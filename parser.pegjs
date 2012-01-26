@@ -3,28 +3,41 @@ start
 
 messageFormatPattern
   = s1:string inner:(messageFormatPatternRight)* {
-    var st = [ s1 ];
+    var st = [];
+    if ( s1 && s1.val ) {
+      st.push( s1 );
+    }
     for( var i in inner ){
       if ( inner.hasOwnProperty( i ) ) {
         st.push( inner[ i ] );
       }
     }
-    return { type: 'MFP', statements: st };
+    return { type: 'messageFormatPattern', statements: st };
   }
 
 messageFormatPatternRight
   = '{' _ mfe:messageFormatElement _ '}' s1:string {
-    return { type: "MFPRight", statements : [ mfe, s1 ] };
+    var res = [];
+    if ( mfe ) {
+      res.push(mfe);
+    }
+    if ( s1 && s1.val ) {
+      res.push( s1 );
+    }
+    return { type: "messageFormatPatternRight", statements : res };
   }
 
 messageFormatElement
   = argIdx:id efmt:(',' elementFormat)? {
     var res = { 
-      type: "MFE",
-      argIdx: argIdx
+      type: "messageFormatElement",
+      argumentIndex: argIdx
     };
     if ( efmt && efmt.length ) {
-      res.efmt = efmt[1];
+      res.elementFormat = efmt[1];
+    }
+    else {
+      res.output = true;
     }
     return res;
   }
@@ -32,50 +45,50 @@ messageFormatElement
 elementFormat
   = _ t:"plural" ',' s:pluralStyle {
     return {
-      type : "EFMT",
-      key : t,
-      val : s.val
+      type : "elementFormat",
+      key  : t,
+      val  : s.val
     };
   }
   / _ t:"select" ',' s:selectStyle {
     return {
-      type : "EFMT",
-      key : t,
-      val : s.val
+      type : "elementFormat",
+      key  : t,
+      val  : s.val
     };
   }
 
 pluralStyle
   = pfp:pluralFormatPattern {
-    return { type: "PS", val: pfp };
+    return { type: "pluralStyle", val: pfp };
   }
 
 selectStyle
   = sfp:selectFormatPattern {
-    return { type: "SS", val: sfp };
+    return { type: "selectStyle", val: sfp };
   }
 
 pluralFormatPattern
   = op:offsetPattern? pf:(pluralForms)* {
-    return {
-      type: "PFP",
-      offsetPattern: op,
+    var res = {
+      type: "pluralFormatPattern",
       pluralForms: pf
     };
+    if ( op ) {
+      res.offset = op;
+    }
+    return res;
   }
 
 offsetPattern
   = _ "offset" _ ":" _ d:digits _ {
-    return {
-      type: "OP",
-      offset: d
-    };
+    return d;
   }
 
 selectFormatPattern
   = pf:pluralForms* {
     return {
-      type: "SFP",
+      type: "selectFormatPattern",
       pluralForms: pf
     };
   }
@@ -83,7 +96,7 @@ selectFormatPattern
 pluralForms
   = _ k:stringKey _ "{" _ mfp:messageFormatPattern _ "}" {
     return {
-      type: "PF",
+      type: "pluralForms",
       key: k,
       val: mfp
     };
@@ -97,9 +110,20 @@ stringKey
     return d;
   }
 
-// TODO:: pull in a cross browser map.
+
 string
-  = s:(_ chars _)* { return { type: "string", val: s.map(function(x){ return x.join(''); }).join('') }; }
+  = s:(_ chars _)* {
+    var tmp = [];
+    for( var i = 0; i < s.length; ++i ) {
+      for( var j = 0; j < s[ i ].length; ++j ) {
+        tmp.push(s[i][j]);
+      }
+    }
+    return {
+      type: "string",
+      val: tmp.join('')
+    };
+  }
 
 // This is a subset to keep code size down
 // More or less, it has to be a single word
