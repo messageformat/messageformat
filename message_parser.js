@@ -161,13 +161,16 @@ module.exports = (function(){
         }
         var result2 = result1 !== null
           ? (function(s1, inner) {
-              var st = [ s1 ];
+              var st = [];
+              if ( s1 && s1.val ) {
+                st.push( s1 );
+              }
               for( var i in inner ){
                 if ( inner.hasOwnProperty( i ) ) {
                   st.push( inner[ i ] );
                 }
               }
-              return { type: 'MFP', statements: st };
+              return { type: 'messageFormatPattern', statements: st };
             })(result1[0], result1[1])
           : null;
         if (result2 !== null) {
@@ -252,7 +255,14 @@ module.exports = (function(){
         }
         var result2 = result1 !== null
           ? (function(mfe, s1) {
-              return { type: "MFPRight", statements : [ mfe, s1 ] };
+              var res = [];
+              if ( mfe ) {
+                res.push(mfe);
+              }
+              if ( s1 && s1.val ) {
+                res.push( s1 );
+              }
+              return { type: "messageFormatPatternRight", statements : res };
             })(result1[2], result1[5])
           : null;
         if (result2 !== null) {
@@ -320,11 +330,14 @@ module.exports = (function(){
         var result2 = result1 !== null
           ? (function(argIdx, efmt) {
               var res = { 
-                type: "MFE",
-                argIdx: argIdx
+                type: "messageFormatElement",
+                argumentIndex: argIdx
               };
               if ( efmt && efmt.length ) {
-                res.efmt = efmt[1];
+                res.elementFormat = efmt[1];
+              }
+              else {
+                res.output = true;
               }
               return res;
             })(result1[0], result1[1])
@@ -400,9 +413,9 @@ module.exports = (function(){
         var result10 = result9 !== null
           ? (function(t, s) {
               return {
-                type : "EFMT",
-                key : t,
-                val : s.val
+                type : "elementFormat",
+                key  : t,
+                val  : s.val
               };
             })(result9[1], result9[3])
           : null;
@@ -461,9 +474,9 @@ module.exports = (function(){
           var result3 = result2 !== null
             ? (function(t, s) {
                 return {
-                  type : "EFMT",
-                  key : t,
-                  val : s.val
+                  type : "elementFormat",
+                  key  : t,
+                  val  : s.val
                 };
               })(result2[1], result2[3])
             : null;
@@ -502,7 +515,7 @@ module.exports = (function(){
         var result1 = parse_pluralFormatPattern();
         var result2 = result1 !== null
           ? (function(pfp) {
-              return { type: "PS", val: pfp };
+              return { type: "pluralStyle", val: pfp };
             })(result1)
           : null;
         if (result2 !== null) {
@@ -534,7 +547,7 @@ module.exports = (function(){
         var result1 = parse_selectFormatPattern();
         var result2 = result1 !== null
           ? (function(sfp) {
-              return { type: "SS", val: sfp };
+              return { type: "selectStyle", val: sfp };
             })(result1)
           : null;
         if (result2 !== null) {
@@ -585,11 +598,14 @@ module.exports = (function(){
         }
         var result2 = result1 !== null
           ? (function(op, pf) {
-              return {
-                type: "PFP",
-                offsetPattern: op,
+              var res = {
+                type: "pluralFormatPattern",
                 pluralForms: pf
               };
+              if ( op ) {
+                res.offset = op;
+              }
+              return res;
             })(result1[0], result1[1])
           : null;
         if (result2 !== null) {
@@ -680,10 +696,7 @@ module.exports = (function(){
         }
         var result2 = result1 !== null
           ? (function(d) {
-              return {
-                type: "OP",
-                offset: d
-              };
+              return d;
             })(result1[5])
           : null;
         if (result2 !== null) {
@@ -721,7 +734,7 @@ module.exports = (function(){
         var result2 = result1 !== null
           ? (function(pf) {
               return {
-                type: "SFP",
+                type: "selectFormatPattern",
                 pluralForms: pf
               };
             })(result1)
@@ -821,7 +834,7 @@ module.exports = (function(){
         var result2 = result1 !== null
           ? (function(k, mfp) {
               return {
-                type: "PF",
+                type: "pluralForms",
                 key: k,
                 val: mfp
               };
@@ -973,7 +986,18 @@ module.exports = (function(){
           }
         }
         var result2 = result1 !== null
-          ? (function(s) { return { type: "string", val: s.map(function(x){ return x.join(''); }).join('') }; })(result1)
+          ? (function(s) {
+              var tmp = [];
+              for( var i = 0; i < s.length; ++i ) {
+                for( var j = 0; j < s[ i ].length; ++j ) {
+                  tmp.push(s[i][j]);
+                }
+              }
+              return {
+                type: "string",
+                val: tmp.join('')
+              };
+            })(result1)
           : null;
         if (result2 !== null) {
           var result0 = result2;

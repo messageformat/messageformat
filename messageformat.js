@@ -17,155 +17,168 @@ License: MIT | Compatible w/ Google Closure's Apache 2
 CLA: Dojo
 
 */
-(function ( root ) {
+var mparse = require('./message_parser');
 
+function MessageFormat ( pluralFunc, locale ){
+  this.pluralFunc = pluralFunc;
+  this.locale = locale;
+}
 
- /* Message format grammar:
- *
- * messageFormatPattern := 
- * string ( "{" messageFormatElement "}" string )*
- * 
- * messageFormatElement := argumentIndex [ "," elementFormat ]
- * 
- * elementFormat := "plural" "," pluralStyle
- *                  | "select" "," selectStyle
- * 
- * pluralStyle :=  pluralFormatPattern
- * 
- * selectStyle :=  selectFormatPattern
- * 
- * pluralFormatPattern := [ "offset" ":" offsetIndex ] pluralForms*
- * 
- * selectFormatPattern := pluralForms*
- * 
- * pluralForms := stringKey "{" ( "{" messageFormatElement "}"|string )* "}"
- *
- *
- *
- * Message example:
- *
- * I see {NUM_PEOPLE, plural, offset:1
- *         =0 {no one at all}
- *         =1 {{WHO}}
- *         one {{WHO} and one other person}
- *         other {{WHO} and # other people}}
- * in {PLACE}.
- *
- * Calling format({'NUM_PEOPLE': 2, 'WHO': 'Mark', 'PLACE': 'Athens'}) would
- * produce "I see Mark and one other person in Athens." as output.
- */
+MessageFormat.locale = {
+  "en" : function () {
+    return 'other';
+  }
+};
 
-// PluralFormat port from Java
-/*
-  function PluralFormat ( plural_rules, locale ) {
-    this.plural_rules = plural_rules || (function (n){ if ( n === 1 ) { return 0; } return 1; });
-    this.locale = locale || "en";
-    this.parsedValues = {};
+MessageFormat.prototype.compile = function compile ( ast ) {
+  var self = this;
+  // Build out our basic SafeString type
+  MessageFormat.SafeString = function(string) {
+    this.string = string;
+  };
+
+  MessageFormat.SafeString.prototype.toString = function() {
+    return this.string.toString();
+  };
+
+  var escape = {
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quo;",
+    "'": "&#x27;",
+    "`": "&#x60;",
+    "\n": "\\n"
+  };
+
+  var badChars = /&(?!\w+;\n)|[<>"'`\n]/g;
+  var possible = /[&<>"'`\n]/;
+
+  var escapeChar = function(chr) {
+    return escape[chr] || "&amp;";
+  };
+
+  var escapeExpression = function(string) {
+    // don't escape SafeStrings, since they're already safe
+    if (string instanceof MessageFormat.SafeString) {
+      return string.toString();
+    } else if (string === null || string === false) {
+      return "";
+    }
+
+    if(!possible.test(string)) { return string; }
+    return string.replace(badChars, escapeChar);
+  };
+
+  var numSub = function ( string, key ) {
+    return string.replace( /#/g, '" + '+key+' + "');
+  };
+
+  MessageFormat.Utils = {
+    escapeExpression: escapeExpression
+  };
+
+  var fp = {
+    begin: 'function ( d ) {\nvar r = "";\n',
+    end  : "return r;\n}"
+  };
+
+  function interpMFP ( ast, data ) {
+    // Set some default data
+    data = data || {};
+    var s = '', i, tmp;
+
+    switch ( ast.type ) {
+      case 'program':
+        return interpMFP( ast.program );
+      case 'messageFormatPattern':
+        for ( i = 0; i < ast.statements.length; ++i ) {
+          s += interpMFP( ast.statements[i], data );
+        }
+        return fp.begin + s + fp.end;
+      case 'messageFormatPatternRight':
+        for ( i = 0; i < ast.statements.length; ++i ) {
+          s += interpMFP( ast.statements[i], data );
+        }
+        return s;
+      case 'messageFormatElement':
+        data.pf_count = data.pf_count || 0;
+        if ( ast.output ) {
+          s += 'r += d["' + ast.argumentIndex + '"];\n';
+        }
+        else {
+          s += 'var k_'+(data.pf_count+1)+'=d["' + ast.argumentIndex + '"];\n';
+          s += interpMFP( ast.elementFormat, data );
+        }
+        return s;
+      case 'elementFormat':
+        if ( ast.key === 'select' ) {
+          s += interpMFP( ast.val, data );
+          s += 'r += pf_' +
+               data.pf_count +
+               '[ /*MessageFormat.locale["' +
+               self.locale +
+               '"](k_' + data.pf_count + ') ||*/ "other" ]( d );\n';
+        }
+        return s;
+      case 'pluralStyle':
+        return 'ps\n';
+      case 'selectStyle':
+        return 'ss\n';
+      case 'pluralFormatPattern':
+        return 'pfp\n';
+      case 'selectFormatPattern':
+
+        data.pf_count = data.pf_count || 0;
+        s += 'var pf_' + data.pf_count + ' = { \n';
+
+        for ( i = 0; i < ast.pluralForms.length; ++i ) {
+          if ( tmp ) {
+            s += ',\n';
+          }
+          else{
+            tmp = 1;
+          }
+          s += '"' + ast.pluralForms[ i ].key + '" : ' + interpMFP( ast.pluralForms[ i ].val, 
+        (function(){ var res = JSON.parse(JSON.stringify(data)); res.pf_count++; return res; })() );
+        }
+        s += '\n};\n';
+        return s;
+      case 'pluralForms':
+        return 'XXXXX';
+      case 'string':
+        return 'r += "' + numSub(escapeExpression(ast.val), 'k_'+data.pf_count) + '";\n';
+      default:
+        throw new Error( 'Bad AST type: ' + ast.type );
+    }
   }
 
-  function isRuleWhiteSpace ( ch ) {
-    var c = "".charCodeAt.call( [ch], 0 );
-    return (c >= 0x0009 && c <= 0x2029 &&
-                (c <= 0x000D || c == 0x0020 || c == 0x0085 ||
-                 c == 0x200E || c == 0x200F || c >= 0x2028));
-  }
+  return (new Function( 'return ' + interpMFP( ast ) ))();
+};
 
-  PluralFormat.prototype.applyPattern = function applyPattern ( pttrn ) {
-         pttrn = pttrn.replace(/^\s\s*         /, '').replace(/\s\s*$/, '');
 
-        this.pattern = pttrn;
-        var braceStack = 0;
 
-        var ruleNames = {
-          "none": 1,
-          "one" : 1,
-          "two" : 1,
-          "other" : 1
-        };
 
-        // Format string has to include keywords.
-        // states:
-        // 0: Reading keyword.
-        // 1: Reading value for preceding keyword.
-        var state = 0;
-        var token = "";
-        var currentKeyword;
-        var readSpaceAfterKeyword = false;
-        for (var i = 0; i < pttrn.length; ++i) {
-            var ch = pttrn.split('')[ i ];
-            console.log( 'ch', ch );
-            switch ( state ) {
-            case 0: // Reading value.
-                if (token.length === 0) {
-                    readSpaceAfterKeyword = false;
-                }
-                if ( isRuleWhiteSpace( ch ) ) {
-                    if (token.length > 0) {
-                        readSpaceAfterKeyword = true;
-                    }
-                    // Skip leading and trailing whitespaces.
-                    break;
-                }
-                if (ch === '{') { // End of keyword definition reached.
-                    currentKeyword = token.toLowerCase();
-                    if (!ruleNames[currentKeyword]) {
-                        throw new Error("Malformed formatting expression. " +
-                                "Unknown keyword \"" + currentKeyword +
-                                "\" at position " + i + ".");
-                    }
-                    if (parsedValues[currentKeyword]) {
-                        throw new Error("Malformed formatting expression. " +
-                                "Text for case \"" + currentKeyword +
-                                "\" at position " + i + " already defined!");
-                    }
-                    token = "";
-                    braceStack++;
-                    state = 1;
-                    break;
-                }
-                if (readSpaceAfterKeyword) {
-                    throw new Error("Malformed formatting expression. " +
-                            "Invalid keyword definition. Character \"" + ch +
-                            "\" at position " + i + " not expected!");
-                }
-                token += ch;
-                break;
-            case 1: // Reading value.
-                switch (ch) {
-                case '{':
-                    braceStack++;
-                    token += ch;
-                    break;
-                case '}':
-                    braceStack--;
-                    if (braceStack === 0) { // End of value reached.
-                        this.parsedValues[currentKeyword] = token;
-                        token = "";
-                        state = 0;
-                    } else if (braceStack < 0) {
-                        throw new Error("Malformed formatting expression. " +
-                                "Braces do not match.");
-                    } else { // braceStack > 0
-                        token += ch;
-                    }
-                    break;
-                default:
-                    token += ch;
-                }
-                break;
-            } // switch state
-        } // for loop.
-        if (braceStack !== 0) {
-            throw new Error(
-                    "Malformed formatting expression. Braces do not match.");
-        }
-        if ( ! this.parsedValues.other ) {
-          throw new Error("Malformed formatting expression.\n" +
-                    "Value for case \"" + "other" +
-                    "\" was not defined.");
-        }
-    };
 
-    exports.PluralFormat = PluralFormat;*/
 
-})( this );
+
+var input = "I see {NUM_PEOPLE,select,"+
+          "=0{no one at all}" +
+          "=1{{WHO}}" +
+          "one{{WHO} and one other person}" +
+          "other {{WHO}, 中国话不用彁字 and # other people, also " + 
+          "{NUM_DOGS,select,"+
+                      "other {# dogs}"+
+          "} } } " +
+  "in {PLACE}.";
+
+var ast = mparse.parse( input );
+
+console.log(
+  (new MessageFormat(false, 'en')).compile( ast )({
+    NUM_PEOPLE : 5,
+    WHO : "Alex Sexton",
+    PLACE : "Austin, Tx",
+    NUM_DOGS: 2
+  })
+);
+
