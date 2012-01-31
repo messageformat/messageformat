@@ -119,11 +119,11 @@ MessageFormat.prototype.compile = function compile ( ast ) {
           s += 'if ( pf_'+(data.pf_count)+'[ k_'+(data.pf_count+1)+' + "" ] ) {\n';
           s += 'r += pf_'+data.pf_count+'[ k_'+(data.pf_count+1)+' + "" ]( d ); \n';
           s += '}\nelse {\n';
-          s += 'r += pf_' +
+          s += 'r += (pf_' +
                data.pf_count +
                '[ MessageFormat.locale["' +
                self.locale +
-               '"]( k_'+(data.pf_count+1)+' - off_'+(data.pf_count)+' ) ]( d );\n';
+               '"]( k_'+(data.pf_count+1)+' - off_'+(data.pf_count)+' ) ] || pf_'+data.pf_count+'[ "other" ] )( d );\n';
           s += '}\n';
         }
         return s;
@@ -197,13 +197,13 @@ var input = "" +
 "  other {their}"+
 "} group.";
 
-input = "There {PLURAL_NUM_PEOPLE, plural, offset:1  =0 {isn't anyone} =1 {is just you} one{is one other person} other{are # other people}} here."
+input = "There {PLURAL_NUM_PEOPLE, plural, offset:1  =0 {isn't anyone} =1 {is just you} other{are # other people}} here."
 
 var ast = mparse.parse( input );
 //console.log(JSON.stringify(ast, null, ' '));
 console.log(
   (new MessageFormat(false, 'en')).compile( ast )({
-    PLURAL_NUM_PEOPLE : 352,
+    PLURAL_NUM_PEOPLE : 2,
     PERSON : "Allie Sexton",
     GENDER: "female"
   })
