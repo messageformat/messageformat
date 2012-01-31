@@ -605,6 +605,9 @@ module.exports = (function(){
               if ( op ) {
                 res.offset = op;
               }
+              else {
+                res.offset = 0;
+              }
               return res;
             })(result1[0], result1[1])
           : null;

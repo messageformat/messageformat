@@ -77,6 +77,9 @@ pluralFormatPattern
     if ( op ) {
       res.offset = op;
     }
+    else {
+      res.offset = 0;
+    }
     return res;
   }
 

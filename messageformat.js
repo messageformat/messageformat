@@ -18,14 +18,16 @@ CLA: Dojo
 
 */
 var mparse = require('./message_parser');
-
 function MessageFormat ( pluralFunc, locale ){
   this.pluralFunc = pluralFunc;
   this.locale = locale;
 }
 
 MessageFormat.locale = {
-  "en" : function () {
+  "en" : function ( n ) {
+    if ( n === 1 ) {
+      return 'one';
+    }
     return 'other';
   }
 };
@@ -42,16 +44,11 @@ MessageFormat.prototype.compile = function compile ( ast ) {
   };
 
   var escape = {
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quo;",
-    "'": "&#x27;",
-    "`": "&#x60;",
     "\n": "\\n"
   };
 
-  var badChars = /&(?!\w+;\n)|[<>"'`\n]/g;
-  var possible = /[&<>"'`\n]/;
+  var badChars = /(\n)|[\n]/g;
+  var possible = /[\n]/;
 
   var escapeChar = function(chr) {
     return escape[chr] || "&amp;";
@@ -70,7 +67,7 @@ MessageFormat.prototype.compile = function compile ( ast ) {
   };
 
   var numSub = function ( string, key ) {
-    return string.replace( /#/g, '" + '+key+' + "');
+    return string.replace( /#/g, '" + ('+key+') + "');
   };
 
   MessageFormat.Utils = {
@@ -113,19 +110,43 @@ MessageFormat.prototype.compile = function compile ( ast ) {
       case 'elementFormat':
         if ( ast.key === 'select' ) {
           s += interpMFP( ast.val, data );
+          s += 'r += (pf_' +
+               data.pf_count +
+               '[ k_' + (data.pf_count+1) + ' ] || pf_'+data.pf_count+'[ "other" ])( d );\n';
+        }
+        else if ( ast.key === 'plural' ) {
+          s += interpMFP( ast.val, data );
+          s += 'if ( pf_'+(data.pf_count)+'[ k_'+(data.pf_count+1)+' + "" ] ) {\n';
+          s += 'r += pf_'+data.pf_count+'[ k_'+(data.pf_count+1)+' + "" ]( d ); \n';
+          s += '}\nelse {\n';
           s += 'r += pf_' +
                data.pf_count +
-               '[ /*MessageFormat.locale["' +
+               '[ MessageFormat.locale["' +
                self.locale +
-               '"](k_' + data.pf_count + ') ||*/ "other" ]( d );\n';
+               '"]( k_'+(data.pf_count+1)+' - off_'+(data.pf_count)+' ) ]( d );\n';
+          s += '}\n';
         }
         return s;
+      /* // Unreachable cases.
       case 'pluralStyle':
-        return 'ps\n';
-      case 'selectStyle':
-        return 'ss\n';
+      case 'selectStyle':*/
       case 'pluralFormatPattern':
-        return 'pfp\n';
+        data.pf_count = data.pf_count || 0;
+        s += 'var off_'+data.pf_count+' = '+ast.offset+';\n';
+        s += 'var pf_' + data.pf_count + ' = { \n';
+
+        for ( i = 0; i < ast.pluralForms.length; ++i ) {
+          if ( tmp ) {
+            s += ',\n';
+          }
+          else{
+            tmp = 1;
+          }
+          s += '"' + ast.pluralForms[ i ].key + '" : ' + interpMFP( ast.pluralForms[ i ].val, 
+        (function(){ var res = JSON.parse(JSON.stringify(data)); res.pf_count++; return res; })() );
+        }
+        s += '\n};\n';
+        return s;
       case 'selectFormatPattern':
 
         data.pf_count = data.pf_count || 0;
@@ -143,16 +164,19 @@ MessageFormat.prototype.compile = function compile ( ast ) {
         }
         s += '\n};\n';
         return s;
+      /* // Unreachable
       case 'pluralForms':
-        return 'XXXXX';
+      */
       case 'string':
-        return 'r += "' + numSub(escapeExpression(ast.val), 'k_'+data.pf_count) + '";\n';
+        return 'r += "' + numSub(escapeExpression(ast.val), 'k_'+data.pf_count+' - off_'+(data.pf_count-1)) + '";\n';
       default:
         throw new Error( 'Bad AST type: ' + ast.type );
     }
   }
-
-  return (new Function( 'return ' + interpMFP( ast ) ))();
+  var out = interpMFP( ast );
+  global.MessageFormat = MessageFormat;
+  console.log( out );
+  return (new Function( 'var MessageFormat = this.MessageFormat; return ' + out ))();
 };
 
 
@@ -161,24 +185,27 @@ MessageFormat.prototype.compile = function compile ( ast ) {
 
 
 
-var input = "I see {NUM_PEOPLE,select,"+
-          "=0{no one at all}" +
-          "=1{{WHO}}" +
-          "one{{WHO} and one other person}" +
-          "other {{WHO}, 中国话不用彁字 and # other people, also " + 
-          "{NUM_DOGS,select,"+
-                      "other {# dogs}"+
-          "} } } " +
-  "in {PLACE}.";
+var input = "" +
+"{PERSON} added {PLURAL_NUM_PEOPLE, plural, offset:1" +
+"     =0 {no one}"+
+"     =1 {just {GENDER, select, male {him} female {her} other{them}}self}"+
+"    one {{GENDER, select, male {him} female {her} other{them}}self and one other person}"+
+"  other {{GENDER, select, male {him} female {her} other{them}}self and # other people}"+
+"} to {GENDER, select,"+
+"   male {his}"+
+" female {her}"+
+"  other {their}"+
+"} group.";
+
+input = "There {PLURAL_NUM_PEOPLE, plural, offset:1  =0 {isn't anyone} =1 {is just you} one{is one other person} other{are # other people}} here."
 
 var ast = mparse.parse( input );
-
+//console.log(JSON.stringify(ast, null, ' '));
 console.log(
   (new MessageFormat(false, 'en')).compile( ast )({
-    NUM_PEOPLE : 5,
-    WHO : "Alex Sexton",
-    PLACE : "Austin, Tx",
-    NUM_DOGS: 2
+    PLURAL_NUM_PEOPLE : 352,
+    PERSON : "Allie Sexton",
+    GENDER: "female"
   })
 );
 
