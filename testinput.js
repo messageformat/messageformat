@@ -12,9 +12,13 @@ console.log( JSON.stringify(
   "in {PLACE}."
 
 ),null, '  '));
-/*
-var PluralFormat = require('./messageformat').PluralFormat;
-var fmtr = new PluralFormat();
 
-console.log( fmtr.applyPattern("{0, plural, one{{0, number, C''''est #,##0.0#  fichier}} other {Ce sont # fichiers}}") );
+/*
+{{#_ "i18n_key" "OBJECT" object "COUNT" object_count }}
+  I have {OBJGENDER, plural
+         one {a {object} }
+         other {COUNT {{object}s  }
+  .
+{{/_}}
 */
+
