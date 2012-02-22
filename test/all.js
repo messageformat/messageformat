@@ -27,9 +27,81 @@ describe( "PluralFormat", function () {
       expect( pf.compile ).to.be.a( 'function' );
     });
 
+    it("should bail on non-existing locales", function () {
+      expect(function(){ var a = new PluralFormat( 'lawlz' ); }).to.throwError();
+    });
+
+  });
+
+  describe( "Simple Parsing", function () {
+
+    describe( "Basic Variables", function () {
+
+      it("should accept only a variable", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('{test}') ).to.be.an( 'object' );
+      });
+
+      it("should not care about white space in a variable", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( JSON.stringify( pf.parse('{test }') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
+        expect( JSON.stringify( pf.parse('{ test}') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
+        expect( JSON.stringify( pf.parse('{test  }') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
+        expect( JSON.stringify( pf.parse('{  test}') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
+        expect( JSON.stringify( pf.parse('{test}') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
+      });
+
+      it("should maintain exact strings on either side of variables", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('x{test}').program.statements[0].val ).to.be( 'x' );
+        expect( pf.parse('\n{test}').program.statements[0].val ).to.be( '\n' );
+        expect( pf.parse(' {test}').program.statements[0].val ).to.be( ' ' );
+        expect( pf.parse('x { test}').program.statements[0].val ).to.be( 'x ' );
+        expect( pf.parse('x{test} x ').program.statements[1].statements[1].val ).to.be( ' x ' );
+        expect( pf.parse('x\n{test}\n').program.statements[0].val ).to.be( 'x\n' );
+        expect( pf.parse('x\n{test}\n').program.statements[1].statements[1].val ).to.be( '\n' );
+      });
+    });
+
+    describe( "Selects", function () {
+
+      it("should accept a select statement based on a variable", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('') );
+      });
+
+    });
+
+    describe( "Parsing Errors", function () {
+
+      it("should catch mismatched/invalid bracket situations", function () {
+        var pf = new PluralFormat( 'en' );
+        expect(function(){ pf.parse('}'); }).to.throwError();
+        expect(function(){ pf.parse('{'); }).to.throwError();
+        expect(function(){ pf.parse('{{X}'); }).to.throwError();
+        expect(function(){ pf.parse('{}'); }).to.throwError();
+        expect(function(){ pf.parse('{}{'); }).to.throwError();
+        expect(function(){ pf.parse('{X}{'); }).to.throwError();
+        expect(function(){ pf.parse('}{}'); }).to.throwError();
+        expect(function(){ pf.parse('}{X}'); }).to.throwError();
+        expect(function(){ pf.parse('{}}'); }).to.throwError();
+        expect(function(){ pf.parse('{X}}'); }).to.throwError();
+        expect(function(){ pf.parse('{{X}}'); }).to.throwError();
+        expect(function(){ pf.parse(); }).to.throwError();
+        // Technically an empty string is valid.
+        expect(function(){ pf.parse(''); }).to.not.throwError();
+      });
+
+      it("should not allow an offset for SELECTs", function () {
+        var pf = new PluralFormat( 'en' );
+        expect(function(){ pf.parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
+      });
+
+    });
   });
 
   describe( "Complex parsing", function () {
+
     it("can parse complex strings", function () {
       var input = "" +
       "{PERSON} added {PLURAL_NUM_PEOPLE, plural, offset:1" +

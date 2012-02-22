@@ -11,7 +11,17 @@
 (function ( root ) {
 
   // Create the contructor function
-  function PluralFormat ( locale, pluralFunc ){
+  function PluralFormat ( locale, pluralFunc ) {
+    // Defaults
+    locale = locale || "en";
+    pluralFunc = pluralFunc || PluralFormat.locale[ locale ];
+
+    // Let's just be friends.
+    if ( ! pluralFunc ) {
+      throw new Error( "Plural Function not found for locale: " + locale );
+    }
+
+    // Own Properties
     this.pluralFunc = pluralFunc;
     this.locale = locale;
   }
@@ -20,9 +30,12 @@
   PluralFormat.locale = {
     "en" : function ( n ) {
       if ( n === 1 ) {
-        return 'one';
+        return "one";
       }
-      return 'other';
+      return "other";
+    },
+    "en_us" : function () {
+      return this.en.apply( this, arguments );
     }
   };
 
@@ -65,7 +78,12 @@
     }
   };
 
-  PluralFormat.prototype.parse = require( './message_parser' ).parse;
+  var mparser = require( './message_parser' );
+
+  PluralFormat.prototype.parse = function () {
+    // Bind to itself so error handling works
+    return mparser.parse.apply( mparser, arguments );
+  };
 
   PluralFormat.prototype.precompile = function compile ( ast ) {
     var self = this,

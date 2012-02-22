@@ -944,52 +944,65 @@ module.exports = (function(){
         
         
         var savedPos0 = pos;
-        var result1 = [];
         var savedPos1 = pos;
-        var result4 = parse__();
-        if (result4 !== null) {
-          var result5 = parse_chars();
-          if (result5 !== null) {
-            var result6 = parse__();
-            if (result6 !== null) {
-              var result3 = [result4, result5, result6];
+        var result3 = parse__();
+        if (result3 !== null) {
+          var result4 = [];
+          var savedPos2 = pos;
+          var result6 = parse__();
+          if (result6 !== null) {
+            var result7 = parse_chars();
+            if (result7 !== null) {
+              var result8 = parse__();
+              if (result8 !== null) {
+                var result5 = [result6, result7, result8];
+              } else {
+                var result5 = null;
+                pos = savedPos2;
+              }
             } else {
-              var result3 = null;
-              pos = savedPos1;
+              var result5 = null;
+              pos = savedPos2;
             }
           } else {
-            var result3 = null;
+            var result5 = null;
+            pos = savedPos2;
+          }
+          while (result5 !== null) {
+            result4.push(result5);
+            var savedPos2 = pos;
+            var result6 = parse__();
+            if (result6 !== null) {
+              var result7 = parse_chars();
+              if (result7 !== null) {
+                var result8 = parse__();
+                if (result8 !== null) {
+                  var result5 = [result6, result7, result8];
+                } else {
+                  var result5 = null;
+                  pos = savedPos2;
+                }
+              } else {
+                var result5 = null;
+                pos = savedPos2;
+              }
+            } else {
+              var result5 = null;
+              pos = savedPos2;
+            }
+          }
+          if (result4 !== null) {
+            var result1 = [result3, result4];
+          } else {
+            var result1 = null;
             pos = savedPos1;
           }
         } else {
-          var result3 = null;
+          var result1 = null;
           pos = savedPos1;
         }
-        while (result3 !== null) {
-          result1.push(result3);
-          var savedPos1 = pos;
-          var result4 = parse__();
-          if (result4 !== null) {
-            var result5 = parse_chars();
-            if (result5 !== null) {
-              var result6 = parse__();
-              if (result6 !== null) {
-                var result3 = [result4, result5, result6];
-              } else {
-                var result3 = null;
-                pos = savedPos1;
-              }
-            } else {
-              var result3 = null;
-              pos = savedPos1;
-            }
-          } else {
-            var result3 = null;
-            pos = savedPos1;
-          }
-        }
         var result2 = result1 !== null
-          ? (function(s) {
+          ? (function(ws, s) {
               var tmp = [];
               for( var i = 0; i < s.length; ++i ) {
                 for( var j = 0; j < s[ i ].length; ++j ) {
@@ -998,9 +1011,9 @@ module.exports = (function(){
               }
               return {
                 type: "string",
-                val: tmp.join('')
+                val: ws + tmp.join('')
               };
-            })(result1)
+            })(result1[0], result1[1])
           : null;
         if (result2 !== null) {
           var result0 = result2;

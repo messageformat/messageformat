@@ -115,7 +115,7 @@ stringKey
 
 
 string
-  = s:(_ chars _)* {
+  = ws:_ s:(_ chars _)* {
     var tmp = [];
     for( var i = 0; i < s.length; ++i ) {
       for( var j = 0; j < s[ i ].length; ++j ) {
@@ -124,7 +124,7 @@ string
     }
     return {
       type: "string",
-      val: tmp.join('')
+      val: ws + tmp.join('')
     };
   }
 
