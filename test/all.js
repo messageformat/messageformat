@@ -37,7 +37,7 @@ describe( "PluralFormat", function () {
 
   });
 
-  describe( "Simple Parsing", function () {
+  describe( "Parsing", function () {
 
     describe( "Replacement", function () {
 
@@ -54,6 +54,12 @@ describe( "PluralFormat", function () {
         expect( pf.parse("\\{test").program.statements[0].val ).to.eql( '{test' );
         expect( pf.parse("test\\}").program.statements[0].val ).to.eql( 'test}' );
         expect( pf.parse("\\{test\\}").program.statements[0].val ).to.eql( '{test}' );
+      });
+
+      it("should gracefully handle quotes (since it ends up in a JS String)", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('This is a dbl quote: "').program.statements[0].val ).to.eql( 'This is a dbl quote: "' );
+        expect( pf.parse("This is a single quote: '").program.statements[0].val ).to.eql( "This is a single quote: '" );
       });
 
       it("should accept only a variable", function () {
@@ -87,15 +93,58 @@ describe( "PluralFormat", function () {
         expect( pf.parse('☺{test}').program.statements[0].val ).to.be( '☺' );
         expect( pf.parse('中{test}中国话不用彁字。').program.statements[1].statements[1].val ).to.be( '中国话不用彁字。' );
       });
+
+      it("shouldn't matter if it has html or something in it", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('<div class="test">content: {TEST}</div>').program.statements[0].val ).to.be( '<div class="test">content: ' );
+        expect( pf.parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[0].argumentIndex ).to.be( 'TEST' );
+        expect( pf.parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[1].val ).to.be( '</div>' );
+      });
+
+      it("should allow you to use keywords for plural formats everywhere except where they go", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('select select, ').program.statements[0].val ).to.eql( 'select select, ' );
+        expect( pf.parse('select offset, offset:1 ').program.statements[0].val ).to.eql( 'select offset, offset:1 ' );
+        expect( pf.parse('one other, =1 ').program.statements[0].val ).to.eql( 'one other, =1 ' );
+        expect( pf.parse('one {select} ').program.statements[1].statements[0].argumentIndex ).to.eql( 'select' );
+        expect( pf.parse('one {plural} ').program.statements[1].statements[0].argumentIndex ).to.eql( 'plural' );
+      });
     });
 
     describe( "Selects", function () {
 
       it("should accept a select statement based on a variable", function () {
         var pf = new PluralFormat( 'en' );
-       // expect( pf.parse('') );
+        expect(function(){ pf.parse('{VAR, select, key{a} other{b}}'); }).to.not.throwError();
       });
 
+      it("should be very whitespace agnostic", function (){
+        var pf = new PluralFormat( 'en' );
+        var firstRes = JSON.stringify(pf.parse('{VAR, select, key{a} other{b}}'));
+        expect( JSON.stringify(pf.parse('{VAR,select,key{a}other{b}}')) ).to.eql( firstRes );
+        expect( JSON.stringify(pf.parse('{    VAR   ,    select   ,    key      {a}   other    {b}    }')) ).to.eql( firstRes );
+        expect( JSON.stringify(pf.parse('{ \n   VAR  \n , \n   select  \n\n , \n \n  key \n    \n {a}  \n other \n   {b} \n  \n }')) ).to.eql( firstRes );
+        expect( JSON.stringify(pf.parse('{ \t  VAR  \n , \n\t  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }')) ).to.eql( firstRes );
+      });
+
+      it("should allow you to use PluralFormat keywords other places, including in select keys", function () {
+        var pf = new PluralFormat( 'en' );
+        // use `select` as a select key
+        expect( pf.parse( 'x {TEST, select, select{a} other{b} }' )
+                    .program.statements[1].statements[0]
+                    .elementFormat.val.pluralForms[0].key
+              ).to.eql( 'select' );
+        // use `offset` as a key (since it goes here in a `plural` case)
+        expect( pf.parse( 'x {TEST, select, offset{a} other{b} }' )
+                    .program.statements[1].statements[0]
+                    .elementFormat.val.pluralForms[0].key
+              ).to.eql( 'offset' );
+        // use the exact variable name as a key name
+        expect( pf.parse( 'x {TEST, select, TEST{a} other{b} }' )
+                    .program.statements[1].statements[0]
+                    .elementFormat.val.pluralForms[0].key
+              ).to.eql( 'TEST' );
+      });
     });
 
     describe( "Parsing Errors", function () {
