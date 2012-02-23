@@ -31,11 +31,30 @@ describe( "PluralFormat", function () {
       expect(function(){ var a = new PluralFormat( 'lawlz' ); }).to.throwError();
     });
 
+    it("should default to 'en' when no locale is passed into the constructor", function () {
+      expect((new PluralFormat()).locale).to.be( 'en' );
+    });
+
   });
 
   describe( "Simple Parsing", function () {
 
-    describe( "Basic Variables", function () {
+    describe( "Replacement", function () {
+
+      it("should accept string only input", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse( 'This is a string' ).program.statements[0].val ).to.be( 'This is a string' );
+        expect( pf.parse( '☺☺☺☺' ).program.statements[0].val ).to.be( '☺☺☺☺' );
+        expect( pf.parse( 'This is \n a string' ).program.statements[0].val ).to.be( 'This is \n a string' );
+        expect( pf.parse( '中国话不用彁字。' ).program.statements[0].val ).to.be( '中国话不用彁字。' );
+      });
+
+      it("should allow you to escape { and } characters", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse("\\{test").program.statements[0].val ).to.eql( '{test' );
+        expect( pf.parse("test\\}").program.statements[0].val ).to.eql( 'test}' );
+        expect( pf.parse("\\{test\\}").program.statements[0].val ).to.eql( '{test}' );
+      });
 
       it("should accept only a variable", function () {
         var pf = new PluralFormat( 'en' );
@@ -44,14 +63,15 @@ describe( "PluralFormat", function () {
 
       it("should not care about white space in a variable", function () {
         var pf = new PluralFormat( 'en' );
-        expect( JSON.stringify( pf.parse('{test }') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
-        expect( JSON.stringify( pf.parse('{ test}') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
-        expect( JSON.stringify( pf.parse('{test  }') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
-        expect( JSON.stringify( pf.parse('{  test}') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
-        expect( JSON.stringify( pf.parse('{test}') ) ).to.be( '{"type":"program","program":{"type":"messageFormatPattern","statements":[{"type":"messageFormatPatternRight","statements":[{"type":"messageFormatElement","argumentIndex":"test","output":true}]}]}}' );
+        var targetStr = JSON.stringify( pf.parse('{test}') );
+        expect( JSON.stringify( pf.parse('{test }') ) ).to.eql( targetStr );
+        expect( JSON.stringify( pf.parse('{ test}') ) ).to.eql( targetStr );
+        expect( JSON.stringify( pf.parse('{test  }') ) ).to.eql( targetStr );
+        expect( JSON.stringify( pf.parse('{  test}') ) ).to.eql( targetStr );
+        expect( JSON.stringify( pf.parse('{test}') ) ).to.eql( targetStr );
       });
 
-      it("should maintain exact strings on either side of variables", function () {
+      it("should maintain exact strings - not affected by variables", function () {
         var pf = new PluralFormat( 'en' );
         expect( pf.parse('x{test}').program.statements[0].val ).to.be( 'x' );
         expect( pf.parse('\n{test}').program.statements[0].val ).to.be( '\n' );
@@ -61,13 +81,19 @@ describe( "PluralFormat", function () {
         expect( pf.parse('x\n{test}\n').program.statements[0].val ).to.be( 'x\n' );
         expect( pf.parse('x\n{test}\n').program.statements[1].statements[1].val ).to.be( '\n' );
       });
+
+      it("should handle extended character literals", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('☺{test}').program.statements[0].val ).to.be( '☺' );
+        expect( pf.parse('中{test}中国话不用彁字。').program.statements[1].statements[1].val ).to.be( '中国话不用彁字。' );
+      });
     });
 
     describe( "Selects", function () {
 
       it("should accept a select statement based on a variable", function () {
         var pf = new PluralFormat( 'en' );
-        expect( pf.parse('') );
+       // expect( pf.parse('') );
       });
 
     });
@@ -95,6 +121,11 @@ describe( "PluralFormat", function () {
       it("should not allow an offset for SELECTs", function () {
         var pf = new PluralFormat( 'en' );
         expect(function(){ pf.parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
+      });
+
+      it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function () {
+        var pf = new PluralFormat( 'en' );
+        expect(function(){ pf.parse('{☺}'); }).to.throwError();
       });
 
     });
