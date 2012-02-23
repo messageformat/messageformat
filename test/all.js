@@ -124,7 +124,7 @@ describe( "PluralFormat", function () {
         expect( JSON.stringify(pf.parse('{VAR,select,key{a}other{b}}')) ).to.eql( firstRes );
         expect( JSON.stringify(pf.parse('{    VAR   ,    select   ,    key      {a}   other    {b}    }')) ).to.eql( firstRes );
         expect( JSON.stringify(pf.parse('{ \n   VAR  \n , \n   select  \n\n , \n \n  key \n    \n {a}  \n other \n   {b} \n  \n }')) ).to.eql( firstRes );
-        expect( JSON.stringify(pf.parse('{ \t  VAR  \n , \n\t  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }')) ).to.eql( firstRes );
+        expect( JSON.stringify(pf.parse('{ \t  VAR  \n , \n\t\r  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }')) ).to.eql( firstRes );
       });
 
       it("should allow you to use PluralFormat keywords other places, including in select keys", function () {
@@ -145,9 +145,83 @@ describe( "PluralFormat", function () {
                     .elementFormat.val.pluralForms[0].key
               ).to.eql( 'TEST' );
       });
+
+      it("should be case-sensitive (select keyword is lowercase, everything else doesn't matter", function () {
+        var pf = new PluralFormat( 'en' );
+        expect(function(){ var a = pf.parse('{TEST, Select, a{a} other{b}}'); }).to.throwError();
+        expect(function(){ var a = pf.parse('{TEST, SELECT, a{a} other{b}}'); }).to.throwError();
+        expect(function(){ var a = pf.parse('{TEST, selecT, a{a} other{b}}'); }).to.throwError();
+      });
+
     });
 
-    describe( "Parsing Errors", function () {
+    describe( "Plurals", function () {
+
+      it("should accept a variable, no offset, and plural keys", function () {
+        var pf = new PluralFormat( 'en' );
+        expect(function(){ var a = pf.parse('{NUM, plural, one{1} other{2}}'); }).to.not.throwError();
+      });
+
+      it("should accept exact values with `=` prefixes", function () {
+        var pf = new PluralFormat( 'en' );
+        expect(
+          pf.parse('{NUM, plural, =0{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 0 );
+        expect(
+          pf.parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 1 );
+        expect(
+          pf.parse('{NUM, plural, =2{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 2 );
+        expect(
+          pf.parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
+        ).to.eql( "other" );
+      });
+
+      it("should accept the 6 official keywords", function () {
+        var pf = new PluralFormat( 'en' );
+        // 'zero', 'one', 'two', 'few', 'many' and 'other'
+        expect(
+          pf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'zero' );
+        expect(
+          pf.parse( '{NUM, plural,   zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'zero' );
+        expect(
+          pf.parse( '{NUM, plural,zero    {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'zero' );
+        expect(
+          pf.parse( '{NUM, plural,  \nzero\n   {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'zero' );
+        expect(
+          pf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
+        ).to.eql( 'one' );
+        expect(
+          pf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[2].key
+        ).to.eql( 'two' );
+        expect(
+          pf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[3].key
+        ).to.eql( 'few' );
+        expect(
+          pf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[4].key
+        ).to.eql( 'many' );
+        expect(
+          pf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[5].key
+        ).to.eql( 'other' );
+      });
+
+      it("should be gracious with whitespace", function () {
+        var pf = new PluralFormat( 'en' );
+        var firstRes = JSON.stringify( pf.parse('{NUM, plural, one{1} other{2}}') );
+        expect(JSON.stringify( pf.parse('{ NUM, plural, one{1} other{2} }') )).to.eql( firstRes );
+        expect(JSON.stringify( pf.parse('{NUM,plural,one{1}other{2}}') )).to.eql( firstRes );
+        expect(JSON.stringify( pf.parse('{\nNUM,   \nplural,\n   one\n\n{1}\n other {2}\n\n\n}') )).to.eql( firstRes );
+        expect(JSON.stringify( pf.parse('{\tNUM\t,\t\t\r plural\t\n, \tone\n{1}    other\t\n{2}\n\n\n}') )).to.eql( firstRes );
+      });
+
+    });
+
+    describe( "Errors", function () {
 
       it("should catch mismatched/invalid bracket situations", function () {
         var pf = new PluralFormat( 'en' );
@@ -197,13 +271,75 @@ describe( "PluralFormat", function () {
 
       var pf = new PluralFormat( 'en' );
       var pf_func = pf.compile( input );
-      var data = {
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 0,
+          PERSON : "Allie Sexton",
+          GENDER: "female"
+      }) ).to.eql('Allie Sexton added no one to her group.');
+
+      expect( pf_func({
           PLURAL_NUM_PEOPLE : 1,
           PERSON : "Allie Sexton",
           GENDER: "female"
-      };
+      }) ).to.eql('Allie Sexton added just herself to her group.');
 
-      expect( pf_func( data ) ).to.eql('Allie Sexton added just herself to her group.');
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 2,
+          PERSON : "Allie Sexton",
+          GENDER: "female"
+      }) ).to.eql('Allie Sexton added herself and one other person to her group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 3,
+          PERSON : "Allie Sexton",
+          GENDER: "female"
+      }) ).to.eql('Allie Sexton added herself and 2 other people to her group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 0,
+          PERSON : "Alex Sexton",
+          GENDER: "male"
+      }) ).to.eql('Alex Sexton added no one to his group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 1,
+          PERSON : "Alex Sexton",
+          GENDER: "male"
+      }) ).to.eql('Alex Sexton added just himself to his group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 2,
+          PERSON : "Alex Sexton",
+          GENDER: "male"
+      }) ).to.eql('Alex Sexton added himself and one other person to his group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 3,
+          PERSON : "Alex Sexton",
+          GENDER: "male"
+      }) ).to.eql('Alex Sexton added himself and 2 other people to his group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 0,
+          PERSON : "Al Sexton"
+      }) ).to.eql('Al Sexton added no one to their group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 1,
+          PERSON : "Al Sexton"
+      }) ).to.eql('Al Sexton added just themself to their group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 2,
+          PERSON : "Al Sexton"
+      }) ).to.eql('Al Sexton added themself and one other person to their group.');
+
+      expect( pf_func({
+          PLURAL_NUM_PEOPLE : 3,
+          PERSON : "Al Sexton"
+      }) ).to.eql('Al Sexton added themself and 2 other people to their group.');
+
     });
 
   });
