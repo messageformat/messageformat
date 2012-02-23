@@ -43,14 +43,14 @@ messageFormatElement
   }
 
 elementFormat
-  = _ t:"plural" ',' s:pluralStyle {
+  = _ t:"plural" _ ',' _ s:pluralStyle _ {
     return {
       type : "elementFormat",
       key  : t,
       val  : s.val
     };
   }
-  / _ t:"select" ',' s:selectStyle {
+  / _ t:"select" _ ',' _ s:selectStyle _ {
     return {
       type : "elementFormat",
       key  : t,
