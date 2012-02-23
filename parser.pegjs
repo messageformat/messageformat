@@ -140,10 +140,18 @@ chars
   = chars:char+ { return chars.join(''); }
 
 char
-  = [^{}\\\0-\x1F\x7f \t\n\r]
+  = x:[^{}\\\0-\x1F\x7f \t\n\r] {
+    return x;
+  }
+  / "\\{" {
+    return "\u007B";
+  }
+  / "\\}" {
+    return "\u007D";
+  }
   / "\\u" h1:hexDigit h2:hexDigit h3:hexDigit h4:hexDigit {
       return String.fromCharCode(parseInt("0x" + h1 + h2 + h3 + h4));
-    }
+  }
 
 digits
   = ds:[0-9]+ {
