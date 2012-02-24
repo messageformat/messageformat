@@ -219,6 +219,23 @@ describe( "PluralFormat", function () {
         expect(JSON.stringify( pf.parse('{\tNUM\t,\t\t\r plural\t\n, \tone\n{1}    other\t\n{2}\n\n\n}') )).to.eql( firstRes );
       });
 
+      it("should take an offset", function () {
+        var pf = new PluralFormat( 'en' );
+        expect( pf.parse('{NUM, plural, offset:4 other{a}}') ).to.be.ok();
+        expect( pf.parse('{NUM, plural, offset : 4 other{a}}') ).to.be.ok();
+        expect( pf.parse('{NUM, plural, offset\n\t\r : \t\n\r4 other{a}}') ).to.be.ok();
+        // technically this is parsable since js identifiers don't start with numbers
+        expect( pf.parse('{NUM,plural,offset:4other{a}}') ).to.be.ok();
+
+        expect(
+          pf.parse('{NUM, plural, offset:4 other{a}}').program.statements[0].statements[0].elementFormat.val.offset
+        ).to.eql( 4 );
+        expect(
+          pf.parse('{NUM,plural,offset:4other{a}}').program.statements[0].statements[0].elementFormat.val.offset
+        ).to.eql( 4 );
+
+      });
+
     });
 
     describe( "Errors", function () {
@@ -249,6 +266,10 @@ describe( "PluralFormat", function () {
       it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function () {
         var pf = new PluralFormat( 'en' );
         expect(function(){ pf.parse('{☺}'); }).to.throwError();
+      });
+
+      it("should throw errors on negative offsets", function() {
+        expect(function(){ pf.parse('{NUM, plural, offset:-4 other{a}}'); }).to.throwError();
       });
 
     });
