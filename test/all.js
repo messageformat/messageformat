@@ -238,6 +238,44 @@ describe( "PluralFormat", function () {
 
     });
 
+    describe( "Nested/Recursive blocks", function () {
+
+      it("should allow a select statement inside of a select statement", function () {
+        var pf = new PluralFormat( 'en' );
+
+        expect(function(){ var a = pf.parse('{NUM1, select, other{{NUM2, select, other{a}}}}'); }).to.not.throwError();
+        expect(
+          pf.parse('{NUM1, select, other{{NUM2, select, other{a}}}}')
+            .program
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].val
+        ).to.eql( 'a' );
+
+        expect(function(){ var a = pf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
+        expect(
+         pf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}') 
+            .program
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].val
+        ).to.eql( 'b' );
+
+        expect(function(){ var a = pf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(
+         pf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}')
+            .program
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].val
+        ).to.eql( 'c' );
+      });
+
+    });
+
     describe( "Errors", function () {
 
       it("should catch mismatched/invalid bracket situations", function () {
