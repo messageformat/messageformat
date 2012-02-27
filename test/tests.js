@@ -393,7 +393,7 @@ describe( "PluralFormat", function () {
         expect(function(){ pf.parse('{☺}'); }).to.throwError();
       });
 
-      it("should throw errors on negative offsets", function() {
+      it("should throw errors on negative offsets", function () {
         expect(function(){ pf.parse('{NUM, plural, offset:-4 other{a}}'); }).to.throwError();
       });
 
