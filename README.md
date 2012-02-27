@@ -87,6 +87,18 @@ var MessageFormat = require('messageformat');
 <script src="/path/to/messageformat.js"></script>
 ```
 
+### Adding Provided Locales
+```
+<!-- after the messageformat.js include, but before you need to use the locale -->
+<script src="/path/to/messageformat/locales/xx_xx.js"></script>
+```
+
+### Adding Custom locales
+```javascript
+// Any time after MessageFormat is included
+MessageFormat.locale["locale_name"] = 
+```
+
 ## Why not Gettext?
 
 Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
