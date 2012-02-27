@@ -113,7 +113,7 @@ var MessageFormat = require('messageformat');
 
 ### Browser
 ```html
-<script src="/path/to/messageformat.js"></script>
+<script src="/path/to/messageformat-v0.x.x.js"></script>
 ```
 
 ### Adding Provided Locales
