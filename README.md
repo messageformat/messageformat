@@ -2,6 +2,8 @@
 
 The experience and subtlety of your program's text can be important. PluralFormat is a mechanism for handling both *pluralization* and *gender* in your applications. It can also lead to much better translations, as it was built by [ICU](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/PluralFormat.html) in 2007 to help solve those two problems for all known [CLDR](http://cldr.unicode.org/) languages - likely all the ones you care about.
 
+There is a good slide-deck on [Plural and Gender in Translated Messages](https://docs.google.com/present/view?id=ddsrrpj5_68gkkvv6hs) by Markus Scherer and Mark Davis. But, again, remember that many of these problems apply even if you're only outputting english.
+
 ## What problems does it solve?
 
 A progression of strings in programs:
@@ -50,6 +52,8 @@ Gettext can generally go only one level deep without hitting some serious roadbl
 
 It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
 
+I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat.
+
 ## Version
 
 `0.1.0`
@@ -71,7 +75,7 @@ You may contribute to this software under the Dojo CLA - <http://dojofoundation.
 
 ## Author
 
-* Alex Sexton - @slexaxton - <http://alexsexton.com/>
+* Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - <http://alexsexton.com/>
 
 
 ## Credits
