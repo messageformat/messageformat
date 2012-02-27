@@ -12,6 +12,11 @@
 
   // Create the contructor function
   function MessageFormat ( locale, pluralFunc ) {
+
+    if ( locale && pluralFunc ) {
+      MessageFormat.locale[ locale ] = pluralFunc;
+    }
+
     // Defaults
     locale = locale || "en";
     pluralFunc = pluralFunc || MessageFormat.locale[ locale ];
@@ -20,6 +25,7 @@
     if ( ! pluralFunc ) {
       throw new Error( "Plural Function not found for locale: " + locale );
     }
+
 
     // Own Properties
     this.pluralFunc = pluralFunc;
