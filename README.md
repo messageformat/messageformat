@@ -14,19 +14,6 @@ A progression of strings in programs:
 
 These are generally unacceptable in this day and age. Not to mention the problem expands when you consider languages with 6 different pluralization rules. You may be using something like Gettext to solve this across multiple languages, but even Gettext falls flat.
 
-## Why not Gettext?
-
-Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
-
-### This would be prohibitively difficult with Gettext
-
-> He found 5 results in 2 categories.
-
-> She found 1 result in 1 category.
-
-> He found 2 results in 1 category.
-
-It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
 
 ## What does it look like?
 
@@ -48,3 +35,48 @@ ICU bills the format as easy to read and write. It may be _more_ easy to read an
 ```
 
 There is very little that needs to be repeated (until gender modifies more than one word), and there are equivalent/appropriate plural keys for every single language in the CLDR database. The syntax highlighting is less than ideal, but parsing a string like this gives you flexibility for your messages even if you're _only_ dealing with english.
+
+## Why not Gettext?
+
+Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
+
+### This would be prohibitively difficult with Gettext
+
+> He found 5 results in 2 categories.
+
+> She found 1 result in 1 category.
+
+> He found 2 results in 1 category.
+
+It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
+
+## Version
+
+`0.1.0`
+
+## TODO
+
+* First and foremost - we need to get a standalone `NumberFormat` implementation - I'll probably port Google Closure's good implementation to not need Closure ASAP
+* Get all locale Plural Form Function data available in a folder - I have the base line for a few for now, and will try to generate the rest soon.
+* Create a tool to help translators generate these.
+* Create a transport standard/mechanism - a way to load in different languages, and to exchange this data (like .po files for gettext)
+* Template integration - I specifically want to make a build time handlebars.js plugin to build this logic into the template builds.
+
+## License
+
+You may use this software under the WTFPL.
+
+You may contribute to this software under the Dojo CLA - <http://dojofoundation.org/about/cla>
+
+
+## Author
+
+* Alex Sexton - @slexaxton - <http://alexsexton.com/>
+
+
+## Credits
+
+Thanks to:
+
+* Google has an implementation that is similar in Google Closure, I tried to vet my code against many of their tests.
+* Norbert Lindenberg for showing me how good it can be.
