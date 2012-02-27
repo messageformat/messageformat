@@ -274,6 +274,51 @@ describe( "PluralFormat", function () {
         ).to.eql( 'c' );
       });
 
+      it("should allow nested plural statements - with and without offsets", function () {
+        var pf = new PluralFormat( 'en' );
+
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
+
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = pf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        // ok we get it, it's recursive.
+
+        expect(
+          pf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}')
+            .program
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].statements[0].elementFormat.val.pluralForms[0].val
+              .statements[0].val
+        ).to.eql('c');
+      });
+
     });
 
     describe( "Errors", function () {
@@ -313,7 +358,7 @@ describe( "PluralFormat", function () {
     });
   });
 
-  describe( "Complex parsing", function () {
+  describe( "Message Formatting", function () {
 
     it("can parse complex strings", function () {
       var input = "" +
