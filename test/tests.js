@@ -98,7 +98,7 @@ describe( "MessageFormat", function () {
         expect( mf.parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[1].val ).to.be( '</div>' );
       });
 
-      it("should allow you to use keywords for plural formats everywhere except where they go", function () {
+      it("should allow you to use extension keywords for plural formats everywhere except where they go", function () {
         var mf = new MessageFormat( 'en' );
         expect( mf.parse('select select, ').program.statements[0].val ).to.eql( 'select select, ' );
         expect( mf.parse('select offset, offset:1 ').program.statements[0].val ).to.eql( 'select offset, offset:1 ' );
@@ -124,7 +124,7 @@ describe( "MessageFormat", function () {
         expect( JSON.stringify(mf.parse('{ \t  VAR  \n , \n\t\r  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }')) ).to.eql( firstRes );
       });
 
-      it("should allow you to use MessageFormat keywords other places, including in select keys", function () {
+      it("should allow you to use MessageFormat extension keywords other places, including in select keys", function () {
         var mf = new MessageFormat( 'en' );
         // use `select` as a select key
         expect( mf.parse( 'x {TEST, select, select{a} other{b} }' )
