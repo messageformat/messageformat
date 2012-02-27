@@ -93,6 +93,7 @@
 
   MessageFormat.prototype.precompile = function compile ( ast ) {
     var self = this,
+        needOther = false,
         fp = {
       begin: 'function ( d ) {\nvar r = "";\n',
       end  : "return r;\n}"
@@ -153,26 +154,38 @@
           data.pf_count = data.pf_count || 0;
           s += 'var off_'+data.pf_count+' = '+ast.offset+';\n';
           s += 'var pf_' + data.pf_count + ' = { \n';
+          needOther = true;
+          // We're going to simultaneously check to make sure we hit the required 'other' option.
 
           for ( i = 0; i < ast.pluralForms.length; ++i ) {
+            if ( ast.pluralForms[ i ].key === 'other' ) {
+              needOther = false;
+            }
             if ( tmp ) {
               s += ',\n';
             }
             else{
               tmp = 1;
             }
-            s += '"' + ast.pluralForms[ i ].key + '" : ' + interpMFP( ast.pluralForms[ i ].val, 
+            s += '"' + ast.pluralForms[ i ].key + '" : ' + interpMFP( ast.pluralForms[ i ].val,
           (function(){ var res = JSON.parse(JSON.stringify(data)); res.pf_count++; return res; })() );
           }
           s += '\n};\n';
+          if ( needOther ) {
+            throw new Error("No 'other' form found in pluralFormatPattern " + data.pf_count);
+          }
           return s;
         case 'selectFormatPattern':
 
           data.pf_count = data.pf_count || 0;
           s += 'var off_'+data.pf_count+' = 0;\n';
           s += 'var pf_' + data.pf_count + ' = { \n';
+          needOther = true;
 
           for ( i = 0; i < ast.pluralForms.length; ++i ) {
+            if ( ast.pluralForms[ i ].key === 'other' ) {
+              needOther = false;
+            }
             if ( tmp ) {
               s += ',\n';
             }
@@ -188,6 +201,9 @@
             );
           }
           s += '\n};\n';
+          if ( needOther ) {
+            throw new Error("No 'other' form found in selectFormatPattern " + data.pf_count);
+          }
           return s;
         /* // Unreachable
         case 'pluralForms':

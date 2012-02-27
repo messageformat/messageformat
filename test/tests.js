@@ -448,6 +448,20 @@ describe( "MessageFormat", function () {
       });
 
       expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:0})).to.be( "res: wasfew" );
+      expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:1})).to.be( "res: wasfew" );
+      expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:2})).to.be( "res: wasfew" );
+      expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:3})).to.be( "res: wasfew" );
+      expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({})).to.be( "res: wasfew" );
+    });
+
+    it("throws an error when no `other` option is found - plurals", function () {
+      var mf = new MessageFormat( 'en' );
+      expect(function(){ var x = mf.compile("{X, plural, someoption{a}}"); }).to.throwError();
+    });
+
+    it("throws an error when no `other` option is found - selects", function () {
+      var mf = new MessageFormat( 'en' );
+      expect(function(){ var x = mf.compile("{X, select, someoption{a}}"); }).to.throwError();
     });
 
     it("can parse complex, real-world strings", function () {
