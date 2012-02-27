@@ -84,7 +84,7 @@
     }
   };
 
-  var mparser = require( './message_parser' );
+  var mparser = require( './lib/message_parser' );
 
   MessageFormat.prototype.parse = function () {
     // Bind to itself so error handling works
