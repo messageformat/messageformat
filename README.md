@@ -4,6 +4,8 @@ The experience and subtlety of your program's text can be important. PluralForma
 
 There is a good slide-deck on [Plural and Gender in Translated Messages](https://docs.google.com/present/view?id=ddsrrpj5_68gkkvv6hs) by Markus Scherer and Mark Davis. But, again, remember that many of these problems apply even if you're only outputting english.
 
+[See just how many different pluralization rules there are.](http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html)
+
 ## What problems does it solve?
 
 A progression of strings in programs:
@@ -53,6 +55,8 @@ Gettext can generally go only one level deep without hitting some serious roadbl
 It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
 
 I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat.
+
+Most Gettext tools will look up the Plural Forms for a given locale for you. This is also the opinion of PluralFormat. The library should just contain the known plural forms of every locale, and not force translators to reinput this information each time.
 
 ## Version
 
