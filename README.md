@@ -1,6 +1,6 @@
 # pluralformat.js
 
-The experience and subtlety of your program's text can be important. PluralFormat is a mechanism for handling both *pluralization* and *gender* in your applications. It can also lead to much better translations, as it was built (by ICU - http://icu-project.org/apiref/icu4j/com/ibm/icu/text/PluralFormat.html - in 2007) to help solve those two problems for all known CLDR ( http://cldr.unicode.org/ ) languages (likely all the ones you care about).
+The experience and subtlety of your program's text can be important. PluralFormat is a mechanism for handling both *pluralization* and *gender* in your applications. It can also lead to much better translations, as it was built by [ICU](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/PluralFormat.html) in 2007 to help solve those two problems for all known [CLDR](http://cldr.unicode.org/) languages - likely all the ones you care about.
 
 ## What problems does it solve?
 
