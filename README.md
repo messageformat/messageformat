@@ -73,6 +73,35 @@ Here's a few data sets against this message:
 
 There is very little that needs to be repeated (until gender modifies more than one word), and there are equivalent/appropriate plural keys for every single language in the CLDR database. The syntax highlighting is less than ideal, but parsing a string like this gives you flexibility for your messages even if you're _only_ dealing with english.
 
+## Features
+
+* Handles arbitrary nesting of pluralization and select rules.
+* Works on the server and the client.
+* No i18n necessary - you can use it for just well-formed english sentences. `UX++;`
+* Speed: Compiles messages to JavaScript code.
+  * This is great for speed. Message formatting is just string contacentation.
+  * Run a precompiler at build time and remove the need for most of the library. `filesize--;`
+* Compatible with other languages that support MessageFormat
+* Most translation companies are beginning to be exposed to translations like this, even if it's not their core business.
+
+## Why not Gettext?
+
+Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
+
+### This would be prohibitively difficult with Gettext
+
+> He found 5 results in 2 categories.
+
+> She found 1 result in 1 category.
+
+> He found 2 results in 1 category.
+
+It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
+
+I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat and SelectFormat.
+
+Most Gettext tools will look up the Plural Forms for a given locale for you. This is also the opinion of PluralFormat. The library should just contain the known plural forms of every locale, and not force translators to reinput this information each time.
+
 ## Install
 
 ### Node
@@ -104,23 +133,9 @@ MessageFormat.locale["locale_name"] = function () { ... };
 var mf = new MessageFormat( 'locale_name', function () { ... } );
 ```
 
-## Why not Gettext?
+## Usage
 
-Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
-
-### This would be prohibitively difficult with Gettext
-
-> He found 5 results in 2 categories.
-
-> She found 1 result in 1 category.
-
-> He found 2 results in 1 category.
-
-It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
-
-I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat and SelectFormat.
-
-Most Gettext tools will look up the Plural Forms for a given locale for you. This is also the opinion of PluralFormat. The library should just contain the known plural forms of every locale, and not force translators to reinput this information each time.
+See the [docs page](http://slexaxton.github.com/messageformat.js) for detailed usage info.
 
 ## Version
 
