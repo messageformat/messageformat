@@ -24,7 +24,8 @@
   "devDependencies" : {
     "mocha" : "*",
     "expect.js" : "*",
-    "serve": "*"
+    "serve": "*",
+    "pegjs": "*"
   },
   "license": "To Use: WTFPL, To Contribute: Dojo CLA"
 }
