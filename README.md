@@ -24,7 +24,7 @@ These are generally unacceptable in this day and age. Not to mention the problem
 ICU bills the format as easy to read and write. It may be _more_ easy to read and write, but I'd still suggest a tool for non-programmers. It looks a lot like Java's `ChoiceFormat` - but is different in a few significant ways, most notably its addition of the `plural` keyword.
 
 
-```
+```javascript
 {GENDER, select,
     male {He}
   female {She}
