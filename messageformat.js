@@ -1,7 +1,7 @@
 /**
- * pluralformat.js
+ * messageformat.js
  *
- * ICU PluralFormat for JavaScript
+ * ICU PluralFormat + SelectFormat for JavaScript
  *
  * @author Alex Sexton - @SlexAxton
  * @version 0.1.0
@@ -11,10 +11,10 @@
 (function ( root ) {
 
   // Create the contructor function
-  function PluralFormat ( locale, pluralFunc ) {
+  function MessageFormat ( locale, pluralFunc ) {
     // Defaults
     locale = locale || "en";
-    pluralFunc = pluralFunc || PluralFormat.locale[ locale ];
+    pluralFunc = pluralFunc || MessageFormat.locale[ locale ];
 
     // Let's just be friends.
     if ( ! pluralFunc ) {
@@ -27,7 +27,7 @@
   }
 
   // Set up the locales object. Add in english by default
-  PluralFormat.locale = {
+  MessageFormat.locale = {
     "en" : function ( n ) {
       if ( n === 1 ) {
         return "one";
@@ -41,15 +41,15 @@
 
   // Build out our basic SafeString type
   // more or less stolen from Handlebars by @wycats
-  PluralFormat.SafeString = function( string ) {
+  MessageFormat.SafeString = function( string ) {
     this.string = string;
   };
 
-  PluralFormat.SafeString.prototype.toString = function () {
+  MessageFormat.SafeString.prototype.toString = function () {
     return this.string.toString();
   };
 
-  PluralFormat.Utils = {
+  MessageFormat.Utils = {
     numSub : function ( string, key ) {
       return string.replace( /#/g, '" + ('+key+') + "');
     },
@@ -64,7 +64,7 @@
           };
 
       // Don't escape SafeStrings, since they're already safe
-      if ( string instanceof PluralFormat.SafeString ) {
+      if ( string instanceof MessageFormat.SafeString ) {
         return string.toString();
       }
       else if ( string === null || string === false ) {
@@ -80,12 +80,12 @@
 
   var mparser = require( './message_parser' );
 
-  PluralFormat.prototype.parse = function () {
+  MessageFormat.prototype.parse = function () {
     // Bind to itself so error handling works
     return mparser.parse.apply( mparser, arguments );
   };
 
-  PluralFormat.prototype.precompile = function compile ( ast ) {
+  MessageFormat.prototype.precompile = function compile ( ast ) {
     var self = this,
         fp = {
       begin: 'function ( d ) {\nvar r = "";\n',
@@ -134,7 +134,7 @@
             s += '}\nelse {\n';
             s += 'r += (pf_' +
                  data.pf_count +
-                 '[ PluralFormat.locale["' +
+                 '[ MessageFormat.locale["' +
                  self.locale +
                  '"]( k_'+(data.pf_count+1)+' - off_'+(data.pf_count)+' ) ] || pf_'+data.pf_count+'[ "other" ] )( d );\n';
             s += '}\n';
@@ -186,8 +186,8 @@
         case 'pluralForms':
         */
         case 'string':
-          return 'r += "' + PluralFormat.Utils.numSub(
-            PluralFormat.Utils.escapeExpression( ast.val ),
+          return 'r += "' + MessageFormat.Utils.numSub(
+            MessageFormat.Utils.escapeExpression( ast.val ),
             'k_' + data.pf_count + ' - off_' + ( data.pf_count - 1 )
           ) + '";\n';
         default:
@@ -197,24 +197,24 @@
     return interpMFP( ast );
   };
 
-  PluralFormat.prototype.compile = function ( message ) {
-    return (new Function( 'PluralFormat',
+  MessageFormat.prototype.compile = function ( message ) {
+    return (new Function( 'MessageFormat',
       'return ' +
         this.precompile(
           this.parse( message )
         )
-    ))(PluralFormat);
+    ))(MessageFormat);
   };
 
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = PluralFormat;
+      exports = module.exports = MessageFormat;
     }
-    exports.PluralFormat = PluralFormat;
+    exports.MessageFormat = MessageFormat;
   }
   else {
-    root['PluralFormat'] = PluralFormat;
+    root['MessageFormat'] = MessageFormat;
   }
 
 })( this );

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset=utf-8 />
-    <title>pluralformat.js Test Suite</title>
+    <title>messageformat.js Test Suite</title>
     <link rel="stylesheet" href="/node_modules/mocha/mocha.css" />
     <script src="/test/jquery.min.js"></script>
     <script src="/node_modules/mocha/mocha.js"></script>
@@ -23,18 +23,18 @@
         throw new Error( 'Trying to run node code in the browser: ' + x );
       };
     </script>
-    <script src="/pluralformat.js"></script>
+    <script src="/messageformat.js"></script>
     <script src="/test/tests.js"></script>
     <script>
       window.require = undefined;
     </script>
   </head>
   <body>
-    <h1>pluralformat.js Test Suite</h1>
+    <h1>messageformat.js Test Suite</h1>
     <div id="mocha"></div>
     <script>
       window.onload = function () {
-        mocha.run().globals(['PluralFormat']);
+        mocha.run().globals(['MessageFormat']);
       };
     </script>
   </body>
