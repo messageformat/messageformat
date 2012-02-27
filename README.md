@@ -73,6 +73,20 @@ Here's a few data sets against this message:
 
 There is very little that needs to be repeated (until gender modifies more than one word), and there are equivalent/appropriate plural keys for every single language in the CLDR database. The syntax highlighting is less than ideal, but parsing a string like this gives you flexibility for your messages even if you're _only_ dealing with english.
 
+## Install
+
+### Node
+```
+> npm install messageformat
+
+var MessageFormat = require('messageformat');
+```
+
+### Browser
+```html
+<script src="/path/to/messageformat.js"></script>
+```
+
 ## Why not Gettext?
 
 Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
