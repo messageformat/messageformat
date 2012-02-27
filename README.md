@@ -76,7 +76,7 @@ There is very little that needs to be repeated (until gender modifies more than 
 ## Install
 
 ### Node
-```
+```javascript
 > npm install messageformat
 
 var MessageFormat = require('messageformat');
@@ -88,15 +88,20 @@ var MessageFormat = require('messageformat');
 ```
 
 ### Adding Provided Locales
-```
+```html
 <!-- after the messageformat.js include, but before you need to use the locale -->
 <script src="/path/to/messageformat/locales/xx_xx.js"></script>
 ```
 
+TODO:: In node, we can automatically pull in all known locales for you.
+
 ### Adding Custom locales
 ```javascript
 // Any time after MessageFormat is included
-MessageFormat.locale["locale_name"] = 
+MessageFormat.locale["locale_name"] = function () { ... };
+
+// Or during instantiation
+var mf = new MessageFormat( 'locale_name', function () { ... } );
 ```
 
 ## Why not Gettext?
