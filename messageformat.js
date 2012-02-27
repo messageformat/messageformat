@@ -163,6 +163,7 @@
         case 'selectFormatPattern':
 
           data.pf_count = data.pf_count || 0;
+          s += 'var off_'+data.pf_count+' = 0;\n';
           s += 'var pf_' + data.pf_count + ' = { \n';
 
           for ( i = 0; i < ast.pluralForms.length; ++i ) {

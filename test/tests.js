@@ -402,7 +402,47 @@ describe( "MessageFormat", function () {
 
   describe( "Message Formatting", function () {
 
-    it("can parse complex strings", function () {
+    it("has a precompile function", function () {
+      var mf = new MessageFormat( 'en' );
+      expect(mf.precompile).to.be.a('function');
+    });
+
+    it("precompiles to a string", function () {
+      var mf = new MessageFormat( 'en' );
+
+      expect(mf.precompile(mf.parse("test"))).to.be.a('string');
+    });
+
+    it("has a compile function", function () {
+      var mf = new MessageFormat( 'en' );
+      expect(mf.compile).to.be.a('function');
+    });
+
+    it("compiles to a function", function () {
+      var mf = new MessageFormat( 'en' );
+
+      expect(mf.compile("test")).to.be.a('function');
+    });
+
+    it("can output a non-formatted string", function () {
+      var mf = new MessageFormat( 'en' );
+
+      expect((mf.compile("This is a string."))()).to.eql("This is a string.");
+    });
+
+    it("can substitute named variables", function () {
+      var mf = new MessageFormat( 'en' );
+
+      expect((mf.compile("The var is {VAR}."))({"VAR":5})).to.eql("The var is 5.");
+    });
+
+    it("can substitute shorthand variables", function () {
+      var mf = new MessageFormat( 'en' );
+
+      expect((mf.compile("{VAR, select, other{The var is #.}}"))({"VAR":5})).to.eql("The var is 5.");
+    });
+
+    it("can parse complex, real-world strings", function () {
       var input = "" +
       "{PERSON} added {PLURAL_NUM_PEOPLE, plural, offset:1" +
       "     =0 {no one}"+
