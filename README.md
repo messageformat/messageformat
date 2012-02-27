@@ -38,6 +38,37 @@ ICU bills the format as easy to read and write. It may be _more_ easy to read an
              }.
 ```
 
+Here's a few data sets against this message:
+
+```javascript
+{
+  "GENDER"         : "male",
+  "NUM_RESULTS"    : 1,
+  "NUM_CATEGORIES" : 2
+}
+> "He found 1 result in 2 categories."
+
+{
+  "GENDER"         : "female",
+  "NUM_RESULTS"    : 1,
+  "NUM_CATEGORIES" : 2
+}
+> "She found 1 result in 2 categories."
+
+{
+  "GENDER"         : "male",
+  "NUM_RESULTS"    : 2,
+  "NUM_CATEGORIES" : 1
+}
+> "He found 2 results in 1 category."
+
+{
+  "NUM_RESULTS"    : 2,
+  "NUM_CATEGORIES" : 2
+}
+> "They found 2 results in 2 categories."
+```
+
 There is very little that needs to be repeated (until gender modifies more than one word), and there are equivalent/appropriate plural keys for every single language in the CLDR database. The syntax highlighting is less than ideal, but parsing a string like this gives you flexibility for your messages even if you're _only_ dealing with english.
 
 ## Why not Gettext?
