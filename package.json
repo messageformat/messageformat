@@ -1,0 +1,30 @@
+{
+  "name": "pluralformat",
+  "version": "0.1.0",
+  "author": "Alex Sexton <alexsexton@gmail.com>",
+  "description": "Plural and Select Message Formatting - i18n Tool - A JavaScript Implemenation of the ICU PluralFormat",
+  "repository": {
+    "type": "git",
+    "url": "https://SlexAxton@github.com/SlexAxton/pluralformat.js.git"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "main": "./pluralformat",
+  "keywords": [
+    "i18n",
+    "pluralformat",
+    "icu",
+    "gettext",
+    "choiceformat",
+    "messageformat",
+    "internationalization"
+  ],
+  "dependencies" : {},
+  "devDependencies" : {
+    "mocha" : "*",
+    "expect.js" : "*",
+    "serve": "*"
+  },
+  "license": "To Use: WTFPL, To Contribute: Dojo CLA"
+}

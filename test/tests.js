@@ -1,6 +1,3 @@
-var expect = require('expect.js');
-var PluralFormat = require('./../pluralformat');
-
 describe( "PluralFormat", function () {
 
   describe( "Public API", function () {

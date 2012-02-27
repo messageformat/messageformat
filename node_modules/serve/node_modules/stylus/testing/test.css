@@ -1,0 +1,39 @@
+#a,
+#b,
+#c,
+#d,
+#e,
+#f,
+#g,
+#h,
+#i {
+  display: inline-block;
+  padding: 25px;
+}
+#a {
+  background: #f00;
+}
+#b {
+  background: #00f;
+}
+#c {
+  background: #4c00b2;
+}
+#d {
+  background: #7f007f;
+}
+#e {
+  background: #b2004c;
+}
+#f {
+  background: #4c00b2;
+}
+#g {
+  background: #b2004c;
+}
+#h {
+  background: #b2004c;
+}
+#i {
+  background: #cc0032;
+}

@@ -9,8 +9,25 @@
     <script src="/node_modules/expect.js/expect.js"></script>
     <script>mocha.setup('bdd')</script>
 
+    <script>
+      // A VERY crude trick to not have to build in the parser for tests.
+      window.module = {};
+    </script>
+    <script src="/message_parser.js"></script>
+    <script>
+      // A VERY crude trick to not have to build in the parser for tests.
+      window.require = function ( x ) {
+        if ( x === './message_parser' ) {
+          return module.exports;
+        }
+        throw new Error( 'Trying to run node code in the browser: ' + x );
+      };
+    </script>
     <script src="/pluralformat.js"></script>
     <script src="/test/tests.js"></script>
+    <script>
+      window.require = undefined;
+    </script>
   </head>
   <body>
     <h1>pluralformat.js Test Suite</h1>
