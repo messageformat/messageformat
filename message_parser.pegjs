@@ -155,7 +155,7 @@ char
 
 digits
   = ds:[0-9]+ {
-    return parseInt((""+ds), 10);
+    return parseInt((ds.join('')), 10);
   }
 
 hexDigit

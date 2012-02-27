@@ -464,6 +464,20 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         expect(function(){ var x = mf.compile("{X, select, someoption{a}}"); }).to.throwError();
       });
+
+      it("only calculates the offset from non-literals", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("{NUM, plural, offset:1 =0{a} one{b} other{c}}");
+        expect(mfunc({NUM:0})).to.eql('a');
+        expect(mfunc({NUM:1})).to.eql('c');
+        expect(mfunc({NUM:2})).to.eql('b');
+      });
+
+      it("should give priority to literals", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("{NUM, plural, =34{a} one{b} other{c}}");
+        expect(mfunc({NUM:34})).to.eql('a');
+      });
     });
 
     describe("Real World Uses", function  () {

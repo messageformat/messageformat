@@ -1381,7 +1381,7 @@ module.exports = (function(){
         }
         var result2 = result1 !== null
           ? (function(ds) {
-              return parseInt((""+ds), 10);
+              return parseInt((ds.join('')), 10);
             })(result1)
           : null;
         if (result2 !== null) {
