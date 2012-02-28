@@ -245,7 +245,7 @@ var message = mf.compile('There {NUM_RESULTS, plural, one{is one result} other{a
 "There are 0 results."
 
 > message({"NUM_RESULTS" : 1});
-"There is 1 result."
+"There is one result."
 
 > message({"NUM_RESULTS" : 100});
 "There are 100 results."
