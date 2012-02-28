@@ -57,6 +57,7 @@
 
   MessageFormat.Utils = {
     numSub : function ( string, key, depth ) {
+      // make sure that it's not an escaped octothorpe
       return string.replace( /^#|[^\\]#/g, function (m) {
         var prefix = m && m.length === 2 ? m.charAt(0) : '';
         return prefix + '" + (function(){ var x = ' +
