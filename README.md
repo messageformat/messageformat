@@ -211,7 +211,8 @@ var message = mf.compile('{GENDER, select, male{He} female{She} other{They}} lik
 // Insantiate a new MessageFormat object
 var mf = new MessageFormat('en');
 
-// You can use the provided locales in the `/locale` folder (include the file directly after including messageformat.js
+// You can use the provided locales in the `/locale` folder 
+// (include the file directly after including messageformat.js
 var mf = new MessageFormat( 'sl' );
 
 // OR - you can pass a custom plural function to the MessageFormat constructor function.
@@ -238,6 +239,56 @@ var message = mf.compile('There {NUM_RESULTS, plural, one{is one result} other{a
 "There are 100 results."
 
 ```
+
+#### Named Keys
+
+ICU declares 6 named keys that can be mapped to every language in the CLDR data. Those are:
+
+* zero
+* one
+* two
+* few
+* many
+* other (**required**)
+
+All of them are fairly straight-forward, but do remember, that for some languages, they are more loose "guidelines" than they are exact.
+
+The only **required** key is `other`. Your compilation will throw an error if you forget this. In english, and many other languages, the logic is simple:
+
+`If N equals 1, then ONE, otherwise OTHER`
+
+Other languages (take a peak at `ar.js` or `sl.js`) can get much more complicated.
+
+**Remember. English only uses `one` and `other` - so including `zero` will never get called, even when the number is 0`**
+
+The most simple (to pluralize) languages have no pluralization rules an rely solely on the `other` named key.
+
+```
+{NUM, plural,
+  zero  {There are zero - in a lang that needs it.}
+  one   {There is one - in a lang that has it.}
+  two   {There is two - in a lang that has it.}
+  few   {There are a few - in a lang that has it.}
+  many  {There are many - in a lang that has it.}
+  other {There is a different amount than all the other stuff above.}
+}
+```
+
+#### Literal Numeric Keys
+
+There also exists the capability to put literal numbers as keys in a select statement. These are delimited by prefixing them with the `=` character. These will match single, specific numbers. If there is a match, that branch will immediately run, and the corresponding named key **will not** also run.
+
+There are plenty of legitimate uses for this, especially when considering base cases and more pleasant language. But if you're a Douglas Adams fan, might use it like so:
+
+```
+You have {NUM_TASKS, plural,
+            one {one task}
+            other {# tasks}
+            =42 {the answer to the life, the universe and everything tasks}
+         } remaining.
+```
+
+When `NUM_TASKS` is 42, this outputs smiles. Remember, these have priority over the named keys.
 
 ### PluralFormat - offset extension
 
