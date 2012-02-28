@@ -56,8 +56,12 @@
   };
 
   MessageFormat.Utils = {
-    numSub : function ( string, key ) {
-      return string.replace( /#/g, '" + ('+key+') + "');
+    numSub : function ( string, key, depth ) {
+      return string.replace( /^#|[^\\]#/g, function (m) {
+        var prefix = m && m.length === 2 ? m.charAt(0) : '';
+        return prefix + '" + (function(){ var x = ' +
+        key+';\nif( isNaN(x) ){\nthrow new Error("MessageFormat: `"+lastkey_'+depth+'+"` isnt a number.");\n}\nreturn x;\n})() + "'
+      });
     },
     escapeExpression : function (string) {
       var escape = {
@@ -95,14 +99,14 @@
     var self = this,
         needOther = false,
         fp = {
-      begin: 'function ( d ) {\nvar r = "";\n',
+      begin: 'function(d){\nvar r = "";\n',
       end  : "return r;\n}"
     };
 
     function interpMFP ( ast, data ) {
       // Set some default data
       data = data || {};
-      var s = '', i, tmp;
+      var s = '', i, tmp, lastkeyname;
 
       switch ( ast.type ) {
         case 'program':
@@ -119,11 +123,14 @@
           return s;
         case 'messageFormatElement':
           data.pf_count = data.pf_count || 0;
+          s += 'if(!d){\nthrow new Error("MessageFormat: No data passed to function.");\n}\n';
           if ( ast.output ) {
             s += 'r += d["' + ast.argumentIndex + '"];\n';
           }
           else {
-            s += 'var k_'+(data.pf_count+1)+'=d["' + ast.argumentIndex + '"];\n';
+            lastkeyname = 'lastkey_'+(data.pf_count+1);
+            s += 'var '+lastkeyname+' = "'+ast.argumentIndex+'";\n';
+            s += 'var k_'+(data.pf_count+1)+'=d['+lastkeyname+'];\n';
             s += interpMFP( ast.elementFormat, data );
           }
           return s;
@@ -211,7 +218,8 @@
         case 'string':
           return 'r += "' + MessageFormat.Utils.numSub(
             MessageFormat.Utils.escapeExpression( ast.val ),
-            'k_' + data.pf_count + ' - off_' + ( data.pf_count - 1 )
+            'k_' + data.pf_count + ' - off_' + ( data.pf_count - 1 ),
+            data.pf_count
           ) + '";\n';
         default:
           throw new Error( 'Bad AST type: ' + ast.type );

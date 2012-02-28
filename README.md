@@ -1,6 +1,6 @@
 # messageformat.js
 
-The experience and subtlety of your program's text can be important. MessageFormat (PluralFormat + SelectFormat) is a mechanism for handling both *pluralization* and *gender* in your applications. It can also lead to much better translations, as it was built by [ICU](http://icu-project.org/apiref/icu4c/classMessageFormat.html) to help solve those two problems for all known [CLDR](http://cldr.unicode.org/) languages - likely all the ones you care about.
+The experience and subtlety of your program's text can be important. MessageFormat (PluralFormat + SelectFormat) is a mechanism for handling both *pluralization* and *gender* in your applications. It can also lead to much better translations, as it was built by [ICU](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html) to help solve those two problems for all known [CLDR](http://cldr.unicode.org/) languages - likely all the ones you care about.
 
 There is a good slide-deck on [Plural and Gender in Translated Messages](https://docs.google.com/present/view?id=ddsrrpj5_68gkkvv6hs) by Markus Scherer and Mark Davis. But, again, remember that many of these problems apply even if you're only outputting english.
 

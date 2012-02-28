@@ -431,6 +431,21 @@ describe( "MessageFormat", function () {
         expect((mf.compile("This is a string."))()).to.eql("This is a string.");
       });
 
+      it("gets non-ascii character all the way through.", function () {
+        var mf = new MessageFormat( 'en' );
+        expect((mf.compile('中{test}中国话不用彁字。'))({test:"☺"})).to.eql( "中☺中国话不用彁字。" );
+      });
+
+      it("should get escaped brackets all the way out the other end", function () {
+        var mf = new MessageFormat( 'en' );
+        expect((mf.compile('\\{\\{\\{'))()).to.eql( "{{{" );
+        expect((mf.compile('\\}\\}\\}'))()).to.eql( "}}}" );
+        expect((mf.compile('\\{\\{\\{{test}\\}\\}\\}'))({test:4})).to.eql( "{{{4}}}" );
+        expect((mf.compile('\\{\\{\\{{test, select, other{#}}\\}\\}\\}'))({test:4})).to.eql( "{{{4}}}" );
+        expect((mf.compile('\\{\\{\\{{test, plural, other{#}}\\}\\}\\}'))({test:4})).to.eql( "{{{4}}}" );
+        expect((mf.compile('\\{\\{\\{{test, plural, offset:1 other{#}}\\}\\}\\}'))({test:4})).to.eql( "{{{3}}}" );
+      });
+
       it("can substitute named variables", function () {
         var mf = new MessageFormat( 'en' );
 
@@ -477,6 +492,48 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("{NUM, plural, =34{a} one{b} other{c}}");
         expect(mfunc({NUM:34})).to.eql('a');
+      });
+
+      it("should throw an error when you don't pass it any data, but it expects it", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("{NEEDSDATAYO}");
+        expect(function(){ var z = mfunc(); }).to.throwError();
+      });
+
+      it("should not throw an error when you don't pass it any data, but it expects none", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("Just a string");
+        expect(function(){ var z = mfunc(); }).to.not.throwError();
+      });
+
+      it("should allow for a simple select", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("I am {FEELING, select, a{happy} b{sad} other{indifferent}}.");
+
+        expect(mfunc({FEELING:"a"})).to.eql("I am happy.");
+        expect(mfunc({FEELING:"b"})).to.eql("I am sad.");
+        expect(mfunc({FEELING:"q"})).to.eql("I am indifferent.");
+        expect(mfunc({})).to.eql("I am indifferent.");
+      });
+
+      it("should allow for a simple plural form", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("I have {FRIENDS, plural, one{one friend} other{# friends}}.");
+        //console.log((mf.precompile(mf.parse("I have {FRIENDS, plural, one{one friend} other{# friends}}."))).toString() );
+        expect(mfunc({FRIENDS:0})).to.eql("I have 0 friends.");
+        expect(mfunc({FRIENDS:1})).to.eql("I have one friend.");
+        expect(mfunc({FRIENDS:2})).to.eql("I have 2 friends.");
+      });
+
+      it("should reject number injections of numbers that don't exist", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile(
+          "I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, one{one enemy} other{# enemies}}}}."
+        );
+        expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but 0 enemies.");
+        expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/MessageFormat\: \`ENEMIES\` isnt a number\./);
+        expect(function(){ var x = mfunc({}); }).to.throwError(/MessageFormat\: \`.+\` isnt a number\./);
+        expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/MessageFormat\: \`FRIENDS\` isnt a number\./);
       });
     });
 
