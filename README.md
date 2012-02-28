@@ -362,6 +362,21 @@ var message = mf.compile(
 
 ```
 
+### Nesting
+
+Very simply, you can nest both `SelectFormat` blocks into `PluralFormat` blocks, and visa-versa, as deeply as you'd like. Simply start the new block directly inside:
+
+```
+{SEL1, select,
+  other {{PLUR1, plural,
+          one {1}
+          other {{SEL2, select,
+                  other {deep in the heart.}
+                }}
+        }}
+}
+```
+
 ## Version
 
 `0.1.0`
