@@ -162,7 +162,7 @@ The second most simple way to use MessageFormat is for simple variable replaceme
 
 By default (like in the previous example), you are just writing a literal. Then the first level of brackets brings you into one of several data-driven situations. The most simple is variable replacement.
 
-Simple putting a variable name in between `{` and `}` will place that variable there in the output.
+Simply putting a variable name in between `{` and `}` will place that variable there in the output.
 
 ```javascript
 // Instantiate new MessageFormat object for your locale
@@ -235,6 +235,49 @@ var message = mf.compile('There {NUM_RESULTS, plural, one{is one result} other{a
 
 > message({"NUM_RESULTS" : 100});
 "There are 100 results."
+
+```
+
+### PluralFormat - offset extension
+
+ICU provided the ability to extend existing select and plural functionality, and the only official extension (that I could find) is the `offset` extension.
+
+It goes after the `plural` declaration, and is used to generate sentences that break up a number into multiple sections. For instance:
+> You and 4 others added this to their profiles.
+
+In this case, the total number of people who added 'this' to their profiles is actually 5. We can use the `offset` extension to help us with this.
+
+```javascript
+var mf = new MessageFormat('en');
+
+// For simplicity's sake, let's assume the base case here isn't silly.
+// The test suite has a bigger offset example at the bottom
+// Let's also assume neutral gender for the same reason
+
+// Set the offset to 1
+var message = mf.compile(
+  'You {NUM_ADDS, plural, offset:1' +
+          '=0{didnt add this to your profile}' + // Number literals, with a `=` do **NOT** use the offset value
+          'zero{added this to your profile}' +
+          'one{and one other person added this to their profile}' +
+          'other{and # others added this to their profiles}' +
+      '}.'
+);
+
+// Tip: I like to consider the `=` prefixed number literals as more of an "inductive step"
+// e.g. in this case, since (0 - 1) is _negative_ 1, we want to handle that base case.
+
+> message({"NUM_ADDS" : 0 });
+"You didnt add this to your profile."
+
+> message({"NUM_ADDS" : 1 });
+"You added this to your profile."
+
+> message({"NUM_ADDS" : 2 });
+"You and one other person added this to their profile."
+
+> message({"NUM_ADDS" : 3 });
+"You and 3 others added this to their profile."
 
 ```
 
