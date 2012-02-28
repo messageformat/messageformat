@@ -548,7 +548,7 @@ describe( "MessageFormat", function () {
         // note, cy.js was included in the html file for the browser
         // and then in the common.js file
         var mf = new MessageFormat( 'cy' );
-        var mfunc = mf.compile("{NUM, plural, zero{a} one{b} two{c} few{d} many{e} other{f}}");
+        var mfunc = mf.compile("{NUM, plural, zero{a} one{b} two{c} few{d} many{e} other{f} =42{omg42}}");
 
         expect(mfunc({NUM:0})).to.eql('a');
         expect(mfunc({NUM:1})).to.eql('b');
@@ -556,6 +556,7 @@ describe( "MessageFormat", function () {
         expect(mfunc({NUM:3})).to.eql('d');
         expect(mfunc({NUM:6})).to.eql('e');
         expect(mfunc({NUM:15})).to.eql('f');
+        expect(mfunc({NUM:42})).to.eql('omg42');
       });
 
       it("can parse complex, real-world messages with nested selects and plurals with offsets", function () {
