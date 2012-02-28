@@ -88,24 +88,6 @@ There is very little that needs to be repeated (until gender modifies more than 
 * Supports unicode characters
 * Most translation companies are beginning to be exposed to translations like this, even if it's not their core business.
 
-## Why not Gettext?
-
-Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
-
-### This would be prohibitively difficult with Gettext
-
-> He found 5 results in 2 categories.
-
-> She found 1 result in 1 category.
-
-> He found 2 results in 1 category.
-
-It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
-
-I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat and SelectFormat.
-
-Most Gettext tools will look up the Plural Forms for a given locale for you. This is also the opinion of PluralFormat. The library should just contain the known plural forms of every locale, and not force translators to reinput this information each time.
-
 ## Install
 
 ### Node
@@ -397,6 +379,24 @@ var msg = mf.compile("\\{ {S, select, other{# is a \\#}} \\}");
 > msg({S:5});
 "{ 5 is a # }"
 ```
+
+## Why not Gettext?
+
+Gettext can generally go only one level deep without hitting some serious roadblocks. For example, two plural elements in a sentence, or the combination of gender and plurals.
+
+### This would be prohibitively difficult with Gettext
+
+> He found 5 results in 2 categories.
+
+> She found 1 result in 1 category.
+
+> He found 2 results in 1 category.
+
+It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
+
+I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat and SelectFormat.
+
+Most Gettext tools will look up the Plural Forms for a given locale for you. This is also the opinion of PluralFormat. The library should just contain the known plural forms of every locale, and not force translators to reinput this information each time.
 
 ## Version
 
