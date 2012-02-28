@@ -3,7 +3,7 @@ describe( "MessageFormat", function () {
   describe( "Public API", function () {
 
     it("should exist", function () {
-      expect( MessageFormat ).to.be.ok();
+      expect( MessageFormat ).to.be.a('function');
     });
 
     it("should have static helper functions/objects", function () {
@@ -458,7 +458,7 @@ describe( "MessageFormat", function () {
         expect((mf.compile("{VAR, select, other{The var is #.}}"))({"VAR":5})).to.eql("The var is 5.");
       });
 
-      it("allows escaped shorthand variables", function () {
+      it("allows escaped shorthand variable: #", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile('{X, select, other{# is a \\#}}');
         expect(mfunc({X:3})).to.eql("3 is a #");
