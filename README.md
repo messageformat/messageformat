@@ -377,6 +377,25 @@ Very simply, you can nest both `SelectFormat` blocks into `PluralFormat` blocks,
 }
 ```
 
+### Escaping
+
+messageformat.js tries to a good job of being tolerant of as much as possible, but some characters, like the ones used the actual MessageFormat spec itself, must be escaped to be a part of your string.
+
+For `{`, `}` and `#` (only inside of a select value) literals, just escape them with a backslash. (If you are in a JS string, you'll need to escape the escape backslash so it'll look like two).
+
+```javascript
+Technically, it's just:
+
+\{\}\#
+
+But in practice, since you're often dealing with string literals, it looks more like
+
+var msg = mf.compile("\\{ {S, select, other{# is a \\#}} \\}");
+
+> msg({S:5});
+"{ 5 is a # }"
+```
+
 ## Version
 
 `0.1.0`
