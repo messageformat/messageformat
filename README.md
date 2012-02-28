@@ -161,6 +161,27 @@ var message = mf.compile('{GENDER, select, male{He} female{She} other{They}} lik
 
 ```
 
+## Tests
+
+```sh
+> make test
+
+> make test-browser
+```
+
+## Build Time Compilation
+
+You **really** should take advantage of this. It is _much_ faster than parsing in real-time.
+
+I will eventually release a Handlebars and Require.js (r.js) plugin to do this automatically, but if you would like to output the raw javascript function, the following does that:
+
+```javascript
+var mf = new MessageFormat('en');
+var js_string_represenation = mf.precompile( mf.parse( 'Your {NUM, plural, one{message} other{messages}} go here.' ) );
+
+// This returns an unnamed - unreferenced function that needs to be passed the MessageFormat object. See the source of `MessageFormat.compile` for more details.
+```
+
 ## Version
 
 `0.1.0`
