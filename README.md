@@ -426,5 +426,6 @@ You may contribute to this software under the Dojo CLA - <http://dojofoundation.
 
 Thanks to:
 
+* [Bazaarvoice](https://github.com/Bazaarvoice) - my employer - for letting me do cool stuff like this.
 * Google has an implementation that is similar in Google Closure, I tried to vet my code against many of their tests.
 * Norbert Lindenberg for showing me how good it can be.
