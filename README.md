@@ -135,6 +135,34 @@ MessageFormat.locale["locale_name"] = function () { ... };
 var mf = new MessageFormat( 'locale_name', function () { ... } );
 ```
 
+## Tests
+
+These require node:
+
+```sh
+> make test
+
+> make test-browser
+```
+
+## Build Time Compilation
+
+You **really** should take advantage of this. It is _much_ faster than parsing in real-time.
+
+I will eventually release a Handlebars and Require.js (r.js) plugin to do this automatically, but if you would like to output the raw javascript function, the following does that:
+
+```javascript
+var mf = new MessageFormat('en');
+var js_string_represenation = mf.precompile(
+  mf.parse(
+    'Your {NUM, plural, one{message} other{messages}} go here.'
+  )
+);
+
+// This returns an unnamed - unreferenced function that needs to be passed the 
+// MessageFormat object. See the source of `MessageFormat.compile` for more details.
+```
+
 ## Usage
 
 ### No Frills
@@ -332,34 +360,6 @@ var message = mf.compile(
 > message({"NUM_ADDS" : 3 });
 "You and 3 others added this to their profile."
 
-```
-
-## Tests
-
-These require node:
-
-```sh
-> make test
-
-> make test-browser
-```
-
-## Build Time Compilation
-
-You **really** should take advantage of this. It is _much_ faster than parsing in real-time.
-
-I will eventually release a Handlebars and Require.js (r.js) plugin to do this automatically, but if you would like to output the raw javascript function, the following does that:
-
-```javascript
-var mf = new MessageFormat('en');
-var js_string_represenation = mf.precompile(
-  mf.parse(
-    'Your {NUM, plural, one{message} other{messages}} go here.'
-  )
-);
-
-// This returns an unnamed - unreferenced function that needs to be passed the 
-// MessageFormat object. See the source of `MessageFormat.compile` for more details.
 ```
 
 ## Version
