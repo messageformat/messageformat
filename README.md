@@ -82,6 +82,8 @@ There is very little that needs to be repeated (until gender modifies more than 
   * This is great for speed. Message formatting is just string contacentation.
   * Run a precompiler at build time and remove the need for most of the library. `filesize--;`
 * Compatible with other languages that support MessageFormat
+* Very whitespace tolerant.
+* Supports unicode characters
 * Most translation companies are beginning to be exposed to translations like this, even if it's not their core business.
 
 ## Why not Gettext?
@@ -135,7 +137,29 @@ var mf = new MessageFormat( 'locale_name', function () { ... } );
 
 ## Usage
 
-See the [docs page](http://slexaxton.github.com/messageformat.js) for detailed usage info.
+### SelectFormat
+
+`SelectFormat` is a lot like a switch statement for your messages. Most often it's used to select gender in a string. Here's an example:
+
+```javascript
+// Insantiate an instance with your language settings
+var mf = new MesssageFormat('en');
+// Compile a message - returns a function
+var message = mf.compile('{GENDER, select, male{He} female{She} other{They}} liked this.');
+
+// Run your message function with your data
+> message({"GENDER" : "male"});
+"He liked this."
+
+> message({"GENDER" : "female"});
+"She liked this."
+
+// The 'other' key is **required** and in the case of GENDER
+// it should be phrased as if you are too far away to tell the gender of the subject.
+> message({});
+"They liked this."
+
+```
 
 ## Version
 
