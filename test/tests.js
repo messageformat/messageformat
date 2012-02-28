@@ -544,6 +544,20 @@ describe( "MessageFormat", function () {
     });
 
     describe("Real World Uses", function  () {
+      it("can correctly pull in a different pluralization rule set", function () {
+        // note, cy.js was included in the html file for the browser
+        // and then in the common.js file
+        var mf = new MessageFormat( 'cy' );
+        var mfunc = mf.compile("{NUM, plural, zero{a} one{b} two{c} few{d} many{e} other{f}}");
+
+        expect(mfunc({NUM:0})).to.eql('a');
+        expect(mfunc({NUM:1})).to.eql('b');
+        expect(mfunc({NUM:2})).to.eql('c');
+        expect(mfunc({NUM:3})).to.eql('d');
+        expect(mfunc({NUM:6})).to.eql('e');
+        expect(mfunc({NUM:15})).to.eql('f');
+      });
+
       it("can parse complex, real-world messages with nested selects and plurals with offsets", function () {
         var input = "" +
         "{PERSON} added {PLURAL_NUM_PEOPLE, plural, offset:1" +
