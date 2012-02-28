@@ -175,7 +175,8 @@ var message = mf.compile('His name is {NAME}.');
 > message({ "NAME" : "Jed" });
 "His name is Jed."
 
-// NOTE:: it's best to try and stick to keys that would be natively tolerant in your JS runtimes (think valid JS variable names).
+// NOTE:: it's best to try and stick to keys that would be natively 
+//        tolerant in your JS runtimes (think valid JS variable names).
 ```
 
 ### SelectFormat
@@ -243,6 +244,7 @@ var message = mf.compile('There {NUM_RESULTS, plural, one{is one result} other{a
 ICU provided the ability to extend existing select and plural functionality, and the only official extension (that I could find) is the `offset` extension.
 
 It goes after the `plural` declaration, and is used to generate sentences that break up a number into multiple sections. For instance:
+
 > You and 4 others added this to their profiles.
 
 In this case, the total number of people who added 'this' to their profiles is actually 5. We can use the `offset` extension to help us with this.
@@ -257,8 +259,8 @@ var mf = new MessageFormat('en');
 // Set the offset to 1
 var message = mf.compile(
   'You {NUM_ADDS, plural, offset:1' +
-          '=0{didnt add this to your profile}' + // Number literals, with a `=` do **NOT** use the offset value
-          'zero{added this to your profile}' +
+          '=0{didnt add this to your profile}' + // Number literals, with a `=` do **NOT** use
+          'zero{added this to your profile}' +   //   the offset value
           'one{and one other person added this to their profile}' +
           'other{and # others added this to their profiles}' +
       '}.'
@@ -305,7 +307,8 @@ var js_string_represenation = mf.precompile(
   )
 );
 
-// This returns an unnamed - unreferenced function that needs to be passed the MessageFormat object. See the source of `MessageFormat.compile` for more details.
+// This returns an unnamed - unreferenced function that needs to be passed the 
+// MessageFormat object. See the source of `MessageFormat.compile` for more details.
 ```
 
 ## Version
