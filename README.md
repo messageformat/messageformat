@@ -254,7 +254,7 @@ var message = mf.compile('There {NUM_RESULTS, plural, one{is one result} other{a
 
 #### Named Keys
 
-ICU declares 6 named keys that can be mapped to every language in the CLDR data. Those are:
+ICU declares the 6 named keys that CLDR defines for their plural form data. Those are:
 
 * zero
 * one
@@ -271,7 +271,7 @@ The only **required** key is `other`. Your compilation will throw an error if yo
 
 Other languages (take a peak at `ar.js` or `sl.js`) can get much more complicated.
 
-**Remember. English only uses `one` and `other` - so including `zero` will never get called, even when the number is 0`**
+**Remember. English only uses `one` and `other` - so including `zero` will never get called, even when the number is 0**
 
 The most simple (to pluralize) languages have no pluralization rules an rely solely on the `other` named key.
 
@@ -394,13 +394,15 @@ Gettext can generally go only one level deep without hitting some serious roadbl
 
 It can likely be done with contexts/domains for gender and some extra plural forms work to pick contexts for the plurals, but it's less than ideal. Not to mention every translation must be completed in its entirety for every combination. That stinks too.
 
+You can easily mix Gettext and MessageFormat by storing MessageFormat strings in your .po files. However, I would stop using the built in plural functions of Gettext.
+
 I tend to only use Gettext on projects that are already using it in other languages, so we can share translations, otherwise, I like to live on the wild-side and use PluralFormat and SelectFormat.
 
 Most Gettext tools will look up the Plural Forms for a given locale for you. This is also the opinion of PluralFormat. The library should just contain the known plural forms of every locale, and not force translators to reinput this information each time.
 
 ## Version
 
-`0.1.0`
+`0.1.1`
 
 ## TODO
 

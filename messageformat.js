@@ -4,7 +4,7 @@
  * ICU PluralFormat + SelectFormat for JavaScript
  *
  * @author Alex Sexton - @SlexAxton
- * @version 0.1.0
+ * @version 0.1.1
  * @license WTFPL
  * @contributor_license Dojo CLA
 */
@@ -1739,7 +1739,7 @@
     return mparser.parse.apply( mparser, arguments );
   };
 
-  MessageFormat.prototype.precompile = function compile ( ast ) {
+  MessageFormat.prototype.precompile = function ( ast ) {
     var self = this,
         needOther = false,
         fp = {
