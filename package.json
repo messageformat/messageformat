@@ -21,10 +21,17 @@
     "messageformat",
     "internationalization"
   ],
-  "dependencies" : {},
-  "devDependencies" : {
-    "mocha" : "*",
-    "expect.js" : "*",
+  "dependencies": {
+    "optimist": "~0.3.1",
+    "coffee-script": "~1.2.0",
+    "watchr": "~1.0.0",
+    "underscore": "~1.3.1",
+    "async": "~0.1.18",
+    "glob": "~3.1.9"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "expect.js": "*",
     "serve": "*",
     "pegjs": "*"
   },
