@@ -1,4 +1,12 @@
 (function(){ window.i18n || (window.i18n = {}) 
+var MessageFormat = { locale: {} };
+MessageFormat.locale.fr = function (n) {
+  if (n >= 0 && n < 2) {
+    return 'one';
+  }
+  return 'other';
+};
+
 window.i18n["colors"] = {}
 window.i18n["colors"]["red"] = function(d){
 var r = "";

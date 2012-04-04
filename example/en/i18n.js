@@ -1,20 +1,12 @@
 (function(){ window.i18n || (window.i18n = {}) 
-window.i18n["colors"] = {}
-window.i18n["colors"]["red"] = function(d){
-var r = "";
-r += "red";
-return r;
-}
-window.i18n["colors"]["blue"] = function(d){
-var r = "";
-r += "blue";
-return r;
-}
-window.i18n["colors"]["green"] = function(d){
-var r = "";
-r += "green";
-return r;
-}
+var MessageFormat = { locale: {} };
+MessageFormat.locale.en = function ( n ) {
+  if ( n === 1 ) {
+    return "one";
+  }
+  return "other";
+};
+
 window.i18n["sub/folder/plural"] = {}
 window.i18n["sub/folder/plural"]["test"] = function(d){
 var r = "";
@@ -44,6 +36,22 @@ else {
 r += (pf_0[ MessageFormat.locale["en"]( k_1 - off_0 ) ] || pf_0[ "other" ] )( d );
 }
 r += " go here.";
+return r;
+}
+window.i18n["colors"] = {}
+window.i18n["colors"]["red"] = function(d){
+var r = "";
+r += "red";
+return r;
+}
+window.i18n["colors"]["blue"] = function(d){
+var r = "";
+r += "blue";
+return r;
+}
+window.i18n["colors"]["green"] = function(d){
+var r = "";
+r += "green";
 return r;
 }
 })();

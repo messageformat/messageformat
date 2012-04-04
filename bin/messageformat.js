@@ -11,8 +11,9 @@ var optimist    = require('optimist'),
   MessageFormat = require('../'),
   _             = require('underscore'),
   optimist      = optimist.usage('Usage: $0 [INPUT_DIR] [OUTPUT]')
-  .alias('lang', 'l')
-  .describe('lang', 'default language')
+  .alias('locale', 'l')
+  .describe('locale', 'locale to use')
+  .demand('locale')
   .alias('inputdir', 'i')
   .describe('inputdir', 'directory containings messageformat file to compile')
   .alias('output', 'o')
@@ -43,17 +44,12 @@ if(options._ && options._.length >=2 ) options.output = options._[1];
 if(!options.inputdir || !options.output) return optimist.showHelp();
 var inputdir = options.inputdir;
 
-var langFile = join(__dirname, '..', 'locale', options.lang + '.js');
-if(options.verbose) console.log('Load lang file: ' + langFile);
-fs.readFile(langFile, function(err, txt){
-  if(err) handleError(new Error('lang ' + options.lang + ' not supported.' ));
-  var script = vm.createScript(txt);
 
-  /* needed for runInThisContext */
-  global.MessageFormat = MessageFormat;
-  script.runInThisContext();
+compile();
+if(options.watch){
+  return watch(options.inputdir, _.debounce(compile, 100));
+}
 
-});
 
 function handleError( err, data ){
   if(err){
@@ -96,59 +92,68 @@ function write( data, callback ){
   });
 };
 
-compile();
-if(options.watch){
-  return watch(options.inputdir, _.debounce(compile, 100));
-}
 
 
 function build(inputdir, options, callback){
   // arrays of compiled templates
   var compiledMessageFormat = [];
 
-  if( options.verbose ) { console.log('Read dir: ' + inputdir); }
-  // list each file in inputdir folder and subfolders
-  glob(join(inputdir, options.include), function(err, files){
-    files = files.map(function(file){
-      // normalize the file name
-      return file.replace(inputdir, '').replace(/^\//, '');
-    })
+  // read locale file
+  var localeFile = join(__dirname, '..', 'locale', options.locale + '.js');
+  if(options.verbose) console.log('Load locale file: ' + localeFile);
+  fs.readFile(localeFile, function(err, localeStr){
+    if(err) handleError(new Error('locale ' + options.locale + ' not supported.' ));
+    var script = vm.createScript(localeStr);
+    // needed for runInThisContext
+    global.MessageFormat = MessageFormat;
+    script.runInThisContext();
 
-    async.forEach(files, readFile, function(err){
-      // errors are logged in readFile. No need to print them here.
-      var fileData =
-        ['(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ']
-        .concat(compiledMessageFormat)
+    if( options.verbose ) { console.log('Read dir: ' + inputdir); }
+    // list each file in inputdir folder and subfolders
+    glob(join(inputdir, options.include), function(err, files){
+      files = files.map(function(file){
+        // normalize the file name
+        return file.replace(inputdir, '').replace(/^\//, '');
+      })
+
+      async.forEach(files, readFile, function(err){
+        // errors are logged in readFile. No need to print them here.
+        var fileData = [
+          '(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ',
+          'var MessageFormat = { locale: {} };',
+          localeStr
+        ].concat(compiledMessageFormat)
         .concat(['})();']);
-      return callback(null, _.flatten(fileData));
-    });
-
-    // Read each file, compile them, and append the result in the `compiledI18n` array
-    function readFile(file, cb){
-      var path = join(inputdir, file);
-      fs.stat(path, function(err, stat){
-        if(err) { handleError(err); return  cb(); }
-        if(!stat.isFile()) {
-          if( options.verbose ) { handleError('Skip ' + file); }
-          return cb();
-        }
-
-        fs.readFile(path, 'utf8', function(err, text){
-          if(err) { handleError(err); return cb() }
-
-          var nm = join(file).split('.')[0];
-
-          if( options.verbose ) console.log('Building ' + options.namespace + '["' + nm + '"]');
-          compiledMessageFormat.push(compiler( options, nm, JSON.parse(text) ));
-          cb();
-        });
+        return callback(null, _.flatten(fileData));
       });
-    }
+
+      // Read each file, compile them, and append the result in the `compiledI18n` array
+      function readFile(file, cb){
+        var path = join(inputdir, file);
+        fs.stat(path, function(err, stat){
+          if(err) { handleError(err); return  cb(); }
+          if(!stat.isFile()) {
+            if( options.verbose ) { handleError('Skip ' + file); }
+            return cb();
+          }
+
+          fs.readFile(path, 'utf8', function(err, text){
+            if(err) { handleError(err); return cb() }
+
+            var nm = join(file).split('.')[0];
+
+            if( options.verbose ) console.log('Building ' + options.namespace + '["' + nm + '"]');
+            compiledMessageFormat.push(compiler( options, nm, JSON.parse(text) ));
+            cb();
+          });
+        });
+      }
+    });
   });
 }
 
 function compiler(options, nm, obj){
-  var mf = new MessageFormat(options.lang),
+  var mf = new MessageFormat(options.locale),
     compiledMessageFormat = [options.namespace + '["' + nm + '"] = {}'];
 
   _(obj).forEach(function(value, key){
