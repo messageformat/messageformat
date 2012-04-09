@@ -1,49 +1,76 @@
 #!/usr/bin/env node
 
-var optimist    = require('optimist'),
+var nopt = require("nopt")
   fs            = require('fs'),
   vm            = require('vm'),
   coffee        = require('coffee-script'), /* only for watchr */
   watch         = require('watchr').watch,
-  join          = require('path').join,
+  Path          = require('path'),
+  join          = Path.join,
   glob          = require("glob"),
   async         = require('async'),
   MessageFormat = require('../'),
   _             = require('underscore'),
-  optimist      = optimist.usage('Usage: $0 [INPUT_DIR] [OUTPUT]')
-  .alias('locale', 'l')
-  .describe('locale', 'locale to use')
-  .demand('locale')
-  .alias('inputdir', 'i')
-  .describe('inputdir', 'directory containings messageformat file to compile')
-  .alias('output', 'o')
-  .describe('output', 'output where messageformat will be compiled')
-  .alias('watch', 'w')
-  .describe('watch', 'watch `inputdir` for change')
-  .alias('namespace', 'ns')
-  .describe('namespace', 'object in the browser containing the templates')
-  .alias('include', 'I')
-  .describe('include', 'Glob patterns for templates files to include in `inputdir`')
-  .alias('stdout', 's')
-  .describe('stdout', 'Print the result in stdout instead of writing in a file')
-  .alias('verbose', 'v')
-  .describe('verbose', 'Print logs for debug')
-  .default('inputdir', process.cwd())
-  .default('output', process.cwd())
-  .default('watch', false)
-  .default('namespace', 'window.i18n')
-  .default('include', '**/*.json')
-  .default('stdout', false)
-  .default('verbose', false),
-  options = optimist.argv,
+  knownOpts = {
+    "locale"    : String,
+    "inputdir"  : Path,
+    "output"    : Path,
+    "watch"     : Boolean,
+    "namespace" : String,
+    "include"   : String,
+    "stdout"    : Boolean,
+    "verbose"   : Boolean
+  },
+  description = {
+    "locale"    : "locale to use [mandatory]",
+    "inputdir"  : "directory containings messageformat files to compile",
+    "output"    : "output where messageformat will be compiled",
+    "watch"     : "watch `inputdir` for change",
+    "namespace" : "object in the browser containing the templates",
+    "include"   : "Glob patterns for files to include in `inputdir`",
+    "stdout"    : "Print the result in stdout instead of writing in a file",
+    "verbose"   : "Print logs for debug"
+  },
+  defaults = {
+    "inputdir"  : process.cwd(),
+    "output"    : process.cwd(),
+    "watch"     : false,
+    "namespace" : 'window.i18n',
+    "include"   : '**/*.json',
+    "stdout"    : false,
+    "verbose"   : false
+  },
+  shortHands = {
+    "l"  : "--locale",
+    "i"  : "--inputdir",
+    "o"  : "--output",
+    "w"  : "--watch",
+    "ns" : "--namespace",
+    "I"  : "--include",
+    "s"  : "--stdout",
+    "v"  : "--verbose"
+  },
+  options = nopt(knownOpts, shortHands, process.argv, 2),
+  argvRemain = options.argv.remain,
   inputdir;
 
-if(options._ && options._.length >=1 ) options.inputdir = options._[0];
-if(options._ && options._.length >=2 ) options.output = options._[1];
+// defaults value
+_(defaults).forEach(function(value, key){
+    options[key] = options[key] || value;
+})
 
-if(!options.inputdir || !options.output) return optimist.showHelp();
+
+if(argvRemain && argvRemain.length >=1 ) options.inputdir = argvRemain[0];
+if(argvRemain && argvRemain.length >=2 ) options.output = argvRemain[1];
+
+if(!options.locale) {
+  console.error('Usage: messageformat -l [locale] [INPUT_DIR] [OUTPUT_DIR]')
+  console.error('')
+  console.error(nopt.usage(knownOpts, shortHands, description, defaults));
+  process.exit(-1);
+}
+
 var inputdir = options.inputdir;
-
 
 compile();
 if(options.watch){
@@ -110,7 +137,7 @@ function build(inputdir, options, callback){
 
     if( options.verbose ) { console.log('Read dir: ' + inputdir); }
     // list each file in inputdir folder and subfolders
-    glob(join(inputdir, options.include), function(err, files){
+    glob(options.include, {cwd: inputdir}, function(err, files){
       files = files.map(function(file){
         // normalize the file name
         return file.replace(inputdir, '').replace(/^\//, '');
@@ -140,7 +167,7 @@ function build(inputdir, options, callback){
           fs.readFile(path, 'utf8', function(err, text){
             if(err) { handleError(err); return cb() }
 
-            var nm = join(file).split('.')[0];
+            var nm = join(file).split('.')[0].replace(/\\/g, '/'); // windows users should have the same key.
 
             if( options.verbose ) console.log('Building ' + options.namespace + '["' + nm + '"]');
             compiledMessageFormat.push(compiler( options, nm, JSON.parse(text) ));
