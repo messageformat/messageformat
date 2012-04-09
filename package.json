@@ -11,6 +11,9 @@
     "test": "make test"
   },
   "main": "./messageformat",
+  "bin": {
+    "messageformat": "./bin/messageformat.js"
+  },
   "keywords": [
     "i18n",
     "pluralformat",
