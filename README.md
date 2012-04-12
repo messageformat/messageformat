@@ -194,16 +194,7 @@ Take a look at the example [inputdir](messageformat.js/tree/master/example/en) a
 A watch mode is available with the `--watch` or `-w` option.
 
 
-#### In the browser
-
-Now that you have compiled your messageformat, you can use it in your [html](messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`. 
-
-In the browser, the global `window.i18n` is an object containing the messageformat compiled functions.
-
-    $('<div>').text(window.i18n['sub/folder/plural'].test({NUM: 1})).appendTo('#content');
-
-The namespace `window.i18n` could be changed with the `--namespace` or `-ns` option.
-
+#### The JSON messageformat files
 
 The original JSON files are simple objects, with a key and a messageformat string as value, like [this one](messageformat.js/blob/master/example/en/sub/folder/plural.json):
 
@@ -213,15 +204,12 @@ The original JSON files are simple objects, with a key and a messageformat strin
 
 The CLI walks into `inputdir` recursively so you can structure your messageformat with [dirs and subdirs](messageformat.js/tree/master/example/en).
 
-Subdirectories messageformat are available in the `window.i18n` namespace, prefixed with their relative path :
 
-    > window.i18n['sub/folder/plural']
-    Object
-    * test: [ Function ]
+#### In the browser
 
-`sub/folder` is the path, `plural` is the name of [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used.
+Now that you have compiled your messageformat, you can use it in your [html](messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`. 
 
-If we inspect [the whole i18n namespace](messageformat.js/blob/master/example/en/i18n.js), this is what we found:
+In the browser, the global `window.i18n` is an object containing the messageformat compiled functions.
 
     > i18n
     Object
@@ -229,8 +217,22 @@ If we inspect [the whole i18n namespace](messageformat.js/blob/master/example/en
         blue:   [ Function ]
         green:  [ Function ]
         red:    [ Function ]
-      sub/folder/plural: Object
+      "sub/folder/plural": Object
         test:   [ Function ]
+
+You could then use it:
+
+    $('<div>').text( window.i18n[ 'sub/folder/plural' ].test( { NUM: 1 } ) ).appendTo('#content');
+
+The namespace `window.i18n` could be changed with the `--namespace` or `-ns` option.
+
+Subdirectories messageformat are available in the `window.i18n` namespace, prefixed with their relative path :
+
+    > window.i18n['sub/folder/plural']
+    Object
+    * test: [ Function ]
+
+`sub/folder` is the path, `plural` is the name of [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used.
 
 
 A working example is available [here](messageformat.js/tree/master/example).
