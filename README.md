@@ -155,10 +155,9 @@ This tool is in early stage. It was tested on Linux and Windows, but if you find
 
 #### Usage
 
-    > npm install -g messageformat
+    > [sudo] npm install -g messageformat
 
     > messageformat
-
     Usage: messageformat -l [locale] [INPUT_DIR] [OUTPUT_DIR]
 
         --locale, -l        locale to use [mandatory]
@@ -177,18 +176,20 @@ If your prefer looking at an example [go there](messageformat.js/tree/master/exa
 
 When using the CLI, the following commands will works exactly the same:
 
-    > messageformat --locale en [./example/en](messageformat.js/tree/master/example/en)
-    > messageformat --locale en [./example/en](messageformat.js/tree/master/example/en) [./i18n.js](messageformat.js/blob/master/example/en/i18n.js)
-    > messageformat --locale en --inputdir [./example/en](messageformat.js/tree/master/example/en) --output [./i18n.js](messageformat.js/blob/master/example/en/i18n.js)
+    > messageformat --locale en ./example/en
+    > messageformat --locale en ./example/en ./i18n.js
+    > messageformat --locale en --inputdir ./example/en --output ./i18n.js
 
 or even shorter
 
-    > cd [example/en/](messageformat.js/tree/master/example/en)
+    > cd example/en
     > messageformat -l en
 
 You can also do it with a unix pipe
 
-    > messageformat -l en --stdout > [i18n.js](messageformat.js/blob/master/example/en/i18n.js)
+    > messageformat -l en --stdout > i18n.js
+
+Take a look at the example [inputdir](messageformat.js/tree/master/example/en) and [output](messageformat.js/blob/master/example/en/i18n.js)
 
 A watch mode is available with the `--watch` or `-w` option.
 
@@ -210,15 +211,15 @@ The original JSON files are simple objects, with a key and a messageformat strin
       "test": "Your {NUM, plural, one{message} other{messages}} go here."
     }
 
-The CLI walks into `inputdir` recursively so you can structure your messageformat with dirs and subdirs.
+The CLI walks into `inputdir` recursively so you can structure your messageformat with [dirs and subdirs](messageformat.js/tree/master/example/en).
 
-Subdirectories messageformat are available in the `window.i18n` namespace prefixed by their relative path :
+Subdirectories messageformat are available in the `window.i18n` namespace, prefixed with their relative path :
 
     > window.i18n['sub/folder/plural']
     Object
     * test: [ Function ]
 
-`sub/folder` is the path, `plural` is the name of [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used in [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json).
+`sub/folder` is the path, `plural` is the name of [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used.
 
 If we inspect [the whole i18n namespace](messageformat.js/blob/master/example/en/i18n.js), this is what we found:
 
@@ -232,7 +233,7 @@ If we inspect [the whole i18n namespace](messageformat.js/blob/master/example/en
         test:   [ Function ]
 
 
-A working example could be found [here](messageformat.js/tree/master/example).
+A working example is available [here](messageformat.js/tree/master/example).
 
 ### No Frills
 
