@@ -147,7 +147,92 @@ var js_string_represenation = mf.precompile(
 // MessageFormat object. See the source of `MessageFormat.compile` for more details.
 ```
 
-## Usage
+### The CLI compiler
+
+If you don't want to compile your templates programmatically, you can use the built in CLI compiler.
+
+This tool is in early stage. It was tested on Linux and Windows, but if you find a bug, please create an issue.
+
+#### Usage
+
+    > npm install -g messageformat
+
+    > messageformat
+
+    Usage: messageformat -l [locale] [INPUT_DIR] [OUTPUT_DIR]
+
+        --locale, -l        locale to use [mandatory]
+        --inputdir, -i      directory containings messageformat files to compile       $PWD
+        --output, -o        output where messageformat will be compiled                $PWD
+        --watch, -w         watch `inputdir` for change                                false
+        --namespace, -ns    object in the browser containing the templates             window.i18n
+        --include, -I       Glob patterns for files to include in `inputdir`           **/*.json
+        --stdout, -s        Print the result in stdout instead of writing in a file    false
+        --verbose, -v       Print logs for debug                                       false
+
+If your prefer looking at an example [go there](messageformat.js/tree/master/example).
+
+
+`messageformat` will read every JSON files in `inputdir` and compile them to `output`.
+
+When using the CLI, the following commands will works exactly the same:
+
+    > messageformat --locale en [./example/en](messageformat.js/tree/master/example/en)
+    > messageformat --locale en [./example/en](messageformat.js/tree/master/example/en) [./i18n.js](messageformat.js/blob/master/example/en/i18n.js)
+    > messageformat --locale en --inputdir [./example/en](messageformat.js/tree/master/example/en) --output [./i18n.js](messageformat.js/blob/master/example/en/i18n.js)
+
+or even shorter
+
+    > cd [example/en/](messageformat.js/tree/master/example/en)
+    > messageformat -l en
+
+You can also do it with a unix pipe
+
+    > messageformat -l en --stdout > [i18n.js](messageformat.js/blob/master/example/en/i18n.js)
+
+A watch mode is available with the `--watch` or `-w` option.
+
+
+#### In the browser
+
+Now that you have compiled your messageformat, you can use it in your [html](messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`. 
+
+In the browser, the global `window.i18n` is an object containing the messageformat compiled functions.
+
+    $('<div>').text(window.i18n['sub/folder/plural'].test({NUM: 1})).appendTo('#content');
+
+The namespace `window.i18n` could be changed with the `--namespace` or `-ns` option.
+
+
+The original JSON files are simple objects, with a key and a messageformat string as value, like [this one](messageformat.js/blob/master/example/en/sub/folder/plural.json):
+
+    {
+      "test": "Your {NUM, plural, one{message} other{messages}} go here."
+    }
+
+The CLI walks into `inputdir` recursively so you can structure your messageformat with dirs and subdirs.
+
+Subdirectories messageformat are available in the `window.i18n` namespace prefixed by their relative path :
+
+    > window.i18n['sub/folder/plural']
+    Object
+    * test: [ Function ]
+
+`sub/folder` is the path, `plural` is the name of [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used in [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json).
+
+If we inspect [the whole i18n namespace](messageformat.js/blob/master/example/en/i18n.js), this is what we found:
+
+    > i18n
+    Object
+      colors: Object
+        blue:   [ Function ]
+        green:  [ Function ]
+        red:    [ Function ]
+      sub/folder/plural: Object
+        test:   [ Function ]
+
+
+A working example could be found [here](messageformat.js/tree/master/example).
 
 ### No Frills
 
