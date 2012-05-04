@@ -12,6 +12,7 @@
 
   // Create the contructor function
   function MessageFormat ( locale, pluralFunc ) {
+    var pluralLocale;
 
     if ( locale && pluralFunc ) {
       MessageFormat.locale[ locale ] = pluralFunc;
@@ -21,7 +22,11 @@
     locale = locale || "en";
     pluralFunc = pluralFunc || MessageFormat.locale[ locale ];
 
-    // Let's just be friends.
+    // Lets just be friends, fallback through the language tags
+    pluralLocale = locale;
+    while ( !pluralFunc && ( pluralLocale = MessageFormat.fallback( pluralLocale ) ) ) {
+      pluralFunc = MessageFormat.locale[ pluralLocale ];
+    }
     if ( ! pluralFunc ) {
       throw new Error( "Plural Function not found for locale: " + locale );
     }
@@ -39,10 +44,17 @@
         return "one";
       }
       return "other";
-    },
-    "en_us" : function () {
-      return this.en.apply( this, arguments );
     }
+  };
+
+  MessageFormat.fallback = function( locale ) {
+    var tagSeparator = locale.indexOf("-") >= 0 ? "-" : "_",
+      tags = locale.split( tagSeparator );
+    tags.pop();
+    if (tags.length === 0) {
+      return null;
+    }
+    return tags.join( tagSeparator );
   };
 
   // Build out our basic SafeString type
@@ -421,7 +433,7 @@
           }
           var result2 = result1 !== null
           ? (function(argIdx, efmt) {
-            var res = { 
+            var res = {
               type: "messageFormatElement",
               argumentIndex: argIdx
             };
