@@ -25,6 +25,10 @@ describe( "MessageFormat", function () {
       expect( mf.compile ).to.be.a( 'function' );
     });
 
+    it("should fallback when a base pluralFunc exists", function() {
+      expect((new MessageFormat( 'en-x-test1-test2' )).pluralFunc).to.be( MessageFormat.locale.en );
+    });
+
     it("should bail on non-existing locales", function () {
       expect(function(){ var a = new MessageFormat( 'lawlz' ); }).to.throwError();
     });
