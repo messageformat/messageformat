@@ -1,3 +1,4 @@
+/*global describe,it,expect,MessageFormat */
 describe( "MessageFormat", function () {
 
   describe( "Public API", function () {
@@ -22,6 +23,10 @@ describe( "MessageFormat", function () {
       expect( mf.parse ).to.be.a( 'function' );
       expect( mf.precompile ).to.be.a( 'function' );
       expect( mf.compile ).to.be.a( 'function' );
+    });
+
+    it("should fallback when a base pluralFunc exists", function() {
+      expect((new MessageFormat( 'en-x-test1-test2' )).pluralFunc).to.be( MessageFormat.locale.en );
     });
 
     it("should bail on non-existing locales", function () {
