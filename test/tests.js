@@ -1,3 +1,4 @@
+/*global describe,it,expect,MessageFormat */
 describe( "MessageFormat", function () {
 
   describe( "Public API", function () {
