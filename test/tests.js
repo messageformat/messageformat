@@ -25,6 +25,17 @@ describe( "MessageFormat", function () {
       expect( mf.compile ).to.be.a( 'function' );
     });
 
+    it("should fallback when a base pluralFunc exists", function() {
+      var mf = new MessageFormat( 'en-x-test1-test2' );
+      expect(mf.fallbackLocale).to.be("en");
+      expect(mf.pluralFunc).to.be( MessageFormat.locale.en );
+    });
+    it("should fallback when a base pluralFunc exists (underscores)", function() {
+      var mf = new MessageFormat( 'en_x_test1_test2' );
+      expect(mf.fallbackLocale).to.be("en");
+      expect(mf.pluralFunc).to.be( MessageFormat.locale.en );
+    });
+
     it("should bail on non-existing locales", function () {
       expect(function(){ var a = new MessageFormat( 'lawlz' ); }).to.throwError();
     });
@@ -499,6 +510,21 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("{NUM, plural, =34{a} one{b} other{c}}");
         expect(mfunc({NUM:34})).to.eql('a');
+      });
+
+      it("should use the locale plural function", function() {
+        var mf = new MessageFormat( 'cy' );
+        var mfunc = mf.compile("{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}");
+        expect(mfunc.toString()).to.contain('MessageFormat.locale["cy"]');
+        expect(mfunc({num: 5})).to.be("+");
+
+      });
+
+      it("should use the fallback locale plural function if the locale isn't available", function() {
+        var mf = new MessageFormat( 'en-x-test1-test2' );
+        var mfunc = mf.compile("{num, plural, one {# thing} other {# things}}");
+        expect(mfunc.toString()).to.contain('MessageFormat.locale["en"]');
+        expect(mfunc({num: 3})).to.be("3 things");
       });
 
       it("should throw an error when you don't pass it any data, but it expects it", function () {

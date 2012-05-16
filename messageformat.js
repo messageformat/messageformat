@@ -12,24 +12,24 @@
 
   // Create the contructor function
   function MessageFormat ( locale, pluralFunc ) {
+    var fallbackLocale;
 
     if ( locale && pluralFunc ) {
       MessageFormat.locale[ locale ] = pluralFunc;
     }
 
     // Defaults
-    locale = locale || "en";
-    pluralFunc = pluralFunc || MessageFormat.locale[ locale ];
+    fallbackLocale = locale = locale || "en";
+    pluralFunc = pluralFunc || MessageFormat.locale[ fallbackLocale = MessageFormat.Utils.getFallbackLocale( locale ) ];
 
-    // Let's just be friends.
     if ( ! pluralFunc ) {
       throw new Error( "Plural Function not found for locale: " + locale );
     }
 
-
     // Own Properties
     this.pluralFunc = pluralFunc;
     this.locale = locale;
+    this.fallbackLocale = fallbackLocale;
   }
 
   // Set up the locales object. Add in english by default
@@ -39,9 +39,6 @@
         return "one";
       }
       return "other";
-    },
-    "en_us" : function () {
-      return this.en.apply( this, arguments );
     }
   };
 
@@ -86,6 +83,19 @@
         return string;
       }
       return string.replace( badChars, escapeChar );
+    },
+    getFallbackLocale: function( locale ) {
+      var tagSeparator = locale.indexOf("-") >= 0 ? "-" : "_";
+
+      // Lets just be friends, fallback through the language tags
+      while ( ! MessageFormat.locale.hasOwnProperty( locale ) ) {
+        locale = locale.substring(0, locale.lastIndexOf( tagSeparator ));
+        if (locale.length === 0) {
+          return null;
+        }
+      }
+
+      return locale;
     }
   };
 
@@ -1793,7 +1803,7 @@
             s += 'r += (pf_' +
                  data.pf_count +
                  '[ MessageFormat.locale["' +
-                 self.locale +
+                 self.fallbackLocale +
                  '"]( k_'+(data.pf_count+1)+' - off_'+(data.pf_count)+' ) ] || pf_'+data.pf_count+'[ "other" ] )( d );\n';
             s += '}\n';
           }
