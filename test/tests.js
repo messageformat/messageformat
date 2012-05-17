@@ -76,6 +76,11 @@ describe( "MessageFormat", function () {
         expect( mf.parse('{test}') ).to.be.an( 'object' );
       });
 
+      it("should accept a nested variable", function () {
+        var mf = new MessageFormat( 'en' );
+        expect( mf.parse('{t.e.s.t}') ).to.be.an( 'object' );
+      });
+
       it("should not care about white space in a variable", function () {
         var mf = new MessageFormat( 'en' );
         var targetStr = JSON.stringify( mf.parse('{test}') );
@@ -462,6 +467,12 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
 
         expect((mf.compile("The var is {VAR}."))({"VAR":5})).to.eql("The var is 5.");
+      });
+
+      it("can substitute nested variables", function () {
+        var mf = new MessageFormat( 'en' );
+
+        expect((mf.compile("The var is {VAR.VAR}."))({"VAR":{"VAR":5}})).to.eql("The var is 5.");
       });
 
       it("can substitute shorthand variables", function () {
