@@ -472,7 +472,8 @@ describe( "MessageFormat", function () {
       it("can substitute nested variables", function () {
         var mf = new MessageFormat( 'en' );
 
-        expect((mf.compile("The var is {VAR.VAR}."))({"VAR":{"VAR":5}})).to.eql("The var is 5.");
+        expect((mf.compile("The var is {some.nested.var}."))({"some":{"nested":{"var":12}}})).to.eql("The var is 12.");
+        expect((mf.compile("The var is {array.test.0.1}."))({"array":{"test":[[1, 15]]}})).to.eql("The var is 15.");
       });
 
       it("can substitute shorthand variables", function () {
