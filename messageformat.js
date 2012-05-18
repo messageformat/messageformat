@@ -1193,24 +1193,24 @@
             }
             if (result4 !== null) {
               var result5 = [];
-              if (input.substr(pos).match(/^[^ 	\n\r,.+={}]/) !== null) {
+              if (input.substr(pos).match(/^[^ 	\n\r,+={}]/) !== null) {
                 var result7 = input.charAt(pos);
                 pos++;
               } else {
                 var result7 = null;
                 if (reportMatchFailures) {
-                  matchFailed("[^ 	\\n\\r,.+={}]");
+                  matchFailed("[^ 	\\n\\r,+={}]");
                 }
               }
               while (result7 !== null) {
                 result5.push(result7);
-                if (input.substr(pos).match(/^[^ 	\n\r,.+={}]/) !== null) {
+                if (input.substr(pos).match(/^[^ 	\n\r,+={}]/) !== null) {
                   var result7 = input.charAt(pos);
                   pos++;
                 } else {
                   var result7 = null;
                   if (reportMatchFailures) {
-                    matchFailed("[^ 	\\n\\r,.+={}]");
+                    matchFailed("[^ 	\\n\\r,+={}]");
                   }
                 }
               }
@@ -1779,7 +1779,9 @@
           data.pf_count = data.pf_count || 0;
           s += 'if(!d){\nthrow new Error("MessageFormat: No data passed to function.");\n}\n';
           if ( ast.output ) {
-            s += 'r += d["' + ast.argumentIndex + '"];\n';
+            s += 'r += d' + ast.argumentIndex.split('.').map(function(x) {
+              return '["'+x+'"]';
+            }).join('') + ';\n';
           }
           else {
             lastkeyname = 'lastkey_'+(data.pf_count+1);
