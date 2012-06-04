@@ -63,10 +63,11 @@
     },
     escapeExpression : function (string) {
       var escape = {
-            "\n": "\\n"
+            "\n": "\\n",
+            "\"": '\\"'
           },
-          badChars = /(\n)|[\n]/g,
-          possible = /[\n]/,
+          badChars = /[\n"]/g,
+          possible = /[\n"]/,
           escapeChar = function(chr) {
             return escape[chr] || "&amp;";
           };
@@ -431,7 +432,7 @@
           }
           var result2 = result1 !== null
           ? (function(argIdx, efmt) {
-            var res = { 
+            var res = {
               type: "messageFormatElement",
               argumentIndex: argIdx
             };
