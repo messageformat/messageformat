@@ -448,6 +448,11 @@ describe( "MessageFormat", function () {
         expect((mf.compile('中{test}中国话不用彁字。'))({test:"☺"})).to.eql( "中☺中国话不用彁字。" );
       });
 
+      it("escapes double quotes", function() {
+        var mf = new MessageFormat( 'en' );
+        expect((mf.compile('She said "Hello"'))()).to.eql('She said "Hello"');
+      });
+
       it("should get escaped brackets all the way out the other end", function () {
         var mf = new MessageFormat( 'en' );
         expect((mf.compile('\\{\\{\\{'))()).to.eql( "{{{" );
