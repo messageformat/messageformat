@@ -4,7 +4,7 @@
  * ICU PluralFormat + SelectFormat for JavaScript
  *
  * @author Alex Sexton - @SlexAxton
- * @version 0.1.3
+ * @version 0.1.4
  * @license WTFPL
  * @contributor_license Dojo CLA
 */
@@ -1898,6 +1898,11 @@
       exports = module.exports = MessageFormat;
     }
     exports.MessageFormat = MessageFormat;
+  }
+  else if (typeof define === 'function' && define.amd) {
+    define(function() {
+      return MessageFormat;
+    });
   }
   else {
     root['MessageFormat'] = MessageFormat;
