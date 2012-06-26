@@ -4,7 +4,7 @@
  * ICU PluralFormat + SelectFormat for JavaScript
  *
  * @author Alex Sexton - @SlexAxton
- * @version 0.1.1
+ * @version 0.1.3
  * @license WTFPL
  * @contributor_license Dojo CLA
 */
