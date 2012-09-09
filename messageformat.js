@@ -58,7 +58,7 @@
       return string.replace( /^#|[^\\]#/g, function (m) {
         var prefix = m && m.length === 2 ? m.charAt(0) : '';
         return prefix + '" + (function(){ var x = ' +
-        key+';\nif( isNaN(x) ){\nthrow new Error("MessageFormat: `"+lastkey_'+depth+'+"` isnt a number.");\n}\nreturn x;\n})() + "'
+        key+';\nif( isNaN(x) ){\nthrow new Error("MessageFormat: `"+lastkey_'+depth+'+"` isnt a number.");\n}\nreturn x;\n})() + "';
       });
     },
     escapeExpression : function (string) {
