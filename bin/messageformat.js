@@ -184,6 +184,7 @@ function compiler(options, nm, obj){
     compiledMessageFormat = [options.namespace + '["' + nm + '"] = {}'];
 
   _(obj).forEach(function(value, key){
+    if (value == '') value = key;
     var str = mf.precompile( mf.parse(value) );
     compiledMessageFormat.push(options.namespace + '["' + nm + '"]["' + key + '"] = ' + str);
   });
