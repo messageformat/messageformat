@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "Alex Sexton <alexsexton@gmail.com>",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "repository": {
@@ -25,7 +25,7 @@
     "internationalization"
   ],
   "dependencies": {
-    "nopt": "http://nodeload.github.com/Filirom1/nopt/tarball/master#pull-request-in-progress",
+    "nopt": "~2.0.0",
     "coffee-script": "~1.2.0",
     "watchr": "~1.0.0",
     "underscore": "~1.3.1",

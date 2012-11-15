@@ -66,7 +66,7 @@ if(argvRemain && argvRemain.length >=2 ) options.output = argvRemain[1];
 if(!options.locale) {
   console.error('Usage: messageformat -l [locale] [INPUT_DIR] [OUTPUT_DIR]')
   console.error('')
-  console.error(nopt.usage(knownOpts, shortHands, description, defaults));
+  //console.error(nopt(knownOpts, shortHands, description, defaults));
   process.exit(-1);
 }
 
