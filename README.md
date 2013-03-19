@@ -169,7 +169,7 @@ This tool is in early stage. It was tested on Linux and Windows, but if you find
         --stdout, -s        Print the result in stdout instead of writing in a file    false
         --verbose, -v       Print logs for debug                                       false
 
-If your prefer looking at an example [go there](messageformat.js/tree/master/example).
+If your prefer looking at an example [go there](https://github.com/SlexAxton/messageformat.js/tree/master/example/en).
 
 
 `messageformat` will read every JSON files in `inputdir` and compile them to `output`.
@@ -189,7 +189,7 @@ You can also do it with a unix pipe
 
     > messageformat -l en --stdout > i18n.js
 
-Take a look at the example [inputdir](messageformat.js/tree/master/example/en) and [output](messageformat.js/blob/master/example/en/i18n.js)
+Take a look at the example [inputdir](https://github.com/SlexAxton/messageformat.js/tree/master/example/en) and [output](https://github.com/SlexAxton/messageformat.js/tree/master/example/en/i18n.js)
 
 A watch mode is available with the `--watch` or `-w` option.
 
