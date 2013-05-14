@@ -19,8 +19,26 @@
     }
 
     // Defaults
-    fallbackLocale = locale = locale || "en";
+    fallbackLocale = locale = locale || 'en';
     pluralFunc = pluralFunc || MessageFormat.locale[ fallbackLocale = MessageFormat.Utils.getFallbackLocale( locale ) ];
+
+    // NodeJS try first to get it from `locale` dir
+    if ( ! pluralFunc && module.exports ) {
+      var join = require('path').join,
+          fs = require('fs'),
+          vm = require('vm');
+      var localeFile = join(__dirname, 'locale', locale + '.js');
+      try {
+        var localeStr = fs.readFileSync(localeFile);
+        var script = vm.createScript(localeStr);
+        // needed for runInThisContext
+        global.MessageFormat = MessageFormat;
+        script.runInThisContext();
+        pluralFunc = MessageFormat.locale[ fallbackLocale = MessageFormat.Utils.getFallbackLocale( locale ) ];
+      } catch (err) {
+        throw new Error('Locale ' + locale + ' is unknown by messageformat.js');
+      }
+    }
 
     if ( ! pluralFunc ) {
       throw new Error( "Plural Function not found for locale: " + locale );
