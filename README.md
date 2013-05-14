@@ -81,7 +81,7 @@ There is very little that needs to be repeated (until gender modifies more than 
 * Works on the server and the client.
 * No i18n necessary - you can use it for just well-formed english sentences. `UX++;`
 * Speed: Compiles messages to JavaScript code.
-  * This is great for speed. Message formatting is just string contacentation.
+  * This is great for speed. Message formatting is just string concatenation.
   * Run a precompiler at build time and remove the need for most of the library. `filesize--;`
 * Compatible with other languages that support MessageFormat
 * Very whitespace tolerant.
