@@ -23,7 +23,7 @@
     pluralFunc = pluralFunc || MessageFormat.locale[ fallbackLocale = MessageFormat.Utils.getFallbackLocale( locale ) ];
 
     // NodeJS try first to get it from `locale` dir
-    if ( ! pluralFunc && module.exports ) {
+    if ( ! pluralFunc && typeof module !== 'undefined' && module.exports ) {
       var join = require('path').join,
           fs = require('fs'),
           vm = require('vm');
