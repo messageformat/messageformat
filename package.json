@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "Alex Sexton <alexsexton@gmail.com>",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "repository": {
