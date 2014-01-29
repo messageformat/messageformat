@@ -263,7 +263,7 @@ describe( "MessageFormat", function () {
 
         expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
         expect(
-         mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}') 
+         mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
@@ -479,6 +479,12 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile('{X, select, other{# is a \\#}}');
         expect(mfunc({X:3})).to.eql("3 is a #");
+      });
+
+      it("should not substitute octothorpes that are outside of curly braces", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile('This is an octothorpe: #');
+        expect(mfunc({X:3})).to.eql("This is an octothorpe: #");
       });
 
       it("obeys plural functions", function () {
