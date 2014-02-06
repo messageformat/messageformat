@@ -1571,11 +1571,14 @@
         case 'pluralForms':
         */
         case 'string':
-          return 'r += "' + MessageFormat.Utils.numSub(
-            MessageFormat.Utils.escapeExpression( ast.val ),
-            'k_' + data.pf_count + ' - off_' + ( data.pf_count - 1 ),
-            data.pf_count
-          ) + '";\n';
+          tmp = MessageFormat.Utils.escapeExpression( ast.val );
+          if ( data.pf_count ) {
+            tmp = MessageFormat.Utils.numSub( tmp,
+              'k_' + data.pf_count + ' - off_' + ( data.pf_count - 1 ),
+              data.pf_count
+            );
+          }
+          return 'r += "' + tmp + '";\n';
         default:
           throw new Error( 'Bad AST type: ' + ast.type );
       }
