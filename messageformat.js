@@ -1470,6 +1470,10 @@
           for ( i = 0; i < ast.statements.length; ++i ) {
             s += interpMFP( ast.statements[i], data );
           }
+          tmp = /^r \+= (.+)\n$/.exec(s);
+          if ( tmp ) {
+            return 'function(d){return ' + tmp[1] + '}';
+          }
           return fp.begin + s + fp.end;
         case 'messageFormatPatternRight':
           for ( i = 0; i < ast.statements.length; ++i ) {

@@ -7,6 +7,10 @@ MessageFormat.locale.en = function ( n ) {
   return "other";
 };
 
+window.i18n["colors"] = {}
+window.i18n["colors"]["red"] = function(d){return "red";}
+window.i18n["colors"]["blue"] = function(d){return "blue";}
+window.i18n["colors"]["green"] = function(d){return "green";}
 window.i18n["sub/folder/plural"] = {}
 window.i18n["sub/folder/plural"]["test"] = function(d){
 var r = "";
@@ -18,16 +22,8 @@ var lastkey_1 = "NUM";
 var k_1=d[lastkey_1];
 var off_0 = 0;
 var pf_0 = { 
-"one" : function(d){
-var r = "";
-r += "message";
-return r;
-},
-"other" : function(d){
-var r = "";
-r += "messages";
-return r;
-}
+"one" : function(d){return "message";},
+"other" : function(d){return "messages";}
 };
 if ( pf_0[ k_1 + "" ] ) {
 r += pf_0[ k_1 + "" ]( d ); 
@@ -36,22 +32,6 @@ else {
 r += (pf_0[ MessageFormat.locale["en"]( k_1 - off_0 ) ] || pf_0[ "other" ] )( d );
 }
 r += " go here.";
-return r;
-}
-window.i18n["colors"] = {}
-window.i18n["colors"]["red"] = function(d){
-var r = "";
-r += "red";
-return r;
-}
-window.i18n["colors"]["blue"] = function(d){
-var r = "";
-r += "blue";
-return r;
-}
-window.i18n["colors"]["green"] = function(d){
-var r = "";
-r += "green";
 return r;
 }
 })();
