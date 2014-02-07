@@ -129,63 +129,70 @@ function build(inputdir, options, callback){
   // arrays of compiled templates
   var compiledMessageFormat = [];
 
-  // read locale file
-  var localeFile = join(__dirname, '..', 'locale', options.locale + '.js');
-  if(options.verbose) console.log('Load locale file: ' + localeFile);
-  fs.readFile(localeFile, function(err, localeStr){
-    if(err) handleError(new Error('locale ' + options.locale + ' not supported.' ));
-    var script = vm.createScript(localeStr);
-    // needed for runInThisContext
-    global.MessageFormat = MessageFormat;
-    script.runInThisContext();
+  // read shared include file
+  var inclFile = join(__dirname, '..', 'lib', 'messageformat.include.js');
+  if(options.verbose) console.log('Load include file: ' + inclFile);
+  fs.readFile(inclFile, function(err, inclStr){
+    if(err) handleError(new Error('Could not read shared include file.' ));
 
-    if( options.verbose ) { console.log('Read dir: ' + inputdir); }
-    // list each file in inputdir folder and subfolders
-    glob(options.include, {cwd: inputdir}, function(err, files){
-      files = files.map(function(file){
-        // normalize the file name
-        return file.replace(inputdir, '').replace(/^\//, '');
-      })
+    // read locale file
+    var localeFile = join(__dirname, '..', 'locale', options.locale + '.js');
+    if(options.verbose) console.log('Load locale file: ' + localeFile);
+    fs.readFile(localeFile, function(err, localeStr){
+      if(err) handleError(new Error('locale ' + options.locale + ' not supported.' ));
+      var script = vm.createScript(localeStr);
+      // needed for runInThisContext
+      global.MessageFormat = MessageFormat;
+      script.runInThisContext();
 
-      async.forEach(files, readFile, function(err){
-        // errors are logged in readFile. No need to print them here.
-        var fileData = [
-          '(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ',
-          'var MessageFormat = { locale: {} };',
-          localeStr
-        ].concat(compiledMessageFormat)
-        .concat(['})();']);
-        return callback(null, _.flatten(fileData));
-      });
+      if( options.verbose ) { console.log('Read dir: ' + inputdir); }
+      // list each file in inputdir folder and subfolders
+      glob(options.include, {cwd: inputdir}, function(err, files){
+        files = files.map(function(file){
+          // normalize the file name
+          return file.replace(inputdir, '').replace(/^\//, '');
+        })
 
-      // Read each file, compile them, and append the result in the `compiledI18n` array
-      function readFile(file, cb){
-        var path = join(inputdir, file);
-        fs.stat(path, function(err, stat){
-          if(err) { handleError(err); return  cb(); }
-          if(!stat.isFile()) {
-            if( options.verbose ) { handleError('Skip ' + file); }
-            return cb();
-          }
-
-          fs.readFile(path, 'utf8', function(err, text){
-            if(err) { handleError(err); return cb() }
-
-            var nm = join(file).split('.')[0].replace(/\\/g, '/'); // windows users should have the same key.
-
-            if(options.combine !== undefined) {
-              nm = options.combine;
-              if( options.verbose ) console.log('Adding to ' + options.namespace + '["' + nm + '"]');
-            }
-            else {
-              if( options.verbose ) console.log('Building ' + options.namespace + '["' + nm + '"]');
-            }
-
-            compiledMessageFormat.push(compiler( options, nm, JSON.parse(text) ));
-            cb();
-          });
+        async.forEach(files, readFile, function(err){
+          // errors are logged in readFile. No need to print them here.
+          var fileData = [
+            '(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ',
+            inclStr,
+            localeStr
+          ].concat(compiledMessageFormat)
+          .concat(['})();']);
+          return callback(null, _.flatten(fileData));
         });
-      }
+
+        // Read each file, compile them, and append the result in the `compiledI18n` array
+        function readFile(file, cb){
+          var path = join(inputdir, file);
+          fs.stat(path, function(err, stat){
+            if(err) { handleError(err); return  cb(); }
+            if(!stat.isFile()) {
+              if( options.verbose ) { handleError('Skip ' + file); }
+              return cb();
+            }
+
+            fs.readFile(path, 'utf8', function(err, text){
+              if(err) { handleError(err); return cb() }
+
+              var nm = join(file).split('.')[0].replace(/\\/g, '/'); // windows users should have the same key.
+
+              if(options.combine !== undefined) {
+                nm = options.combine;
+                if( options.verbose ) console.log('Adding to ' + options.namespace + '["' + nm + '"]');
+              }
+              else {
+                if( options.verbose ) console.log('Building ' + options.namespace + '["' + nm + '"]');
+              }
+
+              compiledMessageFormat.push(compiler( options, nm, JSON.parse(text) ));
+              cb();
+            });
+          });
+        }
+      });
     });
   });
 }
