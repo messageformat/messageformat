@@ -1,6 +1,1 @@
-MessageFormat.locale.sq = function ( n ) {
-  if ( n === 1 ) {
-    return "one";
-  }
-  return "other";
-};
+MessageFormat.locale.sq=function(n){return n===1?"one":"other"}

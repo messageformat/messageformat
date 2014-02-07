@@ -1,9 +1,1 @@
-MessageFormat.locale.ga = function (n) {
-  if (n == 1) {
-    return 'one';
-  }
-  if (n == 2) {
-    return 'two';
-  }
-  return 'other';
-};
+MessageFormat.locale.ga=function(n){return n==1?"one":(n==2?"two":"other")}
