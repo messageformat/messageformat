@@ -158,8 +158,8 @@ function build(inputdir, options, callback){
           var fileData = [
             '(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ',
             'var MessageFormat = { locale: {} };',
-            inclStr,
-            localeStr
+            localeStr.toString().trim(),
+            inclStr.toString().trim(),
           ].concat(compiledMessageFormat)
           .concat(['})();']);
           return callback(null, _.flatten(fileData));
