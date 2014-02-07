@@ -157,6 +157,7 @@ function build(inputdir, options, callback){
           // errors are logged in readFile. No need to print them here.
           var fileData = [
             '(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ',
+            'var MessageFormat = { locale: {} };',
             inclStr,
             localeStr
           ].concat(compiledMessageFormat)
