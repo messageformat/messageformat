@@ -50,14 +50,12 @@
   // plural
   p=function(d,k,o,l,p){
     c(d);
-    var v = p[ d[k] ] || p[ MessageFormat.locale[l](d[k]-o) ] || p.other;
-    return "string" == typeof v ? v : v(d);
+    return p[ d[k] ] || p[ MessageFormat.locale[l](d[k]-o) ] || p.other;
   }
   // select
   s=function(d,k,p){
     c(d);
-    var v = p[ d[k] ] || p.other;
-    return "string" == typeof v ? v : v(d);
+    return p[ d[k] ] || p.other;
   }
 
   // Set up the locales object. Add in english by default
@@ -1479,12 +1477,7 @@
             r.push(interpMFP( ast.statements[i], data ));
           }
           tmp = r.join('+') || '""';
-          if ( data.pf_count && /^"[^"]*"$/.test(tmp) ) {
-            return tmp;
-          }
-          else {
-            return 'function(d){return ' + tmp + '}';
-          }
+          return data.pf_count ? tmp : 'function(d){return ' + tmp + '}';
         case 'messageFormatPatternRight':
           for ( i = 0; i < ast.statements.length; ++i ) {
             r.push(interpMFP( ast.statements[i], data ));
