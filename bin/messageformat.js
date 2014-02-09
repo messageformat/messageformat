@@ -200,11 +200,12 @@ function build(inputdir, options, callback){
 
 function compiler(options, nm, obj){
   var mf = new MessageFormat(options.locale),
-    compiledMessageFormat = [options.namespace + '["' + nm + '"] = {}'];
+    cmf = [options.namespace + '["' + nm + '"] = {'];
 
   _(obj).forEach(function(value, key){
     var str = mf.precompile( mf.parse(value) );
-    compiledMessageFormat.push(options.namespace + '["' + nm + '"]["' + key + '"] = ' + str);
+    cmf.push('"' + key + '":' + str + ',');
   });
-  return compiledMessageFormat;
+  cmf[cmf.length-1] = cmf[cmf.length-1].replace(/,$/, '}');
+  return cmf;
 }
