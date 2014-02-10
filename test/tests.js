@@ -163,6 +163,15 @@ describe( "MessageFormat", function () {
         expect(function(){ var a = mf.parse('{TEST, selecT, a{a} other{b}}'); }).to.throwError();
       });
 
+      it("should accept '' as a key value representing an empty string", function () {
+        var mf = new MessageFormat( 'en' );
+        expect(function(){ mf.parse("{VAR, select, ''{a} other{b}}"); }).to.not.throwError();
+        expect( mf.parse( "x {TEST, select, ''{a} other{b} }" )
+                    .program.statements[1].statements[0]
+                    .elementFormat.val.pluralForms[0].key
+              ).to.eql( '' );
+      });
+
     });
 
     describe( "Plurals", function () {
@@ -594,6 +603,16 @@ describe( "MessageFormat", function () {
         expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/MessageFormat\: \`ENEMIES\` isnt a number\./);
         expect(function(){ var x = mfunc({}); }).to.throwError(/MessageFormat\: \`.+\` isnt a number\./);
         expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/MessageFormat\: \`FRIENDS\` isnt a number\./);
+      });
+
+      it("should allow for a select with a case for an empty string", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("I am {FEELING, select, ''{happy} b{sad} other{indifferent}}.");
+
+        expect(mfunc({FEELING:""})).to.eql("I am happy.");
+        expect(mfunc({FEELING:"b"})).to.eql("I am sad.");
+        expect(mfunc({FEELING:"q"})).to.eql("I am indifferent.");
+        expect(mfunc({})).to.eql("I am indifferent.");
       });
     });
 
