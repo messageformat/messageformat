@@ -74,6 +74,7 @@ describe( "MessageFormat", function () {
       it("should accept only a variable", function () {
         var mf = new MessageFormat( 'en' );
         expect( mf.parse('{test}') ).to.be.an( 'object' );
+        expect( mf.parse('{0}') ).to.be.an( 'object' );
       });
 
       it("should not care about white space in a variable", function () {
@@ -405,6 +406,11 @@ describe( "MessageFormat", function () {
         expect(function(){ mf.parse('{☺}'); }).to.throwError();
       });
 
+      it("should allow positional variables", function () {
+        var mf = new MessageFormat( 'en' );
+        expect(function(){ mf.parse('{0}'); }).to.not.throwError();
+      });
+
       it("should throw errors on negative offsets", function () {
         expect(function(){ mf.parse('{NUM, plural, offset:-4 other{a}}'); }).to.throwError();
       });
@@ -469,10 +475,20 @@ describe( "MessageFormat", function () {
         expect((mf.compile("The var is {VAR}."))({"VAR":5})).to.eql("The var is 5.");
       });
 
+      it("can substitute positional variables", function () {
+        var mf = new MessageFormat( 'en' );
+
+        expect((mf.compile("The var is {0}."))({"0":5})).to.eql("The var is 5.");
+        expect((mf.compile("The var is {0}."))([5])).to.eql("The var is 5.");
+        expect((mf.compile("The vars are {0} and {1}."))([5,-3])).to.eql("The vars are 5 and -3.");
+        expect((mf.compile("The vars are {0} and {01}."))([5,-3])).to.eql("The vars are 5 and undefined.");
+      });
+
       it("can substitute shorthand variables", function () {
         var mf = new MessageFormat( 'en' );
 
         expect((mf.compile("{VAR, select, other{The var is #.}}"))({"VAR":5})).to.eql("The var is 5.");
+        expect((mf.compile("{0, select, other{The var is #.}}"))([5])).to.eql("The var is 5.");
       });
 
       it("allows escaped shorthand variable: #", function () {
