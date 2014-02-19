@@ -494,10 +494,7 @@ Most Gettext tools will look up the Plural Forms for a given locale for you. Thi
 
 ## TODO
 
-* First and foremost - we need to get a standalone `NumberFormat` implementation - I'll probably port Google Closure's good implementation to not need Closure ASAP
-* Get all locale Plural Form Function data available in a folder - I have the base line for a few for now, and will try to generate the rest soon.
-* Create a tool to help translators generate these.
-* Create a transport standard/mechanism - a way to load in different languages, and to exchange this data (like .po files for gettext)
+* Create a tool to help translators understand and use this format.
 * Template integration - I specifically want to make a build time handlebars.js plugin to build this logic into the template builds.
 
 ## License
