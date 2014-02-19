@@ -1,1 +1,1 @@
-MessageFormat.locale.in=function(n){return "other"}
+MessageFormat.locale["in"]=function(n){return "other"}
