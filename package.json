@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "Alex Sexton <alexsexton@gmail.com>",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "repository": {
@@ -14,6 +14,9 @@
   "bin": {
     "messageformat": "./bin/messageformat.js"
   },
+  "contributors":[
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
   "keywords": [
     "i18n",
     "pluralformat",

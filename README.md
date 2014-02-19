@@ -143,7 +143,7 @@ var js_string_represenation = mf.precompile(
   )
 );
 
-// This returns an unnamed - unreferenced function that needs to be passed the 
+// This returns an unnamed - unreferenced function that needs to be passed the
 // MessageFormat object. See the source of `MessageFormat.compile` for more details.
 ```
 
@@ -207,7 +207,7 @@ The CLI walks into `inputdir` recursively so you can structure your messageforma
 
 #### In the browser
 
-Now that you have compiled your messageformat, you can use it in your [html](messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`. 
+Now that you have compiled your messageformat, you can use it in your [html](messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`.
 
 In the browser, the global `window.i18n` is an object containing the messageformat compiled functions.
 
@@ -275,7 +275,7 @@ var message = mf.compile('His name is {NAME}.');
 > message({ "NAME" : "Jed" });
 "His name is Jed."
 
-// NOTE:: it's best to try and stick to keys that would be natively 
+// NOTE:: it's best to try and stick to keys that would be natively
 //        tolerant in your JS runtimes (think valid JS variable names).
 ```
 
@@ -311,7 +311,7 @@ var message = mf.compile('{GENDER, select, male{He} female{She} other{They}} lik
 // Insantiate a new MessageFormat object
 var mf = new MessageFormat('en');
 
-// You can use the provided locales in the `/locale` folder 
+// You can use the provided locales in the `/locale` folder
 // (include the file directly after including messageformat.js
 var mf = new MessageFormat( 'sl' );
 
@@ -490,7 +490,7 @@ Most Gettext tools will look up the Plural Forms for a given locale for you. Thi
 
 ## Version
 
-`0.1.7`
+`0.1.8`
 
 ## TODO
 
@@ -511,6 +511,9 @@ You may contribute to this software under the Dojo CLA - <http://dojofoundation.
 
 * Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - <http://alexsexton.com/>
 
+## Major Contributors
+
+* Eemeli Aro - [@eemeli](https://github.com/eemeli)
 
 ## Credits
 
