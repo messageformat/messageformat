@@ -1,6 +1,1 @@
-MessageFormat.locale.eu = function ( n ) {
-  if ( n === 1 ) {
-    return "one";
-  }
-  return "other";
-};
+MessageFormat.locale.eu=function(n){return n===1?"one":"other"}

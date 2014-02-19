@@ -1,3 +1,1 @@
-MessageFormat.locale.id = function(n) {
-  return 'other';
-};
+MessageFormat.locale.id=function(n){return "other"}

@@ -1,6 +1,1 @@
-MessageFormat.locale.iw = function ( n ) {
-  if ( n === 1 ) {
-    return "one";
-  }
-  return "other";
-};
+MessageFormat.locale.iw=function(n){return n===1?"one":"other"}

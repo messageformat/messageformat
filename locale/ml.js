@@ -1,6 +1,1 @@
-MessageFormat.locale.ml = function ( n ) {
-  if ( n === 1 ) {
-    return "one";
-  }
-  return "other";
-};
+MessageFormat.locale.ml=function(n){return n===1?"one":"other"}

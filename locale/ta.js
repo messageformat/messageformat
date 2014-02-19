@@ -1,6 +1,1 @@
-MessageFormat.locale.ta = function ( n ) {
-  if ( n === 1 ) {
-    return "one";
-  }
-  return "other";
-};
+MessageFormat.locale.ta=function(n){return n===1?"one":"other"}

@@ -1,3 +1,1 @@
-MessageFormat.locale.hu = function(n) {
-  return 'other';
-};
+MessageFormat.locale.hu=function(n){return "other"}
