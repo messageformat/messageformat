@@ -998,13 +998,13 @@
           pos1 = pos;
           result0 = parse__();
           if (result0 !== null) {
-            if (/^[a-zA-Z$_]/.test(input.charAt(pos))) {
+            if (/^[0-9a-zA-Z$_]/.test(input.charAt(pos))) {
               result1 = input.charAt(pos);
               pos++;
             } else {
               result1 = null;
               if (reportFailures === 0) {
-                matchFailed("[a-zA-Z$_]");
+                matchFailed("[0-9a-zA-Z$_]");
               }
             }
             if (result1 !== null) {
