@@ -8,7 +8,11 @@ There is a good slide-deck on [Plural and Gender in Translated Messages](https:/
 
 [See just how many different pluralization rules there are.](http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html)
 
-MessageFormat in Java-land technically incorporates all other type formatting (and the older ChoiceFormat) directly into its messages, however, in the name of filesize, messageformat.js only strives to implement **SelectFormat** and **PluralFormat**. There are plans to pull in locale-aware **NumberFormat** parsing as a "plugin" to this library, but as of right now, it's best to pass things in preformatted (as suggested in the ICU docs).
+MessageFormat in Java-land technically incorporates all other type formatting (and the older ChoiceFormat) directly into its messages, however, in the name of filesize, messageformat.js only strives to implement **SelectFormat** and **PluralFormat**.
+
+There are plans to pull in locale-aware **NumberFormat** parsing as a "plugin" to this library, but as of right now, it's best to pass things in preformatted (as suggested in the ICU docs).
+
+We have also ported the Google Closure implementation of [NumberFormat](https://github.com/jedtoolkit/numberformat.js), but there is no direct integration of these two libraries. (They work well together!)
 
 ## What problems does it solve?
 
