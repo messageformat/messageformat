@@ -904,6 +904,26 @@
             if (result0 === null) {
               pos = pos0;
             }
+            if (result0 === null) {
+              pos0 = pos;
+              if (input.substr(pos, 2) === "''") {
+                result0 = "''";
+                pos += 2;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"''\"");
+                }
+              }
+              if (result0 !== null) {
+                result0 = (function(offset) {
+                  return "";
+                })(pos0);
+              }
+              if (result0 === null) {
+                pos = pos0;
+              }
+            }
           }
           return result0;
         }
