@@ -10,11 +10,14 @@
     <input type="button" value="en" name="en" />
     <input type="button" value="fr" name="fr" />
     <script>
-      $('<div>').text(window.i18n['colors'].red()).appendTo('#content');
-      $('<div>').text(window.i18n['colors'].blue()).appendTo('#content');
-      $('<div>').text(window.i18n['colors'].green()).appendTo('#content');
-      $('<div>').text(window.i18n['sub/folder/plural'].test({NUM: 1})).appendTo('#content');
-      $('<div>').text(window.i18n['sub/folder/plural'].test({NUM: 2})).appendTo('#content');
+      var colors = window.i18n.get('colors');
+      $('<div>').text(colors('red')).appendTo('#content');
+      $('<div>').text(colors('blue')).appendTo('#content');
+      $('<div>').text(colors('green')).appendTo('#content');
+
+      var plural_test = window.i18n.get('sub/folder/plural', 'test');
+      $('<div>').text(plural_test({NUM: 1})).appendTo('#content');
+      $('<div>').text(plural_test({NUM: 2})).appendTo('#content');
 
       $('input').click(function(e){
         e.preventDefault();

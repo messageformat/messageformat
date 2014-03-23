@@ -159,7 +159,7 @@ function build(inputdir, options, callback){
             '(function(){ ' + options.namespace + ' || (' + options.namespace + ' = {}) ',
             'var MessageFormat = { locale: {} };',
             localeStr.toString().trim(),
-            inclStr.toString().trim(),
+            inclStr.toString().trim().replace(/^window\.i18n/mg, options.namespace),
           ].concat(compiledMessageFormat)
           .concat(['})();']);
           return callback(null, _.flatten(fileData));
