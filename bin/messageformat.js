@@ -204,7 +204,7 @@ function compiler(options, nm, obj){
 
   _(obj).forEach(function(value, key){
     var str = mf.precompile( mf.parse(value) );
-    cmf.push('"' + key + '":' + str + ',');
+    cmf.push(JSON.stringify(key) + ':' + str + ',');
   });
   cmf[cmf.length-1] = cmf[cmf.length-1].replace(/,$/, '}');
   return cmf;
