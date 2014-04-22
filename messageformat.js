@@ -32,21 +32,23 @@
     this.fallbackLocale = fallbackLocale;
   }
 
-  MessageFormat.LocalFunctions = 'var\n'
-    + 'c=function(d){if(!d)throw new Error("MessageFormat: No data passed to function.")}\n'
-    + 'n=function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: `"+k+"` isnt a number.");return d[k]-(o||0)}\n'
-    + 'v=function(d,k){c(d);return d[k]}\n'
-    + 'p=function(d,k,o,l,p){c(d);return d[k] in p?p[d[k]]:(k=MessageFormat.locale[l](d[k]-o),k in p?p[k]:p.other)}\n'
-    + 's=function(d,k,p){c(d);return d[k] in p?p[d[k]]:p.other};\n';
-
   // Set up the locales object. Add in english by default
-  MessageFormat.locale = {
-    "en" : function ( n ) {
-      if ( n === 1 ) {
-        return "one";
+  MessageFormat.locale = { "en": function(n){return n===1?"one":"other"} };
+
+  MessageFormat.LocalFunctions = function() {
+    var l = [];
+    for ( var lc in this.locale ) {
+      if ( this.locale.hasOwnProperty(lc) ) {
+        l.push(JSON.stringify(lc) + ':' + this.locale[lc].toString());
       }
-      return "other";
     }
+    return 'var\n'
+      + 'f={' + l.join(',') + '}\n'
+      + 'c=function(d){if(!d)throw new Error("MessageFormat: No data passed to function.")}\n'
+      + 'n=function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: `"+k+"` isnt a number.");return d[k]-(o||0)}\n'
+      + 'v=function(d,k){c(d);return d[k]}\n'
+      + 'p=function(d,k,o,l,p){c(d);return d[k] in p?p[d[k]]:(k=f[l](d[k]-o),k in p?p[k]:p.other)}\n'
+      + 's=function(d,k,p){c(d);return d[k] in p?p[d[k]]:p.other};\n';
   };
 
   // Build out our basic SafeString type
@@ -1536,7 +1538,7 @@
 
   MessageFormat.prototype.compile = function ( message ) {
     return (new Function( 'MessageFormat',
-      MessageFormat.LocalFunctions +
+      MessageFormat.LocalFunctions() +
       'return ' + this.precompile( this.parse( message ))
     ))(MessageFormat);
   };
