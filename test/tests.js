@@ -7,10 +7,8 @@ describe( "MessageFormat", function () {
       expect( MessageFormat ).to.be.a('function');
     });
 
-    it("should have static helper functions/objects", function () {
-      expect( MessageFormat.Utils ).to.be.an( 'object' );
+    it("should have static locale object", function () {
       expect( MessageFormat.locale ).to.be.an( 'object' );
-      expect( MessageFormat.SafeString ).to.be.a( 'function' );
     });
 
     it("should be a constructor", function () {
@@ -27,13 +25,11 @@ describe( "MessageFormat", function () {
 
     it("should fallback when a base pluralFunc exists", function() {
       var mf = new MessageFormat( 'en-x-test1-test2' );
-      expect(mf.fallbackLocale).to.be("en");
-      expect(mf.pluralFunc).to.be( MessageFormat.locale.en );
+      expect(mf.locale).to.be("en");
     });
     it("should fallback when a base pluralFunc exists (underscores)", function() {
       var mf = new MessageFormat( 'en_x_test1_test2' );
-      expect(mf.fallbackLocale).to.be("en");
-      expect(mf.pluralFunc).to.be( MessageFormat.locale.en );
+      expect(mf.locale).to.be("en");
     });
 
     it("should bail on non-existing locales", function () {

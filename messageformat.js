@@ -12,24 +12,17 @@
 
   // Create the contructor function
   function MessageFormat ( locale, pluralFunc ) {
-    var fallbackLocale;
-
-    if ( locale && pluralFunc ) {
-      MessageFormat.locale[ locale ] = pluralFunc;
+    this.locale = locale || "en";
+    if ( pluralFunc ) {
+      MessageFormat.locale[ this.locale ] = pluralFunc;
+    } else {
+      while ( this.locale && ! MessageFormat.locale.hasOwnProperty( this.locale ) ) {
+        this.locale = this.locale.replace(/[-_]?[^-_]*$/, '');
+      }
+      if ( ! this.locale ) {
+        throw new Error( "Plural function not found for locale: " + locale );
+      }
     }
-
-    // Defaults
-    fallbackLocale = locale = locale || "en";
-    pluralFunc = pluralFunc || MessageFormat.locale[ fallbackLocale = MessageFormat.Utils.getFallbackLocale( locale ) ];
-
-    if ( ! pluralFunc ) {
-      throw new Error( "Plural Function not found for locale: " + locale );
-    }
-
-    // Own Properties
-    this.pluralFunc = pluralFunc;
-    this.locale = locale;
-    this.fallbackLocale = fallbackLocale;
   }
 
   // methods in common with the generated MessageFormat
@@ -65,61 +58,6 @@
         return "one";
       }
       return "other";
-    }
-  };
-
-  // Build out our basic SafeString type
-  // more or less stolen from Handlebars by @wycats
-  MessageFormat.SafeString = function( string ) {
-    this.string = string;
-  };
-
-  MessageFormat.SafeString.prototype.toString = function () {
-    return this.string.toString();
-  };
-
-  MessageFormat.Utils = {
-    numSub : function ( string, d, key, offset ) {
-      // make sure that it's not an escaped octothorpe
-      var s = string.replace( /(^|[^\\])#/g, '$1"+n(' + d + ',' + key + (offset ? ',' + offset : '') + ')+"' );
-      return s.replace( /^""\+/, '' ).replace( /\+""$/, '' );
-    },
-    escapeExpression : function (string) {
-      var escape = {
-            "\n": "\\n",
-            "\"": '\\"'
-          },
-          badChars = /[\n"]/g,
-          possible = /[\n"]/,
-          escapeChar = function(chr) {
-            return escape[chr] || "&amp;";
-          };
-
-      // Don't escape SafeStrings, since they're already safe
-      if ( string instanceof MessageFormat.SafeString ) {
-        return string.toString();
-      }
-      else if ( string === null || string === false ) {
-        return "";
-      }
-
-      if ( ! possible.test( string ) ) {
-        return string;
-      }
-      return string.replace( badChars, escapeChar );
-    },
-    getFallbackLocale: function( locale ) {
-      var tagSeparator = locale.indexOf("-") >= 0 ? "-" : "_";
-
-      // Lets just be friends, fallback through the language tags
-      while ( ! MessageFormat.locale.hasOwnProperty( locale ) ) {
-        locale = locale.substring(0, locale.lastIndexOf( tagSeparator ));
-        if (locale.length === 0) {
-          return null;
-        }
-      }
-
-      return locale;
     }
   };
 
@@ -1500,7 +1438,7 @@
           else if ( ast.key === 'plural' ) {
             data.offset[data.pf_count || 0] = ast.val.offset || 0;
             return 'p(d,' + data.keys[data.pf_count] + ',' + (data.offset[data.pf_count] || 0)
-              + ',"' + self.fallbackLocale + '",' + interpMFP( ast.val, data ) + ')';
+              + ',"' + self.locale + '",' + interpMFP( ast.val, data ) + ')';
           }
           return '';
         /* // Unreachable cases.
@@ -1541,9 +1479,11 @@
         case 'pluralForms':
         */
         case 'string':
-          tmp = '"' + MessageFormat.Utils.escapeExpression( ast.val ) + '"';
+          tmp = '"' + (ast.val || "").replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"';
           if ( data.pf_count ) {
-            tmp = MessageFormat.Utils.numSub( tmp, 'd', data.keys[data.pf_count-1], data.offset[data.pf_count-1]);
+            var o = data.offset[data.pf_count-1];
+            tmp = tmp.replace(/(^|[^\\])#/g, '$1"+n(d,' + data.keys[data.pf_count-1] + (o ? ',' + o : '') + ')+"');
+            tmp = tmp.replace(/^""\+/, '').replace(/\+""$/, '');
           }
           return tmp;
         default:
