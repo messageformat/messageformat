@@ -36,11 +36,11 @@
       }
     }
     return 'var\n'
-      + 'f={' + l.join(',') + '}\n'
-      + 'c=function(d){if(!d)throw new Error("MessageFormat: No data passed to function.")}\n'
-      + 'n=function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: `"+k+"` isnt a number.");return d[k]-(o||0)}\n'
-      + 'v=function(d,k){c(d);return d[k]}\n'
-      + 'p=function(d,k,o,l,p){c(d);return d[k] in p?p[d[k]]:(k=f[l](d[k]-o),k in p?p[k]:p.other)}\n'
+      + 'f={' + l.join(',') + '},\n'
+      + 'c=function(d){if(!d)throw new Error("MessageFormat: No data passed to function.")},\n'
+      + 'n=function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: `"+k+"` isnt a number.");return d[k]-(o||0)},\n'
+      + 'v=function(d,k){c(d);return d[k]},\n'
+      + 'p=function(d,k,o,l,p){c(d);return d[k] in p?p[d[k]]:(k=f[l](d[k]-o),k in p?p[k]:p.other)},\n'
       + 's=function(d,k,p){c(d);return d[k] in p?p[d[k]]:p.other};\n';
   };
 
