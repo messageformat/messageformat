@@ -16,6 +16,13 @@ describe( "MessageFormat", function () {
       expect( mf ).to.be.a( MessageFormat );
     });
 
+    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
+      it("should be a constructor", function () {
+        var mf = new MessageFormat( 'es' );
+        expect( mf ).to.be.a( MessageFormat );
+      });
+    }
+
     it("should have instance functions", function () {
       var mf = new MessageFormat( 'en' );
       expect( mf.parse ).to.be.a( 'function' );
