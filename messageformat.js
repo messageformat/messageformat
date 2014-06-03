@@ -10,73 +10,54 @@
 */
 (function ( root ) {
 
-  // Create the contructor function
-  function MessageFormat ( locale, pluralFunc ) {
-    this.locale = locale || "en";
+  function MessageFormat ( locale, pluralFunc, globalName ) {
+    var lc = locale || 'en', lcFile;
     if ( pluralFunc ) {
-      MessageFormat.locale[ this.locale ] = pluralFunc;
+      MessageFormat.locale[lc] = pluralFunc;
     } else {
-      while ( this.locale && ! MessageFormat.locale.hasOwnProperty( this.locale ) ) {
-        this.locale = this.locale.replace(/[-_]?[^-_]*$/, '');
+      while ( lc && ! MessageFormat.locale.hasOwnProperty( lc ) ) {
+        lc = lc.replace(/[-_]?[^-_]*$/, '');
       }
-      if ( ! this.locale ) {
-        if ( typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' ) {
-          // in NodeJS, try to load locale from file
-          this.locale = locale.replace(/[-_].*$/, '');
-          var path = require('path'),
-              fs = require('fs'),
-              vm = require('vm'),
-              localeFile = require.resolve(path.join(__dirname, 'locale', this.locale + '.js'));
-
-          try {
-            var localeCode = fs.readFileSync(localeFile);
-            var script = vm.createScript(localeCode);
-            script.runInNewContext({ MessageFormat: MessageFormat });
-          } catch (ex) {
-            ex.message = 'Locale ' + locale + ' could not be loaded: ' + ex.message;
-            throw ex;
-          }
-        } else {
-          throw new Error( "Plural function not found for locale: " + locale );
-        }
+      if ( ! lc ) {
+        lc = locale.replace(/[-_].*$/, '');
+		MessageFormat.locale[lc] = MessageFormat.loadLocale(lc);
       }
     }
+    this.lc = lc;
+    this.globalName = globalName || 'i18n';
   }
 
-  // methods in common with the generated MessageFormat
-  // check d
-  c=function(d){
-    if(!d){throw new Error("MessageFormat: No data passed to function.")}
-  }
-  // require number
-  n=function(d,k,o){
-    if(isNaN(d[k])){throw new Error("MessageFormat: `"+k+"` isnt a number.")}
-    return d[k] - (o || 0);
-  }
-  // value
-  v=function(d,k){
-    c(d);
-    return d[k];
-  }
-  // plural
-  p=function(d,k,o,l,p){
-    c(d);
-    return d[k] in p ? p[d[k]] : (k = MessageFormat.locale[l](d[k]-o), k in p ? p[k] : p.other);
-  }
-  // select
-  s=function(d,k,p){
-    c(d);
-    return d[k] in p ? p[d[k]] : p.other;
-  }
+  if ( !('locale' in MessageFormat) ) MessageFormat.locale = {};
 
-  // Set up the locales object. Add in english by default
-  MessageFormat.locale = {
-    "en" : function ( n ) {
-      if ( n === 1 ) {
-        return "one";
-      }
-      return "other";
+  MessageFormat.loadLocale = function ( lc ) {
+    try {
+      var lcFile = require('path').join(__dirname, 'locale', lc + '.js'),
+          lcStr = ('' + require('fs').readFileSync(lcFile)).match(/{[^]*}/);
+      if (!lcStr) throw "no function found in file '" + lcFile + "'";
+      return 'function(n)' + lcStr;
+    } catch (ex) {
+      if ( lc == 'en' ) {
+        return 'function(n){return n===1?"one":"other"}';
+	  } else {
+        ex.message = 'Locale ' + lc + ' could not be loaded: ' + ex.message;
+        throw ex;
+	  }
     }
+  };
+
+  MessageFormat.prototype.functions = function () {
+    var l = [];
+    for ( var lc in MessageFormat.locale ) {
+      if ( MessageFormat.locale.hasOwnProperty(lc) ) {
+        l.push(JSON.stringify(lc) + ':' + MessageFormat.locale[lc].toString().trim());
+      }
+    }
+    return '{lc:{' + l.join(',') + '},\n'
+      + 'c:function(d,k){if(!d)throw new Error("MessageFormat: Data required for \'"+k+"\'.")},\n'
+      + 'n:function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: \'"+k+"\' isn\'t a number.");return d[k]-(o||0)},\n'
+      + 'v:function(d,k){' + this.globalName + '.c(d,k);return d[k]},\n'
+      + 'p:function(d,k,o,l,p){' + this.globalName + '.c(d,k);return d[k] in p?p[d[k]]:(k=' + this.globalName + '.lc[l](d[k]-o),k in p?p[k]:p.other)},\n'
+      + 's:function(d,k,p){' + this.globalName + '.c(d,k);return d[k] in p?p[d[k]]:p.other}}';
   };
 
   // This is generated and pulled in for browsers.
@@ -1360,7 +1341,7 @@
         case 'messageFormatElement':
           data.pf_count = data.pf_count || 0;
           if ( ast.output ) {
-            return 'v(d,"' + ast.argumentIndex + '")';
+            return self.globalName + '.v(d,"' + ast.argumentIndex + '")';
           }
           else {
             data.keys[data.pf_count] = '"' + ast.argumentIndex + '"';
@@ -1369,12 +1350,12 @@
           return '';
         case 'elementFormat':
           if ( ast.key === 'select' ) {
-            return 's(d,' + data.keys[data.pf_count] + ',' + interpMFP( ast.val, data ) + ')';
+            return self.globalName + '.s(d,' + data.keys[data.pf_count] + ',' + interpMFP( ast.val, data ) + ')';
           }
           else if ( ast.key === 'plural' ) {
             data.offset[data.pf_count || 0] = ast.val.offset || 0;
-            return 'p(d,' + data.keys[data.pf_count] + ',' + (data.offset[data.pf_count] || 0)
-              + ',"' + self.locale + '",' + interpMFP( ast.val, data ) + ')';
+            return self.globalName + '.p(d,' + data.keys[data.pf_count] + ',' + (data.offset[data.pf_count] || 0)
+              + ',"' + self.lc + '",' + interpMFP( ast.val, data ) + ')';
           }
           return '';
         /* // Unreachable cases.
@@ -1418,7 +1399,7 @@
           tmp = '"' + (ast.val || "").replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"';
           if ( data.pf_count ) {
             var o = data.offset[data.pf_count-1];
-            tmp = tmp.replace(/(^|[^\\])#/g, '$1"+n(d,' + data.keys[data.pf_count-1] + (o ? ',' + o : '') + ')+"');
+            tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + self.globalName + '.n(d,' + data.keys[data.pf_count-1] + (o ? ',' + o : '') + ')+"');
             tmp = tmp.replace(/^""\+/, '').replace(/\+""$/, '');
           }
           return tmp;
@@ -1430,12 +1411,10 @@
   };
 
   MessageFormat.prototype.compile = function ( message ) {
-    return (new Function( 'MessageFormat',
-      'return ' +
-        this.precompile(
-          this.parse( message )
-        )
-    ))(MessageFormat);
+    return (new Function(
+      'this[\'' + this.globalName + '\']=' + this.functions() + ';' +
+      'return ' + this.precompile( this.parse( message ))
+    ))();
   };
 
 
