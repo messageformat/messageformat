@@ -32,11 +32,11 @@ describe( "MessageFormat", function () {
 
     it("should fallback when a base pluralFunc exists", function() {
       var mf = new MessageFormat( 'en-x-test1-test2' );
-      expect(mf.locale).to.be("en");
+      expect(mf.lc).to.be("en");
     });
     it("should fallback when a base pluralFunc exists (underscores)", function() {
       var mf = new MessageFormat( 'en_x_test1_test2' );
-      expect(mf.locale).to.be("en");
+      expect(mf.lc).to.be("en");
     });
 
     it("should bail on non-existing locales", function () {
@@ -44,7 +44,7 @@ describe( "MessageFormat", function () {
     });
 
     it("should default to 'en' when no locale is passed into the constructor", function () {
-      expect((new MessageFormat()).locale).to.be( 'en' );
+      expect((new MessageFormat()).lc).to.be( 'en' );
     });
 
   });
@@ -594,9 +594,9 @@ describe( "MessageFormat", function () {
           "I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, one{one enemy} other{# enemies}}}}."
         );
         expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but 0 enemies.");
-        expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/MessageFormat\: \`ENEMIES\` isnt a number\./);
-        expect(function(){ var x = mfunc({}); }).to.throwError(/MessageFormat\: \`.+\` isnt a number\./);
-        expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/MessageFormat\: \`FRIENDS\` isnt a number\./);
+        expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/MessageFormat\: \'ENEMIES\' isn\'t a number\./);
+        expect(function(){ var x = mfunc({}); }).to.throwError(/MessageFormat\: \'.+\' isn\'t a number\./);
+        expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/MessageFormat\: \'FRIENDS\' isn\'t a number\./);
       });
     });
 
