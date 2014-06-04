@@ -1417,6 +1417,14 @@
     ))();
   };
 
+  MessageFormat.prototype.precompileObject = function ( messages ) {
+    var tmp = [];
+    for (var key in messages) {
+      tmp.push(JSON.stringify(key) + ':' + this.precompile(this.parse(messages[key])));
+    }
+	return '{\n' + tmp.join(',\n') + '}';
+  };
+
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {

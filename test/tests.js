@@ -699,7 +699,23 @@ describe( "MessageFormat", function () {
             PLURAL_NUM_PEOPLE : 3,
             PERSON : "Al Sexton"
         }) ).to.eql('Al Sexton added themself and 2 other people to their group.');
+      });
 
+      it("can precompile a JSON object into executable Javascript source code", function () {
+        var mf = new MessageFormat( 'en' );
+		var data = { 'key': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
+		var source = mf.precompileObject(data);
+        expect(source).to.contain('"key"');
+
+		var mfunc = (new Function(
+			'this[\'' + mf.globalName + '\']=' + mf.functions() + ';\n' +
+			'var obj = ' + source + ';\n' +
+			'return obj.key;'
+		))();
+        expect(mfunc).to.be.a('function');
+
+        expect(mfunc({FRIENDS:1})).to.eql("I have one friend.");
+        expect(mfunc({FRIENDS:2})).to.eql("I have 2 friends.");
       });
     });
   });
