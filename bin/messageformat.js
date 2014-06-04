@@ -15,7 +15,6 @@ var nopt = require("nopt")
     "locale"    : String,
     "inputdir"  : Path,
     "output"    : Path,
-    "combine"   : String,
     "watch"     : Boolean,
     "namespace" : String,
     "include"   : String,
@@ -26,7 +25,6 @@ var nopt = require("nopt")
     "locale"    : "locale to use [mandatory]",
     "inputdir"  : "directory containing messageformat files to compile",
     "output"    : "output where messageformat will be compiled",
-    "combine"   : "combines multiple input files to the provided namespace array element",
     "watch"     : "watch `inputdir` for change",
     "namespace" : "object in the browser containing the templates",
     "include"   : "Glob patterns for files to include in `inputdir`",
@@ -36,7 +34,6 @@ var nopt = require("nopt")
   defaults = {
     "inputdir"  : process.cwd(),
     "output"    : process.cwd(),
-    "combine"   : undefined,
     "watch"     : false,
     "namespace" : 'window.i18n',
     "include"   : '**/*.json',
@@ -47,7 +44,6 @@ var nopt = require("nopt")
     "l"  : "--locale",
     "i"  : "--inputdir",
     "o"  : "--output",
-    "c"  : "--combine",
     "w"  : "--watch",
     "ns" : "--namespace",
     "I"  : "--include",
@@ -162,13 +158,7 @@ function build(inputdir, options, callback){
 
           var nm = join(file).split('.')[0].replace(/\\/g, '/'); // windows users should have the same key.
 
-          if(options.combine !== undefined) {
-            nm = options.combine;
-            if( options.verbose ) console.log('Adding to ' + mf.globalName + '["' + nm + '"]');
-          }
-          else {
-            if( options.verbose ) console.log('Building ' + mf.globalName + '["' + nm + '"]');
-          }
+          if( options.verbose ) console.log('Building ' + mf.globalName + '["' + nm + '"]');
 
           compiledMessageFormat.push(compiler( mf, nm, JSON.parse(text) ));
           cb();
