@@ -18,7 +18,7 @@ var
     "verbose"   : Boolean
   },
   description = {
-    "locale"    : "locale to use [mandatory]",
+    "locale"    : "locale(s) to use [mandatory]",
     "inputdir"  : "directory containing messageformat files to compile",
     "output"    : "output where messageformat will be compiled",
     "namespace" : "global object in the output containing the templates",
@@ -59,7 +59,7 @@ var
       console.error('Usage: messageformat -l [locale] [INPUT_DIR] [OUTPUT_DIR]\n')
       process.exit(-1);
     }
-    if (fs.statSync(o.output).isDirectory()) {
+    if (fs.existsSync(o.output) && fs.statSync(o.output).isDirectory()) {
       o.output = Path.join(o.output, 'i18n.js');
     }
     o.namespace = o.namespace.replace(/^window\./, '')
@@ -77,28 +77,38 @@ function write(options, data) {
 }
 
 function parseFileSync(options, mf, file) {
-  var path = Path.join(options.inputdir, file);
+  var path = Path.join(options.inputdir, file),
+      lc0 = mf.lc,
+      file_parts = file.split(/[.\/]+/),
+      r = '';
   if (!fs.statSync(path).isFile()) {
     _log('Skipping ' + file);
     return '';
   }
+  for (var i = file_parts.length - 1; i >= 0; --i) {
+    if (file_parts[i] in MessageFormat.locale) { mf.lc = file_parts[i]; break; }
+  }
   try {
     var text = fs.readFileSync(path, 'utf8'),
           nm = file.replace(/\.[^.]*$/, '').replace(/\\/g, '/'),
-          gn = mf.globalName + '["' + nm + '"]',
-         cmf = mf.precompileObject(JSON.parse(text));
-    _log('Building ' + gn);
+          gn = mf.globalName + '["' + nm + '"]';
+    _log('Building ' + gn + ' from `' + file + '` with locale "' + mf.lc + '"');
+    r = gn + '=' + mf.precompileObject(JSON.parse(text));
   } catch (ex) {
     console.error('--->\tParse error in ' + path + ': ' + ex.message);
-    return '';
+  } finally {
+    mf.lc = lc0;
   }
-  return gn + '=' + cmf;
+  return r;
 }
 
 function build(options, callback) {
-  var mf = new MessageFormat(options.locale, false, options.namespace),
+  var lc = options.locale.trim().split(/[ ,]+/),
+      mf = new MessageFormat(lc[0], false, options.namespace),
       compiledMessageFormat = [];
+  for (var i = 1; i < lc.length; ++i) MessageFormat.loadLocale(lc[i]);
   _log('Input dir: ' + options.inputdir);
+  _log('Included locales: ' + lc.join(', '));
   glob(options.include, {cwd: options.inputdir}, function(err, files) {
     async.each(
       files.map(function(file) { return file.replace(options.inputdir, '').replace(/^\//, ''); }),
