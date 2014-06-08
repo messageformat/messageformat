@@ -185,6 +185,7 @@ function compiler(mf, nm, obj){
     var str = mf.precompile( mf.parse(value) );
     cmf.push(JSON.stringify(key) + ':' + str + ',');
   });
-  cmf[cmf.length-1] = cmf[cmf.length-1].replace(/,$/, '}');
+  cmf[cmf.length-1] = cmf[cmf.length-1].replace(/,$/, '');
+  cmf.push('};');
   return cmf;
 }
