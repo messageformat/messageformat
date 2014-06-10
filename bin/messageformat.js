@@ -15,7 +15,8 @@ var
     "namespace" : String,
     "include"   : String,
     "stdout"    : Boolean,
-    "verbose"   : Boolean
+    "verbose"   : Boolean,
+    "help"      : Boolean
   },
   description = {
     "locale"    : "locale(s) to use [mandatory]",
@@ -34,7 +35,8 @@ var
     "namespace" : 'i18n',
     "include"   : '**/*.json',
     "stdout"    : false,
-    "verbose"   : false
+    "verbose"   : false,
+    "help"      : false
   },
   shortHands = {
     "l"  : "--locale",
@@ -44,7 +46,8 @@ var
     "I"  : "--include",
     "s"  : "--stdout",
     "w"  : "--watch",
-    "v"  : "--verbose"
+    "v"  : "--verbose",
+    "?"  : "--help"
   },
   options = (function() {
     var o = nopt(knownOpts, shortHands, process.argv, 2);
@@ -55,9 +58,20 @@ var
       if (o.argv.remain.length >= 1) o.inputdir = o.argv.remain[0];
       if (o.argv.remain.length >= 2) o.output = o.argv.remain[1];
     }
-    if (!o.locale) {
-      console.error('Usage: messageformat -l [locale] [INPUT_DIR] [OUTPUT_DIR]\n')
-      process.exit(-1);
+    if (!o.locale || o.help) {
+      var usage = ['Usage: messageformat -l [locale] [OPTIONS] [INPUT_DIR] [OUTPUT_DIR]'];
+	  if (!o.help) {
+	    usage.push("Try 'messageformat --help' for more information.");
+        console.error(usage.join('\n'));
+        process.exit(-1);
+	  }
+	  usage.push('\nAvailable options:');
+	  for (var key in shortHands) {
+	    var desc = description[shortHands[key].toString().substr(2)];
+		if (desc) usage.push('   -' + key + ',\t' + shortHands[key] + (shortHands[key].length < 8 ? '  ' : '') + '\t' + desc);
+	  }
+	  console.log(usage.join('\n'));
+      process.exit(0);
     }
     if (fs.existsSync(o.output) && fs.statSync(o.output).isDirectory()) {
       o.output = Path.join(o.output, 'i18n.js');
