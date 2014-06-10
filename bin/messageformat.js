@@ -60,17 +60,17 @@ var
     }
     if (!o.locale || o.help) {
       var usage = ['Usage: messageformat -l [locale] [OPTIONS] [INPUT_DIR] [OUTPUT_DIR]'];
-	  if (!o.help) {
-	    usage.push("Try 'messageformat --help' for more information.");
+      if (!o.help) {
+        usage.push("Try 'messageformat --help' for more information.");
         console.error(usage.join('\n'));
         process.exit(-1);
-	  }
-	  usage.push('\nAvailable options:');
-	  for (var key in shortHands) {
-	    var desc = description[shortHands[key].toString().substr(2)];
-		if (desc) usage.push('   -' + key + ',\t' + shortHands[key] + (shortHands[key].length < 8 ? '  ' : '') + '\t' + desc);
-	  }
-	  console.log(usage.join('\n'));
+      }
+      usage.push('\nAvailable options:');
+      for (var key in shortHands) {
+        var desc = description[shortHands[key].toString().substr(2)];
+        if (desc) usage.push('   -' + key + ',\t' + shortHands[key] + (shortHands[key].length < 8 ? '  ' : '') + '\t' + desc);
+      }
+      console.log(usage.join('\n'));
       process.exit(0);
     }
     if (fs.existsSync(o.output) && fs.statSync(o.output).isDirectory()) {
@@ -83,7 +83,7 @@ var
 
 function write(options, data) {
   data = data.join('\n');
-  if (options.stdout) return console.log(data);
+  if (options.stdout) { _log(''); return console.log(data); }
   fs.writeFile( options.output, data, 'utf8', function(err) {
     if (err) return console.error('--->\t' + err.message);
     _log(options.output + " written.");
@@ -124,8 +124,7 @@ function build(options, callback) {
   _log('Input dir: ' + options.inputdir);
   _log('Included locales: ' + lc.join(', '));
   glob(options.include, {cwd: options.inputdir}, function(err, files) {
-    async.each(
-      files.map(function(file) { return file.replace(options.inputdir, '').replace(/^\//, ''); }),
+    if (!err) async.each(files,
       function(file, cb) {
         var pf = parseFileSync(options, mf, file);
         if (pf) compiledMessageFormat.push(pf);
