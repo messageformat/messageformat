@@ -41,5 +41,5 @@
     "serve": "*",
     "pegjs": "*"
   },
-  "license": "To Use: WTFPL, To Contribute: Dojo CLA"
+  "license": "To use or fork, Apache License, Version 2.0. To contribute back, Dojo CLA"
 }
