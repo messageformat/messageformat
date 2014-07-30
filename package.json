@@ -8,7 +8,7 @@
     "url": "https://SlexAxton@github.com/SlexAxton/messageformat.js.git"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha --require test/common --reporter spec --growl test/tests.js"
   },
   "main": "./messageformat",
   "bin": {
