@@ -31,6 +31,7 @@ var
     "namespace" : String,
     "include"   : String,
     "stdout"    : Boolean,
+    "module"    : Boolean,
     "verbose"   : Boolean,
     "help"      : Boolean
   },
@@ -42,6 +43,7 @@ var
     "include"   : "glob patterns for files to include from `inputdir`",
     "stdout"    : "print the result in stdout instead of writing in a file",
     "watch"     : "watch `inputdir` for changes",
+    "module"    : "create a commonJS module, instead of a global window variable",
     "verbose"   : "print logs for debug"
   },
   defaults = {
@@ -52,6 +54,7 @@ var
     "include"   : '**/*.json',
     "stdout"    : false,
     "verbose"   : false,
+    "module"    : false,
     "help"      : false
   },
   shortHands = {
@@ -60,6 +63,7 @@ var
     "o"  : "--output",
     "ns" : "--namespace",
     "I"  : "--include",
+    "m"  : "--module",
     "s"  : "--stdout",
     "w"  : "--watch",
     "v"  : "--verbose",
@@ -147,15 +151,29 @@ function build(options, callback) {
         cb();
       },
       function() {
-        var data = ['(function(G){G[\'' + mf.globalName + '\']=' + mf.functions()]
-          .concat(compiledMessageFormat)
-          .concat('})(this);\n');
-        return callback(options, data);
+        if (options.module) {
+          return buildForCommonJSModule(mf, compiledMessageFormat, callback, options);
+        } else {
+          return buildForWindowGlobal(mf, compiledMessageFormat, callback, options);
+        }
       }
     );
   });
 }
 
+function buildForCommonJSModule(mf, compiledMessageFormat, callback, options) {
+    var data = ['var ' + mf.globalName + '=' + mf.functions() + ';']
+        .concat(compiledMessageFormat)
+        .concat('module.exports = ' + mf.globalName + ';\n');
+    return callback(options, data);
+}
+
+function buildForWindowGlobal(mf, compiledMessageFormat, callback, options) {
+    var data = ['(function(G){G[\'' + mf.globalName + '\']=' + mf.functions()]
+        .concat(compiledMessageFormat)
+        .concat('})(this);\n');
+    return callback(options, data);
+}
 
 build(options, write);
 
