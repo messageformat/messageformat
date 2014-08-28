@@ -171,6 +171,7 @@ This tool is in early stage. It was tested on Linux and Windows, but if you find
         --namespace, -ns    object in the browser containing the templates             window.i18n
         --include, -I       Glob patterns for files to include in `inputdir`           **/*.json
         --stdout, -s        Print the result in stdout instead of writing in a file    false
+        --module, -m        create a commonJS module, instead of a window variable     false
         --verbose, -v       Print logs for debug                                       false
 
 If your prefer looking at an example [go there](https://github.com/SlexAxton/messageformat.js/tree/master/example/en).

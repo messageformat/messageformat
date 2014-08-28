@@ -45,3 +45,6 @@ build/buildinfo.properties
 build/config/buildinfo.properties
 
 lib/message_parser.js
+
+# Test artifacts
+test/common-js-generated-test-fixture.js
