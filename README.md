@@ -201,18 +201,18 @@ A watch mode is available with the `--watch` or `-w` option.
 
 #### The JSON messageformat files
 
-The original JSON files are simple objects, with a key and a messageformat string as value, like [this one](messageformat.js/blob/master/example/en/sub/folder/plural.json):
+The original JSON files are simple objects, with a key and a messageformat string as value, like [this one](https://github.com/SlexAxton/messageformat.js/blob/master/example/en/sub/folder/plural.json):
 
     {
       "test": "Your {NUM, plural, one{message} other{messages}} go here."
     }
 
-The CLI walks into `inputdir` recursively so you can structure your messageformat with [dirs and subdirs](messageformat.js/tree/master/example/en).
+The CLI walks into `inputdir` recursively so you can structure your messageformat with [dirs and subdirs](https://github.com/SlexAxton/messageformat.js/tree/master/example/en).
 
 
 #### In the browser
 
-Now that you have compiled your messageformat, you can use it in your [html](messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`.
+Now that you have compiled your messageformat, you can use it in your [html](https://github.com/SlexAxton/messageformat.js/blob/master/example/index.html) by adding a `<script src="index.js"></script>`.
 
 In the browser, the global `window.i18n` is an object containing the messageformat compiled functions.
 
@@ -237,10 +237,10 @@ Subdirectories messageformat are available in the `window.i18n` namespace, prefi
     Object
     * test: [ Function ]
 
-`sub/folder` is the path, `plural` is the name of [the JSON file](messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used.
+`sub/folder` is the path, `plural` is the name of [the JSON file](https://github.com/SlexAxton/messageformat.js/blob/master/example/en/sub/folder/plural.json), `test` is the key used.
 
 
-A working example is available [here](messageformat.js/tree/master/example).
+A working example is available [here](https://github.com/SlexAxton/messageformat.js/tree/master/example).
 
 ### No Frills
 
