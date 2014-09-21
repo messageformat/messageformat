@@ -25,7 +25,7 @@
 (function ( root ) {
 
   function MessageFormat ( locale, pluralFunc, globalName ) {
-    var lc = locale || 'en', lcFile;
+    var lc = locale || 'en', lcFn;
     if ( pluralFunc ) {
       MessageFormat.locale[lc] = pluralFunc;
     } else {
@@ -34,7 +34,9 @@
       }
       if ( ! lc ) {
         lc = locale.replace(/[-_].*$/, '');
-        MessageFormat.loadLocale(lc);
+        lcFn = require('make-plural').build(lc);
+        if (lcFn) MessageFormat.locale[lc] = lcFn;
+        else throw 'Locale ' + lc + ' could not be loaded';
       }
     }
     this.lc = lc;  // used in 'elementFormat'
@@ -42,22 +44,6 @@
   }
 
   if ( !('locale' in MessageFormat) ) MessageFormat.locale = {};
-
-  MessageFormat.loadLocale = function ( lc ) {
-    try {
-      var lcFile = require('path').join(__dirname, 'locale', lc + '.js'),
-          lcStr = ('' + require('fs').readFileSync(lcFile)).match(/{[^]*}/);
-      if (!lcStr) throw "no function found in file '" + lcFile + "'";
-      MessageFormat.locale[lc] = 'function(n)' + lcStr;
-    } catch (ex) {
-      if ( lc == 'en' ) {
-        MessageFormat.locale[lc] = 'function(n){return n===1?"one":"other"}';
-      } else {
-        ex.message = 'Locale ' + lc + ' could not be loaded: ' + ex.message;
-        throw ex;
-      }
-    }
-  };
 
   MessageFormat.prototype.functions = function () {
     var l = [];
