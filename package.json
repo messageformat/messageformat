@@ -33,7 +33,8 @@
     "watchr": "~2.4.9",
     "underscore": "~1.5.2",
     "async": "~0.2.10",
-    "glob": "~3.2.8"
+    "glob": "~3.2.8",
+    "make-plural": "~1.2.0"
   },
   "devDependencies": {
     "mocha": "*",
