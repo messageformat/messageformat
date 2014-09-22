@@ -19,16 +19,11 @@ GREEN=\033[32;01m
 RED=\033[31;01m
 YELLOW=\033[33;01m
 STOP=\033[0m
-REPORTER=dot
 CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
 test:
-	@./node_modules/.bin/mocha \
-		--require test/common \
-		--reporter $(REPORTER) \
-		--growl \
-		test/tests.js
+	@npm run test
 
 test-browser:
 	@open "http://127.0.0.1:3000/test/" & ./node_modules/.bin/serve .

@@ -34,7 +34,7 @@
     "underscore": "~1.5.2",
     "async": "~0.2.10",
     "glob": "~3.2.8",
-    "make-plural": "~1.1.0"
+    "make-plural": "~1.1.4"
   },
   "devDependencies": {
     "mocha": "*",
