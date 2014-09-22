@@ -9,17 +9,10 @@
     <script src="../node_modules/expect.js/index.js"></script>
     <script>mocha.setup('bdd')</script>
     <script src="../messageformat.js"></script>
-    <script src="../node_modules/make-plural/lib/make-plural.js"></script>
+    <script src="../node_modules/make-plural/make-plural.js"></script>
     <script>
-      var xhr = new XMLHttpRequest();
-      xhr.open('get', '../node_modules/make-plural/data/unicode-cldr-plural-rules.json', false);
-      xhr.send();
-	  if (xhr.status == 200) {
-        var cldr = JSON.parse(xhr.responseText);
-        Plurals.set_rules(cldr);
-        MessageFormat.locale['en'] = Plurals.build('en');
-        MessageFormat.locale['cy'] = Plurals.build('cy');
-      }
+      MessageFormat.locale['en'] = Plurals.build('en');
+      MessageFormat.locale['cy'] = Plurals.build('cy');
     </script>
     <script src="tests.js"></script>
   </head>
