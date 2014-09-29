@@ -50,6 +50,13 @@ elementFormat
       val  : s.val
     };
   }
+  / _ t:"selectordinal" _ ',' _ s:selectStyle _ {
+    return {
+      type : "elementFormat",
+      key  : t,
+      val  : s.val
+    };
+  }
   / _ t:"select" _ ',' _ s:selectStyle _ {
     return {
       type : "elementFormat",
