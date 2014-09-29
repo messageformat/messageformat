@@ -251,6 +251,31 @@ describe( "MessageFormat", function () {
 
     });
 
+    describe( "Ordinals", function () {
+
+      it("should accept a variable and ordinal keys", function () {
+        var mf = new MessageFormat( 'en' );
+        expect(function(){ var a = mf.parse('{NUM, selectordinal, one{1} other{2}}'); }).to.not.throwError();
+      });
+
+      it("should accept exact values with `=` prefixes", function () {
+        var mf = new MessageFormat( 'en' );
+        expect(
+          mf.parse('{NUM, selectordinal, =0{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 0 );
+        expect(
+          mf.parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 1 );
+        expect(
+          mf.parse('{NUM, selectordinal, =2{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+        ).to.eql( 2 );
+        expect(
+          mf.parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
+        ).to.eql( "other" );
+      });
+
+    });
+
     describe( "Nested/Recursive blocks", function () {
 
       it("should allow a select statement inside of a select statement", function () {
@@ -367,7 +392,7 @@ describe( "MessageFormat", function () {
         // ok we get it, it's recursive.
 
         expect(
-          mf.parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, select, other{{NUM4, plural, offset:1 other{c}}}}}}}}')
+          mf.parse('{NUM1, selectordinal, other{{NUM2, plural, offset:1 other{{NUM3, selectordinal, other{{NUM4, plural, offset:1 other{c}}}}}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
@@ -402,6 +427,11 @@ describe( "MessageFormat", function () {
       it("should not allow an offset for SELECTs", function () {
         var mf = new MessageFormat( 'en' );
         expect(function(){ mf.parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
+      });
+
+      it("should not allow an offset for SELECTORDINALs", function () {
+        var mf = new MessageFormat( 'en' );
+        expect(function(){ mf.parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
       });
 
       it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function () {
@@ -518,6 +548,18 @@ describe( "MessageFormat", function () {
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({})).to.be( "res: wasfew" );
       });
 
+      it("obeys selectordinal functions", function () {
+        var mf = new MessageFormat( 'fake', function ( x, ord ) {
+          return ord ? 'few' : 'other';
+        });
+
+        expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:0})).to.be( "res: wasfew" );
+        expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:1})).to.be( "res: wasfew" );
+        expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:2})).to.be( "res: wasfew" );
+        expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:3})).to.be( "res: wasfew" );
+        expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({})).to.be( "res: wasfew" );
+      });
+
       it("throws an error when no `other` option is found - plurals", function () {
         var mf = new MessageFormat( 'en' );
         expect(function(){ var x = mf.compile("{X, plural, someoption{a}}"); }).to.throwError();
@@ -526,6 +568,11 @@ describe( "MessageFormat", function () {
       it("throws an error when no `other` option is found - selects", function () {
         var mf = new MessageFormat( 'en' );
         expect(function(){ var x = mf.compile("{X, select, someoption{a}}"); }).to.throwError();
+      });
+
+      it("throws an error when no `other` option is found - selectordinals", function () {
+        var mf = new MessageFormat( 'en' );
+        expect(function(){ var x = mf.compile("{X, selectordinal, someoption{a}}"); }).to.throwError();
       });
 
       it("only calculates the offset from non-literals", function () {
@@ -547,6 +594,14 @@ describe( "MessageFormat", function () {
         var mfunc = mf.compile("{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}");
         expect(mfunc.toString()).to.contain('"cy"');
         expect(mfunc({num: 5})).to.be("+");
+
+      });
+
+      it("should use the locale selectordinal function", function() {
+        var mf = new MessageFormat( 'cy' );
+        var mfunc = mf.compile("{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}");
+        expect(mfunc.toString()).to.contain('"cy"');
+        expect(mfunc({num: 5})).to.be("5,6");
 
       });
 
@@ -586,6 +641,15 @@ describe( "MessageFormat", function () {
         expect(mfunc({FRIENDS:0})).to.eql("I have 0 friends.");
         expect(mfunc({FRIENDS:1})).to.eql("I have one friend.");
         expect(mfunc({FRIENDS:2})).to.eql("I have 2 friends.");
+      });
+
+      it("should allow for a simple selectordinal form", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor.");
+        //console.log((mf.precompile(mf.parse("The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor."))).toString() );
+        expect(mfunc({FLOOR:0})).to.eql("The 0th floor.");
+        expect(mfunc({FLOOR:1})).to.eql("The 1st floor.");
+        expect(mfunc({FLOOR:2})).to.eql("The 2nd floor.");
       });
 
       it("should reject number injections of numbers that don't exist", function () {
