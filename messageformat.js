@@ -60,7 +60,6 @@
         }
         return '{' + s.join(',\n') + '}';
       };
-      this.lc = MessageFormat.locale;
       return _stringify(this);
     }
   };
@@ -1416,7 +1415,6 @@
   };
 
   MessageFormat.prototype.compile = function ( message ) {
-    this.runtime.lc = MessageFormat.locale;
     return (new Function('f',
       'return ' + this.precompile( this.parse( message ))
     ))(this.runtime);
