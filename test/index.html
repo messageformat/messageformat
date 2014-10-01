@@ -11,8 +11,8 @@
     <script src="../messageformat.js"></script>
     <script src="../node_modules/make-plural/make-plural.js"></script>
     <script>
-      MessageFormat.locale['en'] = Plurals.build('en', {'return_function':1});
-      MessageFormat.locale['cy'] = Plurals.build('cy', {'return_function':1});
+      MessageFormat.locale['en'] = MakePlural('en', {'ordinals':1});
+      MessageFormat.locale['cy'] = MakePlural('cy', {'ordinals':1});
     </script>
     <script src="tests.js"></script>
   </head>
