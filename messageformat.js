@@ -24,7 +24,7 @@
 
 (function ( root ) {
 
-  function MessageFormat ( locale, pluralFunc, globalName ) {
+  function MessageFormat ( locale, pluralFunc ) {
     var lc = locale || 'en', lcFn;
     if ( pluralFunc ) {
       MessageFormat.locale[lc] = pluralFunc;
@@ -34,30 +34,35 @@
       }
       if ( ! lc ) {
         lc = locale.replace(/[-_].*$/, '');
-        lcFn = (typeof require != 'undefined') && require('make-plural').build(lc);
+        lcFn = require('make-plural').build(lc, {'return_function':1});
         if (lcFn) MessageFormat.locale[lc] = lcFn;
         else throw 'Locale `' + lc + '` could not be loaded';
       }
     }
     this.lc = lc;  // used in 'elementFormat'
-    this.globalName = globalName || 'i18n';
   }
 
   if ( !('locale' in MessageFormat) ) MessageFormat.locale = {};
 
-  MessageFormat.prototype.functions = function () {
-    var l = [];
-    for ( var lc in MessageFormat.locale ) {
-      if ( MessageFormat.locale.hasOwnProperty(lc) ) {
-        l.push(JSON.stringify(lc) + ':' + MessageFormat.locale[lc].toString().trim());
-      }
+  MessageFormat.prototype.runtime = {
+    lc: MessageFormat.locale,
+    c: function(d,k){if(!d)throw new Error("MessageFormat: Data required for '"+k+"'.")},
+    n: function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: '"+k+"' isn't a number.");return d[k]-(o||0)},
+    v: function(f,d,k){f.c(d,k);return d[k]},
+    p: function(f,d,k,o,l,p){f.c(d,k);return d[k] in p?p[d[k]]:(k=f.lc[l](d[k]-o),k in p?p[k]:p.other)},
+    s: function(f,d,k,p){f.c(d,k);return d[k] in p?p[d[k]]:p.other},
+    toString: function () {
+      var _stringify = function(f) {
+        if (typeof f != 'object') return f.toString().trim();
+        var s = [];
+        for (var i in f) if (i != 'toString') {
+          s.push(JSON.stringify(i) + ':' + _stringify(f[i]));
+        }
+        return '{' + s.join(',\n') + '}';
+      };
+      this.lc = MessageFormat.locale;
+      return _stringify(this);
     }
-    return '{lc:{' + l.join(',') + '},\n'
-      + 'c:function(d,k){if(!d)throw new Error("MessageFormat: Data required for \'"+k+"\'.")},\n'
-      + 'n:function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: \'"+k+"\' isn\'t a number.");return d[k]-(o||0)},\n'
-      + 'v:function(d,k){' + this.globalName + '.c(d,k);return d[k]},\n'
-      + 'p:function(d,k,o,l,p){' + this.globalName + '.c(d,k);return d[k] in p?p[d[k]]:(k=' + this.globalName + '.lc[l](d[k]-o),k in p?p[k]:p.other)},\n'
-      + 's:function(d,k,p){' + this.globalName + '.c(d,k);return d[k] in p?p[d[k]]:p.other}}';
   };
 
   // This is generated and pulled in for browsers.
@@ -1341,7 +1346,7 @@
         case 'messageFormatElement':
           data.pf_count = data.pf_count || 0;
           if ( ast.output ) {
-            return self.globalName + '.v(d,"' + ast.argumentIndex + '")';
+            return 'f.v(f,d,"' + ast.argumentIndex + '")';
           }
           else {
             data.keys[data.pf_count] = '"' + ast.argumentIndex + '"';
@@ -1350,11 +1355,11 @@
           return '';
         case 'elementFormat':
           if ( ast.key === 'select' ) {
-            return self.globalName + '.s(d,' + data.keys[data.pf_count] + ',' + interpMFP( ast.val, data ) + ')';
+            return 'f.s(f,d,' + data.keys[data.pf_count] + ',' + interpMFP( ast.val, data ) + ')';
           }
           else if ( ast.key === 'plural' ) {
             data.offset[data.pf_count || 0] = ast.val.offset || 0;
-            return self.globalName + '.p(d,' + data.keys[data.pf_count] + ',' + (data.offset[data.pf_count] || 0)
+            return 'f.p(f,d,' + data.keys[data.pf_count] + ',' + (data.offset[data.pf_count] || 0)
               + ',"' + self.lc + '",' + interpMFP( ast.val, data ) + ')';
           }
           return '';
@@ -1399,7 +1404,7 @@
           tmp = '"' + (ast.val || "").replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"';
           if ( data.pf_count ) {
             var o = data.offset[data.pf_count-1];
-            tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + self.globalName + '.n(d,' + data.keys[data.pf_count-1] + (o ? ',' + o : '') + ')+"');
+            tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + 'f.n(d,' + data.keys[data.pf_count-1] + (o ? ',' + o : '') + ')+"');
             tmp = tmp.replace(/^""\+/, '').replace(/\+""$/, '');
           }
           return tmp;
@@ -1411,10 +1416,10 @@
   };
 
   MessageFormat.prototype.compile = function ( message ) {
-    return (new Function(
-      'this[\'' + this.globalName + '\']=' + this.functions() + ';' +
+    this.runtime.lc = MessageFormat.locale;
+    return (new Function('f',
       'return ' + this.precompile( this.parse( message ))
-    ))();
+    ))(this.runtime);
   };
 
   MessageFormat.prototype.precompileObject = function ( messages ) {

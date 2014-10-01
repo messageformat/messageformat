@@ -124,10 +124,9 @@ function parseFileSync(options, mf, file) {
   }
   try {
     var text = fs.readFileSync(path, 'utf8'),
-          nm = file.replace(/\.[^.]*$/, '').replace(/\\/g, '/'),
-          gn = mf.globalName + '["' + nm + '"]';
-    _log('Building ' + gn + ' from `' + file + '` with locale "' + mf.lc + '"');
-    r = gn + '=' + mf.precompileObject(JSON.parse(text));
+          nm = JSON.stringify(file.replace(/\.[^.]*$/, '').replace(/\\/g, '/'));
+    _log('Building ' + nm + ' from `' + file + '` with locale "' + mf.lc + '"');
+    r = nm + ':' + mf.precompileObject(JSON.parse(text));
   } catch (ex) {
     console.error('--->\tParse error in ' + path + ': ' + ex.message);
   } finally {
@@ -138,7 +137,7 @@ function parseFileSync(options, mf, file) {
 
 function build(options, callback) {
   var lc = options.locale.trim().split(/[ ,]+/),
-      mf = new MessageFormat(lc[0], false, options.namespace),
+      mf = new MessageFormat(lc[0], false),
       compiledMessageFormat = [];
   for (var i = 1; i < lc.length; ++i) MessageFormat.loadLocale(lc[i]);
   _log('Input dir: ' + options.inputdir);
@@ -162,15 +161,14 @@ function build(options, callback) {
 }
 
 function buildForCommonJSModule(mf, compiledMessageFormat, callback, options) {
-    var data = ['var ' + mf.globalName + '=' + mf.functions() + ';']
-        .concat(compiledMessageFormat)
-        .concat('module.exports = ' + mf.globalName + ';\n');
+    var data = ['var f = ' + mf.runtime.toString() + ';']
+        .concat('module.exports = {' + compiledMessageFormat.join(',\n') + '};\n');
     return callback(options, data);
 }
 
 function buildForWindowGlobal(mf, compiledMessageFormat, callback, options) {
-    var data = ['(function(G){G[\'' + mf.globalName + '\']=' + mf.functions()]
-        .concat(compiledMessageFormat)
+    var data = ['(function(G){var f=' + mf.runtime.toString() + ';']
+        .concat('G[' + JSON.stringify(options.namespace) + ']={' + compiledMessageFormat.join(',\n') + '}')
         .concat('})(this);\n');
     return callback(options, data);
 }
