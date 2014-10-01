@@ -1,16 +1,16 @@
-(function(G){G['i18n']={lc:{"fr":function(n) {
-  if (n >= 0 && n < 2) return 'one';
-  return 'other';
+(function(G){var f={"lc":{"fr":function anonymous(n) {
+if (n >= 0 && n < 2) return 'one';
+return 'other';
 }},
-c:function(d,k){if(!d)throw new Error("MessageFormat: Data required for '"+k+"'.")},
-n:function(d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: '"+k+"' isn't a number.");return d[k]-(o||0)},
-v:function(d,k){i18n.c(d,k);return d[k]},
-p:function(d,k,o,l,p){i18n.c(d,k);return d[k] in p?p[d[k]]:(k=i18n.lc[l](d[k]-o),k in p?p[k]:p.other)},
-s:function(d,k,p){i18n.c(d,k);return d[k] in p?p[d[k]]:p.other}}
-i18n["colors"]={
+"c":function (d,k){if(!d)throw new Error("MessageFormat: Data required for '"+k+"'.")},
+"n":function (d,k,o){if(isNaN(d[k]))throw new Error("MessageFormat: '"+k+"' isn't a number.");return d[k]-(o||0)},
+"v":function (f,d,k){f.c(d,k);return d[k]},
+"p":function (f,d,k,o,l,p){f.c(d,k);return d[k] in p?p[d[k]]:(k=f.lc[l](d[k]-o),k in p?p[k]:p.other)},
+"s":function (f,d,k,p){f.c(d,k);return d[k] in p?p[d[k]]:p.other}};
+G["i18n"]={"colors":{
 "red":function(d){return "rouge"},
 "blue":function(d){return "bleu"},
-"green":function(d){return "vert"}}
-i18n["sub/folder/plural"]={
-"test":function(d){return i18n.p(d,"NUM",0,"fr",{"one":"Votre message se trouve","other":"Vos messages se trouvent"})+" ici."}}
+"green":function(d){return "vert"}},
+"sub/folder/plural":{
+"test":function(d){return f.p(f,d,"NUM",0,"fr",{"one":"Votre message se trouve","other":"Vos messages se trouvent"})+" ici."}}}
 })(this);

@@ -708,8 +708,7 @@ describe( "MessageFormat", function () {
         expect(source).to.contain('"key"');
 
 		var mfunc = (new Function(
-			'this[\'' + mf.globalName + '\']=' + mf.functions() + ';\n' +
-			'var obj = ' + source + ';\n' +
+			'var f = ' + mf.runtime.toString() + ', obj = ' + source + ';' +
 			'return obj.key;'
 		))();
         expect(mfunc).to.be.a('function');
