@@ -624,6 +624,18 @@ describe( "MessageFormat", function () {
         expect(function(){ var z = mfunc(); }).to.not.throwError();
       });
 
+      it("should throw an error when using an undefined formatting function", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("This is {VAR,uppercase}.");
+        expect(function(){ var z = mfunc({"VAR":"big"}); }).to.throwError();
+      });
+
+      it("should allow for custom formatting functions", function () {
+        var mf = new MessageFormat( 'en' );
+        mf.runtime.uppercase = function(f,d,k) { return d[k].toUpperCase(); };
+        expect((mf.compile("This is {VAR,uppercase}."))({"VAR":"big"})).to.eql("This is BIG.");
+      });
+
       it("should allow for a simple select", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("I am {FEELING, select, a{happy} b{sad} other{indifferent}}.");
