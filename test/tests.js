@@ -461,7 +461,6 @@ describe( "MessageFormat", function () {
 
       it("precompiles to a string", function () {
         var mf = new MessageFormat( 'en' );
-
         expect(mf.precompile(mf.parse("test"))).to.be.a('string');
       });
 
@@ -472,7 +471,6 @@ describe( "MessageFormat", function () {
 
       it("compiles to a function", function () {
         var mf = new MessageFormat( 'en' );
-
         expect(mf.compile("test")).to.be.a('function');
       });
 
@@ -504,13 +502,11 @@ describe( "MessageFormat", function () {
 
       it("can substitute named variables", function () {
         var mf = new MessageFormat( 'en' );
-
         expect((mf.compile("The var is {VAR}."))({"VAR":5})).to.eql("The var is 5.");
       });
 
       it("can substitute positional variables", function () {
         var mf = new MessageFormat( 'en' );
-
         expect((mf.compile("The var is {0}."))({"0":5})).to.eql("The var is 5.");
         expect((mf.compile("The var is {0}."))([5])).to.eql("The var is 5.");
         expect((mf.compile("The vars are {0} and {1}."))([5,-3])).to.eql("The vars are 5 and -3.");
@@ -519,7 +515,6 @@ describe( "MessageFormat", function () {
 
       it("can substitute shorthand variables", function () {
         var mf = new MessageFormat( 'en' );
-
         expect((mf.compile("{VAR, select, other{The var is #.}}"))({"VAR":5})).to.eql("The var is 5.");
         expect((mf.compile("{0, select, other{The var is #.}}"))([5])).to.eql("The var is 5.");
       });
@@ -540,7 +535,6 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'fake', function ( x ) {
           return 'few';
         });
-
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:0})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:1})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:2})).to.be( "res: wasfew" );
@@ -552,7 +546,6 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'fake', function ( x, ord ) {
           return ord ? 'few' : 'other';
         });
-
         expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:0})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:1})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:2})).to.be( "res: wasfew" );
@@ -594,7 +587,6 @@ describe( "MessageFormat", function () {
         var mfunc = mf.compile("{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}");
         expect(mfunc.toString()).to.contain('"cy"');
         expect(mfunc({num: 5})).to.be("+");
-
       });
 
       it("should use the locale selectordinal function", function() {
@@ -602,7 +594,6 @@ describe( "MessageFormat", function () {
         var mfunc = mf.compile("{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}");
         expect(mfunc.toString()).to.contain('"cy"');
         expect(mfunc({num: 5})).to.be("5,6");
-
       });
 
       it("should use the fallback locale plural function if the locale isn't available", function() {
@@ -639,7 +630,6 @@ describe( "MessageFormat", function () {
       it("should allow for a simple select", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("I am {FEELING, select, a{happy} b{sad} other{indifferent}}.");
-
         expect(mfunc({FEELING:"a"})).to.eql("I am happy.");
         expect(mfunc({FEELING:"b"})).to.eql("I am sad.");
         expect(mfunc({FEELING:"q"})).to.eql("I am indifferent.");
@@ -682,7 +672,6 @@ describe( "MessageFormat", function () {
         // and then in the common.js file
         var mf = new MessageFormat( 'cy' );
         var mfunc = mf.compile("{NUM, plural, zero{a} one{b} two{c} few{d} many{e} other{f} =42{omg42}}");
-
         expect(mfunc({NUM:0})).to.eql('a');
         expect(mfunc({NUM:1})).to.eql('b');
         expect(mfunc({NUM:2})).to.eql('c');
@@ -779,14 +768,14 @@ describe( "MessageFormat", function () {
 
       it("can precompile a JSON object into executable Javascript source code", function () {
         var mf = new MessageFormat( 'en' );
-		var data = { 'key': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
-		var source = mf.precompileObject(data);
+        var data = { 'key': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
+        var source = mf.precompileObject(data);
         expect(source).to.contain('"key"');
 
-		var mfunc = (new Function(
-			'var f = ' + mf.runtime.toString() + ', obj = ' + source + ';' +
-			'return obj.key;'
-		))();
+        var mfunc = (new Function(
+            'var f = ' + mf.runtime.toString() + ', obj = ' + source + ';' +
+            'return obj.key;'
+        ))();
         expect(mfunc).to.be.a('function');
 
         expect(mfunc({FRIENDS:1})).to.eql("I have one friend.");
