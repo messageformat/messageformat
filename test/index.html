@@ -10,10 +10,6 @@
     <script>mocha.setup('bdd')</script>
     <script src="../messageformat.js"></script>
     <script src="../node_modules/make-plural/make-plural.js"></script>
-    <script>
-      MessageFormat.locale['en'] = MakePlural('en', {'ordinals':1});
-      MessageFormat.locale['cy'] = MakePlural('cy', {'ordinals':1});
-    </script>
     <script src="tests.js"></script>
   </head>
   <body>

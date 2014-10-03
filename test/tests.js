@@ -31,12 +31,14 @@ describe( "MessageFormat", function () {
     });
 
     it("should fallback when a base pluralFunc exists", function() {
-      var mf = new MessageFormat( 'en-x-test1-test2' );
-      expect(mf.lc).to.be("en");
+      var mf = new MessageFormat('en-x-test1-test2');
+      expect(mf.lc).to.contain( 'en' );
+      expect(mf.runtime.lc['en-x-test1-test2']).to.be.a('function');
     });
     it("should fallback when a base pluralFunc exists (underscores)", function() {
       var mf = new MessageFormat( 'en_x_test1_test2' );
-      expect(mf.lc).to.be("en");
+      expect(mf.lc).to.contain( 'en' );
+      expect(mf.runtime.lc['en_x_test1_test2']).to.be.a('function');
     });
 
     it("should bail on non-existing locales", function () {
@@ -44,7 +46,7 @@ describe( "MessageFormat", function () {
     });
 
     it("should default to 'en' when no locale is passed into the constructor", function () {
-      expect((new MessageFormat()).lc).to.be( 'en' );
+      expect((new MessageFormat()).lc).to.contain( 'en' );
     });
 
   });
@@ -599,7 +601,7 @@ describe( "MessageFormat", function () {
       it("should use the fallback locale plural function if the locale isn't available", function() {
         var mf = new MessageFormat( 'en-x-test1-test2' );
         var mfunc = mf.compile("{num, plural, one {# thing} other {# things}}");
-        expect(mfunc.toString()).to.contain('"en"');
+        expect(mfunc.toString()).to.contain('"en');
         expect(mfunc({num: 3})).to.be("3 things");
       });
 
@@ -623,7 +625,7 @@ describe( "MessageFormat", function () {
 
       it("should allow for custom formatting functions", function () {
         var mf = new MessageFormat( 'en' );
-        mf.runtime.uppercase = function(f,d,k) { return d[k].toUpperCase(); };
+        mf.runtime.uppercase = function(v) { return v.toUpperCase(); };
         expect((mf.compile("This is {VAR,uppercase}."))({"VAR":"big"})).to.eql("This is BIG.");
       });
 
@@ -660,9 +662,9 @@ describe( "MessageFormat", function () {
           "I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, one{one enemy} other{# enemies}}}}."
         );
         expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but 0 enemies.");
-        expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/MessageFormat\: \'ENEMIES\' isn\'t a number\./);
-        expect(function(){ var x = mfunc({}); }).to.throwError(/MessageFormat\: \'.+\' isn\'t a number\./);
-        expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/MessageFormat\: \'FRIENDS\' isn\'t a number\./);
+        expect(function(){ var x = mfunc({FRIENDS:0,ENEMIES:'none'}); }).to.throwError(/ isn't a number\.$/);
+        expect(function(){ var x = mfunc({}); }).to.throwError(/ isn't a number\.$/);
+        expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/ isn't a number\.$/);
       });
     });
 
