@@ -120,12 +120,12 @@ function parseFileSync(options, mf, file) {
     return '';
   }
   for (var i = file_parts.length - 1; i >= 0; --i) {
-    if (file_parts[i] in MessageFormat.locale) { mf.lc = file_parts[i]; break; }
+    if (file_parts[i] in MessageFormat.locale) { mf.lc = [file_parts[i]]; break; }
   }
   try {
     var text = fs.readFileSync(path, 'utf8'),
           nm = JSON.stringify(file.replace(/\.[^.]*$/, '').replace(/\\/g, '/'));
-    _log('Building ' + nm + ' from `' + file + '` with locale "' + mf.lc + '"');
+    _log('Building ' + nm + ' from `' + file + '` with locale "' + mf.lc[0] + '"');
     r = nm + ':' + mf.precompileObject(JSON.parse(text));
   } catch (ex) {
     console.error('--->\tParse error in ' + path + ': ' + ex.message);
@@ -139,7 +139,9 @@ function build(options, callback) {
   var lc = options.locale.trim().split(/[ ,]+/),
       mf = new MessageFormat(lc[0], false),
       compiledMessageFormat = [];
-  for (var i = 1; i < lc.length; ++i) MessageFormat.loadLocale(lc[i]);
+  for (var i = 1; i < lc.length; ++i) {
+    if (!MessageFormat.pluralFunc(lc[i])) throw 'Locale `' + lc[i] + '` could not be loaded';
+  }
   _log('Input dir: ' + options.inputdir);
   _log('Included locales: ' + lc.join(', '));
   glob(options.include, {cwd: options.inputdir}, function(err, files) {
@@ -161,13 +163,13 @@ function build(options, callback) {
 }
 
 function buildForCommonJSModule(mf, compiledMessageFormat, callback, options) {
-    var data = ['var f = ' + mf.runtime.toString() + ';']
+    var data = ['var ' + mf.runtime.toString() + ';']
         .concat('module.exports = {' + compiledMessageFormat.join(',\n') + '};\n');
     return callback(options, data);
 }
 
 function buildForWindowGlobal(mf, compiledMessageFormat, callback, options) {
-    var data = ['(function(G){var f=' + mf.runtime.toString() + ';']
+    var data = ['(function(G){var ' + mf.runtime.toString() + ';']
         .concat('G[' + JSON.stringify(options.namespace) + ']={' + compiledMessageFormat.join(',\n') + '}')
         .concat('})(this);\n');
     return callback(options, data);

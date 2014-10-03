@@ -33,12 +33,12 @@ describe( "MessageFormat", function () {
     it("should fallback when a base pluralFunc exists", function() {
       var mf = new MessageFormat('en-x-test1-test2');
       expect(mf.lc).to.contain( 'en' );
-      expect(mf.runtime.lc['en-x-test1-test2']).to.be.a('function');
+      expect(mf.runtime.pf['en-x-test1-test2']).to.be.a('function');
     });
     it("should fallback when a base pluralFunc exists (underscores)", function() {
       var mf = new MessageFormat( 'en_x_test1_test2' );
       expect(mf.lc).to.contain( 'en' );
-      expect(mf.runtime.lc['en_x_test1_test2']).to.be.a('function');
+      expect(mf.runtime.pf['en_x_test1_test2']).to.be.a('function');
     });
 
     it("should bail on non-existing locales", function () {
@@ -625,7 +625,7 @@ describe( "MessageFormat", function () {
 
       it("should allow for custom formatting functions", function () {
         var mf = new MessageFormat( 'en' );
-        mf.runtime.uppercase = function(v) { return v.toUpperCase(); };
+        mf.runtime.fmt.uppercase = function(v) { return v.toUpperCase(); };
         expect((mf.compile("This is {VAR,uppercase}."))({"VAR":"big"})).to.eql("This is BIG.");
       });
 
@@ -775,7 +775,7 @@ describe( "MessageFormat", function () {
         expect(source).to.contain('"key"');
 
         var mfunc = (new Function(
-            'var f = ' + mf.runtime.toString() + ', obj = ' + source + ';' +
+            'var ' + mf.runtime.toString() + ', obj = ' + source + ';' +
             'return obj.key;'
         ))();
         expect(mfunc).to.be.a('function');
