@@ -92,7 +92,7 @@
 
   MessageFormat.prototype.runtime = {
     _n: function(v,o){if(isNaN(v))throw new Error("'"+v+"' isn't a number.");return v-(o||0)},
-    _p: function(v,o,l,p,s){return v in p?p[v]:(k=l(v-o,s),k in p?p[k]:p.other)},
+    _p: function(v,o,l,p,s){return v in p?p[v]:(v=l(v-o,s),v in p?p[v]:p.other)},
     _s: function(v,p){return v in p?p[v]:p.other},
     pf: {},
     fmt: {},
