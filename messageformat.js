@@ -18,7 +18,7 @@
  * limitations under the License.
  *
  * @author Alex Sexton - @SlexAxton
- * @version 0.1.7
+ * @version 0.2.1
  * @contributor_license Dojo CLA
  */
 
