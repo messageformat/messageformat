@@ -34,7 +34,7 @@
       this.lc = locale;
     }
     if (!pluralFunc) {
-      pluralFunc = MessageFormat.pluralFunc(this.lc);
+      pluralFunc = MessageFormat.getPluralFunc(this.lc);
       if (!pluralFunc) throw 'Plural function for locale `' + this.lc.join(',') + '` could not be loaded';
     }
     this.runtime.fmt = {};
@@ -42,18 +42,18 @@
     this.runtime.pf[this.lc[0]] = pluralFunc;
   }
 
-  if ( !('locale' in MessageFormat) ) MessageFormat.locale = {};
+  if (!('plurals' in MessageFormat)) MessageFormat.plurals = {};
 
-  MessageFormat.pluralFunc = function(locale) {
+  MessageFormat.getPluralFunc = function(locale) {
     var MakePlural = (typeof require != 'undefined') && require('make-plural') || root.MakePlural || function() { return false; };
     for (var i = 0; i < locale.length; ++i) {
       var lc = locale[i];
-      if (lc in MessageFormat.locale) {
-        return MessageFormat.locale[lc];
+      if (lc in MessageFormat.plurals) {
+        return MessageFormat.plurals[lc];
       }
       var fn = MakePlural(lc, {ordinals:1, quiet:1});
       if (fn) {
-        MessageFormat.locale[lc] = fn;
+        MessageFormat.plurals[lc] = fn;
         return fn;
       }
     }
@@ -61,7 +61,7 @@
   }
 
   // note: Intl is not defined in default Node until joyent/node#7676 lands
-  MessageFormat.format = {
+  MessageFormat.formatters = {
     number: function(self) {
       return new Function("v,lc,p",
         "return Intl.NumberFormat(lc,\n" +
@@ -1559,8 +1559,8 @@
               args = args.concat([ data.offset[data.pf_count] || 0, 'pf[' + JSON.stringify(self.lc[0]) + ']', interpMFP(ast.val, data) ]);
               return '_p(' + args.join(',') + ')';
             default:
-              if (!(ast.key in self.runtime.fmt) && (ast.key in MessageFormat.format)) {
-                tmp = MessageFormat.format[ast.key];
+              if (!(ast.key in self.runtime.fmt) && (ast.key in MessageFormat.formatters)) {
+                tmp = MessageFormat.formatters[ast.key];
                 self.runtime.fmt[ast.key] = (typeof tmp(self) == 'function') ? tmp(self) : tmp;
               }
               args.push(JSON.stringify(self.lc));

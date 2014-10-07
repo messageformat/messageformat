@@ -7,8 +7,8 @@ describe( "MessageFormat", function () {
       expect( MessageFormat ).to.be.a('function');
     });
 
-    it("should have static locale object", function () {
-      expect( MessageFormat.locale ).to.be.an( 'object' );
+    it("should have static plurals object", function () {
+      expect( MessageFormat.plurals ).to.be.an( 'object' );
     });
 
     it("should be a constructor", function () {

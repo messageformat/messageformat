@@ -120,7 +120,7 @@ function parseFileSync(options, mf, file) {
     return '';
   }
   for (var i = file_parts.length - 1; i >= 0; --i) {
-    if (file_parts[i] in MessageFormat.locale) { mf.lc = [file_parts[i]]; break; }
+    if (file_parts[i] in MessageFormat.plurals) { mf.lc = [file_parts[i]]; break; }
   }
   try {
     var text = fs.readFileSync(path, 'utf8'),
@@ -140,7 +140,7 @@ function build(options, callback) {
       mf = new MessageFormat(lc[0], false),
       compiledMessageFormat = [];
   for (var i = 1; i < lc.length; ++i) {
-    if (!MessageFormat.pluralFunc(lc[i])) throw 'Locale `' + lc[i] + '` could not be loaded';
+    if (!MessageFormat.getPluralFunc(lc[i])) throw 'Locale `' + lc[i] + '` could not be loaded';
   }
   _log('Input dir: ' + options.inputdir);
   _log('Included locales: ' + lc.join(', '));
