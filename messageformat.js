@@ -1510,6 +1510,10 @@
     return mparser.parse.apply( mparser, arguments );
   };
 
+  var propname = function(s) {
+    return /^[A-Z_$][0-9A-Z_$]*$/i.test(s) ? s : JSON.stringify(s);
+  };
+
   MessageFormat.prototype._precompile = function(ast, data) {
     data = data || { keys: {}, offset: {} };
     var r = [], i, tmp, args = [];
@@ -1572,10 +1576,9 @@
           if ( key === 'other' ) {
             needOther = false;
           }
-          if (!/^[A-Z_$][0-9A-Z_$]*$/i.test(key)) key = JSON.stringify(key);
           var data_copy = JSON.parse(JSON.stringify(data));
           data_copy.pf_count++;
-          r.push(key + ':' + this._precompile(ast.pluralForms[i].val, data_copy));
+          r.push(propname(key) + ':' + this._precompile(ast.pluralForms[i].val, data_copy));
         }
         if ( needOther ) {
           throw new Error("No 'other' form found in " + ast.type + " " + data.pf_count);
@@ -1597,20 +1600,58 @@
     }
   };
 
-  MessageFormat.prototype.compile = function ( message ) {
-    var ast = MessageFormat._parse(message).program;
-    return (new Function('_n,_p,_s,pf,fmt',
-      'return ' + this._precompile(ast)
-    ))(this.runtime._n, this.runtime._p, this.runtime._s, this.runtime.pf, this.runtime.fmt);
-  };
+  MessageFormat.prototype.compile = function ( messages, opt ) {
+    var r = {}, lc0 = this.lc,
+        compileMsg = function(self, msg) {
+          try {
+            var ast = MessageFormat._parse(msg).program;
+            return self._precompile(ast);
+          } catch (e) {
+            throw new Error((ast ? 'Precompiler' : 'Parser') + ' error: ' + e.toString());
+          }
+        },
+        stringify = function(r) {
+          if (typeof r != 'object') return r;
+          var o = [];
+          for (var k in r) o.push(propname(k) + ':' + stringify(r[k]));
+          return '{\n' + o.join(',\n') + '}';
+        };
 
-  MessageFormat.prototype.precompileObject = function ( messages ) {
-    var tmp = [];
-    for (var key in messages) {
-      if (!/^[A-Z_$][0-9A-Z_$]*$/i.test(key)) key = JSON.stringify(key);
-      tmp.push(key + ':' + this.compile(messages[key]).toString());
+    if (typeof messages == 'string') {
+      var f = new Function('_n,_p,_s,pf,fmt', 'return ' + compileMsg(this, messages));
+      return f(this.runtime._n, this.runtime._p, this.runtime._s, this.runtime.pf, this.runtime.fmt);
     }
-    return '{\n' + tmp.join(',\n') + '}';
+
+    opt = opt || {};
+
+    for (var ns in messages) {
+      if (opt.locale) this.lc = opt.locale[ns] && [].concat(opt.locale[ns]) || lc0;
+      if (typeof messages[ns] == 'string') {
+        try { r[ns] = compileMsg(this, messages[ns]); }
+        catch (e) { e.message = e.message.replace(':', ' with `' + ns + '`:'); throw e; }
+      } else {
+        r[ns] = {};
+        for (var key in messages[ns]) {
+          try { r[ns][key] = compileMsg(this, messages[ns][key]); }
+          catch (e) { e.message = e.message.replace(':', ' with `' + key + '` in `' + ns + '`:'); throw e; }
+        }
+      }
+    }
+
+    this.lc = lc0;
+    var s = 'var\n' + this.runtime.toString() + ';\n\n';
+    switch (opt.global || '') {
+      case 'exports':
+        var o = [];
+        for (var k in r) o.push('exports[' + JSON.stringify(k) + '] = ' + stringify(r[k]));
+        return new Function(s + o.join(';\n'));
+      case 'module.exports':
+        return new Function(s + 'module.exports = ' + stringify(r));
+      case '':
+        return new Function(s + 'return ' + stringify(r));
+      default:
+        return new Function('G', s + 'G[' + JSON.stringify(opt.global) + '] = ' + stringify(r));
+    }
   };
 
 

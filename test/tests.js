@@ -730,20 +730,16 @@ describe( "MessageFormat", function () {
         }) ).to.eql('Al Sexton added themself and 2 other people to their group.');
       });
 
-      it("can precompile a JSON object into executable Javascript source code", function () {
+      it("can compile an object of messages into a function", function () {
         var mf = new MessageFormat( 'en' );
         var data = { 'key': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
-        var source = mf.precompileObject(data);
-        expect(source).to.match(/\bkey\b/);
-
-        var mfunc = (new Function(
-            'var ' + mf.runtime.toString() + ', obj = ' + source + ';' +
-            'return obj.key;'
-        ))();
+        var mfunc = mf.compile(data);
         expect(mfunc).to.be.a('function');
+        expect(mfunc.toString()).to.match(/\bkey\b/);
 
-        expect(mfunc({FRIENDS:1})).to.eql("I have one friend.");
-        expect(mfunc({FRIENDS:2})).to.eql("I have 2 friends.");
+        expect(mfunc().key).to.be.a('function');
+        expect(mfunc().key({FRIENDS:1})).to.eql("I have one friend.");
+        expect(mfunc().key({FRIENDS:2})).to.eql("I have 2 friends.");
       });
     });
   });
