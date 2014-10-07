@@ -623,16 +623,22 @@ describe( "MessageFormat", function () {
         expect(function(){ var z = mfunc({"VAR":"big"}); }).to.throwError();
       });
 
-      it("should allow for included ICU argType formatting functions", function () {
+      it("should use formatting functions - set in MessageFormat.formatters", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("The date is {VAR,date}.");
         expect(mfunc({"VAR":"2010-12-31"})).to.contain("2010");
       });
 
-      it("should allow for custom formatting functions", function () {
+      it("should use formatting functions - set in runtime", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("This is {VAR,uppercase}.");
         mf.runtime.fmt.uppercase = function(v) { return v.toUpperCase(); };
+        expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
+      });
+
+      it("should use formatting functions - set in creator", function () {
+        var mf = new MessageFormat( 'en', false, {uppercase: function(v) { return v.toUpperCase(); }} );
+        var mfunc = mf.compile("This is {VAR,uppercase}.");
         expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
       });
 
