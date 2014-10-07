@@ -16,17 +16,9 @@ describe( "MessageFormat", function () {
       expect( mf ).to.be.a( MessageFormat );
     });
 
-    if (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined') {
-      it("should be a constructor", function () {
-        var mf = new MessageFormat( 'es' );
-        expect( mf ).to.be.a( MessageFormat );
-      });
-    }
-
     it("should have instance functions", function () {
       var mf = new MessageFormat( 'en' );
-      expect( mf.parse ).to.be.a( 'function' );
-      expect( mf.precompile ).to.be.a( 'function' );
+      expect( mf._precompile ).to.be.a( 'function' );
       expect( mf.compile ).to.be.a( 'function' );
     });
 
@@ -56,116 +48,103 @@ describe( "MessageFormat", function () {
     describe( "Replacement", function () {
 
       it("should accept string only input", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse( 'This is a string' ).program.statements[0].val ).to.be( 'This is a string' );
-        expect( mf.parse( '☺☺☺☺' ).program.statements[0].val ).to.be( '☺☺☺☺' );
-        expect( mf.parse( 'This is \n a string' ).program.statements[0].val ).to.be( 'This is \n a string' );
-        expect( mf.parse( '中国话不用彁字。' ).program.statements[0].val ).to.be( '中国话不用彁字。' );
+        expect( MessageFormat._parse( 'This is a string' ).program.statements[0].val ).to.be( 'This is a string' );
+        expect( MessageFormat._parse( '☺☺☺☺' ).program.statements[0].val ).to.be( '☺☺☺☺' );
+        expect( MessageFormat._parse( 'This is \n a string' ).program.statements[0].val ).to.be( 'This is \n a string' );
+        expect( MessageFormat._parse( '中国话不用彁字。' ).program.statements[0].val ).to.be( '中国话不用彁字。' );
       });
 
       it("should allow you to escape { and } characters", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse("\\{test").program.statements[0].val ).to.eql( '{test' );
-        expect( mf.parse("test\\}").program.statements[0].val ).to.eql( 'test}' );
-        expect( mf.parse("\\{test\\}").program.statements[0].val ).to.eql( '{test}' );
+        expect( MessageFormat._parse("\\{test").program.statements[0].val ).to.eql( '{test' );
+        expect( MessageFormat._parse("test\\}").program.statements[0].val ).to.eql( 'test}' );
+        expect( MessageFormat._parse("\\{test\\}").program.statements[0].val ).to.eql( '{test}' );
       });
 
       it("should gracefully handle quotes (since it ends up in a JS String)", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('This is a dbl quote: "').program.statements[0].val ).to.eql( 'This is a dbl quote: "' );
-        expect( mf.parse("This is a single quote: '").program.statements[0].val ).to.eql( "This is a single quote: '" );
+        expect( MessageFormat._parse('This is a dbl quote: "').program.statements[0].val ).to.eql( 'This is a dbl quote: "' );
+        expect( MessageFormat._parse("This is a single quote: '").program.statements[0].val ).to.eql( "This is a single quote: '" );
       });
 
       it("should accept only a variable", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('{test}') ).to.be.an( 'object' );
-        expect( mf.parse('{0}') ).to.be.an( 'object' );
+        expect( MessageFormat._parse('{test}') ).to.be.an( 'object' );
+        expect( MessageFormat._parse('{0}') ).to.be.an( 'object' );
       });
 
       it("should not care about white space in a variable", function () {
-        var mf = new MessageFormat( 'en' );
-        var targetStr = JSON.stringify( mf.parse('{test}') );
-        expect( JSON.stringify( mf.parse('{test }') ) ).to.eql( targetStr );
-        expect( JSON.stringify( mf.parse('{ test}') ) ).to.eql( targetStr );
-        expect( JSON.stringify( mf.parse('{test  }') ) ).to.eql( targetStr );
-        expect( JSON.stringify( mf.parse('{  test}') ) ).to.eql( targetStr );
-        expect( JSON.stringify( mf.parse('{test}') ) ).to.eql( targetStr );
+        var targetStr = JSON.stringify( MessageFormat._parse('{test}') );
+        expect( JSON.stringify( MessageFormat._parse('{test }') ) ).to.eql( targetStr );
+        expect( JSON.stringify( MessageFormat._parse('{ test}') ) ).to.eql( targetStr );
+        expect( JSON.stringify( MessageFormat._parse('{test  }') ) ).to.eql( targetStr );
+        expect( JSON.stringify( MessageFormat._parse('{  test}') ) ).to.eql( targetStr );
+        expect( JSON.stringify( MessageFormat._parse('{test}') ) ).to.eql( targetStr );
       });
 
       it("should maintain exact strings - not affected by variables", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('x{test}').program.statements[0].val ).to.be( 'x' );
-        expect( mf.parse('\n{test}').program.statements[0].val ).to.be( '\n' );
-        expect( mf.parse(' {test}').program.statements[0].val ).to.be( ' ' );
-        expect( mf.parse('x { test}').program.statements[0].val ).to.be( 'x ' );
-        expect( mf.parse('x{test} x ').program.statements[1].statements[1].val ).to.be( ' x ' );
-        expect( mf.parse('x\n{test}\n').program.statements[0].val ).to.be( 'x\n' );
-        expect( mf.parse('x\n{test}\n').program.statements[1].statements[1].val ).to.be( '\n' );
+        expect( MessageFormat._parse('x{test}').program.statements[0].val ).to.be( 'x' );
+        expect( MessageFormat._parse('\n{test}').program.statements[0].val ).to.be( '\n' );
+        expect( MessageFormat._parse(' {test}').program.statements[0].val ).to.be( ' ' );
+        expect( MessageFormat._parse('x { test}').program.statements[0].val ).to.be( 'x ' );
+        expect( MessageFormat._parse('x{test} x ').program.statements[1].statements[1].val ).to.be( ' x ' );
+        expect( MessageFormat._parse('x\n{test}\n').program.statements[0].val ).to.be( 'x\n' );
+        expect( MessageFormat._parse('x\n{test}\n').program.statements[1].statements[1].val ).to.be( '\n' );
       });
 
       it("should handle extended character literals", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('☺{test}').program.statements[0].val ).to.be( '☺' );
-        expect( mf.parse('中{test}中国话不用彁字。').program.statements[1].statements[1].val ).to.be( '中国话不用彁字。' );
+        expect( MessageFormat._parse('☺{test}').program.statements[0].val ).to.be( '☺' );
+        expect( MessageFormat._parse('中{test}中国话不用彁字。').program.statements[1].statements[1].val ).to.be( '中国话不用彁字。' );
       });
 
       it("shouldn't matter if it has html or something in it", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('<div class="test">content: {TEST}</div>').program.statements[0].val ).to.be( '<div class="test">content: ' );
-        expect( mf.parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[0].argumentIndex ).to.be( 'TEST' );
-        expect( mf.parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[1].val ).to.be( '</div>' );
+        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').program.statements[0].val ).to.be( '<div class="test">content: ' );
+        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[0].argumentIndex ).to.be( 'TEST' );
+        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').program.statements[1].statements[1].val ).to.be( '</div>' );
       });
 
       it("should allow you to use extension keywords for plural formats everywhere except where they go", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('select select, ').program.statements[0].val ).to.eql( 'select select, ' );
-        expect( mf.parse('select offset, offset:1 ').program.statements[0].val ).to.eql( 'select offset, offset:1 ' );
-        expect( mf.parse('one other, =1 ').program.statements[0].val ).to.eql( 'one other, =1 ' );
-        expect( mf.parse('one {select} ').program.statements[1].statements[0].argumentIndex ).to.eql( 'select' );
-        expect( mf.parse('one {plural} ').program.statements[1].statements[0].argumentIndex ).to.eql( 'plural' );
+        expect( MessageFormat._parse('select select, ').program.statements[0].val ).to.eql( 'select select, ' );
+        expect( MessageFormat._parse('select offset, offset:1 ').program.statements[0].val ).to.eql( 'select offset, offset:1 ' );
+        expect( MessageFormat._parse('one other, =1 ').program.statements[0].val ).to.eql( 'one other, =1 ' );
+        expect( MessageFormat._parse('one {select} ').program.statements[1].statements[0].argumentIndex ).to.eql( 'select' );
+        expect( MessageFormat._parse('one {plural} ').program.statements[1].statements[0].argumentIndex ).to.eql( 'plural' );
       });
     });
 
     describe( "Selects", function () {
 
       it("should accept a select statement based on a variable", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ mf.parse('{VAR, select, key{a} other{b}}'); }).to.not.throwError();
+        expect(function(){ MessageFormat._parse('{VAR, select, key{a} other{b}}'); }).to.not.throwError();
       });
 
       it("should be very whitespace agnostic", function (){
-        var mf = new MessageFormat( 'en' );
-        var firstRes = JSON.stringify(mf.parse('{VAR, select, key{a} other{b}}'));
-        expect( JSON.stringify(mf.parse('{VAR,select,key{a}other{b}}')) ).to.eql( firstRes );
-        expect( JSON.stringify(mf.parse('{    VAR   ,    select   ,    key      {a}   other    {b}    }')) ).to.eql( firstRes );
-        expect( JSON.stringify(mf.parse('{ \n   VAR  \n , \n   select  \n\n , \n \n  key \n    \n {a}  \n other \n   {b} \n  \n }')) ).to.eql( firstRes );
-        expect( JSON.stringify(mf.parse('{ \t  VAR  \n , \n\t\r  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }')) ).to.eql( firstRes );
+        var firstRes = JSON.stringify(MessageFormat._parse('{VAR, select, key{a} other{b}}'));
+        expect( JSON.stringify(MessageFormat._parse('{VAR,select,key{a}other{b}}')) ).to.eql( firstRes );
+        expect( JSON.stringify(MessageFormat._parse('{    VAR   ,    select   ,    key      {a}   other    {b}    }')) ).to.eql( firstRes );
+        expect( JSON.stringify(MessageFormat._parse('{ \n   VAR  \n , \n   select  \n\n , \n \n  key \n    \n {a}  \n other \n   {b} \n  \n }')) ).to.eql( firstRes );
+        expect( JSON.stringify(MessageFormat._parse('{ \t  VAR  \n , \n\t\r  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }')) ).to.eql( firstRes );
       });
 
       it("should allow you to use MessageFormat extension keywords other places, including in select keys", function () {
-        var mf = new MessageFormat( 'en' );
         // use `select` as a select key
-        expect( mf.parse( 'x {TEST, select, select{a} other{b} }' )
+        expect( MessageFormat._parse( 'x {TEST, select, select{a} other{b} }' )
                     .program.statements[1].statements[0]
                     .elementFormat.val.pluralForms[0].key
               ).to.eql( 'select' );
         // use `offset` as a key (since it goes here in a `plural` case)
-        expect( mf.parse( 'x {TEST, select, offset{a} other{b} }' )
+        expect( MessageFormat._parse( 'x {TEST, select, offset{a} other{b} }' )
                     .program.statements[1].statements[0]
                     .elementFormat.val.pluralForms[0].key
               ).to.eql( 'offset' );
         // use the exact variable name as a key name
-        expect( mf.parse( 'x {TEST, select, TEST{a} other{b} }' )
+        expect( MessageFormat._parse( 'x {TEST, select, TEST{a} other{b} }' )
                     .program.statements[1].statements[0]
                     .elementFormat.val.pluralForms[0].key
               ).to.eql( 'TEST' );
       });
 
       it("should be case-sensitive (select keyword is lowercase, everything else doesn't matter", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ var a = mf.parse('{TEST, Select, a{a} other{b}}'); }).to.throwError();
-        expect(function(){ var a = mf.parse('{TEST, SELECT, a{a} other{b}}'); }).to.throwError();
-        expect(function(){ var a = mf.parse('{TEST, selecT, a{a} other{b}}'); }).to.throwError();
+        expect(function(){ var a = MessageFormat._parse('{TEST, Select, a{a} other{b}}'); }).to.throwError();
+        expect(function(){ var a = MessageFormat._parse('{TEST, SELECT, a{a} other{b}}'); }).to.throwError();
+        expect(function(){ var a = MessageFormat._parse('{TEST, selecT, a{a} other{b}}'); }).to.throwError();
       });
 
     });
@@ -173,80 +152,75 @@ describe( "MessageFormat", function () {
     describe( "Plurals", function () {
 
       it("should accept a variable, no offset, and plural keys", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ var a = mf.parse('{NUM, plural, one{1} other{2}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM, plural, one{1} other{2}}'); }).to.not.throwError();
       });
 
       it("should accept exact values with `=` prefixes", function () {
-        var mf = new MessageFormat( 'en' );
         expect(
-          mf.parse('{NUM, plural, =0{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, plural, =0{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 0 );
         expect(
-          mf.parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 1 );
         expect(
-          mf.parse('{NUM, plural, =2{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, plural, =2{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 2 );
         expect(
-          mf.parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
+          MessageFormat._parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
         ).to.eql( "other" );
       });
 
       it("should accept the 6 official keywords", function () {
-        var mf = new MessageFormat( 'en' );
         // 'zero', 'one', 'two', 'few', 'many' and 'other'
         expect(
-          mf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          mf.parse( '{NUM, plural,   zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural,   zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          mf.parse( '{NUM, plural,zero    {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural,zero    {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          mf.parse( '{NUM, plural,  \nzero\n   {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural,  \nzero\n   {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          mf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
         ).to.eql( 'one' );
         expect(
-          mf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[2].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[2].key
         ).to.eql( 'two' );
         expect(
-          mf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[3].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[3].key
         ).to.eql( 'few' );
         expect(
-          mf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[4].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[4].key
         ).to.eql( 'many' );
         expect(
-          mf.parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[5].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].statements[0].elementFormat.val.pluralForms[5].key
         ).to.eql( 'other' );
       });
 
       it("should be gracious with whitespace", function () {
-        var mf = new MessageFormat( 'en' );
-        var firstRes = JSON.stringify( mf.parse('{NUM, plural, one{1} other{2}}') );
-        expect(JSON.stringify( mf.parse('{ NUM, plural, one{1} other{2} }') )).to.eql( firstRes );
-        expect(JSON.stringify( mf.parse('{NUM,plural,one{1}other{2}}') )).to.eql( firstRes );
-        expect(JSON.stringify( mf.parse('{\nNUM,   \nplural,\n   one\n\n{1}\n other {2}\n\n\n}') )).to.eql( firstRes );
-        expect(JSON.stringify( mf.parse('{\tNUM\t,\t\t\r plural\t\n, \tone\n{1}    other\t\n{2}\n\n\n}') )).to.eql( firstRes );
+        var firstRes = JSON.stringify( MessageFormat._parse('{NUM, plural, one{1} other{2}}') );
+        expect(JSON.stringify( MessageFormat._parse('{ NUM, plural, one{1} other{2} }') )).to.eql( firstRes );
+        expect(JSON.stringify( MessageFormat._parse('{NUM,plural,one{1}other{2}}') )).to.eql( firstRes );
+        expect(JSON.stringify( MessageFormat._parse('{\nNUM,   \nplural,\n   one\n\n{1}\n other {2}\n\n\n}') )).to.eql( firstRes );
+        expect(JSON.stringify( MessageFormat._parse('{\tNUM\t,\t\t\r plural\t\n, \tone\n{1}    other\t\n{2}\n\n\n}') )).to.eql( firstRes );
       });
 
       it("should take an offset", function () {
-        var mf = new MessageFormat( 'en' );
-        expect( mf.parse('{NUM, plural, offset:4 other{a}}') ).to.be.ok();
-        expect( mf.parse('{NUM, plural, offset : 4 other{a}}') ).to.be.ok();
-        expect( mf.parse('{NUM, plural, offset\n\t\r : \t\n\r4 other{a}}') ).to.be.ok();
+        expect( MessageFormat._parse('{NUM, plural, offset:4 other{a}}') ).to.be.ok();
+        expect( MessageFormat._parse('{NUM, plural, offset : 4 other{a}}') ).to.be.ok();
+        expect( MessageFormat._parse('{NUM, plural, offset\n\t\r : \t\n\r4 other{a}}') ).to.be.ok();
         // technically this is parsable since js identifiers don't start with numbers
-        expect( mf.parse('{NUM,plural,offset:4other{a}}') ).to.be.ok();
+        expect( MessageFormat._parse('{NUM,plural,offset:4other{a}}') ).to.be.ok();
 
         expect(
-          mf.parse('{NUM, plural, offset:4 other{a}}').program.statements[0].statements[0].elementFormat.val.offset
+          MessageFormat._parse('{NUM, plural, offset:4 other{a}}').program.statements[0].statements[0].elementFormat.val.offset
         ).to.eql( 4 );
         expect(
-          mf.parse('{NUM,plural,offset:4other{a}}').program.statements[0].statements[0].elementFormat.val.offset
+          MessageFormat._parse('{NUM,plural,offset:4other{a}}').program.statements[0].statements[0].elementFormat.val.offset
         ).to.eql( 4 );
 
       });
@@ -256,23 +230,21 @@ describe( "MessageFormat", function () {
     describe( "Ordinals", function () {
 
       it("should accept a variable and ordinal keys", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ var a = mf.parse('{NUM, selectordinal, one{1} other{2}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM, selectordinal, one{1} other{2}}'); }).to.not.throwError();
       });
 
       it("should accept exact values with `=` prefixes", function () {
-        var mf = new MessageFormat( 'en' );
         expect(
-          mf.parse('{NUM, selectordinal, =0{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, selectordinal, =0{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 0 );
         expect(
-          mf.parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 1 );
         expect(
-          mf.parse('{NUM, selectordinal, =2{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, selectordinal, =2{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 2 );
         expect(
-          mf.parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
+          MessageFormat._parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].statements[0].elementFormat.val.pluralForms[1].key
         ).to.eql( "other" );
       });
 
@@ -281,20 +253,18 @@ describe( "MessageFormat", function () {
     describe( "Nested/Recursive blocks", function () {
 
       it("should allow a select statement inside of a select statement", function () {
-        var mf = new MessageFormat( 'en' );
-
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, select, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{a}}}}'); }).to.not.throwError();
         expect(
-          mf.parse('{NUM1, select, other{{NUM2, select, other{a}}}}')
+          MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{a}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].val
         ).to.eql( 'a' );
 
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
         expect(
-         mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}')
+         MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
@@ -302,9 +272,9 @@ describe( "MessageFormat", function () {
               .statements[0].val
         ).to.eql( 'b' );
 
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
         expect(
-         mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}')
+         MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
@@ -315,41 +285,39 @@ describe( "MessageFormat", function () {
       });
 
       it("should allow nested plural statements - with and without offsets", function () {
-        var mf = new MessageFormat( 'en' );
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
 
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
 
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
         // ok we get it, it's recursive.
 
         expect(
-          mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}')
+          MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
@@ -360,41 +328,39 @@ describe( "MessageFormat", function () {
       });
 
       it("should allow nested plural and select statements - with and without offsets", function () {
-        var mf = new MessageFormat( 'en' );
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, select, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
 
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, select, other{a}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{a}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{a}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
 
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{b}}}}}}'); }).to.not.throwError();
-
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
-        expect(function(){ var a = mf.parse('{NUM1, select, other{{NUM2, select, other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, offset:1 other{{NUM4, plural, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, plural, other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}'); }).to.not.throwError();
         // ok we get it, it's recursive.
 
         expect(
-          mf.parse('{NUM1, selectordinal, other{{NUM2, plural, offset:1 other{{NUM3, selectordinal, other{{NUM4, plural, offset:1 other{c}}}}}}}}')
+          MessageFormat._parse('{NUM1, selectordinal, other{{NUM2, plural, offset:1 other{{NUM3, selectordinal, other{{NUM4, plural, offset:1 other{c}}}}}}}}')
             .program
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
               .statements[0].statements[0].elementFormat.val.pluralForms[0].val
@@ -409,45 +375,40 @@ describe( "MessageFormat", function () {
     describe( "Errors", function () {
 
       it("should catch mismatched/invalid bracket situations", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ mf.parse('}'); }).to.throwError();
-        expect(function(){ mf.parse('{'); }).to.throwError();
-        expect(function(){ mf.parse('{{X}'); }).to.throwError();
-        expect(function(){ mf.parse('{}'); }).to.throwError();
-        expect(function(){ mf.parse('{}{'); }).to.throwError();
-        expect(function(){ mf.parse('{X}{'); }).to.throwError();
-        expect(function(){ mf.parse('}{}'); }).to.throwError();
-        expect(function(){ mf.parse('}{X}'); }).to.throwError();
-        expect(function(){ mf.parse('{}}'); }).to.throwError();
-        expect(function(){ mf.parse('{X}}'); }).to.throwError();
-        expect(function(){ mf.parse('{{X}}'); }).to.throwError();
-        expect(function(){ mf.parse(); }).to.throwError();
+        expect(function(){ MessageFormat._parse('}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{{X}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{}{'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{X}{'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('}{}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('}{X}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{}}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{X}}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{{X}}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse(); }).to.throwError();
         // Technically an empty string is valid.
-        expect(function(){ mf.parse(''); }).to.not.throwError();
+        expect(function(){ MessageFormat._parse(''); }).to.not.throwError();
       });
 
       it("should not allow an offset for SELECTs", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ mf.parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
       });
 
       it("should not allow an offset for SELECTORDINALs", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ mf.parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
       });
 
       it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ mf.parse('{☺}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{☺}'); }).to.throwError();
       });
 
       it("should allow positional variables", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(function(){ mf.parse('{0}'); }).to.not.throwError();
+        expect(function(){ MessageFormat._parse('{0}'); }).to.not.throwError();
       });
 
       it("should throw errors on negative offsets", function () {
-        expect(function(){ mf.parse('{NUM, plural, offset:-4 other{a}}'); }).to.throwError();
+        expect(function(){ MessageFormat._parse('{NUM, plural, offset:-4 other{a}}'); }).to.throwError();
       });
 
     });
@@ -456,16 +417,6 @@ describe( "MessageFormat", function () {
   describe( "Message Formatting", function () {
 
     describe( "Basic API", function () {
-      it("has a precompile function", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(mf.precompile).to.be.a('function');
-      });
-
-      it("precompiles to a string", function () {
-        var mf = new MessageFormat( 'en' );
-        expect(mf.precompile(mf.parse("test"))).to.be.a('string');
-      });
-
       it("has a compile function", function () {
         var mf = new MessageFormat( 'en' );
         expect(mf.compile).to.be.a('function');
@@ -654,7 +605,6 @@ describe( "MessageFormat", function () {
       it("should allow for a simple plural form", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("I have {FRIENDS, plural, one{one friend} other{# friends}}.");
-        //console.log((mf.precompile(mf.parse("I have {FRIENDS, plural, one{one friend} other{# friends}}."))).toString() );
         expect(mfunc({FRIENDS:0})).to.eql("I have 0 friends.");
         expect(mfunc({FRIENDS:1})).to.eql("I have one friend.");
         expect(mfunc({FRIENDS:2})).to.eql("I have 2 friends.");
@@ -663,7 +613,6 @@ describe( "MessageFormat", function () {
       it("should allow for a simple selectordinal form", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor.");
-        //console.log((mf.precompile(mf.parse("The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor."))).toString() );
         expect(mfunc({FLOOR:0})).to.eql("The 0th floor.");
         expect(mfunc({FLOOR:1})).to.eql("The 1st floor.");
         expect(mfunc({FLOOR:2})).to.eql("The 2nd floor.");
@@ -785,7 +734,7 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         var data = { 'key': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
         var source = mf.precompileObject(data);
-        expect(source).to.contain('"key"');
+        expect(source).to.match(/\bkey\b/);
 
         var mfunc = (new Function(
             'var ' + mf.runtime.toString() + ', obj = ' + source + ';' +

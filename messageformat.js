@@ -1505,115 +1505,110 @@
     };
   })();
 
-  MessageFormat.prototype.parse = function () {
+  MessageFormat._parse = function () {
     // Bind to itself so error handling works
     return mparser.parse.apply( mparser, arguments );
   };
 
-  MessageFormat.prototype.precompile = function ( ast ) {
-    var self = this,
-        needOther = false;
+  MessageFormat.prototype._precompile = function(ast, data) {
+    data = data || { keys: {}, offset: {} };
+    var r = [], i, tmp, args = [];
 
-    function _next ( data ) {
-      var res = JSON.parse( JSON.stringify( data ) );
-      res.pf_count++;
-      return res;
-    }
-    function interpMFP ( ast, data ) {
-      data = data || { keys: {}, offset: {} };
-      var r = [], i, tmp, args = [];
+    switch ( ast.type ) {
+      case 'messageFormatPattern':
+        for ( i = 0; i < ast.statements.length; ++i ) {
+          r.push(this._precompile( ast.statements[i], data ));
+        }
+        tmp = r.join('+') || '""';
+        return data.pf_count ? tmp : 'function(d){return ' + tmp + '}';
 
-      switch ( ast.type ) {
-        case 'messageFormatPattern':
-          for ( i = 0; i < ast.statements.length; ++i ) {
-            r.push(interpMFP( ast.statements[i], data ));
-          }
-          tmp = r.join('+') || '""';
-          return data.pf_count ? tmp : 'function(d){return ' + tmp + '}';
+      case 'messageFormatPatternRight':
+        for ( i = 0; i < ast.statements.length; ++i ) {
+          r.push(this._precompile( ast.statements[i], data ));
+        }
+        return r.join('+');
 
-        case 'messageFormatPatternRight':
-          for ( i = 0; i < ast.statements.length; ++i ) {
-            r.push(interpMFP( ast.statements[i], data ));
-          }
-          return r.join('+');
+      case 'messageFormatElement':
+        data.pf_count = data.pf_count || 0;
+        if ( ast.output ) {
+          return 'd[' + JSON.stringify(ast.argumentIndex) + ']';
+        }
+        else {
+          data.keys[data.pf_count] = JSON.stringify(ast.argumentIndex);
+          return this._precompile( ast.elementFormat, data );
+        }
+        return '';
 
-        case 'messageFormatElement':
-          data.pf_count = data.pf_count || 0;
-          if ( ast.output ) {
-            return 'd[' + JSON.stringify(ast.argumentIndex) + ']';
-          }
-          else {
-            data.keys[data.pf_count] = JSON.stringify(ast.argumentIndex);
-            return interpMFP( ast.elementFormat, data );
-          }
-          return '';
-
-        case 'elementFormat':
-          var args = [ 'd[' + data.keys[data.pf_count] + ']' ];
-          switch (ast.key) {
-            case 'select':
-              args.push(interpMFP(ast.val, data));
-              return '_s(' + args.join(',') + ')';
-            case 'selectordinal':
-              args = args.concat([ 0, 'pf[' + JSON.stringify(self.lc[0]) + ']', interpMFP(ast.val, data), 1 ]);
-              return '_p(' + args.join(',') + ')';
-            case 'plural':
-              data.offset[data.pf_count || 0] = ast.val.offset || 0;
-              args = args.concat([ data.offset[data.pf_count] || 0, 'pf[' + JSON.stringify(self.lc[0]) + ']', interpMFP(ast.val, data) ]);
-              return '_p(' + args.join(',') + ')';
-            default:
-              if (!(ast.key in self.runtime.fmt) && (ast.key in MessageFormat.formatters)) {
-                tmp = MessageFormat.formatters[ast.key];
-                self.runtime.fmt[ast.key] = (typeof tmp(self) == 'function') ? tmp(self) : tmp;
-              }
-              args.push(JSON.stringify(self.lc));
-              if (ast.val && ast.val.length) args.push(JSON.stringify(ast.val.length == 1 ? ast.val[0] : ast.val));
-              return 'fmt.' + ast.key + '(' + args.join(',') + ')';
-          }
-
-        case 'pluralFormatPattern':
-        case 'selectFormatPattern':
-          data.pf_count = data.pf_count || 0;
-          if (ast.type == 'selectFormatPattern') data.offset[data.pf_count] = 0;
-          needOther = true;
-          for ( i = 0; i < ast.pluralForms.length; ++i ) {
-            if ( ast.pluralForms[ i ].key === 'other' ) {
-              needOther = false;
+      case 'elementFormat':
+        var args = [ 'd[' + data.keys[data.pf_count] + ']' ];
+        switch (ast.key) {
+          case 'select':
+            args.push(this._precompile(ast.val, data));
+            return '_s(' + args.join(',') + ')';
+          case 'selectordinal':
+            args = args.concat([ 0, 'pf[' + JSON.stringify(this.lc[0]) + ']', this._precompile(ast.val, data), 1 ]);
+            return '_p(' + args.join(',') + ')';
+          case 'plural':
+            data.offset[data.pf_count || 0] = ast.val.offset || 0;
+            args = args.concat([ data.offset[data.pf_count] || 0, 'pf[' + JSON.stringify(this.lc[0]) + ']', this._precompile(ast.val, data) ]);
+            return '_p(' + args.join(',') + ')';
+          default:
+            if (!(ast.key in this.runtime.fmt) && (ast.key in MessageFormat.formatters)) {
+              tmp = MessageFormat.formatters[ast.key];
+              this.runtime.fmt[ast.key] = (typeof tmp(this) == 'function') ? tmp(this) : tmp;
             }
-            r.push('"' + ast.pluralForms[ i ].key + '":' + interpMFP( ast.pluralForms[ i ].val, _next(data) ));
-          }
-          if ( needOther ) {
-            throw new Error("No 'other' form found in " + ast.type + " " + data.pf_count);
-          }
-          return '{' + r.join(',') + '}';
+            args.push(JSON.stringify(this.lc));
+            if (ast.val && ast.val.length) args.push(JSON.stringify(ast.val.length == 1 ? ast.val[0] : ast.val));
+            return 'fmt.' + ast.key + '(' + args.join(',') + ')';
+        }
 
-        case 'string':
-          tmp = '"' + (ast.val || "").replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"';
-          if ( data.pf_count ) {
-            args = [ 'd[' + data.keys[data.pf_count-1] + ']' ];
-            if (data.offset[data.pf_count-1]) args.push(data.offset[data.pf_count-1]);
-            tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + '_n(' + args.join(',') + ')+"');
-            tmp = tmp.replace(/^""\+/, '').replace(/\+""$/, '');
+      case 'pluralFormatPattern':
+      case 'selectFormatPattern':
+        data.pf_count = data.pf_count || 0;
+        if (ast.type == 'selectFormatPattern') data.offset[data.pf_count] = 0;
+        var needOther = true;
+        for ( i = 0; i < ast.pluralForms.length; ++i ) {
+          var key = ast.pluralForms[i].key;
+          if ( key === 'other' ) {
+            needOther = false;
           }
-          return tmp;
+          if (!/^[A-Z_$][0-9A-Z_$]*$/i.test(key)) key = JSON.stringify(key);
+          var data_copy = JSON.parse(JSON.stringify(data));
+          data_copy.pf_count++;
+          r.push(key + ':' + this._precompile(ast.pluralForms[i].val, data_copy));
+        }
+        if ( needOther ) {
+          throw new Error("No 'other' form found in " + ast.type + " " + data.pf_count);
+        }
+        return '{' + r.join(',') + '}';
 
-        default:
-          throw new Error( 'Bad AST type: ' + ast.type );
-      }
+      case 'string':
+        tmp = '"' + (ast.val || "").replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"';
+        if ( data.pf_count ) {
+          args = [ 'd[' + data.keys[data.pf_count-1] + ']' ];
+          if (data.offset[data.pf_count-1]) args.push(data.offset[data.pf_count-1]);
+          tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + '_n(' + args.join(',') + ')+"');
+          tmp = tmp.replace(/^""\+/, '').replace(/\+""$/, '');
+        }
+        return tmp;
+
+      default:
+        throw new Error( 'Bad AST type: ' + ast.type );
     }
-    return interpMFP( ast.program );
   };
 
   MessageFormat.prototype.compile = function ( message ) {
+    var ast = MessageFormat._parse(message).program;
     return (new Function('_n,_p,_s,pf,fmt',
-      'return ' + this.precompile( this.parse( message ))
+      'return ' + this._precompile(ast)
     ))(this.runtime._n, this.runtime._p, this.runtime._s, this.runtime.pf, this.runtime.fmt);
   };
 
   MessageFormat.prototype.precompileObject = function ( messages ) {
     var tmp = [];
     for (var key in messages) {
-      tmp.push(JSON.stringify(key) + ':' + this.precompile(this.parse(messages[key])));
+      if (!/^[A-Z_$][0-9A-Z_$]*$/i.test(key)) key = JSON.stringify(key);
+      tmp.push(key + ':' + this.compile(messages[key]).toString());
     }
     return '{\n' + tmp.join(',\n') + '}';
   };
