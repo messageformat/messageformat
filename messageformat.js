@@ -93,6 +93,11 @@
     }
   };
 
+  MessageFormat.prototype.setIntlSupport = function(enable) {
+	  this.withIntlSupport = !!enable || (typeof enable == 'undefined');
+	  return this;
+  };
+
   MessageFormat.prototype.runtime = {
     _n: function(v,o){if(isNaN(v))throw new Error("'"+v+"' isn't a number.");return v-(o||0)},
     _p: function(v,o,l,p,s){return v in p?p[v]:(v=l(v-o,s),v in p?p[v]:p.other)},
@@ -1557,7 +1562,7 @@
             args = args.concat([ data.offset[data.pf_count] || 0, 'pf[' + JSON.stringify(this.lc[0]) + ']', this._precompile(ast.val, data) ]);
             return '_p(' + args.join(',') + ')';
           default:
-            if (!(ast.key in this.runtime.fmt) && (ast.key in MessageFormat.formatters)) {
+            if (this.withIntlSupport && !(ast.key in this.runtime.fmt) && (ast.key in MessageFormat.formatters)) {
               tmp = MessageFormat.formatters[ast.key];
               this.runtime.fmt[ast.key] = (typeof tmp(this) == 'function') ? tmp(this) : tmp;
             }
