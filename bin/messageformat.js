@@ -96,13 +96,12 @@ var
     if (fs.existsSync(o.output) && fs.statSync(o.output).isDirectory()) {
       o.output = Path.join(o.output, 'i18n.js');
     }
-    o.namespace = o.namespace.replace(/^window\./, '')
+    o.namespace = o.module ? 'module.exports' : o.namespace.replace(/^window\./, '')
     return o;
   })(),
   _log = (options.verbose ? function(s) { console.log(s); } : function(){});
 
 function write(options, data) {
-  data = data.join('\n');
   if (options.stdout) { _log(''); return console.log(data); }
   fs.writeFile( options.output, data, 'utf8', function(err) {
     if (err) return console.error('--->\t' + err.message);
@@ -110,67 +109,55 @@ function write(options, data) {
   });
 }
 
-function parseFileSync(options, mf, file) {
-  var path = Path.join(options.inputdir, file),
-      lc0 = mf.lc,
+function parseFileSync(dir, file) {
+  var path = Path.join(dir, file),
       file_parts = file.split(/[.\/]+/),
-      r = '';
+      r = { namespace: null, locale: null, data: null };
   if (!fs.statSync(path).isFile()) {
     _log('Skipping ' + file);
-    return '';
+    return null;
   }
+  r.namespace = file.replace(/\.[^.]*$/, '').replace(/\\/g, '/');
   for (var i = file_parts.length - 1; i >= 0; --i) {
-    if (file_parts[i] in MessageFormat.locale) { mf.lc = file_parts[i]; break; }
+    if (file_parts[i] in MessageFormat.plurals) { r.locale = file_parts[i]; break; }
   }
   try {
-    var text = fs.readFileSync(path, 'utf8'),
-          nm = JSON.stringify(file.replace(/\.[^.]*$/, '').replace(/\\/g, '/'));
-    _log('Building ' + nm + ' from `' + file + '` with locale "' + mf.lc + '"');
-    r = nm + ':' + mf.precompileObject(JSON.parse(text));
+    _log('Building ' + JSON.stringify(r.namespace) + ' from `' + file + '` with ' + (r.locale ? 'locale ' + JSON.stringify(r.locale) : 'default locale'));
+    r.data = JSON.parse(fs.readFileSync(path, 'utf8'));
   } catch (ex) {
-    console.error('--->\tParse error in ' + path + ': ' + ex.message);
-  } finally {
-    mf.lc = lc0;
+    console.error('--->\tRead error in ' + path + ': ' + ex.message);
   }
   return r;
 }
 
 function build(options, callback) {
   var lc = options.locale.trim().split(/[ ,]+/),
-      mf = new MessageFormat(lc[0], false),
-      compiledMessageFormat = [];
-  for (var i = 1; i < lc.length; ++i) MessageFormat.loadLocale(lc[i]);
+      mf = new MessageFormat(lc[0]),
+      messages = {},
+      compileOpt = { global: options.namespace, locale: {} };
+  for (var i = 1; i < lc.length; ++i) {
+    if (!MessageFormat.getPluralFunc(lc[i])) throw 'Plural function for locale `' + lc[i] + '` could not be loaded';
+  }
   _log('Input dir: ' + options.inputdir);
   _log('Included locales: ' + lc.join(', '));
   glob(options.include, {cwd: options.inputdir}, function(err, files) {
     if (!err) async.each(files,
       function(file, cb) {
-        var pf = parseFileSync(options, mf, file);
-        if (pf) compiledMessageFormat.push(pf);
+        var r = parseFileSync(options.inputdir, file);
+        if (r && r.data) {
+          messages[r.namespace] = r.data;
+          if (r.locale) compileOpt.locale[r.namespace] = r.locale;
+        }
         cb();
       },
       function() {
-        if (options.module) {
-          return buildForCommonJSModule(mf, compiledMessageFormat, callback, options);
-        } else {
-          return buildForWindowGlobal(mf, compiledMessageFormat, callback, options);
-        }
+        var fn_str = mf.compile(messages, compileOpt).toString();
+        fn_str = fn_str.replace(/^\s*function\b[^{]*{\s*/, '').replace(/\s*}\s*$/, '');
+        var data = options.module ? fn_str : '(function(G){' + fn_str + '\n})(this);';
+        return callback(options, data.trim() + '\n');
       }
     );
   });
-}
-
-function buildForCommonJSModule(mf, compiledMessageFormat, callback, options) {
-    var data = ['var f = ' + mf.runtime.toString() + ';']
-        .concat('module.exports = {' + compiledMessageFormat.join(',\n') + '};\n');
-    return callback(options, data);
-}
-
-function buildForWindowGlobal(mf, compiledMessageFormat, callback, options) {
-    var data = ['(function(G){var f=' + mf.runtime.toString() + ';']
-        .concat('G[' + JSON.stringify(options.namespace) + ']={' + compiledMessageFormat.join(',\n') + '}')
-        .concat('})(this);\n');
-    return callback(options, data);
 }
 
 build(options, write);
