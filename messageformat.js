@@ -1657,7 +1657,7 @@
     exports.MessageFormat = MessageFormat;
   }
   else if (typeof define === 'function' && define.amd) {
-    define(function() {
+    define(['make-plural'], function() {
       return MessageFormat;
     });
   }
