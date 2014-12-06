@@ -524,3 +524,7 @@ Thanks to:
 * [Bazaarvoice](https://github.com/Bazaarvoice) - my employer - for letting me do cool stuff like this.
 * Google has an implementation that is similar in Google Closure, I tried to vet my code against many of their tests.
 * Norbert Lindenberg for showing me how good it can be.
+
+## Implementations in other languages
+
+[Jeff Hansen](https://github.com/jeffijoe) ([@jeffijoe](https://twitter.com/jeffijoe)) wrote an implementation for .NET: https://github.com/jeffijoe/messageformat.net - it's a Portable Class Library, making it possible to use on iOS, Android, Windows Phone, and pretty much any other .NET target.
