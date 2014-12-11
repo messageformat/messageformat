@@ -137,18 +137,27 @@ These require node:
 
 You **really** should take advantage of this. It is _much_ faster than parsing in real-time.
 
-I will eventually release a Handlebars and Require.js (r.js) plugin to do this automatically, but if you would like to output the raw javascript function, the following does that:
+I will eventually release a Handlebars and Require.js (r.js) plugin to do this automatically. For now you can grab the raw javascript function the following way:
 
 ```javascript
 var mf = new MessageFormat('en');
-var js_string_represenation = mf.precompile(
-  mf.parse(
-    'Your {NUM, plural, one{message} other{messages}} go here.'
-  )
-);
+var message = mf.compile
+  ( 'Your {NUM, plural, '
+  +   'one{message goes here} '
+  +   'other{messages go here one by one}}'
+  + '.'
+  );
 
-// This returns an unnamed - unreferenced function that needs to be passed the
-// MessageFormat object. See the source of `MessageFormat.compile` for more details.
+// This returns an unnamed function that expects the dataset as argument:
+message({NUM: 1});  // » 'Your message goes here.'
+message({NUM: 5});  // » 'Your messages go here one by one.'
+
+// If you want to process the function further, you can call the toString
+// method directly:
+message.toString();
+// »
+// 'function (d){return "Your "+i18n.p(d,"NUM",0,"en",{"one":"message goes
+// here","other":"messages go here one by one"})+"."}'
 ```
 
 ### The CLI compiler
