@@ -42,5 +42,5 @@
     "serve": "*",
     "pegjs": "*"
   },
-  "license": "To use or fork, Apache License, Version 2.0. To contribute back, Dojo CLA"
+  "license": "To use or fork, MIT License. To contribute back, Dojo CLA"
 }

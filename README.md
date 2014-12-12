@@ -504,7 +504,7 @@ Most Gettext tools will look up the Plural Forms for a given locale for you. Thi
 
 ## License
 
-You may use this software under the Apache License, version 2.0.
+You may use this software under the MIT License.
 
 You may contribute to this software under the Dojo CLA - <http://dojofoundation.org/about/cla>
 
