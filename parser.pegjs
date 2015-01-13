@@ -32,25 +32,25 @@ messageFormatElement
   }
 
 elementFormat
-  = _ t:"plural" _ ',' _ s:pluralStyle _ {
+  = _ t:"plural" _ ',' _ s:pluralFormatPattern _ {
     return {
       type : "elementFormat",
       key  : t,
-      val  : s.val
+      val  : s
     };
   }
-  / _ t:"selectordinal" _ ',' _ s:selectStyle _ {
+  / _ t:"selectordinal" _ ',' _ s:selectFormatPattern _ {
     return {
       type : "elementFormat",
       key  : t,
-      val  : s.val
+      val  : s
     };
   }
-  / _ t:"select" _ ',' _ s:selectStyle _ {
+  / _ t:"select" _ ',' _ s:selectFormatPattern _ {
     return {
       type : "elementFormat",
       key  : t,
-      val  : s.val
+      val  : s
     };
   }
   / _ t:id p:argStylePattern* {
@@ -59,16 +59,6 @@ elementFormat
       key  : t,
       val  : p
     };
-  }
-
-pluralStyle
-  = pfp:pluralFormatPattern {
-    return { type: "pluralStyle", val: pfp };
-  }
-
-selectStyle
-  = sfp:selectFormatPattern {
-    return { type: "selectStyle", val: sfp };
   }
 
 pluralFormatPattern
@@ -159,6 +149,8 @@ char
 
 digits
   = ds:[0-9]+ {
+    //the number might start with 0 but must not be interpreted as an octal number
+    //Hence, the base is passed to parseInt explicitely
     return parseInt((ds.join('')), 10);
   }
 
