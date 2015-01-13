@@ -52,6 +52,8 @@ describe( "MessageFormat", function () {
         expect( MessageFormat._parse( '☺☺☺☺' ).program.statements[0].val ).to.be( '☺☺☺☺' );
         expect( MessageFormat._parse( 'This is \n a string' ).program.statements[0].val ).to.be( 'This is \n a string' );
         expect( MessageFormat._parse( '中国话不用彁字。' ).program.statements[0].val ).to.be( '中国话不用彁字。' );
+        expect( MessageFormat._parse( ' \t leading whitspace' ).program.statements[0].val ).to.be( ' \t leading whitspace' );
+        expect( MessageFormat._parse( 'trailing whitespace   \n  ' ).program.statements[0].val ).to.be( 'trailing whitespace   \n  ' );
       });
 
       it("should allow you to escape { and } characters", function () {
