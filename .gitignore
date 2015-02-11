@@ -1,4 +1,5 @@
 /node_modules/**/*
+lib/message_parser.js
 
 # Numerous always-ignore extensions
 *.diff
@@ -23,6 +24,7 @@ Thumbs.db
 nbproject
 *.sublime-project
 *.sublime-workspace
+.vimrc
 
 # Dreamweaver added files
 _notes
@@ -43,8 +45,6 @@ publish
 # build script local files
 build/buildinfo.properties
 build/config/buildinfo.properties
-
-lib/message_parser.js
 
 # Test artifacts
 test/common-js-generated-test-fixture.js
