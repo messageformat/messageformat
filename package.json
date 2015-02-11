@@ -1,22 +1,7 @@
 {
   "name": "messageformat",
   "version": "0.2.1",
-  "author": "Alex Sexton <alexsexton@gmail.com>",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
-  "repository": {
-    "type": "git",
-    "url": "https://SlexAxton@github.com/SlexAxton/messageformat.js.git"
-  },
-  "scripts": {
-    "test": "bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js; mocha --require test/common --reporter spec --growl test/tests.js"
-  },
-  "main": "./messageformat",
-  "bin": {
-    "messageformat": "./bin/messageformat.js"
-  },
-  "contributors": [
-    "Eemeli Aro <eemeli@gmail.com>"
-  ],
   "keywords": [
     "i18n",
     "pluralformat",
@@ -27,14 +12,31 @@
     "messageformat",
     "internationalization"
   ],
+  "author": "Alex Sexton <alexsexton@gmail.com>",
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "To use or fork, MIT License. To contribute back, Dojo CLA",
+  "homepage": "https://github.com/SlexAxton/messageformat.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SlexAxton/messageformat.js.git"
+  },
+  "main": "./messageformat",
+  "bin": { "messageformat": "./bin/messageformat.js" },
+  "files": [
+    "messageformat.js",
+    "bin/messageformat.js",
+    "example",
+    "LICENSE",
+    "README.md"
+  ],
   "dependencies": {
-    "nopt": "~2.1.2",
-    "coffee-script": "~1.7.0",
-    "watchr": "~2.4.9",
-    "underscore": "~1.5.2",
     "async": "~0.2.10",
     "glob": "~3.2.8",
-    "make-plural": "~2.0.0"
+    "make-plural": "~2.1.1",
+    "nopt": "~2.1.2",
+    "watchr": "~2.4.9"
   },
   "devDependencies": {
     "expect.js": "*",
@@ -43,5 +45,7 @@
     "pegjs": "*",
     "serve": "*"
   },
-  "license": "To use or fork, MIT License. To contribute back, Dojo CLA"
+  "scripts": {
+    "test": "bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js; mocha --require test/common --reporter spec --growl test/tests.js"
+  }
 }

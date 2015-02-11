@@ -1,6 +1,6 @@
-/node_modules/**/*
-lib/message_parser.js
 doc/
+lib/message_parser.js
+node_modules/
 
 # Numerous always-ignore extensions
 *.diff
@@ -14,7 +14,7 @@ doc/
 *~
 *.sass-cache
 
-# OS or Editor folders
+# OS or Editor files
 .DS_Store
 Thumbs.db
 .cache
@@ -27,25 +27,14 @@ nbproject
 *.sublime-workspace
 .vimrc
 
-# Dreamweaver added files
-_notes
-dwsync.xml
-
 # Komodo
 *.komodoproject
 .komodotools
 
 # Folders to ignore
-.hg
-.svn
-.CVS
 intermediate
 publish
 .idea
-
-# build script local files
-build/buildinfo.properties
-build/config/buildinfo.properties
 
 # Test artifacts
 test/common-js-generated-test-fixture.js
