@@ -1,5 +1,5 @@
 # 
-# Copyright 2014
+# Copyright 2012-2014 Alex Sexton, Eemeli Aro, and Contributors
 # 
 # Licensed under the MIT License
 # 
