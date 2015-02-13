@@ -12,6 +12,9 @@ STOP=\033[0m
 CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
+doc: ./lib/messageformat.dev.js
+	@./node_modules/.bin/jsdoc -c jsdoc-conf.json
+
 test:
 	@npm run test
 

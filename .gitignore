@@ -1,5 +1,6 @@
 /node_modules/**/*
 lib/message_parser.js
+doc/
 
 # Numerous always-ignore extensions
 *.diff
