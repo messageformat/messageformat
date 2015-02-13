@@ -14,7 +14,7 @@
   "bin": {
     "messageformat": "./bin/messageformat.js"
   },
-  "contributors":[
+  "contributors": [
     "Eemeli Aro <eemeli@gmail.com>"
   ],
   "keywords": [
@@ -37,10 +37,11 @@
     "make-plural": "~2.0.0"
   },
   "devDependencies": {
-    "mocha": "*",
     "expect.js": "*",
-    "serve": "*",
-    "pegjs": "*"
+    "jsdoc": "^3.3.0-beta1",
+    "mocha": "*",
+    "pegjs": "*",
+    "serve": "*"
   },
   "license": "To use or fork, MIT License. To contribute back, Dojo CLA"
 }

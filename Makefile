@@ -1,5 +1,5 @@
 # 
-# Copyright 2014
+# Copyright 2012-2014 Alex Sexton, Eemeli Aro, and Contributors
 # 
 # Licensed under the MIT License
 # 
@@ -11,6 +11,9 @@ YELLOW=\033[33;01m
 STOP=\033[0m
 CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
+
+doc: ./lib/messageformat.dev.js
+	@./node_modules/.bin/jsdoc -c jsdoc-conf.json
 
 test:
 	@npm run test
