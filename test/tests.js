@@ -48,23 +48,23 @@ describe( "MessageFormat", function () {
     describe( "Replacement", function () {
 
       it("should accept string only input", function () {
-        expect( MessageFormat._parse( 'This is a string' ).program.statements[0].val ).to.be( 'This is a string' );
-        expect( MessageFormat._parse( '☺☺☺☺' ).program.statements[0].val ).to.be( '☺☺☺☺' );
-        expect( MessageFormat._parse( 'This is \n a string' ).program.statements[0].val ).to.be( 'This is \n a string' );
-        expect( MessageFormat._parse( '中国话不用彁字。' ).program.statements[0].val ).to.be( '中国话不用彁字。' );
-        expect( MessageFormat._parse( ' \t leading whitspace' ).program.statements[0].val ).to.be( ' \t leading whitspace' );
-        expect( MessageFormat._parse( 'trailing whitespace   \n  ' ).program.statements[0].val ).to.be( 'trailing whitespace   \n  ' );
+        expect( MessageFormat._parse( 'This is a string' ).statements[0].val ).to.be( 'This is a string' );
+        expect( MessageFormat._parse( '☺☺☺☺' ).statements[0].val ).to.be( '☺☺☺☺' );
+        expect( MessageFormat._parse( 'This is \n a string' ).statements[0].val ).to.be( 'This is \n a string' );
+        expect( MessageFormat._parse( '中国话不用彁字。' ).statements[0].val ).to.be( '中国话不用彁字。' );
+        expect( MessageFormat._parse( ' \t leading whitspace' ).statements[0].val ).to.be( ' \t leading whitspace' );
+        expect( MessageFormat._parse( 'trailing whitespace   \n  ' ).statements[0].val ).to.be( 'trailing whitespace   \n  ' );
       });
 
       it("should allow you to escape { and } characters", function () {
-        expect( MessageFormat._parse("\\{test").program.statements[0].val ).to.eql( '{test' );
-        expect( MessageFormat._parse("test\\}").program.statements[0].val ).to.eql( 'test}' );
-        expect( MessageFormat._parse("\\{test\\}").program.statements[0].val ).to.eql( '{test}' );
+        expect( MessageFormat._parse("\\{test").statements[0].val ).to.eql( '{test' );
+        expect( MessageFormat._parse("test\\}").statements[0].val ).to.eql( 'test}' );
+        expect( MessageFormat._parse("\\{test\\}").statements[0].val ).to.eql( '{test}' );
       });
 
       it("should gracefully handle quotes (since it ends up in a JS String)", function () {
-        expect( MessageFormat._parse('This is a dbl quote: "').program.statements[0].val ).to.eql( 'This is a dbl quote: "' );
-        expect( MessageFormat._parse("This is a single quote: '").program.statements[0].val ).to.eql( "This is a single quote: '" );
+        expect( MessageFormat._parse('This is a dbl quote: "').statements[0].val ).to.eql( 'This is a dbl quote: "' );
+        expect( MessageFormat._parse("This is a single quote: '").statements[0].val ).to.eql( "This is a single quote: '" );
       });
 
       it("should accept only a variable", function () {
@@ -82,32 +82,32 @@ describe( "MessageFormat", function () {
       });
 
       it("should maintain exact strings - not affected by variables", function () {
-        expect( MessageFormat._parse('x{test}').program.statements[0].val ).to.be( 'x' );
-        expect( MessageFormat._parse('\n{test}').program.statements[0].val ).to.be( '\n' );
-        expect( MessageFormat._parse(' {test}').program.statements[0].val ).to.be( ' ' );
-        expect( MessageFormat._parse('x { test}').program.statements[0].val ).to.be( 'x ' );
-        expect( MessageFormat._parse('x{test} x ').program.statements[2].val ).to.be( ' x ' );
-        expect( MessageFormat._parse('x\n{test}\n').program.statements[0].val ).to.be( 'x\n' );
-        expect( MessageFormat._parse('x\n{test}\n').program.statements[2].val ).to.be( '\n' );
+        expect( MessageFormat._parse('x{test}').statements[0].val ).to.be( 'x' );
+        expect( MessageFormat._parse('\n{test}').statements[0].val ).to.be( '\n' );
+        expect( MessageFormat._parse(' {test}').statements[0].val ).to.be( ' ' );
+        expect( MessageFormat._parse('x { test}').statements[0].val ).to.be( 'x ' );
+        expect( MessageFormat._parse('x{test} x ').statements[2].val ).to.be( ' x ' );
+        expect( MessageFormat._parse('x\n{test}\n').statements[0].val ).to.be( 'x\n' );
+        expect( MessageFormat._parse('x\n{test}\n').statements[2].val ).to.be( '\n' );
       });
 
       it("should handle extended character literals", function () {
-        expect( MessageFormat._parse('☺{test}').program.statements[0].val ).to.be( '☺' );
-        expect( MessageFormat._parse('中{test}中国话不用彁字。').program.statements[2].val ).to.be( '中国话不用彁字。' );
+        expect( MessageFormat._parse('☺{test}').statements[0].val ).to.be( '☺' );
+        expect( MessageFormat._parse('中{test}中国话不用彁字。').statements[2].val ).to.be( '中国话不用彁字。' );
       });
 
       it("shouldn't matter if it has html or something in it", function () {
-        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').program.statements[0].val ).to.be( '<div class="test">content: ' );
-        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').program.statements[1].argumentIndex ).to.be( 'TEST' );
-        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').program.statements[2].val ).to.be( '</div>' );
+        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').statements[0].val ).to.be( '<div class="test">content: ' );
+        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').statements[1].argumentIndex ).to.be( 'TEST' );
+        expect( MessageFormat._parse('<div class="test">content: {TEST}</div>').statements[2].val ).to.be( '</div>' );
       });
 
       it("should allow you to use extension keywords for plural formats everywhere except where they go", function () {
-        expect( MessageFormat._parse('select select, ').program.statements[0].val ).to.eql( 'select select, ' );
-        expect( MessageFormat._parse('select offset, offset:1 ').program.statements[0].val ).to.eql( 'select offset, offset:1 ' );
-        expect( MessageFormat._parse('one other, =1 ').program.statements[0].val ).to.eql( 'one other, =1 ' );
-        expect( MessageFormat._parse('one {select} ').program.statements[1].argumentIndex ).to.eql( 'select' );
-        expect( MessageFormat._parse('one {plural} ').program.statements[1].argumentIndex ).to.eql( 'plural' );
+        expect( MessageFormat._parse('select select, ').statements[0].val ).to.eql( 'select select, ' );
+        expect( MessageFormat._parse('select offset, offset:1 ').statements[0].val ).to.eql( 'select offset, offset:1 ' );
+        expect( MessageFormat._parse('one other, =1 ').statements[0].val ).to.eql( 'one other, =1 ' );
+        expect( MessageFormat._parse('one {select} ').statements[1].argumentIndex ).to.eql( 'select' );
+        expect( MessageFormat._parse('one {plural} ').statements[1].argumentIndex ).to.eql( 'plural' );
       });
     });
 
@@ -127,20 +127,17 @@ describe( "MessageFormat", function () {
 
       it("should allow you to use MessageFormat extension keywords other places, including in select keys", function () {
         // use `select` as a select key
-        expect( MessageFormat._parse( 'x {TEST, select, select{a} other{b} }' )
-                    .program.statements[1]
-                    .elementFormat.val.pluralForms[0].key
-              ).to.eql( 'select' );
+        expect(MessageFormat._parse('x {TEST, select, select{a} other{b} }')
+          .statements[1].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'select' );
         // use `offset` as a key (since it goes here in a `plural` case)
-        expect( MessageFormat._parse( 'x {TEST, select, offset{a} other{b} }' )
-                    .program.statements[1]
-                    .elementFormat.val.pluralForms[0].key
-              ).to.eql( 'offset' );
+        expect(MessageFormat._parse('x {TEST, select, offset{a} other{b} }')
+          .statements[1].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'offset' );
         // use the exact variable name as a key name
-        expect( MessageFormat._parse( 'x {TEST, select, TEST{a} other{b} }' )
-                    .program.statements[1]
-                    .elementFormat.val.pluralForms[0].key
-              ).to.eql( 'TEST' );
+        expect(MessageFormat._parse('x {TEST, select, TEST{a} other{b} }')
+          .statements[1].elementFormat.val.pluralForms[0].key
+        ).to.eql( 'TEST' );
       });
 
       it("should be case-sensitive (select keyword is lowercase, everything else doesn't matter", function () {
@@ -159,47 +156,47 @@ describe( "MessageFormat", function () {
 
       it("should accept exact values with `=` prefixes", function () {
         expect(
-          MessageFormat._parse('{NUM, plural, =0{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, plural, =0{e1} other{2}}').statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 0 );
         expect(
-          MessageFormat._parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, plural, =1{e1} other{2}}').statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 1 );
         expect(
-          MessageFormat._parse('{NUM, plural, =2{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, plural, =2{e1} other{2}}').statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 2 );
         expect(
-          MessageFormat._parse('{NUM, plural, =1{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[1].key
+          MessageFormat._parse('{NUM, plural, =1{e1} other{2}}').statements[0].elementFormat.val.pluralForms[1].key
         ).to.eql( "other" );
       });
 
       it("should accept the 6 official keywords", function () {
         // 'zero', 'one', 'two', 'few', 'many' and 'other'
         expect(
-          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          MessageFormat._parse( '{NUM, plural,   zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural,   zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          MessageFormat._parse( '{NUM, plural,zero    {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural,zero    {0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          MessageFormat._parse( '{NUM, plural,  \nzero\n   {0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse( '{NUM, plural,  \nzero\n   {0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 'zero' );
         expect(
-          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[1].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[1].key
         ).to.eql( 'one' );
         expect(
-          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[2].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[2].key
         ).to.eql( 'two' );
         expect(
-          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[3].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[3].key
         ).to.eql( 'few' );
         expect(
-          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[4].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[4].key
         ).to.eql( 'many' );
         expect(
-          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).program.statements[0].elementFormat.val.pluralForms[5].key
+          MessageFormat._parse( '{NUM, plural, zero{0} one{1} two{2} few{5} many{100} other{101}}' ).statements[0].elementFormat.val.pluralForms[5].key
         ).to.eql( 'other' );
       });
 
@@ -219,10 +216,10 @@ describe( "MessageFormat", function () {
         expect( MessageFormat._parse('{NUM,plural,offset:4other{a}}') ).to.be.ok();
 
         expect(
-          MessageFormat._parse('{NUM, plural, offset:4 other{a}}').program.statements[0].elementFormat.val.offset
+          MessageFormat._parse('{NUM, plural, offset:4 other{a}}').statements[0].elementFormat.val.offset
         ).to.eql( 4 );
         expect(
-          MessageFormat._parse('{NUM,plural,offset:4other{a}}').program.statements[0].elementFormat.val.offset
+          MessageFormat._parse('{NUM,plural,offset:4other{a}}').statements[0].elementFormat.val.offset
         ).to.eql( 4 );
 
       });
@@ -237,16 +234,16 @@ describe( "MessageFormat", function () {
 
       it("should accept exact values with `=` prefixes", function () {
         expect(
-          MessageFormat._parse('{NUM, selectordinal, =0{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, selectordinal, =0{e1} other{2}}').statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 0 );
         expect(
-          MessageFormat._parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, selectordinal, =1{e1} other{2}}').statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 1 );
         expect(
-          MessageFormat._parse('{NUM, selectordinal, =2{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[0].key
+          MessageFormat._parse('{NUM, selectordinal, =2{e1} other{2}}').statements[0].elementFormat.val.pluralForms[0].key
         ).to.eql( 2 );
         expect(
-          MessageFormat._parse('{NUM, selectordinal, =1{e1} other{2}}').program.statements[0].elementFormat.val.pluralForms[1].key
+          MessageFormat._parse('{NUM, selectordinal, =1{e1} other{2}}').statements[0].elementFormat.val.pluralForms[1].key
         ).to.eql( "other" );
       });
 
@@ -258,31 +255,28 @@ describe( "MessageFormat", function () {
         expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{a}}}}'); }).to.not.throwError();
         expect(
           MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{a}}}}')
-            .program
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].val
         ).to.eql( 'a' );
 
         expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}'); }).to.not.throwError();
         expect(
-         MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}')
-            .program
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].val
+          MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{b}}}}}}')
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].val
         ).to.eql( 'b' );
 
         expect(function(){ var a = MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}'); }).to.not.throwError();
         expect(
-         MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}')
-            .program
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].val
+          MessageFormat._parse('{NUM1, select, other{{NUM2, select, other{{NUM3, select, other{{NUM4, select, other{c}}}}}}}}')
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].val
         ).to.eql( 'c' );
       });
 
@@ -320,12 +314,11 @@ describe( "MessageFormat", function () {
 
         expect(
           MessageFormat._parse('{NUM1, plural, offset:1 other{{NUM2, plural, offset:1 other{{NUM3, plural, offset:1 other{{NUM4, plural, offset:1 other{c}}}}}}}}')
-            .program
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].val
         ).to.eql('c');
       });
 
@@ -363,12 +356,11 @@ describe( "MessageFormat", function () {
 
         expect(
           MessageFormat._parse('{NUM1, selectordinal, other{{NUM2, plural, offset:1 other{{NUM3, selectordinal, other{{NUM4, plural, offset:1 other{c}}}}}}}}')
-            .program
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].elementFormat.val.pluralForms[0].val
-              .statements[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].elementFormat.val.pluralForms[0].val
+            .statements[0].val
         ).to.eql('c');
       });
 
