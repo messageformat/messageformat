@@ -142,22 +142,20 @@
           peg$startRuleFunctions = { start: peg$parsestart },
           peg$startRuleFunction  = peg$parsestart,
   
-          peg$c0 = function(messageFormatPattern) { return { type: "program", program: messageFormatPattern }; },
+          peg$c0 = function(messageFormatPattern) {
+                return { type: "program", program: messageFormatPattern };
+              },
           peg$c1 = peg$FAILED,
           peg$c2 = [],
           peg$c3 = function(s1, inner) {
-              var st = [];
-              if ( s1 && s1.val ) {
-                st.push( s1 );
-              }
-              for( var i = 0; i < inner.length; i++ ){
-                st.push( inner[ i ][ 0 ] );
-                if( inner[ i ][ 1 ].val !== "") {
-                  st.push( inner[ i ][ 1 ] );
+                var st = [];
+                if (s1 && s1.val) st.push(s1);
+                for (var i = 0; i < inner.length; i++) {
+                  st.push(inner[i][0]);
+                  if (inner[i][1].val !== "") st.push(inner[i][1]);
                 }
-              }
-              return { type: 'messageFormatPattern', statements: st };
-            },
+                return { type: 'messageFormatPattern', statements: st };
+              },
           peg$c4 = "{",
           peg$c5 = { type: "literal", value: "{", description: "\"{\"" },
           peg$c6 = null,
@@ -166,119 +164,80 @@
           peg$c9 = "}",
           peg$c10 = { type: "literal", value: "}", description: "\"}\"" },
           peg$c11 = function(argIdx, efmt) {
-              var res = { 
-                type: "messageFormatElement",
-                argumentIndex: argIdx
-              };
-              if ( efmt && efmt.length ) {
-                res.elementFormat = efmt[1];
-              }
-              else {
-                res.output = true;
-              }
-              return res;
-            },
+                var res = {
+                  type: "messageFormatElement",
+                  argumentIndex: argIdx
+                };
+                if (efmt && efmt.length) {
+                  res.elementFormat = efmt[1];
+                } else {
+                  res.output = true;
+                }
+                return res;
+              },
           peg$c12 = "plural",
           peg$c13 = { type: "literal", value: "plural", description: "\"plural\"" },
           peg$c14 = function(t, s) {
-              return {
-                type : "elementFormat",
-                key  : t,
-                val  : s
-              };
-            },
+                return { type: "elementFormat", key: t, val: s };
+              },
           peg$c15 = "selectordinal",
           peg$c16 = { type: "literal", value: "selectordinal", description: "\"selectordinal\"" },
           peg$c17 = "select",
           peg$c18 = { type: "literal", value: "select", description: "\"select\"" },
           peg$c19 = function(t, p) {
-              return {
-                type : "elementFormat",
-                key  : t,
-                val  : p
-              };
-            },
+                return { type: "elementFormat", key: t, val: p };
+              },
           peg$c20 = function(op, pf) {
-              var res = {
-                type: "pluralFormatPattern",
-                pluralForms: pf
-              };
-              if ( op ) {
-                res.offset = op;
-              }
-              else {
-                res.offset = 0;
-              }
-              return res;
-            },
+                var res = {
+                  type: "pluralFormatPattern",
+                  pluralForms: pf
+                };
+                if ( op ) {
+                  res.offset = op;
+                }
+                else {
+                  res.offset = 0;
+                }
+                return res;
+              },
           peg$c21 = "offset",
           peg$c22 = { type: "literal", value: "offset", description: "\"offset\"" },
           peg$c23 = ":",
           peg$c24 = { type: "literal", value: ":", description: "\":\"" },
-          peg$c25 = function(d) {
-              return d;
-            },
-          peg$c26 = function(pf) {
-              return {
-                type: "selectFormatPattern",
-                pluralForms: pf
-              };
-            },
+          peg$c25 = function(d) { return d; },
+          peg$c26 = function(pf) { return { type: "selectFormatPattern", pluralForms: pf }; },
           peg$c27 = function(k, mfp) {
-              return {
-                type: "pluralForms",
-                key: k,
-                val: mfp
-              };
-            },
-          peg$c28 = function(i) {
-              return i;
-            },
+                return { type: "pluralForms", key: k, val: mfp };
+              },
+          peg$c28 = function(i) { return i; },
           peg$c29 = "=",
           peg$c30 = { type: "literal", value: "=", description: "\"=\"" },
-          peg$c31 = function(p) {
-              return p;
-            },
-          peg$c32 = function(s) {
-              return {
-                type: "string",
-                val: s.join('')
-              };
-            },
+          peg$c31 = function(p) { return p; },
+          peg$c32 = function(s) { return { type: "string", val: s.join('') }; },
           peg$c33 = { type: "other", description: "identifier" },
           peg$c34 = /^[0-9a-zA-Z$_]/,
           peg$c35 = { type: "class", value: "[0-9a-zA-Z$_]", description: "[0-9a-zA-Z$_]" },
           peg$c36 = /^[^ \t\n\r,.+={}]/,
           peg$c37 = { type: "class", value: "[^ \\t\\n\\r,.+={}]", description: "[^ \\t\\n\\r,.+={}]" },
-          peg$c38 = function(s) {
-              return s;
-            },
+          peg$c38 = function(s) { return s; },
           peg$c39 = function(chars) { return chars.join(''); },
           peg$c40 = /^[^{}\\\0-\x1F \t\n\r]/,
           peg$c41 = { type: "class", value: "[^{}\\\\\\0-\\x1F \\t\\n\\r]", description: "[^{}\\\\\\0-\\x1F \\t\\n\\r]" },
-          peg$c42 = function(x) {
-              return x;
-            },
+          peg$c42 = function(x) { return x; },
           peg$c43 = "\\#",
           peg$c44 = { type: "literal", value: "\\#", description: "\"\\\\#\"" },
-          peg$c45 = function() {
-              return "\\#";
-            },
+          peg$c45 = function() { return "\\#"; },
           peg$c46 = "\\{",
           peg$c47 = { type: "literal", value: "\\{", description: "\"\\\\{\"" },
-          peg$c48 = function() {
-              return "\u007B";
-            },
+          peg$c48 = function() { return "\u007B"; },
           peg$c49 = "\\}",
           peg$c50 = { type: "literal", value: "\\}", description: "\"\\\\}\"" },
-          peg$c51 = function() {
-              return "\u007D";
-            },
+          peg$c51 = function() { return "\u007D"; },
           peg$c52 = "\\u",
           peg$c53 = { type: "literal", value: "\\u", description: "\"\\\\u\"" },
           peg$c54 = function(h1, h2, h3, h4) {
                 return String.fromCharCode(parseInt("0x" + h1 + h2 + h3 + h4));
-            },
+              },
           peg$c55 = /^[0-9]/,
           peg$c56 = { type: "class", value: "[0-9]", description: "[0-9]" },
           peg$c57 = function(ds) {
