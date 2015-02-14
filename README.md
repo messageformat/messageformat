@@ -415,8 +415,8 @@ var mf = new MessageFormat('en');
 // Set the offset to 1
 var message = mf.compile(
   'You {NUM_ADDS, plural, offset:1' +
-          '=0{didnt add this to your profile}' + // Number literals, with a `=` do **NOT** use
-          'zero{added this to your profile}' +   //   the offset value
+          '=0{didnt add this to your profile}' +  // Number literals, with a `=` do **NOT** use
+          '=1{added this to your profile}' +      // the offset value
           'one{and one other person added this to their profile}' +
           'other{and # others added this to their profiles}' +
       '}.'
