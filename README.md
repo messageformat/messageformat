@@ -140,24 +140,40 @@ You **really** should take advantage of this. It is _much_ faster than parsing i
 I will eventually release a Handlebars and Require.js (r.js) plugin to do this automatically. For now you can grab the raw javascript function the following way:
 
 ```javascript
-var mf = new MessageFormat('en');
-var message = mf.compile
-  ( 'Your {NUM, plural, '
-  +   'one{message goes here} '
-  +   'other{messages go here one by one}}'
-  + '.'
-  );
+> var mf = new MessageFormat('en');
+> var messages = {
+    simple: 'A simple message.',
+    var: 'Message with {X}.',
+    plural: 'You have {N, plural, =0{no messages} one{1 message} other{# messages}}.',
+    select: '{GENDER, select, male{He has} female{She has} other{They have}} sent you a message.',
+    ordinal: 'The {N, selectordinal, one{1st} two{2nd} few{3rd} other{#th}} message.' };
 
-// This returns an unnamed function that expects the dataset as argument:
-message({NUM: 1});  // » 'Your message goes here.'
-message({NUM: 5});  // » 'Your messages go here one by one.'
+> var vfunc = mf.compile(messages.var);
+> vfunc({X:'a variable'})
+'Message with a variable.'
+> vfunc.toString()
+'function (d){return "Message with "+d["X"]+"."}'
 
-// If you want to process the function further, you can call the toString
-// method directly:
-message.toString();
-// »
-// 'function (d){return "Your "+i18n.p(d,"NUM",0,"en",{"one":"message goes
-// here","other":"messages go here one by one"})+"."}'
+> var mfunc = mf.compile(messages);
+> mfunc().ordinal({N:3})
+'The 3rd message.'
+
+> console.log(mfunc.toString())
+function anonymous() {
+var
+n=function(v,o){ if (isNaN(v)) throw new Error("'"+v+"' isn't a number."); return v - (o||0) },
+p=function(v,o,l,p,s){ return v in p ? p[v] : ( v = l(o ? v-o : v, s), v in p ? p[v] : p.other ) },
+s=function(v,p){ return v in p ? p[v] : p.other },
+pf={"en":function(n,ord) { var s = String(n).split('.'), v0 = !s[1], t0 = Number(s[0]) == n, n10 = t0 && s[0].substr(-1), n100 = t0 && s[0].substr(-2); if (ord) return (n10 == 1 && n100 != 11) ? 'one' : (n10 == 2 && n100 != 12) ? 'two' : (n10 == 3 && n100 != 13) ? 'few' : 'other'; return (n == 1 && v0) ? 'one' : 'other'; }},
+fmt={};
+
+return {
+simple:function(d){return "A simple message."},
+var:function(d){return "Message with "+d["X"]+"."},
+plural:function(d){return "You have "+p(d["N"],0,pf["en"],{0:"no messages",one:"1 message",other:n(d["N"])+" messages"})+"."},
+select:function(d){return s(d["GENDER"],{male:"He has",female:"She has",other:"They have"})+" sent you a message."},
+ordinal:function(d){return "The "+p(d["N"],0,pf["en"],{one:"1st",two:"2nd",few:"3rd",other:n(d["N"])+"th"},1)+" message."}}
+}
 ```
 
 ### The CLI compiler
