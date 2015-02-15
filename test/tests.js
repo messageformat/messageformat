@@ -539,21 +539,21 @@ describe( "MessageFormat", function () {
       it("should use the locale plural function", function() {
         var mf = new MessageFormat( 'cy' );
         var mfunc = mf.compile("{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}");
-        expect(mfunc.toString()).to.contain('"cy"');
+        expect(mfunc.toString()).to.match(/\bcy\b/);
         expect(mfunc({num: 5})).to.be("+");
       });
 
       it("should use the locale selectordinal function", function() {
         var mf = new MessageFormat( 'cy' );
         var mfunc = mf.compile("{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}");
-        expect(mfunc.toString()).to.contain('"cy"');
+        expect(mfunc.toString()).to.match(/\bcy\b/);
         expect(mfunc({num: 5})).to.be("5,6");
       });
 
       it("should use the fallback locale plural function if the locale isn't available", function() {
         var mf = new MessageFormat( 'en-x-test1-test2' );
         var mfunc = mf.compile("{num, plural, one {# thing} other {# things}}");
-        expect(mfunc.toString()).to.contain('"en');
+        expect(mfunc.toString()).to.match(/\ben\b/);
         expect(mfunc({num: 3})).to.be("3 things");
       });
 

@@ -31,8 +31,8 @@
       pluralFunc = MessageFormat.getPluralFunc(this.lc);
       if (!pluralFunc) throw 'Plural function for locale `' + this.lc.join(',') + '` could not be loaded';
     }
-    this.runtime.pf = {};
-    this.runtime.pf[this.lc[0]] = pluralFunc;
+    this.runtime.pluralFuncs = {};
+    this.runtime.pluralFuncs[this.lc[0]] = pluralFunc;
     this.runtime.fmt = {};
     if (formatters) for (var f in formatters) {
       this.runtime.fmt[f] = formatters[f];
@@ -187,50 +187,48 @@
     /**
      * Utility function for `#` in plural rules
      *
-     * @param {number} v - The value to operate on
-     * @param {number} [o=0] - An optional offset, set by the surrounding context
+     * @param {number} value - The value to operate on
+     * @param {number} [offset=0] - An optional offset, set by the surrounding context
      */
-    n: function(v,o){
-      if (isNaN(v)) throw new Error("'"+v+"' isn't a number.");
-      return v - (o||0)
+    number: function(value, offset) {
+      if (isNaN(value)) throw new Error("'" + value + "' isn't a number.");
+      return value - (offset || 0);
     },
 
     /**
      * Utility function for `{N, plural|selectordinal, ...}`
      *
-     * Outer check is for the presence of `v` as a literal numeric key in `p`,
-     * inner applies offset & looks up plural key from `l`, a locale function
-     * from `pf` that uses `s` to choose between cardinal & ordinal plural rules.
-     *
-     * @param {number} v - The key to use to find a pluralization rule
-     * @param {number} o - An offset to apply to `v`
-     * @param {function} l - A locale function from `pf`
-     * @param {Object.<string,string>} p - The object from which results are looked up
-     * @param {?boolean} s - If true, use ordinal rather than cardinal rules
+     * @param {number} value - The key to use to find a pluralization rule
+     * @param {number} offset - An offset to apply to `value`
+     * @param {function} lcfunc - A locale function from `pluralFuncs`
+     * @param {Object.<string,string>} data - The object from which results are looked up
+     * @param {?boolean} isOrdinal - If true, use ordinal rather than cardinal rules
      * @returns {string} The result of the pluralization
      */
-    p: function(v,o,l,p,s){
-      return v in p ? p[v] : (
-        v = l(o ? v-o : v, s),
-        v in p ? p[v] : p.other
-      )
+    plural: function(value, offset, lcfunc, data, isOrdinal) {
+      if (value in data) return data[value];
+      if (offset) value -= offset;
+      var key = lcfunc(value, isOrdinal);
+      if (key in data) return data[key];
+      return data.other;
     },
 
     /**
      * Utility function for `{N, select, ...}`
      *
-     * @param {number} v - The key to use to find a selection
-     * @param {Object.<string,string>} p - The object from which results are looked up
+     * @param {number} value - The key to use to find a selection
+     * @param {Object.<string,string>} data - The object from which results are looked up
      * @returns {string} The result of the select statement
      */
-    s: function(v,p){
-      return v in p ? p[v] : p.other
+    select: function(value, data) {
+      if (value in data) return data[value];
+      return data.other
     },
 
     /** Pluralization functions
      *  @instance
      *  @type Object.<string,function>  */
-    pf: {},
+    pluralFuncs: {},
 
     /** Custom formatting functions called by `{var, fn[, args]*}` syntax
      *  @instance
@@ -238,17 +236,25 @@
      *  @type Object.<string,function>  */
     fmt: {},
 
-    /** Custom stringifier to clean up browser inconsistencies & minify output */
+    /** Custom stringifier to clean up browser inconsistencies */
     toString: function () {
-      var _stringify = function(o, top) {
-        if (typeof o != 'object') return o.toString().replace(/^(function) \w*/, '$1').replace(/\s+/g, ' ');
+      var _stringify = function(o, level) {
+        if (typeof o != 'object') {
+          var funcStr = o.toString().replace(/^(function )\w*/, '$1');
+          var indent = /([ \t]*)\S.*$/.exec(funcStr);
+          return indent ? funcStr.replace(new RegExp('^' + indent[1], 'mg'), '') : funcStr;
+        }
         var s = [];
         for (var i in o) if (i != 'toString') {
-          s.push((top ? i + '=' : JSON.stringify(i) + ':') + _stringify(o[i], false));
+          if (level == 0) s.push('var ' + i + ' = ' + _stringify(o[i], level + 1) + ';\n');
+          else s.push(propname(i) + ': ' + _stringify(o[i], level + 1));
         }
-        return top ? s.join(',\n') : '{' + s.join(',\n') + '}';
+        if (level == 0) return s.join('');
+        if (s.length == 0) return '{}';
+        var indent = '  '; while (--level) indent += '  ';
+        return '{\n' + s.join(',\n').replace(/^/gm, indent) + '\n}';
       };
-      return _stringify(this, true);
+      return _stringify(this, 0);
     }
   };
 
@@ -1528,8 +1534,13 @@
 
   /** Utility function for quoting an Object's key value iff required
    *  @private */
-  var propname = function(s) {
-    return /^[A-Z_$][0-9A-Z_$]*$/i.test(s) ? s : JSON.stringify(s);
+  var propname = function(key, obj) {
+    if (/^[A-Z_$][0-9A-Z_$]*$/i.test(key)) {
+      return obj ? obj + '.' + key : key;
+    } else {
+      var jkey = JSON.stringify(key);
+      return obj ? obj + '[' + jkey + ']' : jkey;
+    }
   };
 
   /** Recursively map an AST to its resulting string
@@ -1543,33 +1554,33 @@
         for ( i = 0; i < ast.statements.length; ++i ) {
           r.push(this._precompile( ast.statements[i], data ));
         }
-        tmp = r.join('+') || '""';
-        return data.pf_count ? tmp : 'function(d){return ' + tmp + '}';
+        tmp = r.join(' + ') || '""';
+        return data.pf_count ? tmp : 'function(d) { return ' + tmp + '; }';
 
       case 'messageFormatElement':
         data.pf_count = data.pf_count || 0;
         if ( ast.output ) {
-          return 'd[' + JSON.stringify(ast.argumentIndex) + ']';
+          return propname(ast.argumentIndex, 'd');
         }
         else {
-          data.keys[data.pf_count] = JSON.stringify(ast.argumentIndex);
+          data.keys[data.pf_count] = ast.argumentIndex;
           return this._precompile( ast.elementFormat, data );
         }
         return '';
 
       case 'elementFormat':
-        var args = [ 'd[' + data.keys[data.pf_count] + ']' ];
+        var args = [ propname(data.keys[data.pf_count], 'd') ];
         switch (ast.key) {
           case 'select':
             args.push(this._precompile(ast.val, data));
-            return 's(' + args.join(',') + ')';
+            return 'select(' + args.join(', ') + ')';
           case 'selectordinal':
-            args = args.concat([ 0, 'pf[' + JSON.stringify(this.lc[0]) + ']', this._precompile(ast.val, data), 1 ]);
-            return 'p(' + args.join(',') + ')';
+            args = args.concat([ 0, propname(this.lc[0], 'pluralFuncs'), this._precompile(ast.val, data), 1 ]);
+            return 'plural(' + args.join(', ') + ')';
           case 'plural':
             data.offset[data.pf_count || 0] = ast.val.offset || 0;
-            args = args.concat([ data.offset[data.pf_count] || 0, 'pf[' + JSON.stringify(this.lc[0]) + ']', this._precompile(ast.val, data) ]);
-            return 'p(' + args.join(',') + ')';
+            args = args.concat([ data.offset[data.pf_count] || 0, propname(this.lc[0], 'pluralFuncs'), this._precompile(ast.val, data) ]);
+            return 'plural(' + args.join(', ') + ')';
           default:
             if (this.withIntlSupport && !(ast.key in this.runtime.fmt) && (ast.key in MessageFormat.formatters)) {
               tmp = MessageFormat.formatters[ast.key];
@@ -1577,7 +1588,7 @@
             }
             args.push(JSON.stringify(this.lc));
             if (ast.val && ast.val.length) args.push(JSON.stringify(ast.val.length == 1 ? ast.val[0] : ast.val));
-            return 'fmt.' + ast.key + '(' + args.join(',') + ')';
+            return 'fmt.' + ast.key + '(' + args.join(', ') + ')';
         }
 
       case 'pluralFormatPattern':
@@ -1592,19 +1603,19 @@
           }
           var data_copy = JSON.parse(JSON.stringify(data));
           data_copy.pf_count++;
-          r.push(propname(key) + ':' + this._precompile(ast.pluralForms[i].val, data_copy));
+          r.push(propname(key) + ': ' + this._precompile(ast.pluralForms[i].val, data_copy));
         }
         if ( needOther ) {
           throw new Error("No 'other' form found in " + ast.type + " " + data.pf_count);
         }
-        return '{' + r.join(',') + '}';
+        return '{ ' + r.join(', ') + ' }';
 
       case 'string':
         tmp = '"' + (ast.val || "").replace(/\n/g, '\\n').replace(/"/g, '\\"') + '"';
         if ( data.pf_count ) {
-          args = [ 'd[' + data.keys[data.pf_count-1] + ']' ];
+          args = [ propname(data.keys[data.pf_count-1], 'd') ];
           if (data.offset[data.pf_count-1]) args.push(data.offset[data.pf_count-1]);
-          tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + 'n(' + args.join(',') + ')+"');
+          tmp = tmp.replace(/(^|[^\\])#/g, '$1"+' + 'number(' + args.join(', ') + ')+"');
           tmp = tmp.replace(/^""\+/, '').replace(/\+""$/, '');
         }
         return tmp;
@@ -1669,16 +1680,21 @@
             throw new Error((ast ? 'Precompiler' : 'Parser') + ' error: ' + e.toString());
           }
         },
-        stringify = function(r) {
+        stringify = function(r, level) {
+          if (!level) level = 0;
           if (typeof r != 'object') return r;
-          var o = [];
-          for (var k in r) o.push(propname(k) + ':' + stringify(r[k]));
-          return '{\n' + o.join(',\n') + '}';
+          var o = [], indent = '';
+          for (var i = 0; i < level; ++i) indent += '  ';
+          for (var k in r) o.push('\n' + indent + '  ' + propname(k) + ': ' + stringify(r[k], level + 1));
+          return '{' + o.join(',') + '\n' + indent + '}';
         };
 
     if (typeof messages == 'string') {
-      var f = new Function('n,p,s,pf,fmt', 'return ' + compileMsg(this, messages));
-      return f(this.runtime.n, this.runtime.p, this.runtime.s, this.runtime.pf, this.runtime.fmt);
+      var f = new Function(
+          'number, plural, select, pluralFuncs, fmt',
+          'return ' + compileMsg(this, messages));
+      return f(this.runtime.number, this.runtime.plural, this.runtime.select,
+          this.runtime.pluralFuncs, this.runtime.fmt);
     }
 
     opt = opt || {};
@@ -1698,18 +1714,18 @@
     }
 
     this.lc = lc0;
-    var s = 'var\n' + this.runtime.toString() + ';\n\n';
+    var s = this.runtime.toString() + '\n';
     switch (opt.global || '') {
       case 'exports':
         var o = [];
-        for (var k in r) o.push('exports[' + JSON.stringify(k) + '] = ' + stringify(r[k]));
+        for (var k in r) o.push(propname(k, 'exports') + ' = ' + stringify(r[k]));
         return new Function(s + o.join(';\n'));
       case 'module.exports':
         return new Function(s + 'module.exports = ' + stringify(r));
       case '':
         return new Function(s + 'return ' + stringify(r));
       default:
-        return new Function('G', s + 'G[' + JSON.stringify(opt.global) + '] = ' + stringify(r));
+        return new Function('G', s + propname(opt.global, 'G') + ' = ' + stringify(r));
     }
   };
 

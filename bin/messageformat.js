@@ -145,7 +145,7 @@ function build(options, callback) {
       function() {
         var fn_str = mf.compile(messages, compileOpt).toString();
         fn_str = fn_str.replace(/^\s*function\b[^{]*{\s*/, '').replace(/\s*}\s*$/, '');
-        var data = options.module ? fn_str : '(function(G){' + fn_str + '\n})(this);';
+        var data = options.module ? fn_str : '(function(G) {\n' + fn_str + '\n})(this);';
         return callback(options, data.trim() + '\n');
       }
     );
