@@ -460,7 +460,7 @@ var message = mf.compile(
 "You and one other person added this to their profile."
 
 > message({"NUM_ADDS" : 3 });
-"You and 3 others added this to their profile."
+"You and 2 others added this to their profile."
 
 ```
 
