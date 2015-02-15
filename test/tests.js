@@ -25,12 +25,12 @@ describe( "MessageFormat", function () {
     it("should fallback when a base pluralFunc exists", function() {
       var mf = new MessageFormat('en-x-test1-test2');
       expect(mf.lc).to.contain( 'en' );
-      expect(mf.runtime.pf['en-x-test1-test2']).to.be.a('function');
+      expect(mf.runtime.pluralFuncs['en-x-test1-test2']).to.be.a('function');
     });
     it("should fallback when a base pluralFunc exists (underscores)", function() {
       var mf = new MessageFormat( 'en_x_test1_test2' );
       expect(mf.lc).to.contain( 'en' );
-      expect(mf.runtime.pf['en_x_test1_test2']).to.be.a('function');
+      expect(mf.runtime.pluralFuncs['en_x_test1_test2']).to.be.a('function');
     });
 
     it("should bail on non-existing locales", function () {
