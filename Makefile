@@ -29,9 +29,9 @@ parser: ./lib/message_parser.js
 
 publish: ./lib/message_parser.js ./lib/messageformat.dev.js
 	@sed \
-		-e '1i\  // This is generated and pulled in for browsers.' \
+		-e '1i\    // This is generated and pulled in for browsers.' \
 		-e 's/module.exports/var mparser/' \
-		-e 's/^/  /' \
+		-e 's/^/    /' \
 		$< > ./parser.tmp.js
 	@sed \
 		-e "/var mparser = require/{r ./parser.tmp.js" \
