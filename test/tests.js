@@ -523,6 +523,13 @@ describe( "MessageFormat", function () {
         expect(mfunc({NUM:2})).to.eql('b');
       });
 
+      it("should obey `i=0 and v=0` rules", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("{NUM, plural, one{a} other{b}}");
+        expect(mfunc({NUM:'1'})).to.eql('a');
+        expect(mfunc({NUM:'1.0'})).to.eql('b');
+      });
+
       it("should give priority to literals", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("{NUM, plural, =34{a} one{b} other{c}}");
