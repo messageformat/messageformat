@@ -126,7 +126,9 @@ function build(options, callback) {
       messages = {},
       compileOpt = { global: options.namespace, locale: {} };
   for (var i = 1; i < lc.length; ++i) {
-    if (!MessageFormat.getPluralFunc(lc[i])) throw 'Plural function for locale `' + lc[i] + '` could not be loaded';
+    var pf = MessageFormat.getPluralFunc([lc[i]]);
+    if (!pf) throw 'Plural function for locale `' + lc[i] + '` could not be loaded';
+    mf.runtime.pluralFuncs[lc[i]] = pf;
   }
   _log('Input dir: ' + options.inputdir);
   _log('Included locales: ' + lc.join(', '));
