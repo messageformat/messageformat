@@ -1,4 +1,12 @@
-/*global describe,it,expect,MessageFormat */
+var assert = require('assert');
+var expect = require('expect.js');
+var MessageFormat = require('../messageformat');
+
+// common-js-generated-test-fixture is generated in the Makefile before the tests are executed using the command
+// bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js
+var i18n = require('./common-js-generated-test-fixture');
+
+/*global describe,it */
 describe( "MessageFormat", function () {
 
   describe( "Public API", function () {
@@ -745,17 +753,11 @@ describe( "MessageFormat", function () {
     });
   });
 
-  if (typeof require !== 'undefined') {
-    describe("CommonJS Support", function () {
-      it("should be able to use with a standard node require", function () {
-        // common-js-generated-test-fixture is generated in the package.json before the tests are executed using the command
-        // bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js
-        var i18n = require('./common-js-generated-test-fixture');
-
-        expect(i18n["example/en/colors"].red()).to.eql('red');
-        expect(i18n["example/en/colors"].blue()).to.eql('blue');
-        expect(i18n["example/en/colors"].green()).to.eql('green');
-      });
+  describe("CommonJS Support", function () {
+    it("should be able to use with a standard node require", function () {
+      expect(i18n["example/en/colors"].red()).to.eql('red');
+      expect(i18n["example/en/colors"].blue()).to.eql('blue');
+      expect(i18n["example/en/colors"].green()).to.eql('green');
     });
-  }
+  });
 });

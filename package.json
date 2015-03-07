@@ -23,7 +23,9 @@
     "url": "https://github.com/SlexAxton/messageformat.js.git"
   },
   "main": "./messageformat",
-  "bin": { "messageformat": "./bin/messageformat.js" },
+  "bin": {
+    "messageformat": "./bin/messageformat.js"
+  },
   "files": [
     "messageformat.js",
     "bin/messageformat.js",
@@ -43,9 +45,10 @@
     "jsdoc": "^3.3.0-beta1",
     "mocha": "*",
     "pegjs": "*",
-    "serve": "*"
+    "serve": "*",
+    "webpack": "^1.7.2"
   },
   "scripts": {
-    "test": "bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js; mocha --require test/common --reporter spec --growl test/tests.js"
+    "test": "make test"
   }
 }
