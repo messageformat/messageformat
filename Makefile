@@ -12,14 +12,21 @@ STOP=\033[0m
 CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
+dist:
+	@./node_modules/.bin/webpack -p --output-library MessageFormat --output-library-target umd messageformat.js dist/messageformat.min.js
+
 doc: ./lib/messageformat.dev.js
 	@./node_modules/.bin/jsdoc -c jsdoc-conf.json
 
 test:
-	@npm run test
+	@bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js
+	@mocha --reporter spec --growl test/tests.js
 
 test-browser:
-	@open "http://127.0.0.1:3000/test/" & ./node_modules/.bin/serve .
+	@bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js
+	@./node_modules/.bin/webpack -d -w test/tests.js test/tests-bundle.js &
+	@./node_modules/.bin/serve test
+	@open "http://127.0.0.1:3000/"
 
 ./lib/message_parser.js: ./lib/message_parser.pegjs
 	@./node_modules/.bin/pegjs $< $@

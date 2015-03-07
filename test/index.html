@@ -1,24 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset=utf-8 />
-    <title>messageformat.js Test Suite</title>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-    <script src="jquery.min.js"></script>
-    <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/expect.js/index.js"></script>
-    <script>mocha.setup('bdd')</script>
-    <script src="../messageformat.js"></script>
-    <script src="../node_modules/make-plural/make-plural.js"></script>
-    <script src="tests.js"></script>
+    <title>messageformat.js tests</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="mocha.css" />
   </head>
   <body>
-    <h1>messageformat.js Test Suite</h1>
     <div id="mocha"></div>
+    <script src="mocha.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <script src="tests-bundle.js"></script>
     <script>
-      window.onload = function () {
-        mocha.run().globals(['MessageFormat']);
-      };
+      mocha.run();
     </script>
   </body>
 </html>
