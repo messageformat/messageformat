@@ -520,10 +520,11 @@ Most Gettext tools will look up the Plural Forms for a given locale for you. Thi
 
 ## Version
 
-`0.2.1`
+`0.3.0-0`
 
 ## TODO
 
+* Update the documentation
 * Create a tool to help translators understand and use this format.
 * Template integration - I specifically want to make a build time handlebars.js plugin to build this logic into the template builds.
 
