@@ -46,6 +46,6 @@
     "serve": "*"
   },
   "scripts": {
-    "test": "bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js; mocha --require test/common --reporter spec --growl test/tests.js"
+    "test": "make test"
   }
 }
