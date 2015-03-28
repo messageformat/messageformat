@@ -140,10 +140,14 @@ describe( "MessageFormat", function () {
         ).to.eql( 'TEST' );
       });
 
-      it("should be case-sensitive (select keyword is lowercase, everything else doesn't matter", function () {
+      it("should be case-sensitive (select keyword is lowercase, everything else doesn't matter)", function () {
         expect(function(){ var a = MessageFormat._parse('{TEST, Select, a{a} other{b}}'); }).to.throwError();
         expect(function(){ var a = MessageFormat._parse('{TEST, SELECT, a{a} other{b}}'); }).to.throwError();
         expect(function(){ var a = MessageFormat._parse('{TEST, selecT, a{a} other{b}}'); }).to.throwError();
+      });
+
+      it("should not accept keys with `=` prefixes", function () {
+        expect(function(){ var a = MessageFormat._parse('{TEST, select, =0{a} other{b}}'); }).to.throwError();
       });
 
     });
@@ -389,8 +393,8 @@ describe( "MessageFormat", function () {
         expect(function(){ MessageFormat._parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
       });
 
-      it("should not allow an offset for SELECTORDINALs", function () {
-        expect(function(){ MessageFormat._parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
+      it("should allow an offset for SELECTORDINALs", function () {
+        expect(function(){ MessageFormat._parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.not.throwError();
       });
 
       it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function () {
