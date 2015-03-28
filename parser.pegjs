@@ -30,7 +30,7 @@ elementFormat
   = _ t:"plural" _ ',' _ s:pluralFormatPattern _ {
       return { type: "elementFormat", key: t, val: s };
     }
-  / _ t:"selectordinal" _ ',' _ s:selectFormatPattern _ {
+  / _ t:"selectordinal" _ ',' _ s:pluralFormatPattern _ {
       return { type: "elementFormat", key: t, val: s };
     }
   / _ t:"select" _ ',' _ s:selectFormatPattern _ {
@@ -48,17 +48,22 @@ pluralFormatPattern
 offsetPattern
   = _ "offset" _ ":" _ d:digits _ { return d; }
 
-selectFormatPattern
-  = pf:pluralForms* { return { type: "selectFormatPattern", pluralForms: pf }; }
-
 pluralForms
-  = _ k:stringKey _ "{" _ mfp:messageFormatPattern _ "}" {
-      return { type: "pluralForms", key: k, val: mfp };
+  = _ k:pluralKey _ "{" _ mfp:messageFormatPattern _ "}" {
+      return { key: k, val: mfp };
     }
 
-stringKey
+pluralKey
   = i:id { return i; }
   / "=" d:digits { return d; }
+
+selectFormatPattern
+  = pf:selectForms* { return { type: "selectFormatPattern", pluralForms: pf }; }
+
+selectForms
+  = _ k:id _ "{" _ mfp:messageFormatPattern _ "}" {
+      return { key: k, val: mfp };
+    }
 
 argStylePattern
   = _ "," _ p:id _ { return p; }
