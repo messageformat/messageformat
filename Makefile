@@ -13,22 +13,13 @@ BIN=./node_modules/.bin
 .PHONY: test test-browser clean
 
 
-messageformat.js: lib/messageformat-parser.js lib/messageformat.js
-	@sed \
-		-e '1i\    // This is generated and pulled in for browsers.' \
-		-e 's/module.exports/var mparser/' \
-		-e 's/^/    /' \
-		$< > ./parser.tmp.js
-	@sed \
-		-e "/var mparser = require/{r ./parser.tmp.js" \
-		-e "d}" \
-		$(word 2,$^) > $@
-	@rm ./parser.tmp.js
+messageformat.js: lib/messageformat.js lib/messageformat-parser.js
+	@${BIN}/browserify $< -s MessageFormat -o $@
 	@echo "${CHK} messageformat.js is now ready for browsers."
 
 lib/messageformat-parser.js: lib/messageformat-parser.pegjs
 	@${BIN}/pegjs $< $@
-	@echo "${CHK} parser re-compiled by pegjs"
+	@echo "${CHK} parser re-compiled by PEGjs"
 
 
 doc: lib/messageformat.js

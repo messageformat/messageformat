@@ -23,7 +23,9 @@
     "url": "https://github.com/SlexAxton/messageformat.js.git"
   },
   "main": "lib/messageformat",
-  "bin": { "messageformat": "./bin/messageformat.js" },
+  "bin": {
+    "messageformat": "./bin/messageformat.js"
+  },
   "files": [
     "lib/messageformat.js",
     "lib/messageformat-parser.js",
@@ -35,11 +37,12 @@
   "dependencies": {
     "async": "~0.2.10",
     "glob": "~3.2.8",
-    "make-plural": "~2.1.1",
+    "make-plural": "3.0.0-rc2",
     "nopt": "~2.1.2",
     "watchr": "~2.4.9"
   },
   "devDependencies": {
+    "browserify": "^9.0.3",
     "expect.js": "*",
     "jsdoc": "^3.3.0-beta1",
     "mocha": "*",

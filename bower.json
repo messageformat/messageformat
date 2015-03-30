@@ -16,8 +16,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/SlexAxton/messageformat.js.git"
-  },
-  "dependencies": {
-    "make-plural": "~2.1.2"
   }
 }
