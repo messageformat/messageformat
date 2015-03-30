@@ -1,6 +1,10 @@
-doc/
-lib/message_parser.js
+/doc/
+/lib/messageformat-parser.js
+/messageformat.js
 node_modules/
+
+# Test artifacts
+/test/common-js-generated-test-fixture.js
 
 # Numerous always-ignore extensions
 *.diff
@@ -35,6 +39,3 @@ nbproject
 intermediate
 publish
 .idea
-
-# Test artifacts
-test/common-js-generated-test-fixture.js

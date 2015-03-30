@@ -3,7 +3,7 @@
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "main": "messageformat.js",
   "license": "To use or fork, MIT License. To contribute back, Dojo CLA",
-  "ignore": [ ".*", "lib/", "test/", "Makefile"],
+  "ignore": [ ".*", "lib/", "test/", "component.json", "jsdoc-conf.json", "Makefile", "package.json"],
   "keywords": [
     "i18n", "icu", "internationalization", "gettext",
     "messageformat", "pluralformat", "selectformat", "choiceformat"
