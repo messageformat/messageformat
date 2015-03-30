@@ -38,7 +38,7 @@ doc: lib/messageformat.dev.js
 test/common-js-generated-test-fixture.js: bin/messageformat.js messageformat.js example/en/colors.json
 	@./$< --module --locale en --include $(word 3,$^) -o $@
 
-test: test/common-js-generated-test-fixture.js
+test: messageformat.js test/common-js-generated-test-fixture.js
 	@${BIN}/mocha --require test/common --reporter spec --growl test/tests.js
 
 test-browser: test/common-js-generated-test-fixture.js

@@ -206,11 +206,11 @@
      * @returns {string} The result of the pluralization
      */
     plural: function(value, offset, lcfunc, data, isOrdinal) {
-      if (value in data) return data[value];
+      if (value in data) return data[value]();
       if (offset) value -= offset;
       var key = lcfunc(value, isOrdinal);
-      if (key in data) return data[key];
-      return data.other;
+      if (key in data) return data[key]();
+      return data.other();
     },
 
     /**
@@ -221,8 +221,8 @@
      * @returns {string} The result of the select statement
      */
     select: function(value, data) {
-      if (value in data) return data[value];
-      return data.other
+      if (value in data) return data[value]();
+      return data.other()
     },
 
     /** Pluralization functions
@@ -1667,18 +1667,14 @@
         data.pf_count = data.pf_count || 0;
         if (ast.type == 'selectFormatPattern') data.offset[data.pf_count] = 0;
         var needOther = true;
-        for ( i = 0; i < ast.pluralForms.length; ++i ) {
+        for (i = 0; i < ast.pluralForms.length; ++i) {
           var key = ast.pluralForms[i].key;
-          if ( key === 'other' ) {
-            needOther = false;
-          }
+          if (key === 'other') needOther = false;
           var data_copy = JSON.parse(JSON.stringify(data));
           data_copy.pf_count++;
-          r.push(propname(key) + ': ' + this._precompile(ast.pluralForms[i].val, data_copy));
+          r.push(propname(key) + ': function() { return ' + this._precompile(ast.pluralForms[i].val, data_copy) + ';}');
         }
-        if ( needOther ) {
-          throw new Error("No 'other' form found in " + ast.type + " " + data.pf_count);
-        }
+        if (needOther) throw new Error("No 'other' form found in " + ast.type + " " + data.pf_count);
         return '{ ' + r.join(', ') + ' }';
 
       case 'string':

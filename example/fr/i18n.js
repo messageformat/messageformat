@@ -4,15 +4,15 @@ var number = function (value, offset) {
   return value - (offset || 0);
 };
 var plural = function (value, offset, lcfunc, data, isOrdinal) {
-  if (value in data) return data[value];
+  if (value in data) return data[value]();
   if (offset) value -= offset;
   var key = lcfunc(value, isOrdinal);
-  if (key in data) return data[key];
-  return data.other;
+  if (key in data) return data[key]();
+  return data.other();
 };
 var select = function (value, data) {
-  if (value in data) return data[value];
-  return data.other
+  if (value in data) return data[value]();
+  return data.other()
 };
 var pluralFuncs = {
   fr: function(n,ord) {
@@ -29,7 +29,7 @@ G.i18n = {
     green: function(d) { return "vert"; }
   },
   "sub/folder/plural": {
-    test: function(d) { return plural(d.NUM, 0, pluralFuncs.fr, { one: "Votre message se trouve", other: "Vos messages se trouvent" }) + " ici."; }
+    test: function(d) { return plural(d.NUM, 0, pluralFuncs.fr, { one: function() { return "Votre message se trouve";}, other: function() { return "Vos messages se trouvent";} }) + " ici."; }
   }
 }
 })(this);
