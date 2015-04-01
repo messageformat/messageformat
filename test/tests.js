@@ -660,6 +660,18 @@ describe( "MessageFormat", function () {
         expect(function(){ var x = mfunc({}); }).to.throwError(/ isn't a number\.$/);
         expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/ isn't a number\.$/);
       });
+
+      it("should not expose prototype members - selects", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("I am {FEELING, select, a{happy} b{sad} other{indifferent}}.");
+        expect(mfunc({FEELING:"toString"})).to.eql("I am indifferent.");
+      });
+
+      it("should not expose prototype members - plurals", function () {
+        var mf = new MessageFormat( 'en' );
+        var mfunc = mf.compile("I have {FRIENDS, plural, one{one friend} other{friends}}.");
+        expect(mfunc({FRIENDS:"toString"})).to.eql("I have friends.");
+      });
     });
 
     describe("Real World Uses", function  () {

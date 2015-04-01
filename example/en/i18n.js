@@ -4,20 +4,20 @@ var number = function (value, offset) {
   return value - (offset || 0);
 };
 var plural = function (value, offset, lcfunc, data, isOrdinal) {
-  if (value in data) return data[value]();
+  if (data.hasOwnProperty(value)) return data[value]();
   if (offset) value -= offset;
   var key = lcfunc(value, isOrdinal);
   if (key in data) return data[key]();
   return data.other();
 };
 var select = function (value, data) {
-  if (value in data) return data[value]();
+  if (data.hasOwnProperty(value)) return data[value]();
   return data.other()
 };
 var pluralFuncs = {
   en: function(n,ord) {
     var s = String(n).split('.'), v0 = !s[1], t0 = Number(s[0]) == n,
-        n10 = t0 && s[0].substr(-1), n100 = t0 && s[0].substr(-2);
+        n10 = t0 && s[0].slice(-1), n100 = t0 && s[0].slice(-2);
     if (ord) return (n10 == 1 && n100 != 11) ? 'one'
         : (n10 == 2 && n100 != 12) ? 'two'
         : (n10 == 3 && n100 != 13) ? 'few'

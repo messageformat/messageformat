@@ -4,14 +4,14 @@ var number = function (value, offset) {
   return value - (offset || 0);
 };
 var plural = function (value, offset, lcfunc, data, isOrdinal) {
-  if (value in data) return data[value]();
+  if (data.hasOwnProperty(value)) return data[value]();
   if (offset) value -= offset;
   var key = lcfunc(value, isOrdinal);
   if (key in data) return data[key]();
   return data.other();
 };
 var select = function (value, data) {
-  if (value in data) return data[value]();
+  if (data.hasOwnProperty(value)) return data[value]();
   return data.other()
 };
 var pluralFuncs = {
