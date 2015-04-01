@@ -607,6 +607,15 @@ describe( "MessageFormat", function () {
         expect(mfunc({})).to.eql("I am indifferent.");
       });
 
+      it("should not evaluate select paths that aren't taken", function() {
+        var mf = new MessageFormat( 'en' );
+        var spyCalled = false;
+        mf.runtime.fmt.spy = function(v) { spyCalled = true; return "spy"; };
+        var mfunc = mf.compile("{VAR, select, a{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
+        expect(mfunc({VAR:"a"})).to.eql("correct");
+        expect(spyCalled).to.eql(false);
+      });
+
       it("should allow for a simple plural form", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("I have {FRIENDS, plural, one{one friend} other{# friends}}.");
@@ -615,12 +624,30 @@ describe( "MessageFormat", function () {
         expect(mfunc({FRIENDS:2})).to.eql("I have 2 friends.");
       });
 
+      it("should not evaluate plural paths that aren't taken", function() {
+        var mf = new MessageFormat( 'en' );
+        var spyCalled = false;
+        mf.runtime.fmt.spy = function(v) { spyCalled = true; return "spy"; };
+        var mfunc = mf.compile("{VAR, plural, one{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
+        expect(mfunc({VAR:1})).to.eql("correct");
+        expect(spyCalled).to.eql(false);
+      });
+
       it("should allow for a simple selectordinal form", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor.");
         expect(mfunc({FLOOR:0})).to.eql("The 0th floor.");
         expect(mfunc({FLOOR:1})).to.eql("The 1st floor.");
         expect(mfunc({FLOOR:2})).to.eql("The 2nd floor.");
+      });
+
+      it("should not evaluate selectordinal paths that aren't taken", function() {
+        var mf = new MessageFormat( 'en' );
+        var spyCalled = false;
+        mf.runtime.fmt.spy = function(v) { spyCalled = true; return "spy"; };
+        var mfunc = mf.compile("{VAR, selectordinal, one{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
+        expect(mfunc({VAR:1})).to.eql("correct");
+        expect(spyCalled).to.eql(false);
       });
 
       it("should reject number injections of numbers that don't exist", function () {
