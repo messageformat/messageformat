@@ -204,6 +204,12 @@ describe( "MessageFormat", function () {
         ).to.eql( 'other' );
       });
 
+      it("should reject invalid keys", function() {
+        expect(function(){ var a = MessageFormat._parse('{NUM, plural, uno{1} other{2}}'); }).to.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM, plural, some{1} other{2}}'); }).to.throwError();
+        expect(function(){ var a = MessageFormat._parse('{NUM, plural, one{1} xyz {-1} other{2}}'); }).to.throwError();
+      });
+
       it("should be gracious with whitespace", function () {
         var firstRes = JSON.stringify( MessageFormat._parse('{NUM, plural, one{1} other{2}}') );
         expect(JSON.stringify( MessageFormat._parse('{ NUM, plural, one{1} other{2} }') )).to.eql( firstRes );
@@ -394,7 +400,7 @@ describe( "MessageFormat", function () {
       });
 
       it("should allow an offset for SELECTORDINALs", function () {
-        expect(function(){ MessageFormat._parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.not.throwError();
+        expect(function(){ MessageFormat._parse('{NUM, selectordinal, offset:1 one { 1 } other { 2 }}'); }).to.not.throwError();
       });
 
       it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function () {
@@ -506,7 +512,7 @@ describe( "MessageFormat", function () {
 
       it("throws an error when no `other` option is found - plurals", function () {
         var mf = new MessageFormat( 'en' );
-        expect(function(){ var x = mf.compile("{X, plural, someoption{a}}"); }).to.throwError();
+        expect(function(){ var x = mf.compile("{X, plural, one{a}}"); }).to.throwError();
       });
 
       it("throws an error when no `other` option is found - selects", function () {
@@ -516,7 +522,7 @@ describe( "MessageFormat", function () {
 
       it("throws an error when no `other` option is found - selectordinals", function () {
         var mf = new MessageFormat( 'en' );
-        expect(function(){ var x = mf.compile("{X, selectordinal, someoption{a}}"); }).to.throwError();
+        expect(function(){ var x = mf.compile("{X, selectordinal, one{a}}"); }).to.throwError();
       });
 
       it("only calculates the offset from non-literals", function () {
@@ -628,7 +634,7 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         var spyCalled = false;
         mf.runtime.fmt.spy = function(v) { spyCalled = true; return "spy"; };
-        var mfunc = mf.compile("{VAR, plural, one{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
+        var mfunc = mf.compile("{VAR, plural, one{correct} few{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
         expect(mfunc({VAR:1})).to.eql("correct");
         expect(spyCalled).to.eql(false);
       });
@@ -645,7 +651,7 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en' );
         var spyCalled = false;
         mf.runtime.fmt.spy = function(v) { spyCalled = true; return "spy"; };
-        var mfunc = mf.compile("{VAR, selectordinal, one{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
+        var mfunc = mf.compile("{VAR, selectordinal, one{correct} few{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
         expect(mfunc({VAR:1})).to.eql("correct");
         expect(spyCalled).to.eql(false);
       });
