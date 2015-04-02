@@ -206,7 +206,7 @@
      * @returns {string} The result of the pluralization
      */
     plural: function(value, offset, lcfunc, data, isOrdinal) {
-      if (data.hasOwnProperty(value)) return data[value]();
+      if ({}.hasOwnProperty.call(data, value)) return data[value]();
       if (offset) value -= offset;
       var key = lcfunc(value, isOrdinal);
       if (key in data) return data[key]();
@@ -221,7 +221,7 @@
      * @returns {string} The result of the select statement
      */
     select: function(value, data) {
-      if (data.hasOwnProperty(value)) return data[value]();
+      if ({}.hasOwnProperty.call(data, value)) return data[value]();
       return data.other()
     },
 

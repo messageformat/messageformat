@@ -663,7 +663,7 @@ describe( "MessageFormat", function () {
 
       it("should not expose prototype members - selects", function () {
         var mf = new MessageFormat( 'en' );
-        var mfunc = mf.compile("I am {FEELING, select, a{happy} b{sad} other{indifferent}}.");
+        var mfunc = mf.compile("I am {FEELING, select, a{happy} hasOwnProperty{evil} other{indifferent}}.");
         expect(mfunc({FEELING:"toString"})).to.eql("I am indifferent.");
       });
 
