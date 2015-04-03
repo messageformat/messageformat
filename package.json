@@ -37,7 +37,7 @@
   "dependencies": {
     "async": "~0.2.10",
     "glob": "~3.2.8",
-    "make-plural": "3.0.0-rc2",
+    "make-plural": "^3.0.0-rc4",
     "nopt": "~2.1.2",
     "watchr": "~2.4.9"
   },

@@ -125,11 +125,10 @@ function build(options, callback) {
       mf = new MessageFormat(lc[0]),
       messages = {},
       compileOpt = { global: options.namespace, locale: {} };
-  for (var i = 1; i < lc.length; ++i) {
-    var pf = MessageFormat.getPluralFunc([lc[i]]);
-    if (!pf) throw 'Plural function for locale `' + lc[i] + '` could not be loaded';
-    mf.runtime.pluralFuncs[lc[i]] = pf;
-  }
+  lc.slice(1).forEach(function(l){
+    var pf = mf.runtime.pluralFuncs[l] = MessageFormat.plurals[l];
+    if (!pf) throw 'Plural function for locale `' + l + '` not found';
+  });
   _log('Input dir: ' + options.inputdir);
   _log('Included locales: ' + lc.join(', '));
   glob(options.include, {cwd: options.inputdir}, function(err, files) {
