@@ -79,6 +79,7 @@ chars
 
 char
   = x:[^{}#\\\0-\x1F\x7f \t\n\r] { return x; }
+  / "\\\\" { return "\\"; }
   / "\\#" { return "#"; }
   / "\\{" { return "\u007B"; }
   / "\\}" { return "\u007D"; }
