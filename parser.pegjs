@@ -2,7 +2,7 @@ start
   = messageFormatPattern
 
 messageFormatPattern
-  = st:(messageFormatElement/string)* {
+  = st:(messageFormatElement/string/octothorpe)* {
       return { type: 'messageFormatPattern', statements: st };
     }
 
@@ -62,6 +62,9 @@ selectForm
 argStylePattern
   = _ "," _ p:id _ { return p; }
 
+octothorpe
+  = '#' { return {type: 'octothorpe'}; };
+
 string
   = s:(chars/whitespace)+ { return { type: "string", val: s.join('') }; }
 
@@ -75,8 +78,8 @@ chars
   = chars:char+ { return chars.join(''); }
 
 char
-  = x:[^{}\\\0-\x1F\x7f \t\n\r] { return x; }
-  / "\\#" { return "\\#"; }
+  = x:[^{}#\\\0-\x1F\x7f \t\n\r] { return x; }
+  / "\\#" { return "#"; }
   / "\\{" { return "\u007B"; }
   / "\\}" { return "\u007D"; }
   / "\\u" h1:hexDigit h2:hexDigit h3:hexDigit h4:hexDigit {
