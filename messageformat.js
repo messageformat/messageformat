@@ -1362,7 +1362,7 @@ module.exports = (function() {
 },{}],2:[function(require,module,exports){
 /** @file messageformat.js - ICU PluralFormat + SelectFormat for JavaScript
  *  @author Alex Sexton - @SlexAxton
- *  @version 0.3.0-0
+ *  @version 0.3.0-1
  *  @copyright 2012-2015 Alex Sexton, Eemeli Aro, and Contributors
  *  @license To use or fork, MIT. To contribute back, Dojo CLA  */
 
