@@ -1,28 +1,4 @@
-@font-face {
-    font-family: 'Open Sans';
-    font-weight: normal;
-    font-style: normal;
-    src: url('../fonts/OpenSans-Regular-webfont.eot');
-    src:
-        local('Open Sans'),
-        local('OpenSans'),
-        url('../fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/OpenSans-Regular-webfont.woff') format('woff'),
-        url('../fonts/OpenSans-Regular-webfont.svg#open_sansregular') format('svg');
-}
-
-@font-face {
-    font-family: 'Open Sans Light';
-    font-weight: normal;
-    font-style: normal;
-    src: url('../fonts/OpenSans-Light-webfont.eot');
-    src:
-        local('Open Sans Light'),
-        local('OpenSans Light'),
-        url('../fonts/OpenSans-Light-webfont.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/OpenSans-Light-webfont.woff') format('woff'),
-        url('../fonts/OpenSans-Light-webfont.svg#open_sanslight') format('svg');
-}
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,300,400,600);
 
 html
 {
@@ -147,7 +123,6 @@ h1, h2, h3, h4 {
 
 h1
 {
-    font-family: 'Open Sans Light', sans-serif;
     font-size: 48px;
     letter-spacing: -2px;
     margin: 12px 24px 20px;
