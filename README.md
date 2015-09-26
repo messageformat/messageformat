@@ -554,3 +554,7 @@ Thanks to:
 ## Implementations in other languages
 
 [Jeff Hansen](https://github.com/jeffijoe) ([@jeffijoe](https://twitter.com/jeffijoe)) wrote an implementation for .NET: https://github.com/jeffijoe/messageformat.net - it's a Portable Class Library, making it possible to use on iOS, Android, Windows Phone, and pretty much any other .NET target.
+
+## Additional tools
+
+[icu-converter](https://github.com/alex-dow/icu-converter) is a NodeJS tool for converting message files in the [ICU Resource Bundle](http://userguide.icu-project.org/locale/resources) format into JSON or .property files.
