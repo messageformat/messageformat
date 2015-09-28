@@ -151,13 +151,17 @@ function build(options, callback) {
   });
 }
 
-build(options, write);
+function runner(options) {
+  build(options, write);
+}
+
+runner(options);
 
 if (options.watch) {
   _log('watching for changes in ' + options.inputdir + '...\n');
   require('watchr').watch({
     path: options.inputdir,
     ignorePaths: [ options.output ],
-    listener: function(changeType, filePath) { if (/\.json$/.test(filePath)) build(options, write); }
+    listener: function(changeType, filePath) { if (/\.json$/.test(filePath)) runner(options); }
   });
 }
