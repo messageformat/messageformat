@@ -61,9 +61,6 @@ var
   },
   options = (function() {
     var o = nopt(knownOpts, shortHands, process.argv, 2);
-    for (var key in defaults) {
-      o[key] = o[key] || defaults[key];
-    }
     if (o.argv.remain) {
       if (o.argv.remain.length >= 1) o.inputdir = o.argv.remain[0];
       if (o.argv.remain.length >= 2) o.output = o.argv.remain[1];
@@ -83,10 +80,6 @@ var
       console.log(usage.join('\n'));
       process.exit(0);
     }
-    if (fs.existsSync(o.output) && fs.statSync(o.output).isDirectory()) {
-      o.output = Path.join(o.output, 'i18n.js');
-    }
-    o.namespace = o.module ? 'module.exports' : o.namespace.replace(/^window\./, '')
     return o;
   })(),
   _log = (options.verbose ? function(s) { console.log(s); } : function(){});
@@ -121,6 +114,13 @@ function parseFileSync(dir, file) {
 }
 
 function build(options, callback) {
+  for (var key in defaults) {
+    options[key] = options[key] || defaults[key];
+  }
+  if (fs.existsSync(options.output) && fs.statSync(options.output).isDirectory()) {
+    options.output = Path.join(options.output, 'i18n.js');
+  }
+  options.namespace = options.module ? 'module.exports' : options.namespace.replace(/^window\./, '');
   var lc = options.locale.trim().split(/[ ,]+/),
       mf = new MessageFormat(lc[0]),
       messages = {},
