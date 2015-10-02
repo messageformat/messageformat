@@ -51,5 +51,8 @@
   },
   "scripts": {
     "test": "make test"
+  },
+  "browser": {
+    "fs": false
   }
 }
