@@ -2,7 +2,6 @@
 describe( "MessageFormat", function () {
 
   describe( "Public API", function () {
-
     it("should exist", function () {
       expect( MessageFormat ).to.be.a('function');
     });
@@ -610,6 +609,16 @@ describe( "MessageFormat", function () {
         var mf = new MessageFormat( 'en', false, {uppercase: function(v) { return v.toUpperCase(); }} );
         var mfunc = mf.compile("This is {VAR,uppercase}.");
         expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
+      });
+
+      it("should use bidiStructuredText MessageFormat formatter", function () {
+        var mf = new MessageFormat('en', null, {"bidiStructuredText": MessageFormat.formatters.bidiStructuredText} );
+        var mfunc = mf.compile("{0} >> {1}");		
+        expect(mfunc([ "first_english_word", "SECOND_ARABIC_WORD" ])).to.equal('\u200efirst_english_word\u200e >> \u200eSECOND_ARABIC_WORD\u200e');
+
+        mf = new MessageFormat('ar-EG', null, {"bidiStructuredText": MessageFormat.formatters.bidiStructuredText} );
+        var mfunc = mf.compile("{0} >> {1}");		
+        expect(mfunc([ "first_english_word", "SECOND_ARABIC_WORD" ])).to.equal('\u200ffirst_english_word\u200f >> \u200fSECOND_ARABIC_WORD\u200f');
       });
 
       it("should allow for a simple select", function () {
