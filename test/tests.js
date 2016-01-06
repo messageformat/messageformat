@@ -2,6 +2,7 @@
 describe( "MessageFormat", function () {
 
   describe( "Public API", function () {
+
     it("should exist", function () {
       expect( MessageFormat ).to.be.a('function');
     });
@@ -611,14 +612,14 @@ describe( "MessageFormat", function () {
         expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
       });
 
-      it("should use bidiStructuredText MessageFormat formatter", function () {
-        var mf = new MessageFormat('en', null, {"bidiStructuredText": MessageFormat.formatters.bidiStructuredText} );
+      it("should use bidiStructuredTextFmt MessageFormat formatter", function () {
+        var mf = new MessageFormat('en', null, {"bidiStructuredTextFmt": true} );
         var mfunc = mf.compile("{0} >> {1}");		
-        expect(mfunc([ "first_english_word", "SECOND_ARABIC_WORD" ])).to.equal('\u200efirst_english_word\u200e >> \u200eSECOND_ARABIC_WORD\u200e');
+        expect(mfunc([ "Hello! English", "Hello \u0647\u0644\u0627\u060d" ])).to.equal('\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e');
 
-        mf = new MessageFormat('ar-EG', null, {"bidiStructuredText": MessageFormat.formatters.bidiStructuredText} );
+        mf = new MessageFormat('ar-EG', null, {"bidiStructuredTextFmt": true} );
         var mfunc = mf.compile("{0} >> {1}");		
-        expect(mfunc([ "first_english_word", "SECOND_ARABIC_WORD" ])).to.equal('\u200ffirst_english_word\u200f >> \u200fSECOND_ARABIC_WORD\u200f');
+        expect(mfunc([ "Hello! English", "Hello \u0647\u0644\u0627\u060d" ])).to.equal('\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f');
       });
 
       it("should allow for a simple select", function () {
