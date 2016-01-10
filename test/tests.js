@@ -612,6 +612,16 @@ describe( "MessageFormat", function () {
         expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
       });
 
+      it("should use bidiStructuredTextFmt MessageFormat formatter", function () {
+        var mf = new MessageFormat('en', null, {"bidiStructuredTextFmt": true} );
+        var mfunc = mf.compile("{0} >> {1}");		
+        expect(mfunc([ "Hello! English", "Hello \u0647\u0644\u0627\u060d" ])).to.equal('\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e');
+
+        mf = new MessageFormat('ar-EG', null, {"bidiStructuredTextFmt": true} );
+        var mfunc = mf.compile("{0} >> {1}");		
+        expect(mfunc([ "Hello! English", "Hello \u0647\u0644\u0627\u060d" ])).to.equal('\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f');
+      });
+
       it("should allow for a simple select", function () {
         var mf = new MessageFormat( 'en' );
         var mfunc = mf.compile("I am {FEELING, select, a{happy} b{sad} other{indifferent}}.");
