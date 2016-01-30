@@ -35,11 +35,11 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "~0.2.10",
-    "glob": "~3.2.8",
-    "make-plural": "^3.0.0-rc4",
-    "nopt": "~2.1.2",
-    "watchr": "~2.4.9"
+    "async": "~1.4.2",
+    "glob": "~5.0.14",
+    "make-plural": "~3.0.0",
+    "nopt": "~3.0.4",
+    "watchr": "~2.4.13"
   },
   "devDependencies": {
     "browserify": "^9.0.3",
