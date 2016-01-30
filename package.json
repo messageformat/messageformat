@@ -17,7 +17,7 @@
     "Eemeli Aro <eemeli@gmail.com>"
   ],
   "license": "To use or fork, MIT License. To contribute back, Dojo CLA",
-  "homepage": "https://github.com/SlexAxton/messageformat.js",
+  "homepage": "https://messageformat.github.io/",
   "repository": {
     "type": "git",
     "url": "https://github.com/SlexAxton/messageformat.js.git"
