@@ -10,8 +10,7 @@ ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
 
-.PHONY: test test-browser examples clean
-
+.PHONY: test test-browser examples release clean
 
 messageformat.js: lib/messageformat.js lib/messageformat-parser.js
 	@${BIN}/browserify $< -s MessageFormat -o $@
@@ -39,6 +38,12 @@ doc: lib/messageformat.js
 examples: example/en/i18n.js example/fr/i18n.js
 example/%/i18n.js: bin/messageformat.js lib/messageformat.js lib/messageformat-parser.js
 	./$< --locale $* --inputdir $(dir $@) --output $@
+
+
+release: clean messageformat.js test examples doc
+	git add -f messageformat.js lib/messageformat-parser.js doc/*html doc/styles/ doc/scripts/
+	git commit -m 'Packaging files for release'
+	git am jsdoc-fix-fonts.patch
 
 
 clean:
