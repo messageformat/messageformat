@@ -35,16 +35,16 @@
     "README.md"
   ],
   "dependencies": {
-    "async": "~1.4.2",
-    "glob": "~5.0.14",
-    "make-plural": "~3.0.0",
-    "nopt": "~3.0.4",
+    "async": "~1.5.2",
+    "glob": "~6.0.4",
+    "make-plural": "~3.0.3",
+    "nopt": "~3.0.6",
     "watchr": "~2.4.13"
   },
   "devDependencies": {
-    "browserify": "^9.0.3",
+    "browserify": "~13.0.0",
     "expect.js": "*",
-    "jsdoc": "^3.3.0-beta1",
+    "jsdoc": "~3.4.0",
     "mocha": "*",
     "pegjs": "*",
     "serve": "*"
