@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script> 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
     <script>document.write('<script src="' + (localStorage.getItem('lang') || 'en') + '/i18n.js"><\/script>')</script>
   </head>
   <body>
@@ -18,8 +18,7 @@
 
       $('input').click(function(e){
         e.preventDefault();
-        var $target = $(e.target);
-        var lang = $target.attr('name');
+        var lang = $(e.target).attr('name');
         localStorage.setItem('lang', lang);
         location.reload();
       });
