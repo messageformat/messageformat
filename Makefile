@@ -10,7 +10,7 @@ ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
 
-.PHONY: test test-browser clean
+.PHONY: test test-browser examples clean
 
 
 messageformat.js: lib/messageformat.js lib/messageformat-parser.js
@@ -22,10 +22,6 @@ lib/messageformat-parser.js: lib/messageformat-parser.pegjs
 	@echo "${CHK} parser re-compiled by PEGjs"
 
 
-doc: lib/messageformat.js
-	@${BIN}/jsdoc -c jsdoc-conf.json
-	@echo "${CHK} API documentation generated with jsdoc"
-
 test/common-js-generated-test-fixture.js: bin/messageformat.js lib/messageformat.js lib/messageformat-parser.js example/en/colors.json
 	./$< --module --locale en --include $(lastword $^) -o $@
 
@@ -34,6 +30,15 @@ test: test/common-js-generated-test-fixture.js
 
 test-browser: messageformat.js test/common-js-generated-test-fixture.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
+
+
+doc: lib/messageformat.js
+	@${BIN}/jsdoc -c jsdoc-conf.json
+	@echo "${CHK} API documentation generated with jsdoc"
+
+examples: example/en/i18n.js example/fr/i18n.js
+example/%/i18n.js: bin/messageformat.js lib/messageformat.js lib/messageformat-parser.js
+	./$< --locale $* --inputdir $(dir $@) --output $@
 
 
 clean:
