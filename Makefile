@@ -1,4 +1,4 @@
-# Copyright 2012-2015 Alex Sexton, Eemeli Aro, and Contributors
+# Copyright 2012-2016 Alex Sexton, Eemeli Aro, and Contributors
 # Licensed under the MIT License
 
 GREEN=\033[32;01m
