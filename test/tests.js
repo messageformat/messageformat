@@ -612,14 +612,13 @@ describe( "MessageFormat", function () {
         expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
       });
 
-      it("should use bidiStructuredTextFmt MessageFormat formatter", function () {
-        var mf = new MessageFormat('en', null, {"bidiStructuredTextFmt": true} );
-        var mfunc = mf.compile("{0} >> {1}");		
-        expect(mfunc([ "Hello! English", "Hello \u0647\u0644\u0627\u060d" ])).to.equal('\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e');
-
-        mf = new MessageFormat('ar-EG', null, {"bidiStructuredTextFmt": true} );
-        var mfunc = mf.compile("{0} >> {1}");		
-        expect(mfunc([ "Hello! English", "Hello \u0647\u0644\u0627\u060d" ])).to.equal('\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f');
+      it("should add control codes to bidirectional text", function () {
+        var msg = '{0} >> {1}';
+        var data = ['Hello! English', 'Hello \u0647\u0644\u0627\u060d'];
+        var mfEn = new MessageFormat('en').setBiDiSupport(true);
+        var mfEg = new MessageFormat('ar-EG').setBiDiSupport(true);
+        expect(mfEn.compile(msg)(data)).to.equal('\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e');
+        expect(mfEg.compile(msg)(data)).to.equal('\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f');
       });
 
       it("should allow for a simple select", function () {
