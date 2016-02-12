@@ -811,14 +811,20 @@ describe( "MessageFormat", function () {
 
       it("can compile an object enclosing reserved JavaScript words used as keys in quotes", function () {
         var mf = new MessageFormat( 'en' );
-        var data = { 'default': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
+        var data = { 'default': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.',
+                     'unreserved': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
         var mfunc = mf.compile(data);
         expect(mfunc).to.be.a('function');
         expect(mfunc.toString()).to.match(/"default"/);
+        expect(mfunc.toString()).to.match(/[^"]unreserved[^"]/);
 
         expect(mfunc()['default']).to.be.a('function');
         expect(mfunc()['default']({FRIENDS:1})).to.eql("I have one friend.");
         expect(mfunc()['default']({FRIENDS:2})).to.eql("I have 2 friends.");
+
+        expect(mfunc().unreserved).to.be.a('function');
+        expect(mfunc().unreserved({FRIENDS:1})).to.eql("I have one friend.");
+        expect(mfunc().unreserved({FRIENDS:2})).to.eql("I have 2 friends.");
       });
     });
   });
