@@ -824,6 +824,21 @@ describe( "MessageFormat", function () {
         expect(mfunc().unreserved).to.be.a('function');
         expect(mfunc().unreserved()).to.eql("unreserved is not a JavaScript reserved word so should not be quoted");
       });
+
+      it("can be instantiated multiple times for multiple languages", function () {
+        var mf = {
+            en: new MessageFormat('en'),
+            ru: new MessageFormat('ru')
+        };
+        var cf = {
+            en: mf.en.compile('{count} {count, plural, other{users}}'),
+            ru: mf.ru.compile('{count} {count, plural, other{пользователей}}')
+        };
+        expect(function(){ cf.en({count: 12}); }).to.not.throwError();
+        expect(cf.en({count: 12})).to.eql('12 users');
+        expect(function(){ cf.ru({count: 13}); }).to.not.throwError();
+        expect(cf.ru({count: 13})).to.eql('13 пользователей');
+      });
     });
   });
 
