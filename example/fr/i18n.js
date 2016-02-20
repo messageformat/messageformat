@@ -1,4 +1,11 @@
 (function(G) {
+var pluralFuncs = {
+  fr: function (n, ord) {
+    if (ord) return (n == 1) ? 'one' : 'other';
+    return (n >= 0 && n < 2) ? 'one' : 'other';
+  }
+};
+var fmt = {};
 var number = function (value, offset) {
   if (isNaN(value)) throw new Error("'" + value + "' isn't a number.");
   return value - (offset || 0);
@@ -14,13 +21,6 @@ var select = function (value, data) {
   if ({}.hasOwnProperty.call(data, value)) return data[value]();
   return data.other()
 };
-var pluralFuncs = {
-  fr: function (n, ord) {
-    if (ord) return (n == 1) ? 'one' : 'other';
-    return (n >= 0 && n < 2) ? 'one' : 'other';
-  }
-};
-var fmt = {};
 
 G.i18n = {
   colors: {
