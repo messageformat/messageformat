@@ -26,7 +26,7 @@ lib/parser.js: lib/parser.pegjs
 
 
 test: lib/messageformat.js lib/parser.js
-	@${BIN}/mocha --require test/common --reporter spec --growl test/tests.js
+	@${BIN}/mocha --require test/common --reporter spec --growl test/parser.js test/messageformat.js
 
 test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
