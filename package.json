@@ -48,6 +48,7 @@
     "mocha": "*",
     "pegjs": "*",
     "serve": "*",
+    "tmp": "*",
     "uglify-js": "2.*"
   },
   "scripts": {

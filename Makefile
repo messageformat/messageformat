@@ -25,13 +25,10 @@ lib/messageformat-parser.js: lib/messageformat-parser.pegjs
 	@echo "${CHK} parser re-compiled by PEGjs"
 
 
-test/common-js-generated-test-fixture.js: bin/messageformat.js lib/messageformat.js lib/messageformat-parser.js example/en/colors.json
-	./$< --module --locale en --include $(lastword $^) -o $@
-
-test: test/common-js-generated-test-fixture.js
+test: lib/messageformat.js lib/messageformat-parser.js
 	@${BIN}/mocha --require test/common --reporter spec --growl test/tests.js
 
-test-browser: messageformat.js test/common-js-generated-test-fixture.js
+test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
@@ -51,4 +48,4 @@ release: clean messageformat.min.js test examples doc
 
 
 clean:
-	rm -rf messageformat.*js* lib/messageformat-parser.js doc/ test/common-js-generated-test-fixture.js
+	rm -rf messageformat.*js* lib/messageformat-parser.js doc/

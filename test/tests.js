@@ -798,31 +798,30 @@ describe( "MessageFormat", function () {
       });
 
       it("can compile an object of messages into a function", function () {
-        var mf = new MessageFormat( 'en' );
+        var mf = new MessageFormat('en');
         var data = { 'key': 'I have {FRIENDS, plural, one{one friend} other{# friends}}.' };
         var mfunc = mf.compile(data);
-        expect(mfunc).to.be.a('function');
+        expect(mfunc).to.be.an('object');
         expect(mfunc.toString()).to.match(/\bkey\b/);
 
-        expect(mfunc().key).to.be.a('function');
-        expect(mfunc().key({FRIENDS:1})).to.eql("I have one friend.");
-        expect(mfunc().key({FRIENDS:2})).to.eql("I have 2 friends.");
+        expect(mfunc.key).to.be.a('function');
+        expect(mfunc.key({FRIENDS:1})).to.eql("I have one friend.");
+        expect(mfunc.key({FRIENDS:2})).to.eql("I have 2 friends.");
       });
 
       it("can compile an object enclosing reserved JavaScript words used as keys in quotes", function () {
-        var mf = new MessageFormat( 'en' );
+        var mf = new MessageFormat('en');
         var data = { 'default': 'default is a JavaScript reserved word so should be quoted',
                      'unreserved': 'unreserved is not a JavaScript reserved word so should not be quoted' };
         var mfunc = mf.compile(data);
-        expect(mfunc).to.be.a('function');
         expect(mfunc.toString()).to.match(/"default"/);
         expect(mfunc.toString()).to.match(/[^"]unreserved[^"]/);
 
-        expect(mfunc()['default']).to.be.a('function');
-        expect(mfunc()['default']()).to.eql("default is a JavaScript reserved word so should be quoted");
+        expect(mfunc['default']).to.be.a('function');
+        expect(mfunc['default']()).to.eql("default is a JavaScript reserved word so should be quoted");
 
-        expect(mfunc().unreserved).to.be.a('function');
-        expect(mfunc().unreserved()).to.eql("unreserved is not a JavaScript reserved word so should not be quoted");
+        expect(mfunc.unreserved).to.be.a('function');
+        expect(mfunc.unreserved()).to.eql("unreserved is not a JavaScript reserved word so should not be quoted");
       });
 
       it("can be instantiated multiple times for multiple languages", function () {
@@ -843,15 +842,31 @@ describe( "MessageFormat", function () {
   });
 
   if (typeof require !== 'undefined') {
-    describe("CommonJS Support", function () {
-      it("should be able to use with a standard node require", function () {
-        // common-js-generated-test-fixture is generated in the package.json before the tests are executed using the command
-        // bin/messageformat.js --module --locale en --include example/en/colors.json -o test/common-js-generated-test-fixture.js
-        var i18n = require('./common-js-generated-test-fixture');
-
-        expect(i18n["example/en/colors"].red()).to.eql('red');
-        expect(i18n["example/en/colors"].blue()).to.eql('blue');
-        expect(i18n["example/en/colors"].green()).to.eql('green');
+    describe("Module/CommonJS support", function () {
+      var fs = require('fs');
+      var tmp = require('tmp');
+      var colorSrc = { red: 'red', blue: 'blue', green: 'green' };
+      var cf = new MessageFormat('en').compile(colorSrc);
+      ['module.exports', 'exports', 'GLOBAL.i18n'].forEach(function(moduleFmt) {
+        it('should work with `' + moduleFmt + '`', function(done) {
+          tmp.file({ postfix: '.js' }, function(err, path, fd) {
+            if (err) throw err;
+            fs.write(fd, cf.toString(moduleFmt), function(err) {
+              if (err) throw err;
+              var colors = require(path);
+              var gm = /^global\.(.*)/i.exec(moduleFmt);
+              if (gm) {
+                expect(colors.red).to.be(undefined);
+                colors = global[gm[1]];
+              }
+              expect(colors).to.be.an('object');
+              expect(colors.red()).to.eql('red');
+              expect(colors.blue()).to.eql('blue');
+              expect(colors.green()).to.eql('green');
+              done();
+            });
+          });
+        });
       });
     });
   }
