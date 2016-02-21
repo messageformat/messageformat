@@ -1,6 +1,6 @@
 /doc/
-/lib/messageformat-parser.js
-/messageformat.*
+/lib/parser.js
+/messageformat.*js*
 node_modules/
 
 # Numerous always-ignore extensions

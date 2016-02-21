@@ -28,7 +28,7 @@
   },
   "files": [
     "lib/messageformat.js",
-    "lib/messageformat-parser.js",
+    "lib/parser.js",
     "bin/messageformat.js",
     "example",
     "LICENSE",
