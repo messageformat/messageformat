@@ -1,44 +1,38 @@
 /*global describe,it,expect,MessageFormat */
-describe( "MessageFormat", function () {
+describe("MessageFormat", function() {
 
-  describe( "Public API", function () {
+  describe("Public API", function() {
 
-    it("should exist", function () {
-      expect( MessageFormat ).to.be.a('function');
+    it("should exist", function() {
+      expect(MessageFormat).to.be.a('function');
     });
 
-    it("should have static plurals object", function () {
-      expect( MessageFormat.plurals ).to.be.an( 'object' );
+    it("should be a constructor", function() {
+      var mf = new MessageFormat('en');
+      expect(mf).to.be.a(MessageFormat);
     });
 
-    it("should be a constructor", function () {
-      var mf = new MessageFormat( 'en' );
-      expect( mf ).to.be.a( MessageFormat );
-    });
-
-    it("should have instance functions", function () {
-      var mf = new MessageFormat( 'en' );
-      expect( mf._precompile ).to.be.a( 'function' );
-      expect( mf.compile ).to.be.a( 'function' );
+    it("should have a compile() function", function() {
+      var mf = new MessageFormat('en');
+      expect(mf.compile).to.be.a('function');
     });
 
     it("should fallback when a base pluralFunc exists", function() {
       var mf = new MessageFormat('en-x-test1-test2');
-      expect(mf.lc).to.contain( 'en' );
-      expect(mf.runtime.pluralFuncs['en-x-test1-test2']).to.be.a('function');
+      expect(mf.pluralFuncs['en-x-test1-test2']).to.be.a('function');
     });
+
     it("should fallback when a base pluralFunc exists (underscores)", function() {
-      var mf = new MessageFormat( 'en_x_test1_test2' );
-      expect(mf.lc).to.contain( 'en' );
-      expect(mf.runtime.pluralFuncs['en_x_test1_test2']).to.be.a('function');
+      var mf = new MessageFormat('en_x_test1_test2');
+      expect(mf.pluralFuncs['en_x_test1_test2']).to.be.a('function');
     });
 
-    it("should bail on non-existing locales", function () {
-      expect(function(){ var a = new MessageFormat( 'lawlz' ); }).to.throwError();
+    it("should bail on non-existing locales", function() {
+      expect(function(){ var a = new MessageFormat('lawlz'); }).to.throwError();
     });
 
-    it("should default to 'en' when no locale is passed into the constructor", function () {
-      expect((new MessageFormat()).lc).to.contain( 'en' );
+    it("should default to 'en' when no locale is passed into the constructor", function() {
+      expect(MessageFormat.defaultLocale).to.eql('en');
     });
 
   });
@@ -497,9 +491,7 @@ describe( "MessageFormat", function () {
       });
 
       it("obeys plural functions", function () {
-        var mf = new MessageFormat( 'fake', function ( x ) {
-          return 'few';
-        });
+        var mf = new MessageFormat({ fake: function(x) { return 'few'; } });
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:0})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:1})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:2})).to.be( "res: wasfew" );
@@ -508,9 +500,7 @@ describe( "MessageFormat", function () {
       });
 
       it("obeys selectordinal functions", function () {
-        var mf = new MessageFormat( 'fake', function ( x, ord ) {
-          return ord ? 'few' : 'other';
-        });
+        var mf = new MessageFormat({ fake: function(x, ord) { return ord ? 'few' : 'other'; } });
         expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:0})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:1})).to.be( "res: wasfew" );
         expect((mf.compile("res: {val, selectordinal, few{wasfew} other{failed}}"))({val:2})).to.be( "res: wasfew" );
@@ -607,7 +597,7 @@ describe( "MessageFormat", function () {
       });
 
       it("should use formatting functions - set in creator", function () {
-        var mf = new MessageFormat( 'en', false, {uppercase: function(v) { return v.toUpperCase(); }} );
+        var mf = new MessageFormat('en', { uppercase: function(v) { return v.toUpperCase(); } });
         var mfunc = mf.compile("This is {VAR,uppercase}.");
         expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
       });
@@ -833,6 +823,18 @@ describe( "MessageFormat", function () {
             en: mf.en.compile('{count} {count, plural, other{users}}'),
             ru: mf.ru.compile('{count} {count, plural, other{пользователей}}')
         };
+        expect(function(){ cf.en({count: 12}); }).to.not.throwError();
+        expect(cf.en({count: 12})).to.eql('12 users');
+        expect(function(){ cf.ru({count: 13}); }).to.not.throwError();
+        expect(cf.ru({count: 13})).to.eql('13 пользователей');
+      });
+
+      it("can support multiple languages internally", function () {
+        var mf = new MessageFormat([ 'en', 'ru' ]);
+        var cf = mf.compile({
+            en: '{count} {count, plural, other{users}}',
+            ru: '{count} {count, plural, other{пользователей}}'
+        });
         expect(function(){ cf.en({count: 12}); }).to.not.throwError();
         expect(cf.en({count: 12})).to.eql('12 users');
         expect(function(){ cf.ru({count: 13}); }).to.not.throwError();
