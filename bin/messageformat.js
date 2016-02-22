@@ -1,163 +1,105 @@
 #!/usr/bin/env node
 
 /**
- * Copyright 2012-2014 Alex Sexton, Eemeli Aro, and Contributors
+ * Copyright 2012-2016 Alex Sexton, Eemeli Aro, and Contributors
  *
  * Licensed under the MIT License
  */
 
-var
-  nopt          = require('nopt'),
-  fs            = require('fs'),
-  Path          = require('path'),
-  glob          = require('glob'),
-  async         = require('async'),
-  MessageFormat = require('../'),
-  knownOpts = {
-    "locale"    : String,
-    "inputdir"  : Path,
-    "output"    : Path,
-    "watch"     : Boolean,
-    "namespace" : String,
-    "include"   : String,
-    "stdout"    : Boolean,
-    "module"    : Boolean,
-    "verbose"   : Boolean,
-    "help"      : Boolean
-  },
-  description = {
-    "locale"    : "locale(s) to use [mandatory]",
-    "inputdir"  : "directory containing messageformat files to compile",
-    "output"    : "output where messageformat will be compiled",
-    "namespace" : "global object in the output containing the templates",
-    "include"   : "glob patterns for files to include from `inputdir`",
-    "stdout"    : "print the result in stdout instead of writing in a file",
-    "watch"     : "watch `inputdir` for changes",
-    "module"    : "create a commonJS module, instead of a global window variable",
-    "verbose"   : "print logs for debug"
-  },
-  defaults = {
-    "inputdir"  : process.cwd(),
-    "output"    : process.cwd(),
-    "watch"     : false,
-    "namespace" : 'i18n',
-    "include"   : '**/*.json',
-    "stdout"    : false,
-    "verbose"   : false,
-    "module"    : false,
-    "help"      : false
-  },
-  shortHands = {
-    "l"  : "--locale",
-    "i"  : "--inputdir",
-    "o"  : "--output",
-    "ns" : "--namespace",
-    "I"  : "--include",
-    "m"  : "--module",
-    "s"  : "--stdout",
-    "w"  : "--watch",
-    "v"  : "--verbose",
-    "?"  : "--help"
-  },
-  options = (function() {
-    var o = nopt(knownOpts, shortHands, process.argv, 2);
-    for (var key in defaults) {
-      o[key] = o[key] || defaults[key];
-    }
-    if (o.argv.remain) {
-      if (o.argv.remain.length >= 1) o.inputdir = o.argv.remain[0];
-      if (o.argv.remain.length >= 2) o.output = o.argv.remain[1];
-    }
-    if (!o.locale || o.help) {
-      var usage = ['Usage: messageformat -l [locale] [OPTIONS] [INPUT_DIR] [OUTPUT_DIR]'];
-      if (!o.help) {
-        usage.push("Try 'messageformat --help' for more information.");
-        console.error(usage.join('\n'));
-        process.exit(-1);
-      }
-      usage.push('\nAvailable options:');
-      for (var key in shortHands) {
-        var desc = description[shortHands[key].toString().substr(2)];
-        if (desc) usage.push('   -' + key + ',\t' + shortHands[key] + (shortHands[key].length < 8 ? '  ' : '') + '\t' + desc);
-      }
-      console.log(usage.join('\n'));
-      process.exit(0);
-    }
-    if (fs.existsSync(o.output) && fs.statSync(o.output).isDirectory()) {
-      o.output = Path.join(o.output, 'i18n.js');
-    }
-    o.namespace = o.module ? 'module.exports' : o.namespace.replace(/^window\./, '')
-    return o;
-  })(),
-  _log = (options.verbose ? function(s) { console.log(s); } : function(){});
+var fs = require('fs'),
+    glob = require('glob'),
+    MessageFormat = require('../'),
+    nopt = require('nopt'),
+    path = require('path'),
+    knownOpts = {
+      help: Boolean,
+      locale: [String, Array],
+      namespace: String
+    },
+    shortHands = {
+      h: ['--help'],
+      l: ['--locale'],
+      n: ['--namespace']
+    },
+    description = {
+      locale: "locale(s) to use [mandatory]",
+      namespace: "global object in the output containing the templates",
+    },
+    options = nopt(knownOpts, shortHands, process.argv, 2),
+    inputFiles = options.argv.remain.map(function(fn) { return path.resolve(fn); });
 
-function write(options, data) {
-  if (options.stdout) { _log(''); return console.log(data); }
-  fs.writeFile( options.output, data, 'utf8', function(err) {
-    if (err) return console.error('--->\t' + err.message);
-    _log(options.output + " written.");
-  });
+
+if (options.help || inputFiles.length === 0) {
+  printUsage();
+} else {
+  var locale = options.locale ? options.locale.join(',').split(/[ ,]+/) : null;
+  if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
+  var input = readInput(inputFiles, '.json', '/');
+  var ns = options.namespace || 'module.exports';
+  var output = new MessageFormat(locale).compile(input).toString(ns);
+  console.log(output);
 }
 
-function parseFileSync(dir, file) {
-  var path = Path.join(dir, file),
-      file_parts = file.split(/[.\/]+/),
-      r = { namespace: null, locale: null, data: null };
-  if (!fs.statSync(path).isFile()) {
-    _log('Skipping ' + file);
-    return null;
+
+function printUsage() {
+  var usage = [
+    'usage: *messageformat* [*-l* _lc_] [*-n* _ns_] _input_',
+    '',
+    'Parses the _input_ JSON file(s) of MessageFormat strings into a JS module of',
+    'corresponding hierarchical functions, written to stdout. Directories are',
+    'recursively scanned for all .json files.',
+    '',
+    '  *-l* _lc_, *--locale*=_lc_',
+    '        The locale(s) _lc_ to include; if multiple, selected by matching',
+    '        message key. [default: *en*]',
+    '',
+    '  *-n* _ns_, *--namespace*=_ns_',
+    '        The global object or modules format for the output JS. If _ns_ does not',
+    '        contain a \'.\', the output follows an UMD pattern. For module support,',
+    '        the values \'*export default*\' (ES6), \'*exports*\' (CommonJS), and',
+    '        \'*module.exports*\' (node.js) are special. [default: *module.exports*]'
+  ].join('\n');
+  if (process.stdout.isTTY) {
+    usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
+                 .replace(/\*(.+?)\*/g, '\x1B[1m$1\x1B[0m');
+  } else {
+    usage = usage.replace(/[_*]/g, '');
   }
-  r.namespace = file.replace(/\.[^.]*$/, '').replace(/\\/g, '/');
-  for (var i = file_parts.length - 1; i >= 0; --i) {
-    if (file_parts[i] in MessageFormat.plurals) { r.locale = file_parts[i]; break; }
-  }
-  try {
-    _log('Building ' + JSON.stringify(r.namespace) + ' from `' + file + '` with ' + (r.locale ? 'locale ' + JSON.stringify(r.locale) : 'default locale'));
-    r.data = JSON.parse(fs.readFileSync(path, 'utf8'));
-  } catch (ex) {
-    console.error('--->\tRead error in ' + path + ': ' + ex.message);
-  }
-  return r;
+  console.log(usage);
 }
 
-function build(options, callback) {
-  var lc = options.locale.trim().split(/[ ,]+/),
-      mf = new MessageFormat(lc[0]),
-      messages = {},
-      compileOpt = { global: options.namespace, locale: {} };
-  lc.slice(1).forEach(function(l){
-    var pf = mf.runtime.pluralFuncs[l] = MessageFormat.plurals[l];
-    if (!pf) throw 'Plural function for locale `' + l + '` not found';
-  });
-  _log('Input dir: ' + options.inputdir);
-  _log('Included locales: ' + lc.join(', '));
-  glob(options.include, {cwd: options.inputdir}, function(err, files) {
-    if (!err) async.each(files,
-      function(file, cb) {
-        var r = parseFileSync(options.inputdir, file);
-        if (r && r.data) {
-          messages[r.namespace] = r.data;
-          if (r.locale) compileOpt.locale[r.namespace] = r.locale;
-        }
-        cb();
-      },
-      function() {
-        var fn_str = mf.compile(messages, compileOpt).toString();
-        fn_str = fn_str.replace(/^\s*function\b[^{]*{\s*/, '').replace(/\s*}\s*$/, '');
-        var data = options.module ? fn_str : '(function(G) {\n' + fn_str + '\n})(this);';
-        return callback(options, data.trim() + '\n');
-      }
-    );
-  });
-}
 
-build(options, write);
+function readInput(include, ext, sep) {
+  // modified from http://stackoverflow.com/a/1917041
+  function sharedPathLength(array) {
+    var A = array.sort(), a1 = A[0], a2 = A[A.length - 1], len = a1.length, i = 0;
+    while (i < len && a1.charAt(i) === a2.charAt(i)) ++i;
+    return a1.substring(0, i).replace(/[^/]+$/, '').length;
+  }
 
-if (options.watch) {
-  _log('watching for changes in ' + options.inputdir + '...\n');
-  require('watchr').watch({
-    path: options.inputdir,
-    ignorePaths: [ options.output ],
-    listener: function(changeType, filePath) { if (/\.json$/.test(filePath)) build(options, write); }
+  var ls = [];
+  include.forEach(function(fn) {
+    if (!fs.existsSync(fn)) throw new Error('Input file not found: ' + fn);
+    if (fs.statSync(fn).isDirectory()) {
+      ls.push.apply(ls, glob.sync(path.join(fn, '**/*' + ext)));
+    } else {
+      if (path.extname(fn) !== ext) throw new Error('Input file extension is not ' + ext + ': ' + fn);
+      ls.push(fn);
+    }
   });
+
+  var start = sharedPathLength(ls);
+  var end = -1 * ext.length;
+  var input = {};
+  ls.forEach(function(fn) {
+    var key = fn.slice(start, end);
+    var parts = key.split(sep);
+    var last = parts.length - 1;
+    parts.reduce(function(root, part, idx) {
+      if (idx == last) root[part] = require(fn);
+      else if (!(part in root)) root[part] = {};
+      return root[part];
+    }, input);
+  });
+  return input;
 }
