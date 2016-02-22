@@ -207,8 +207,7 @@ describe("MessageFormat", function() {
 
     it("should throw an error when using an undefined formatting function", function() {
       var mf = new MessageFormat('en');
-      var mfunc = mf.compile("This is {VAR,uppercase}.");
-      expect(function(){ var z = mfunc({"VAR":"big"}); }).to.throwError();
+      expect(function(){ mf.compile("This is {VAR,uppercase}.") }).to.throwError();
     });
 
     it("should use formatting functions - set in MessageFormat.formatters", function() {
@@ -219,8 +218,8 @@ describe("MessageFormat", function() {
 
     it("should use formatting functions - set in runtime", function() {
       var mf = new MessageFormat('en');
-      var mfunc = mf.compile("This is {VAR,uppercase}.");
       mf.fmt.uppercase = function(v) { return v.toUpperCase(); };
+      var mfunc = mf.compile("This is {VAR,uppercase}.");
       expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
     });
 
