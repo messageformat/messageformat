@@ -10,7 +10,7 @@ ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
 
-.PHONY: test test-browser examples release clean
+.PHONY: test test-browser release clean
 
 messageformat.js: lib/messageformat.js lib/parser.js
 	@${BIN}/browserify $< -s MessageFormat -o $@
@@ -36,12 +36,11 @@ doc: lib/messageformat.js
 	@${BIN}/jsdoc -c jsdoc-conf.json
 	@echo "${CHK} API documentation generated with jsdoc"
 
-examples: example/en/i18n.js example/fr/i18n.js
-example/%/i18n.js: bin/messageformat.js lib/messageformat.js lib/parser.js
-	./$< --locale $* --inputdir $(dir $@) --output $@
+example/i18n.js: bin/messageformat.js lib/messageformat.js lib/parser.js
+	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
 
-release: clean messageformat.min.js test examples doc
+release: clean messageformat.min.js test example/i18n.js doc
 	git add -f messageformat.*js* lib/parser.js doc/*html doc/styles/ doc/scripts/
 	git commit -m 'Packaging files for release'
 	git am jsdoc-fix-fonts.patch
