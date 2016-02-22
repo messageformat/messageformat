@@ -470,33 +470,44 @@ describe("MessageFormat", function() {
     });
 
   });
-  if (typeof require !== 'undefined') describe("Module/CommonJS support", function() {
-    var fs = require('fs');
-    var tmp = require('tmp');
+  describe("Module/CommonJS support", function() {
     var colorSrc = { red: 'red', blue: 'blue', green: 'green' };
     var cf = new MessageFormat('en').compile(colorSrc);
 
-    ['module.exports', 'exports', 'GLOBAL.i18n'].forEach(function(moduleFmt) {
-      it('should work with `' + moduleFmt + '`', function(done) {
-        tmp.file({ postfix: '.js' }, function(err, path, fd) {
-          if (err) throw err;
-          fs.write(fd, cf.toString(moduleFmt), function(err) {
+    if (typeof require !== 'undefined') {
+      ['module.exports', 'exports', 'GLOBAL.i18n', 'umd'].forEach(function(moduleFmt) {
+        it('should work with `' + moduleFmt + '`', function(done) {
+          var fs = require('fs');
+          var tmp = require('tmp');
+          tmp.file({ postfix: '.js' }, function(err, path, fd) {
             if (err) throw err;
-            var colors = require(path);
-            var gm = /^global\.(.*)/i.exec(moduleFmt);
-            if (gm) {
-              expect(colors.red).to.be(undefined);
-              colors = global[gm[1]];
-            }
-            expect(colors).to.be.an('object');
-            expect(colors.red()).to.eql('red');
-            expect(colors.blue()).to.eql('blue');
-            expect(colors.green()).to.eql('green');
-            done();
+            fs.write(fd, cf.toString(moduleFmt), function(err) {
+              if (err) throw err;
+              var colors = require(path);
+              var gm = /^global\.(.*)/i.exec(moduleFmt);
+              if (gm) {
+                expect(colors.red).to.be(undefined);
+                colors = global[gm[1]];
+              }
+              expect(colors).to.be.an('object');
+              expect(colors.red()).to.eql('red');
+              expect(colors.blue()).to.eql('blue');
+              expect(colors.green()).to.eql('green');
+              done();
+            });
           });
         });
       });
-    });
-
+    } else {
+      var moduleFmt = 'window.i18n';
+      it('should work with `' + moduleFmt + '`', function() {
+        eval(cf.toString(moduleFmt));
+        expect(window).to.have.property('i18n')
+        var colors = window.i18n;
+        expect(colors.red()).to.eql('red');
+        expect(colors.blue()).to.eql('blue');
+        expect(colors.green()).to.eql('green');
+      });
+    }
   });
 });
