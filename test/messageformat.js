@@ -216,15 +216,8 @@ describe("MessageFormat", function() {
       expect(mfunc({"VAR":"2010-12-31"})).to.contain("2010");
     });
 
-    it("should use formatting functions - set in runtime", function() {
-      var mf = new MessageFormat('en');
-      mf.fmt.uppercase = function(v) { return v.toUpperCase(); };
-      var mfunc = mf.compile("This is {VAR,uppercase}.");
-      expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
-    });
-
     it("should use formatting functions - set in creator", function() {
-      var mf = new MessageFormat('en', { uppercase: function(v) { return v.toUpperCase(); } });
+      var mf = new MessageFormat('en').addFormatters({ uppercase: function(v) { return v.toUpperCase(); } });
       var mfunc = mf.compile("This is {VAR,uppercase}.");
       expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
     });
@@ -248,9 +241,8 @@ describe("MessageFormat", function() {
     });
 
     it("should not evaluate select paths that aren't taken", function() {
-      var mf = new MessageFormat('en');
       var spyCalled = false;
-      mf.fmt.spy = function(v) { spyCalled = true; return "spy"; };
+      var mf = new MessageFormat('en').addFormatters({ spy: function(v) { spyCalled = true; return "spy"; } });
       var mfunc = mf.compile("{VAR, select, a{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
       expect(mfunc({VAR:"a"})).to.eql("correct");
       expect(spyCalled).to.eql(false);
@@ -265,9 +257,8 @@ describe("MessageFormat", function() {
     });
 
     it("should not evaluate plural paths that aren't taken", function() {
-      var mf = new MessageFormat('en');
       var spyCalled = false;
-      mf.fmt.spy = function(v) { spyCalled = true; return "spy"; };
+      var mf = new MessageFormat('en').addFormatters({ spy: function(v) { spyCalled = true; return "spy"; } });
       var mfunc = mf.compile("{VAR, plural, one{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
       expect(mfunc({VAR:1})).to.eql("correct");
       expect(spyCalled).to.eql(false);
@@ -282,9 +273,8 @@ describe("MessageFormat", function() {
     });
 
     it("should not evaluate selectordinal paths that aren't taken", function() {
-      var mf = new MessageFormat('en');
       var spyCalled = false;
-      mf.fmt.spy = function(v) { spyCalled = true; return "spy"; };
+      var mf = new MessageFormat('en').addFormatters({ spy: function(v) { spyCalled = true; return "spy"; } });
       var mfunc = mf.compile("{VAR, selectordinal, one{correct} b{incorrect {VAR, spy}} other{incorrect {VAR, spy}}}");
       expect(mfunc({VAR:1})).to.eql("correct");
       expect(spyCalled).to.eql(false);
