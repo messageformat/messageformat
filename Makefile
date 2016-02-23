@@ -14,7 +14,11 @@ BIN=./node_modules/.bin
 
 messageformat.js: lib/messageformat.js lib/messageformat-parser.js
 	@${BIN}/browserify $< -s MessageFormat -o $@
-	@echo "${CHK} messageformat.js is now ready for browsers."
+	@echo "${CHK} $@ is now ready for browsers."
+
+messageformat.min.js: messageformat.js
+	@$(BIN)/uglifyjs $< --compress --mangle -o $@
+	@echo "${CHK} $@ is now ready for browsers."
 
 lib/messageformat-parser.js: lib/messageformat-parser.pegjs
 	@${BIN}/pegjs $< $@
@@ -40,8 +44,8 @@ example/%/i18n.js: bin/messageformat.js lib/messageformat.js lib/messageformat-p
 	./$< --locale $* --inputdir $(dir $@) --output $@
 
 
-release: clean messageformat.js test examples doc
-	git add -f messageformat.js lib/messageformat-parser.js doc/*html doc/styles/ doc/scripts/
+release: clean messageformat.min.js test examples doc
+	git add -f messageformat.js messageformat.min.js lib/messageformat-parser.js doc/*html doc/styles/ doc/scripts/
 	git commit -m 'Packaging files for release'
 	git am jsdoc-fix-fonts.patch
 
