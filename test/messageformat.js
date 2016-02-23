@@ -189,7 +189,7 @@ describe("MessageFormat", function() {
     it("should use the fallback locale plural function if the locale isn't available", function() {
       var mf = new MessageFormat('en-x-test1-test2');
       var mfunc = mf.compile("{num, plural, one {# thing} other {# things}}");
-      expect(mfunc.toString()).to.match(/\ben\b/);
+      expect(mfunc.toString()).to.match(/\ben[-_]/);
       expect(mfunc({num: 3})).to.be("3 things");
     });
 
