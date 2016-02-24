@@ -47,7 +47,8 @@
     "jsdoc": "~3.4.0",
     "mocha": "*",
     "pegjs": "*",
-    "serve": "*"
+    "serve": "*",
+    "uglify-js": "2.*"
   },
   "scripts": {
     "test": "make test"
