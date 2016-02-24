@@ -17,7 +17,7 @@ messageformat.js: lib/messageformat.js lib/messageformat-parser.js
 	@echo "${CHK} $@ is now ready for browsers."
 
 messageformat.min.js: messageformat.js
-	@$(BIN)/uglifyjs $< --compress --mangle -o $@
+	@$(BIN)/uglifyjs $< --compress --mangle --output $@ --source-map $@.map
 	@echo "${CHK} $@ is now ready for browsers."
 
 lib/messageformat-parser.js: lib/messageformat-parser.pegjs
@@ -45,10 +45,10 @@ example/%/i18n.js: bin/messageformat.js lib/messageformat.js lib/messageformat-p
 
 
 release: clean messageformat.min.js test examples doc
-	git add -f messageformat.js messageformat.min.js lib/messageformat-parser.js doc/*html doc/styles/ doc/scripts/
+	git add -f messageformat.*js* lib/messageformat-parser.js doc/*html doc/styles/ doc/scripts/
 	git commit -m 'Packaging files for release'
 	git am jsdoc-fix-fonts.patch
 
 
 clean:
-	rm -rf messageformat.js lib/messageformat-parser.js doc/ test/common-js-generated-test-fixture.js
+	rm -rf messageformat.*js* lib/messageformat-parser.js doc/ test/common-js-generated-test-fixture.js
