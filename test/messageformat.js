@@ -471,7 +471,7 @@ describe("MessageFormat", function() {
           var tmp = require('tmp');
           tmp.file({ postfix: '.js' }, function(err, path, fd) {
             if (err) throw err;
-            fs.write(fd, cf.toString(moduleFmt), function(err) {
+            fs.write(fd, cf.toString(moduleFmt), 0, 'utf8', function(err) {
               if (err) throw err;
               var colors = require(path);
               var gm = /^global\.(.*)/i.exec(moduleFmt);
