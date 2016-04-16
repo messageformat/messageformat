@@ -348,8 +348,18 @@ describe("Parser", function() {
       expect(function(){ parse('{NUM, select, offset:1 test { 1 } test2 { 2 }}'); }).to.throwError();
     });
 
+    it("should not allow invalid keys for PLURALs", function() {
+      expect(function(){ parse('{NUM, plural, one { 1 } invalid { error } other { 2 }}'); }).to.throwError();
+      expect(function(){ parse('{NUM, plural, one { 1 } some { error } other { 2 }}', { cardinal: ['one', 'other'] }); }).to.throwError();
+    });
+
+    it("should not allow invalid keys for SELECTORDINALs", function() {
+      expect(function(){ parse('{NUM, selectordinal, one { 1 } invalid { error } other { 2 }}'); }).to.throwError();
+      expect(function(){ parse('{NUM, selectordinal, one { 1 } some { error } other { 2 }}', { ordinal: ['one', 'other'] }); }).to.throwError();
+    });
+
     it("should allow an offset for SELECTORDINALs", function() {
-      expect(function(){ parse('{NUM, selectordinal, offset:1 test { 1 } test2 { 2 }}'); }).to.not.throwError();
+      expect(function(){ parse('{NUM, selectordinal, offset:1 one { 1 } other { 2 }}'); }).to.not.throwError();
     });
 
     it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function() {

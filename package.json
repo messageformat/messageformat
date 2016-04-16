@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "glob": "~6.0.4",
-    "make-plural": "~3.0.3",
+    "make-plural": "~3.0.4",
     "nopt": "~3.0.6",
     "reserved-words": "^0.1.1"
   },
