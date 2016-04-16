@@ -118,6 +118,14 @@ describe("MessageFormat", function() {
       expect(mfunc({X:3})).to.eql("This is an octothorpe: #");
     });
 
+    it("should have configurable # parsing support", function() {
+      var mf = new MessageFormat('en');
+      var msg = '{X, plural, other{{Y, select, other{#}}}}';
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('3');
+      mf.setStrictNumberSign(true);
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('#');
+    });
+
     it("obeys plural functions", function() {
       var mf = new MessageFormat({ fake: function(x) { return 'few'; } });
       expect((mf.compile("res: {val, plural, few{wasfew} other{failed}}"))({val:0})).to.be("res: wasfew");
