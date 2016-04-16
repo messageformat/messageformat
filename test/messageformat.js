@@ -82,9 +82,7 @@ describe("MessageFormat", function() {
       expect((mf.compile('\\{\\{\\{'))()).to.eql("{{{");
       expect((mf.compile('\\}\\}\\}'))()).to.eql("}}}");
       expect((mf.compile('\\{\\{\\{{test}\\}\\}\\}'))({test:4})).to.eql("{{{4}}}");
-      expect((mf.compile('\\{\\{\\{{test, select, other{#}}\\}\\}\\}'))({test:4})).to.eql("{{{4}}}");
       expect((mf.compile('\\{\\{\\{{test, plural, other{#}}\\}\\}\\}'))({test:4})).to.eql("{{{4}}}");
-      expect((mf.compile('\\{\\{\\{{test, plural, offset:1 other{#}}\\}\\}\\}'))({test:4})).to.eql("{{{3}}}");
     });
 
     it("can substitute named variables", function() {
@@ -102,13 +100,15 @@ describe("MessageFormat", function() {
 
     it("can substitute shorthand variables", function() {
       var mf = new MessageFormat('en');
-      expect((mf.compile("{VAR, select, other{The var is #.}}"))({"VAR":5})).to.eql("The var is 5.");
-      expect((mf.compile("{0, select, other{The var is #.}}"))([5])).to.eql("The var is 5.");
+      expect((mf.compile("{VAR, plural, other{The var is #.}}"))({ VAR: 5 })).to.eql("The var is 5.");
+      expect((mf.compile("{0, plural, other{The var is #.}}"))([5])).to.eql("The var is 5.");
+      expect((mf.compile("{VAR, plural, offset:1 other{The var is #.}}"))({ VAR: 5 })).to.eql("The var is 4.");
+      expect((mf.compile("{X, plural, other{{Y, select, other{The var is #.}}}}"))({ X: 5, Y: 'key' })).to.eql("The var is 5.");
     });
 
     it("allows escaped shorthand variable: #", function() {
       var mf = new MessageFormat('en');
-      var mfunc = mf.compile('{X, select, other{# is a \\#}}');
+      var mfunc = mf.compile('{X, plural, other{# is a \\#}}');
       expect(mfunc({X:3})).to.eql("3 is a #");
     });
 
