@@ -42,7 +42,7 @@ example/i18n.js: bin/messageformat.js $(SRC)
 
 
 release: clean messageformat.min.js test example/i18n.js doc
-	git add -f messageformat.*js* lib/parser.js doc/*html doc/styles/ doc/scripts/
+	git add -f messageformat.*js* lib/parser.js doc/*html doc/styles/ doc/scripts/ example/i18n.js
 	git commit -m 'Packaging files for release'
 	git am jsdoc-fix-fonts.patch
 
