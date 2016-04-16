@@ -22,12 +22,13 @@
     "type": "git",
     "url": "https://github.com/SlexAxton/messageformat.js.git"
   },
-  "main": "lib/messageformat",
+  "main": "lib/",
   "bin": {
     "messageformat": "./bin/messageformat.js"
   },
   "files": [
-    "lib/messageformat.js",
+    "lib/index.js",
+    "lib/compiler.js",
     "lib/parser.js",
     "bin/messageformat.js",
     "example",

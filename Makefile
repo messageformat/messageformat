@@ -9,10 +9,11 @@ CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
+SRC=lib/index.js lib/compiler.js lib/parser.js
 
 .PHONY: test test-browser release clean
 
-messageformat.js: lib/messageformat.js lib/parser.js
+messageformat.js: $(SRC)
 	@${BIN}/browserify $< -s MessageFormat -o $@
 	@echo "${CHK} $@ is now ready for browsers."
 
@@ -25,18 +26,18 @@ lib/parser.js: lib/parser.pegjs
 	@echo "${CHK} parser re-compiled by PEGjs"
 
 
-test: lib/messageformat.js lib/parser.js
+test: $(SRC)
 	@${BIN}/mocha --require test/common --reporter spec --growl test/parser.js test/messageformat.js
 
 test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: lib/messageformat.js
+doc: lib/index.js
 	@${BIN}/jsdoc -c jsdoc-conf.json
 	@echo "${CHK} API documentation generated with jsdoc"
 
-example/i18n.js: bin/messageformat.js lib/messageformat.js lib/parser.js
+example/i18n.js: bin/messageformat.js $(SRC)
 	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
 
