@@ -33,7 +33,7 @@ test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: lib/index.js
+doc: lib/index.js lib/compiler.js
 	@${BIN}/jsdoc -c jsdoc-conf.json
 	@echo "${CHK} API documentation generated with jsdoc"
 

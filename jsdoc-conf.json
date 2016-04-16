@@ -1,5 +1,5 @@
 {
-  "source": { "include": [ "lib/index.js" ] },
+  "source": { "include": [ "lib/index.js", "lib/compiler.js" ] },
   "plugins": [ "plugins/markdown" ],
   "opts": { "destination": "./doc/" }
 }
