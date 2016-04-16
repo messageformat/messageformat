@@ -11,9 +11,13 @@ ERR=${RED} ✖${STOP}
 BIN=./node_modules/.bin
 SRC=lib/index.js lib/compiler.js lib/parser.js
 
-.PHONY: test test-browser release clean
+.PHONY: all test test-browser release clean
 
-messageformat.js: $(SRC)
+all: messageformat.min.js test example/i18n.js doc
+
+node_modules: ; npm install
+
+messageformat.js: $(SRC) | node_modules
 	@${BIN}/browserify $< -s MessageFormat -o $@
 	@echo "${CHK} $@ is now ready for browsers."
 
@@ -21,7 +25,7 @@ messageformat.min.js: messageformat.js
 	@$(BIN)/uglifyjs $< --compress --mangle --output $@ --source-map $@.map
 	@echo "${CHK} $@ is now ready for browsers."
 
-lib/parser.js: lib/parser.pegjs
+lib/parser.js: lib/parser.pegjs | node_modules
 	@${BIN}/pegjs $< $@
 	@echo "${CHK} parser re-compiled by PEGjs"
 
@@ -33,19 +37,19 @@ test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: lib/index.js lib/compiler.js
-	@${BIN}/jsdoc -c jsdoc-conf.json
+doc: lib/index.js lib/compiler.js | node_modules
+	@${BIN}/jsdoc -c doc/jsdoc-conf.json
 	@echo "${CHK} API documentation generated with jsdoc"
 
 example/i18n.js: bin/messageformat.js $(SRC)
 	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
 
-release: clean messageformat.min.js test example/i18n.js doc
+release: clean all
+	git apply doc/jsdoc-fix-fonts.patch
 	git add -f messageformat.*js* lib/parser.js doc/*html doc/styles/ doc/scripts/ example/i18n.js
 	git commit -m 'Packaging files for release'
-	git am jsdoc-fix-fonts.patch
 
 
 clean:
-	rm -rf messageformat.*js* lib/parser.js doc/
+	rm -rf messageformat.*js* lib/parser.js doc/*.html doc/fonts/ doc/scripts/ doc/styles/
