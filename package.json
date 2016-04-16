@@ -33,6 +33,7 @@
     "bin/messageformat.js",
     "example",
     "LICENSE",
+    "messageformat.js",
     "README.md"
   ],
   "dependencies": {
