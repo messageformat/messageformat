@@ -91,6 +91,9 @@ bower install messageformat
 </script>
 ```
 
+### Git / Direct download
+The tagged [releases](https://github.com/SlexAxton/messageformat.js/releases) available on github.com include all of the compiled files that are kept off the master branch of the repository. When working with a clone of the repository, you'll likely want to run `make all` to generate them yourself.
+
 
 ## License
 
