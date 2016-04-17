@@ -224,10 +224,20 @@ describe("MessageFormat", function() {
       expect(mfunc({"VAR":"2010-12-31"})).to.contain("2010");
     });
 
-    it("should use formatting functions - set in creator", function() {
+    it("should use formatting functions - set by #addFormatters()", function() {
       var mf = new MessageFormat('en').addFormatters({ uppercase: function(v) { return v.toUpperCase(); } });
       var mfunc = mf.compile("This is {VAR,uppercase}.");
       expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
+    });
+
+    it("should be able to disable plural checks", function() {
+      var mf0 = new MessageFormat('en');
+      var mf1 = new MessageFormat('en');
+      var msg = '{X, plural, zero{none} one{one} other{some: #}}';
+      expect(function(){ mf0.compile(msg) }).to.throwError();
+      mf0.disablePluralKeyChecks();
+      expect(mf0.compile(msg)({ X: 0 })).to.eql("some: 0");
+      expect(function(){ mf1.compile(msg) }).to.throwError();
     });
 
     it("should add control codes to bidirectional text", function() {
