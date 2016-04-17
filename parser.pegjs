@@ -15,9 +15,13 @@ token
       };
     }
   / '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
-      var ls = ((type === 'selectordinal') ? options.ordinal : options.cardinal);
+      var ls = ((type === 'selectordinal') ? options.ordinal : options.cardinal)
+               || ['zero', 'one', 'two', 'few', 'many', 'other'];
       if (ls && ls.length) cases.forEach(function(c) {
-        if (isNaN(c.key) && ls.indexOf(c.key) < 0) throw new Error('Invalid ' + type + ' key: ' + c.key);
+        if (isNaN(c.key) && ls.indexOf(c.key) < 0) throw new Error(
+          'Invalid key `' + c.key + '` for argument `' + arg + '`.' +
+          ' Valid ' + type + ' keys for this locale are `' + ls.join('`, `') +
+          '`, and explicit keys like `=0`.');
       });
       return {
         type: type,
@@ -48,7 +52,7 @@ caseTokens = '{' (_ & '{')? tokens:token* _ '}' { return tokens; }
 offset = _ 'offset' _ ':' _ d:digits _ { return d; }
 
 pluralKey
-  = $('zero'/'one'/'two'/'few'/'many'/'other')
+  = id
   / '=' d:digits { return d; }
 
 functionParams = _ ',' _ p:id _ { return p; }
