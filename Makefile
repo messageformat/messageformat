@@ -11,9 +11,9 @@ ERR=${RED} ✖${STOP}
 BIN=./node_modules/.bin
 SRC=lib/index.js lib/compiler.js
 
-.PHONY: all test test-browser release clean
+.PHONY: all test test-browser doc release clean
 
-all: messageformat.min.js test example/i18n.js doc
+all: messageformat.min.js test example/i18n.js doc/index.html
 
 node_modules: ; npm install
 
@@ -33,8 +33,12 @@ test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: lib/index.js lib/compiler.js | node_modules
+doc: doc/index.html
+
+doc/index.html: lib/index.js lib/compiler.js | node_modules
 	@${BIN}/jsdoc -c doc/jsdoc-conf.json
+	@git apply doc/jsdoc-fix-fonts.patch
+	@rm -r doc/fonts
 	@echo "${CHK} API documentation generated with jsdoc"
 
 example/i18n.js: bin/messageformat.js $(SRC)
@@ -42,10 +46,9 @@ example/i18n.js: bin/messageformat.js $(SRC)
 
 
 release: clean all
-	git apply doc/jsdoc-fix-fonts.patch
 	git add -f messageformat.*js* doc/*html doc/styles/ doc/scripts/ example/i18n.js
 	git commit -m 'Packaging files for release'
 
 
 clean:
-	rm -rf messageformat.*js* doc/*.html doc/fonts/ doc/scripts/ doc/styles/
+	rm -rf messageformat.*js* doc/*.html doc/scripts/ doc/styles/

@@ -27,13 +27,13 @@
     "messageformat": "./bin/messageformat.js"
   },
   "files": [
-    "lib/index.js",
-    "lib/compiler.js",
-    "bin/messageformat.js",
+    "bin",
+    "doc",
     "example",
-    "LICENSE",
+    "lib",
     "messageformat.js",
-    "README.md"
+    "messageformat.min.js",
+    "messageformat.min.js.map"
   ],
   "dependencies": {
     "glob": "~6.0.4",
