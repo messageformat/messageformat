@@ -1,0 +1,32 @@
+{
+  "name": "messageformat-parser",
+  "version": "1.0.0-rc.1",
+  "description": "A PEG.js parser for ICU MessageFormat strings -- part of messageformat.js",
+  "keywords": [
+    "icu",
+    "messageformat",
+    "parser"
+  ],
+  "contributors": [
+    "Alex Sexton <alexsexton@gmail.com>",
+    "Eemeli Aro <eemeli@gmail.com>",
+    "Adrian Vogelsgesang <adrian.vogelsgesang@tum.de>"
+  ],
+  "license": "MIT",
+  "homepage": "https://messageformat.github.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/parser.git"
+  },
+  "main": "parser.js",
+  "files": [
+    "parser.pegjs",
+    "parser.js"
+  ],
+  "devDependencies": {
+    "pegjs": ">=0.8.0"
+  },
+  "scripts": {
+    "prepublish": "pegjs parser.pegjs"
+  }
+}
