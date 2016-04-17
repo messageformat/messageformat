@@ -29,7 +29,6 @@
   "files": [
     "lib/index.js",
     "lib/compiler.js",
-    "lib/parser.js",
     "bin/messageformat.js",
     "example",
     "LICENSE",
@@ -46,8 +45,8 @@
     "browserify": "~13.0.0",
     "expect.js": "*",
     "jsdoc": "~3.4.0",
+    "messageformat-parser": "^1.0.0-rc.1",
     "mocha": "*",
-    "pegjs": "*",
     "serve": "*",
     "tmp": "*",
     "uglify-js": "2.*"

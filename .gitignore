@@ -1,7 +1,6 @@
 /doc/
 !/doc/jsdoc-*
 /example/i18n.js
-/lib/parser.js
 /messageformat.*js*
 node_modules/
 

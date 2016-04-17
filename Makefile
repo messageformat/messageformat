@@ -9,7 +9,7 @@ CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
-SRC=lib/index.js lib/compiler.js lib/parser.js
+SRC=lib/index.js lib/compiler.js
 
 .PHONY: all test test-browser release clean
 
@@ -25,13 +25,9 @@ messageformat.min.js: messageformat.js
 	@$(BIN)/uglifyjs $< --compress --mangle --output $@ --source-map $@.map
 	@echo "${CHK} $@ is now ready for browsers."
 
-lib/parser.js: lib/parser.pegjs | node_modules
-	@${BIN}/pegjs $< $@
-	@echo "${CHK} parser re-compiled by PEGjs"
-
 
 test: $(SRC)
-	@${BIN}/mocha --require test/common --reporter spec --growl test/parser.js test/messageformat.js
+	@${BIN}/mocha --require test/common --reporter spec --growl test/messageformat.js
 
 test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
@@ -47,9 +43,9 @@ example/i18n.js: bin/messageformat.js $(SRC)
 
 release: clean all
 	git apply doc/jsdoc-fix-fonts.patch
-	git add -f messageformat.*js* lib/parser.js doc/*html doc/styles/ doc/scripts/ example/i18n.js
+	git add -f messageformat.*js* doc/*html doc/styles/ doc/scripts/ example/i18n.js
 	git commit -m 'Packaging files for release'
 
 
 clean:
-	rm -rf messageformat.*js* lib/parser.js doc/*.html doc/fonts/ doc/scripts/ doc/styles/
+	rm -rf messageformat.*js* doc/*.html doc/fonts/ doc/scripts/ doc/styles/
