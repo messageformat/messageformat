@@ -24,9 +24,12 @@
     "parser.js"
   ],
   "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.4.5",
     "pegjs": ">=0.8.0"
   },
   "scripts": {
-    "prepublish": "pegjs parser.pegjs"
+    "prepublish": "pegjs parser.pegjs",
+    "test": "mocha"
   }
 }
