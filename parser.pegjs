@@ -1,45 +1,50 @@
 start = token* 
 
 token
-  = '{' _ arg:id _ '}' {
-      return {
-        type: 'argument',
-        arg: arg
-      };
-    }
-  / '{' _ arg:id _ ',' _ 'select' _ ',' _ cases:selectCase+ _ '}' {
-      return {
-        type: 'select',
-        arg: arg,
-        cases: cases
-      };
-    }
-  / '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
-      var ls = ((type === 'selectordinal') ? options.ordinal : options.cardinal)
-               || ['zero', 'one', 'two', 'few', 'many', 'other'];
-      if (ls && ls.length) cases.forEach(function(c) {
-        if (isNaN(c.key) && ls.indexOf(c.key) < 0) throw new Error(
-          'Invalid key `' + c.key + '` for argument `' + arg + '`.' +
-          ' Valid ' + type + ' keys for this locale are `' + ls.join('`, `') +
-          '`, and explicit keys like `=0`.');
-      });
-      return {
-        type: type,
-        arg: arg,
-        offset: offset || 0,
-        cases: cases
-      };
-    }
-  / '{' _ arg:id _ ',' _ key:id _ params:functionParams* '}' {
-      return {
-        type: 'function',
-        arg: arg,
-        key: key,
-        params: params
-      };
-    }
+  = argument / select / plural / function
   / '#' { return { type: 'octothorpe' }; }
   / str:char+ { return str.join(''); }
+
+argument = '{' _ arg:id _ '}' {
+    return {
+      type: 'argument',
+      arg: arg
+    };
+  }
+
+select = '{' _ arg:id _ ',' _ 'select' _ ',' _ cases:selectCase+ _ '}' {
+    return {
+      type: 'select',
+      arg: arg,
+      cases: cases
+    };
+  }
+
+plural = '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
+    var ls = ((type === 'selectordinal') ? options.ordinal : options.cardinal)
+             || ['zero', 'one', 'two', 'few', 'many', 'other'];
+    if (ls && ls.length) cases.forEach(function(c) {
+      if (isNaN(c.key) && ls.indexOf(c.key) < 0) throw new Error(
+        'Invalid key `' + c.key + '` for argument `' + arg + '`.' +
+        ' Valid ' + type + ' keys for this locale are `' + ls.join('`, `') +
+        '`, and explicit keys like `=0`.');
+    });
+    return {
+      type: type,
+      arg: arg,
+      offset: offset || 0,
+      cases: cases
+    };
+  }
+
+function = '{' _ arg:id _ ',' _ key:id _ params:functionParams* '}' {
+    return {
+      type: 'function',
+      arg: arg,
+      key: key,
+      params: params
+    };
+  }
 
 id = $([0-9a-zA-Z$_][^ \t\n\r,.+={}]*)
 
