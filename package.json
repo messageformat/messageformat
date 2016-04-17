@@ -52,7 +52,8 @@
     "uglify-js": "2.*"
   },
   "scripts": {
-    "test": "make test"
+    "prepublish": "make all",
+    "test": "mocha"
   },
   "browser": {
     "fs": false

@@ -27,7 +27,7 @@ messageformat.min.js: messageformat.js
 
 
 test: $(SRC)
-	@${BIN}/mocha --require test/common --reporter spec --growl test/messageformat.js
+	@${BIN}/mocha
 
 test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
