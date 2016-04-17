@@ -1,16 +1,21 @@
 # messageformat-parser  <a href="http://travis-ci.org/messageformat/parser"><img align="right" alt="Build Status" src="https://secure.travis-ci.org/messageformat/parser.png"></a>
 
-A PEG.js parser for [ICU MessageFormat](https://messageformat.github.io/guide/))
-strings -- part of [messageformat.js](https://messageformat.github.io/). Outputs
-an AST defined by [parser.pegjs](./parser.pegjs).
+A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat.js].
+Outputs an AST defined by [parser.pegjs].
 
 The generated parser function takes two parameters, first the string to be
 parsed, and a second optional parameter `options`, an object containing arrays
-of keywords for `cardinal` and `ordinal` rules for the current locale -- these
+of keywords for `cardinal` and `ordinal` rules for the current locale – these
 are used to validate plural and selectordinal keys. If `options` or its fields
-are missing or set to false, the full set of valid Unicode CLDR keys is used:
+are missing or set to false, the full set of valid [Unicode CLDR] keys is used:
 `'zero', 'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in
 an empty array.
+
+[ICU MessageFormat]: https://messageformat.github.io/guide/
+[messageformat.js]: https://messageformat.github.io/
+[parser.pegjs]: ./parser.pegjs
+[PEG.js]: http://pegjs.org/
+[Unicode CLDR]: http://cldr.unicode.org/index/cldr-spec/plural-rules
 
 
 #### Installation
