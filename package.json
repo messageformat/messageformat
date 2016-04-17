@@ -38,6 +38,7 @@
   "dependencies": {
     "glob": "~6.0.4",
     "make-plural": "~3.0.4",
+    "messageformat-parser": "^1.0.0-rc.1",
     "nopt": "~3.0.6",
     "reserved-words": "^0.1.1"
   },
@@ -45,7 +46,6 @@
     "browserify": "~13.0.0",
     "expect.js": "*",
     "jsdoc": "~3.4.0",
-    "messageformat-parser": "^1.0.0-rc.1",
     "mocha": "*",
     "serve": "*",
     "tmp": "*",
