@@ -1,4 +1,4 @@
-# messageformat-parser
+# messageformat-parser  <a href="http://travis-ci.org/messageformat/parser"><img align="right" alt="Build Status" src="https://secure.travis-ci.org/messageformat/parser.png"></a>
 
 A PEG.js parser for [ICU MessageFormat](https://messageformat.github.io/guide/))
 strings -- part of [messageformat.js](https://messageformat.github.io/). Outputs
