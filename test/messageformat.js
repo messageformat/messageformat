@@ -233,6 +233,12 @@ describe("Basic Message Formatting", function() {
     expect(mfunc({"VAR":"big"})).to.eql("This is BIG.");
   });
 
+  it("should use formatting functions for object input - set by #addFormatters()", function() {
+    var mf = new MessageFormat('en').addFormatters({ uppercase: function(v) { return v.toUpperCase(); } });
+    var mfunc = mf.compile(["This is {VAR,uppercase}.", "Other string"]);
+    expect(mfunc[0]({"VAR":"big"})).to.eql("This is BIG.");
+  });
+
   it("should be able to disable plural checks", function() {
     var mf0 = new MessageFormat('en');
     var mf1 = new MessageFormat('en');
