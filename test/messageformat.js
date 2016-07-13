@@ -289,9 +289,9 @@ describe("Basic Message Formatting", function() {
       "I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, one{one enemy} other{# enemies}}}}."
     );
     expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but 0 enemies.");
-    expect(function(){ var x = mfunc({FRIENDS:0,ENEMIES:'none'}); }).to.throwError(/ isn't a number\.$/);
-    expect(function(){ var x = mfunc({}); }).to.throwError(/ isn't a number\.$/);
-    expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/ isn't a number\.$/);
+    expect(function(){ var x = mfunc({FRIENDS:0,ENEMIES:'none'}); }).to.throwError(/\'ENEMIES\' isn't a number\.$/);
+    expect(function(){ var x = mfunc({}); }).to.throwError(/\'.+\' isn't a number\.$/);
+    expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/\'FRIENDS\' isn't a number\.$/);
   });
 
   it("should not expose prototype members - selects", function() {
