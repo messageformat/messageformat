@@ -39,7 +39,7 @@
     "glob": "~6.0.4",
     "make-plural": "~3.0.3",
     "nopt": "~3.0.6",
-    "watchr": "~2.4.13"
+    "watchr": "^2.5.0"
   },
   "devDependencies": {
     "browserify": "~13.0.0",
