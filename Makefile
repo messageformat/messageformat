@@ -9,10 +9,15 @@ CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
+SRC=lib/index.js lib/compiler.js
 
-.PHONY: test test-browser examples release clean
+.PHONY: all test test-browser doc release clean
 
-messageformat.js: lib/messageformat.js lib/messageformat-parser.js
+all: messageformat.min.js test example/i18n.js doc/index.html
+
+node_modules: ; npm install
+
+messageformat.js: $(SRC) | node_modules
 	@${BIN}/browserify $< -s MessageFormat -o $@
 	@echo "${CHK} $@ is now ready for browsers."
 
@@ -20,35 +25,30 @@ messageformat.min.js: messageformat.js
 	@$(BIN)/uglifyjs $< --compress --mangle --output $@ --source-map $@.map
 	@echo "${CHK} $@ is now ready for browsers."
 
-lib/messageformat-parser.js: lib/messageformat-parser.pegjs
-	@${BIN}/pegjs $< $@
-	@echo "${CHK} parser re-compiled by PEGjs"
 
+test: $(SRC)
+	@${BIN}/mocha
 
-test/common-js-generated-test-fixture.js: bin/messageformat.js lib/messageformat.js lib/messageformat-parser.js example/en/colors.json
-	./$< --module --locale en --include $(lastword $^) -o $@
-
-test: test/common-js-generated-test-fixture.js
-	@${BIN}/mocha --require test/common --reporter spec --growl test/tests.js
-
-test-browser: messageformat.js test/common-js-generated-test-fixture.js
+test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: lib/messageformat.js
-	@${BIN}/jsdoc -c jsdoc-conf.json
+doc: doc/index.html
+
+doc/index.html: lib/index.js lib/compiler.js | node_modules
+	@${BIN}/jsdoc -c doc/jsdoc-conf.json
+	@git apply doc/jsdoc-fix-fonts.patch
+	@rm -r doc/fonts
 	@echo "${CHK} API documentation generated with jsdoc"
 
-examples: example/en/i18n.js example/fr/i18n.js
-example/%/i18n.js: bin/messageformat.js lib/messageformat.js lib/messageformat-parser.js
-	./$< --locale $* --inputdir $(dir $@) --output $@
+example/i18n.js: bin/messageformat.js $(SRC)
+	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
 
-release: clean messageformat.min.js test examples doc
-	git add -f messageformat.*js* lib/messageformat-parser.js doc/*html doc/styles/ doc/scripts/
+release: clean all
+	git add -f messageformat.*js* doc/*html doc/styles/ doc/scripts/ example/i18n.js
 	git commit -m 'Packaging files for release'
-	git am jsdoc-fix-fonts.patch
 
 
 clean:
-	rm -rf messageformat.*js* lib/messageformat-parser.js doc/ test/common-js-generated-test-fixture.js
+	rm -rf messageformat.*js* doc/*.html doc/scripts/ doc/styles/

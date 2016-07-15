@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <script>document.write('<script src="' + (localStorage.getItem('lang') || 'en') + '/i18n.js"><\/script>')</script>
-  </head>
-  <body>
-    <div id="content">
-    </div>
-    <input type="button" value="en" name="en" />
-    <input type="button" value="fr" name="fr" />
-    <script>
-      $('<div>').text(window.i18n['colors'].red()).appendTo('#content');
-      $('<div>').text(window.i18n['colors'].blue()).appendTo('#content');
-      $('<div>').text(window.i18n['colors'].green()).appendTo('#content');
-      $('<div>').text(window.i18n['sub/folder/plural'].test({NUM: 1})).appendTo('#content');
-      $('<div>').text(window.i18n['sub/folder/plural'].test({NUM: 2})).appendTo('#content');
+<div id="content"></div>
+<input type="button" value="en" id="en" />
+<input type="button" value="fr" id="fr" />
 
-      $('input').click(function(e){
-        e.preventDefault();
-        var lang = $(e.target).attr('name');
-        localStorage.setItem('lang', lang);
-        location.reload();
-      });
-    </script>
-  </body>
-</html>
+<script src="i18n.js"></script>
+<script>
+  function showContents(lc) {
+    var colors = window.i18n[lc].colors;
+    var plural = window.i18n[lc].sub.folder.plural;
+    var el = document.getElementById('content');
+    el.innerHTML = '';
+    [ colors.red(), colors.blue(), colors.green(),
+      plural.test({ NUM: 1 }), plural.test({ NUM: 2 })
+    ].forEach(function(s) {
+      el.innerHTML += '<div>' + s + '</div>';
+    });
+    localStorage.setItem('lang', lc);
+  }
+
+  showContents(localStorage.getItem('lang') || 'en');
+  document.getElementById('en').onclick = showContents.bind(null, 'en');
+  document.getElementById('fr').onclick = showContents.bind(null, 'fr');
+</script>
