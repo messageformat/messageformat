@@ -20,7 +20,7 @@
   "homepage": "https://messageformat.github.io/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SlexAxton/messageformat.js.git"
+    "url": "https://github.com/messageformat/messageformat.js.git"
   },
   "main": "lib/",
   "bin": {
