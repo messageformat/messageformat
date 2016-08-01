@@ -123,10 +123,12 @@ describe("Basic Message Formatting", function() {
 
   it("should have configurable # parsing support", function() {
     var mf = new MessageFormat('en');
-    var msg = '{X, plural, other{{Y, select, other{#}}}}';
+    var msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
     expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('3');
+    expect(mf.compile(msg)({ X: 'x' })).to.eql('x');
     mf.setStrictNumberSign(true);
     expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('#');
+    expect(function() { mf.compile(msg)({ X: 'x' }); }).to.throwError(/\bX\b.*non-numerical value/);
   });
 
   it("obeys plural functions", function() {
@@ -290,9 +292,9 @@ describe("Basic Message Formatting", function() {
       "=0{no enemies} =1{one nemesis} one{two enemies} other{one nemesis and # enemies}}}}."
     );
     expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but no enemies.");
-    expect(function(){ var x = mfunc({}); }).to.throwError(/\bFRIENDS\b.*non-numerical value/);
+    expect(function(){ var x = mfunc({}); }).to.throwError(/\bENEMIES\b.*non-numerical value/);
     expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/\bENEMIES\b.*non-numerical value/);
-    expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/\bFRIENDS\b.*non-numerical value/);
+    expect(mfunc({ENEMIES:1})).to.eql('I have undefined friends but one nemesis.');
   });
 
   it("should not expose prototype members - selects", function() {
