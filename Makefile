@@ -9,7 +9,7 @@ CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
-SRC=lib/index.js lib/compiler.js
+SRC=lib/index.js lib/compiler.js lib/runtime.js
 
 .PHONY: all test test-browser doc release clean
 
@@ -35,7 +35,7 @@ test-browser: messageformat.js
 
 doc: doc/index.html
 
-doc/index.html: lib/index.js lib/compiler.js | node_modules
+doc/index.html: $(SRC) | node_modules
 	@${BIN}/jsdoc -c doc/jsdoc-conf.json
 	@git apply doc/jsdoc-fix-fonts.patch
 	@rm -r doc/fonts
