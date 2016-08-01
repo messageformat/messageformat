@@ -286,12 +286,13 @@ describe("Basic Message Formatting", function() {
   it("should reject number injections of numbers that don't exist", function() {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
-      "I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, one{one enemy} other{# enemies}}}}."
+      "I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, offset:1 " +
+      "=0{no enemies} =1{one nemesis} one{two enemies} other{one nemesis and # enemies}}}}."
     );
-    expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but 0 enemies.");
-    expect(function(){ var x = mfunc({FRIENDS:0,ENEMIES:'none'}); }).to.throwError(/\'ENEMIES\' isn't a number\.$/);
-    expect(function(){ var x = mfunc({}); }).to.throwError(/\'.+\' isn't a number\.$/);
-    expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/\'FRIENDS\' isn't a number\.$/);
+    expect(mfunc({FRIENDS:0, ENEMIES: 0})).to.eql("I have 0 friends but no enemies.");
+    expect(function(){ var x = mfunc({}); }).to.throwError(/\bFRIENDS\b.*non-numerical value/);
+    expect(function(){ var x = mfunc({FRIENDS:0}); }).to.throwError(/\bENEMIES\b.*non-numerical value/);
+    expect(function(){ var x = mfunc({ENEMIES:0}); }).to.throwError(/\bFRIENDS\b.*non-numerical value/);
   });
 
   it("should not expose prototype members - selects", function() {
