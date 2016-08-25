@@ -8,7 +8,7 @@ module.exports = function(content) {
   var messageFunctions = new MessageFormat(locale).compile(messages);
 
   this.cacheable && this.cacheable();
-  this.value = messageFunctions;
+  this.value = [ messageFunctions ];
 
   return messageFunctions.toString('module.exports');
 };
