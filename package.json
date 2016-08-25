@@ -1,6 +1,6 @@
 {
   "name": "messageformat-loader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Webpack loader for https://github.com/messageformat/messageformat.js",
   "main": "index.js",
   "scripts": {
