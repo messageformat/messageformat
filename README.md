@@ -10,6 +10,12 @@
 npm install messageformat-loader
 ```
 
+You'll also need another loader (like [json-loader](https://github.com/webpack/json-loader)) to actually load the JSON strings
+
+```
+npm install json-loader
+```
+
 ## Usage
 
 [Documentation: Using loaders](http://webpack.github.io/docs/using-loaders.html)
@@ -31,7 +37,7 @@ npm install messageformat-loader
 ### example.js
 
 ``` javascript
-var messages = require('messageformat!./messages.json');
+var messages = require('messageformat!json!./messages.json');
 messages['ordinal-example']({ N: 1 });
 // => 'The 1st message.'
 ```
