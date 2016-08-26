@@ -10,11 +10,7 @@
 npm install messageformat-loader
 ```
 
-You'll also need another loader (like [json-loader](https://github.com/webpack/json-loader)) to actually load the JSON strings
-
-```
-npm install json-loader
-```
+You'll also need another loader (like [json-loader](https://github.com/webpack/json-loader) or [multi-json-loader](https://github.com/cletusw/multi-json-loader)) to actually load the JSON strings
 
 ## Usage
 
@@ -37,10 +33,14 @@ npm install json-loader
 ### example.js
 
 ``` javascript
-var messages = require('messageformat!json!./messages.json');
+var messages = require('messageformat?locale=en!json!./messages.json');
 messages['ordinal-example']({ N: 1 });
 // => 'The 1st message.'
 ```
+
+## Options (passed as [query parameters](http://webpack.github.io/docs/using-loaders.html#query-parameters))
+
+* `locale` The [CLDR language code](http://www.unicode.org/cldr/charts/29/supplemental/language_territory_information.html) to pass to [messageformat.js](https://messageformat.github.io/messageformat.js/doc/MessageFormat.html). Defaults to `en`.
 
 ## License
 
