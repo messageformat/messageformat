@@ -1,6 +1,6 @@
 var expect = require('expect.js');
 var fs = require('fs');
-var PEG = require('pegjs');
+var peg = require('pegjs');
 
 var parse = null;
 
@@ -9,7 +9,7 @@ describe("Parser generation", function() {
   it("should generate a valid parser from pegjs source", function() {
     var src = fs.readFileSync('./parser.pegjs', 'utf8');
     expect(src).to.not.be.empty();
-    var parser = PEG.buildParser(src);
+    var parser = peg.generate(src);
     expect(parser.parse).to.be.a('function');
     parse = parser.parse;
   });
