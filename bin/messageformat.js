@@ -14,16 +14,14 @@ var fs = require('fs'),
     knownOpts = {
       help: Boolean,
       locale: [String, Array],
-      namespace: String
+      namespace: String,
+      'disable-plural-key-checks': Boolean
     },
     shortHands = {
       h: ['--help'],
       l: ['--locale'],
-      n: ['--namespace']
-    },
-    description = {
-      locale: "locale(s) to use [mandatory]",
-      namespace: "global object in the output containing the templates",
+      n: ['--namespace'],
+      p: ['--disable-plural-key-checks']
     },
     options = nopt(knownOpts, shortHands, process.argv, 2),
     inputFiles = options.argv.remain.map(function(fn) { return path.resolve(fn); });
@@ -36,14 +34,16 @@ if (options.help || inputFiles.length === 0) {
   if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
   var input = readInput(inputFiles, '.json', '/');
   var ns = options.namespace || 'module.exports';
-  var output = new MessageFormat(locale).compile(input).toString(ns);
+  var mf = new MessageFormat(locale);
+  if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
+  var output = mf.compile(input).toString(ns);
   console.log(output);
 }
 
 
 function printUsage() {
   var usage = [
-    'usage: *messageformat* [*-l* _lc_] [*-n* _ns_] _input_',
+    'usage: *messageformat* [*-l* _lc_] [*-n* _ns_] [*-p*] _input_',
     '',
     'Parses the _input_ JSON file(s) of MessageFormat strings into a JS module of',
     'corresponding hierarchical functions, written to stdout. Directories are',
@@ -57,7 +57,13 @@ function printUsage() {
     '        The global object or modules format for the output JS. If _ns_ does not',
     '        contain a \'.\', the output follows an UMD pattern. For module support,',
     '        the values \'*export default*\' (ES6), \'*exports*\' (CommonJS), and',
-    '        \'*module.exports*\' (node.js) are special. [default: *module.exports*]'
+    '        \'*module.exports*\' (node.js) are special. [default: *module.exports*]',
+    '',
+    '  *-p*, *--disable-plural-key-checks*',
+    '        By default, messageformat.js throws an error when a statement uses a',
+    '        non-numerical key that will never be matched as a pluralization',
+    '        category for the current locale. Use this argument to disable the',
+    '        validation and allow unused plural keys. [default: *false*]'
   ].join('\n');
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
