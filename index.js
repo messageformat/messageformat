@@ -5,7 +5,11 @@ module.exports = function(content) {
   var query = loaderUtils.parseQuery(this.query);
   var locale = query.locale || 'en';
   var messages = (Array.isArray(this.inputValue) && typeof this.inputValue[0] === 'object') ? this.inputValue[0] : this.exec(content);
-  var messageFunctions = new MessageFormat(locale).compile(messages);
+  var messageFormat = new MessageFormat(locale);
+  if (query.disablePluralKeyChecks) {
+    messageFormat.disablePluralKeyChecks();
+  }
+  var messageFunctions = messageFormat.compile(messages);
 
   this.cacheable && this.cacheable();
   this.value = [ messageFunctions ];
