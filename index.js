@@ -4,7 +4,7 @@ var MessageFormat = require('messageformat');
 module.exports = function(content) {
   var query = loaderUtils.parseQuery(this.query);
   var locale = query.locale || 'en';
-  var messages = (Array.isArray(this.inputValue) && typeof this.inputValue[0] === 'object') ? this.inputValue[0] : this.exec(content);
+  var messages = (Array.isArray(this.inputValue) && typeof this.inputValue[0] === 'object') ? this.inputValue[0] : this.exec(content, this.resource);
   var messageFormat = new MessageFormat(locale);
   if (query.disablePluralKeyChecks) {
     messageFormat.disablePluralKeyChecks();
