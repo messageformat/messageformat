@@ -80,6 +80,14 @@ describe("Basic Message Formatting", function() {
     expect((mf.compile('\\u263A\\u263B'))()).to.eql('☺☻');
   });
 
+  it("accepts special characters escaped with MessageFormat.escape", function() {
+    var mf = new MessageFormat('en');
+    expect(mf.compile(MessageFormat.escape('{'))()).to.eql('{');
+    expect(mf.compile(MessageFormat.escape('}'))()).to.eql('}');
+    expect(mf.compile(MessageFormat.escape('#'))()).to.eql('#');
+    expect(mf.compile(MessageFormat.escape('\\'))()).to.eql('\\');
+  });
+
   it("should get escaped brackets all the way out the other end", function() {
     var mf = new MessageFormat('en');
     expect((mf.compile('\\{\\{\\{'))()).to.eql("{{{");
