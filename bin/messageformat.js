@@ -16,14 +16,16 @@ var fs = require('fs'),
       locale: [String, Array],
       namespace: String,
       'disable-plural-key-checks': Boolean,
-      'flat': Boolean
+      'flat': Boolean,
+      'regex': String
     },
     shortHands = {
       h: ['--help'],
       l: ['--locale'],
       n: ['--namespace'],
       p: ['--disable-plural-key-checks'],
-      f: ['--flat']
+      f: ['--flat'],
+      r: ['--regex']
     },
     options = nopt(knownOpts, shortHands, process.argv, 2),
     inputFiles = options.argv.remain.map(function(fn) { return path.resolve(fn); });
@@ -38,8 +40,35 @@ if (options.help || inputFiles.length === 0) {
   var ns = options.namespace || 'module.exports';
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
+  if (options.regex) {
+    input = filter(input, new RegExp(options.regex));
+  }
   var output = mf.compile(input).toString(ns);
   console.log(output);
+}
+
+function filter(obj, re, path) {
+    if (!path) {
+        path = '';
+    }
+    var result = {};
+    for (var key in obj) {
+        var keyPath = path ? (path + '.' + key) : key;
+
+        if (typeof obj[key] !== 'object' || Array.isArray(obj[key])) {
+            if (re.test(keyPath)) {
+                result[key] = obj[key];
+            }
+        }
+        else {
+            var sub = filter(obj[key], re, keyPath);
+            if (Object.keys(sub).length > 0) {
+                result[key] = sub;
+            }
+        }
+    }
+
+    return result;
 }
 
 
@@ -69,7 +98,11 @@ function printUsage() {
     '',
     '  *-f*, *--flat*',
     '        Do not make an input file path a part of the exports hiearchy.',
-    '        Instead, use just the input JSON structure'
+    '        Instead, use just the input JSON structure',
+    '',
+    '  *-r*, *--regex*',
+    '        Filter keys by a regular expression. Subkeys are separated by a dot.',
+    '        For example, { foo: { bar: "Hello" } } is matched by foo[.]bar'
   ].join('\n');
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
