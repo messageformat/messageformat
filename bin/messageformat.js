@@ -32,7 +32,7 @@ if (options.help || inputFiles.length === 0) {
 } else {
   var locale = options.locale ? options.locale.join(',').split(/[ ,]+/) : null;
   if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
-  var input = readInput(inputFiles, '.json', '/');
+  var input = readInput(inputFiles, '.json', path.sep);
   var ns = options.namespace || 'module.exports';
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
