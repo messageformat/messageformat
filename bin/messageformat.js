@@ -15,13 +15,15 @@ var fs = require('fs'),
       help: Boolean,
       locale: [String, Array],
       namespace: String,
-      'disable-plural-key-checks': Boolean
+      'disable-plural-key-checks': Boolean,
+      'flat': Boolean
     },
     shortHands = {
       h: ['--help'],
       l: ['--locale'],
       n: ['--namespace'],
-      p: ['--disable-plural-key-checks']
+      p: ['--disable-plural-key-checks'],
+      f: ['--flat']
     },
     options = nopt(knownOpts, shortHands, process.argv, 2),
     inputFiles = options.argv.remain.map(function(fn) { return path.resolve(fn); });
@@ -32,7 +34,7 @@ if (options.help || inputFiles.length === 0) {
 } else {
   var locale = options.locale ? options.locale.join(',').split(/[ ,]+/) : null;
   if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
-  var input = readInput(inputFiles, '.json', path.sep);
+  var input = readInput(inputFiles, '.json', options.flat ? null : path.sep);
   var ns = options.namespace || 'module.exports';
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
@@ -63,7 +65,11 @@ function printUsage() {
     '        By default, messageformat.js throws an error when a statement uses a',
     '        non-numerical key that will never be matched as a pluralization',
     '        category for the current locale. Use this argument to disable the',
-    '        validation and allow unused plural keys. [default: *false*]'
+    '        validation and allow unused plural keys. [default: *false*]',
+    '',
+    '  *-f*, *--flat*',
+    '        Do not make an input file path a part of the exports hiearchy.',
+    '        Instead, use just the input JSON structure'
   ].join('\n');
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
@@ -98,6 +104,10 @@ function readInput(include, ext, sep) {
   var end = -1 * ext.length;
   var input = {};
   ls.forEach(function(fn) {
+    if (!sep) {
+      input = require(fn);
+      return;
+    }
     var key = fn.slice(start, end);
     var parts = key.split(sep);
     var last = parts.length - 1;
