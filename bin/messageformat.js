@@ -15,13 +15,15 @@ var fs = require('fs'),
       help: Boolean,
       locale: [String, Array],
       namespace: String,
-      'disable-plural-key-checks': Boolean
+      'disable-plural-key-checks': Boolean,
+      simplify: Boolean
     },
     shortHands = {
       h: ['--help'],
       l: ['--locale'],
       n: ['--namespace'],
-      p: ['--disable-plural-key-checks']
+      p: ['--disable-plural-key-checks'],
+      s: ['--simplify']
     },
     options = nopt(knownOpts, shortHands, process.argv, 2),
     inputFiles = options.argv.remain.map(function(fn) { return path.resolve(fn); });
@@ -33,6 +35,7 @@ if (options.help || inputFiles.length === 0) {
   var locale = options.locale ? options.locale.join(',').split(/[ ,]+/) : null;
   if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
   var input = readInput(inputFiles, '.json', path.sep);
+  if (options.simplify) simplify(input);
   var ns = options.namespace || 'module.exports';
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
@@ -63,7 +66,13 @@ function printUsage() {
     '        By default, messageformat.js throws an error when a statement uses a',
     '        non-numerical key that will never be matched as a pluralization',
     '        category for the current locale. Use this argument to disable the',
-    '        validation and allow unused plural keys. [default: *false*]'
+    '        validation and allow unused plural keys. [default: *false*]',
+    '',
+    '  *-s*, *--simplify*',
+    '        Simplify the output object structure, by dropping intermediate keys when',
+    '        those keys are shared across all objects at that level, in addition to',
+    '        the default filtering-out of shared keys at the root of the object.',
+    '        [default: *false*]'
   ].join('\n');
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
@@ -103,4 +112,34 @@ function readInput(include, ext, sep) {
       else break;
   }
   return input;
+}
+
+function simplify(input) {
+  function getAllObjects(obj, level) {
+    if (typeof obj !== 'object') throw new Error('non-object value')
+    if (level === 0) return [obj];
+    else if (level === 1) return Object.keys(obj).map(k => obj[k]);
+    else return Object.keys(obj)
+      .map(k => getAllObjects(obj[k], level - 1))
+      .reduce((a, b) => a.concat(b), []);
+  }
+
+  var lvl = 0;
+  try {
+    while (true) {
+      var objects = getAllObjects(input, lvl);
+      var keysets = objects.map(obj => Object.keys(obj).map(k => {
+        if (typeof obj[k] !== 'object') throw new Error('non-object value');
+        return Object.keys(obj[k]);
+      }));
+      var key0 = keysets[0][0][0];
+      if (keysets.every(keyset => keyset.every(ks => ks.length === 1 && ks[0] === key0))) {
+        objects.forEach(obj => Object.keys(obj).forEach(k => obj[k] = obj[k][key0]));
+      } else {
+        ++lvl;
+      }
+    }
+  } catch (e) {
+    if (e.message !== 'non-object value') throw e;
+  }
 }
