@@ -76,13 +76,6 @@ function printUsage() {
 
 
 function readInput(include, ext, sep) {
-  // modified from http://stackoverflow.com/a/1917041
-  function sharedPathLength(array) {
-    var A = array.sort(), a1 = A[0], a2 = A[A.length - 1], len = a1.length, i = 0;
-    while (i < len && a1.charAt(i) === a2.charAt(i)) ++i;
-    return a1.substring(0, i).replace(/[^/]+$/, '').length;
-  }
-
   var ls = [];
   include.forEach(function(fn) {
     if (!fs.existsSync(fn)) throw new Error('Input file not found: ' + fn);
@@ -94,12 +87,9 @@ function readInput(include, ext, sep) {
     }
   });
 
-  var start = sharedPathLength(ls);
-  var end = -1 * ext.length;
   var input = {};
   ls.forEach(function(fn) {
-    var key = fn.slice(start, end);
-    var parts = key.split(sep);
+    var parts = fn.slice(0, -ext.length).split(sep);
     var last = parts.length - 1;
     parts.reduce(function(root, part, idx) {
       if (idx == last) root[part] = require(fn);
@@ -107,5 +97,10 @@ function readInput(include, ext, sep) {
       return root[part];
     }, input);
   });
+  while (true) {
+      var keys = Object.keys(input);
+      if (keys.length === 1) input = input[keys[0]];
+      else break;
+  }
   return input;
 }
