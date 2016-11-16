@@ -101,7 +101,7 @@ You may use this software under the MIT License.
 
 ## Contributor License Agreement
 
-We require all contributions to be covered under the JS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions, you have the legal right to contribute and you are transferring the copyright of your works to the Dojo Foundation.
+We require all contributions to be covered under the JS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions, you have the legal right to contribute and you are transferring the copyright of your works to the JavaScript Foundation.
 
 If you are an unfamiliar contributor to the committer assessing your pull request, it is best to make it clear how you are covered by a CLA in the notes of the pull request. The committer will verify your status.
 
