@@ -1,5 +1,5 @@
 {
-  "name": "messageformat",
+  "name": "@gilt-tech/vendor.messageformat",
   "version": "0.1.8",
   "author": "Alex Sexton <alexsexton@gmail.com>",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
@@ -8,7 +8,8 @@
     "url": "https://SlexAxton@github.com/SlexAxton/messageformat.js.git"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "prepublish": "swig pre-publish --vendor"
   },
   "main": "./messageformat",
   "bin": {

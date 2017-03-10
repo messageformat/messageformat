@@ -1565,4 +1565,4 @@ var
 
   exports.MessageFormat = MessageFormat;
 
-})(window);
+})(this);
