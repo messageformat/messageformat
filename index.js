@@ -9,6 +9,9 @@ module.exports = function(content) {
   if (query.disablePluralKeyChecks) {
     messageFormat.disablePluralKeyChecks();
   }
+  if (query.intlSupport) {
+    messageFormat.setIntlSupport(true);
+  }
   var messageFunctions = messageFormat.compile(messages);
 
   this.cacheable && this.cacheable();
