@@ -80,6 +80,19 @@ describe("Replacement", function() {
     expect(parse('one {plural} ')[1].arg).to.eql('plural');
   });
 
+  it("should correctly handle apostrophes", function() {
+    // This mirrors the default DOUBLE_OPTIONAL behavior of ICU.
+    expect(parse("I see '{many}'")[0]).to.eql("I see {many}");
+    expect(parse("I said '{''Wow!''}'")[0]).to.eql("I said {'Wow!'}");
+    expect(parse("I don't know")[0]).to.eql("I don't know");
+    expect(parse("I don''t know")[0]).to.eql("I don't know");
+    expect(parse("A'a''a'A")[0]).to.eql("A'a'a'A");
+    expect(parse("A'{a''a}'A")[0]).to.eql("A{a'a}A");
+
+    // # and | are not special here.
+    expect(parse("A '#' A")[0]).to.eql("A '#' A");
+    expect(parse("A '|' A")[0]).to.eql("A '|' A");
+  });
 });
 describe("Simple arguments", function() {
 
@@ -214,6 +227,30 @@ describe("Plurals", function() {
     expect(
       parse('{NUM,plural,offset:4other{a}}')[0].offset
     ).to.eql(4);
+  });
+
+  it("should support quoting", function() {
+    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].type).to.eql('function');
+    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].arg).to.eql('x');
+    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].key).to.eql('date');
+    // Octothorpe is not special here regardless of strict number sign
+    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].params[0]).to.eql("y-M-dd # '#'");
+
+    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens[0].type).to.eql('octothorpe');
+    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens[1]).to.eql(" ' ");
+    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens[2].type).to.eql('octothorpe');
+    expect(parse("{NUM, plural, one{# '#'} two{two}}")[0].cases[0].tokens[0].type).to.eql('octothorpe');
+    expect(parse("{NUM, plural, one{# '#'} two{two}}")[0].cases[0].tokens[1]).to.eql(" #");
+
+    expect(parse("{NUM, plural, one{one#} two{two}}")[0].cases[0].tokens[0]).to.eql('one');
+    expect(parse("{NUM, plural, one{one#} two{two}}")[0].cases[0].tokens[1].type).to.eql('octothorpe');
+
+    // without strict number sign
+    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}")[0].cases[0].tokens[2].cases[0].tokens[0].type).to.eql('octothorpe')
+    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}")[0].cases[0].tokens[2].cases[0].tokens[1]).to.eql(' # one')
+    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}")[0].cases[0].tokens[2].cases[0].tokens[2].type).to.eql('octothorpe')
+    // with strict number sign
+    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}", { strictNumberSign: true })[0].cases[0].tokens[2].cases[0].tokens[0]).to.eql('# \'#\' one#')
   });
 
 });

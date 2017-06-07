@@ -6,20 +6,35 @@ Outputs an AST defined by [parser.pegjs].
 The generated parser function takes two parameters, first the string to be
 parsed, and a second optional parameter `options`, an object.
 
-The options object contains arrays
+The `options` object contains arrays
 of keywords for `cardinal` and `ordinal` rules for the current locale – these
 are used to validate plural and selectordinal keys. If `options` or its fields
 are missing or set to false, the full set of valid [Unicode CLDR] keys is used:
 `'zero', 'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in
 an empty array.
 
-The `options` object also supports a setting that makes the parser
-follow the ICU MessageFormat spec more closely: `strictFunctionParams`.
+The `options` object also supports two settings that make the parser
+follow the ICU MessageFormat spec more closely: `strictNumberSign` and `strictFunctionParams`.
+
+Inside a `plural` or `selectordinal` statement, a pound symbol (`#`) is replaced
+with the input number. By default, `#` is parsed as a special character
+in nested statements too, and can be escaped using apostrophes (`'#'`).
+
+Setting `strictNumberSign` to true will only parse `#` as a special character
+directly inside a `plural` or `selectordinal` statement.
+Outside those, `#` and `'#'` are parsed as literal text.
 
 By default, function parameters are split on commas and trimmed,
 so the parameters in `{x,fn,   a,   b   }` are parsed as `['a','b']`.
 Setting `strictFunctionParams` to true will result in a params array
 with a single element: `['   a,   b   ']`.
+
+The parser only supports the `DOUBLE_OPTIONAL` apostrophe mode.
+A single apostrophe only starts quoted literal text if preceded
+by a curly brace (`{}`) or a pound symbol (`#`) inside a
+`plural` or `selectordinal` statement, depending on the value of `strictNumberSign`.
+Otherwise, it is a literal apostrophe. A double apostrophe is always
+a literal apostrophe.
 
 [ICU MessageFormat]: https://messageformat.github.io/guide/
 [messageformat.js]: https://messageformat.github.io/

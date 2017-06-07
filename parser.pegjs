@@ -1,8 +1,12 @@
+{
+  var inPlural = false;
+}
+
 start = token*
 
 token
   = argument / select / plural / function
-  / '#' { return { type: 'octothorpe' }; }
+  / '#' & { return inPlural; } { return { type: 'octothorpe' }; }
   / str:char+ { return str.join(''); }
 
 argument = '{' _ arg:id _ '}' {
@@ -12,7 +16,7 @@ argument = '{' _ arg:id _ '}' {
     };
   }
 
-select = '{' _ arg:id _ ',' _ 'select' _ ',' _ cases:selectCase+ _ '}' {
+select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strictNumberSign) { inPlural = false; } return m; }) _ ',' _ cases:selectCase+ _ '}' {
     return {
       type: 'select',
       arg: arg,
@@ -20,7 +24,7 @@ select = '{' _ arg:id _ ',' _ 'select' _ ',' _ cases:selectCase+ _ '}' {
     };
   }
 
-plural = '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
+plural = '{' _ arg:id _ ',' _ type:(m:('plural'/'selectordinal') { inPlural = true; return m; } ) _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
     var ls = ((type === 'selectordinal') ? options.ordinal : options.cardinal)
              || ['zero', 'one', 'two', 'few', 'many', 'other'];
     if (ls && ls.length) cases.forEach(function(c) {
@@ -29,6 +33,7 @@ plural = '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:off
         ' Valid ' + type + ' keys for this locale are `' + ls.join('`, `') +
         '`, and explicit keys like `=0`.');
     });
+    inPlural = false;
     return {
       type: type,
       arg: arg,
@@ -37,7 +42,7 @@ plural = '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:off
     };
   }
 
-function = '{' _ arg:id _ ',' _ key:id _ params:functionParams '}' {
+function = '{' _ arg:id _ ',' _ key:(m:id { if (options.strictNumberSign) { inPlural = false; } return m; }) _ params:functionParams '}' {
     return {
       type: 'function',
       arg: arg,
@@ -80,12 +85,20 @@ quotedCurly
   = "'{"str:inapos*"'" { return '\u007B'+str.join(''); }
   / "'}"str:inapos*"'" { return '\u007D'+str.join(''); }
 
+quoted
+  = quotedCurly
+  / quotedOcto:(("'#"str:inapos*"'" { return "#"+str.join(''); }) & { return inPlural; }) { return quotedOcto[0]; }
+  / "'"
+
 quotedFunctionParams
   = quotedCurly
   / "'"
 
 char
-  = [^{}#\\\0-\x08\x0e-\x1f\x7f]
+  = doubleapos
+  / quoted
+  / octo:'#' & { return !inPlural; } { return octo; }
+  / [^{}#\\\0-\x08\x0e-\x1f\x7f]
   / '\\\\' { return '\\'; }
   / '\\#' { return '#'; }
   / '\\{' { return '\u007B'; }
