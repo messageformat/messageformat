@@ -96,6 +96,15 @@ describe("Basic Message Formatting", function() {
     expect((mf.compile('\\{\\{\\{{test, plural, other{#}}\\}\\}\\}'))({test:4})).to.eql("{{{4}}}");
   });
 
+  it("should handle ICU apostrophe-escaping", function() {
+    var mf = new MessageFormat('en');
+    expect(mf.compile("This '{isn''t}' obvious")()).to.eql("This {isn't} obvious")
+    expect(mf.compile("I see '{many}'")()).to.eql("I see {many}")
+    expect(mf.compile("I said '{''Wow!''}'")()).to.eql("I said {'Wow!'}")
+    expect(mf.compile("I don't know")()).to.eql("I don't know")
+    expect(mf.compile("I don''t know")()).to.eql("I don't know")
+  });
+
   it("can substitute named variables", function() {
     var mf = new MessageFormat('en');
     expect((mf.compile("The var is {VAR}."))({"VAR":5})).to.eql("The var is 5.");
