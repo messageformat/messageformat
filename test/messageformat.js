@@ -98,6 +98,7 @@ describe("Basic Message Formatting", function() {
 
   it("should handle ICU apostrophe-escaping", function() {
     var mf = new MessageFormat('en');
+    expect(mf.compile("This '{isn''t}' obvious")()).to.eql("This {isn't} obvious")
     expect(mf.compile("I see '{many}'")()).to.eql("I see {many}")
     expect(mf.compile("I said '{''Wow!''}'")()).to.eql("I said {'Wow!'}")
     expect(mf.compile("I don't know")()).to.eql("I don't know")
