@@ -71,6 +71,14 @@ describe("Basic Message Formatting", function() {
     expect((mf.compile('\\u005c'))()).to.eql('\\');
   });
 
+  it("should handle apostrophes correctly", function() {
+    var mf = new MessageFormat('en');
+    expect(mf.compile("I see '{many}'")()).to.eql("I see {many}");
+    expect(mf.compile("I said '{''Wow!''}'")()).to.eql("I said {'Wow!'}");
+    expect(mf.compile("I don't know")()).to.eql("I don't know");
+    expect(mf.compile("I don''t know")()).to.eql("I don't know");
+  });
+
   it("accepts escaped special characters", function() {
     var mf = new MessageFormat('en');
     expect((mf.compile('\\{'))()).to.eql('{');
@@ -132,11 +140,20 @@ describe("Basic Message Formatting", function() {
   it("should have configurable # parsing support", function() {
     var mf = new MessageFormat('en');
     var msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
+    var msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
     expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('3');
     expect(mf.compile(msg)({ X: 'x' })).to.eql('x');
+    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.eql('#');
+    expect(mf.compile(msg2)({ X: 'x' })).to.eql('#');
     mf.setStrictNumberSign(true);
     expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('#');
     expect(function() { mf.compile(msg)({ X: 'x' }); }).to.throwError(/\bX\b.*non-numerical value/);
+    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.eql("'#'");
+    mf.setStrictNumberSign(false);
+    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('3');
+    expect(mf.compile(msg)({ X: 'x' })).to.eql('x');
+    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.eql('#');
+    expect(mf.compile(msg2)({ X: 'x' })).to.eql('#');
   });
 
   it("obeys plural functions", function() {
