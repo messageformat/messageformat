@@ -33,7 +33,7 @@ You'll also need another loader (like [json-loader](https://github.com/webpack/j
 ### example.js
 
 ``` javascript
-var messages = require('messageformat?locale=en!json!./messages.json');
+var messages = require('messageformat-loader?locale=en!json-loader!./messages.json');
 messages['ordinal-example']({ N: 1 });
 // => 'The 1st message.'
 ```
