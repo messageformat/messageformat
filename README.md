@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/messageformat/messageformat.js.png)](http://travis-ci.org/messageformat/messageformat.js)
+[![Build Status](https://secure.travis-ci.org/messageformat/messageformat.js.svg)](http://travis-ci.org/messageformat/messageformat.js)
 
 # messageformat.js
 
@@ -25,7 +25,7 @@ Using messageformat.js, you can separate your code from your text formatting, wh
 With this message:
 
 ```js
-> var msg =
+> const msg =
   '{GENDER, select, male{He} female{She} other{They} }' +
   ' found ' +
   '{RES, plural, =0{no results} one{1 result} other{# results} }' +
@@ -37,7 +37,7 @@ With this message:
 You'll get these results:
 
 ```js
-> var mfunc = new MessageFormat('en').compile(msg);
+> const mfunc = new MessageFormat('en').compile(msg);
 
 > mfunc({ GENDER: 'male', RES: 1, CAT: 2 })
 'He found 1 result in the 2nd category.'
@@ -75,8 +75,8 @@ npm install messageformat
 ```
 
 ```js
-var MessageFormat = require('messageformat');
-var mf = new MessageFormat('en');
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 ```
 
 ### Bower
@@ -87,7 +87,7 @@ bower install messageformat
 ```html
 <script src="path/to/bower_components/messageformat/messageformat.js"></script>
 <script>
-  var mf = new MessageFormat('en');
+  const mf = new MessageFormat('en');
 </script>
 ```
 
