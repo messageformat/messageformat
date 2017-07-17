@@ -25,13 +25,9 @@ Using messageformat.js, you can separate your code from your text formatting, wh
 With this message:
 
 ```js
-> const msg =
-  '{GENDER, select, male{He} female{She} other{They} }' +
-  ' found ' +
-  '{RES, plural, =0{no results} one{1 result} other{# results} }' +
-  ' in the ' +
-  '{CAT, selectordinal, one{#st} two{#nd} few{#rd} other{#th} }' +
-  ' category.';
+> const msg = `{GENDER, select, male{He} female{She} other{They} } found
+  {RES, plural, =0{no results} one{1 result} other{# results} } in the
+  {CAT, selectordinal, one{#st} two{#nd} few{#rd} other{#th} } category.`;
 ```
 
 You'll get these results:
@@ -117,9 +113,9 @@ If your GitHub user id you are submitting your pull request from differs from th
 
 Thanks to:
 
-* [Bazaarvoice](https://github.com/Bazaarvoice) - my previous employer - for letting me do cool stuff like this.
+* [Bazaarvoice](https://github.com/Bazaarvoice) - Alex's previous employer - for letting him do cool stuff like this.
 * Google has an implementation that is similar in Google Closure, I tried to vet my code against many of their tests.
-* Norbert Lindenberg for showing me how good it can be.
+* Norbert Lindenberg for showing how good it can be.
 
 
 ## Implementations in other languages
