@@ -12,14 +12,16 @@ var fs = require('fs'),
     nopt = require('nopt'),
     path = require('path'),
     knownOpts = {
+      'disable-plural-key-checks': Boolean,
+      'enable-intl-support': Boolean,
       help: Boolean,
       locale: [String, Array],
       namespace: String,
-      'disable-plural-key-checks': Boolean,
       simplify: Boolean
     },
     shortHands = {
       h: ['--help'],
+      i: ['--enable-intl-support'],
       l: ['--locale'],
       n: ['--namespace'],
       p: ['--disable-plural-key-checks'],
@@ -39,6 +41,7 @@ if (options.help || inputFiles.length === 0) {
   var ns = options.namespace || 'module.exports';
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
+  if (options['enable-intl-support']) mf.setIntlSupport(true);
   var output = mf.compile(input).toString(ns);
   console.log(output);
 }
@@ -46,7 +49,7 @@ if (options.help || inputFiles.length === 0) {
 
 function printUsage() {
   var usage = [
-    'usage: *messageformat* [*-l* _lc_] [*-n* _ns_] [*-p*] _input_',
+    'usage: *messageformat* [options] _input_',
     '',
     'Parses the _input_ JSON file(s) of MessageFormat strings into a JS module of',
     'corresponding hierarchical functions, written to stdout. Directories are',
@@ -55,6 +58,12 @@ function printUsage() {
     '  *-l* _lc_, *--locale*=_lc_',
     '        The locale(s) _lc_ to include; if multiple, selected by matching',
     '        message key. [default: *en*]',
+    '',
+    '  *-i*, *--enable-intl-support*',
+    '        Because native or polyfilled support for global Intl object is not',
+    '        guaranteed, messageformat.js will disable Intl formatters by default.',
+    '        If you require Intl support, you can use this argument to enable',
+    '        Intl formatters for your messages. [default: *false*]',
     '',
     '  *-n* _ns_, *--namespace*=_ns_',
     '        The global object or modules format for the output JS. If _ns_ does not',

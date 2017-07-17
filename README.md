@@ -99,8 +99,13 @@ The tagged [releases](https://github.com/messageformat/messageformat.js/releases
 
 You may use this software under the MIT License.
 
-You may contribute to this software under the [Dojo CLA](http://dojofoundation.org/about/cla).
+## Contributor License Agreement
 
+We require all contributions to be covered under the JS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions, you have the legal right to contribute and you are transferring the copyright of your works to the JavaScript Foundation.
+
+If you are an unfamiliar contributor to the committer assessing your pull request, it is best to make it clear how you are covered by a CLA in the notes of the pull request. The committer will verify your status.
+
+If your GitHub user id you are submitting your pull request from differs from the e-mail address which you have signed your CLA under, you should specifically note what you have your CLA filed under (and for CCLA that you are listed under your company's authorised contributors).
 
 ## Authors
 
