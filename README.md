@@ -4,12 +4,22 @@ A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat.js]
 Outputs an AST defined by [parser.pegjs].
 
 The generated parser function takes two parameters, first the string to be
-parsed, and a second optional parameter `options`, an object containing arrays
+parsed, and a second optional parameter `options`, an object.
+
+The options object contains arrays
 of keywords for `cardinal` and `ordinal` rules for the current locale – these
 are used to validate plural and selectordinal keys. If `options` or its fields
 are missing or set to false, the full set of valid [Unicode CLDR] keys is used:
 `'zero', 'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in
 an empty array.
+
+The `options` object also supports a setting that makes the parser
+follow the ICU MessageFormat spec more closely: `strictFunctionParams`.
+
+By default, function parameters are split on commas and trimmed,
+so the parameters in `{x,fn,   a,   b   }` are parsed as `['a','b']`.
+Setting `strictFunctionParams` to true will result in a params array
+with a single element: `['   a,   b   ']`.
 
 [ICU MessageFormat]: https://messageformat.github.io/guide/
 [messageformat.js]: https://messageformat.github.io/

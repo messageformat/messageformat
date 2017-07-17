@@ -239,6 +239,61 @@ describe("Ordinals", function() {
   });
 
 });
+describe("Functions", function() {
+  it("should accept no parameters", function() {
+    expect(parse('{var,date}')[0].type).to.eql('function');
+    expect(parse('{var,date}')[0].key).to.eql('date');
+    expect(parse('{var,date}')[0].params).to.be.empty;
+  })
+
+  it("should accept parameters", function() {
+    expect(parse('{var,date,long}')[0].type).to.eql('function');
+    expect(parse('{var,date,long}')[0].key).to.eql('date');
+    expect(parse('{var,date,long}')[0].params[0]).to.eql('long');
+    expect(parse('{var,date,long,short}')[0].params[0]).to.eql('long');
+    expect(parse('{var,date,long,short}')[0].params[1]).to.eql('short');
+  })
+
+  it("should accept parameters with whitespace", function() {
+    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0].type).to.eql('function');
+    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0].key).to.eql('date');
+    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0].params[0]).to.eql('y-M-d HH:mm:ss zzzz');
+    // This is not how ICU works. ICU does not trim whitespace,
+    // but messageformat-parse must trim it to maintain backwards compatibility.
+    expect(parse('{var,date,   y-M-d HH:mm:ss zzzz    }')[0].params[0]).to.eql('y-M-d HH:mm:ss zzzz');
+    // This is how ICU works.
+    expect(parse('{var,date,   y-M-d HH:mm:ss zzzz    }', { strictFunctionParams: true })[0].params[0]).to.eql('   y-M-d HH:mm:ss zzzz    ');
+  })
+
+  it("should accept parameters with special characters", function() {
+    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0].type).to.eql('function');
+    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0].key).to.eql('date');
+    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0].params[0]).to.eql("y-M-d {,} ' HH:mm:ss zzzz");
+    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz'}'}")[0].params[0]).to.eql("y-M-d {,} ' HH:mm:ss zzzz}");
+    expect(parse("{var,date,y-M-d # HH:mm:ss zzzz}")[0].params[0]).to.eql("y-M-d # HH:mm:ss zzzz");
+    expect(parse("{var,date,y-M-d '#' HH:mm:ss zzzz}")[0].params[0]).to.eql("y-M-d '#' HH:mm:ss zzzz");
+    // This is not how ICU works.
+    expect(parse("{var,date,y-M-d, HH:mm:ss zzzz}")[0].params[0]).to.eql("y-M-d");
+    expect(parse("{var,date,y-M-d, HH:mm:ss zzzz}")[0].params[1]).to.eql("HH:mm:ss zzzz");
+    // This is how ICU works, but this only allows a single argStyle parameter.
+    expect(parse("{var,date,y-M-d, HH:mm:ss zzzz}", { strictFunctionParams: true })[0].params[0]).to.eql("y-M-d, HH:mm:ss zzzz");
+  })
+
+  it("should be gracious with whitespace", function() {
+    var firstRes = JSON.stringify(parse('{var, date, long, short}'));
+    expect(JSON.stringify(parse('{ var, date, long, short }'))).to.eql(firstRes);
+    expect(JSON.stringify(parse('{var,date,long,short}'))).to.eql(firstRes);
+    expect(JSON.stringify(parse('{\nvar,   \ndate,\n   long\n\n,\n short\n\n\n}'))).to.eql(firstRes);
+    expect(JSON.stringify(parse('{\tvar\t,\t\t\r date\t\n, \tlong\n,    short\t\n\n\n\n}'))).to.eql(firstRes);
+
+    // This is not how ICU works. ICU does not trim whitespace.
+    firstRes = JSON.stringify(parse('{var, date, y-M-d HH:mm:ss zzzz}'));
+    expect(JSON.stringify(parse('{ var, date, y-M-d HH:mm:ss zzzz }'))).to.eql(firstRes);
+    expect(JSON.stringify(parse('{var,date,y-M-d HH:mm:ss zzzz}'))).to.eql(firstRes);
+    expect(JSON.stringify(parse('{\nvar,   \ndate,\n  \n\n\n y-M-d HH:mm:ss zzzz\n\n\n}'))).to.eql(firstRes);
+    expect(JSON.stringify(parse('{\tvar\t,\t\t\r date\t\n, \t\ny-M-d HH:mm:ss zzzz\t\n\n\n\n}'))).to.eql(firstRes);
+  });
+});
 describe("Nested/Recursive blocks", function() {
 
   it("should allow a select statement inside of a select statement", function() {

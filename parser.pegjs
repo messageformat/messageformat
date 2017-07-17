@@ -1,4 +1,4 @@
-start = token* 
+start = token*
 
 token
   = argument / select / plural / function
@@ -37,7 +37,7 @@ plural = '{' _ arg:id _ ',' _ type:('plural'/'selectordinal') _ ',' _ offset:off
     };
   }
 
-function = '{' _ arg:id _ ',' _ key:id _ params:functionParams* '}' {
+function = '{' _ arg:id _ ',' _ key:id _ params:functionParams '}' {
     return {
       type: 'function',
       arg: arg,
@@ -47,6 +47,10 @@ function = '{' _ arg:id _ ',' _ key:id _ params:functionParams* '}' {
   }
 
 id = $([0-9a-zA-Z$_][^ \t\n\r,.+={}]*)
+
+paramDefault = str:paramcharsDefault+ { return str.join(''); }
+
+paramStrict = str:paramcharsStrict+ { return str.join(''); }
 
 selectCase = _ key:id _ tokens:caseTokens { return { key: key, tokens: tokens }; }
 
@@ -60,7 +64,25 @@ pluralKey
   = id
   / '=' d:digits { return d; }
 
-functionParams = _ ',' _ p:id _ { return p; }
+functionParams
+  = p:functionParamsDefault* ! { return options.strictFunctionParams; } { return p; }
+  / p:functionParamsStrict* & { return options.strictFunctionParams; } { return p; }
+
+functionParamsStrict = _ ',' p:paramStrict { return p; }
+
+functionParamsDefault = _ ',' _ p:paramDefault _ { return p.replace(/^[ \t\n\r]*|[ \t\n\r]*$/g, ''); }
+
+doubleapos = "''" { return "'"; }
+
+inapos = doubleapos / str:[^']+ { return str.join(''); }
+
+quotedCurly
+  = "'{"str:inapos*"'" { return '\u007B'+str.join(''); }
+  / "'}"str:inapos*"'" { return '\u007D'+str.join(''); }
+
+quotedFunctionParams
+  = quotedCurly
+  / "'"
 
 char
   = [^{}#\\\0-\x08\x0e-\x1f\x7f]
@@ -71,6 +93,18 @@ char
   / '\\u' h1:hexDigit h2:hexDigit h3:hexDigit h4:hexDigit {
       return String.fromCharCode(parseInt('0x' + h1 + h2 + h3 + h4));
     }
+
+paramcharsCommon
+  = doubleapos
+  / quotedFunctionParams
+
+paramcharsDefault
+  = paramcharsCommon
+  / str:[^',}]+ { return str.join(''); }
+
+paramcharsStrict
+  = paramcharsCommon
+  / str:[^'}]+ { return str.join(''); }
 
 digits = $([0-9]+)
 
