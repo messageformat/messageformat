@@ -88,3 +88,8 @@ npm install messageformat-parser
 // Error: Invalid key `zero` for argument `words`. Valid plural keys for this
 //        locale are `one`, `other`, and explicit keys like `=0`.
 ```
+
+#### Contributor License Agreement
+See the [messageformat.js README][CLA] for details.
+
+[CLA]: https://github.com/messageformat/messageformat.js#contributor-license-agreement
