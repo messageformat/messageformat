@@ -8,10 +8,10 @@ parsed, and a second optional parameter `options`, an object with the following
 possible keys:
 
 - `cardinal` and `ordinal` – Arrays of valid plural categories for the current
-  locale, used to validate plural and selectordinal keys. If these are missing
-  or set to false, the full set of valid [Unicode CLDR] keys is used: `'zero',
-  'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in an empty
-  array.
+  locale, used to validate `plural` and `selectordinal` keys. If these are
+  missing or set to false, the full set of valid [Unicode CLDR] keys is used:
+  `'zero', 'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in
+  an empty array.
 
 - `strictFunctionParams` – By default, function parameters are split on commas
   and trimmed, so the parameters in `{x,fn,   a,   b   }` are parsed as
@@ -27,7 +27,7 @@ possible keys:
   special character directly inside a `plural` or `selectordinal` statement.
   Outside those, `#` and `'#'` will be parsed as literal text.
 
-The parser only supports the default `DOUBLE_OPTIONAL` apostrophe mode. A
+The parser only supports the default `DOUBLE_OPTIONAL` [apostrophe mode]. A
 single apostrophe only starts quoted literal text if preceded by a curly brace
 (`{}`) or a pound symbol (`#`) inside a `plural` or `selectordinal` statement,
 depending on the value of `strictNumberSign`. Otherwise, it is a literal
@@ -38,6 +38,7 @@ apostrophe. A double apostrophe is always a literal apostrophe.
 [parser.pegjs]: ./parser.pegjs
 [PEG.js]: http://pegjs.org/
 [Unicode CLDR]: http://cldr.unicode.org/index/cldr-spec/plural-rules
+[apostrophe mode]: http://www.icu-project.org/apiref/icu4c/messagepattern_8h.html#af6e0757e0eb81c980b01ee5d68a9978b
 
 
 #### Installation
@@ -102,6 +103,8 @@ npm install messageformat-parser
 // Error: Invalid key `zero` for argument `words`. Valid plural keys for this
 //        locale are `one`, `other`, and explicit keys like `=0`.
 ```
+
+For more example usage, please take a look at our [test suite](./test.js).
 
 #### Contributor License Agreement
 See the [messageformat.js README][CLA] for details.
