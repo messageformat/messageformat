@@ -469,6 +469,11 @@ describe("Errors", function() {
 
   it("shouldn't allow characters in variables that aren't valid JavaScript identifiers", function() {
     expect(function(){ parse('{☺}'); }).to.throwError();
+    expect(function(){ parse('{a☺}'); }).to.throwError();
+  });
+
+  it("should allow characters in variables that are valid ICU identifiers", function() {
+    expect(function(){ parse('{ű\u3000á}'); }).to.not.throwError();
   });
 
   it("should allow positional variables", function() {
