@@ -19,6 +19,20 @@ possible keys:
   follow the ICU MessageFormat spec more closely, and result in a params array
   with a single element: `['   a,   b   ']`.
 
+- `strictNumberSign` – Inside a `plural` or `selectordinal` statement, a pound
+  symbol (`#`) is replaced with the input number. By default, `#` is also parsed
+  as a special character in nested statements too, and can be escaped using
+  apostrophes (`'#'`). Setting `strictNumberSign` to true will make the parser
+  follow the ICU MessageFormat spec more closely, and only parse `#` as a
+  special character directly inside a `plural` or `selectordinal` statement.
+  Outside those, `#` and `'#'` will be parsed as literal text.
+
+The parser only supports the default `DOUBLE_OPTIONAL` apostrophe mode. A
+single apostrophe only starts quoted literal text if preceded by a curly brace
+(`{}`) or a pound symbol (`#`) inside a `plural` or `selectordinal` statement,
+depending on the value of `strictNumberSign`. Otherwise, it is a literal
+apostrophe. A double apostrophe is always a literal apostrophe.
+
 [ICU MessageFormat]: https://messageformat.github.io/guide/
 [messageformat.js]: https://messageformat.github.io/
 [parser.pegjs]: ./parser.pegjs
