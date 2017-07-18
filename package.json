@@ -1,6 +1,6 @@
 {
   "name": "messageformat-parser",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A PEG.js parser for ICU MessageFormat strings -- part of messageformat.js",
   "keywords": [
     "icu",
@@ -10,6 +10,7 @@
   "contributors": [
     "Alex Sexton <alexsexton@gmail.com>",
     "Eemeli Aro <eemeli@gmail.com>",
+    "Nikola Kovacs <nikola.kovacs@gmail.com>",
     "Adrian Vogelsgesang <adrian.vogelsgesang@tum.de>"
   ],
   "license": "MIT",
