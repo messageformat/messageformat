@@ -28,9 +28,9 @@
   },
   "homepage": "https://github.com/cletusw/messageformat-loader#readme",
   "peerDependencies": {
-    "messageformat": "^1.0.0-rc.3"
+    "messageformat": "1.x"
   },
   "dependencies": {
-    "loader-utils": "^0.2.15"
+    "loader-utils": "^1.1.0"
   }
 }

@@ -2,15 +2,25 @@ var loaderUtils = require('loader-utils');
 var MessageFormat = require('messageformat');
 
 module.exports = function(content) {
-  var query = loaderUtils.parseQuery(this.query);
-  var locale = query.locale || 'en';
-  var messages = (Array.isArray(this.inputValue) && typeof this.inputValue[0] === 'object') ? this.inputValue[0] : this.exec(content, this.resource);
+  var options = loaderUtils.getOptions(this);
+  var locale = options.locale;
+  if (typeof locale === 'string' && locale.indexOf(',') !== -1) locale = locale.split(',');
+  var messages = JSON.parse(content);
   var messageFormat = new MessageFormat(locale);
-  if (query.disablePluralKeyChecks) {
+  if (options.disablePluralKeyChecks) {
     messageFormat.disablePluralKeyChecks();
   }
-  if (query.intlSupport) {
+  if (options.intlSupport) {
     messageFormat.setIntlSupport(true);
+  }
+  if (options.biDiSupport) {
+    messageFormat.setBiDiSupport();
+  }
+  if (options.formatters) {
+    messageFormat.addFormatters(options.formatters);
+  }
+  if (options.strictNumberSign) {
+    messageFormat.setStrictNumberSign();
   }
   var messageFunctions = messageFormat.compile(messages);
 
