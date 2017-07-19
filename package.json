@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cletusw/messageformat-loader.git"
+    "url": "git+https://github.com/messageformat/loader.git"
   },
   "keywords": [
     "i18n",
@@ -19,14 +19,15 @@
     "selectformat",
     "messageformat",
     "internationalization",
+    "loader",
     "webpack"
   ],
   "author": "Clayton Watts <cletusw@gmail.com> (https://github.com/cletusw)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cletusw/messageformat-loader/issues"
+    "url": "https://github.com/messageformat/loader/issues"
   },
-  "homepage": "https://github.com/cletusw/messageformat-loader#readme",
+  "homepage": "https://github.com/messageformat/loader#readme",
   "peerDependencies": {
     "messageformat": "1.x"
   },
