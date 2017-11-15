@@ -37,19 +37,19 @@
   ],
   "dependencies": {
     "glob": "~7.0.6",
-    "make-plural": "~3.0.6",
-    "messageformat-parser": "^1.0.0",
+    "make-plural": "^4.0.1",
+    "messageformat-parser": "^1.1.0",
     "nopt": "~3.0.6",
-    "reserved-words": "^0.1.1"
+    "reserved-words": "^0.1.2"
   },
   "devDependencies": {
-    "browserify": "~13.1.0",
+    "browserify": "^13.3.0",
     "expect.js": "*",
-    "jsdoc": "~3.4.0",
+    "jsdoc": "^3.5.5",
     "mocha": "~3.0.2",
-    "serve": "*",
-    "tmp": "*",
-    "uglify-js": "~2.7.3"
+    "serve": "^6.4.1",
+    "tmp": "0.0.33",
+    "uglify-js": "^2.8.29"
   },
   "scripts": {
     "prepublish": "make all",
