@@ -1,0 +1,94 @@
+const common = require('common-prefix')
+const yaml = require('js-yaml')
+const pluralCategories = require('make-plural/umd/pluralCategories')
+
+const cldrPluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other']
+
+const defaultOptions = {
+  defaultLocale: 'en',
+  filename: null,
+  includeLocales: null,
+  json: false,
+  onWarning: null,
+  pluralVariable: 'count',
+  replacements: [
+    { pattern: /[%#]{(\w+)}/g, replacement: '\x02$1\x03' },
+    { pattern: /[\\{}#]/g, replacement: '\\$&' },
+    { pattern: /\x02/g, replacement: '{' },
+    { pattern: /\x03/g, replacement: '}' }
+  ],
+  schema: null,  // DEFAULT_SAFE_SCHEMA
+  verbose: false
+}
+
+const getMessageFormat = (msg, { replacements }) => msg ? (
+  replacements.reduce((msg, { pattern, replacement, state }) => {
+    if (state) replacement = replacement.bind(Object.assign({}, state))
+    return msg.replace(pattern, replacement)
+  }, String(msg))
+) : ''
+
+const isPluralObject = (data, locale, { verbose }) => {
+  const { cardinal: pluralKeys } = pluralCategories[locale] || {}
+  const keys = Object.keys(data)
+  if (!pluralKeys || pluralKeys.length === 0 || keys.length === 0) return false
+  if (
+    keys.length === pluralKeys.length &&
+    keys.every(key => (
+      pluralKeys.includes(key) &&
+      (!data[key] || typeof data[key] !== 'object')
+    ))
+  ) return true
+  if (verbose && keys.every(key => cldrPluralCategories.includes(key))) {
+    console.warn(`yaml-to-messageformat: Nearly valid plural for locale ${locale}: ${JSON.stringify(data)}`)
+  }
+  return false
+}
+
+const getPluralMessage = (data, options) => {
+  const keys = Object.keys(data)
+  const messages = keys.map(key => getMessageFormat(data[key], options))
+  const prefix = common(messages)
+  const suffix = common(messages.map(msg => msg.split('').reverse().join('')))
+  const cut = suffix ? (
+    (msg) => msg.slice(prefix.length, -suffix.length)
+  ) : prefix ? (
+    (msg) => msg.slice(prefix.length)
+  ) : (
+    (msg) => msg
+  )
+  const pc = keys.map((key, i) => `${key}{${cut(messages[i])}}`)
+  const pv = options.pluralVariable
+  return `${prefix}{${pv}, plural, ${pc.join(' ')}}${suffix}`
+}
+
+const convertData = (data, locale, options) => {
+  if (!data) {
+    return ''
+  } else if (Array.isArray(data)) {
+    return data.map(d => convertData(d, locale, options))
+  } else if (typeof data === 'object') {
+    if (options.pluralVariable && isPluralObject(data, locale, options)) {
+      return getPluralMessage(data, options)
+    } else {
+      return Object.keys(data).reduce((res, key) => {
+        const { includeLocales: il, verbose } = options
+        const isLcKey = (!il || il.includes(key)) && pluralCategories[key]
+        if (verbose && isLcKey) console.log(`yaml-to-messageformat: Found locale ${key}`)
+        res[key] = convertData(data[key], isLcKey ? key : locale, options)
+        return res
+      }, {})
+    }
+  } else {
+    return getMessageFormat(data, options)
+  }
+}
+
+const convert = (input, options) => {
+  options = Object.assign(defaultOptions, options)
+  let data = yaml.safeLoadAll(input, options)
+  if (data.length === 1) data = data[0]
+  return convertData(data, options.defaultLocale, options)
+}
+
+module.exports = convert
