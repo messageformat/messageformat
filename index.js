@@ -74,7 +74,10 @@ const convertData = (data, locale, options) => {
       return Object.keys(data).reduce((res, key) => {
         const { includeLocales: il, verbose } = options
         const isLcKey = (!il || il.includes(key)) && pluralCategories[key]
-        if (verbose && isLcKey) console.log(`yaml-to-messageformat: Found locale ${key}`)
+        if (isLcKey) {
+          options._lc[key] = true
+          if (verbose) console.log(`yaml-to-messageformat: Found locale ${key}`)
+        }
         res[key] = convertData(data[key], isLcKey ? key : locale, options)
         return res
       }, {})
@@ -86,9 +89,14 @@ const convertData = (data, locale, options) => {
 
 const convert = (input, options) => {
   options = Object.assign(defaultOptions, options)
+  options._lc = { [options.defaultLocale]: true }
   let data = yaml.safeLoadAll(input, options)
   if (data.length === 1) data = data[0]
-  return convertData(data, options.defaultLocale, options)
+  const translations = convertData(data, options.defaultLocale, options)
+  return {
+    locales: Object.keys(options._lc).filter(lc => lc),
+    translations
+  }
 }
 
 module.exports = convert
