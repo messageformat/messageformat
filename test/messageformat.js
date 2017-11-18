@@ -172,6 +172,14 @@ describe("Basic Message Formatting", function() {
     expect(function(){ var x = mf.compile("{X, selectordinal, someoption{a}}"); }).to.throwError();
   });
 
+  it("does not throw an error when no `other` option is found - plurals with custom pluralFunc", function() {
+    var fake = function(x, ord) { return ord ? 'few' : 'some'; }
+    fake.cardinal = ['some']
+    fake.ordinal = ['few']
+    var mf = new MessageFormat({ fake: fake });
+    expect(function(){ var x = mf.compile("{X, plural, some{a}}"); }).to.not.throwError();
+  });
+
   it("only calculates the offset from non-literals", function() {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile("{NUM, plural, offset:1 =0{a} one{b} other{c}}");
