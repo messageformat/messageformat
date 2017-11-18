@@ -1,6 +1,6 @@
 # messageformat-parser  <a href="http://travis-ci.org/messageformat/parser"><img align="right" alt="Build Status" src="https://secure.travis-ci.org/messageformat/parser.png"></a>
 
-A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat.js].
+A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat].
 Outputs an AST defined by [parser.pegjs].
 
 The generated parser function takes two parameters, first the string to be
@@ -34,7 +34,7 @@ depending on the value of `strictNumberSign`. Otherwise, it is a literal
 apostrophe. A double apostrophe is always a literal apostrophe.
 
 [ICU MessageFormat]: https://messageformat.github.io/guide/
-[messageformat.js]: https://messageformat.github.io/
+[messageformat]: https://messageformat.github.io/
 [parser.pegjs]: ./parser.pegjs
 [PEG.js]: http://pegjs.org/
 [Unicode CLDR]: http://cldr.unicode.org/index/cldr-spec/plural-rules
@@ -107,6 +107,6 @@ npm install messageformat-parser
 For more example usage, please take a look at our [test suite](./test.js).
 
 #### Contributor License Agreement
-See the [messageformat.js README][CLA] for details.
+See the [messageformat README][CLA] for details.
 
 [CLA]: https://github.com/messageformat/messageformat.js#contributor-license-agreement
