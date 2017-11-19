@@ -1,0 +1,19 @@
+{
+  "name": "messageformat-loader-example",
+  "version": "0.1.0",
+  "description": "Small example for messageformat-loader",
+  "scripts": {
+    "build": "webpack",
+    "postinstall": "cd .. && npm install --no-save messageformat",
+    "prepare": "npm run build"
+  },
+  "main": "src/index.js",
+  "repository": "https://github.com/eemeli/messageformat-loader",
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "messageformat": "^1.0.2",
+    "messageformat-loader": "file:../",
+    "webpack": "^3.8.1"
+  }
+}

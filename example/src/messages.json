@@ -1,0 +1,16 @@
+{
+  "en": {
+    "simple": "A simple message.",
+    "var": "Message with {X}.",
+    "plural": "You have {N, plural, =0{no messages} one{1 message} other{# messages}}.",
+    "select": "{GENDER, select, male{He has} female{She has} other{They have}} sent you a message.",
+    "ordinal": "The {N, selectordinal, one{1st} two{2nd} few{3rd} other{#th}} message."
+  },
+  "fi": {
+    "simple": "Yksinkertainen viesti.",
+    "var": "Viesti jossa {X}.",
+    "plural": "Sinulla {N, plural, =0{ei ole viestejä} one{on 1 viesti} other{on # viestiä}}.",
+    "select": "{GENDER, select, other{Hän}} lähetti sinulle viestin.",
+    "ordinal": "{N, selectordinal, other{#.}} viesti."
+  }
+}
