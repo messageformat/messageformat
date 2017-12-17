@@ -1,19 +1,21 @@
+<img align="right" width="100" height="100" src="logo/messageformat.svg">
+
 [![Build Status](https://secure.travis-ci.org/messageformat/messageformat.js.svg)](http://travis-ci.org/messageformat/messageformat.js)
 
-# messageformat.js
+# messageformat
 
-The experience and subtlety of your program's text can be important. MessageFormat is a mechanism for handling both **pluralization** and **gender** in your applications. It can also lead to much better translations, as it's designed to support [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) included in the [Unicode CLDR](http://cldr.unicode.org/).
+The experience and subtlety of your program's text can be important. ICU MessageFormat is a mechanism for handling both **pluralization** and **gender** in your applications. It can also lead to much better translations, as it's designed to support [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) included in the [Unicode CLDR](http://cldr.unicode.org/).
 
-The ICU has an [official guide](http://userguide.icu-project.org/formatparse/messages) for the format. Messageformat.js supports and extends all parts of the [standard](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html), with the exception of the deprecated ChoiceFormat.
+The ICU has an [official guide](http://userguide.icu-project.org/formatparse/messages) for the format. Messageformat supports and extends all parts of the [standard](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html), with the exception of the deprecated ChoiceFormat.
 
 There is a good slide-deck on [Plural and Gender in Translated Messages](https://docs.google.com/presentation/d/1ZyN8-0VXmod5hbHveq-M1AeQ61Ga3BmVuahZjbmbBxo/pub?start=false&loop=false&delayms=3000#slide=id.g1bc43a82_2_14) by Markus Scherer and Mark Davis. But, again, remember that many of these problems apply even if you're only outputting english.
 
-Please see [messageformat.github.io](https://messageformat.github.io/) for a guide to MessageFormat, more information on on the build-time use of messageformat.js, and the code documentation.
+Please see [messageformat.github.io](https://messageformat.github.io/) for a guide to MessageFormat, more information on on the build-time use of messageformat, and the code documentation.
 
 
 ## What problems does it solve?
 
-Using messageformat.js, you can separate your code from your text formatting, while enabling much more humane expressions. In other words, you won't need to see this anymore in your output:
+Using messageformat, you can separate your code from your text formatting, while enabling much more humane expressions. In other words, you won't need to see this anymore in your output:
 
 > There are 1 results.  
 > There are 1 result(s).  
