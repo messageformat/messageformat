@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "glob": "~7.0.6",
-    "make-plural": "^4.0.1",
+    "make-plural": "^4.1.1",
     "messageformat-parser": "^1.1.0",
     "nopt": "~3.0.6",
     "reserved-words": "^0.1.2"
@@ -47,7 +47,7 @@
     "expect.js": "*",
     "jsdoc": "^3.5.5",
     "mocha": "~3.0.2",
-    "serve": "^6.4.1",
+    "serve": "^6.4.3",
     "tmp": "0.0.33",
     "uglify-js": "^2.8.29"
   },
