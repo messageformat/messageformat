@@ -14,6 +14,7 @@ var fs = require('fs'),
     knownOpts = {
       'disable-plural-key-checks': Boolean,
       'enable-intl-support': Boolean,
+      'esline-disable': Boolean,
       help: Boolean,
       locale: [String, Array],
       namespace: String,
@@ -43,6 +44,7 @@ if (options.help || inputFiles.length === 0) {
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
   if (options['enable-intl-support']) mf.setIntlSupport(true);
   var output = mf.compile(input).toString(ns);
+  if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   console.log(output);
 }
 
