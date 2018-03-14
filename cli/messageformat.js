@@ -59,29 +59,13 @@ function printUsage() {
     '        The locale(s) _lc_ to include; if multiple, selected by matching',
     '        message key. [default: *en*]',
     '',
-    '  *-i*, *--enable-intl-support*',
-    '        Because native or polyfilled support for global Intl object is not',
-    '        guaranteed, messageformat will disable Intl formatters by default.',
-    '        If you require Intl support, you can use this argument to enable',
-    '        Intl formatters for your messages. [default: *false*]',
-    '',
     '  *-n* _ns_, *--namespace*=_ns_',
     '        The global object or modules format for the output JS. If _ns_ does not',
     '        contain a \'.\', the output follows an UMD pattern. For module support,',
     '        the values \'*export default*\' (ES6), \'*exports*\' (CommonJS), and',
     '        \'*module.exports*\' (node.js) are special. [default: *module.exports*]',
     '',
-    '  *-p*, *--disable-plural-key-checks*',
-    '        By default, messageformat throws an error when a statement uses a',
-    '        non-numerical key that will never be matched as a pluralization',
-    '        category for the current locale. Use this argument to disable the',
-    '        validation and allow unused plural keys. [default: *false*]',
-    '',
-    '  *-s*, *--simplify*',
-    '        Simplify the output object structure, by dropping intermediate keys when',
-    '        those keys are shared across all objects at that level, in addition to',
-    '        the default filtering-out of shared keys at the root of the object.',
-    '        [default: *false*]'
+    'See the messageformat-cli README for more options.'
   ].join('\n');
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
