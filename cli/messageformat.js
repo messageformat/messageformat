@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Copyright 2012-2016 Alex Sexton, Eemeli Aro, and Contributors
+ * Copyright 2012-2018 Alex Sexton, Eemeli Aro, and Contributors
  *
  * Licensed under the MIT License
  */
 
 var fs = require('fs'),
     glob = require('glob'),
-    MessageFormat = require('../'),
+    MessageFormat = require('messageformat'),
     nopt = require('nopt'),
     path = require('path'),
     knownOpts = {

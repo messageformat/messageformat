@@ -1,0 +1,31 @@
+{
+  "name": "messageformat-cli",
+  "version": "1.1.1",
+  "description": "MessageFormat CLI",
+  "keywords": [
+    "i18n",
+    "icu",
+    "messageformat",
+    "internationalization"
+  ],
+  "author": "Alex Sexton <alexsexton@gmail.com>",
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://messageformat.github.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.js.git"
+  },
+  "bin": {
+    "messageformat": "./messageformat.js"
+  },
+  "dependencies": {
+    "glob": "~7.0.6",
+    "nopt": "~3.0.6"
+  },
+  "peerDependencies": {
+    "messageformat": "1.x"
+  }
+}

@@ -22,12 +22,8 @@
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.js.git"
   },
-  "main": "lib/",
-  "bin": {
-    "messageformat": "./cli/messageformat.js"
-  },
+  "main": "lib/index.js",
   "files": [
-    "cli",
     "doc",
     "example",
     "lib",
@@ -36,10 +32,8 @@
     "messageformat.min.js.map"
   ],
   "dependencies": {
-    "glob": "~7.0.6",
     "make-plural": "^4.1.1",
     "messageformat-parser": "^1.1.0",
-    "nopt": "~3.0.6",
     "reserved-words": "^0.1.2"
   },
   "devDependencies": {

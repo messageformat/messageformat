@@ -15,6 +15,9 @@ SRC=lib/index.js lib/compiler.js lib/runtime.js
 
 all: messageformat.min.js test example/i18n.js doc/index.html
 
+cli/node_modules:
+	cd cli && npm install && npm install --no-save ../
+
 node_modules: ; npm install
 
 messageformat.js: $(SRC) | node_modules
@@ -41,7 +44,7 @@ doc/index.html: $(SRC) | node_modules
 	@rm -r doc/fonts
 	@echo "${CHK} API documentation generated with jsdoc"
 
-example/i18n.js: cli/messageformat.js $(SRC)
+example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
 	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
 
