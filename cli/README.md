@@ -25,10 +25,10 @@ or
 ## Options
 
 ### `-l lc, --locale=lc`
-The locale(s) lc to include; if multiple, selected by matching message key. [default: `'en'`]
+The locale(s) _`lc`_ to include; if multiple, selected by matching message key. [default: `'en'`]
 
-### `-n ns, --namespace=ns`
-The global object or modules format for the output JS. If ns does not contain a `.`, the output follows an UMD pattern. For module support, the values `'export default'` (ES6), `exports` (CommonJS), and `module.exports` (node.js) are special. [default: `'module.exports'`]
+### `-n ns, --namespace=ns, --es6`
+The global object or modules format for the output JS. If _`ns`_ does not contain a `.`, the output follows an UMD pattern. For module support, the values `'export default'` (ES6, shorthand `--es6`), `exports` (CommonJS), and `module.exports` (node.js) are special. [default: `'module.exports'`]
 
 ### `--disable-plural-key-checks`
 By default, messageformat throws an error when a statement uses a non-numerical key that will never be matched as a pluralization category for the current locale. Use this argument to disable the validation and allow unused plural keys. [default: `false`]
@@ -52,6 +52,6 @@ npx messageformat messages/strings.json > messages/en.js
 
 With `messages/en.json` and `messages/fr.json`, combine both into an ES6-compatible module, with the top-level keys `en` and `fr` containing functions that each use the correct language's pluralization rules:
 ```
-npx messageformat --locale=en,fr --namespace='export default' messages/ > messages.js
+npx messageformat --locale=en,fr --es6 messages/ > messages.js
 ```
 

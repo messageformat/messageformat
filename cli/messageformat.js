@@ -15,6 +15,7 @@ var fs = require('fs'),
       'disable-plural-key-checks': Boolean,
       'enable-intl-support': Boolean,
       'esline-disable': Boolean,
+      es6: Boolean,
       help: Boolean,
       locale: [String, Array],
       namespace: String,
@@ -39,7 +40,7 @@ if (options.help || inputFiles.length === 0) {
   if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
   var input = readInput(inputFiles, '.json', path.sep);
   if (options.simplify) simplify(input);
-  var ns = options.namespace || 'module.exports';
+  var ns = options.namespace || (options.es6 ? 'export default' : 'module.exports');
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
   if (options['enable-intl-support']) mf.setIntlSupport(true);
@@ -61,11 +62,12 @@ function printUsage() {
     '        The locale(s) _lc_ to include; if multiple, selected by matching',
     '        message key. [default: *en*]',
     '',
-    '  *-n* _ns_, *--namespace*=_ns_',
+    '  *-n* _ns_, *--namespace*=_ns_, *--es6*',
     '        The global object or modules format for the output JS. If _ns_ does not',
     '        contain a \'.\', the output follows an UMD pattern. For module support,',
-    '        the values \'*export default*\' (ES6), \'*exports*\' (CommonJS), and',
-    '        \'*module.exports*\' (node.js) are special. [default: *module.exports*]',
+    '        the values \'*export default*\' (ES6, shorthand *--es6*), \'*exports*\'',
+    '        (CommonJS), and \'*module.exports*\' (node.js) are special.',
+    '        [default: *module.exports*]',
     '',
     'See the messageformat-cli README for more options.'
   ].join('\n');
