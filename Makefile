@@ -41,7 +41,7 @@ doc/index.html: $(SRC) | node_modules
 	@rm -r doc/fonts
 	@echo "${CHK} API documentation generated with jsdoc"
 
-example/i18n.js: bin/messageformat.js $(SRC)
+example/i18n.js: cli/messageformat.js $(SRC)
 	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
 

@@ -24,10 +24,10 @@
   },
   "main": "lib/",
   "bin": {
-    "messageformat": "./bin/messageformat.js"
+    "messageformat": "./cli/messageformat.js"
   },
   "files": [
-    "bin",
+    "cli",
     "doc",
     "example",
     "lib",
