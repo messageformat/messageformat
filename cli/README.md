@@ -6,7 +6,7 @@ Parses and compiles the input JSON file(s) of MessageFormat strings into a JS mo
 ## Installation
 
 ```
-npm install messageformat messageformat-cli
+npm install messageformat@next messageformat-cli
 ```
 
 [`messageformat`](https://www.npmjs.com/package/messageformat) is a peer dependency of `messageformat-cli`, and needs to be installed separately.
