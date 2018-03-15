@@ -13,6 +13,7 @@ const nopt = require('nopt');
 const path = require('path');
 
 const knownOpts = {
+  delimiters: [String, Array],
   'disable-plural-key-checks': Boolean,
   'esline-disable': Boolean,
   es6: Boolean,
@@ -24,6 +25,7 @@ const knownOpts = {
   simplify: Boolean
 };
 const shortHands = {
+  d: ['--delimiters'],
   e: ['--extensions'],
   h: ['--help'],
   l: ['--locale'],
@@ -47,6 +49,15 @@ function getOptions(knownOpts, shortHands) {
   } catch (e) {}
   const cliOptions = nopt(knownOpts, shortHands, process.argv, 2);
   Object.assign(options, cliOptions);
+
+  // normalise & set default values
+  let delim = Array.isArray(options.delimiters)
+    ? options.delimiters.join('')
+    : typeof options.delimiters === 'string'
+      ? options.delimiters
+      : '._' + path.sep;
+  delim = delim.replace(/[/\\]+/g, '\\' + path.sep).replace(/[-\]]/g, '\\$&');
+  options.delimiters = new RegExp(`[${delim}]`);
   options.extensions = options.extensions && options.extensions.length > 0 ? (
     options.extensions.map(ext => ext.trim().replace(/^([^.]*\.)?/, '.'))
   ) : ['.json'];
@@ -62,7 +73,7 @@ const options = getOptions(knownOpts, shortHands);
 if (options.help || options.include.length === 0) {
   printUsage();
 } else {
-  const input = readInput(options.include, options.extensions, path.sep);
+  const input = readInput(options.include, options.extensions, options.delimiters);
   if (options.simplify) simplify(input);
   const mf = new MessageFormat(options.locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
@@ -125,7 +136,7 @@ function readInput(include, extensions, sep) {
     }
   });
 
-  const input = {};
+  let input = {};
   ls.forEach((fn) => {
     const ext = path.extname(fn);
     const parts = fn.slice(0, -ext.length).split(sep);

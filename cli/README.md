@@ -38,6 +38,9 @@ The global object or modules format for the output JS. If _`ns`_ does not contai
 ### `-o of, --outfile=of`
 Write output to the file _`of`_. If unspecified or `-`, prints to stdout.
 
+### `--delimiters`
+Set of characters by which the file path is split into output object keys. [default: `._/` or `._\` depending on platform]
+
 ### `--disable-plural-key-checks`
 By default, messageformat throws an error when a statement uses a non-numerical key that will never be matched as a pluralization category for the current locale. Use this argument to disable the validation and allow unused plural keys. [default: `false`]
 
