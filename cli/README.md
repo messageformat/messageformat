@@ -44,6 +44,9 @@ By default, messageformat throws an error when a statement uses a non-numerical 
 ### `--eslint-disable`
 Add an `/* eslint-disable */` comment as the first line of the output, to silence [ESLint](https://eslint.org/) warnings. [default: `false`]
 
+### `--extensions`
+Array or comma-separated list of file extensions to parse as source files. [default: `['.json']`]
+
 ### `--simplify`
 Simplify the output object structure, by dropping intermediate keys when those keys are shared across all objects at that level, in addition to the default filtering-out of shared keys at the root of the object. [default: `false`]
 

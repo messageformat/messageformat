@@ -16,6 +16,7 @@ const knownOpts = {
   'disable-plural-key-checks': Boolean,
   'esline-disable': Boolean,
   es6: Boolean,
+  extensions: [String, Array],
   help: Boolean,
   locale: [String, Array],
   namespace: String,
@@ -23,6 +24,7 @@ const knownOpts = {
   simplify: Boolean
 };
 const shortHands = {
+  e: ['--extensions'],
   h: ['--help'],
   l: ['--locale'],
   n: ['--namespace'],
@@ -43,11 +45,16 @@ function getOptions(knownOpts, shortHands) {
     const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
     Object.assign(options, cfg.messageformat || cfg);
   } catch (e) {}
-  if (typeof options.locale === 'string') options.locale = [options.locale];
   const cliOptions = nopt(knownOpts, shortHands, process.argv, 2);
   Object.assign(options, cliOptions);
+  options.extensions = options.extensions && options.extensions.length > 0 ? (
+    options.extensions.map(ext => ext.trim().replace(/^([^.]*\.)?/, '.'))
+  ) : ['.json'];
   if (options.argv.remain.length > 0) options.include = options.argv.remain;
   options.include = (options.include || []).map(fn => path.resolve(fn));
+  const lc = Array.isArray(options.locale) ? options.locale.join(',') : options.locale;
+  options.locale = lc ? lc.split(/[ ,]+/) : null;
+  if (!options.namespace) options.namespace = options.es6 ? 'export default' : 'module.exports';
   return options
 }
 
@@ -55,13 +62,11 @@ const options = getOptions(knownOpts, shortHands);
 if (options.help || options.include.length === 0) {
   printUsage();
 } else {
-  var locale = options.locale ? options.locale.join(',').split(/[ ,]+/) : null;
-  var input = readInput(options.include, '.json', path.sep);
+  const input = readInput(options.include, options.extensions, path.sep);
   if (options.simplify) simplify(input);
-  var ns = options.namespace || (options.es6 ? 'export default' : 'module.exports');
-  var mf = new MessageFormat(locale);
+  const mf = new MessageFormat(options.locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
-  var output = mf.compile(input).toString(ns);
+  let output = mf.compile(input).toString(options.namespace);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   if (options.outfile && options.outfile !== '-') {
     fs.writeFileSync(path.resolve(options.outfile), output)
@@ -105,30 +110,34 @@ function printUsage() {
 }
 
 
-function readInput(include, ext, sep) {
-  var ls = [];
-  include.forEach(function(fn) {
-    if (!fs.existsSync(fn)) throw new Error('Input file not found: ' + fn);
+function readInput(include, extensions, sep) {
+  const ls = [];
+  include.forEach((fn) => {
+    if (!fs.existsSync(fn)) throw new Error(`Input file not found: ${fn}`);
     if (fs.statSync(fn).isDirectory()) {
-      ls.push.apply(ls, glob.sync(path.join(fn, '**/*' + ext)));
-    } else {
-      if (path.extname(fn) !== ext) throw new Error('Input file extension is not ' + ext + ': ' + fn);
+      extensions.forEach(ext => {
+        ls.push.apply(ls, glob.sync(path.join(fn, '**/*' + ext)));
+      })
+    } else if (extensions.includes(path.extname(fn))) {
       ls.push(fn);
+    } else {
+      throw new Error(`Unrecognised file extension (expected ${extensions}): ${fn}`);
     }
   });
 
-  var input = {};
-  ls.forEach(function(fn) {
-    var parts = fn.slice(0, -ext.length).split(sep);
-    var last = parts.length - 1;
-    parts.reduce(function(root, part, idx) {
-      if (idx == last) root[part] = require(fn);
+  const input = {};
+  ls.forEach((fn) => {
+    const ext = path.extname(fn);
+    const parts = fn.slice(0, -ext.length).split(sep);
+    const lastIdx = parts.length - 1;
+    parts.reduce((root, part, idx) => {
+      if (idx == lastIdx) root[part] = require(fn);
       else if (!(part in root)) root[part] = {};
       return root[part];
     }, input);
   });
   while (true) {
-      var keys = Object.keys(input);
+      const keys = Object.keys(input);
       if (keys.length === 1) input = input[keys[0]];
       else break;
   }
