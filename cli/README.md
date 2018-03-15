@@ -22,18 +22,21 @@ or
 ./node_modules/.bin/messageformat [options] [input]
 ```
 
-`input` should consist of one or more `.json` files or directories, unless defined in a configuration file. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure. Output is written to `stdout`.
+`input` should consist of one or more `.json` files or directories, unless defined in a configuration file. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure.
 
 
 ## Options
 
-In addition to defining options on the command line, options may also be set in the `"messageformat"` object in your **`package.json`**, or in a **`messageformat.rc.json`** configuration file, using the long-form option names. Input files and directories may also be given as an `"include"` array in a configuration file. Command-line options override configuration files.
+In addition to defining options on the command line, options may also be set in the **`"messageformat"`** object in your **`package.json`** file, or in a **`messageformat.rc.json`** configuration file, using the long-form option names as keys. Input files and directories may also be given as an **`"include"`** array in a configuration file. Command-line options override configuration files.
 
 ### `-l lc, --locale=lc`
 The locale(s) _`lc`_ to include; if multiple, selected by matching message key. [default: `'en'`]
 
 ### `-n ns, --namespace=ns, --es6`
 The global object or modules format for the output JS. If _`ns`_ does not contain a `.`, the output follows an UMD pattern. For module support, the values `'export default'` (ES6, shorthand `--es6`), `exports` (CommonJS), and `module.exports` (node.js) are special. [default: `'module.exports'`]
+
+### `-o of, --outfile=of`
+Write output to the file _`of`_. If unspecified or `-`, prints to stdout.
 
 ### `--disable-plural-key-checks`
 By default, messageformat throws an error when a statement uses a non-numerical key that will never be matched as a pluralization category for the current locale. Use this argument to disable the validation and allow unused plural keys. [default: `false`]
@@ -68,7 +71,8 @@ Same, but with this configuration in `package.json`:
     "locale": ["en", "fr"],
     "include": [
       "messages/"
-    ]
+    ],
+    "outfile": "messages.js"
   },
   "scripts": {
     ...,

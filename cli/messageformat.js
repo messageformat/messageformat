@@ -19,12 +19,14 @@ const knownOpts = {
   help: Boolean,
   locale: [String, Array],
   namespace: String,
+  outfile: String,
   simplify: Boolean
 };
 const shortHands = {
   h: ['--help'],
   l: ['--locale'],
   n: ['--namespace'],
+  o: ['--outfile'],
   p: ['--disable-plural-key-checks'],
   s: ['--simplify']
 };
@@ -61,17 +63,21 @@ if (options.help || options.include.length === 0) {
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
   var output = mf.compile(input).toString(ns);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
-  console.log(output);
+  if (options.outfile && options.outfile !== '-') {
+    fs.writeFileSync(path.resolve(options.outfile), output)
+  } else {
+    console.log(output);
+  }
 }
 
 
 function printUsage() {
   var usage = [
-    'usage: *messageformat* [options] _input_',
+    'usage: *messageformat* [options] [_input_]',
     '',
     'Parses the _input_ JSON file(s) of MessageFormat strings into a JS module of',
-    'corresponding hierarchical functions, written to stdout. Directories are',
-    'recursively scanned for all .json files.',
+    'corresponding hierarchical functions. Input directories are recursively',
+    'scanned for all .json files.',
     '',
     '  *-l* _lc_, *--locale*=_lc_',
     '        The locale(s) _lc_ to include; if multiple, selected by matching',
@@ -79,12 +85,15 @@ function printUsage() {
     '',
     '  *-n* _ns_, *--namespace*=_ns_, *--es6*',
     '        The global object or modules format for the output JS. If _ns_ does not',
-    '        contain a \'.\', the output follows an UMD pattern. For module support,',
-    '        the values \'*export default*\' (ES6, shorthand *--es6*), \'*exports*\'',
-    '        (CommonJS), and \'*module.exports*\' (node.js) are special.',
-    '        [default: *module.exports*]',
+    '        contain a \'.\', the output follows an UMD pattern. The values',
+    '        \'*export default*\' (shorthand *--es6*), \'*exports*\', and \'*module.exports*\'',
+    '        are special, and are handled appropriately. [default: *module.exports*]',
     '',
-    'See the messageformat-cli README for more options.'
+    '  *-o* _of_, *--outfile*=_of_',
+    '        Write output to the file _of_. If unspecified or \'-\', prints to stdout',
+    '',
+    'Configuration may also be set in *package.json* or *messageformat.rc.json*. See',
+    'the messageformat-cli README for more options.'
   ].join('\n');
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
