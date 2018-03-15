@@ -15,17 +15,19 @@ npm install messageformat messageformat-cli
 ## Usage
 
 ```
-npx messageformat [options] input
+npx messageformat [options] [input]
 ```
 or
 ```
-./node_modules/.bin/messageformat [options] input
+./node_modules/.bin/messageformat [options] [input]
 ```
 
-`input` should consist of one or more `.json` files or directories. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure. Output is written to `stdout`.
+`input` should consist of one or more `.json` files or directories, unless defined in a configuration file. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure. Output is written to `stdout`.
 
 
 ## Options
+
+In addition to defining options on the command line, options may also be set in the `"messageformat"` object in your **`package.json`**, or in a **`messageformat.rc.json`** configuration file, using the long-form option names. Input files and directories may also be given as an `"include"` array in a configuration file. Command-line options override configuration files.
 
 ### `-l lc, --locale=lc`
 The locale(s) _`lc`_ to include; if multiple, selected by matching message key. [default: `'en'`]
@@ -50,7 +52,31 @@ With `messages/strings.json`, compile it into a node.js module using the default
 npx messageformat messages/strings.json > messages/en.js
 ```
 
+----
 With `messages/en.json` and `messages/fr.json`, combine both into an ES6-compatible module, with the top-level keys `en` and `fr` containing functions that each use the correct language's pluralization rules:
 ```
 npx messageformat --locale=en,fr --es6 messages/ > messages.js
+```
+
+----
+Same, but with this configuration in `package.json`:
+```
+{
+  ...,
+  "messageformat": {
+    "es6": true,
+    "locale": ["en", "fr"],
+    "include": [
+      "messages/"
+    ]
+  },
+  "scripts": {
+    ...,
+    "build:messages": "messageformat"
+  }
+}
+```
+
+```
+npm run build:messages
 ```

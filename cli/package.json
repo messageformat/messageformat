@@ -21,6 +21,9 @@
   "bin": {
     "messageformat": "./messageformat.js"
   },
+  "engines" : {
+    "node" : ">=6.0"
+  },
   "dependencies": {
     "glob": "~7.0.6",
     "nopt": "~3.0.6"

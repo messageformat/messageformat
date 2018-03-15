@@ -6,37 +6,55 @@
  * Licensed under the MIT License
  */
 
-var fs = require('fs'),
-    glob = require('glob'),
-    MessageFormat = require('messageformat'),
-    nopt = require('nopt'),
-    path = require('path'),
-    knownOpts = {
-      'disable-plural-key-checks': Boolean,
-      'esline-disable': Boolean,
-      es6: Boolean,
-      help: Boolean,
-      locale: [String, Array],
-      namespace: String,
-      simplify: Boolean
-    },
-    shortHands = {
-      h: ['--help'],
-      l: ['--locale'],
-      n: ['--namespace'],
-      p: ['--disable-plural-key-checks'],
-      s: ['--simplify']
-    },
-    options = nopt(knownOpts, shortHands, process.argv, 2),
-    inputFiles = options.argv.remain.map(function(fn) { return path.resolve(fn); });
+const fs = require('fs');
+const glob = require('glob');
+const MessageFormat = require('messageformat');
+const nopt = require('nopt');
+const path = require('path');
 
+const knownOpts = {
+  'disable-plural-key-checks': Boolean,
+  'esline-disable': Boolean,
+  es6: Boolean,
+  help: Boolean,
+  locale: [String, Array],
+  namespace: String,
+  simplify: Boolean
+};
+const shortHands = {
+  h: ['--help'],
+  l: ['--locale'],
+  n: ['--namespace'],
+  p: ['--disable-plural-key-checks'],
+  s: ['--simplify']
+};
 
-if (options.help || inputFiles.length === 0) {
+function getOptions(knownOpts, shortHands) {
+  const options = {};
+  try {
+    const pkgPath = path.resolve('package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    Object.assign(options, pkg.messageformat);
+  } catch (e) {}
+  try {
+    const cfgPath = path.resolve('messageformat.rc.json');
+    const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    Object.assign(options, cfg.messageformat || cfg);
+  } catch (e) {}
+  if (typeof options.locale === 'string') options.locale = [options.locale];
+  const cliOptions = nopt(knownOpts, shortHands, process.argv, 2);
+  Object.assign(options, cliOptions);
+  if (options.argv.remain.length > 0) options.include = options.argv.remain;
+  options.include = (options.include || []).map(fn => path.resolve(fn));
+  return options
+}
+
+const options = getOptions(knownOpts, shortHands);
+if (options.help || options.include.length === 0) {
   printUsage();
 } else {
   var locale = options.locale ? options.locale.join(',').split(/[ ,]+/) : null;
-  if (inputFiles.length === 0) inputFiles = [ process.cwd() ];
-  var input = readInput(inputFiles, '.json', path.sep);
+  var input = readInput(options.include, '.json', path.sep);
   if (options.simplify) simplify(input);
   var ns = options.namespace || (options.es6 ? 'export default' : 'module.exports');
   var mf = new MessageFormat(locale);
