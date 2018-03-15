@@ -257,7 +257,7 @@ describe("Basic Message Formatting", function() {
   });
 
   it("should use formatting functions - set in MessageFormat.formatters", function() {
-    var mf = new MessageFormat('en').setIntlSupport();
+    var mf = new MessageFormat('en');
     var mfunc = mf.compile("The date is {VAR,date}.");
     expect(mfunc({"VAR":"2010-12-31"})).to.contain("2010");
   });

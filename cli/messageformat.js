@@ -13,7 +13,6 @@ var fs = require('fs'),
     path = require('path'),
     knownOpts = {
       'disable-plural-key-checks': Boolean,
-      'enable-intl-support': Boolean,
       'esline-disable': Boolean,
       es6: Boolean,
       help: Boolean,
@@ -23,7 +22,6 @@ var fs = require('fs'),
     },
     shortHands = {
       h: ['--help'],
-      i: ['--enable-intl-support'],
       l: ['--locale'],
       n: ['--namespace'],
       p: ['--disable-plural-key-checks'],
@@ -43,7 +41,6 @@ if (options.help || inputFiles.length === 0) {
   var ns = options.namespace || (options.es6 ? 'export default' : 'module.exports');
   var mf = new MessageFormat(locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
-  if (options['enable-intl-support']) mf.setIntlSupport(true);
   var output = mf.compile(input).toString(ns);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   console.log(output);
