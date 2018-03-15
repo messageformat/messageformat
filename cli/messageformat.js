@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 
+const dotProperties = require('dot-properties');
 const fs = require('fs');
 const glob = require('glob');
 const MessageFormat = require('messageformat');
@@ -60,7 +61,7 @@ function getOptions(knownOpts, shortHands) {
   options.delimiters = new RegExp(`[${delim}]`);
   options.extensions = options.extensions && options.extensions.length > 0 ? (
     options.extensions.map(ext => ext.trim().replace(/^([^.]*\.)?/, '.'))
-  ) : ['.json'];
+  ) : ['.json', '.properties'];
   if (options.argv.remain.length > 0) options.include = options.argv.remain;
   options.include = (options.include || []).map(fn => path.resolve(fn));
   const lc = Array.isArray(options.locale) ? options.locale.join(',') : options.locale;
@@ -142,8 +143,23 @@ function readInput(include, extensions, sep) {
     const parts = fn.slice(0, -ext.length).split(sep);
     const lastIdx = parts.length - 1;
     parts.reduce((root, part, idx) => {
-      if (idx == lastIdx) root[part] = require(fn);
-      else if (!(part in root)) root[part] = {};
+      if (idx == lastIdx) {
+        switch (ext) {
+          // extension list from https://github.com/github/linguist/blob/master/lib/linguist/languages.yml
+          case '.ini':
+          case '.cfg':
+          case '.prefs':
+          case '.pro':
+          case '.properties':
+            const src = fs.readFileSync(fn, 'latin1');
+            root[part] = dotProperties.parse(src, sep.test('.'))
+            break
+          default:
+            root[part] = require(fn);
+        }
+      } else if (!(part in root)) {
+        root[part] = {};
+      }
       return root[part];
     }, input);
   });

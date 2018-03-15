@@ -1,6 +1,6 @@
 # Command-line MessageFormat Compiler
 
-Parses and compiles the input JSON file(s) of MessageFormat strings into a JS module of corresponding hierarchical functions.
+Parses and compiles the input JSON and [.properties](https://en.wikipedia.org/wiki/.properties) file(s) of MessageFormat strings into a JS module of corresponding hierarchical functions.
 
 
 ## Installation
@@ -22,7 +22,7 @@ or
 ./node_modules/.bin/messageformat [options] [input]
 ```
 
-`input` should consist of one or more `.json` files or directories, unless defined in a configuration file. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure.
+`input` should consist of one or more files or directories, unless defined in a configuration file. Directories are recursively scanned for `.json` and `.properties` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure.
 
 
 ## Options
@@ -48,7 +48,7 @@ By default, messageformat throws an error when a statement uses a non-numerical 
 Add an `/* eslint-disable */` comment as the first line of the output, to silence [ESLint](https://eslint.org/) warnings. [default: `false`]
 
 ### `--extensions`
-Array or comma-separated list of file extensions to parse as source files. [default: `['.json']`]
+Array or comma-separated list of file extensions to parse as source files. [default: `['.json', '.properties']`]
 
 ### `--simplify`
 Simplify the output object structure, by dropping intermediate keys when those keys are shared across all objects at that level, in addition to the default filtering-out of shared keys at the root of the object. [default: `false`]
