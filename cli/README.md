@@ -1,6 +1,6 @@
 # Command-line MessageFormat Compiler
 
-Parses the input JSON file(s) of MessageFormat strings into a JS module of corresponding hierarchical functions, written to stdout. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure.
+Parses and compiles the input JSON file(s) of MessageFormat strings into a JS module of corresponding hierarchical functions.
 
 
 ## Installation
@@ -9,7 +9,8 @@ Parses the input JSON file(s) of MessageFormat strings into a JS module of corre
 npm install messageformat messageformat-cli
 ```
 
-`messageformat` is a peer dependency of `messageformat-cli`.
+[`messageformat`](https://www.npmjs.com/package/messageformat) is a peer dependency of `messageformat-cli`, and needs to be installed separately.
+
 
 ## Usage
 
@@ -20,6 +21,8 @@ or
 ```
 ./node_modules/.bin/messageformat [options] input
 ```
+
+`input` should consist of one or more `.json` files or directories. Directories are recursively scanned for all `.json` files. With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure. Output is written to `stdout`.
 
 
 ## Options
@@ -34,10 +37,10 @@ The global object or modules format for the output JS. If _`ns`_ does not contai
 By default, messageformat throws an error when a statement uses a non-numerical key that will never be matched as a pluralization category for the current locale. Use this argument to disable the validation and allow unused plural keys. [default: `false`]
 
 ### `--enable-intl-support`
-Because native or polyfilled support for global Intl object is not guaranteed, messageformat will disable Intl formatters by default. If you require Intl support, you can use this argument to enable Intl formatters for your messages. [default: `false`]
+Because native or polyfilled support for the global `Intl` object is not guaranteed, messageformat will disable Intl formatters by default. If you require Intl support, you can use this argument to enable Intl formatters for your messages. [default: `false`]
 
 ### `--eslint-disable`
-Add an `/* eslint-disable */` comment as the first line of the output, to silence ESLint warnings. [default: `false`]
+Add an `/* eslint-disable */` comment as the first line of the output, to silence [ESLint](https://eslint.org/) warnings. [default: `false`]
 
 ### `--simplify`
 Simplify the output object structure, by dropping intermediate keys when those keys are shared across all objects at that level, in addition to the default filtering-out of shared keys at the root of the object. [default: `false`]
@@ -54,4 +57,3 @@ With `messages/en.json` and `messages/fr.json`, combine both into an ES6-compati
 ```
 npx messageformat --locale=en,fr --es6 messages/ > messages.js
 ```
-
