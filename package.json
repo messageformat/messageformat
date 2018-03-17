@@ -1,6 +1,6 @@
 {
   "name": "messageformat-parser",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "A PEG.js parser for ICU MessageFormat strings",
   "keywords": [
     "icu",
