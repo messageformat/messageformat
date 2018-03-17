@@ -101,14 +101,7 @@ char
   = doubleapos
   / quoted
   / octo:'#' & { return !inPlural; } { return octo; }
-  / [^{}#\\\0-\x08\x0e-\x1f\x7f]
-  / '\\\\' { return '\\'; }
-  / '\\#' { return '#'; }
-  / '\\{' { return '\u007B'; }
-  / '\\}' { return '\u007D'; }
-  / '\\u' h1:hexDigit h2:hexDigit h3:hexDigit h4:hexDigit {
-      return String.fromCharCode(parseInt('0x' + h1 + h2 + h3 + h4));
-    }
+  / [^{}#\0-\x08\x0e-\x1f\x7f]
 
 paramcharsCommon
   = doubleapos
@@ -123,8 +116,6 @@ paramcharsStrict
   / str:[^'}]+ { return str.join(''); }
 
 digits = $([0-9]+)
-
-hexDigit = [0-9a-fA-F]
 
 // Pattern_White_Space
 _ = $([\u0009-\u000d \u0085\u200e\u200f\u2028\u2029]*)

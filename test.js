@@ -27,9 +27,9 @@ describe("Replacement", function() {
   });
 
   it("should allow you to escape { and } characters", function() {
-    expect(parse("\\{test")[0]).to.eql('{test');
-    expect(parse("test\\}")[0]).to.eql('test}');
-    expect(parse("\\{test\\}")[0]).to.eql('{test}');
+    expect(parse("'{'test")[0]).to.eql('{test');
+    expect(parse("test'}'")[0]).to.eql('test}');
+    expect(parse("'{test}'")[0]).to.eql('{test}');
   });
 
   it("should gracefully handle quotes (since it ends up in a JS String)", function() {
