@@ -252,6 +252,8 @@ describe("Basic Message Formatting", function() {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile("The date is {VAR,date}.");
     expect(mfunc({"VAR":"2010-12-31"})).to.contain("2010");
+    mfunc = mf.compile("Countdown: {VAR, duration}.");
+    expect(mfunc({ VAR: -151200.42 })).to.eql("Countdown: -42:00:00.420.");
   });
 
   it("should use formatting functions - set by #addFormatters()", function() {
