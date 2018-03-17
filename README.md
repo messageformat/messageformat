@@ -13,12 +13,6 @@ the following possible keys:
   `'zero', 'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in
   an empty array.
 
-- `strictFunctionParams` – By default, function parameters are split on commas
-  and trimmed, so the parameters in `{x,fn,   a,   b   }` are parsed as
-  `['a','b']`. Setting `strictFunctionParams` to true will make the parser
-  follow the ICU MessageFormat spec more closely, and result in a params array
-  with a single element: `['   a,   b   ']`.
-
 - `strictNumberSign` – Inside a `plural` or `selectordinal` statement, a pound
   symbol (`#`) is replaced with the input number. By default, `#` is also parsed
   as a special character in nested statements too, and can be escaped using
@@ -136,7 +130,7 @@ type Function = {
   type: 'function',
   arg: Identifier,
   key: Identifier,
-  params: string[]
+  param: string | null
 }
 
 type PluralCase = {
