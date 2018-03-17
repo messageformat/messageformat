@@ -266,6 +266,12 @@ describe("Basic Message Formatting", function() {
     expect(mfunc[0]({"VAR":"big"})).to.eql("This is BIG.");
   });
 
+  it("should use formatting functions with parameters", function() {
+    var mf = new MessageFormat('en').addFormatters({ arg: function(v, lc, arg) { return arg; } });
+    var mfunc = mf.compile("This is {VAR, arg, X, Y }.");
+    expect(mfunc({"VAR":"big"})).to.eql("This is X, Y.");
+  });
+
   it("should be able to disable plural checks", function() {
     var mf0 = new MessageFormat('en');
     var mf1 = new MessageFormat('en');
