@@ -111,7 +111,7 @@ For more example usage, please take a look at our [test suite](./test.js).
 
 The output of `parse()` is a `Token` array:
 
-```js
+```typescript
 type Token = string | Argument | Plural | Select | Function
 
 type Argument = {
