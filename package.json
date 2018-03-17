@@ -1,6 +1,6 @@
 {
   "name": "messageformat-parser",
-  "version": "2.0.0",
+  "version": "3.0.0-beta.1",
   "description": "A PEG.js parser for ICU MessageFormat strings",
   "keywords": [
     "icu",
@@ -21,8 +21,8 @@
   },
   "main": "parser.js",
   "files": [
-    "parser.pegjs",
-    "parser.js"
+    "parser.js",
+    "codemod-fix-backslash-escapes.js"
   ],
   "devDependencies": {
     "expect.js": "^0.3.1",
@@ -30,7 +30,8 @@
     "pegjs": "^0.10.0"
   },
   "scripts": {
-    "prepublish": "pegjs parser.pegjs",
+    "prepare": "pegjs parser.pegjs",
+    "prepublishOnly": "npm test",
     "test": "mocha"
   }
 }
