@@ -3,9 +3,9 @@
 A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat].
 Outputs an AST defined by [parser.pegjs].
 
-The generated parser function takes two parameters, first the string to be
-parsed, and a second optional parameter `options`, an object with the following
-possible keys:
+The generated `parse(src, [options])` function takes two parameters, first the
+string to be parsed, and a second optional parameter `options`, an object with
+the following possible keys:
 
 - `cardinal` and `ordinal` – Arrays of valid plural categories for the current
   locale, used to validate `plural` and `selectordinal` keys. If these are
@@ -41,14 +41,14 @@ apostrophe. A double apostrophe is always a literal apostrophe.
 [apostrophe mode]: http://www.icu-project.org/apiref/icu4c/messagepattern_8h.html#af6e0757e0eb81c980b01ee5d68a9978b
 
 
-#### Installation
+## Installation
 
 ```sh
 npm install messageformat-parser
 ```
 
 
-#### Usage
+## Usage
 
 ```js
 > var parse = require('messageformat-parser').parse;
@@ -106,7 +106,58 @@ npm install messageformat-parser
 
 For more example usage, please take a look at our [test suite](./test.js).
 
-#### Contributor License Agreement
-See the [messageformat README][CLA] for details.
+
+## Structure
+
+The output of `parse()` is a `Token` array:
+
+```js
+type Token = string | Argument | Plural | Select | Function
+
+type Argument = {
+  type: 'argument',
+  arg: Identifier
+}
+
+type Plural = {
+  type: 'plural' | 'selectordinal',
+  arg: Identifier,
+  offset: number,
+  cases: PluralCase[]
+}
+
+type Select = {
+  type: 'select',
+  arg: Identifier,
+  cases: SelectCase[]
+}
+
+type Function = {
+  type: 'function',
+  arg: Identifier,
+  key: Identifier,
+  params: string[]
+}
+
+type PluralCase = {
+  key: 'zero' | 'one' | 'two' | 'few' | 'many' | 'other' | '=0' | '=1' | '=2' | ...,
+  tokens: (Token | Octothorpe)[]
+}
+
+type SelectCase = {
+  key: Identifier,
+  tokens: strictNumberSign ? Token[] : (Token | Octothorpe)[]
+}
+
+type Octothorpe = {
+  type: 'octothorpe'
+}
+
+type Identifier = string  // not containing whitespace or control characters
+```
+
+
+## License & Contributor License Agreement
+Released under the MIT license. See the [messageformat README][CLA] for details.
 
 [CLA]: https://github.com/messageformat/messageformat.js#contributor-license-agreement
