@@ -1,5 +1,5 @@
 {
-  "source": { "include": [ "lib/" ] },
+  "source": { "include": [ "lib/", "lib/formatters/" ] },
   "plugins": [ "plugins/markdown" ],
   "opts": { "destination": "./doc/" }
 }
