@@ -66,11 +66,6 @@ describe("Basic Message Formatting", function() {
     expect((mf.compile('She said "Hello"'))()).to.eql('She said "Hello"');
   });
 
-  it("escapes backslashes (regression test for #99)", function() {
-    var mf = new MessageFormat('en');
-    expect((mf.compile('\\u005c'))()).to.eql('\\');
-  });
-
   it("should handle apostrophes correctly", function() {
     var mf = new MessageFormat('en');
     expect(mf.compile("I see '{many}'")()).to.eql("I see {many}");
@@ -81,11 +76,8 @@ describe("Basic Message Formatting", function() {
 
   it("accepts escaped special characters", function() {
     var mf = new MessageFormat('en');
-    expect((mf.compile('\\{'))()).to.eql('{');
-    expect((mf.compile('\\}'))()).to.eql('}');
-    expect((mf.compile('\\#'))()).to.eql('#');
-    expect((mf.compile('\\\\'))()).to.eql('\\');
-    expect((mf.compile('\\u263A\\u263B'))()).to.eql('☺☻');
+    expect((mf.compile("'{'"))()).to.eql('{');
+    expect((mf.compile("'}'"))()).to.eql('}');
   });
 
   it("accepts special characters escaped with MessageFormat.escape", function() {
@@ -93,15 +85,15 @@ describe("Basic Message Formatting", function() {
     expect(mf.compile(MessageFormat.escape('{'))()).to.eql('{');
     expect(mf.compile(MessageFormat.escape('}'))()).to.eql('}');
     expect(mf.compile(MessageFormat.escape('#'))()).to.eql('#');
-    expect(mf.compile(MessageFormat.escape('\\'))()).to.eql('\\');
+    expect(mf.compile(MessageFormat.escape('#', true))()).to.eql("'#'");
   });
 
   it("should get escaped brackets all the way out the other end", function() {
     var mf = new MessageFormat('en');
-    expect((mf.compile('\\{\\{\\{'))()).to.eql("{{{");
-    expect((mf.compile('\\}\\}\\}'))()).to.eql("}}}");
-    expect((mf.compile('\\{\\{\\{{test}\\}\\}\\}'))({test:4})).to.eql("{{{4}}}");
-    expect((mf.compile('\\{\\{\\{{test, plural, other{#}}\\}\\}\\}'))({test:4})).to.eql("{{{4}}}");
+    expect((mf.compile("'{{{'"))()).to.eql("{{{");
+    expect((mf.compile("'}}}'"))()).to.eql("}}}");
+    expect((mf.compile("'{{{'{test}'}}}'"))({test:4})).to.eql("{{{4}}}");
+    expect((mf.compile("'{{{'{test, plural, other{#}}'}}}'"))({test:4})).to.eql("{{{4}}}");
   });
 
   it("can substitute named variables", function() {
@@ -127,7 +119,7 @@ describe("Basic Message Formatting", function() {
 
   it("allows escaped shorthand variable: #", function() {
     var mf = new MessageFormat('en');
-    var mfunc = mf.compile('{X, plural, other{# is a \\#}}');
+    var mfunc = mf.compile("{X, plural, other{# is a '#'}}");
     expect(mfunc({X:3})).to.eql("3 is a #");
   });
 
