@@ -102,19 +102,19 @@ describe('Formatters', () => {
     it('default', () => {
       const msg = mf.compile('The time is now {T, time}');
       const data = { T: 978384385000 };
-      expect(msg(data)).to.eql('The time is now 11:26:25 PM');
+      expect(msg(data)).to.match(/^The time is now \d\d?:\d\d:25 PM$/);
     });
 
     it('set locale', () => {
       const msg = mf.compile('Kello on nyt {T, time}', 'fi');
       const data = { T: 978384385000 };
-      expect(msg(data)).to.eql('Kello on nyt 23.26.25');
+      expect(msg(data)).to.match(/^Kello on nyt \d\d\.\d\d\.25$/);
     });
 
     it('full time & date', () => {
       const msg = mf.compile('The Eagle landed at {T, time, full} on {T, date, full}');
       const data = { T: '1969-07-20 20:17:40 UTC' };
-      expect(msg(data)).to.eql('The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969');
+      expect(msg(data)).to.match(/^The Eagle landed at \d\d?:\d\d:40 .M \S+ on \w+day, July \d\d, 1969$/);
     });
   });
 });
