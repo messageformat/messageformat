@@ -19,7 +19,7 @@ describe('Formatters', () => {
     it('set locale', () => {
       const msg = mf.compile('Tänään on {T, date}', 'fi');
       const data = { T: Date.parse('2016-02-21') };
-      expect(msg(data)).to.match(/^Tänään on 21. helmik.* 2016$/);
+      expect(msg(data)).to.match(/^Tänään on .*2016/);
     });
 
     it('argument', () => {
@@ -93,7 +93,7 @@ describe('Formatters', () => {
     });
   });
 
-  describe('date', () => {
+  describe('time', () => {
     let mf;
     beforeEach(() => {
       mf = new MessageFormat(['en', 'fi']);
@@ -108,7 +108,7 @@ describe('Formatters', () => {
     it('set locale', () => {
       const msg = mf.compile('Kello on nyt {T, time}', 'fi');
       const data = { T: 978384385000 };
-      expect(msg(data)).to.match(/^Kello on nyt \d\d\.\d\d\.25$/);
+      expect(msg(data)).to.match(/^Kello on nyt \d\d.\d\d.25/);
     });
 
     it('full time & date', () => {
