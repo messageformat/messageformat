@@ -108,7 +108,7 @@ describe('Formatters', () => {
     it('set locale', () => {
       const msg = mf.compile('Kello on nyt {T, time}', 'fi');
       const data = { T: 978384385000 };
-      expect(msg(data)).to.match(/^Kello on nyt \d\d.\d\d.25/);
+      expect(msg(data)).to.match(/^Kello on nyt \d\d?.\d\d.25/);
     });
 
     it('full time & date', () => {
