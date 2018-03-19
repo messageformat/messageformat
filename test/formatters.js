@@ -72,11 +72,24 @@ describe('Formatters', () => {
       expect(msg(data)).to.eql('99% complete');
     });
 
+    it('default currency', () => {
+      const msg = mf.compile('The total is {V, number, currency}.');
+      const data = { V: 5.5 };
+      expect(msg(data)).to.eql('The total is $5.50.');
+    });
+
     it('currency', () => {
       mf.currency = 'EUR';
       const msg = mf.compile('The total is {V, number, currency}.');
       const data = { V: 5.5 };
       expect(msg(data)).to.eql('The total is €5.50.');
+    });
+
+    it('currency:GBP', () => {
+      mf.currency = 'EUR';
+      const msg = mf.compile('The total is {V, number, currency:GBP}.');
+      const data = { V: 5.5 };
+      expect(msg(data)).to.eql('The total is £5.50.');
     });
   });
 
