@@ -4,7 +4,7 @@
   "description": "Small example for messageformat-loader",
   "scripts": {
     "build": "webpack",
-    "postinstall": "cd .. && npm install --no-save messageformat",
+    "postinstall": "cd .. && npm install && npm install --no-save messageformat",
     "prepare": "npm run build"
   },
   "main": "src/index.js",
