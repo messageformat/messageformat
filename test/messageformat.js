@@ -504,7 +504,7 @@ describe("Module/CommonJS support", function() {
   var cf = new MessageFormat('en').compile(colorSrc);
 
   if (typeof require !== 'undefined') {
-    ['module.exports', 'exports', 'global.i18n', 'umd'].forEach(function(moduleFmt) {
+    ['module.exports', 'global.i18n', 'umd'].forEach(function(moduleFmt) {
       it('should work with `' + moduleFmt + '`', function(done) {
         var fs = require('fs');
         var tmp = require('tmp');

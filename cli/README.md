@@ -33,7 +33,7 @@ In addition to defining options on the command line, options may also be set in 
 The locale(s) _`lc`_ to include; if multiple, selected by matching message key. [default: `'en'`]
 
 ### `-n ns, --namespace=ns, --es6`
-The global object or modules format for the output JS. If _`ns`_ does not contain a `.`, the output follows an UMD pattern. For module support, the values `'export default'` (ES6, shorthand `--es6`), `exports` (CommonJS), and `module.exports` (node.js) are special. [default: `'module.exports'`]
+The global object or modules format for the output JS. If _`ns`_ does not contain a `.`, the output follows an UMD pattern. For ES6 module output with a `default` export, use *--es6*. [default: `'module.exports'`]
 
 ### `-o of, --outfile=of`
 Write output to the file _`of`_. If unspecified or `-`, prints to stdout.
