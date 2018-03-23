@@ -42,6 +42,28 @@ describe('Get', () => {
     expect(messages.locale).to.eql(null);
   });
 
+  it('defaultLocale', () => {
+    expect(messages.defaultLocale).to.be('en');
+    messages.defaultLocale = 'fi-FI';
+    expect(messages.defaultLocale).to.be('fi');
+    messages._data['sv-SE'] = {}
+    messages.defaultLocale = 'sv';
+    expect(messages.defaultLocale).to.be('sv-SE');
+    messages.defaultLocale = 'foo';
+    expect(messages.defaultLocale).to.be(null);
+  });
+
+  it('locale', () => {
+    expect(messages.locale).to.be('en');
+    messages.locale = 'fi-FI';
+    expect(messages.locale).to.be('fi');
+    messages._data['sv-SE'] = {}
+    messages.locale = 'sv';
+    expect(messages.locale).to.be('sv-SE');
+    messages.locale = 'foo';
+    expect(messages.locale).to.be(null);
+  });
+
   it('hasMessage', () => {
     expect(messages.hasMessage('a')).to.be(true);
     expect(messages.hasMessage('c')).to.be(false);
