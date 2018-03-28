@@ -123,14 +123,16 @@ describe('Get', () => {
     expect(messages.get([])).to.only.have.keys(['b', 'e']);
   });
 
-  it('addLocale', () => {
+  it('addMessages', () => {
     const mf = new MessageFormat('sv');
     const sv = { e: 'Jag pratar lite svenska.' }
-    messages.addLocale('sv', mf.compile(sv));
+    messages.addMessages(mf.compile(sv), 'sv');
     expect(messages.availableLocales).to.eql(['en', 'fi', 'sv']);
     messages.locale = 'sv'
     expect(messages.get('e')).to.eql('Jag pratar lite svenska.');
     expect(messages.getFallback()).to.eql(['en']);
     expect(messages.get([])).to.only.have.key('e');
+    messages.addMessages(() => 'z', null, ['x', 'y'])
+    expect(messages.get(['x', 'y'])).to.eql('z');
   });
 });
