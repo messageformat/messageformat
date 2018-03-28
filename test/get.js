@@ -82,6 +82,14 @@ describe('Get', () => {
     expect(messages.hasObject('c', null, true)).to.be(true);
   });
 
+  it('resolveLocale', () => {
+    expect(messages.resolveLocale('en')).to.be('en');
+    expect(messages.resolveLocale('en-US')).to.be('en');
+    expect(messages.resolveLocale('sv')).to.be(null);
+    messages._data['sv-SE'] = {}
+    expect(messages.resolveLocale('sv')).to.be('sv-SE');
+  })
+
   it('get/set fallback', () => {
     expect(messages.getFallback()).to.eql([]);
     expect(messages.getFallback('fi')).to.eql(['en']);
