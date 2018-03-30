@@ -7,11 +7,12 @@
   ],
   "opts": {
     "destination": "doc/",
+    "readme": "README.md",
     "template": "node_modules/ink-docstrap/template",
     "tutorials": "pages/"
   },
   "templates": {
-    "logoFile": "../logo/messageformat.svg",
+    "logoFile": "logo/messageformat.svg",
     "outputSourceFiles": true,
     "search": false,
     "systemName": "messageformat",

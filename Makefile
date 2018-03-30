@@ -42,6 +42,7 @@ doc/index.html: $(SRC) | node_modules
 	@${BIN}/jsdoc -c doc/jsdoc-conf.json
 	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g' doc/*.html
 	@for f in doc/tutorial*; do mv $$f $${f/tutorial/page}; done
+	@cp -r logo doc/logo
 	@echo "${CHK} API documentation generated with jsdoc"
 
 example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
