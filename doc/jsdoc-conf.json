@@ -7,11 +7,14 @@
   ],
   "opts": {
     "destination": "doc/",
-    "template": "node_modules/ink-docstrap/template"
+    "template": "node_modules/ink-docstrap/template",
+    "tutorials": "pages/"
   },
   "templates": {
+    "logoFile": "../logo/messageformat.svg",
     "outputSourceFiles": true,
-    "systemname": "messageformat",
+    "search": false,
+    "systemName": "messageformat",
     "theme": "flatly"
   }
 }
