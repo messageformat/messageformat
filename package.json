@@ -39,6 +39,7 @@
   "devDependencies": {
     "browserify": "^13.3.0",
     "expect.js": "*",
+    "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.5.5",
     "mocha": "~3.0.2",
     "serve": "^6.4.3",
