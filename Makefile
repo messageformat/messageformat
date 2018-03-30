@@ -11,9 +11,9 @@ ERR=${RED} ✖${STOP}
 BIN=./node_modules/.bin
 SRC=lib/index.js lib/compiler.js lib/formatters/* lib/get.js lib/runtime.js
 
-.PHONY: all test test-browser doc release clean
+.PHONY: all test test-browser release clean
 
-all: messageformat.min.js test example/i18n.js doc/index.html
+all: messageformat.min.js test example/i18n.js doc
 
 cli/node_modules:
 	cd cli && npm install && npm install --no-save ../
@@ -36,10 +36,8 @@ test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: doc/index.html
-
-doc/index.html: $(SRC) | node_modules
-	@${BIN}/jsdoc -c doc/jsdoc-conf.json
+doc: $(SRC) | node_modules
+	@${BIN}/jsdoc -c jsdoc-conf.json
 	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g' doc/*.html
 	@for f in doc/tutorial*; do mv $$f $${f/tutorial/page}; done
 	@cp -r logo doc/logo
@@ -50,9 +48,9 @@ example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
 
 
 release: clean all
-	git add -f messageformat.*js* doc/*html doc/styles/ doc/scripts/ example/i18n.js
+	git add -f messageformat.*js* doc example/i18n.js
 	git commit -m 'Packaging files for release'
 
 
 clean:
-	rm -rf messageformat.*js* doc/*.html doc/scripts/ doc/styles/
+	rm -rf messageformat.*js* doc

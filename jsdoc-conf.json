@@ -6,7 +6,7 @@
     "plugins/markdown"
   ],
   "opts": {
-    "destination": "doc/",
+    "destination": "docs/",
     "readme": "README.md",
     "template": "node_modules/ink-docstrap/template",
     "tutorials": "pages/"
