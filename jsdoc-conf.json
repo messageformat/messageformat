@@ -12,6 +12,7 @@
     "tutorials": "pages/"
   },
   "templates": {
+    "github": "messageformat/messageformat.js",
     "logoFile": "logo/messageformat.svg",
     "outputSourceFiles": true,
     "search": false,
