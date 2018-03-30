@@ -1,5 +1,17 @@
 {
-  "source": { "include": [ "lib/", "lib/formatters/" ] },
-  "plugins": [ "plugins/markdown" ],
-  "opts": { "destination": "./doc/" }
+  "source": {
+    "include": [ "lib/", "lib/formatters/" ]
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "destination": "doc/",
+    "template": "node_modules/ink-docstrap/template"
+  },
+  "templates": {
+    "outputSourceFiles": true,
+    "systemname": "messageformat",
+    "theme": "flatly"
+  }
 }

@@ -40,8 +40,6 @@ doc: doc/index.html
 
 doc/index.html: $(SRC) | node_modules
 	@${BIN}/jsdoc -c doc/jsdoc-conf.json
-	@git apply doc/jsdoc-fix-fonts.patch
-	@rm -r doc/fonts
 	@echo "${CHK} API documentation generated with jsdoc"
 
 example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
