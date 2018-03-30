@@ -2,25 +2,26 @@
 
 You may use this software under the MIT License:
 
-<blockquote style="font-size: inherit">
-<p>Copyright 2012-2018 Alex Sexton, Eemeli Aro, and Contributors</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-</blockquote>
+> Copyright 2012-2018 Alex Sexton, Eemeli Aro, and Contributors
+>
+> Permission is hereby granted, free of charge, to any person obtaining
+> a copy of this software and associated documentation files (the
+> "Software"), to deal in the Software without restriction, including
+> without limitation the rights to use, copy, modify, merge, publish,
+> distribute, sublicense, and/or sell copies of the Software, and to
+> permit persons to whom the Software is furnished to do so, subject to
+> the following conditions:
+>
+> The above copyright notice and this permission notice shall be
+> included in all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+> EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+> MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+> NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+> LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+> OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+> WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 ## Contributor License Agreement
@@ -42,16 +43,7 @@ If your GitHub user id you are submitting your pull request from differs from th
 
 Thanks to:
 
+* [Vincit](https://vincit.fi/en/) - Eemeli's current employer - for letting him do cool stuff like this.
 * [Bazaarvoice](https://github.com/Bazaarvoice) - Alex's previous employer - for letting him do cool stuff like this.
 * Google has an implementation that is similar in Google Closure, the code has been vetted against many of their tests.
 * Norbert Lindenberg for showing Alex how good it can be.
-
-
-## Implementations in other languages
-
-[Jeff Hansen](https://github.com/jeffijoe) ([@jeffijoe](https://twitter.com/jeffijoe)) has written an [implementation for .NET](https://github.com/jeffijoe/messageformat.net) - it's a Portable Class Library, making it possible to use on iOS, Android, Windows Phone, and pretty much any other .NET target.
-
-
-## Additional tools
-
-[icu-converter](https://github.com/alex-dow/icu-converter) is a NodeJS tool for converting message files in the [ICU Resource Bundle](http://userguide.icu-project.org/locale/resources) format into JSON or .property files.
