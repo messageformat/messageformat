@@ -1,3 +1,17 @@
+## Features
+
+* Handles arbitrary nesting of pluralization and select rules
+* Supports all ~466 languages included in the Unicode CLDR
+* Works on the server and the client
+* Remarkably useful even for single-language use
+* Speed & efficiency: Can pre-compile messages to JavaScript code
+  * Great for speed: message formatting is just string concatenation
+* Compatible with other MessageFormat implementations
+* Extendable with custom formatting functions
+* Very whitespace tolerant
+* Supports Unicode, including RTL and mixed LTR/RTL strings
+
+
 ## License
 
 You may use this software under the MIT License:
