@@ -1,7 +1,7 @@
 This guide aims to provide an introduction to ICU MessageFormat syntax, along
 with minimal code examples that are directly executable in a node.js
 environment. **For production use**, we recommend using {@tutorial build} and
-the {@link Get} runtime accessor class.
+the {@link Messages} runtime accessor class.
 
 ## String Lookup
 

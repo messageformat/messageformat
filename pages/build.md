@@ -87,7 +87,7 @@ the messageformat-cli README for more options.
 
 The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's `example/i18n.js` sample output includes a function `en.sub.folder.plural.test()`, which was compiled from the `test` key in the source file `example/en/sub/folder/plural.json`. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.
 
-In development use, it may then prove problematic to use the messageformat compiled messages directly, as mistakes in message keys will throw errors when they are called as functions, along with errors from missing properties for messages using variables. To that end, the library includes {@link Get}, a utility accessor library that helps with common usage patterns, as well as making it easier to load message data dynamically.
+In development use, it may then prove problematic to use the messageformat compiled messages directly, as mistakes in message keys will throw errors when they are called as functions, along with errors from missing properties for messages using variables. To that end, the library includes **{@link Messages}**, a utility accessor library that helps with common usage patterns, as well as making it easier to load message data dynamically.
 
 It works like this (using [messageformat-loader], configured for `en` and `fi` locales):
 
@@ -113,9 +113,9 @@ It works like this (using [messageformat-loader], configured for `en` and `fi` l
 <div class="panel panel-default">
   <div class="panel-heading">example.js</div>
   <div class="panel-body">
-    <pre class="prettyprint source lang-javascript"><code>import MessageFormatGet from 'messageformat/lib/get'
+    <pre class="prettyprint source lang-javascript"><code>import Messages from 'messageformat/messages'
 import msgData from './messages.json'
-const messages = new MessageFormatGet(msgData, 'en')  // sets default locale
+const messages = new Messages(msgData, 'en')  // sets default locale
 
 messages.hasMessage('a')                // true
 messages.hasObject('c')                 // true

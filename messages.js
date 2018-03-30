@@ -27,9 +27,9 @@
  *
  * ...
  *
- * var MessageFormatGet = require('messageformat/lib/get');
+ * var Messages = require('messageformat/messages');
  * var msgData = require('./messages');
- * var messages = new MessageFormatGet(msgData, 'en');
+ * var messages = new Messages(msgData, 'en');
  *
  * messages.hasMessage('a')                // true
  * messages.hasObject('c')                 // true
@@ -48,7 +48,7 @@
  * messages.get('b', { COUNT: 3 })         // 'Tällä on 3 käyttäjää.'
  * messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'
  */
-function Get(locales, defaultLocale) {
+function Messages(locales, defaultLocale) {
   this._data = {};
   this._fallback = {};
   Object.keys(locales).forEach(function(lc) {
@@ -61,7 +61,7 @@ function Get(locales, defaultLocale) {
   /**
    * List of available locales
    * @readonly
-   * @memberof Get
+   * @memberof Messages
    * @member {string[]} availableLocales
    */
   Object.defineProperty(this, 'availableLocales', {
@@ -71,11 +71,11 @@ function Get(locales, defaultLocale) {
   /**
    * Current locale
    *
-   * One of Get#availableLocales or `null`. Partial matches of language tags
+   * One of Messages#availableLocales or `null`. Partial matches of language tags
    * are supported, so e.g. with an `en` locale defined, it will be selected by
    * `messages.locale = 'en-US'` and vice versa.
    *
-   * @memberof Get
+   * @memberof Messages
    * @member {string|null} locale
    */
   Object.defineProperty(this, 'locale', {
@@ -87,11 +87,11 @@ function Get(locales, defaultLocale) {
   /**
    * Default fallback locale
    *
-   * One of Get#availableLocales or `null`. Partial matches of language tags
+   * One of Messages#availableLocales or `null`. Partial matches of language tags
    * are supported, so e.g. with an `en` locale defined, it will be selected by
    * `messages.defaultLocale = 'en-US'` and vice versa.
    *
-   * @memberof Get
+   * @memberof Messages
    * @member {string|null} defaultLocale
    */
   Object.defineProperty(this, 'defaultLocale', {
@@ -101,7 +101,7 @@ function Get(locales, defaultLocale) {
   this._defaultLocale = this._locale;
 }
 
-module.exports = Get;
+module.exports = Messages;
 
 /**
  * Add new messages to the accessor; useful if loading data dynamically
@@ -118,9 +118,9 @@ module.exports = Get;
  *   single message function
  * @param {string} [lc] If empty or undefined, defaults to `this.locale`
  * @param {string[]} [keypath] The keypath being added
- * @returns {Get} The Get instance, to allow for chaining
+ * @returns {Messages} The Messages instance, to allow for chaining
  */
-Get.prototype.addMessages = function(data, lc, keypath) {
+Messages.prototype.addMessages = function(data, lc, keypath) {
   if (!lc) lc = this.locale;
   if (typeof data !== 'function') {
     data = Object.keys(data).reduce(function(map, key) {
@@ -151,7 +151,7 @@ Get.prototype.addMessages = function(data, lc, keypath) {
  * @param {string} lc Locale code
  * @returns {string|null}
  */
-Get.prototype.resolveLocale = function(lc) {
+Messages.prototype.resolveLocale = function(lc) {
   if (this._data[lc]) return lc;
   if (lc) {
     var l = String(lc);
@@ -172,7 +172,7 @@ Get.prototype.resolveLocale = function(lc) {
  * @param {string} [lc] If empty or undefined, defaults to `this.locale`
  * @returns {string[]}
  */
-Get.prototype.getFallback = function(lc) {
+Messages.prototype.getFallback = function(lc) {
   if (!lc) lc = this.locale;
   return this._fallback[lc] || (
     lc === this.defaultLocale || !this.defaultLocale ? [] : [this.defaultLocale]
@@ -187,9 +187,9 @@ Get.prototype.getFallback = function(lc) {
  *
  * @param {string} lc
  * @param {string[]|null} fallback
- * @returns {Get} The Get instance, to allow for chaining
+ * @returns {Messages} The Messages instance, to allow for chaining
  */
-Get.prototype.setFallback = function(lc, fallback) {
+Messages.prototype.setFallback = function(lc, fallback) {
   this._fallback[lc] = Array.isArray(fallback) ? fallback : null;
   return this;
 }
@@ -206,7 +206,7 @@ Get.prototype.setFallback = function(lc, fallback) {
  * @param {boolean} [fallback=false] If true, also checks fallback locales
  * @returns {boolean}
  */
-Get.prototype.hasMessage = function(key, lc, fallback) {
+Messages.prototype.hasMessage = function(key, lc, fallback) {
   if (!lc) lc = this.locale;
   var fb = fallback ? this.getFallback(lc) : null;
   return _has(this._data, lc, key, fb, 'function');
@@ -224,7 +224,7 @@ Get.prototype.hasMessage = function(key, lc, fallback) {
  * @param {boolean} [fallback=false] If true, also checks fallback locales
  * @returns {boolean}
  */
-Get.prototype.hasObject = function(key, lc, fallback) {
+Messages.prototype.hasObject = function(key, lc, fallback) {
   if (!lc) lc = this.locale;
   var fb = fallback ? this.getFallback(lc) : null;
   return _has(this._data, lc, key, fb, 'object');
@@ -245,7 +245,7 @@ Get.prototype.hasObject = function(key, lc, fallback) {
  * @param {string} [lc] If empty or undefined, defaults to `this.locale`
  * @returns {string|Object<string,function|object>}
  */
-Get.prototype.get = function(key, props, lc) {
+Messages.prototype.get = function(key, props, lc) {
   if (!lc) lc = this.locale;
   var msg = _get(this._data[lc], key);
   if (msg) return typeof msg == 'function' ? msg(props) : msg;

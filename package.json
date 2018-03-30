@@ -29,7 +29,8 @@
     "lib",
     "messageformat.js",
     "messageformat.min.js",
-    "messageformat.min.js.map"
+    "messageformat.min.js.map",
+    "messages.js"
   ],
   "dependencies": {
     "make-plural": "^4.1.1",

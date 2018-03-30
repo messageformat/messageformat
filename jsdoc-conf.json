@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": [ "lib/", "lib/formatters/" ]
+    "include": [ "lib/", "lib/formatters/", "messages.js" ]
   },
   "plugins": [
     "plugins/markdown"

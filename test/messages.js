@@ -1,10 +1,10 @@
 if (typeof require !== 'undefined') {
   var expect = require('expect.js');
-  var Get = require('../lib/get');
+  var Messages = require('../messages');
   var MessageFormat = require('../');
 }
 
-describe('Get', () => {
+describe('Messages', () => {
   let msgData, messages;
 
   before(() => {
@@ -26,19 +26,19 @@ describe('Get', () => {
   })
 
   beforeEach(() => {
-    messages = new Get(msgData, 'en');
+    messages = new Messages(msgData, 'en');
   })
 
   it('constructor', () => {
-    expect(messages).to.be.a(Get);
+    expect(messages).to.be.a(Messages);
     expect(messages.locale).to.eql('en');
     expect(messages.defaultLocale).to.eql('en');
     expect(messages.availableLocales).to.eql(['en', 'fi']);
-    messages = new Get(msgData);
+    messages = new Messages(msgData);
     expect(messages.locale).to.eql('en');
-    messages = new Get(msgData, 'fi');
+    messages = new Messages(msgData, 'fi');
     expect(messages.locale).to.eql('fi');
-    messages = new Get(msgData, null);
+    messages = new Messages(msgData, null);
     expect(messages.locale).to.eql(null);
   });
 
