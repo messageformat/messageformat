@@ -24,7 +24,7 @@
   },
   "main": "lib/index.js",
   "files": [
-    "doc",
+    "docs",
     "example",
     "lib",
     "messageformat.js",

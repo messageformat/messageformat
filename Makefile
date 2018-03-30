@@ -13,7 +13,7 @@ SRC=lib/index.js lib/compiler.js lib/formatters/* lib/get.js lib/runtime.js
 
 .PHONY: all test test-browser release clean
 
-all: messageformat.min.js test example/i18n.js doc
+all: messageformat.min.js test example/i18n.js docs
 
 cli/node_modules:
 	cd cli && npm install && npm install --no-save ../
@@ -36,11 +36,11 @@ test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-doc: $(SRC) | node_modules
+docs: $(SRC) | node_modules
 	@${BIN}/jsdoc -c jsdoc-conf.json
-	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g' doc/*.html
-	@for f in doc/tutorial*; do mv $$f $${f/tutorial/page}; done
-	@cp -r logo doc/logo
+	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g' docs/*.html
+	@for f in docs/tutorial*; do mv $$f $${f/tutorial/page}; done
+	@cp -r logo docs/logo
 	@echo "${CHK} API documentation generated with jsdoc"
 
 example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
@@ -48,9 +48,9 @@ example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
 
 
 release: clean all
-	git add -f messageformat.*js* doc example/i18n.js
+	git add -f messageformat.*js* docs example/i18n.js
 	git commit -m 'Packaging files for release'
 
 
 clean:
-	rm -rf messageformat.*js* doc
+	rm -rf messageformat.*js* docs
