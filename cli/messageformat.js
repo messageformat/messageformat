@@ -17,7 +17,6 @@ const knownOpts = {
   delimiters: [String, Array],
   'disable-plural-key-checks': Boolean,
   'esline-disable': Boolean,
-  es6: Boolean,
   extensions: [String, Array],
   help: Boolean,
   locale: [String, Array],
@@ -66,7 +65,6 @@ function getOptions(knownOpts, shortHands) {
   options.include = (options.include || []).map(fn => path.resolve(fn));
   const lc = Array.isArray(options.locale) ? options.locale.join(',') : options.locale;
   options.locale = lc ? lc.split(/[ ,]+/) : null;
-  if (!options.namespace) options.namespace = options.es6 ? 'export default' : 'module.exports';
   return options
 }
 
@@ -92,18 +90,20 @@ function printUsage() {
   let usage =
 `usage: *messageformat* [options] [_input_, ...]
 
-Parses the _input_ JSON and .properties file(s) of MessageFormat strings into
+Parses the _input_ JSON and .properties files of MessageFormat strings into
 a JS module of corresponding hierarchical functions. Input directories are
 recursively scanned for all .json and .properties files.
 
   *-l* _lc_, *--locale*=_lc_
         The locale(s) _lc_ to include; if multiple, selected by matching
-        message key. [default: *en*]
+        message key. If not set, path keys matching any locale code will set
+        the active locale, starting with a default 'en' locale.
 
-  *-n* _ns_, *--namespace*=_ns_, *--es6*
-        The global object or modules format for the output JS. If _ns_ does
-        not contain a '.', the output follows an UMD pattern. For ES6 module
-        output with a default export, use *--es6*. [default: *module.exports*]
+  *-n* _ns_, *--namespace*=_ns_
+        By default, output is an ES6 module with a default export; set _ns_
+        to support other environments. If _ns_ does not contain a '.', the
+        output follows an UMD pattern. For CommonJS module output, use
+        *--namespace=module.exports*.
 
   *-o* _of_, *--outfile*=_of_
         Write output to the file _of_. If undefined or '-', prints to stdout

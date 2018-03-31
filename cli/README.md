@@ -30,10 +30,10 @@ or
 In addition to defining options on the command line, options may also be set in the **`"messageformat"`** object in your **`package.json`** file, or in a **`messageformat.rc.json`** configuration file, using the long-form option names as keys. Input files and directories may also be given as an **`"include"`** array in a configuration file. Command-line options override configuration files.
 
 ### `-l lc, --locale=lc`
-The locale(s) _`lc`_ to include; if multiple, selected by matching message key. [default: `'en'`]
+The locale(s) _`lc`_ to include; if multiple, first is default and others are selected by matching message key. If not set or empty, path keys matching any locale code will set the active locale, starting with a default `en` locale.
 
-### `-n ns, --namespace=ns, --es6`
-The global object or modules format for the output JS. If _`ns`_ does not contain a `.`, the output follows an UMD pattern. For ES6 module output with a `default` export, use *--es6*. [default: `'module.exports'`]
+### `-n ns, --namespace=ns`
+By default, output is an ES6 module with a default export; set _`ns`_ to support other environments. If _`ns`_ does not contain a `.`, the output follows an UMD pattern. For CommonJS module output, use *--namespace=module.exports*.
 
 ### `-o of, --outfile=of`
 Write output to the file _`of`_. If unspecified or `-`, prints to stdout.
@@ -64,8 +64,10 @@ npx messageformat messages/strings.json > messages/en.js
 ----
 With `messages/en.json` and `messages/fr.json`, combine both into an ES6-compatible module, with the top-level keys `en` and `fr` containing functions that each use the correct language's pluralization rules:
 ```
-npx messageformat --locale=en,fr --es6 messages/ > messages.js
+npx messageformat --locale=en,fr messages/ > messages.js
 ```
+
+Note: The `locale` option could be left out here if is known that the data does not include any 2-3 letter keys matching other locales.
 
 ----
 Same, but with this configuration in `package.json`:
@@ -73,7 +75,6 @@ Same, but with this configuration in `package.json`:
 {
   ...,
   "messageformat": {
-    "es6": true,
     "locale": ["en", "fr"],
     "include": [
       "messages/"
