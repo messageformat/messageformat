@@ -7,11 +7,13 @@
   ],
   "opts": {
     "destination": "docs/",
+    "package": "package.json",
     "readme": "README.md",
     "template": "node_modules/ink-docstrap/template",
     "tutorials": "pages/"
   },
   "templates": {
+    "disablePackagePath": true,
     "github": "messageformat/messageformat.js",
     "favicon": [
       "<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>",

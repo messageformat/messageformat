@@ -7042,6 +7042,7 @@ img.branding-logo {
 .navbar-github-icon svg {
   width: 24px;
   height: 24px;
+  margin-top: -1.5px;
 }
 .navbar-github-icon path {
   fill: #fff;
