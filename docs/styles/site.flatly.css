@@ -7146,6 +7146,14 @@ code {
   padding-top: 100px !important;
   margin-top: -100px !important;
 }
+.sunlight-container + .sunlight-container {
+  border-top: 1px solid #ecf0f1;
+  margin-top: 21px !important;
+  padding-top: 21px;
+}
+.sunlight-code-container {
+  background-color: transparent !important;
+}
 .sunlight-highlighted {
   margin: 0;
   line-height: auto;

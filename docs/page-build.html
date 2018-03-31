@@ -127,26 +127,29 @@ messages.ordinal({ N: 1 })          // 'The 1st message.'</code></pre>
 <h2>CLI Compiler</h2><p><a href="https://www.npmjs.com/package/messageformat-cli">messageformat-cli</a> is available as a separate package, and is easy to integrate into any build environment that can execute external commands, such as <a href="https://github.com/facebook/create-react-app">create-react-app</a>. In addition to command-line options, the CLI can read configuration from <code>package.json</code> and <code>messageformat.rc.json</code> files; see its documentation for more information.</p>
 <pre class="prettyprint source lang-text"><code>$ npm install messageformat messageformat-cli
 $ npx messageformat
-usage: messageformat [options] [input]
 
-Parses the input JSON file(s) of MessageFormat strings into a JS module of
-corresponding hierarchical functions. Input directories are recursively
-scanned for all .json files.
+usage: messageformat [options] [input, ...]
+
+Parses the input JSON and .properties files of MessageFormat strings into
+a JS module of corresponding hierarchical functions. Input directories are
+recursively scanned for all .json and .properties files.
 
   -l lc, --locale=lc
         The locale(s) lc to include; if multiple, selected by matching
-        message key. [default: en]
+        message key. If not set, path keys matching any locale code will set
+        the active locale, starting with a default 'en' locale.
 
-  -n ns, --namespace=ns, --es6
-        The global object or modules format for the output JS. If ns does not
-        contain a '.', the output follows an UMD pattern. For ES6 module
-        output with a default export, use --es6. [default: module.exports]
+  -n ns, --namespace=ns
+        By default, output is an ES6 module with a default export; set ns
+        to support other environments. If ns does not contain a '.', the
+        output follows an UMD pattern. For CommonJS module output, use
+        --namespace=module.exports.
 
   -o of, --outfile=of
-        Write output to the file of. If unspecified or '-', prints to stdout
+        Write output to the file of. If undefined or '-', prints to stdout
 
-Configuration may also be set in package.json or messageformat.rc.json. See
-the messageformat-cli README for more options.</code></pre><h2>Using compiled messageformat output</h2><p>The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's <code>example/i18n.js</code> sample output includes a function <code>en.sub.folder.plural.test()</code>, which was compiled from the <code>test</code> key in the source file <code>example/en/sub/folder/plural.json</code>. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.</p>
+See the messageformat-cli README for more options. Configuration may also be
+set in package.json or messageformat.rc.json.</code></pre><h2>Using compiled messageformat output</h2><p>The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's <code>example/i18n.js</code> sample output includes a function <code>en.sub.folder.plural.test()</code>, which was compiled from the <code>test</code> key in the source file <code>example/en/sub/folder/plural.json</code>. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.</p>
 <p>In development use, it may then prove problematic to use the messageformat compiled messages directly, as mistakes in message keys will throw errors when they are called as functions, along with errors from missing properties for messages using variables. To that end, the library includes <strong><a href="Messages.html">Messages</a></strong>, a utility accessor library that helps with common usage patterns, as well as making it easier to load message data dynamically.</p>
 <p>It works like this (using <a href="https://www.npmjs.com/package/messageformat-loader">messageformat-loader</a>, configured for <code>en</code> and <code>fi</code> locales):</p>
 <div class="panel panel-default">

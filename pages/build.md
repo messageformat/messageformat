@@ -63,18 +63,20 @@ $ npx messageformat
 
 usage: messageformat [options] [input, ...]
 
-Parses the input JSON and .properties file(s) of MessageFormat strings into
+Parses the input JSON and .properties files of MessageFormat strings into
 a JS module of corresponding hierarchical functions. Input directories are
 recursively scanned for all .json and .properties files.
 
   -l lc, --locale=lc
         The locale(s) lc to include; if multiple, selected by matching
-        message key. [default: en]
+        message key. If not set, path keys matching any locale code will set
+        the active locale, starting with a default 'en' locale.
 
-  -n ns, --namespace=ns, --es6
-        The global object or modules format for the output JS. If ns does
-        not contain a '.', the output follows an UMD pattern. For ES6 module
-        output with a default export, use --es6. [default: module.exports]
+  -n ns, --namespace=ns
+        By default, output is an ES6 module with a default export; set ns
+        to support other environments. If ns does not contain a '.', the
+        output follows an UMD pattern. For CommonJS module output, use
+        --namespace=module.exports.
 
   -o of, --outfile=of
         Write output to the file of. If undefined or '-', prints to stdout

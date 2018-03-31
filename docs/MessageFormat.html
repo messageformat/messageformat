@@ -111,17 +111,18 @@
 
     
     <div class="description">
-        <p>Create a new message formatter</p>
-<p> If <code>locale</code> is not set, calls to <code>compile()</code> will fetch the default locale
- each time. A string <code>locale</code> will create a single-locale MessageFormat
- instance, with pluralisation rules fetched from the Unicode CLDR using
- <a href="http://github.com/eemeli/make-plural.js">make-plural</a>.</p>
-<p> Using an array of strings as <code>locale</code> will create a MessageFormat object
- with multi-language support, with pluralisation rules fetched as above. To
- select which to use, use the second parameter of <code>compile()</code>, or use message
- keys corresponding to your locales.</p>
-<p> Using an object <code>locale</code> with all properties of type <code>function</code> allows for
- the use of custom/externally defined pluralisation rules.</p>
+        <p>Create a new MessageFormat compiler</p>
+<p>If set, the <code>locale</code> parameter limits the compiler to use a subset of the 204
+languages' pluralisation rules made available by the Unicode CLDR.</p>
+<p>Leaving <code>locale</code> undefined or using an array of strings will create a
+MessageFormat instance with multi-language support. To select which to use,
+use the second parameter of <code><a href="MessageFormat.html#compile">compile()</a></code>, or use
+message keys corresponding to your locales. The default locale will be the
+first entry of the array, or <code><a href="MessageFormat.html#.defaultLocale">defaultLocale</a></code>
+if not set.</p>
+<p>A string <code>locale</code> will create a single-locale MessageFormat instance.</p>
+<p>Using an object <code>locale</code> with all properties of type <code>function</code> allows for
+the use of custom or externally defined pluralisation rules; in this case</p>
     </div>
     
 
@@ -170,7 +171,7 @@
 <span class="param-type">Array.&lt;string></span>
 |
 
-<span class="param-type">Object.&lt;string, function()></span>
+<span class="param-type">Object</span>
 
 
 
@@ -292,7 +293,8 @@
     
     <div class="description">
         <p>The default locale</p>
-<p> Read by <code>compile()</code> when no locale has been previously set</p>
+<p>Used by the constructor when no <code>locale</code> has been set to initialise the value
+of its instance counterpart, <code>MessageFormat#defaultLocale</code>.</p>
     </div>
     
 
@@ -599,7 +601,8 @@
 
     
     <div class="description">
-        <p>Add custom formatter functions to this MessageFormat instance</p>
+        <p>Add custom formatter functions to this MessageFormat instance. See the
+<a href="page-guide.html">Format Guide</a> for more details.</p>
 <p>The general syntax for calling a formatting function in MessageFormat is
 <code>{var, fn[, arg]}</code>, where <code>var</code> is the variable that will be set by the
 user code, <code>fn</code> determines the formatting function, and <code>arg</code> is an
@@ -712,13 +715,6 @@ Formatting functions should not have side effects.</p>
 	
 
 	
-	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
-	<dd class="tag-see">
-		<ul>
-			<li><a href="Formatters.html">Formatters</a></li>
-			</ul>
-	</dd>
-	
 
 	
 </dl>
@@ -763,21 +759,21 @@ Formatting functions should not have side effects.</p>
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat(&#x27;en-GB&#x27;);
+    <pre class="sunlight-highlight-javascript">const mf = new MessageFormat(&#x27;en-GB&#x27;)
 mf.addFormatters({
-  upcase: function(v) { return v.toUpperCase(); },
-  locale: function(v, lc) { return lc; },
+  upcase: function(v) { return v.toUpperCase() },
+  locale: function(v, lc) { return lc },
   prop: function(v, lc, p) { return v[p] }
-});
+})
+const messages = mf.compile({
+  describe: &#x27;This is {VAR, upcase}.&#x27;,
+  locale: &#x27;The current locale is {_, locale}.&#x27;,
+  answer: &#x27;Answer: {obj, prop, a}&#x27;
+}
 
-mf.compile(&#x27;This is {VAR, upcase}.&#x27;)({ VAR: &#x27;big&#x27; })
-// &#x27;This is BIG.&#x27;
-
-mf.compile(&#x27;The current locale is {_, locale}.&#x27;)({ _: &#x27;&#x27; })
-// &#x27;The current locale is en-GB.&#x27;
-
-mf.compile(&#x27;Answer: {obj, prop, a}&#x27;)({ obj: {q: 3, a: 42} })
-// &#x27;Answer: 42&#x27;</pre>
+messages.describe({ VAR: &#x27;big&#x27; })        // &#x27;This is BIG.&#x27;
+messages.locale({})                      // &#x27;The current locale is en-GB.&#x27;
+messages.answer({ obj: {q: 3, a: 42} })  // &#x27;Answer: 42&#x27;</pre>
 
 
     
@@ -807,15 +803,24 @@ mf.compile(&#x27;Answer: {obj, prop, a}&#x27;)({ obj: {q: 3, a: 42} })
 <p> If the input <code>messages</code> -- and therefore the output -- of <code>compile()</code> is an
  object, the output object will have a <code>toString(global)</code> method that may be
  used to store or cache the compiled functions to disk, for later inclusion
- in any JS environment, without a local MessageFormat instance required. Its
- <code>global</code> parameters sets the name (if any) of the resulting global variable,
- with special handling for <code>export default</code>. If <code>global</code> does not contain a
- <code>.</code>, the output defaults to an UMD pattern.</p>
-<p> If <code>locale</code> is not set, the first locale set in the object's constructor
- will be used by default; using a key at any depth of <code>messages</code> that is a
- declared locale will set its child elements to use that locale.</p>
-<p> If <code>locale</code> is set, it is used for all messages. If the constructor
- declared any locales, <code>locale</code> needs to be one of them.</p>
+ in any JS environment, without a local MessageFormat instance required. If
+ its <code>global</code> parameter is null or undefined, the result is an ES6 module
+ with a default export. If <code>global</code> is a string containing <code>.</code>, the result
+ will be a script setting its value. Otherwise, the output defaults to an UMD
+ pattern that sets the value of <code>global</code> if used outside of AMD and CommonJS
+ loaders.</p>
+<p> If <code>locale</code> is not set, it will default to
+ <code><a href="MessageFormat.html#.defaultLocale">defaultLocale</a></code>; using a key at any
+ depth of <code>messages</code> that is a declared locale will set its child elements to
+ use that locale.</p>
+<p> If <code>locale</code> is set, it is used for all messages, ignoring any otherwise
+ matching locale keys. If the constructor declared any locales, <code>locale</code>
+ needs to be one of them.</p>
+<p> If <code>compile()</code> is called with a <code>messages</code> object on a MessageFormat
+ instance that does not specify any locales, it will match keys to <em>all</em> 204
+ available locales. This is really useful if you want your messages to be
+ completely determined by your data, but may provide surprising results if
+ your input includes any 2-3 letter strings that are not locale identifiers.</p>
     </div>
     
 
@@ -1014,43 +1019,38 @@ mf.compile(&#x27;Answer: {obj, prop, a}&#x27;)({ obj: {q: 3, a: 42} })
     
         <h5>Examples</h5>
         
-    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat(&#x27;en&#x27;);
-var cf = mf.compile(&#x27;A {TYPE} example.&#x27;);
+    <pre class="sunlight-highlight-javascript">const mf = new MessageFormat(&#x27;en&#x27;)
+const msg = mf.compile(&#x27;A {TYPE} example.&#x27;)
 
-cf({ TYPE: &#x27;simple&#x27; })
-// &#x27;A simple example.&#x27;</pre>
+msg({ TYPE: &#x27;simple&#x27; })  // &#x27;A simple example.&#x27;</pre>
 
-    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat([&#x27;en&#x27;, &#x27;fi&#x27;]);
-var cf = mf.compile({
+    <pre class="sunlight-highlight-javascript">const mf = new MessageFormat([&#x27;en&#x27;, &#x27;fi&#x27;])
+const messages = mf.compile({
   en: { a: &#x27;A {TYPE} example.&#x27;,
         b: &#x27;This is the {COUNT, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} example.&#x27; },
   fi: { a: &#x27;{TYPE} esimerkki.&#x27;,
         b: &#x27;Tämä on {COUNT, selectordinal, other{#.}} esimerkki.&#x27; }
-});
+})
 
-cf.en.b({ COUNT: 2 })
-// &#x27;This is the 2nd example.&#x27;
+messages.en.b({ COUNT: 2 })  // &#x27;This is the 2nd example.&#x27;
+messages.fi.b({ COUNT: 2 })  // &#x27;Tämä on 2. esimerkki.&#x27;</pre>
 
-cf.fi.b({ COUNT: 2 })
-// &#x27;Tämä on 2. esimerkki.&#x27;</pre>
-
-    <pre class="sunlight-highlight-javascript">var fs = require(&#x27;fs&#x27;);
-var mf = new MessageFormat(&#x27;en&#x27;);
-var msgSet = {
+    <pre class="sunlight-highlight-javascript">const fs = require(&#x27;fs&#x27;)
+const mf = new MessageFormat(&#x27;en&#x27;)
+const msgSet = {
   a: &#x27;A {TYPE} example.&#x27;,
   b: &#x27;This has {COUNT, plural, one{one member} other{# members}}.&#x27;,
   c: &#x27;We have {P, number, percent} code coverage.&#x27;
-};
-var cfStr = mf.compile(msgSet).toString(&#x27;module.exports&#x27;);
-fs.writeFileSync(&#x27;messages.js&#x27;, cfStr);
+}
+const msgStr = mf.compile(msgSet).toString(&#x27;module.exports&#x27;)
+fs.writeFileSync(&#x27;messages.js&#x27;, msgStr)
+
 ...
-var messages = require(&#x27;./messages&#x27;);
 
-messages.a({ TYPE: &#x27;more complex&#x27; })
-// &#x27;A more complex example.&#x27;
+const messages = require(&#x27;./messages&#x27;)
 
-messages.b({ COUNT: 3 })
-// &#x27;This has 3 members.&#x27;</pre>
+messages.a({ TYPE: &#x27;more complex&#x27; })  // &#x27;A more complex example.&#x27;
+messages.b({ COUNT: 3 })              // &#x27;This has 3 members.&#x27;</pre>
 
 
     
@@ -1175,16 +1175,15 @@ messages.b({ COUNT: 3 })
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat(&#x27;en&#x27;);
-var msg = &#x27;{X, plural, zero{no answers} one{an answer} other{# answers}}&#x27;;
+    <pre class="sunlight-highlight-javascript">const mf = new MessageFormat(&#x27;en&#x27;)
+const msg = &#x27;{X, plural, zero{no answers} one{an answer} other{# answers}}&#x27;
 
-mf.compile(msg);
+mf.compile(msg)
 // Error: Invalid key &#x60;zero&#x60; for argument &#x60;X&#x60;. Valid plural keys for this
 //        locale are &#x60;one&#x60;, &#x60;other&#x60;, and explicit keys like &#x60;=0&#x60;.
 
-mf.disablePluralKeyChecks();
-mf.compile(msg)({ X: 0 });
-// &#x27;0 answers&#x27;</pre>
+mf.disablePluralKeyChecks()
+mf.compile(msg)({ X: 0 })  // &#x27;0 answers&#x27;</pre>
 
 
     
@@ -1382,14 +1381,14 @@ mf.compile(msg)({ X: 0 });
         <h5>Example</h5>
         
     <pre class="sunlight-highlight-javascript">// upper case stands for RTL characters, output is shown as rendered
-var mf = new MessageFormat(&#x27;en&#x27;);
+const mf = new MessageFormat(&#x27;en&#x27;)
 
-mf.compile(&#x27;{0} &gt;&gt; {1} &gt;&gt; {2}&#x27;)([&#x27;first&#x27;, &#x27;SECOND&#x27;, &#x27;THIRD&#x27;]);
-// &#x27;first &gt;&gt; THIRD &lt;&lt; SECOND&#x27;
+mf.compile(&#x27;{0} &gt;&gt; {1} &gt;&gt; {2}&#x27;)([&#x27;first&#x27;, &#x27;SECOND&#x27;, &#x27;THIRD&#x27;])
+  // &#x27;first &gt;&gt; THIRD &lt;&lt; SECOND&#x27;
 
-mf.setBiDiSupport(true);
-mf.compile(&#x27;{0} &gt;&gt; {1} &gt;&gt; {2}&#x27;)([&#x27;first&#x27;, &#x27;SECOND&#x27;, &#x27;THIRD&#x27;]);
-// &#x27;first &gt;&gt; SECOND &gt;&gt; THIRD&#x27;</pre>
+mf.setBiDiSupport(true)
+mf.compile(&#x27;{0} &gt;&gt; {1} &gt;&gt; {2}&#x27;)([&#x27;first&#x27;, &#x27;SECOND&#x27;, &#x27;THIRD&#x27;])
+  // &#x27;first &gt;&gt; SECOND &gt;&gt; THIRD&#x27;</pre>
 
 
     
@@ -1584,19 +1583,22 @@ mf.compile(&#x27;{0} &gt;&gt; {1} &gt;&gt; {2}&#x27;)([&#x27;first&#x27;, &#x27;
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat(&#x27;en&#x27;);
+    <pre class="sunlight-highlight-javascript">const mf = new MessageFormat(&#x27;en&#x27;)
+const src = {
+  cookie: &#x27;#: {X, plural, =0{no cookies} one{a cookie} other{# cookies}}&#x27;,
+  pastry: &#x60;{X, plural,
+    one {{P, select, cookie{a cookie} other{a pie}}}
+    other {{P, select, cookie{# cookies} other{# pies}}}
+  }&#x60;
+}
+let messages = mf.compile(src)
 
-var cookieMsg = &#x27;#: {X, plural, =0{no cookies} one{a cookie} other{# cookies}}&#x27;;
-mf.compile(cookieMsg)({ X: 3 });
-// &#x27;#: 3 cookies&#x27;
+messages.cookie({ X: 3 })            // &#x27;#: 3 cookies&#x27;
+messages.pastry({ X: 3, P: &#x27;pie&#x27; })  // &#x27;3 pies&#x27;
 
-var pastryMsg = &#x27;{X, plural, one{{P, select, cookie{a cookie} other{a pie}}} other{{P, select, cookie{# cookies} other{# pies}}}}&#x27;;
-mf.compile(pastryMsg)({ X: 3, P: &#x27;pie&#x27; });
-// &#x27;3 pies&#x27;
-
-mf.setStrictNumberSign(true);
-mf.compile(pastryMsg)({ X: 3, P: &#x27;pie&#x27; });
-// &#x27;# pies&#x27;</pre>
+mf.setStrictNumberSign(true)
+messages = mf.compile(src)
+messages.pastry({ X: 3, P: &#x27;pie&#x27; })  // &#x27;# pies&#x27;</pre>
 
 
     
