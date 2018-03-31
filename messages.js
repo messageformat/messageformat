@@ -1,5 +1,9 @@
 /**
- * Accessor for compiled MessageFormat functions
+ * @classdesc Accessor for compiled MessageFormat functions
+ *
+ * ```
+ * import Messages from 'messageformat/messages'
+ * ```
  *
  * @class
  * @param {object} locales A map of locale codes to their function objects
