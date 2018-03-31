@@ -36,12 +36,12 @@ test-browser: messageformat.js
 	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
 
 
-docs: $(SRC) | node_modules
+docs: $(SRC) pages/ | node_modules
 	@${BIN}/jsdoc -c jsdoc-conf.json
 	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g' docs/*.html
 	@for f in docs/tutorial*; do mv $$f $${f/tutorial/page}; done
-	@cp -r logo docs/logo
-	@echo "${CHK} API documentation generated with jsdoc"
+	@cp -r logo docs/
+	@echo "${CHK} API documentation generated"
 
 example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
 	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
