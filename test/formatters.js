@@ -117,5 +117,41 @@ describe('Formatters', () => {
       expect(msg(data)).to.match(/^The Eagle landed at \d\d?:\d\d:40 .M \S+ on \w+day, July \d\d, 1969$/);
     });
   });
-});
+
+  describe('Custom formatters', () => {
+    let mf
+    beforeEach(() => {
+      mf = new MessageFormat('en')
+    })
+
+    it('should throw an error when using an undefined formatting function', () => {
+      expect(() => { mf.compile('This is {VAR,uppercase}.') }).to.throwError()
+    })
+
+    it('should use formatting functions - set in MessageFormat.formatters', () => {
+      let msg = mf.compile('The date is {VAR,date}.')
+      expect(msg({ VAR: '2010-12-31' })).to.contain('2010')
+      msg = mf.compile('Countdown: {VAR, duration}.')
+      expect(msg({ VAR: -151200.42 })).to.eql('Countdown: -42:00:00.420.')
+    })
+
+    it('should use formatting functions - set by #addFormatters()', () => {
+      mf.addFormatters({ uppercase: function(v) { return v.toUpperCase() } })
+      const msg = mf.compile('This is {VAR,uppercase}.')
+      expect(msg({ VAR: 'big' })).to.eql('This is BIG.')
+    })
+
+    it('should use formatting functions for object input - set by #addFormatters()', () => {
+      mf.addFormatters({ uppercase: function(v) { return v.toUpperCase() } })
+      const msg = mf.compile(['This is {VAR,uppercase}.', 'Other string'])
+      expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.')
+    })
+
+    it('should use formatting functions with parameters', () => {
+      mf.addFormatters({ arg: function(v, lc, arg) { return arg } })
+      const msg = mf.compile('This is {VAR, arg, X, Y }.')
+      expect(msg({ VAR: 'big' })).to.eql('This is X, Y.')
+    })
+  })
+})
 
