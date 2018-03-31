@@ -89,28 +89,27 @@ if (options.help || options.include.length === 0) {
 
 
 function printUsage() {
-  var usage = [
-    'usage: *messageformat* [options] [_input_]',
-    '',
-    'Parses the _input_ JSON file(s) of MessageFormat strings into a JS module of',
-    'corresponding hierarchical functions. Input directories are recursively',
-    'scanned for all .json files.',
-    '',
-    '  *-l* _lc_, *--locale*=_lc_',
-    '        The locale(s) _lc_ to include; if multiple, selected by matching',
-    '        message key. [default: *en*]',
-    '',
-    '  *-n* _ns_, *--namespace*=_ns_, *--es6*',
-    '        The global object or modules format for the output JS. If _ns_ does not',
-    '        contain a \'.\', the output follows an UMD pattern. For ES6 module',
-    '        output with a default export, use *--es6*. [default: *module.exports*]',
-    '',
-    '  *-o* _of_, *--outfile*=_of_',
-    '        Write output to the file _of_. If unspecified or \'-\', prints to stdout',
-    '',
-    'Configuration may also be set in *package.json* or *messageformat.rc.json*. See',
-    'the messageformat-cli README for more options.'
-  ].join('\n');
+  let usage =
+`usage: *messageformat* [options] [_input_, ...]
+
+Parses the _input_ JSON and .properties file(s) of MessageFormat strings into
+a JS module of corresponding hierarchical functions. Input directories are
+recursively scanned for all .json and .properties files.
+
+  *-l* _lc_, *--locale*=_lc_
+        The locale(s) _lc_ to include; if multiple, selected by matching
+        message key. [default: *en*]
+
+  *-n* _ns_, *--namespace*=_ns_, *--es6*
+        The global object or modules format for the output JS. If _ns_ does
+        not contain a '.', the output follows an UMD pattern. For ES6 module
+        output with a default export, use *--es6*. [default: *module.exports*]
+
+  *-o* _of_, *--outfile*=_of_
+        Write output to the file _of_. If undefined or '-', prints to stdout
+
+See the messageformat-cli README for more options. Configuration may also be
+set in *package.json* or *messageformat.rc.json*.`;
   if (process.stdout.isTTY) {
     usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
                  .replace(/\*(.+?)\*/g, '\x1B[1m$1\x1B[0m');

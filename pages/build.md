@@ -60,26 +60,27 @@ During the build, the loader will compile your messages into their respective fu
 ```text
 $ npm install messageformat messageformat-cli
 $ npx messageformat
-usage: messageformat [options] [input]
 
-Parses the input JSON file(s) of MessageFormat strings into a JS module of
-corresponding hierarchical functions. Input directories are recursively
-scanned for all .json files.
+usage: messageformat [options] [input, ...]
+
+Parses the input JSON and .properties file(s) of MessageFormat strings into
+a JS module of corresponding hierarchical functions. Input directories are
+recursively scanned for all .json and .properties files.
 
   -l lc, --locale=lc
         The locale(s) lc to include; if multiple, selected by matching
         message key. [default: en]
 
   -n ns, --namespace=ns, --es6
-        The global object or modules format for the output JS. If ns does not
-        contain a '.', the output follows an UMD pattern. For ES6 module
+        The global object or modules format for the output JS. If ns does
+        not contain a '.', the output follows an UMD pattern. For ES6 module
         output with a default export, use --es6. [default: module.exports]
 
   -o of, --outfile=of
-        Write output to the file of. If unspecified or '-', prints to stdout
+        Write output to the file of. If undefined or '-', prints to stdout
 
-Configuration may also be set in package.json or messageformat.rc.json. See
-the messageformat-cli README for more options.
+See the messageformat-cli README for more options. Configuration may also be
+set in package.json or messageformat.rc.json.
 ```
 
 
