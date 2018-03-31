@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>messageformat: Format Guide</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.flatly.css">
+
+	<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>
+<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html"><img class="branding-logo" src="logo/messageformat.svg"
+		alt="logo"/>messageformat</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="MessageFormat.html">MessageFormat</a></li><li><a href="Messages.html">Messages</a></li>
+				</ul>
+			</li>
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-about.html">About</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-build.html">Build-time Compilation</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-guide.html">Format Guide</a>
+					</li>
+				
+			
+		</ul>
+        
+        
+          <ul class="nav navbar-nav navbar-right">
+            <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat.js">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>messageformat on GitHub</title>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+            </a></li>
+          </ul>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			<section class="page-section">
+
+<header>
+    
+
+    <h1 class="page-title">Format Guide</h1>
+</header>
+
+<article>
+    <p>This guide aims to provide an introduction to ICU MessageFormat syntax, along
+with minimal code examples that are directly executable in a node.js
+environment. <strong>For production use</strong>, we recommend using <a href="page-build.html">Build-time Compilation</a> and
+the <a href="Messages.html">Messages</a> runtime accessor class.</p>
+<h2>String Lookup</h2><p>The simplest case of MessageFormat involves no formatting, just a string
+passthrough. This may sound silly, but often it's nice to always use the same
+message formatting system when doing translations, and not everything requires
+variables.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+const message = mf.compile('This is a message.')
+
+message()  // &quot;This is a message.&quot;</code></pre><p><strong>Note</strong>: if a message <em>does</em> require data to be passed in, an error is thrown if
+you do not.</p>
+<h2>Variables</h2><p>The most common way to use MessageFormat is for simple variable replacement.
+MessageFormat may look odd at first, but it's actually fairly simple. One way to
+think about the <code>{</code> and <code>}</code> is that every level of them bring you into and
+out-of &quot;literal&quot; and &quot;code&quot; mode.</p>
+<p>By default (like in the previous example), you are just writing a literal. Then
+the first level of brackets brings you into one of several data-driven
+situations. The most simple is variable replacement.</p>
+<p>Simply putting a variable name in between <code>{</code> and <code>}</code> will place that variable
+there in the output.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+const varMessage = mf.compile('His name is {NAME}.')
+
+varMessage({ NAME: 'Jed' })  // 'His name is Jed.'</code></pre><h2>SelectFormat</h2><p>SelectFormat is a lot like a switch statement for your messages. Often it's used
+to select gender in a string. The format of the statement is <code>{varname, select,
+this{...} that{...} other{...}}</code>, where <code>varname</code> matches a key in the data you
+give to the resulting function, and <code>'this'</code> and <code>'that'</code> are some of the
+string-equivalent values that it may have. The <code>other</code> key is required, and is
+selected if no other case matches.</p>
+<p><strong>Note</strong>: Comparison is made using the JavaScript <code>==</code> operator, so if a key is
+left out of the input data, the case <code>undefined{...}</code> would match that.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MesssageFormat('en')
+const selectMessage = mf.compile(
+  `{ GENDER, select,
+       male {He}
+       female {She}
+       other {They}
+   } liked this.`
+)
+
+selectMessage({ GENDER: 'male' })    // 'He liked this.'
+selectMessage({ GENDER: 'female' })  // 'She liked this.'
+selectMessage({})                    // 'They liked this.'</code></pre><h2>PluralFormat</h2><p>PluralFormat is a similar mechanism to SelectFormat, but specific to numerical
+values. The key that is chosen is generated from the specified input variable by
+a locale-specific <em>plural function</em>.</p>
+<p>The numeric input is mapped to a plural category, some subset of <code>zero</code>, <code>one</code>,
+<code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code> depending on the locale and the type of plural.
+English, for instance, uses <code>one</code> and <code>other</code> for cardinal plurals (e.g. &quot;one
+result&quot;, &quot;many results&quot;) and <code>one</code>, <code>two</code>, <code>few</code>, and <code>other</code> for ordinal
+plurals (e.g. &quot;1st result&quot;, &quot;2nd result&quot;, etc). For information on which keys
+are used by your locale, please refer to the <a href="http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html">CLDR table of plural rules</a>.</p>
+<p>For some languages, The number of printed digits is significant (e.g. &quot;1 meter&quot;,
+&quot;1.0 meters&quot;); to account for that you may pass in the value as a stringified
+representation of the number.</p>
+<p>Matches for exact values are available with the <code>=</code> prefix, e.g. <code>=0</code> and <code>=1</code>.</p>
+<p>The keyword for cardinal plurals is <code>plural</code>, and for ordinal plurals is
+<code>selectordinal</code>.</p>
+<p>Within a plural statement, <code>#</code> will be replaced by the variable value.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+const messages = mf.compile({
+  results: `There { COUNT, plural,
+                    =0 {are no results}
+                    one {is one result}
+                    other {are # results}
+                  }.`,
+  position: `You are { POS, selectordinal,
+                       one {#st}
+                       two {#nd}
+                       few {#rd}
+                       other {#th}
+                     } in the queue.`
+})
+
+messages.results({ COUNT: 0 })    // 'There are no results.'
+messages.results({ COUNT: 1 })    // 'There is one result.'
+messages.results({ COUNT: 100 })  // 'There are 100 results.'
+messages.position({ POS: 1 })     // 'You are 1st in the queue.'
+messages.position({ POS: 33 })    // 'You are 33rd in the queue.'</code></pre><h3>Plural Offset</h3><p>To generate sentences such as &quot;You and 4 others added this to their profiles.&quot;,
+PluralFormat supports adding an <code>offset</code> to the variable value before
+determining its plural category. Literal/exact matches are tested before
+applying the offset.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+const offsetMessage = mf.compile(
+  `You { ADDS, plural, offset:1
+         =0 {did not add this}
+         =1 {added this}
+         one {and one other person added this}
+         other {and # others added this}
+       }.`
+)
+
+offsetMessage({ ADDS: 0 })  // 'You did not add this.'
+offsetMessage({ ADDS: 1 })  // 'You added this.'
+offsetMessage({ ADDS: 2 })  // 'You and one other person added this.'
+offsetMessage({ ADDS: 3 })  // 'You and 2 others added this.'</code></pre><h2>Formatters</h2><p>MessageFormat includes date, duration, number, and time formatting functions in
+the style of ICU's <a href="http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html">simpleArg syntax</a>. They are implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl">Intl</a>
+object defined by ECMA-402.</p>
+<p><strong>Note</strong>: Intl is not defined in Node by default until 0.12 and is not available
+in all browsers (in particular, IE &lt;=10 and Safari &lt;=9.1), so you may need to
+use a <a href="https://www.npmjs.com/package/intl">polyfill</a>.</p>
+<h3>date</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat(['en', 'fi'])
+const messages = mf.compile({
+  en: {
+    today: 'Today is {T, date}',
+    unix: 'Unix time started on {T, date, full}',
+    uptime: '{sys} became operational on {d0, date, short}'
+  },
+  fi: {
+    today: 'Tänään on {T, date}'
+  }
+})
+
+messages.en.today({ T: Date.now() })  // 'Today is Mar 30, 2018'
+messages.fi.today({ T: Date.now() })  // 'Tänään on 30. maalisk. 2018'
+messages.en.unix({ T: 0 })
+  // 'Unix time started on Thursday, January 1, 1970'
+messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' })
+  // 'HAL 9000 became operational on 1/12/1999'</code></pre><h3>duration</h3><p>Represent a duration in seconds as a string.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat();
+const messages = mf.compile({
+  since: 'It has been {D, duration}',
+  countdown: 'Countdown: {D, duration}'
+})
+
+messages.since({ D: 123 })             // 'It has been 2:03'
+messages.countdown({ D: -151200.42 })  // 'Countdown: -42:00:00.420'</code></pre><h3>number</h3><p>Supported parameters are <code>integer</code>, <code>percent</code> , or <code>currency</code>. To specify a non-default currency, use <code>currency:CODE</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+mf.currency = 'EUR'  // needs to be set before first compile() call
+const messages = mf.compile({
+  almost: '{N} is almost {N, number, integer}',
+  complete: '{P, number, percent} complete',
+  currency: {
+    eur: 'The total is {V, number, currency}.',
+    gbp: 'The total is {V, number, currency:GBP}.'
+  }
+})
+
+messages.almost({ N: 3.14 })       // '3.14 is almost 3'
+messages.complete({ P: 0.99 })     // '99% complete'
+messages.currency.eur({ V: 5.5 })  // 'The total is €5.50.'
+messages.currency.gbp({ V: 5.5 })  // 'The total is £5.50.'</code></pre><h3>time</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat(['en', 'fi'])
+const messages = mf.compile({
+  now: {
+    en: 'The time is now {T, time}',
+    fi: 'Kello on nyt {T, time}'
+  },
+  eagle: 'The Eagle landed at {T, time, full} on {T, date, full}'
+}
+
+messages.now.en({ T: Date.now() })  // 'The time is now 11:26:35 PM'
+messages.now.fi({ T: Date.now() })  // 'Kello on nyt 23.26.35'
+messages.eagle({ T: '1969-07-20 20:17:40 UTC' })
+  // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'</code></pre><h3>Custom Formatters</h3><p>In MessageFormat source, a formatter function is called with the syntax
+<code>{var, name, arg}</code>, where <code>var</code> is a variable, <code>name</code> is the formatter name
+(by default, either <code>date</code>, <code>duration</code>, <code>number</code> or <code>time</code>; <code>spellout</code> and
+<code>ordinal</code> are not supported by default), and <code>arg</code> is an optional string
+argument.</p>
+<p>In JavaScript, a formatter is a function called with three parameters:</p>
+<ul>
+<li>The <strong><code>value</code></strong> of the variable; this can be of any user-defined type</li>
+<li>The current <strong><code>locale</code></strong> code</li>
+<li>The trimmed <strong><code>arg</code></strong> string value, or <code>null</code> if not set</li>
+</ul>
+<p>As formatter functions may be used in a precompiled context, they should not
+refer to any variables that are not defined by the function parameters or
+within the function body. To add your own formatters, either add them to the
+static <code>MessageFormat.formatters</code> object, or use
+<a href="MessageFormat.html#addFormatters">MessageFormat#addFormatters</a> to add them to a MessageFormat instance.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en-GB')
+mf.addFormatters({
+  upcase: function(v) { return v.toUpperCase(); },
+  locale: function(v, lc) { return lc; },
+  prop: function(v, lc, p) { return v[p] }
+})
+const messages = mf.compile({
+  describe: 'This is {VAR, upcase}.',
+  locale: 'The current locale is {_, locale}.',
+  answer: 'Answer: {obj, prop, a}'
+}
+
+messages.describe({ VAR: 'big' })        // 'This is BIG.'
+messages.locale({})                      // 'The current locale is en-GB.'
+messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'</code></pre><h2>Nesting</h2><p>All types of messageformat statements may be nested within each other, to unlimited depth:</p>
+<pre class="prettyprint source lang-text"><code>{ SEL1, select,
+  other {
+    { PLUR1, plural,
+      one {1}
+      other {
+        { SEL2, select, other {Deep in the heart.} }
+      }
+    }
+  }
+}</code></pre><h2>Escaping</h2><p>The characters <code>{</code> and <code>}</code> must be escaped with <code>'quotes'</code> to be included in the output as literal characters. Within plural statements, <code>#</code> must also be similarly escaped. The utility function <a href="MessageFormat.html#.escape">MessageFormat.escape</a> may help with this.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+const messages = mf.compile({
+  esc: &quot;'{' {S, plural, other{# is a '#'}} '}'&quot;,
+  var: MessageFormat.escape('Use {var} for variables')
+})
+
+messages.esc({ S: 5 })    // '{ 5 is a # }'
+messages.var({ var: 5 })  // 'Use {var} for variables'</code></pre>
+</article>
+
+</section>
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+
+<footer>
+
+
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".page-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+
+</body>
+</html>
