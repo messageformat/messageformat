@@ -9,7 +9,7 @@ CHK=${GREEN} ✓${STOP}
 ERR=${RED} ✖${STOP}
 
 BIN=./node_modules/.bin
-SRC=lib/messageformat.js lib/compiler.js lib/formatters/* lib/runtime.js messages.js
+SRC=lib/messageformat.js lib/compiler.js lib/formatters/* lib/plurals.js lib/runtime.js messages.js
 
 .PHONY: all test test-browser release clean
 

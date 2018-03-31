@@ -29,11 +29,11 @@ describe('new MessageFormat()', () => {
   })
 
   it('should bail on non-existing locales', () => {
-    expect(() => { const a = new MessageFormat('lawlz') }).to.throwError()
+    expect(() => new MessageFormat('lawlz')).to.throwError()
   })
 
   it('should default to `en` when no locale is passed into the constructor', () => {
-    expect(MessageFormat.defaultLocale).to.eql('en')
+    expect(new MessageFormat().defaultLocale).to.eql('en')
   })
 })
 
@@ -156,16 +156,26 @@ describe('compile()', () => {
     expect(cf.ru({count: 13})).to.eql('13 пользователей')
   })
 
-  it('can support multiple languages internally', () => {
-    mf = new MessageFormat([ 'en', 'ru' ])
+  it('can support multiple languages', () => {
+    mf = new MessageFormat(['en', 'fr', 'ru'])
+    mf.addFormatters({ lc: (v, lc) => lc })
     const cf = mf.compile({
-        en: '{count} {count, plural, other{users}}',
-        ru: '{count} {count, plural, other{пользователей}}'
+        fr: 'Locale: {_, lc}',
+        ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
     })
-    expect(() => cf.en({count: 12})).to.not.throwError()
-    expect(cf.en({count: 12})).to.eql('12 users')
-    expect(() => cf.ru({count: 13})).to.not.throwError()
-    expect(cf.ru({count: 13})).to.eql('13 пользователей')
+    expect(cf.fr({})).to.eql('Locale: fr')
+    expect(cf.ru({ count: 12 })).to.eql('3')
+  })
+
+  it('defaults to supporting all languages', () => {
+    mf = new MessageFormat()
+    mf.addFormatters({ lc: (v, lc) => lc })
+    const cf = mf.compile({
+        fr: 'Locale: {_, lc}',
+        ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
+    })
+    expect(cf.fr({})).to.eql('Locale: fr')
+    expect(cf.ru({ count: 12 })).to.eql('3')
   })
 })
 
