@@ -480,6 +480,11 @@ describe("Module/CommonJS support", function() {
   var colorSrc = { red: 'red', blue: 'blue', green: 'green' };
   var cf = new MessageFormat('en').compile(colorSrc);
 
+  it('should default to ES6', function() {
+    var str = cf.toString();
+    expect(str).to.match(/export default/);
+  });
+
   if (typeof require !== 'undefined') {
     ['module.exports', 'global.i18n', 'umd'].forEach(function(moduleFmt) {
       it('should work with `' + moduleFmt + '`', function(done) {
