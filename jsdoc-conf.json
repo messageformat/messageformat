@@ -14,7 +14,7 @@
   },
   "templates": {
     "disablePackagePath": true,
-    "github": "messageformat/messageformat.js",
+    "github": "messageformat/messageformat",
     "favicon": [
       "<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>",
       "<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>"

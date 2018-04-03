@@ -15,6 +15,6 @@
   "homepage": "https://messageformat.github.io/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/messageformat/messageformat.js.git"
+    "url": "https://github.com/messageformat/messageformat.git"
   }
 }
