@@ -60,4 +60,7 @@ To install just the core package, use:
 npm install messageformat
 ```
 
-This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our {@tutorial guide} will help with the ICU MessageFormat Syntax, and the {@tutorial build} guide provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.
+This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Build-time Compilation Guide] provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.
+
+[Format Guide]: https://messageformat.github.io/messageformat/page-guide
+[Build-time Compilation Guide]: https://messageformat.github.io/messageformat/page-build
