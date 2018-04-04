@@ -21,7 +21,6 @@
   "repository": "messageformat/messageformat",
   "main": "lib/messageformat.js",
   "files": [
-    "docs",
     "example",
     "lib",
     "messageformat.js",
@@ -48,7 +47,7 @@
   "scripts": {
     "build:all": "npm run build && npm run build:example && npm run build:docs",
     "build:browser": "browserify lib/messageformat.js -s MessageFormat -o messageformat.js",
-    "build:docs": "make docs",
+    "build:docs": "jsdoc -c jsdoc-conf.json && ./fix-docs.sh",
     "build:example": "./cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
     "build:minify": "uglifyjs messageformat.js --compress --mangle --output messageformat.min.js --source-map \"url='messageformat.min.js.map'\"",
     "build": "npm run build:browser && npm run build:minify",
@@ -58,8 +57,8 @@
     "test:browser": "npm run build:browser && serve",
     "test": "mocha",
     "preversion": "npm run prepublishOnly",
-    "version": "git commit -am \"Update version\" && git add -f messageformat.*js* docs example/i18n.js",
-    "postversion": "git reset --hard HEAD^",
+    "version": "git commit -am 'Update version' && git add -f messageformat.*js* docs example/i18n.js",
+    "postversion": "git reset --hard HEAD^ && npm run build:docs && git commit -am 'Update documentation'",
     "prepublishOnly": "npm run clean:all && npm test && npm run build:all"
   },
   "browser": {
