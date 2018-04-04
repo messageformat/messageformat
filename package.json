@@ -17,7 +17,7 @@
     "Eemeli Aro <eemeli@gmail.com>"
   ],
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/",
+  "homepage": "https://messageformat.github.io/messageformat/",
   "repository": "messageformat/messageformat",
   "main": "lib/messageformat.js",
   "files": [
@@ -31,18 +31,18 @@
   ],
   "dependencies": {
     "make-plural": "^4.1.1",
-    "messageformat-parser": "^3.0.0-beta.2",
+    "messageformat-parser": "^3.0.0",
     "reserved-words": "^0.1.2"
   },
   "devDependencies": {
-    "browserify": "^13.3.0",
+    "browserify": "^16.1.1",
     "expect.js": "*",
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.5.5",
-    "mocha": "~3.0.2",
-    "serve": "^6.4.3",
+    "mocha": "^5.0.5",
+    "serve": "^6.5.3",
     "tmp": "0.0.33",
-    "uglify-js": "^2.8.29"
+    "uglify-js": "^3.3.18"
   },
   "scripts": {
     "prepublish": "make all",

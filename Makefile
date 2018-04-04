@@ -18,15 +18,14 @@ messageformat.js: $(SRC) | node_modules
 	@echo "$@ is now ready for browsers."
 
 messageformat.min.js: messageformat.js
-	@$(BIN)/uglifyjs $< --compress --mangle --output $@ --source-map $@.map
+	@$(BIN)/uglifyjs $< --compress --mangle --output $@ --source-map "filename='$@.map',url='$@.map'"
 	@echo "$@ is now ready for browsers."
-
 
 test: $(SRC)
 	@${BIN}/mocha
 
 test-browser: messageformat.js
-	@open "http://127.0.0.1:3000/test/" & ${BIN}/serve .
+	@open "http://localhost:5000/test/" & ${BIN}/serve .
 
 docs: clean-docs docs/index.html
 
@@ -40,11 +39,9 @@ docs/index.html: $(SRC) pages/ | node_modules
 example/i18n.js: cli/messageformat.js $(SRC) | cli/node_modules
 	./$< --locale=en,fr --namespace=i18n $(dir $@) > $@
 
-
 release: clean all
 	git add -f messageformat.*js* docs example/i18n.js
 	git commit -m 'Packaging files for release'
-
 
 clean-docs:
 	rm -rf docs/*html docs/fonts docs/img docs/logo docs/scripts docs/styles
