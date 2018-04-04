@@ -38,7 +38,7 @@ test-browser: messageformat.js
 
 docs: $(SRC) pages/ | node_modules
 	@${BIN}/jsdoc -c jsdoc-conf.json
-	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g' docs/*.html
+	@sed -i 's/tutorial/page/g;s/ Tutorial:/:/g;s/"index\.html"/".\/"/g;s/"\([^"\/]\+\)\.html"/"\1"/g' docs/*.html
 	@for f in docs/tutorial*; do mv $$f $${f/tutorial/page}; done
 	@cp -r logo docs/
 	@echo "${CHK} API documentation generated"
