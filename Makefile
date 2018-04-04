@@ -1,4 +1,4 @@
-# Copyright 2012-2016 Alex Sexton, Eemeli Aro, and Contributors
+# Copyright 2012-2018 Alex Sexton, Eemeli Aro, and Contributors
 # Licensed under the MIT License
 
 BIN=./node_modules/.bin
