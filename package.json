@@ -40,13 +40,27 @@
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.5.5",
     "mocha": "^5.0.5",
+    "rimraf": "^2.6.2",
     "serve": "^6.5.3",
     "tmp": "0.0.33",
     "uglify-js": "^3.3.18"
   },
   "scripts": {
-    "prepublish": "make all",
-    "test": "mocha"
+    "build:all": "npm run build && npm run build:example && npm run build:docs",
+    "build:browser": "browserify lib/messageformat.js -s MessageFormat -o messageformat.js",
+    "build:docs": "make docs",
+    "build:example": "./cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
+    "build:minify": "uglifyjs messageformat.js --compress --mangle --output messageformat.min.js --source-map \"url='messageformat.min.js.map'\"",
+    "build": "npm run build:browser && npm run build:minify",
+    "clean:all": "npm run clean && npm run clean:docs",
+    "clean:docs": "rimraf docs/*html docs/fonts docs/img docs/logo docs/scripts docs/styles",
+    "clean": "rimraf messageformat.*js*",
+    "test:browser": "npm run build:browser && serve",
+    "test": "mocha",
+    "preversion": "npm run prepublishOnly",
+    "version": "git commit -am \"Update version\" && git add -f messageformat.*js* docs example/i18n.js",
+    "postversion": "git reset --hard HEAD^",
+    "prepublishOnly": "npm run clean:all && npm test && npm run build:all"
   },
   "browser": {
     "fs": false
