@@ -22,7 +22,7 @@
     "node": ">=6.0"
   },
   "scripts": {
-    "install": "npm install --no-save ../"
+    "prepare": "npm install --no-save ../"
   },
   "dependencies": {
     "dot-properties": "^0.2.0",
