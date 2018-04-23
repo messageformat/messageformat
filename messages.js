@@ -133,14 +133,13 @@ Messages.prototype.addMessages = function(data, lc, keypath) {
     }, {});
   }
   if (Array.isArray(keypath) && keypath.length > 0) {
-    let parent = this._data[lc]
-    for (let i = 0; i < keypath.length - 1; ++i) {
-      const key = keypath[i];
+    var parent = this._data[lc]
+    for (var i = 0; i < keypath.length - 1; ++i) {
+      var key = keypath[i];
       if (!parent[key]) parent[key] = {}
       parent = parent[key]
     }
-    const key = keypath[keypath.length - 1]
-    parent[key] = data
+    parent[keypath[keypath.length - 1]] = data
   } else {
     this._data[lc] = data
   }
