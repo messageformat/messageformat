@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/messageformat/loader#readme",
   "peerDependencies": {
-    "messageformat": "1.x"
+    "messageformat": ">=1.0.0"
   },
   "dependencies": {
     "loader-utils": "^1.1.0"
