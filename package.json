@@ -1,6 +1,6 @@
 {
   "name": "yaml-to-messageformat",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Convert yaml files (e.g. from Rails i18n) into messageformat-compatible JSON",
   "keywords": [
     "messageformat",
