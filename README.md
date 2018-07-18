@@ -53,10 +53,7 @@ messages.en.errors.wrong_length({ count: 42 })
 
 ### API: `convert(input, options)`
 
-`input` should be a string; `options` is an optional set of configuration for
-the [js-yaml] parser, as well as yaml-to-messageformat itself:
-
-- `filename`, `json`, `onWarning`, `schema` – See the [js-yaml documentation]
+`input` should be a string; `options` is an optional set of configuration:
 
 - `defaultLocale` (string, default `'en'`) – Sets the initial locale.
 
@@ -64,6 +61,9 @@ the [js-yaml] parser, as well as yaml-to-messageformat itself:
   input data that matches the two-letter code of a [CLDR pluralisation language]
   switches the language used for determining the pluralisation rules. Set this to
   some limited set of languages (or even an empty array) to limit that.
+
+- `merge` (boolean, default `false`) – Enables YAML merge keys; see the [yaml]
+  documentation for details
 
 - `verbose` (boolean, default `false`) – If set to `true`, some logging and
   warnings will be printed to the console.
@@ -79,5 +79,4 @@ The object returned by the function contains the following fields:
 
 [CLDR pluralisation language]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [messageformat]: https://messageformat.github.io/
-[js-yaml]: https://github.com/nodeca/js-yaml
-[js-yaml documentation]: https://github.com/nodeca/js-yaml#safeload-string---options-
+[yaml]: https://eemeli.org/yaml/#data-schemas

@@ -1,15 +1,12 @@
 const common = require('common-prefix')
-const yaml = require('js-yaml')
+const YAML = require('yaml').default
 const pluralCategories = require('make-plural/umd/pluralCategories')
 
 const cldrPluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other']
 
 const defaultOptions = {
   defaultLocale: 'en',
-  filename: null,
   includeLocales: null,
-  json: false,
-  onWarning: null,
   pluralVariable: 'count',
   replacements: [
     { pattern: /[%#]{(\w+)}/g, replacement: '\x02$1\x03' },
@@ -17,7 +14,7 @@ const defaultOptions = {
     { pattern: /\x02/g, replacement: '{' },
     { pattern: /\x03/g, replacement: '}' }
   ],
-  schema: null,  // DEFAULT_SAFE_SCHEMA
+  schema: 'failsafe',
   verbose: false
 }
 
@@ -88,9 +85,9 @@ const convertData = (data, locale, options) => {
 }
 
 const convert = (input, options) => {
-  options = Object.assign(defaultOptions, options)
+  options = Object.assign({}, defaultOptions, options)
   options._lc = { [options.defaultLocale]: true }
-  let data = yaml.safeLoadAll(input, options)
+  let data = YAML.parse(input, options)
   if (data.length === 1) data = data[0]
   const translations = convertData(data, options.defaultLocale, options)
   return {

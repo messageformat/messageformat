@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "common-prefix": "^1.1.0",
-    "js-yaml": "^3.10.0",
-    "make-plural": "^4.0.1"
+    "make-plural": "^4.0.1",
+    "yaml": "^1.0.0-rc.7"
   }
 }
