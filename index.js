@@ -46,9 +46,10 @@ const getPluralMessage = (data, options) => {
   const keys = Object.keys(data)
   const messages = keys.map(key => getMessageFormat(data[key], options))
   const prefix = common(messages)
-  const suffix = common(messages.map(msg => msg.split('').reverse().join('')))
-  const cut = suffix ? (
-    (msg) => msg.slice(prefix.length, -suffix.length)
+  const suffixLength = common(messages.map(msg => msg.split('').reverse().join(''))).length
+  const suffix = suffixLength > 0 ? messages[0].slice(-suffixLength) : ''
+  const cut = suffixLength > 0 ? (
+    (msg) => msg.slice(prefix.length, -suffixLength)
   ) : prefix ? (
     (msg) => msg.slice(prefix.length)
   ) : (
