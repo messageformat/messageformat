@@ -29,20 +29,20 @@
     "messages.js"
   ],
   "dependencies": {
-    "make-plural": "^4.1.1",
+    "make-plural": "^4.2.0",
     "messageformat-parser": "^3.0.0",
     "reserved-words": "^0.1.2"
   },
   "devDependencies": {
-    "browserify": "^16.1.1",
+    "browserify": "^16.2.2",
     "expect.js": "*",
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.5.5",
-    "mocha": "^5.0.5",
+    "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
-    "serve": "^6.5.3",
+    "serve": "^9.2.0",
     "tmp": "0.0.33",
-    "uglify-js": "^3.3.18"
+    "uglify-js": "^3.4.5"
   },
   "scripts": {
     "build:all": "npm run build && npm run build:example && npm run build:docs",
