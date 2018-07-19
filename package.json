@@ -22,6 +22,7 @@
   "main": "lib/messageformat.js",
   "files": [
     "example",
+    "index.d.ts",
     "lib",
     "messageformat.js",
     "messageformat.min.js",
