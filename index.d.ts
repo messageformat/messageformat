@@ -1,4 +1,4 @@
-declare namespace messageformat {
+declare namespace MessageFormat {
     type Msg = (params: {}) => string;
     type Formatter = (val: any, lc: string, arg?: string) => string;
     type SrcMessage = string | SrcObject;
@@ -8,16 +8,16 @@ declare namespace messageformat {
     }
 }
 
-declare class messageformat {
+declare class MessageFormat {
     constructor(message: { [pluralFuncs: string]: Function });
     constructor(message: string[]);
     constructor(message: string);
     constructor();
-    addFormatters: (format: { [name: string]: messageformat.Formatter }) => messageformat;
-    disablePluralKeyChecks: () => messageformat;
-    setBiDiSupport: (enable: boolean) => messageformat;
-    setStrictNumberSign: (enable: boolean) => messageformat;
-    compile: (messages: messageformat.SrcMessage, locale?: string) => messageformat.Msg;
+    addFormatters: (format: { [name: string]: MessageFormat.Formatter }) => this;
+    disablePluralKeyChecks: () => this;
+    setBiDiSupport: (enable: boolean) => this;
+    setStrictNumberSign: (enable: boolean) => this;
+    compile: (messages: MessageFormat.SrcMessage, locale?: string) => MessageFormat.Msg;
 }
 
-export = messageformat;
+export = MessageFormat;
