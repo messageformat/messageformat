@@ -6,6 +6,8 @@ declare namespace MessageFormat {
     interface SrcObject {
         [key: string]: SrcMessage;
     }
+
+    class MessageFormat extends messageformat {}
 }
 
 declare class MessageFormat {
