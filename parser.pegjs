@@ -42,7 +42,7 @@ plural = '{' _ arg:id _ ',' _ type:(m:('plural'/'selectordinal') { inPlural = tr
     };
   }
 
-function = '{' _ arg:id _ ',' _ key:(m:id { if (options.strictNumberSign) { inPlural = false; } return m; }) _ param:functionParam? '}' {
+function = '{' _ arg:id _ ',' _ key:functionKey _ param:functionParam? '}' {
     return {
       type: 'function',
       arg: arg,
@@ -65,6 +65,15 @@ offset = _ 'offset' _ ':' _ d:digits _ { return d; }
 pluralKey
   = id
   / '=' d:digits { return d; }
+
+functionKey =
+  ! 'select'
+  ! 'plural'
+  ! 'selectordinal'
+  key:id & { return key.toLowerCase() === key && !/^\d/.test(key) } {
+    if (options.strictNumberSign) { inPlural = false; }
+    return key;
+  }
 
 functionParam = _ ',' str:paramChars+ { return str.join(''); }
 

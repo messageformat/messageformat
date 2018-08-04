@@ -277,6 +277,13 @@ describe("Ordinals", function() {
 
 });
 describe("Functions", function() {
+  it("should require lower-case type", function() {
+    expect(function(){ parse('{var,date}'); }).to.not.throwError();
+    expect(function(){ parse('{var,Date}'); }).to.throwError();
+    expect(function(){ parse('{var,daTe}'); }).to.throwError();
+    expect(function(){ parse('{var,9ate}'); }).to.throwError();
+  })
+
   it("should accept no parameters", function() {
     expect(parse('{var,date}')[0].type).to.eql('function');
     expect(parse('{var,date}')[0].key).to.eql('date');
