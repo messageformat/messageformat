@@ -75,12 +75,7 @@ functionKey =
     return key;
   }
 
-functionParam = _ ',' str:paramChars+ { return str.join(''); }
-
-paramChars
-  = doubleapos
-  / quotedCurly
-  / [^}]
+functionParam = _ ',' tokens:token* { return { tokens: tokens }; }
 
 doubleapos = "''" { return "'"; }
 
