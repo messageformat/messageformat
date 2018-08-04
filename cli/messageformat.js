@@ -161,10 +161,10 @@ function readInput(include, extensions, sep) {
       return root[part];
     }, input);
   });
-  while (true) {
-      const keys = Object.keys(input);
-      if (keys.length === 1) input = input[keys[0]];
-      else break;
+  while (input && typeof input === 'object') {
+    const keys = Object.keys(input);
+    if (keys.length === 1) input = input[keys[0]];
+    else break;
   }
   return input;
 }
