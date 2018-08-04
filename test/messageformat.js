@@ -89,13 +89,6 @@ describe('compile()', () => {
     expect(mfunc({num: 5})).to.be('5,6')
   })
 
-  it('should use the fallback locale plural function if the locale is not available', () => {
-    mf = new MessageFormat('en-x-test1-test2')
-    const mfunc = mf.compile('{num, plural, one {# thing} other {# things}}')
-    expect(mfunc.toString()).to.match(/\ben[-_]/)
-    expect(mfunc({num: 3})).to.be('3 things')
-  })
-
   it('should have configurable # parsing support', () => {
     const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}'
     const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}"
@@ -167,15 +160,30 @@ describe('compile()', () => {
     expect(cf.ru({ count: 12 })).to.eql('3')
   })
 
-  it('defaults to supporting all languages', () => {
+  it('defaults to supporting all languages: compile({ fr, ru })', () => {
     mf = new MessageFormat()
     mf.addFormatters({ lc: (v, lc) => lc })
     const cf = mf.compile({
         fr: 'Locale: {_, lc}',
+        xx: 'Locale: {_, lc}',
         ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
     })
     expect(cf.fr({})).to.eql('Locale: fr')
+    expect(cf.xx({})).to.eql('Locale: en')
     expect(cf.ru({ count: 12 })).to.eql('3')
+  })
+
+  it('defaults to supporting all languages: compile(src, locale)', () => {
+    mf = new MessageFormat()
+    mf.addFormatters({ lc: (v, lc) => lc })
+    const cf0 = mf.compile('Locale: {_, lc}', 'fr')
+    expect(cf0({})).to.eql('Locale: fr')
+    const cf1 = mf.compile({
+        fr: 'Locale: {_, lc}',
+        en: '{count, plural, one{1} few{2} many{3} other{x:#}}'
+    }, 'ru-RU')
+    expect(cf1.fr({})).to.eql('Locale: ru-RU')
+    expect(cf1.en({ count: 12 })).to.eql('3')
   })
 })
 
