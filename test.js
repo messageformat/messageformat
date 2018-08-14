@@ -318,6 +318,42 @@ describe("Functions", function() {
     expect(parse("{var,date,y-M-d, HH:mm:ss zzzz}")[0].param.tokens).to.eql(["y-M-d, HH:mm:ss zzzz"]);
   })
 
+  it('should accept parameters containing a basic variable', function() {
+    expect(parse('{foo, date, {bar}}')[0]).to.eql({
+      type: 'function',
+      arg: 'foo',
+      key: 'date',
+      param: { tokens: [' ', { arg: 'bar', type: 'argument' }] }
+    })
+  })
+
+  it('should accept parameters containing a select', function() {
+    expect(parse('{foo, date, {bar, select, other{baz}}}')[0]).to.eql({
+      type: 'function',
+      arg: 'foo',
+      key: 'date',
+      param: { tokens: [' ', {
+        arg: 'bar',
+        type: 'select',
+        cases: [{ key: 'other', tokens: ['baz'] }]
+      }] }
+    })
+  })
+
+  it('should accept parameters containing a plural', function() {
+    expect(parse('{foo, date, {bar, plural, other{#}}}')[0]).to.eql({
+      type: 'function',
+      arg: 'foo',
+      key: 'date',
+      param: { tokens: [' ', {
+        arg: 'bar',
+        type: 'plural',
+        offset: 0,
+        cases: [{ key: 'other', tokens: [{ type: 'octothorpe' }] }]
+      }] }
+    })
+  })
+
   it("should be gracious with whitespace around arg and key", function() {
     var firstRes = JSON.stringify(parse('{var, date}'));
     expect(JSON.stringify(parse('{ var, date }'))).to.eql(firstRes);
@@ -325,6 +361,7 @@ describe("Functions", function() {
     expect(JSON.stringify(parse('{\nvar,   \ndate\n}'))).to.eql(firstRes);
   });
 });
+
 describe("Nested/Recursive blocks", function() {
 
   it("should allow a select statement inside of a select statement", function() {
