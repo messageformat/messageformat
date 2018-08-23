@@ -27,7 +27,8 @@
   "dependencies": {
     "dot-properties": "^0.2.0",
     "glob": "~7.0.6",
-    "nopt": "~3.0.6"
+    "nopt": "~3.0.6",
+    "uv": "^1.0.7"
   },
   "peerDependencies": {
     "messageformat": "2.x"

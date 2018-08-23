@@ -12,6 +12,7 @@ const glob = require('glob');
 const MessageFormat = require('messageformat');
 const nopt = require('nopt');
 const path = require('path');
+const uv = require('uv');
 
 const knownOpts = {
   delimiters: [String, Array],
@@ -149,7 +150,8 @@ function readInput(include, extensions, sep) {
           case '.prefs':
           case '.pro':
           case '.properties':
-            const src = fs.readFileSync(fn, 'latin1');
+            const raw = fs.readFileSync(fn);
+            const src = raw.toString(uv(raw) ? 'utf8' : 'latin1');
             root[part] = dotProperties.parse(src, sep.test('.'))
             break
           default:
