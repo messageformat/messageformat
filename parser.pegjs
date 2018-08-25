@@ -75,7 +75,15 @@ functionKey =
     return key;
   }
 
-functionParam = _ ',' tokens:token* { return { tokens: tokens }; }
+functionParam
+  = _ ',' tokens:token* & { return !options.strictFunctionParam } { return { tokens: tokens } }
+  / _ ',' parts:strictFunctionParamPart* { return { tokens: [parts.join('')] } }
+
+strictFunctionParamPart
+  = p:[^'{}]+ { return p.join('') }
+  / doubleapos
+  / "'" quoted:inapos "'" { return quoted }
+  / '{' p:strictFunctionParamPart* '}' { return '{' + p.join('') + '}' }
 
 doubleapos = "''" { return "'"; }
 
