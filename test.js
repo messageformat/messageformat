@@ -247,17 +247,17 @@ describe("Plurals", function() {
     ]);
   })
 
-  describe('options.strictNumberSign', function() {
+  describe('options.strict', function() {
     var src = "{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}";
 
-    it('should parse # correctly without strictNumberSign', function() {
+    it('should parse # correctly without strict option', function() {
       expect(parse(src)[0].cases[0].tokens[2].cases[0].tokens).to.eql([
         { type: 'octothorpe' }, ' # one', { type: 'octothorpe' }
       ]);
     })
 
-    it('should parse # correctly with strictNumberSign', function() {
-      expect(parse(src, { strictNumberSign: true })[0].cases[0].tokens[2].cases[0].tokens).to.eql([
+    it('should parse # correctly with strict option', function() {
+      expect(parse(src, { strict: true })[0].cases[0].tokens[2].cases[0].tokens).to.eql([
         "# '#' one#"
       ]);
     })
@@ -362,9 +362,9 @@ describe("Functions", function() {
     })
   })
 
-  describe('options.strictFunctionParam', function() {
-    it('should obey strictFunctionParam if set', function() {
-      expect(parse("{foo, date, {bar'}', quote'', other{#}}}", { strictFunctionParam: true })[0]).to.eql({
+  describe('options.strict', function() {
+    it('should obey strict option', function() {
+      expect(parse("{foo, date, {bar'}', quote'', other{#}}}", { strict: true })[0]).to.eql({
         type: 'function',
         arg: 'foo',
         key: 'date',
@@ -372,9 +372,9 @@ describe("Functions", function() {
       })
     })
 
-    it('should require matched braces in param if strictFunctionParam is set', function() {
+    it('should require matched braces in param if strict option is set', function() {
       expect(function() {
-        parse("{foo, date, {bar{}}", { strictFunctionParam: true })
+        parse("{foo, date, {bar{}}", { strict: true })
       }).to.throwError();
     })
   })

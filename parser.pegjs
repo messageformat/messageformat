@@ -16,7 +16,7 @@ argument = '{' _ arg:id _ '}' {
     };
   }
 
-select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strictNumberSign) { inPlural = false; } return m; }) _ ',' _ cases:selectCase+ _ '}' {
+select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strict) { inPlural = false; } return m; }) _ ',' _ cases:selectCase+ _ '}' {
     return {
       type: 'select',
       arg: arg,
@@ -71,12 +71,12 @@ functionKey =
   ! 'plural'
   ! 'selectordinal'
   key:id & { return key.toLowerCase() === key && !/^\d/.test(key) } {
-    if (options.strictNumberSign) { inPlural = false; }
+    if (options.strict) { inPlural = false; }
     return key;
   }
 
 functionParam
-  = _ ',' tokens:token* & { return !options.strictFunctionParam } { return { tokens: tokens } }
+  = _ ',' tokens:token* & { return !options.strict } { return { tokens: tokens } }
   / _ ',' parts:strictFunctionParamPart* { return { tokens: [parts.join('')] } }
 
 strictFunctionParamPart
