@@ -363,7 +363,13 @@ describe("Functions", function() {
   })
 
   describe('options.strict', function() {
-    it('should obey strict option', function() {
+    it('should require known function key with strict option', function() {
+      expect(function() { parse('{foo, bar}') }).to.not.throwError()
+      expect(function() { parse('{foo, bar}', { strict: true }) }).to.throwError()
+      expect(function() { parse('{foo, date}', { strict: true }) }).to.not.throwError()
+    })
+
+    it('parameter parsing should obey strict option', function() {
       expect(parse("{foo, date, {bar'}', quote'', other{#}}}", { strict: true })[0]).to.eql({
         type: 'function',
         arg: 'foo',
@@ -372,7 +378,7 @@ describe("Functions", function() {
       })
     })
 
-    it('should require matched braces in param if strict option is set', function() {
+    it('should require matched braces in parameter if strict option is set', function() {
       expect(function() {
         parse("{foo, date, {bar{}}", { strict: true })
       }).to.throwError();

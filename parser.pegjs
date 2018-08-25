@@ -66,14 +66,11 @@ pluralKey
   = id
   / '=' d:digits { return d; }
 
-functionKey =
-  ! 'select'
-  ! 'plural'
-  ! 'selectordinal'
-  key:id & { return key.toLowerCase() === key && !/^\d/.test(key) } {
-    if (options.strict) { inPlural = false; }
-    return key;
-  }
+functionKey
+  = 'number' / 'date' / 'time' / 'spellout' / 'ordinal' / 'duration'
+  / ! 'select' ! 'plural' ! 'selectordinal' key:id
+    & { return !options.strict && key.toLowerCase() === key && !/^\d/.test(key) }
+    { return key }
 
 functionParam
   = _ ',' tokens:token* & { return !options.strict } { return { tokens: tokens } }
