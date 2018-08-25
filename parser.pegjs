@@ -16,7 +16,7 @@ argument = '{' _ arg:id _ '}' {
     };
   }
 
-select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strictNumberSign) { inPlural = false; } return m; }) _ ',' _ cases:selectCase+ _ '}' {
+select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strict) { inPlural = false; } return m; }) _ ',' _ cases:selectCase+ _ '}' {
     return {
       type: 'select',
       arg: arg,
@@ -42,7 +42,7 @@ plural = '{' _ arg:id _ ',' _ type:(m:('plural'/'selectordinal') { inPlural = tr
     };
   }
 
-function = '{' _ arg:id _ ',' _ key:(m:id { if (options.strictNumberSign) { inPlural = false; } return m; }) _ param:functionParam? '}' {
+function = '{' _ arg:id _ ',' _ key:functionKey _ param:functionParam? '}' {
     return {
       type: 'function',
       arg: arg,
@@ -66,12 +66,21 @@ pluralKey
   = id
   / '=' d:digits { return d; }
 
-functionParam = _ ',' str:paramChars+ { return str.join(''); }
+functionKey
+  = 'number' / 'date' / 'time' / 'spellout' / 'ordinal' / 'duration'
+  / ! 'select' ! 'plural' ! 'selectordinal' key:id
+    & { return !options.strict && key.toLowerCase() === key && !/^\d/.test(key) }
+    { return key }
 
-paramChars
-  = doubleapos
-  / quotedCurly
-  / [^}]
+functionParam
+  = _ ',' tokens:token* & { return !options.strict } { return { tokens: tokens } }
+  / _ ',' parts:strictFunctionParamPart* { return { tokens: [parts.join('')] } }
+
+strictFunctionParamPart
+  = p:[^'{}]+ { return p.join('') }
+  / doubleapos
+  / "'" quoted:inapos "'" { return quoted }
+  / '{' p:strictFunctionParamPart* '}' { return '{' + p.join('') + '}' }
 
 doubleapos = "''" { return "'"; }
 

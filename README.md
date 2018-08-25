@@ -13,19 +13,28 @@ the following possible keys:
   `'zero', 'one', 'two', 'few', 'many', 'other'`. To disable this check, pass in
   an empty array.
 
-- `strictNumberSign` – Inside a `plural` or `selectordinal` statement, a pound
-  symbol (`#`) is replaced with the input number. By default, `#` is also parsed
-  as a special character in nested statements too, and can be escaped using
-  apostrophes (`'#'`). Setting `strictNumberSign` to true will make the parser
-  follow the ICU MessageFormat spec more closely, and only parse `#` as a
-  special character directly inside a `plural` or `selectordinal` statement.
-  Outside those, `#` and `'#'` will be parsed as literal text.
+- `strict` – By default, the parsing applies a few relaxations to the ICU
+  MessageFormat spec. Setting `strict: true` will disable these relaxations:
+  - The `argType` of `simpleArg` formatting functions will be restricted to the
+    set of `number`, `date`, `time`, `spellout`, `ordinal`, and `duration`,
+    rather than accepting any lower-case identifier that does not start with a
+    number.
+  - The optional `argStyle` of `simpleArg` formatting functions will not be
+    parsed as any other text, but instead as the spec requires: "In
+    argStyleText, every single ASCII apostrophe begins and ends quoted literal
+    text, and unquoted {curly braces} must occur in matched pairs."
+  - Inside a `plural` or `selectordinal` statement, a pound symbol (`#`) is
+    replaced with the input number. By default, `#` is also parsed as a special
+    character in nested statements too, and can be escaped using apostrophes
+    (`'#'`). In strict mode `#` will be parsed as a special character only
+    directly inside a `plural` or `selectordinal` statement. Outside those, `#`
+    and `'#'` will be parsed as literal text.
 
-The parser only supports the default `DOUBLE_OPTIONAL` [apostrophe mode]. A
-single apostrophe only starts quoted literal text if preceded by a curly brace
-(`{}`) or a pound symbol (`#`) inside a `plural` or `selectordinal` statement,
-depending on the value of `strictNumberSign`. Otherwise, it is a literal
-apostrophe. A double apostrophe is always a literal apostrophe.
+The parser only supports the default `DOUBLE_OPTIONAL` [apostrophe mode], in
+which a single apostrophe only starts quoted literal text if it immediately
+precedes a curly brace `{}`, or a pound symbol `#` if inside a plural format. A
+literal apostrophe `'` is represented by either a single `'` or a doubled `''`
+apostrophe character.
 
 [ICU MessageFormat]: https://messageformat.github.io/guide/
 [messageformat]: https://messageformat.github.io/
@@ -130,7 +139,9 @@ type Function = {
   type: 'function',
   arg: Identifier,
   key: Identifier,
-  param: string | null
+  param: {
+    tokens: options.strict ? [string] : (Token | Octothorpe)[]
+  } | null
 }
 
 type PluralCase = {
@@ -140,7 +151,7 @@ type PluralCase = {
 
 type SelectCase = {
   key: Identifier,
-  tokens: strictNumberSign ? Token[] : (Token | Octothorpe)[]
+  tokens: options.strict ? Token[] : (Token | Octothorpe)[]
 }
 
 type Octothorpe = {

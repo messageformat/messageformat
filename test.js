@@ -230,28 +230,38 @@ describe("Plurals", function() {
   });
 
   it("should support quoting", function() {
-    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].type).to.eql('function');
-    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].arg).to.eql('x');
-    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].key).to.eql('date');
-    // Octothorpe is not special here regardless of strict number sign
-    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens[0].param).to.eql("y-M-dd # '#'");
+    expect(parse("{NUM, plural, one{{x,date,y-M-dd # '#'}} two{two}}")[0].cases[0].tokens).to.eql([{
+      type: 'function', arg: 'x', key: 'date',
+      param: {
+        tokens: [ 'y-M-dd ', { type: 'octothorpe' }, ' #' ]
+      }
+    }]);
+    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens).to.eql([
+      { type: 'octothorpe' }, " ' ", { type: 'octothorpe' }
+    ]);
+    expect(parse("{NUM, plural, one{# '#'} two{two}}")[0].cases[0].tokens).to.eql([
+      { type: 'octothorpe' }, ' #'
+    ]);
+    expect(parse("{NUM, plural, one{one#} two{two}}")[0].cases[0].tokens).to.eql([
+      'one', { type: 'octothorpe' }
+    ]);
+  })
 
-    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens[0].type).to.eql('octothorpe');
-    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens[1]).to.eql(" ' ");
-    expect(parse("{NUM, plural, one{# '' #} two{two}}")[0].cases[0].tokens[2].type).to.eql('octothorpe');
-    expect(parse("{NUM, plural, one{# '#'} two{two}}")[0].cases[0].tokens[0].type).to.eql('octothorpe');
-    expect(parse("{NUM, plural, one{# '#'} two{two}}")[0].cases[0].tokens[1]).to.eql(" #");
+  describe('options.strict', function() {
+    var src = "{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}";
 
-    expect(parse("{NUM, plural, one{one#} two{two}}")[0].cases[0].tokens[0]).to.eql('one');
-    expect(parse("{NUM, plural, one{one#} two{two}}")[0].cases[0].tokens[1].type).to.eql('octothorpe');
+    it('should parse # correctly without strict option', function() {
+      expect(parse(src)[0].cases[0].tokens[2].cases[0].tokens).to.eql([
+        { type: 'octothorpe' }, ' # one', { type: 'octothorpe' }
+      ]);
+    })
 
-    // without strict number sign
-    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}")[0].cases[0].tokens[2].cases[0].tokens[0].type).to.eql('octothorpe')
-    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}")[0].cases[0].tokens[2].cases[0].tokens[1]).to.eql(' # one')
-    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}")[0].cases[0].tokens[2].cases[0].tokens[2].type).to.eql('octothorpe')
-    // with strict number sign
-    expect(parse("{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}", { strictNumberSign: true })[0].cases[0].tokens[2].cases[0].tokens[0]).to.eql('# \'#\' one#')
-  });
+    it('should parse # correctly with strict option', function() {
+      expect(parse(src, { strict: true })[0].cases[0].tokens[2].cases[0].tokens).to.eql([
+        "# '#' one#"
+      ]);
+    })
+  })
 
 });
 describe("Ordinals", function() {
@@ -277,43 +287,105 @@ describe("Ordinals", function() {
 
 });
 describe("Functions", function() {
-  it("should accept no parameters", function() {
-    expect(parse('{var,date}')[0].type).to.eql('function');
-    expect(parse('{var,date}')[0].key).to.eql('date');
-    expect(parse('{var,date}')[0].param).to.be.null;
+  it("should require lower-case type", function() {
+    expect(function(){ parse('{var,date}'); }).to.not.throwError();
+    expect(function(){ parse('{var,Date}'); }).to.throwError();
+    expect(function(){ parse('{var,daTe}'); }).to.throwError();
+    expect(function(){ parse('{var,9ate}'); }).to.throwError();
+  })
+
+  it('should be gracious with whitespace around arg and key', function() {
+    var expected = { type: 'function', arg: 'var', key: 'date', param: null }
+    expect(parse('{var,date}')[0]).to.eql(expected);
+    expect(parse('{var, date}')[0]).to.eql(expected);
+    expect(parse('{ var, date }')[0]).to.eql(expected);
+    expect(parse('{\nvar,   \ndate\n}')[0]).to.eql(expected);
   })
 
   it("should accept parameters", function() {
-    expect(parse('{var,date,long}')[0].type).to.eql('function');
-    expect(parse('{var,date,long}')[0].key).to.eql('date');
-    expect(parse('{var,date,long}')[0].param).to.eql('long');
-    expect(parse('{var,date,long,short}')[0].param).to.eql('long,short');
+    expect(parse('{var,date,long}')[0]).to.eql({
+      type: 'function', arg: 'var', key: 'date', param: { tokens: ['long'] }
+    });
+    expect(parse('{var,date,long,short}')[0].param.tokens).to.eql(['long,short']);
   })
 
   it("should accept parameters with whitespace", function() {
-    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0].type).to.eql('function');
-    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0].key).to.eql('date');
-    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0].param).to.eql('y-M-d HH:mm:ss zzzz');
-    expect(parse('{var,date,   y-M-d HH:mm:ss zzzz    }')[0].param).to.eql('   y-M-d HH:mm:ss zzzz    ');
+    expect(parse('{var,date,y-M-d HH:mm:ss zzzz}')[0]).to.eql({
+      type: 'function', arg: 'var', key: 'date', param: { tokens: ['y-M-d HH:mm:ss zzzz'] }
+    });
+    expect(parse('{var,date,   y-M-d HH:mm:ss zzzz    }')[0].param.tokens).to.eql(['   y-M-d HH:mm:ss zzzz    ']);
   })
 
   it("should accept parameters with special characters", function() {
-    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0].type).to.eql('function');
-    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0].key).to.eql('date');
-    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0].param).to.eql("y-M-d {,} ' HH:mm:ss zzzz");
-    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz'}'}")[0].param).to.eql("y-M-d {,} ' HH:mm:ss zzzz}");
-    expect(parse("{var,date,y-M-d # HH:mm:ss zzzz}")[0].param).to.eql("y-M-d # HH:mm:ss zzzz");
-    expect(parse("{var,date,y-M-d '#' HH:mm:ss zzzz}")[0].param).to.eql("y-M-d '#' HH:mm:ss zzzz");
-    expect(parse("{var,date,y-M-d, HH:mm:ss zzzz}")[0].param).to.eql("y-M-d, HH:mm:ss zzzz");
+    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz}")[0]).to.eql({
+      type: 'function', arg: 'var', key: 'date', param: { tokens: [ 'y-M-d {,} \' HH:mm:ss zzzz' ] }
+    });
+    expect(parse("{var,date,y-M-d '{,}' '' HH:mm:ss zzzz'}'}")[0].param.tokens).to.eql(["y-M-d {,} ' HH:mm:ss zzzz}"]);
+    expect(parse("{var,date,y-M-d # HH:mm:ss zzzz}")[0].param.tokens).to.eql(["y-M-d # HH:mm:ss zzzz"]);
+    expect(parse("{var,date,y-M-d '#' HH:mm:ss zzzz}")[0].param.tokens).to.eql(["y-M-d '#' HH:mm:ss zzzz"]);
+    expect(parse("{var,date,y-M-d, HH:mm:ss zzzz}")[0].param.tokens).to.eql(["y-M-d, HH:mm:ss zzzz"]);
   })
 
-  it("should be gracious with whitespace around arg and key", function() {
-    var firstRes = JSON.stringify(parse('{var, date}'));
-    expect(JSON.stringify(parse('{ var, date }'))).to.eql(firstRes);
-    expect(JSON.stringify(parse('{var,date}'))).to.eql(firstRes);
-    expect(JSON.stringify(parse('{\nvar,   \ndate\n}'))).to.eql(firstRes);
-  });
+  it('should accept parameters containing a basic variable', function() {
+    expect(parse('{foo, date, {bar}}')[0]).to.eql({
+      type: 'function',
+      arg: 'foo',
+      key: 'date',
+      param: { tokens: [' ', { arg: 'bar', type: 'argument' }] }
+    })
+  })
+
+  it('should accept parameters containing a select', function() {
+    expect(parse('{foo, date, {bar, select, other{baz}}}')[0]).to.eql({
+      type: 'function',
+      arg: 'foo',
+      key: 'date',
+      param: { tokens: [' ', {
+        arg: 'bar',
+        type: 'select',
+        cases: [{ key: 'other', tokens: ['baz'] }]
+      }] }
+    })
+  })
+
+  it('should accept parameters containing a plural', function() {
+    expect(parse('{foo, date, {bar, plural, other{#}}}')[0]).to.eql({
+      type: 'function',
+      arg: 'foo',
+      key: 'date',
+      param: { tokens: [' ', {
+        arg: 'bar',
+        type: 'plural',
+        offset: 0,
+        cases: [{ key: 'other', tokens: [{ type: 'octothorpe' }] }]
+      }] }
+    })
+  })
+
+  describe('options.strict', function() {
+    it('should require known function key with strict option', function() {
+      expect(function() { parse('{foo, bar}') }).to.not.throwError()
+      expect(function() { parse('{foo, bar}', { strict: true }) }).to.throwError()
+      expect(function() { parse('{foo, date}', { strict: true }) }).to.not.throwError()
+    })
+
+    it('parameter parsing should obey strict option', function() {
+      expect(parse("{foo, date, {bar'}', quote'', other{#}}}", { strict: true })[0]).to.eql({
+        type: 'function',
+        arg: 'foo',
+        key: 'date',
+        param: { tokens: [" {bar}, quote', other{#}}"] }
+      })
+    })
+
+    it('should require matched braces in parameter if strict option is set', function() {
+      expect(function() {
+        parse("{foo, date, {bar{}}", { strict: true })
+      }).to.throwError();
+    })
+  })
 });
+
 describe("Nested/Recursive blocks", function() {
 
   it("should allow a select statement inside of a select statement", function() {
