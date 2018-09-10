@@ -1,5 +1,5 @@
 declare namespace MessageFormat {
-    type Msg = (params: {}) => string;
+    type Msg = { (params: {}): string; toString(global?: string): string };
     type Formatter = (val: any, lc: string, arg?: string) => string;
     type SrcMessage = string | SrcObject;
 
