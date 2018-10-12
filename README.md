@@ -29,6 +29,8 @@ For a working demo of the loader, run `npm install` in the `example/` directory,
 }
 ```
 
+If you’re using Webpack 4, you must include `type: 'javascript/auto'` in loader configuration to [properly parse JSON files](https://webpack.js.org/configuration/module/#rule-type).
+
 The default option values are shown, and are not required. [See below](#options) for more information on them. As Webpack v1 does not support loader options, you should instead pass the options as query parameters in that environment; `locale` will accept a comma-delimited set of values.
 
 ### messages.json
