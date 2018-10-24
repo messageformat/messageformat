@@ -9,10 +9,9 @@ declare namespace MessageFormat {
 }
 
 declare class MessageFormat {
-    constructor(message: { [pluralFuncs: string]: Function });
-    constructor(message: string[]);
-    constructor(message: string);
-    constructor();
+    constructor(
+      message?: { [pluralFuncs: string]: Function } | string[] | string
+    );
     addFormatters: (format: { [name: string]: MessageFormat.Formatter }) => this;
     disablePluralKeyChecks: () => this;
     setBiDiSupport: (enable: boolean) => this;
