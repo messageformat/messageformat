@@ -1,6 +1,6 @@
 {
   "name": "messageformat-parser",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "A PEG.js parser for ICU MessageFormat strings",
   "keywords": [
     "icu",
@@ -26,7 +26,7 @@
   ],
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "mocha": "^4.0.1",
+    "mocha": "^4.1.0",
     "pegjs": "^0.10.0"
   },
   "scripts": {
