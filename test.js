@@ -539,4 +539,8 @@ describe("Errors", function() {
     expect(function(){ parse('{NUM, plural, offset:-4 other{a}}'); }).to.throwError();
   });
 
+  it("should require closing bracket", function(){
+    const message = '{count, plural, one {car} other {cars}'
+    expect(function(){ parse(message); }).to.throwError();
+  })
 });
