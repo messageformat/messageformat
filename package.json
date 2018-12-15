@@ -11,19 +11,15 @@
     "example": "example"
   },
   "scripts": {
-    "build:docs": "jsdoc -c jsdoc-conf.json && ./fix-docs.sh",
     "build:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
-    "build": "lerna run build --scope messageformat && npm run build:example && npm run build:docs",
-    "clean:docs": "rimraf docs/*html docs/fonts docs/img docs/logo docs/scripts docs/styles",
-    "clean": "lerna run clean && npm run clean:docs",
+    "build": "lerna run build && npm run build:example",
+    "clean": "lerna run clean",
     "prepare": "lerna bootstrap",
     "test:browser": "lerna run build:browser --scope messageformat && serve",
     "test": "mocha"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "ink-docstrap": "github:messageformat/docstrap#messageformat",
-    "jsdoc": "^3.5.5",
     "lerna": "^3.6.0",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",

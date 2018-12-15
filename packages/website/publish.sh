@@ -12,3 +12,5 @@ for f in docs/tutorial*; do
 done
 
 cp -r logo docs/
+rm -r ../../docs/
+mv docs ../../

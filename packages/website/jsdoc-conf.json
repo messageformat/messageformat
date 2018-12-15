@@ -1,9 +1,9 @@
 {
   "source": {
     "include": [
-      "packages/messageformat/lib/",
-      "packages/messageformat/lib/formatters/",
-      "packages/messageformat/messages.js"
+      "node_modules/messageformat/lib/",
+      "node_modules/messageformat/lib/formatters/",
+      "node_modules/messageformat/messages.js"
     ]
   },
   "plugins": [
@@ -11,8 +11,8 @@
   ],
   "opts": {
     "destination": "docs/",
-    "package": "packages/messageformat/package.json",
-    "readme": "README.md",
+    "package": "node_modules/messageformat/package.json",
+    "readme": "node_modules/messageformat/README.md",
     "template": "node_modules/ink-docstrap/template",
     "tutorials": "pages/"
   },
