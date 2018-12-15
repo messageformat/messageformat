@@ -283,7 +283,7 @@ const messages = mf.compile({
   describe: 'This is {VAR, upcase}.',
   locale: 'The current locale is {_, locale}.',
   answer: 'Answer: {obj, prop, a}'
-}
+})
 
 messages.describe({ VAR: 'big' })        // 'This is BIG.'
 messages.locale({})                      // 'The current locale is en-GB.'
