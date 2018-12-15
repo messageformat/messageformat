@@ -1,68 +1,33 @@
 {
-  "name": "messageformat",
-  "version": "2.0.5",
-  "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
-  "keywords": [
-    "i18n",
-    "pluralformat",
-    "icu",
-    "gettext",
-    "choiceformat",
-    "selectformat",
-    "messageformat",
-    "internationalization"
-  ],
-  "author": "Alex Sexton <alexsexton@gmail.com>",
-  "contributors": [
-    "Eemeli Aro <eemeli@gmail.com>"
-  ],
+  "name": "messageformat-monorepo",
+  "version": "2.1.0-monorepo",
+  "description": "Messageformat monorepo",
+  "private": true,
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/messageformat/",
+  "homepage": "https://messageformat.github.io/",
   "repository": "messageformat/messageformat",
-  "main": "lib/messageformat.js",
-  "files": [
-    "example",
-    "index.d.ts",
-    "lib",
-    "messageformat.js",
-    "messageformat.min.js",
-    "messageformat.min.js.map",
-    "messages.js"
-  ],
-  "dependencies": {
-    "make-plural": "^4.3.0",
-    "messageformat-parser": "^3.0.0",
-    "reserved-words": "^0.1.2"
-  },
-  "devDependencies": {
-    "browserify": "^16.2.3",
-    "expect.js": "*",
-    "ink-docstrap": "github:messageformat/docstrap#messageformat",
-    "jsdoc": "^3.5.5",
-    "mocha": "^5.2.0",
-    "rimraf": "^2.6.2",
-    "serve": "^9.6.0",
-    "tmp": "0.0.33",
-    "uglify-js": "^3.4.9"
+  "directories": {
+    "doc": "docs",
+    "example": "example"
   },
   "scripts": {
-    "build:all": "npm run build && npm run build:example && npm run build:docs",
-    "build:browser": "browserify lib/messageformat.js -s MessageFormat -o messageformat.js",
     "build:docs": "jsdoc -c jsdoc-conf.json && ./fix-docs.sh",
-    "build:example": "./cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
-    "build:minify": "uglifyjs messageformat.js --compress --mangle --output messageformat.min.js --source-map \"url='messageformat.min.js.map'\"",
-    "build": "npm run build:browser && npm run build:minify",
-    "clean:all": "npm run clean && npm run clean:docs",
+    "build:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
+    "build": "lerna run build --scope messageformat && npm run build:example && npm run build:docs",
     "clean:docs": "rimraf docs/*html docs/fonts docs/img docs/logo docs/scripts docs/styles",
-    "clean": "rimraf messageformat.*js*",
-    "test:browser": "npm run build:browser && serve",
-    "test": "mocha",
-    "preversion": "npm run prepublishOnly",
-    "version": "git commit -am 'Update version' && git add -f messageformat.*js* docs example/i18n.js",
-    "postversion": "git reset --hard HEAD^ && npm run build:docs && git commit -am 'Update documentation'",
-    "prepublishOnly": "npm run clean:all && npm test && npm run build:all"
+    "clean": "lerna run clean && npm run clean:docs",
+    "prepare": "lerna bootstrap",
+    "test:browser": "lerna run build:browser --scope messageformat && serve",
+    "test": "mocha"
   },
-  "browser": {
-    "fs": false
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "ink-docstrap": "github:messageformat/docstrap#messageformat",
+    "jsdoc": "^3.5.5",
+    "lerna": "^3.6.0",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "serve": "^10.1.1",
+    "tmp": "0.0.33"
   }
 }

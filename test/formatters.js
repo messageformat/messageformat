@@ -1,6 +1,6 @@
 if (typeof require !== 'undefined') {
   var expect = require('expect.js');
-  var MessageFormat = require('../');
+  var MessageFormat = require('../packages/messageformat');
 }
 
 describe('Formatters', () => {
