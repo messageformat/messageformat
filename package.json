@@ -30,20 +30,20 @@
     "messages.js"
   ],
   "dependencies": {
-    "make-plural": "^4.2.0",
+    "make-plural": "^4.3.0",
     "messageformat-parser": "^3.0.0",
     "reserved-words": "^0.1.2"
   },
   "devDependencies": {
-    "browserify": "^16.2.2",
+    "browserify": "^16.2.3",
     "expect.js": "*",
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "rimraf": "^2.6.2",
-    "serve": "^9.2.0",
+    "serve": "^9.6.0",
     "tmp": "0.0.33",
-    "uglify-js": "^3.4.5"
+    "uglify-js": "^3.4.9"
   },
   "scripts": {
     "build:all": "npm run build && npm run build:example && npm run build:docs",

@@ -25,7 +25,7 @@
     "prepare": "npm install --no-save ../"
   },
   "dependencies": {
-    "dot-properties": "^0.2.0",
+    "dot-properties": "^0.2.1",
     "glob": "~7.0.6",
     "nopt": "~3.0.6",
     "uv": "^1.0.7"
