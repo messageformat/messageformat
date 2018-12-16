@@ -16,7 +16,7 @@
     "clean": "lerna run clean",
     "prepare": "lerna bootstrap",
     "test:browser": "lerna run build:browser --scope messageformat && serve",
-    "test": "mocha"
+    "test": "lerna run test && mocha"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
