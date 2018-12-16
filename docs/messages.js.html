@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>messageformat Source: messages.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.flatly.css">
+
+	<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>
+<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="./"><img class="branding-logo" src="logo/messageformat.svg"
+		alt="logo"/>messageformat</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+				</ul>
+			</li>
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-about">About</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-build">Build-time Compilation</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-guide">Format Guide</a>
+					</li>
+				
+			
+		</ul>
+        
+        
+          <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+            
+            <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>messageformat on GitHub</title>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+            </a></li>
+          </ul>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: messages.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">/**
+ * @classdesc Accessor for compiled MessageFormat functions
+ *
+ * ```
+ * import Messages from 'messageformat/messages'
+ * ```
+ *
+ * @class
+ * @param {object} locales A map of locale codes to their function objects
+ * @param {string|null} [defaultLocale] If not defined, default and initial locale is the first entry of `locales`
+ *
+ * @example
+ * var fs = require('fs');
+ * var MessageFormat = require('messageformat');
+ * var mf = new MessageFormat(['en', 'fi']);
+ * var msgSet = {
+ *   en: {
+ *     a: 'A {TYPE} example.',
+ *     b: 'This has {COUNT, plural, one{one user} other{# users}}.',
+ *     c: {
+ *       d: 'We have {P, number, percent} code coverage.'
+ *     }
+ *   },
+ *   fi: {
+ *     b: 'Tällä on {COUNT, plural, one{yksi käyttäjä} other{# käyttäjää}}.',
+ *     e: 'Minä puhun vain suomea.'
+ *   }
+ * };
+ * var cfStr = mf.compile(msgSet).toString('module.exports');
+ * fs.writeFileSync('messages.js', cfStr);
+ *
+ * ...
+ *
+ * var Messages = require('messageformat/messages');
+ * var msgData = require('./messages');
+ * var messages = new Messages(msgData, 'en');
+ *
+ * messages.hasMessage('a')                // true
+ * messages.hasObject('c')                 // true
+ * messages.get('b', { COUNT: 3 })         // 'This has 3 users.'
+ * messages.get(['c', 'd'], { P: 0.314 })  // 'We have 31% code coverage.'
+ *
+ * messages.get('e')                       // 'e'
+ * messages.setFallback('en', ['foo', 'fi'])
+ * messages.get('e')                       // 'Minä puhun vain suomea.'
+ *
+ * messages.locale = 'fi'
+ * messages.hasMessage('a')                // false
+ * messages.hasMessage('a', 'en')          // true
+ * messages.hasMessage('a', null, true)    // true
+ * messages.hasObject('c')                 // false
+ * messages.get('b', { COUNT: 3 })         // 'Tällä on 3 käyttäjää.'
+ * messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'
+ */
+function Messages(locales, defaultLocale) {
+  this._data = {};
+  this._fallback = {};
+  Object.keys(locales).forEach(function(lc) {
+    if (lc !== 'toString') {
+      this._data[lc] = locales[lc];
+      if (typeof defaultLocale === 'undefined') defaultLocale = lc;
+    }
+  }, this);
+
+  /**
+   * List of available locales
+   * @readonly
+   * @memberof Messages
+   * @member {string[]} availableLocales
+   */
+  Object.defineProperty(this, 'availableLocales', {
+    get: function() { return Object.keys(this._data) }
+  });
+
+  /**
+   * Current locale
+   *
+   * One of Messages#availableLocales or `null`. Partial matches of language tags
+   * are supported, so e.g. with an `en` locale defined, it will be selected by
+   * `messages.locale = 'en-US'` and vice versa.
+   *
+   * @memberof Messages
+   * @member {string|null} locale
+   */
+  Object.defineProperty(this, 'locale', {
+    get: function() { return this._locale },
+    set: function(lc) { this._locale = this.resolveLocale(lc); }
+  });
+  this.locale = defaultLocale;
+
+  /**
+   * Default fallback locale
+   *
+   * One of Messages#availableLocales or `null`. Partial matches of language tags
+   * are supported, so e.g. with an `en` locale defined, it will be selected by
+   * `messages.defaultLocale = 'en-US'` and vice versa.
+   *
+   * @memberof Messages
+   * @member {string|null} defaultLocale
+   */
+  Object.defineProperty(this, 'defaultLocale', {
+    get: function() { return this._defaultLocale },
+    set: function(lc) { this._defaultLocale = this.resolveLocale(lc); }
+  });
+  this._defaultLocale = this._locale;
+}
+
+module.exports = Messages;
+
+/**
+ * Add new messages to the accessor; useful if loading data dynamically
+ *
+ * The locale code `lc` should be an exact match for the locale being updated,
+ * or empty to default to the current locale. Use {@link #resolveLocale} for
+ * resolving partial locale strings.
+ *
+ * If `keypath` is empty, adds or sets the complete message object for the
+ * corresponding locale. If any keys in `keypath` do not exist, a new object
+ * will be created at that key.
+ *
+ * @param {function|object} data Hierarchical map of keys to functions, or a
+ *   single message function
+ * @param {string} [lc] If empty or undefined, defaults to `this.locale`
+ * @param {string[]} [keypath] The keypath being added
+ * @returns {Messages} The Messages instance, to allow for chaining
+ */
+Messages.prototype.addMessages = function(data, lc, keypath) {
+  if (!lc) lc = this.locale;
+  if (typeof data !== 'function') {
+    data = Object.keys(data).reduce(function(map, key) {
+      if (key !== 'toString') map[key] = data[key];
+      return map
+    }, {});
+  }
+  if (Array.isArray(keypath) &amp;&amp; keypath.length > 0) {
+    var parent = this._data[lc]
+    for (var i = 0; i &lt; keypath.length - 1; ++i) {
+      var key = keypath[i];
+      if (!parent[key]) parent[key] = {}
+      parent = parent[key]
+    }
+    parent[keypath[keypath.length - 1]] = data
+  } else {
+    this._data[lc] = data
+  }
+  return this;
+}
+
+/**
+ * Resolve `lc` to the key of an available locale or `null`, allowing for
+ * partial matches. For example, with an `en` locale defined, it will be
+ * selected by `messages.defaultLocale = 'en-US'` and vice versa.
+ *
+ * @param {string} lc Locale code
+ * @returns {string|null}
+ */
+Messages.prototype.resolveLocale = function(lc) {
+  if (this._data[lc]) return lc;
+  if (lc) {
+    var l = String(lc);
+    while (l = l.replace(/[-_]?[^-_]*$/, '')) {
+      if (this._data[l]) return l;
+    }
+    var ll = this.availableLocales;
+    var re = new RegExp('^' + lc + '[-_]');
+    for (var i = 0; i &lt; ll.length; ++i) {
+      if (re.test(ll[i])) return ll[i];
+    }
+  }
+  return null;
+}
+
+/**
+ * Get the list of fallback locales
+ * @param {string} [lc] If empty or undefined, defaults to `this.locale`
+ * @returns {string[]}
+ */
+Messages.prototype.getFallback = function(lc) {
+  if (!lc) lc = this.locale;
+  return this._fallback[lc] || (
+    lc === this.defaultLocale || !this.defaultLocale ? [] : [this.defaultLocale]
+  );
+}
+
+/**
+ * Set the fallback locale or locales for `lc`
+ *
+ * To disable fallback for the locale, use `setFallback(lc, [])`.
+ * To use the default fallback, use `setFallback(lc, null)`.
+ *
+ * @param {string} lc
+ * @param {string[]|null} fallback
+ * @returns {Messages} The Messages instance, to allow for chaining
+ */
+Messages.prototype.setFallback = function(lc, fallback) {
+  this._fallback[lc] = Array.isArray(fallback) ? fallback : null;
+  return this;
+}
+
+/**
+ * Check if `key` is a message function for the locale
+ *
+ * `key` may be a `string` for functions at the root level, or `string[]` for
+ * accessing hierarchical objects. If an exact match is not found and `fallback`
+ * is true, the fallback locales are checked for the first match.
+ *
+ * @param {string|string[]} key The key or keypath being sought
+ * @param {string} [lc] If empty or undefined, defaults to `this.locale`
+ * @param {boolean} [fallback=false] If true, also checks fallback locales
+ * @returns {boolean}
+ */
+Messages.prototype.hasMessage = function(key, lc, fallback) {
+  if (!lc) lc = this.locale;
+  var fb = fallback ? this.getFallback(lc) : null;
+  return _has(this._data, lc, key, fb, 'function');
+}
+
+/**
+ * Check if `key` is a message object for the locale
+ *
+ * `key` may be a `string` for functions at the root level, or `string[]` for
+ * accessing hierarchical objects. If an exact match is not found and `fallback`
+ * is true, the fallback locales are checked for the first match.
+ *
+ * @param {string|string[]} key The key or keypath being sought
+ * @param {string} [lc] If empty or undefined, defaults to `this.locale`
+ * @param {boolean} [fallback=false] If true, also checks fallback locales
+ * @returns {boolean}
+ */
+Messages.prototype.hasObject = function(key, lc, fallback) {
+  if (!lc) lc = this.locale;
+  var fb = fallback ? this.getFallback(lc) : null;
+  return _has(this._data, lc, key, fb, 'object');
+}
+
+/**
+ * Get the message or object corresponding to `key`
+ *
+ * `key` may be a `string` for functions at the root level, or `string[]` for
+ * accessing hierarchical objects. If an exact match is not found, the fallback
+ * locales are checked for the first match.
+ *
+ * If `key` maps to a message function, it will be called with `props`. If it
+ * maps to an object, the object is returned directly.
+ *
+ * @param {string|string[]} key The key or keypath being sought
+ * @param {object} [props] Optional properties passed to the function
+ * @param {string} [lc] If empty or undefined, defaults to `this.locale`
+ * @returns {string|Object&lt;string,function|object>}
+ */
+Messages.prototype.get = function(key, props, lc) {
+  if (!lc) lc = this.locale;
+  var msg = _get(this._data[lc], key);
+  if (msg) return typeof msg == 'function' ? msg(props) : msg;
+  var fb = this.getFallback(lc);
+  for (var i = 0; i &lt; fb.length; ++i) {
+    msg = _get(this._data[fb[i]], key);
+    if (msg) return typeof msg == 'function' ? msg(props) : msg;
+  }
+  return key;
+}
+
+/** @private */
+function _get(obj, key) {
+  if (!obj) return null;
+  if (Array.isArray(key)) {
+    for (var i = 0; i &lt; key.length; ++i) {
+      obj = obj[key[i]];
+      if (!obj) return null;
+    }
+    return obj;
+  }
+  return obj[key];
+}
+
+/** @private */
+function _has(data, lc, key, fallback, type) {
+  var msg = _get(data[lc], key);
+  if (msg) return typeof msg === type;
+  if (fallback) {
+    for (var i = 0; i &lt; fallback.length; ++i) {
+      msg = _get(data[fallback[i]], key);
+      if (msg) return typeof msg === type;
+    }
+  }
+  return false;
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+
+<footer>
+
+
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".page-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+
+</body>
+</html>

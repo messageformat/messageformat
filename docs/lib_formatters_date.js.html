@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>messageformat Source: lib/formatters/date.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.flatly.css">
+
+	<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>
+<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="./"><img class="branding-logo" src="logo/messageformat.svg"
+		alt="logo"/>messageformat</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+				</ul>
+			</li>
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-about">About</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-build">Build-time Compilation</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-guide">Format Guide</a>
+					</li>
+				
+			
+		</ul>
+        
+        
+          <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+            
+            <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>messageformat on GitHub</title>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+            </a></li>
+          </ul>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: lib/formatters/date.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">/** Represent a date as a short/default/long/full string
+ *
+ * The input value needs to be in a form that the
+ * {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date Date object}
+ * can process using its single-argument form, `new Date(value)`.
+ *
+ * @memberof Formatters
+ * @param {number|string} value - Either a Unix epoch time in milliseconds, or a string value representing a date
+ * @param {string} [type='default'] - One of `'short'`, `'default'`, `'long'` , or `full`
+ *
+ * @example
+ * var mf = new MessageFormat(['en', 'fi']);
+ *
+ * mf.compile('Today is {T, date}')({ T: Date.now() })
+ * // 'Today is Feb 21, 2016'
+ *
+ * mf.compile('Tänään on {T, date}', 'fi')({ T: Date.now() })
+ * // 'Tänään on 21. helmikuuta 2016'
+ *
+ * mf.compile('Unix time started on {T, date, full}')({ T: 0 })
+ * // 'Unix time started on Thursday, January 1, 1970'
+ *
+ * var cf = mf.compile('{sys} became operational on {d0, date, short}');
+ * cf({ sys: 'HAL 9000', d0: '12 January 1999' })
+ * // 'HAL 9000 became operational on 1/12/1999'
+ */
+function date(v,lc,p) {
+  var o = {day:'numeric', month:'short', year:'numeric'};
+  switch (p) {
+    case 'full': o.weekday = 'long';
+    case 'long': o.month = 'long'; break;
+    case 'short': o.month = 'numeric';
+  }
+  return (new Date(v)).toLocaleDateString(lc, o)
+}
+
+module.exports = function() { return date; }
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+
+<footer>
+
+
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".page-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+
+</body>
+</html>
