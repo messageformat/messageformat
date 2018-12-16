@@ -15,10 +15,7 @@
   ],
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/messageformat/parser.git"
-  },
+  "repository": "messageformat/messageformat",
   "main": "parser.js",
   "files": [
     "parser.js",
@@ -26,11 +23,11 @@
   ],
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "mocha": "^4.1.0",
+    "mocha": "^5.2.0",
     "pegjs": "^0.10.0"
   },
   "scripts": {
-    "prepare": "pegjs parser.pegjs",
+    "build": "pegjs parser.pegjs",
     "prepublishOnly": "npm test",
     "test": "mocha"
   }
