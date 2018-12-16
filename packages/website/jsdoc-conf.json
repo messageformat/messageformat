@@ -1,14 +1,18 @@
 {
   "source": {
-    "include": [ "lib/", "lib/formatters/", "messages.js" ]
+    "include": [
+      "node_modules/messageformat/lib/",
+      "node_modules/messageformat/lib/formatters/",
+      "node_modules/messageformat/messages.js"
+    ]
   },
   "plugins": [
     "plugins/markdown"
   ],
   "opts": {
     "destination": "docs/",
-    "package": "package.json",
-    "readme": "README.md",
+    "package": "node_modules/messageformat/package.json",
+    "readme": "node_modules/messageformat/README.md",
     "template": "node_modules/ink-docstrap/template",
     "tutorials": "pages/"
   },
