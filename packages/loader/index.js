@@ -2,7 +2,7 @@ var loaderUtils = require('loader-utils');
 var MessageFormat = require('messageformat');
 
 module.exports = function(content) {
-  var options = loaderUtils.getOptions(this);
+  var options = loaderUtils.getOptions(this) || {};
   var locale = options.locale;
   if (typeof locale === 'string' && locale.indexOf(',') !== -1) locale = locale.split(',');
   var messages = JSON.parse(content);
