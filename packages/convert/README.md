@@ -1,6 +1,17 @@
 # messageformat-convert
 
-Converts input (e.g. as used by Rails i18n) into [messageformat]-compatible JSON.
+Converts hiearachical objects into [messageformat]-compatible JSON. More
+specifically, it:
+- Detects two-letter locale keys and parses their contents according to that
+  locale's pluralisation rules
+- Converts `#{var}` and `%{var}` variable replacements into their messageformat
+  equivalents, while properly escaping other `{}` characters.
+- Detects objects encoding pluralisation choices (using the locale-specific set
+  of CLDR categories, i.e. `zero|one|two|few|many|aother`) and converts them to
+  their messageformat equivalents.
+
+With these conversions, messages stored according to the Rails i18n spec may be
+used together with [messageformat].
 
 ### Installation
 
@@ -49,9 +60,10 @@ messages.en.errors.wrong_length({ count: 42 })
 ```
 
 
-### API: `convert(input, options)`
+### API: `convert(data, options)`
 
-`input` should be a string; `options` is an optional set of configuration:
+`data` should be a hierarchical object of strings; `options` is an optional set
+of configuration:
 
 - `defaultLocale` (string, default `'en'`) – Sets the initial locale.
 
