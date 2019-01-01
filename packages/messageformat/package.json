@@ -31,7 +31,7 @@
   ],
   "dependencies": {
     "make-plural": "^4.3.0",
-    "messageformat-parser": "^3.0.0",
+    "messageformat-parser": "^4.0.0",
     "reserved-words": "^0.1.2"
   },
   "devDependencies": {
