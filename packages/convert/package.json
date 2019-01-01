@@ -1,26 +1,25 @@
 {
-  "name": "yaml-to-messageformat",
+  "name": "messageformat-convert",
   "version": "0.2.0",
-  "description": "Convert yaml files (e.g. from Rails i18n) into messageformat-compatible JSON",
+  "description": "Convert input (e.g. from Rails i18n) into messageformat-compatible JSON",
   "keywords": [
     "messageformat",
-    "yaml",
+    "convert",
     "rails",
     "i18n"
   ],
-  "main": "index.js",
-  "repository": "https://github.com/eemeli/yaml-to-messageformat",
   "author": "Eemeli Aro <eemeli@gmail.com>",
   "license": "MIT",
+  "repository": "messageformat/messageformat",
+  "main": "index.js",
   "engines": {
     "node": ">=6.0"
   },
-  "devDependencies": {
-    "messageformat": "^1.1.0"
-  },
   "dependencies": {
-    "common-prefix": "^1.1.0",
-    "make-plural": "^4.0.1",
-    "yaml": "^1.0.0-rc.7"
+    "common-prefix": "1.1.0",
+    "make-plural": "^4.3.0"
+  },
+  "devDependencies": {
+    "messageformat": "^2.0.4"
   }
 }

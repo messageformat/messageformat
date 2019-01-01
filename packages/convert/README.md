@@ -1,16 +1,11 @@
-# yaml-to-messageformat
+# messageformat-convert
 
-Converts yaml input (e.g. as used by Rails i18n) into [messageformat]-compatible
-JSON.
+Converts input (e.g. as used by Rails i18n) into [messageformat]-compatible JSON.
 
 ### Installation
 
 ```sh
-npm install yaml-to-messageformat
-```
-or
-```sh
-yarn add yaml-to-messageformat
+npm install messageformat-convert
 ```
 
 If using in an environment that does not natively support ES6 features such as
@@ -20,18 +15,21 @@ object destructuring and arrow functions, you'll want to use a transpiler for th
 ### Usage
 
 ```js
-const convert = require('yaml-to-messageformat')
-const { locales, translations } = convert(`
-en:
-  format: "%{attribute} %{message}"
-  errors:
-    confirmation: "doesn't match %{attribute}"
-    accepted: "must be accepted"
-    wrong_length:
-      one: "is the wrong length (should be 1 character)"
-      other: "is the wrong length (should be %{count} characters)"
-    equal_to: "must be equal to %{count}"
-`)
+const convert = require('messageformat-convert')
+const { locales, translations } = convert({
+  en: {
+    format: "%{attribute} %{message}",
+    errors: {
+      confirmation: "doesn't match %{attribute}",
+      accepted: "must be accepted",
+      wrong_length: {
+        one: "is the wrong length (should be 1 character)",
+        other: "is the wrong length (should be %{count} characters)"
+      },
+      equal_to: "must be equal to %{count}"
+    }
+  }
+})
 
 const MessageFormat = require('messageformat')
 const mf = new MessageFormat(locales)
@@ -62,9 +60,6 @@ messages.en.errors.wrong_length({ count: 42 })
   switches the language used for determining the pluralisation rules. Set this to
   some limited set of languages (or even an empty array) to limit that.
 
-- `merge` (boolean, default `false`) – Enables YAML merge keys; see the [yaml]
-  documentation for details
-
 - `verbose` (boolean, default `false`) – If set to `true`, some logging and
   warnings will be printed to the console.
 
@@ -79,4 +74,3 @@ The object returned by the function contains the following fields:
 
 [CLDR pluralisation language]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [messageformat]: https://messageformat.github.io/
-[yaml]: https://eemeli.org/yaml/#data-schemas

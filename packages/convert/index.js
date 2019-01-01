@@ -1,5 +1,4 @@
 const common = require('common-prefix')
-const YAML = require('yaml').default
 const pluralCategories = require('make-plural/umd/pluralCategories')
 
 const cldrPluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other']
@@ -37,7 +36,7 @@ const isPluralObject = (data, locale, { verbose }) => {
     ))
   ) return true
   if (verbose && keys.every(key => cldrPluralCategories.includes(key))) {
-    console.warn(`yaml-to-messageformat: Nearly valid plural for locale ${locale}: ${JSON.stringify(data)}`)
+    console.warn(`messageformat-convert: Nearly valid plural for locale ${locale}: ${JSON.stringify(data)}`)
   }
   return false
 }
@@ -74,7 +73,7 @@ const convertData = (data, locale, options) => {
         const isLcKey = (!il || il.includes(key)) && pluralCategories[key]
         if (isLcKey) {
           options._lc[key] = true
-          if (verbose) console.log(`yaml-to-messageformat: Found locale ${key}`)
+          if (verbose) console.log(`messageformat-convert: Found locale ${key}`)
         }
         res[key] = convertData(data[key], isLcKey ? key : locale, options)
         return res
@@ -85,11 +84,10 @@ const convertData = (data, locale, options) => {
   }
 }
 
-const convert = (input, options) => {
+const convert = (data, options) => {
+  if (data.length === 1) data = data[0]
   options = Object.assign({}, defaultOptions, options)
   options._lc = { [options.defaultLocale]: true }
-  let data = YAML.parse(input, options)
-  if (data.length === 1) data = data[0]
   const translations = convertData(data, options.defaultLocale, options)
   return {
     locales: Object.keys(options._lc).filter(lc => lc),
