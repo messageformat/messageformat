@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="115 115 370 370">
+<circle cx="300" cy="300" r="184.7" fill="#4C5963"/>
+<polygon fill="#FFFFFF" points="356.9,365.7 329.5,311 302.1,338.3 274.7,311 247.4,365.7 192.6,365.7 247.4,228.8 302.1,283.6 356.9,228.8 411.7,365.7"/>
+<g>
+	<rect x="227.8" y="228.8" width="19.6" height="20.0" fill="#58C4C8"/>
+	<rect x="227.8" y="248.4" width="19.6" height="20.0" fill="#C8E8E9"/>
+	<rect x="227.4" y="267.9" width="20.0" height="19.6" fill="#00A9AC"/>
+	<rect x="208.2" y="267.9" width="19.6" height="20.0" fill="#C8E8E9"/>
+	<rect x="208.2" y="287.5" width="19.6" height="20.0" fill="#58C4C8"/>
+	<rect x="227.4" y="307.0" width="20.0" height="19.6" fill="#00A9AC"/>
+	<rect x="208.2" y="307.0" width="19.6" height="20.0" fill="#C8E8E9"/>
+	<rect x="207.8" y="326.6" width="20.0" height="19.6" fill="#58C4C8"/>
+	<rect x="188.6" y="326.6" width="19.6" height="20.0" fill="#C8E8E9"/>
+	<rect x="188.6" y="346.2" width="19.6" height="19.6" fill="#00A9AC"/>
+</g>
+</svg>

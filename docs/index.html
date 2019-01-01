@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>messageformat Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.flatly.css">
+
+	<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>
+<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="./"><img class="branding-logo" src="logo/messageformat.svg"
+		alt="logo"/>messageformat</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+				</ul>
+			</li>
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-about">About</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-build">Build-time Compilation</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-guide">Format Guide</a>
+					</li>
+				
+			
+		</ul>
+        
+        
+          <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+            
+            <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>messageformat on GitHub</title>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+            </a></li>
+          </ul>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+	
+	
+
+    <section class="readme-section">
+        <article><div class="main-title">
+<img align="right" width="100" height="100" src="logo/messageformat.svg">
+<a class="badge" href="http://travis-ci.org/messageformat/messageformat"><img src="https://secure.travis-ci.org/messageformat/messageformat.svg" alt="Build Status"></a>
+<h1>messageformat</h1>
+</div>
+
+<p>The experience and subtlety of your program's text can be important. Messageformat is a mechanism for handling both <strong>pluralization</strong> and <strong>gender</strong> in your applications. It can also lead to much better translations, as it's designed to support <a href="http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html">all the languages</a> included in the <a href="http://cldr.unicode.org/">Unicode CLDR</a>.</p>
+<p>The ICU has an <a href="http://userguide.icu-project.org/formatparse/messages">official guide</a> for the format. Messageformat supports and extends all parts of the <a href="http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html">standard</a>, with the exception of the deprecated ChoiceFormat.</p>
+<p>There is a good slide-deck on <a href="https://docs.google.com/presentation/d/1ZyN8-0VXmod5hbHveq-M1AeQ61Ga3BmVuahZjbmbBxo/pub?start=false&amp;loop=false&amp;delayms=3000#slide=id.g1bc43a82_2_14">Plural and Gender in Translated Messages</a> by Markus Scherer and Mark Davis. But, again, remember that many of these problems apply even if you're only outputting english.</p>
+<h2>What problems does it solve?</h2><p>Using messageformat, you can separate your code from your text formatting, while enabling much more humane expressions. In other words, you won't need to see this anymore in your output:</p>
+<blockquote>
+<p>There are 1 results.<br>There are 2 result(s).<br>Number of results: 3.</p>
+</blockquote>
+<p>On a more fundamental level, messageformat and its associated tools can help you build an effective workflow for UI texts and translations, keeping message sources in human-friendly formats, compiling them into JavaScript during your build phase, and making them easy to use from your application code.</p>
+<h2>What does it look like?</h2><p>With this message:</p>
+<pre class="prettyprint source lang-js"><code>const msgSrc = `{GENDER, select,
+  male {He}
+  female {She}
+  other {They}
+} found {RES, plural,
+  =0 {no results}
+  one {1 result}
+  other {# results}
+}.`</code></pre><p>You'll get these results:</p>
+<pre class="prettyprint source lang-js"><code>const MessageFormat = require('messageformat')
+const mf = new MessageFormat('en')
+const msg = mf.compile(msgSrc)
+
+msg({ GENDER: 'male', RES: 1 })    // 'He found 1 result.'
+msg({ GENDER: 'female', RES: 1 })  // 'She found 1 result.'
+msg({ GENDER: 'male', RES: 0 })    // 'He found no results.'
+msg({ RES: 2 })                    // 'They found 2 results.'</code></pre><h2>Getting Started</h2><p>To install just the core package, use:</p>
+<pre class="prettyprint source"><code>npm install messageformat</code></pre><p>This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our <a href="https://messageformat.github.io/messageformat/page-guide">Format Guide</a> will help with the ICU MessageFormat Syntax, and the <a href="https://messageformat.github.io/messageformat/page-build">Build-time Compilation Guide</a> provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.</p></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+
+<footer>
+
+
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".page-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+
+</body>
+</html>

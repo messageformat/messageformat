@@ -1,0 +1,32 @@
+{
+  "source": {
+    "include": [
+      "node_modules/messageformat/lib/",
+      "node_modules/messageformat/lib/formatters/",
+      "node_modules/messageformat/messages.js"
+    ]
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "destination": "docs/",
+    "package": "node_modules/messageformat/package.json",
+    "readme": "node_modules/messageformat/README.md",
+    "template": "node_modules/ink-docstrap/template",
+    "tutorials": "pages/"
+  },
+  "templates": {
+    "disablePackagePath": true,
+    "github": "messageformat/messageformat",
+    "favicon": [
+      "<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>",
+      "<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>"
+    ],
+    "logoFile": "logo/messageformat.svg",
+    "outputSourceFiles": true,
+    "search": false,
+    "systemName": "messageformat",
+    "theme": "flatly"
+  }
+}

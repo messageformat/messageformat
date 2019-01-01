@@ -1,0 +1,30 @@
+{
+  "name": "messageformat-monorepo",
+  "version": "2.1.0-monorepo",
+  "description": "Messageformat monorepo",
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://messageformat.github.io/",
+  "repository": "messageformat/messageformat",
+  "directories": {
+    "doc": "docs",
+    "example": "example"
+  },
+  "scripts": {
+    "build:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
+    "build": "lerna run build && npm run build:example",
+    "clean": "lerna run clean",
+    "prepare": "lerna bootstrap",
+    "pretest": "lerna run build --scope messageformat-parser",
+    "test:browser": "lerna run build:browser --scope messageformat && serve",
+    "test": "lerna run test && mocha"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "lerna": "^3.6.0",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "serve": "^10.1.1",
+    "tmp": "0.0.33"
+  }
+}
