@@ -1,0 +1,5 @@
+{
+  "about": { "title": "About" },
+  "build": { "title": "Build-time Compilation" },
+  "guide": { "title": "Format Guide" }
+}
