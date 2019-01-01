@@ -147,10 +147,26 @@ describe('Formatters', () => {
       expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.')
     })
 
-    it('should use formatting functions with parameters', () => {
-      mf.addFormatters({ arg: function(v, lc, arg) { return arg } })
-      const msg = mf.compile('This is {VAR, arg, X, Y }.')
-      expect(msg({ VAR: 'big' })).to.eql('This is X, Y.')
+    describe('arguments', () => {
+      beforeEach(() => {
+        mf = new MessageFormat('en')
+        mf.addFormatters({ arg: function(v, lc, arg) { return arg } })
+      })
+
+      it('basic string', () => {
+        const msg = mf.compile('This is {_, arg, X, Y }.')
+        expect(msg({})).to.eql('This is X, Y.')
+      })
+
+      it('select', () => {
+        const msg = mf.compile('This is {_, arg, {VAR, select, x{X} other{Y}}}.')
+        expect(msg({ VAR: 'x' })).to.eql('This is X.')
+      })
+
+      it('# in plural', () => {
+        const msg = mf.compile('This is {VAR, plural, one{} other{{_, arg, #}}}.')
+        expect(msg({ VAR: 99 })).to.eql('This is 99.')
+      })
     })
   })
 })

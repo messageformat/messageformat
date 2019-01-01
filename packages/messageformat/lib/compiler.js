@@ -92,7 +92,8 @@ Compiler.prototype.token = function(token, plural) {
 
     case 'select':
       fn = 'select';
-      args.push(this.cases(token, this.mf.strictNumberSign ? null : plural));
+      if (plural && this.mf.strictNumberSign) plural = null;
+      args.push(this.cases(token, plural));
       this.runtime.select = true;
       break;
 
@@ -118,9 +119,9 @@ Compiler.prototype.token = function(token, plural) {
       if (!this.mf.fmt[token.key]) throw new Error('Formatting function ' + JSON.stringify(token.key) + ' not found!');
       args.push(JSON.stringify(this.lc));
       if (token.param) {
-        var tok = token.param.tokens[0]
-        var param = typeof tok === 'string' ? tok.trim() : ''
-        args.push(JSON.stringify(param));
+        if (plural && this.mf.strictNumberSign) plural = null;
+        var s = token.param.tokens.map(function(tok) { return this.token(tok, plural); }, this);
+        args.push('(' + (s.join(' + ') || '""') + ').trim()')
       }
       fn = Compiler.propname(token.key, 'fmt');
       this.formatters[token.key] = true;
