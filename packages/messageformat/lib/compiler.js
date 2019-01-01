@@ -117,8 +117,10 @@ Compiler.prototype.token = function(token, plural) {
       }
       if (!this.mf.fmt[token.key]) throw new Error('Formatting function ' + JSON.stringify(token.key) + ' not found!');
       args.push(JSON.stringify(this.lc));
-      if (typeof token.param === 'string') {
-        args.push(JSON.stringify(token.param.trim()))
+      if (token.param) {
+        var tok = token.param.tokens[0]
+        var param = typeof tok === 'string' ? tok.trim() : ''
+        args.push(JSON.stringify(param));
       }
       fn = Compiler.propname(token.key, 'fmt');
       this.formatters[token.key] = true;
@@ -153,7 +155,7 @@ Compiler.prototype.compile = function(src, lc, plurals) {
   if (typeof src != 'object') {
     this.lc = lc;
     var pc = plurals[lc] || { cardinal: [], ordinal: [] };
-    pc.strictNumberSign = !!this.mf.strictNumberSign;
+    pc.strict = !!this.mf.strictNumberSign;
     var r = parse(src, pc).map(function(token) { return this.token(token); }, this);
     return 'function(d) { return ' + (r.join(' + ') || '""') + '; }';
   } else {
