@@ -15,6 +15,16 @@
   "engines": {
     "node": ">=6.0"
   },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "rules": {
+      "no-console": 0,
+      "no-control-regex": 0
+    }
+  },
   "dependencies": {
     "common-prefix": "1.1.0",
     "make-plural": "^4.3.0"

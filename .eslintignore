@@ -1,0 +1,8 @@
+node_modules/
+package.json
+package-lock.json
+/docs/
+/example/i18n.js
+/packages/loader-example/dist/bundle.js
+/packages/messageformat/messageformat.*
+/packages/parser/parser.js

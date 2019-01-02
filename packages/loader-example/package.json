@@ -10,6 +10,28 @@
   "scripts": {
     "build": "webpack"
   },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": 0
+    },
+    "overrides": [
+      {
+        "files": [
+          "webpack.config.js"
+        ],
+        "env": {
+          "node": true
+        }
+      }
+    ]
+  },
   "dependencies": {
     "messageformat": "^2.0.4",
     "messageformat-loader": "^0.7.0",

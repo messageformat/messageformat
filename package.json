@@ -14,6 +14,7 @@
     "build:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
     "build": "lerna run build && npm run build:example",
     "clean": "lerna run clean",
+    "lint": "eslint '**/*.js'",
     "prepare": "lerna bootstrap",
     "pretest": "lerna run build --scope messageformat-parser",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
@@ -23,7 +24,50 @@
   "prettier": {
     "singleQuote": true
   },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "commonjs": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
+    "rules": {
+      "array-callback-return": "error",
+      "camelcase": "error",
+      "consistent-return": "error",
+      "eqeqeq": [
+        "error",
+        "smart"
+      ],
+      "no-constant-condition": [
+        "error",
+        {
+          "checkLoops": false
+        }
+      ],
+      "no-implicit-globals": "error"
+    },
+    "overrides": [
+      {
+        "files": [
+          "test/*.js"
+        ],
+        "env": {
+          "browser": true,
+          "es6": true,
+          "mocha": true
+        },
+        "rules": {
+          "no-unused-vars": 0
+        }
+      }
+    ]
+  },
   "devDependencies": {
+    "eslint": "^5.11.1",
+    "eslint-config-prettier": "^3.3.0",
     "expect.js": "^0.3.1",
     "lerna": "^3.6.0",
     "mocha": "^5.2.0",
