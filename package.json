@@ -29,6 +29,9 @@
     "env": {
       "commonjs": true
     },
+    "plugins": [
+      "prettier"
+    ],
     "extends": [
       "eslint:recommended",
       "prettier"
@@ -47,7 +50,8 @@
           "checkLoops": false
         }
       ],
-      "no-implicit-globals": "error"
+      "no-implicit-globals": "error",
+      "prettier/prettier": "error"
     },
     "overrides": [
       {
@@ -68,6 +72,7 @@
   "devDependencies": {
     "eslint": "^5.11.1",
     "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "expect.js": "^0.3.1",
     "lerna": "^3.6.0",
     "mocha": "^5.2.0",
