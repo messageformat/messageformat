@@ -1,0 +1,25 @@
+{
+  "name": "messageformat-convert",
+  "version": "0.2.0",
+  "description": "Convert input (e.g. from Rails i18n) into messageformat-compatible JSON",
+  "keywords": [
+    "messageformat",
+    "convert",
+    "rails",
+    "i18n"
+  ],
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "MIT",
+  "repository": "messageformat/messageformat",
+  "main": "index.js",
+  "engines": {
+    "node": ">=6.0"
+  },
+  "dependencies": {
+    "common-prefix": "1.1.0",
+    "make-plural": "^4.3.0"
+  },
+  "devDependencies": {
+    "messageformat": "^2.0.4"
+  }
+}
