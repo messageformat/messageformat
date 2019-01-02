@@ -16,13 +16,18 @@
     "clean": "lerna run clean",
     "prepare": "lerna bootstrap",
     "pretest": "lerna run build --scope messageformat-parser",
+    "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "test:browser": "lerna run build:browser --scope messageformat && serve",
     "test": "lerna run test && mocha"
+  },
+  "prettier": {
+    "singleQuote": true
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
     "lerna": "^3.6.0",
     "mocha": "^5.2.0",
+    "prettier": "^1.15.3",
     "rimraf": "^2.6.2",
     "serve": "^10.1.1",
     "tmp": "0.0.33"
