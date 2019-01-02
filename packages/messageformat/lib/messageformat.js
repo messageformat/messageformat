@@ -3,7 +3,6 @@ var formatters = require('./formatters');
 var Plurals = require('./plurals');
 var Runtime = require('./runtime');
 
-
 /**
  * Create a new MessageFormat compiler
  *
@@ -42,13 +41,16 @@ function MessageFormat(locale) {
     }, this);
     this.defaultLocale = locale[0];
   } else {
-    for (var lc in locale) if (locale.hasOwnProperty(lc)) {
-      if (typeof locale[lc] !== 'function') {
-        throw new Error('Expected function value for locale ' + JSON.stringify(lc));
+    for (var lc in locale)
+      if (locale.hasOwnProperty(lc)) {
+        if (typeof locale[lc] !== 'function') {
+          throw new Error(
+            'Expected function value for locale ' + JSON.stringify(lc)
+          );
+        }
+        this.pluralFuncs[lc] = locale[lc];
+        if (!this.defaultLocale) this.defaultLocale = lc;
       }
-      this.pluralFuncs[lc] = locale[lc];
-      if (!this.defaultLocale) this.defaultLocale = lc;
-    }
     if (this.defaultLocale) {
       this.hasCustomPluralFuncs = true;
     } else {
@@ -58,7 +60,6 @@ function MessageFormat(locale) {
   this.fmt = {};
   this.runtime = new Runtime(this);
 }
-
 
 /**
  * The default locale
@@ -70,7 +71,6 @@ function MessageFormat(locale) {
  * @default 'en'
  */
 MessageFormat.defaultLocale = 'en';
-
 
 /** Escape special characaters
  *
@@ -85,8 +85,7 @@ MessageFormat.defaultLocale = 'en';
 MessageFormat.escape = function(str, octothorpe) {
   var esc = octothorpe ? '[#{}]' : '[{}]';
   return String(str).replace(new RegExp(esc, 'g'), "'$&'");
-}
-
+};
 
 MessageFormat.formatters = formatters;
 
@@ -126,12 +125,12 @@ MessageFormat.formatters = formatters;
  * messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'
  */
 MessageFormat.prototype.addFormatters = function(fmt) {
-  for (var name in fmt) if (fmt.hasOwnProperty(name)) {
-    this.fmt[name] = fmt[name];
-  }
+  for (var name in fmt)
+    if (fmt.hasOwnProperty(name)) {
+      this.fmt[name] = fmt[name];
+    }
   return this;
 };
-
 
 /** Disable the validation of plural & selectordinal keys
  *
@@ -158,13 +157,13 @@ MessageFormat.prototype.addFormatters = function(fmt) {
  */
 MessageFormat.prototype.disablePluralKeyChecks = function() {
   this.noPluralKeyChecks = true;
-  for (var lc in this.pluralFuncs) if (this.pluralFuncs.hasOwnProperty(lc)) {
-    this.pluralFuncs[lc].cardinal = [];
-    this.pluralFuncs[lc].ordinal = [];
-  }
+  for (var lc in this.pluralFuncs)
+    if (this.pluralFuncs.hasOwnProperty(lc)) {
+      this.pluralFuncs[lc].cardinal = [];
+      this.pluralFuncs[lc].ordinal = [];
+    }
   return this;
 };
-
 
 /** Enable or disable the addition of Unicode control characters to all input
  *  to preserve the integrity of the output when mixing LTR and RTL text.
@@ -187,10 +186,9 @@ MessageFormat.prototype.disablePluralKeyChecks = function() {
  *   // 'first >> SECOND >> THIRD'
  */
 MessageFormat.prototype.setBiDiSupport = function(enable) {
-    this.bidiSupport = !!enable || (typeof enable == 'undefined');
-    return this;
+  this.bidiSupport = !!enable || typeof enable == 'undefined';
+  return this;
 };
-
 
 /** According to the ICU MessageFormat spec, a `#` character directly inside a
  *  `plural` or `selectordinal` statement should be replaced by the number
@@ -224,11 +222,10 @@ MessageFormat.prototype.setBiDiSupport = function(enable) {
  * messages.pastry({ X: 3, P: 'pie' })  // '# pies'
  */
 MessageFormat.prototype.setStrictNumberSign = function(enable) {
-    this.strictNumberSign = !!enable || (typeof enable == 'undefined');
-    this.runtime.setStrictNumber(this.strictNumberSign);
-    return this;
+  this.strictNumberSign = !!enable || typeof enable == 'undefined';
+  this.runtime.setStrictNumber(this.strictNumberSign);
+  return this;
 };
-
 
 /** Compile messages into storable functions
  *
@@ -310,9 +307,18 @@ MessageFormat.prototype.compile = function(messages, locale) {
   function _stringify(obj, level) {
     if (!level) level = 0;
     if (typeof obj != 'object') return obj;
-    var o = [], indent = '';
+    var o = [],
+      indent = '';
     for (var i = 0; i < level; ++i) indent += '  ';
-    for (var k in obj) o.push('\n' + indent + '  ' + Compiler.propname(k) + ': ' + _stringify(obj[k], level + 1));
+    for (var k in obj)
+      o.push(
+        '\n' +
+          indent +
+          '  ' +
+          Compiler.propname(k) +
+          ': ' +
+          _stringify(obj[k], level + 1)
+      );
     return '{' + o.join(',') + '\n' + indent + '}';
   }
 
@@ -320,7 +326,8 @@ MessageFormat.prototype.compile = function(messages, locale) {
   if (Object.keys(this.pluralFuncs).length == 0) {
     if (locale) {
       var fn = Plurals.get(locale, this.noPluralKeyChecks);
-      if (!fn) throw new Error('Locale ' + JSON.stringify(locale) + ' not found!');
+      if (!fn)
+        throw new Error('Locale ' + JSON.stringify(locale) + ' not found!');
       pf[locale] = fn;
     } else {
       locale = this.defaultLocale;
@@ -328,7 +335,14 @@ MessageFormat.prototype.compile = function(messages, locale) {
     }
   } else if (locale) {
     var fn = this.pluralFuncs[locale];
-    if (!fn) throw new Error('Locale ' + JSON.stringify(locale) + ' not found in ' + JSON.stringify(this.pluralFuncs) + '!');
+    if (!fn)
+      throw new Error(
+        'Locale ' +
+          JSON.stringify(locale) +
+          ' not found in ' +
+          JSON.stringify(this.pluralFuncs) +
+          '!'
+      );
     pf[locale] = fn;
   } else {
     locale = this.defaultLocale;
@@ -340,8 +354,10 @@ MessageFormat.prototype.compile = function(messages, locale) {
 
   if (typeof messages != 'object') {
     var fn = new Function(
-        'number, plural, select, fmt', Compiler.funcname(locale),
-        'return ' + obj);
+      'number, plural, select, fmt',
+      Compiler.funcname(locale),
+      'return ' + obj
+    );
     var rt = this.runtime;
     return fn(rt.number, rt.plural, rt.select, this.fmt, pf[locale]);
   }
@@ -349,7 +365,8 @@ MessageFormat.prototype.compile = function(messages, locale) {
   var rtStr = this.runtime.toString(pf, compiler) + '\n';
   var objStr = _stringify(obj);
   var result = new Function(rtStr + 'return ' + objStr)();
-  if (result.hasOwnProperty('toString')) throw new Error('The top-level message key `toString` is reserved');
+  if (result.hasOwnProperty('toString'))
+    throw new Error('The top-level message key `toString` is reserved');
 
   result.toString = function(global) {
     if (!global || global === 'export default') {
@@ -357,16 +374,19 @@ MessageFormat.prototype.compile = function(messages, locale) {
     } else if (global.indexOf('.') > -1) {
       return rtStr + global + ' = ' + objStr;
     } else {
-      return rtStr + [
-        '(function (root, G) {',
-        '  if (typeof define === "function" && define.amd) { define(G); }',
-        '  else if (typeof exports === "object") { module.exports = G; }',
-        '  else { ' + Compiler.propname(global, 'root') + ' = G; }',
-        '})(this, ' + objStr + ');'
-      ].join('\n');
+      return (
+        rtStr +
+        [
+          '(function (root, G) {',
+          '  if (typeof define === "function" && define.amd) { define(G); }',
+          '  else if (typeof exports === "object") { module.exports = G; }',
+          '  else { ' + Compiler.propname(global, 'root') + ' = G; }',
+          '})(this, ' + objStr + ');'
+        ].join('\n')
+      );
     }
-  }
+  };
   return result;
-}
+};
 
 module.exports = MessageFormat;

@@ -69,7 +69,9 @@ function Messages(locales, defaultLocale) {
    * @member {string[]} availableLocales
    */
   Object.defineProperty(this, 'availableLocales', {
-    get: function() { return Object.keys(this._data) }
+    get: function() {
+      return Object.keys(this._data);
+    }
   });
 
   /**
@@ -83,8 +85,12 @@ function Messages(locales, defaultLocale) {
    * @member {string|null} locale
    */
   Object.defineProperty(this, 'locale', {
-    get: function() { return this._locale },
-    set: function(lc) { this._locale = this.resolveLocale(lc); }
+    get: function() {
+      return this._locale;
+    },
+    set: function(lc) {
+      this._locale = this.resolveLocale(lc);
+    }
   });
   this.locale = defaultLocale;
 
@@ -99,8 +105,12 @@ function Messages(locales, defaultLocale) {
    * @member {string|null} defaultLocale
    */
   Object.defineProperty(this, 'defaultLocale', {
-    get: function() { return this._defaultLocale },
-    set: function(lc) { this._defaultLocale = this.resolveLocale(lc); }
+    get: function() {
+      return this._defaultLocale;
+    },
+    set: function(lc) {
+      this._defaultLocale = this.resolveLocale(lc);
+    }
   });
   this._defaultLocale = this._locale;
 }
@@ -129,22 +139,22 @@ Messages.prototype.addMessages = function(data, lc, keypath) {
   if (typeof data !== 'function') {
     data = Object.keys(data).reduce(function(map, key) {
       if (key !== 'toString') map[key] = data[key];
-      return map
+      return map;
     }, {});
   }
   if (Array.isArray(keypath) && keypath.length > 0) {
-    var parent = this._data[lc]
+    var parent = this._data[lc];
     for (var i = 0; i < keypath.length - 1; ++i) {
       var key = keypath[i];
-      if (!parent[key]) parent[key] = {}
-      parent = parent[key]
+      if (!parent[key]) parent[key] = {};
+      parent = parent[key];
     }
-    parent[keypath[keypath.length - 1]] = data
+    parent[keypath[keypath.length - 1]] = data;
   } else {
-    this._data[lc] = data
+    this._data[lc] = data;
   }
   return this;
-}
+};
 
 /**
  * Resolve `lc` to the key of an available locale or `null`, allowing for
@@ -158,7 +168,7 @@ Messages.prototype.resolveLocale = function(lc) {
   if (this._data[lc]) return lc;
   if (lc) {
     var l = String(lc);
-    while (l = l.replace(/[-_]?[^-_]*$/, '')) {
+    while ((l = l.replace(/[-_]?[^-_]*$/, ''))) {
       if (this._data[l]) return l;
     }
     var ll = this.availableLocales;
@@ -168,7 +178,7 @@ Messages.prototype.resolveLocale = function(lc) {
     }
   }
   return null;
-}
+};
 
 /**
  * Get the list of fallback locales
@@ -177,10 +187,13 @@ Messages.prototype.resolveLocale = function(lc) {
  */
 Messages.prototype.getFallback = function(lc) {
   if (!lc) lc = this.locale;
-  return this._fallback[lc] || (
-    lc === this.defaultLocale || !this.defaultLocale ? [] : [this.defaultLocale]
+  return (
+    this._fallback[lc] ||
+    (lc === this.defaultLocale || !this.defaultLocale
+      ? []
+      : [this.defaultLocale])
   );
-}
+};
 
 /**
  * Set the fallback locale or locales for `lc`
@@ -195,7 +208,7 @@ Messages.prototype.getFallback = function(lc) {
 Messages.prototype.setFallback = function(lc, fallback) {
   this._fallback[lc] = Array.isArray(fallback) ? fallback : null;
   return this;
-}
+};
 
 /**
  * Check if `key` is a message function for the locale
@@ -213,7 +226,7 @@ Messages.prototype.hasMessage = function(key, lc, fallback) {
   if (!lc) lc = this.locale;
   var fb = fallback ? this.getFallback(lc) : null;
   return _has(this._data, lc, key, fb, 'function');
-}
+};
 
 /**
  * Check if `key` is a message object for the locale
@@ -231,7 +244,7 @@ Messages.prototype.hasObject = function(key, lc, fallback) {
   if (!lc) lc = this.locale;
   var fb = fallback ? this.getFallback(lc) : null;
   return _has(this._data, lc, key, fb, 'object');
-}
+};
 
 /**
  * Get the message or object corresponding to `key`
@@ -258,7 +271,7 @@ Messages.prototype.get = function(key, props, lc) {
     if (msg) return typeof msg == 'function' ? msg(props) : msg;
   }
   return key;
-}
+};
 
 /** @private */
 function _get(obj, key) {

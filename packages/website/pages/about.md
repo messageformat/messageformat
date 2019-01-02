@@ -1,16 +1,15 @@
 ## Features
 
-* Handles arbitrary nesting of pluralization and select rules
-* Supports all ~466 languages included in the Unicode CLDR
-* Works on the server and the client
-* Remarkably useful even for single-language use
-* Speed & efficiency: Can pre-compile messages to JavaScript code
-  * Great for speed: message formatting is just string concatenation
-* Compatible with other MessageFormat implementations
-* Extendable with custom formatting functions
-* Very whitespace tolerant
-* Supports Unicode, including RTL and mixed LTR/RTL strings
-
+- Handles arbitrary nesting of pluralization and select rules
+- Supports all ~466 languages included in the Unicode CLDR
+- Works on the server and the client
+- Remarkably useful even for single-language use
+- Speed & efficiency: Can pre-compile messages to JavaScript code
+  - Great for speed: message formatting is just string concatenation
+- Compatible with other MessageFormat implementations
+- Extendable with custom formatting functions
+- Very whitespace tolerant
+- Supports Unicode, including RTL and mixed LTR/RTL strings
 
 ## License
 
@@ -37,7 +36,6 @@ You may use this software under the MIT License:
 > OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 > WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 ## Contributor License Agreement
 
 We require all contributions to be covered under the JS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions, you have the legal right to contribute and you are transferring the copyright of your works to the JavaScript Foundation.
@@ -46,18 +44,16 @@ If you are an unfamiliar contributor to the committer assessing your pull reques
 
 If your GitHub user id you are submitting your pull request from differs from the e-mail address which you have signed your CLA under, you should specifically note what you have your CLA filed under (and for CCLA that you are listed under your company's authorised contributors).
 
-
 ## Authors
 
-* Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - [alexsexton.com](http://alexsexton.com/)
-* Eemeli Aro - [@eemeli_aro](http://twitter.com/eemeli_aro) - [github.com/eemeli](https://github.com/eemeli)
-
+- Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - [alexsexton.com](http://alexsexton.com/)
+- Eemeli Aro - [@eemeli_aro](http://twitter.com/eemeli_aro) - [github.com/eemeli](https://github.com/eemeli)
 
 ## Credits
 
 Thanks to:
 
-* [Vincit](https://vincit.fi/en/) - Eemeli's current employer - for letting him do cool stuff like this.
-* [Bazaarvoice](https://github.com/Bazaarvoice) - Alex's previous employer - for letting him do cool stuff like this.
-* Google has an implementation that is similar in Google Closure, the code has been vetted against many of their tests.
-* Norbert Lindenberg for showing Alex how good it can be.
+- [Vincit](https://vincit.fi/en/) - Eemeli's current employer - for letting him do cool stuff like this.
+- [Bazaarvoice](https://github.com/Bazaarvoice) - Alex's previous employer - for letting him do cool stuff like this.
+- Google has an implementation that is similar in Google Closure, the code has been vetted against many of their tests.
+- Norbert Lindenberg for showing Alex how good it can be.

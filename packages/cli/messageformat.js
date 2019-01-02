@@ -55,41 +55,46 @@ function getOptions(knownOpts, shortHands) {
   let delim = Array.isArray(options.delimiters)
     ? options.delimiters.join('')
     : typeof options.delimiters === 'string'
-      ? options.delimiters
-      : '._' + path.sep;
+    ? options.delimiters
+    : '._' + path.sep;
   delim = delim.replace(/[/\\]+/g, '\\' + path.sep).replace(/[-\]]/g, '\\$&');
   options.delimiters = new RegExp(`[${delim}]`);
-  options.extensions = options.extensions && options.extensions.length > 0 ? (
-    options.extensions.map(ext => ext.trim().replace(/^([^.]*\.)?/, '.'))
-  ) : ['.json', '.properties'];
+  options.extensions =
+    options.extensions && options.extensions.length > 0
+      ? options.extensions.map(ext => ext.trim().replace(/^([^.]*\.)?/, '.'))
+      : ['.json', '.properties'];
   if (options.argv.remain.length > 0) options.include = options.argv.remain;
   options.include = (options.include || []).map(fn => path.resolve(fn));
-  const lc = Array.isArray(options.locale) ? options.locale.join(',') : options.locale;
+  const lc = Array.isArray(options.locale)
+    ? options.locale.join(',')
+    : options.locale;
   options.locale = lc ? lc.split(/[ ,]+/) : null;
-  return options
+  return options;
 }
 
 const options = getOptions(knownOpts, shortHands);
 if (options.help || options.include.length === 0) {
   printUsage();
 } else {
-  const input = readInput(options.include, options.extensions, options.delimiters);
+  const input = readInput(
+    options.include,
+    options.extensions,
+    options.delimiters
+  );
   if (options.simplify) simplify(input);
   const mf = new MessageFormat(options.locale);
   if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
   let output = mf.compile(input).toString(options.namespace);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   if (options.outfile && options.outfile !== '-') {
-    fs.writeFileSync(path.resolve(options.outfile), output)
+    fs.writeFileSync(path.resolve(options.outfile), output);
   } else {
     console.log(output);
   }
 }
 
-
 function printUsage() {
-  let usage =
-`usage: *messageformat* [options] [_input_, ...]
+  let usage = `usage: *messageformat* [options] [_input_, ...]
 
 Parses the _input_ JSON and .properties files of MessageFormat strings into
 a JS module of corresponding hierarchical functions. Input directories are
@@ -112,32 +117,34 @@ recursively scanned for all .json and .properties files.
 See the messageformat-cli README for more options. Configuration may also be
 set in *package.json* or *messageformat.rc.json*.`;
   if (process.stdout.isTTY) {
-    usage = usage.replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
-                 .replace(/\*(.+?)\*/g, '\x1B[1m$1\x1B[0m');
+    usage = usage
+      .replace(/_(.+?)_/g, '\x1B[4m$1\x1B[0m')
+      .replace(/\*(.+?)\*/g, '\x1B[1m$1\x1B[0m');
   } else {
     usage = usage.replace(/[_*]/g, '');
   }
   console.log(usage);
 }
 
-
 function readInput(include, extensions, sep) {
   const ls = [];
-  include.forEach((fn) => {
+  include.forEach(fn => {
     if (!fs.existsSync(fn)) throw new Error(`Input file not found: ${fn}`);
     if (fs.statSync(fn).isDirectory()) {
       extensions.forEach(ext => {
         ls.push.apply(ls, glob.sync(path.join(fn, '**/*' + ext)));
-      })
+      });
     } else if (extensions.includes(path.extname(fn))) {
       ls.push(fn);
     } else {
-      throw new Error(`Unrecognised file extension (expected ${extensions}): ${fn}`);
+      throw new Error(
+        `Unrecognised file extension (expected ${extensions}): ${fn}`
+      );
     }
   });
 
   let input = {};
-  ls.forEach((fn) => {
+  ls.forEach(fn => {
     const ext = path.extname(fn);
     const parts = fn.slice(0, -ext.length).split(sep);
     const lastIdx = parts.length - 1;
@@ -152,8 +159,8 @@ function readInput(include, extensions, sep) {
           case '.properties':
             const raw = fs.readFileSync(fn);
             const src = raw.toString(uv(raw) ? 'utf8' : 'latin1');
-            root[part] = dotProperties.parse(src, sep.test('.'))
-            break
+            root[part] = dotProperties.parse(src, sep.test('.'));
+            break;
           default:
             root[part] = require(fn);
         }
@@ -173,25 +180,34 @@ function readInput(include, extensions, sep) {
 
 function simplify(input) {
   function getAllObjects(obj, level) {
-    if (typeof obj !== 'object') throw new Error('non-object value')
+    if (typeof obj !== 'object') throw new Error('non-object value');
     if (level === 0) return [obj];
     else if (level === 1) return Object.keys(obj).map(k => obj[k]);
-    else return Object.keys(obj)
-      .map(k => getAllObjects(obj[k], level - 1))
-      .reduce((a, b) => a.concat(b), []);
+    else
+      return Object.keys(obj)
+        .map(k => getAllObjects(obj[k], level - 1))
+        .reduce((a, b) => a.concat(b), []);
   }
 
   var lvl = 0;
   try {
     while (true) {
       var objects = getAllObjects(input, lvl);
-      var keysets = objects.map(obj => Object.keys(obj).map(k => {
-        if (typeof obj[k] !== 'object') throw new Error('non-object value');
-        return Object.keys(obj[k]);
-      }));
+      var keysets = objects.map(obj =>
+        Object.keys(obj).map(k => {
+          if (typeof obj[k] !== 'object') throw new Error('non-object value');
+          return Object.keys(obj[k]);
+        })
+      );
       var key0 = keysets[0][0][0];
-      if (keysets.every(keyset => keyset.every(ks => ks.length === 1 && ks[0] === key0))) {
-        objects.forEach(obj => Object.keys(obj).forEach(k => obj[k] = obj[k][key0]));
+      if (
+        keysets.every(keyset =>
+          keyset.every(ks => ks.length === 1 && ks[0] === key0)
+        )
+      ) {
+        objects.forEach(obj =>
+          Object.keys(obj).forEach(k => (obj[k] = obj[k][key0]))
+        );
       } else {
         ++lvl;
       }

@@ -1,6 +1,5 @@
 var Compiler = require('./compiler');
 
-
 /** A set of utility functions that are called by the compiled Javascript
  *  functions, these are included locally in the output of {@link
  *  MessageFormat#compile compile()}.
@@ -16,7 +15,6 @@ function Runtime(mf) {
 
 module.exports = Runtime;
 
-
 /** Utility function for `#` in plural rules
  *
  *  Will throw an Error if `value` has a non-numeric value and `offset` is
@@ -30,18 +28,31 @@ module.exports = Runtime;
  */
 function defaultNumber(value, name, offset) {
   if (!offset) return value;
-  if (isNaN(value)) throw new Error('Can\'t apply offset:' + offset + ' to argument `' + name +
-                                    '` with non-numerical value ' + JSON.stringify(value) + '.');
+  if (isNaN(value))
+    throw new Error(
+      "Can't apply offset:" +
+        offset +
+        ' to argument `' +
+        name +
+        '` with non-numerical value ' +
+        JSON.stringify(value) +
+        '.'
+    );
   return value - offset;
 }
 
-
 /** @private */
 function strictNumber(value, name, offset) {
-  if (isNaN(value)) throw new Error('Argument `' + name + '` has non-numerical value ' + JSON.stringify(value) + '.');
+  if (isNaN(value))
+    throw new Error(
+      'Argument `' +
+        name +
+        '` has non-numerical value ' +
+        JSON.stringify(value) +
+        '.'
+    );
   return value - (offset || 0);
 }
-
 
 /** Set how strictly the {@link number} method parses its input.
  *
@@ -57,8 +68,7 @@ function strictNumber(value, name, offset) {
  */
 Runtime.prototype.setStrictNumber = function(enable) {
   this.number = enable ? strictNumber : defaultNumber;
-}
-
+};
 
 /** Utility function for `{N, plural|selectordinal, ...}`
  *
@@ -75,8 +85,7 @@ Runtime.prototype.plural = function(value, offset, lcfunc, data, isOrdinal) {
   var key = lcfunc(value, isOrdinal);
   if (key in data) return data[key];
   return data.other;
-}
-
+};
 
 /** Utility function for `{N, select, ...}`
  *
@@ -87,8 +96,7 @@ Runtime.prototype.plural = function(value, offset, lcfunc, data, isOrdinal) {
 Runtime.prototype.select = function(value, data) {
   if ({}.hasOwnProperty.call(data, value)) return data[value];
   return data.other;
-}
-
+};
 
 /** @private */
 Runtime.prototype.toString = function(pluralFuncs, compiler) {
@@ -96,24 +104,36 @@ Runtime.prototype.toString = function(pluralFuncs, compiler) {
     if (typeof o != 'object') {
       var funcStr = o.toString().replace(/^(function )\w*/, '$1');
       var indent = /([ \t]*)\S.*$/.exec(funcStr);
-      return indent ? funcStr.replace(new RegExp('^' + indent[1], 'mg'), '') : funcStr;
+      return indent
+        ? funcStr.replace(new RegExp('^' + indent[1], 'mg'), '')
+        : funcStr;
     }
     var s = [];
     for (var i in o) {
-      if (level == 0) s.push('var ' + i + ' = ' + _stringify(o[i], level + 1) + ';\n');
+      if (level == 0)
+        s.push('var ' + i + ' = ' + _stringify(o[i], level + 1) + ';\n');
       else s.push(Compiler.propname(i) + ': ' + _stringify(o[i], level + 1));
     }
     if (level == 0) return s.join('');
     if (s.length == 0) return '{}';
-    var indent = '  '; while (--level) indent += '  ';
+    var indent = '  ';
+    while (--level) indent += '  ';
     return '{\n' + s.join(',\n').replace(/^/gm, indent) + '\n}';
   }
 
   var obj = {};
-  Object.keys(compiler.locales).forEach(function(lc) { obj[Compiler.funcname(lc)] = pluralFuncs[lc]; });
-  Object.keys(compiler.runtime).forEach(function(fn) { obj[fn] = this[fn]; }, this);
+  Object.keys(compiler.locales).forEach(function(lc) {
+    obj[Compiler.funcname(lc)] = pluralFuncs[lc];
+  });
+  Object.keys(compiler.runtime).forEach(function(fn) {
+    obj[fn] = this[fn];
+  }, this);
   var fmtKeys = Object.keys(compiler.formatters);
   var fmt = this.mf.fmt;
-  if (fmtKeys.length) obj.fmt = fmtKeys.reduce(function(o, key) { o[key] = fmt[key]; return o; }, {});
+  if (fmtKeys.length)
+    obj.fmt = fmtKeys.reduce(function(o, key) {
+      o[key] = fmt[key];
+      return o;
+    }, {});
   return _stringify(obj, 0);
-}
+};

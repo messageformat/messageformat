@@ -1,7 +1,6 @@
 var reserved = require('reserved-words');
 var parse = require('messageformat-parser').parse;
 
-
 /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
  *
  * @class
@@ -12,15 +11,14 @@ var parse = require('messageformat-parser').parse;
  * @property {object} formatters - The formatter functions that are used by the compiled functions
  */
 function Compiler(mf) {
-    this.mf = mf;
-    this.lc = null;
-    this.locales = {};
-    this.runtime = {};
-    this.formatters = {};
+  this.mf = mf;
+  this.lc = null;
+  this.locales = {};
+  this.runtime = {};
+  this.formatters = {};
 }
 
 module.exports = Compiler;
-
 
 /** Utility function for quoting an Object's key value if required
  *
@@ -28,25 +26,49 @@ module.exports = Compiler;
  *  ECMAScript 3rd Edition reserved word (for IE8).
  */
 Compiler.propname = function(key, obj) {
-  if (/^[A-Z_$][0-9A-Z_$]*$/i.test(key) &&
-     ['break', 'continue', 'delete', 'else', 'for', 'function', 'if', 'in', 'new',
-      'return', 'this', 'typeof', 'var', 'void', 'while', 'with', 'case', 'catch',
-      'default', 'do', 'finally', 'instanceof', 'switch', 'throw', 'try'].indexOf(key) < 0) {
+  if (
+    /^[A-Z_$][0-9A-Z_$]*$/i.test(key) &&
+    [
+      'break',
+      'continue',
+      'delete',
+      'else',
+      'for',
+      'function',
+      'if',
+      'in',
+      'new',
+      'return',
+      'this',
+      'typeof',
+      'var',
+      'void',
+      'while',
+      'with',
+      'case',
+      'catch',
+      'default',
+      'do',
+      'finally',
+      'instanceof',
+      'switch',
+      'throw',
+      'try'
+    ].indexOf(key) < 0
+  ) {
     return obj ? obj + '.' + key : key;
   } else {
     var jkey = JSON.stringify(key);
     return obj ? obj + '[' + jkey + ']' : jkey;
   }
-}
-
+};
 
 /** Utility function for escaping a function name if required
  */
 Compiler.funcname = function(key) {
   var fn = key.trim().replace(/\W+/g, '_');
   return reserved.check(fn, 'es2015', true) || /^\d/.test(fn) ? '_' + fn : fn;
-}
-
+};
 
 /** Utility formatter function for enforcing Bidi Structured Text by using UCC
  *
@@ -59,36 +81,53 @@ Compiler.funcname = function(key) {
  */
 Compiler.bidiMarkText = function(text, locale) {
   function isLocaleRTL(locale) {
-    var rtlLanguages = ['ar', 'ckb', 'fa', 'he', 'ks($|[^bfh])', 'lrc', 'mzn',
-                        'pa-Arab', 'ps', 'ug', 'ur', 'uz-Arab', 'yi'];
+    var rtlLanguages = [
+      'ar',
+      'ckb',
+      'fa',
+      'he',
+      'ks($|[^bfh])',
+      'lrc',
+      'mzn',
+      'pa-Arab',
+      'ps',
+      'ug',
+      'ur',
+      'uz-Arab',
+      'yi'
+    ];
     return new RegExp('^' + rtlLanguages.join('|^')).test(locale);
   }
   var mark = JSON.stringify(isLocaleRTL(locale) ? '\u200F' : '\u200E');
   return mark + ' + ' + text + ' + ' + mark;
-}
-
+};
 
 /** @private */
 Compiler.prototype.cases = function(token, plural) {
   var needOther = token.type === 'select' || !this.mf.hasCustomPluralFuncs;
   var r = token.cases.map(function(c) {
     if (c.key === 'other') needOther = false;
-    var s = c.tokens.map(function(tok) { return this.token(tok, plural); }, this);
+    var s = c.tokens.map(function(tok) {
+      return this.token(tok, plural);
+    }, this);
     return Compiler.propname(c.key) + ': ' + (s.join(' + ') || '""');
   }, this);
-  if (needOther) throw new Error("No 'other' form found in " + JSON.stringify(token));
+  if (needOther)
+    throw new Error("No 'other' form found in " + JSON.stringify(token));
   return '{ ' + r.join(', ') + ' }';
-}
-
+};
 
 /** @private */
 Compiler.prototype.token = function(token, plural) {
   if (typeof token == 'string') return JSON.stringify(token);
 
-  var fn, args = [ Compiler.propname(token.arg, 'd') ];
+  var fn,
+    args = [Compiler.propname(token.arg, 'd')];
   switch (token.type) {
     case 'argument':
-      return this.mf.bidiSupport ? Compiler.bidiMarkText(args[0], this.lc) : args[0];
+      return this.mf.bidiSupport
+        ? Compiler.bidiMarkText(args[0], this.lc)
+        : args[0];
 
     case 'select':
       fn = 'select';
@@ -106,22 +145,34 @@ Compiler.prototype.token = function(token, plural) {
 
     case 'plural':
       fn = 'plural';
-      args.push(token.offset || 0, Compiler.funcname(this.lc), this.cases(token, token));
+      args.push(
+        token.offset || 0,
+        Compiler.funcname(this.lc),
+        this.cases(token, token)
+      );
       this.locales[this.lc] = true;
       this.runtime.plural = true;
       break;
 
     case 'function':
-      if (!(token.key in this.mf.fmt) && (token.key in this.mf.constructor.formatters)) {
+      if (
+        !(token.key in this.mf.fmt) &&
+        token.key in this.mf.constructor.formatters
+      ) {
         var fmt = this.mf.constructor.formatters[token.key];
         this.mf.fmt[token.key] = fmt(this.mf);
       }
-      if (!this.mf.fmt[token.key]) throw new Error('Formatting function ' + JSON.stringify(token.key) + ' not found!');
+      if (!this.mf.fmt[token.key])
+        throw new Error(
+          'Formatting function ' + JSON.stringify(token.key) + ' not found!'
+        );
       args.push(JSON.stringify(this.lc));
       if (token.param) {
         if (plural && this.mf.strictNumberSign) plural = null;
-        var s = token.param.tokens.map(function(tok) { return this.token(tok, plural); }, this);
-        args.push('(' + (s.join(' + ') || '""') + ').trim()')
+        var s = token.param.tokens.map(function(tok) {
+          return this.token(tok, plural);
+        }, this);
+        args.push('(' + (s.join(' + ') || '""') + ').trim()');
       }
       fn = Compiler.propname(token.key, 'fmt');
       this.formatters[token.key] = true;
@@ -130,7 +181,7 @@ Compiler.prototype.token = function(token, plural) {
     case 'octothorpe':
       if (!plural) return '"#"';
       fn = 'number';
-      args = [ Compiler.propname(plural.arg, 'd'), JSON.stringify(plural.arg) ];
+      args = [Compiler.propname(plural.arg, 'd'), JSON.stringify(plural.arg)];
       if (plural.offset) args.push(plural.offset);
       this.runtime.number = true;
       break;
@@ -139,7 +190,6 @@ Compiler.prototype.token = function(token, plural) {
   if (!fn) throw new Error('Parser error for token ' + JSON.stringify(token));
   return fn + '(' + args.join(', ') + ')';
 };
-
 
 /** Recursively compile a string or a tree of strings to JavaScript function sources
  *
@@ -157,7 +207,9 @@ Compiler.prototype.compile = function(src, lc, plurals) {
     this.lc = lc;
     var pc = plurals[lc] || { cardinal: [], ordinal: [] };
     pc.strict = !!this.mf.strictNumberSign;
-    var r = parse(src, pc).map(function(token) { return this.token(token); }, this);
+    var r = parse(src, pc).map(function(token) {
+      return this.token(token);
+    }, this);
     return 'function(d) { return ' + (r.join(' + ') || '""') + '; }';
   } else {
     var result = {};
@@ -167,4 +219,4 @@ Compiler.prototype.compile = function(src, lc, plurals) {
     }
     return result;
   }
-}
+};

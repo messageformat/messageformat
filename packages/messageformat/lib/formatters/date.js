@@ -24,14 +24,20 @@
  * cf({ sys: 'HAL 9000', d0: '12 January 1999' })
  * // 'HAL 9000 became operational on 1/12/1999'
  */
-function date(v,lc,p) {
-  var o = {day:'numeric', month:'short', year:'numeric'};
+function date(v, lc, p) {
+  var o = { day: 'numeric', month: 'short', year: 'numeric' };
   switch (p) {
-    case 'full': o.weekday = 'long';
-    case 'long': o.month = 'long'; break;
-    case 'short': o.month = 'numeric';
+    case 'full':
+      o.weekday = 'long';
+    case 'long':
+      o.month = 'long';
+      break;
+    case 'short':
+      o.month = 'numeric';
   }
-  return (new Date(v)).toLocaleDateString(lc, o)
+  return new Date(v).toLocaleDateString(lc, o);
 }
 
-module.exports = function() { return date; }
+module.exports = function() {
+  return date;
+};

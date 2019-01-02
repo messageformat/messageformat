@@ -1,12 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset=utf-8 />
+    <meta charset="utf-8" />
     <title>messageformat Test Suite</title>
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
     <script src="../node_modules/mocha/mocha.js"></script>
     <script src="../node_modules/expect.js/index.js"></script>
-    <script>mocha.setup('bdd')</script>
+    <script>
+      mocha.setup('bdd');
+    </script>
     <script src="../packages/messageformat/messageformat.js"></script>
     <script src="messageformat.js"></script>
   </head>
@@ -14,7 +16,7 @@
     <h1>messageformat Test Suite</h1>
     <div id="mocha"></div>
     <script>
-      window.onload = function () {
+      window.onload = function() {
         mocha.run().globals(['MessageFormat']);
       };
     </script>

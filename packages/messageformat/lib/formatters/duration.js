@@ -39,9 +39,18 @@ function duration(value) {
     }
   }
   var first = parts.shift();
-  return sign + first + ':' + parts.map(function(n) {
-    return n < 10 ? '0' + String(n) : String(n)
-  }).join(':');
+  return (
+    sign +
+    first +
+    ':' +
+    parts
+      .map(function(n) {
+        return n < 10 ? '0' + String(n) : String(n);
+      })
+      .join(':')
+  );
 }
 
-module.exports = function () { return duration; }
+module.exports = function() {
+  return duration;
+};

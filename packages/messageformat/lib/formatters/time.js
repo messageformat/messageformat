@@ -21,13 +21,19 @@
  * cf({ T: '1969-07-20 20:17:40 UTC' })
  * // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
  */
-function time(v,lc,p) {
-  var o = {second:'numeric', minute:'numeric', hour:'numeric'};
+function time(v, lc, p) {
+  var o = { second: 'numeric', minute: 'numeric', hour: 'numeric' };
   switch (p) {
-    case 'full': case 'long': o.timeZoneName = 'short'; break;
-    case 'short': delete o.second;
+    case 'full':
+    case 'long':
+      o.timeZoneName = 'short';
+      break;
+    case 'short':
+      delete o.second;
   }
-  return (new Date(v)).toLocaleTimeString(lc, o)
+  return new Date(v).toLocaleTimeString(lc, o);
 }
 
-module.exports = function () { return time; }
+module.exports = function() {
+  return time;
+};

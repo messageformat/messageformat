@@ -21,37 +21,38 @@
  * will double your doubled quotes each time.
  */
 
-let doubleSingleQuotes = false
+let doubleSingleQuotes = false;
 
-const fixEscapes = (node) => {
-  if (node.type !== 'Literal' || typeof node.value !== 'string') return
-  if (doubleSingleQuotes) node.value = node.value.replace(/''+/g, '$&$&')
-  node.value = node.value.replace(/('*)\\([#{}\\]|u[0-9a-f]{4})('*)/g, (_, start, char, end) => {
-    switch (char[0]) {
-      case 'u':
-        const code = parseInt(char.slice(1), 16)
-        return start + String.fromCharCode(code) + end
-      case '\\':
-        return `${start}\\${end}`
-      default:
-        // Assume multiple ' are already escaped
-        if (start === "'") start = "''"
-        if (end === "'") end = "''"
-        return `'${start}${char}${end}'`
+const fixEscapes = node => {
+  if (node.type !== 'Literal' || typeof node.value !== 'string') return;
+  if (doubleSingleQuotes) node.value = node.value.replace(/''+/g, '$&$&');
+  node.value = node.value.replace(
+    /('*)\\([#{}\\]|u[0-9a-f]{4})('*)/g,
+    (_, start, char, end) => {
+      switch (char[0]) {
+        case 'u':
+          const code = parseInt(char.slice(1), 16);
+          return start + String.fromCharCode(code) + end;
+        case '\\':
+          return `${start}\\${end}`;
+        default:
+          // Assume multiple ' are already escaped
+          if (start === "'") start = "''";
+          if (end === "'") end = "''";
+          return `'${start}${char}${end}'`;
+      }
     }
-  })
-}
+  );
+};
 
 module.exports = ({ source }, { jscodeshift: j }, options) => {
-  if (options.doubleSingleQuotes) doubleSingleQuotes = true
-  const ast = j(source)
-  ast
-    .find(j.Property)
-    .forEach(({ value: { value } }) => fixEscapes(value))
+  if (options.doubleSingleQuotes) doubleSingleQuotes = true;
+  const ast = j(source);
+  ast.find(j.Property).forEach(({ value: { value } }) => fixEscapes(value));
   ast
     .find(j.ArrayExpression)
-    .forEach(({ value: { elements }}) => elements.forEach(fixEscapes))
-  return ast.toSource()
-}
+    .forEach(({ value: { elements } }) => elements.forEach(fixEscapes));
+  return ast.toSource();
+};
 
-module.exports.parser = require('json-estree-ast')
+module.exports.parser = require('json-estree-ast');

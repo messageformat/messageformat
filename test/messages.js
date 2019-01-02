@@ -23,11 +23,11 @@ describe('Messages', () => {
       }
     };
     msgData = mf.compile(msgSet);
-  })
+  });
 
   beforeEach(() => {
     messages = new Messages(msgData, 'en');
-  })
+  });
 
   it('constructor', () => {
     expect(messages).to.be.a(Messages);
@@ -46,7 +46,7 @@ describe('Messages', () => {
     expect(messages.defaultLocale).to.be('en');
     messages.defaultLocale = 'fi-FI';
     expect(messages.defaultLocale).to.be('fi');
-    messages._data['sv-SE'] = {}
+    messages._data['sv-SE'] = {};
     messages.defaultLocale = 'sv';
     expect(messages.defaultLocale).to.be('sv-SE');
     messages.defaultLocale = 'foo';
@@ -57,7 +57,7 @@ describe('Messages', () => {
     expect(messages.locale).to.be('en');
     messages.locale = 'fi-FI';
     expect(messages.locale).to.be('fi');
-    messages._data['sv-SE'] = {}
+    messages._data['sv-SE'] = {};
     messages.locale = 'sv';
     expect(messages.locale).to.be('sv-SE');
     messages.locale = 'foo';
@@ -86,9 +86,9 @@ describe('Messages', () => {
     expect(messages.resolveLocale('en')).to.be('en');
     expect(messages.resolveLocale('en-US')).to.be('en');
     expect(messages.resolveLocale('sv')).to.be(null);
-    messages._data['sv-SE'] = {}
+    messages._data['sv-SE'] = {};
     expect(messages.resolveLocale('sv')).to.be('sv-SE');
-  })
+  });
 
   it('get/set fallback', () => {
     expect(messages.getFallback()).to.eql([]);
@@ -107,7 +107,9 @@ describe('Messages', () => {
 
   it('get message', () => {
     expect(messages.get('b', { COUNT: 3 })).to.eql('This has 3 users.');
-    expect(messages.get(['c', 'd'], { P: 0.314 })).to.eql('We have 31% code coverage.');
+    expect(messages.get(['c', 'd'], { P: 0.314 })).to.eql(
+      'We have 31% code coverage.'
+    );
     expect(messages.get('e')).to.eql('e');
     messages.setFallback('en', ['foo', 'fi']);
     expect(messages.get('e')).to.eql('Minä puhun vain suomea.');
@@ -116,23 +118,25 @@ describe('Messages', () => {
   });
 
   it('get object', () => {
-    expect(messages.get('c')).to.have.property('d')
+    expect(messages.get('c')).to.have.property('d');
     messages.locale = 'fi';
-    expect(messages.get('c')).to.have.property('d')
-    expect(messages.get('c').d({ P: 0.628 })).to.eql('We have 63% code coverage.');
+    expect(messages.get('c')).to.have.property('d');
+    expect(messages.get('c').d({ P: 0.628 })).to.eql(
+      'We have 63% code coverage.'
+    );
     expect(messages.get([])).to.only.have.keys(['b', 'e']);
   });
 
   it('addMessages', () => {
     const mf = new MessageFormat('sv');
-    const sv = { e: 'Jag pratar lite svenska.' }
+    const sv = { e: 'Jag pratar lite svenska.' };
     messages.addMessages(mf.compile(sv), 'sv');
     expect(messages.availableLocales).to.eql(['en', 'fi', 'sv']);
-    messages.locale = 'sv'
+    messages.locale = 'sv';
     expect(messages.get('e')).to.eql('Jag pratar lite svenska.');
     expect(messages.getFallback()).to.eql(['en']);
     expect(messages.get([])).to.only.have.key('e');
-    messages.addMessages(() => 'z', null, ['x', 'y'])
+    messages.addMessages(() => 'z', null, ['x', 'y']);
     expect(messages.get(['x', 'y'])).to.eql('z');
   });
 });
