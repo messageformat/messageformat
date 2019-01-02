@@ -103,19 +103,19 @@ Runtime.prototype.toString = function(pluralFuncs, compiler) {
   function _stringify(o, level) {
     if (typeof o != 'object') {
       var funcStr = o.toString().replace(/^(function )\w*/, '$1');
-      var indent = /([ \t]*)\S.*$/.exec(funcStr);
-      return indent
-        ? funcStr.replace(new RegExp('^' + indent[1], 'mg'), '')
+      var funcIndent = /([ \t]*)\S.*$/.exec(funcStr);
+      return funcIndent
+        ? funcStr.replace(new RegExp('^' + funcIndent[1], 'mg'), '')
         : funcStr;
     }
     var s = [];
     for (var i in o) {
-      if (level == 0)
+      if (level === 0)
         s.push('var ' + i + ' = ' + _stringify(o[i], level + 1) + ';\n');
       else s.push(Compiler.propname(i) + ': ' + _stringify(o[i], level + 1));
     }
-    if (level == 0) return s.join('');
-    if (s.length == 0) return '{}';
+    if (level === 0) return s.join('');
+    if (s.length === 0) return '{}';
     var indent = '  ';
     while (--level) indent += '  ';
     return '{\n' + s.join(',\n').replace(/^/gm, indent) + '\n}';

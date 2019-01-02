@@ -1,3 +1,5 @@
+/* global CURRENCY, Intl */
+
 /** Represent a number as an integer, percent or currency value
  *
  *  Available in MessageFormat strings as `{VAR, number, integer|percent|currency}`.

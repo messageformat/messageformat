@@ -1,3 +1,5 @@
+/* eslint-disable no-fallthrough */
+
 /** Represent a date as a short/default/long/full string
  *
  * The input value needs to be in a form that the

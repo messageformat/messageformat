@@ -515,10 +515,10 @@ describe('Real World Uses', function() {
       '} group.';
 
     var mf = new MessageFormat('en');
-    var mf_func = mf.compile(input);
+    var mfunc = mf.compile(input);
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 0,
         PERSON: 'Allie Sexton',
         GENDER: 'female'
@@ -526,7 +526,7 @@ describe('Real World Uses', function() {
     ).to.eql('Allie Sexton added no one to her group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 1,
         PERSON: 'Allie Sexton',
         GENDER: 'female'
@@ -534,7 +534,7 @@ describe('Real World Uses', function() {
     ).to.eql('Allie Sexton added just herself to her group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 2,
         PERSON: 'Allie Sexton',
         GENDER: 'female'
@@ -542,7 +542,7 @@ describe('Real World Uses', function() {
     ).to.eql('Allie Sexton added herself and one other person to her group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 3,
         PERSON: 'Allie Sexton',
         GENDER: 'female'
@@ -550,7 +550,7 @@ describe('Real World Uses', function() {
     ).to.eql('Allie Sexton added herself and 2 other people to her group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 0,
         PERSON: 'Alex Sexton',
         GENDER: 'male'
@@ -558,7 +558,7 @@ describe('Real World Uses', function() {
     ).to.eql('Alex Sexton added no one to his group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 1,
         PERSON: 'Alex Sexton',
         GENDER: 'male'
@@ -566,7 +566,7 @@ describe('Real World Uses', function() {
     ).to.eql('Alex Sexton added just himself to his group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 2,
         PERSON: 'Alex Sexton',
         GENDER: 'male'
@@ -574,7 +574,7 @@ describe('Real World Uses', function() {
     ).to.eql('Alex Sexton added himself and one other person to his group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 3,
         PERSON: 'Alex Sexton',
         GENDER: 'male'
@@ -582,28 +582,28 @@ describe('Real World Uses', function() {
     ).to.eql('Alex Sexton added himself and 2 other people to his group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 0,
         PERSON: 'Al Sexton'
       })
     ).to.eql('Al Sexton added no one to their group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 1,
         PERSON: 'Al Sexton'
       })
     ).to.eql('Al Sexton added just themself to their group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 2,
         PERSON: 'Al Sexton'
       })
     ).to.eql('Al Sexton added themself and one other person to their group.');
 
     expect(
-      mf_func({
+      mfunc({
         PLURAL_NUM_PEOPLE: 3,
         PERSON: 'Al Sexton'
       })

@@ -30,9 +30,10 @@ const fixEscapes = node => {
     /('*)\\([#{}\\]|u[0-9a-f]{4})('*)/g,
     (_, start, char, end) => {
       switch (char[0]) {
-        case 'u':
+        case 'u': {
           const code = parseInt(char.slice(1), 16);
           return start + String.fromCharCode(code) + end;
+        }
         case '\\':
           return `${start}\\${end}`;
         default:

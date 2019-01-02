@@ -323,19 +323,19 @@ MessageFormat.prototype.compile = function(messages, locale) {
   }
 
   var pf = {};
-  if (Object.keys(this.pluralFuncs).length == 0) {
+  if (Object.keys(this.pluralFuncs).length === 0) {
     if (locale) {
-      var fn = Plurals.get(locale, this.noPluralKeyChecks);
-      if (!fn)
+      var pfn0 = Plurals.get(locale, this.noPluralKeyChecks);
+      if (!pfn0)
         throw new Error('Locale ' + JSON.stringify(locale) + ' not found!');
-      pf[locale] = fn;
+      pf[locale] = pfn0;
     } else {
       locale = this.defaultLocale;
       pf = Plurals.getAll(this.noPluralKeyChecks);
     }
   } else if (locale) {
-    var fn = this.pluralFuncs[locale];
-    if (!fn)
+    var pfn1 = this.pluralFuncs[locale];
+    if (!pfn1)
       throw new Error(
         'Locale ' +
           JSON.stringify(locale) +
@@ -343,7 +343,7 @@ MessageFormat.prototype.compile = function(messages, locale) {
           JSON.stringify(this.pluralFuncs) +
           '!'
       );
-    pf[locale] = fn;
+    pf[locale] = pfn1;
   } else {
     locale = this.defaultLocale;
     pf = this.pluralFuncs;

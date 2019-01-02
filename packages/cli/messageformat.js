@@ -42,12 +42,16 @@ function getOptions(knownOpts, shortHands) {
     const pkgPath = path.resolve('package.json');
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
     Object.assign(options, pkg.messageformat);
-  } catch (e) {}
+  } catch (e) {
+    /* ignore error */
+  }
   try {
     const cfgPath = path.resolve('messageformat.rc.json');
     const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
     Object.assign(options, cfg.messageformat || cfg);
-  } catch (e) {}
+  } catch (e) {
+    /* ignore error */
+  }
   const cliOptions = nopt(knownOpts, shortHands, process.argv, 2);
   Object.assign(options, cliOptions);
 
@@ -149,18 +153,19 @@ function readInput(include, extensions, sep) {
     const parts = fn.slice(0, -ext.length).split(sep);
     const lastIdx = parts.length - 1;
     parts.reduce((root, part, idx) => {
-      if (idx == lastIdx) {
+      if (idx === lastIdx) {
         switch (ext) {
           // extension list from https://github.com/github/linguist/blob/master/lib/linguist/languages.yml
           case '.ini':
           case '.cfg':
           case '.prefs':
           case '.pro':
-          case '.properties':
+          case '.properties': {
             const raw = fs.readFileSync(fn);
             const src = raw.toString(uv(raw) ? 'utf8' : 'latin1');
             root[part] = dotProperties.parse(src, sep.test('.'));
             break;
+          }
           default:
             root[part] = require(fn);
         }
