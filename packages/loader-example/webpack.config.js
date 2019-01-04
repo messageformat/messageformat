@@ -11,7 +11,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\bmessages\.json$/,
+        test: /\bmessages\.(json|ya?ml)$/,
         loader: require.resolve('messageformat-loader'),
         options: {
           biDiSupport: false,

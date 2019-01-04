@@ -1,9 +1,10 @@
 var loaderUtils = require('loader-utils');
 var MessageFormat = require('messageformat');
 var convert = require('messageformat-convert');
+var YAML = require('yaml');
 
 module.exports = function(content) {
-  var messages = JSON.parse(content);
+  var messages = YAML.parse(content);
   var options = loaderUtils.getOptions(this) || {};
   var locale = options.locale;
   if (options.convert) {
