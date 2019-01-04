@@ -1,12 +1,20 @@
 var loaderUtils = require('loader-utils');
 var MessageFormat = require('messageformat');
+var convert = require('messageformat-convert');
 
 module.exports = function(content) {
+  var messages = JSON.parse(content);
   var options = loaderUtils.getOptions(this) || {};
   var locale = options.locale;
+  if (options.convert) {
+    var cm = convert(messages, options.convert);
+    if (!locale) {
+      locale = cm.locales;
+    }
+    messages = cm.translations;
+  }
   if (typeof locale === 'string' && locale.indexOf(',') !== -1)
     locale = locale.split(',');
-  var messages = JSON.parse(content);
   var messageFormat = new MessageFormat(locale);
   if (options.disablePluralKeyChecks) {
     messageFormat.disablePluralKeyChecks();
