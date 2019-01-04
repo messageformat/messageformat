@@ -4,7 +4,8 @@ var MessageFormat = require('messageformat');
 module.exports = function(content) {
   var options = loaderUtils.getOptions(this) || {};
   var locale = options.locale;
-  if (typeof locale === 'string' && locale.indexOf(',') !== -1) locale = locale.split(',');
+  if (typeof locale === 'string' && locale.indexOf(',') !== -1)
+    locale = locale.split(',');
   var messages = JSON.parse(content);
   var messageFormat = new MessageFormat(locale);
   if (options.disablePluralKeyChecks) {
@@ -25,7 +26,7 @@ module.exports = function(content) {
   var messageFunctions = messageFormat.compile(messages);
 
   this.cacheable && this.cacheable();
-  this.value = [ messageFunctions ];
+  this.value = [messageFunctions];
 
   return messageFunctions.toString('module.exports');
 };

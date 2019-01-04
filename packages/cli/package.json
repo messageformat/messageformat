@@ -21,6 +21,15 @@
   "engines": {
     "node": ">=6.0"
   },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "rules": {
+      "no-console": 0
+    }
+  },
   "dependencies": {
     "dot-properties": "^0.2.1",
     "glob": "~7.0.6",

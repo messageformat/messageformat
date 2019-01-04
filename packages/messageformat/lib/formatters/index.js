@@ -33,4 +33,4 @@ module.exports = {
   duration: require('./duration'),
   number: require('./number'),
   time: require('./time')
-}
+};

@@ -1,19 +1,20 @@
 Fundamentally, messageformat is a compiler that turns ICU MessageFormat input into JavaScript. While it's certainly possible to use it directly in your client code, that will mean including the full compiler in your client-side code (admittedly, just 15kB when minified & gzipped), and being okay with `new Function` being called for each message string.
 
 The recommended alternative is to use messageformat as a compile-time tool. To that end, we provide three different sorts of solutions:
+
 - **Webpack loaders** for JSON, .properties, gettext PO, and YAML files
 - **[messageformat-cli]** for command-line use, supporting JSON and .properties files
 - Our **JavaScript API**, in particular {@link MessageFormat#compile}
 
 Compiling messages during your build will allow for a significant decrease in filesize and execution time, as all that's required to run on the client are the final compiled functions.
 
-[Webpack]: https://webpack.js.org/
+[webpack]: https://webpack.js.org/
 [messageformat-cli]: https://www.npmjs.com/package/messageformat-cli
-
 
 ## Webpack loaders
 
 Each of the loaders is similar, supporting a specific file type. Their configuration options vary slightly, depending on the common practices for the format; please see their own documentations for details:
+
 - JSON: [messageformat-loader]
 - .properties: [messageformat-properties-loader] – Used by [Java resource bundles]
 - PO files: [messageformat-po-loader] – Used by [gettext]
@@ -21,11 +22,11 @@ Each of the loaders is similar, supporting a specific file type. Their configura
 
 [messageformat-loader]: https://www.npmjs.com/package/messageformat-loader
 [messageformat-properties-loader]: https://www.npmjs.com/package/messageformat-properties-loader
-[Java resource bundles]: https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-
+[java resource bundles]: https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-
 [messageformat-po-loader]: https://www.npmjs.com/package/messageformat-po-loader
 [gettext]: https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
 [messageformat-yaml-loader]: https://www.npmjs.com/package/messageformat-yaml-loader
-[Rails i18n]: http://guides.rubyonrails.org/i18n.html
+[rails i18n]: http://guides.rubyonrails.org/i18n.html
 
 Using [messageformat-loader] as an example, these enable a JavaScript API that looks like this:
 
@@ -49,7 +50,6 @@ messages.ordinal({ N: 1 })          // 'The 1st message.'</code></pre>
 </div>
 
 During the build, the loader will compile your messages into their respective functions, and package only those into the webpack output.
-
 
 ## CLI Compiler
 
@@ -85,7 +85,6 @@ See the messageformat-cli README for more options. Configuration may also be
 set in package.json or messageformat.rc.json.
 ```
 
-
 ## Using compiled messageformat output
 
 The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's `example/i18n.js` sample output includes a function `en.sub.folder.plural.test()`, which was compiled from the `test` key in the source file `example/en/sub/folder/plural.json`. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.
@@ -120,21 +119,22 @@ It works like this (using [messageformat-loader], configured for `en` and `fi` l
 import msgData from './messages.json'
 const messages = new Messages(msgData, 'en')  // sets default locale
 
-messages.hasMessage('a')                // true
-messages.hasObject('c')                 // true
-messages.get('b', { COUNT: 3 })         // 'This has 3 users.'
-messages.get(['c', 'd'], { P: 0.314 })  // 'We have 31% code coverage.'
+messages.hasMessage('a') // true
+messages.hasObject('c') // true
+messages.get('b', { COUNT: 3 }) // 'This has 3 users.'
+messages.get(['c', 'd'], { P: 0.314 }) // 'We have 31% code coverage.'
 
-messages.get('e')                       // 'e'
+messages.get('e') // 'e'
 messages.setFallback('en', ['foo', 'fi'])
-messages.get('e')                       // 'Minä puhun vain suomea.'
+messages.get('e') // 'Minä puhun vain suomea.'
 
 messages.locale = 'fi'
-messages.hasMessage('a')                // false
-messages.hasMessage('a', 'en')          // true
-messages.hasMessage('a', null, true)    // true
-messages.hasObject('c')                 // false
-messages.get('b', { COUNT: 3 })         // 'Tällä on 3 käyttäjää.'
-messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'</code></pre>
+messages.hasMessage('a') // false
+messages.hasMessage('a', 'en') // true
+messages.hasMessage('a', null, true) // true
+messages.hasObject('c') // false
+messages.get('b', { COUNT: 3 }) // 'Tällä on 3 käyttäjää.'
+messages.get('c').d({ P: 0.628 }) // 'We have 63% code coverage.'</code></pre>
+
   </div>
 </div>

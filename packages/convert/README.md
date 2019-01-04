@@ -2,6 +2,7 @@
 
 Converts hiearachical objects into [messageformat]-compatible JSON. More
 specifically, it:
+
 - Detects two-letter locale keys and parses their contents according to that
   locale's pluralisation rules
 - Converts `#{var}` and `%{var}` variable replacements into their messageformat
@@ -22,43 +23,41 @@ npm install messageformat-convert
 If using in an environment that does not natively support ES6 features such as
 object destructuring and arrow functions, you'll want to use a transpiler for this.
 
-
 ### Usage
 
 ```js
-const convert = require('messageformat-convert')
+const convert = require('messageformat-convert');
 const { locales, translations } = convert({
   en: {
-    format: "%{attribute} %{message}",
+    format: '%{attribute} %{message}',
     errors: {
       confirmation: "doesn't match %{attribute}",
-      accepted: "must be accepted",
+      accepted: 'must be accepted',
       wrong_length: {
-        one: "is the wrong length (should be 1 character)",
-        other: "is the wrong length (should be %{count} characters)"
+        one: 'is the wrong length (should be 1 character)',
+        other: 'is the wrong length (should be %{count} characters)'
       },
-      equal_to: "must be equal to %{count}"
+      equal_to: 'must be equal to %{count}'
     }
   }
-})
+});
 
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat(locales)
-const messages = mf.compile(translations)
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat(locales);
+const messages = mf.compile(translations);
 
-messages.en.errors.accepted()
+messages.en.errors.accepted();
 // 'must be accepted'
 
 messages.en.format({
   attribute: 'Problem',
   message: messages.en.errors.confirmation({ attribute: 'your style' })
-})
+});
 // 'Problem doesn\'t match your style'
 
-messages.en.errors.wrong_length({ count: 42 })
+messages.en.errors.wrong_length({ count: 42 });
 // 'is the wrong length (should be 42 characters)'
 ```
-
 
 ### API: `convert(data, options)`
 
@@ -84,5 +83,5 @@ The object returned by the function contains the following fields:
 - `translations` (object) – An object containing the MessageFormat strings,
   matching the shape of the input data
 
-[CLDR pluralisation language]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+[cldr pluralisation language]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [messageformat]: https://messageformat.github.io/

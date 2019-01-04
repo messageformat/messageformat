@@ -1,6 +1,6 @@
-const path = require('path')
+const path = require('path');
 
-const locale = ['en', 'fi']
+const locale = ['en', 'fi'];
 
 module.exports = {
   entry: './src/index.js',
@@ -24,4 +24,4 @@ module.exports = {
       }
     ]
   }
-}
+};

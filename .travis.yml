@@ -1,6 +1,11 @@
 language: node_js
 node_js:
-  - "node"
-  - "6"
+  - 'node'
+  - '6'
+
 before_script:
   - npm run prepare # not automatic on npm <4
+
+script:
+  - npm test
+  - npm run lint

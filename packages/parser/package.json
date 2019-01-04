@@ -21,6 +21,25 @@
     "parser.js",
     "codemod-fix-backslash-escapes.js"
   ],
+  "eslintConfig": {
+    "env": {
+      "commonjs": true,
+      "es6": true
+    },
+    "overrides": [
+      {
+        "files": [
+          "test.js"
+        ],
+        "env": {
+          "mocha": true
+        },
+        "rules": {
+          "no-unused-vars": 0
+        }
+      }
+    ]
+  },
   "devDependencies": {
     "expect.js": "^0.3.1",
     "mocha": "^5.2.0",

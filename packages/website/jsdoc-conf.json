@@ -6,9 +6,7 @@
       "node_modules/messageformat/messages.js"
     ]
   },
-  "plugins": [
-    "plugins/markdown"
-  ],
+  "plugins": ["plugins/markdown"],
   "opts": {
     "destination": "docs/",
     "package": "node_modules/messageformat/package.json",

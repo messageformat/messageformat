@@ -14,15 +14,69 @@
     "build:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
     "build": "lerna run build && npm run build:example",
     "clean": "lerna run clean",
+    "lint": "eslint '**/*.js'",
     "prepare": "lerna bootstrap",
     "pretest": "lerna run build --scope messageformat-parser",
+    "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "test:browser": "lerna run build:browser --scope messageformat && serve",
     "test": "lerna run test && mocha"
   },
+  "prettier": {
+    "singleQuote": true
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "commonjs": true
+    },
+    "plugins": [
+      "prettier"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "prettier"
+    ],
+    "rules": {
+      "array-callback-return": "error",
+      "camelcase": "error",
+      "consistent-return": "error",
+      "eqeqeq": [
+        "error",
+        "smart"
+      ],
+      "no-constant-condition": [
+        "error",
+        {
+          "checkLoops": false
+        }
+      ],
+      "no-implicit-globals": "error",
+      "prettier/prettier": "error"
+    },
+    "overrides": [
+      {
+        "files": [
+          "test/*.js"
+        ],
+        "env": {
+          "browser": true,
+          "es6": true,
+          "mocha": true
+        },
+        "rules": {
+          "no-unused-vars": 0
+        }
+      }
+    ]
+  },
   "devDependencies": {
+    "eslint": "^5.11.1",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "expect.js": "^0.3.1",
     "lerna": "^3.6.0",
     "mocha": "^5.2.0",
+    "prettier": "^1.15.3",
     "rimraf": "^2.6.2",
     "serve": "^10.1.1",
     "tmp": "0.0.33"

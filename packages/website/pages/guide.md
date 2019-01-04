@@ -11,16 +11,15 @@ message formatting system when doing translations, and not everything requires
 variables.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-const message = mf.compile('This is a message.')
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+const message = mf.compile('This is a message.');
 
-message()  // "This is a message."
+message(); // "This is a message."
 ```
 
 **Note**: if a message _does_ require data to be passed in, an error is thrown if
 you do not.
-
 
 ## Variables
 
@@ -37,19 +36,17 @@ Simply putting a variable name in between `{` and `}` will place that variable
 there in the output.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-const varMessage = mf.compile('His name is {NAME}.')
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+const varMessage = mf.compile('His name is {NAME}.');
 
-varMessage({ NAME: 'Jed' })  // 'His name is Jed.'
+varMessage({ NAME: 'Jed' }); // 'His name is Jed.'
 ```
-
 
 ## SelectFormat
 
 SelectFormat is a lot like a switch statement for your messages. Often it's used
-to select gender in a string. The format of the statement is `{varname, select,
-this{...} that{...} other{...}}`, where `varname` matches a key in the data you
+to select gender in a string. The format of the statement is `{varname, select, this{...} that{...} other{...}}`, where `varname` matches a key in the data you
 give to the resulting function, and `'this'` and `'that'` are some of the
 string-equivalent values that it may have. The `other` key is required, and is
 selected if no other case matches.
@@ -58,21 +55,20 @@ selected if no other case matches.
 left out of the input data, the case `undefined{...}` would match that.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MesssageFormat('en')
+const MessageFormat = require('messageformat');
+const mf = new MesssageFormat('en');
 const selectMessage = mf.compile(
   `{ GENDER, select,
        male {He}
        female {She}
        other {They}
    } liked this.`
-)
+);
 
-selectMessage({ GENDER: 'male' })    // 'He liked this.'
-selectMessage({ GENDER: 'female' })  // 'She liked this.'
-selectMessage({})                    // 'They liked this.'
+selectMessage({ GENDER: 'male' }); // 'He liked this.'
+selectMessage({ GENDER: 'female' }); // 'She liked this.'
+selectMessage({}); // 'They liked this.'
 ```
-
 
 ## PluralFormat
 
@@ -98,11 +94,11 @@ The keyword for cardinal plurals is `plural`, and for ordinal plurals is
 
 Within a plural statement, `#` will be replaced by the variable value.
 
-[CLDR table of plural rules]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+[cldr table of plural rules]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 const messages = mf.compile({
   results: `There { COUNT, plural,
                     =0 {are no results}
@@ -115,15 +111,14 @@ const messages = mf.compile({
                        few {#rd}
                        other {#th}
                      } in the queue.`
-})
+});
 
-messages.results({ COUNT: 0 })    // 'There are no results.'
-messages.results({ COUNT: 1 })    // 'There is one result.'
-messages.results({ COUNT: 100 })  // 'There are 100 results.'
-messages.position({ POS: 1 })     // 'You are 1st in the queue.'
-messages.position({ POS: 33 })    // 'You are 33rd in the queue.'
+messages.results({ COUNT: 0 }); // 'There are no results.'
+messages.results({ COUNT: 1 }); // 'There is one result.'
+messages.results({ COUNT: 100 }); // 'There are 100 results.'
+messages.position({ POS: 1 }); // 'You are 1st in the queue.'
+messages.position({ POS: 33 }); // 'You are 33rd in the queue.'
 ```
-
 
 ### Plural Offset
 
@@ -133,8 +128,8 @@ determining its plural category. Literal/exact matches are tested before
 applying the offset.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 const offsetMessage = mf.compile(
   `You { ADDS, plural, offset:1
          =0 {did not add this}
@@ -142,14 +137,13 @@ const offsetMessage = mf.compile(
          one {and one other person added this}
          other {and # others added this}
        }.`
-)
+);
 
-offsetMessage({ ADDS: 0 })  // 'You did not add this.'
-offsetMessage({ ADDS: 1 })  // 'You added this.'
-offsetMessage({ ADDS: 2 })  // 'You and one other person added this.'
-offsetMessage({ ADDS: 3 })  // 'You and 2 others added this.'
+offsetMessage({ ADDS: 0 }); // 'You did not add this.'
+offsetMessage({ ADDS: 1 }); // 'You added this.'
+offsetMessage({ ADDS: 2 }); // 'You and one other person added this.'
+offsetMessage({ ADDS: 3 }); // 'You and 2 others added this.'
 ```
-
 
 ## Formatters
 
@@ -161,18 +155,17 @@ object defined by ECMA-402.
 in all browsers (in particular, IE <=10 and Safari <=9.1), so you may need to
 use a [polyfill].
 
-[simpleArg syntax]: http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html
-[Intl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
+[simplearg syntax]: http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html
+[intl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
 [polyfill]: https://www.npmjs.com/package/intl
-
 
 ### date
 
 Supported parameters are `short`, `default`, `long` , or `full`.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat(['en', 'fi'])
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat(['en', 'fi']);
 const messages = mf.compile({
   en: {
     today: 'Today is {T, date}',
@@ -182,42 +175,40 @@ const messages = mf.compile({
   fi: {
     today: 'Tänään on {T, date}'
   }
-})
+});
 
-messages.en.today({ T: Date.now() })  // 'Today is Mar 30, 2018'
-messages.fi.today({ T: Date.now() })  // 'Tänään on 30. maalisk. 2018'
-messages.en.unix({ T: 0 })
-  // 'Unix time started on Thursday, January 1, 1970'
-messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' })
-  // 'HAL 9000 became operational on 1/12/1999'
+messages.en.today({ T: Date.now() }); // 'Today is Mar 30, 2018'
+messages.fi.today({ T: Date.now() }); // 'Tänään on 30. maalisk. 2018'
+messages.en.unix({ T: 0 });
+// 'Unix time started on Thursday, January 1, 1970'
+messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' });
+// 'HAL 9000 became operational on 1/12/1999'
 ```
-
 
 ### duration
 
 Represent a duration in seconds as a string.
 
 ```javascript
-const MessageFormat = require('messageformat')
+const MessageFormat = require('messageformat');
 const mf = new MessageFormat();
 const messages = mf.compile({
   since: 'It has been {D, duration}',
   countdown: 'Countdown: {D, duration}'
-})
+});
 
-messages.since({ D: 123 })             // 'It has been 2:03'
-messages.countdown({ D: -151200.42 })  // 'Countdown: -42:00:00.420'
+messages.since({ D: 123 }); // 'It has been 2:03'
+messages.countdown({ D: -151200.42 }); // 'Countdown: -42:00:00.420'
 ```
-
 
 ### number
 
 Supported parameters are `integer`, `percent` , or `currency`. To specify a non-default currency, use `currency:CODE`.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-mf.currency = 'EUR'  // needs to be set before first compile() call
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+mf.currency = 'EUR'; // needs to be set before first compile() call
 const messages = mf.compile({
   almost: '{N} is almost {N, number, integer}',
   complete: '{P, number, percent} complete',
@@ -225,12 +216,12 @@ const messages = mf.compile({
     eur: 'The total is {V, number, currency}.',
     gbp: 'The total is {V, number, currency:GBP}.'
   }
-})
+});
 
-messages.almost({ N: 3.14 })       // '3.14 is almost 3'
-messages.complete({ P: 0.99 })     // '99% complete'
-messages.currency.eur({ V: 5.5 })  // 'The total is €5.50.'
-messages.currency.gbp({ V: 5.5 })  // 'The total is £5.50.'
+messages.almost({ N: 3.14 }); // '3.14 is almost 3'
+messages.complete({ P: 0.99 }); // '99% complete'
+messages.currency.eur({ V: 5.5 }); // 'The total is €5.50.'
+messages.currency.gbp({ V: 5.5 }); // 'The total is £5.50.'
 ```
 
 ### time
@@ -254,7 +245,6 @@ messages.eagle({ T: '1969-07-20 20:17:40 UTC' })
   // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
 ```
 
-
 ### Custom Formatters
 
 In MessageFormat source, a formatter function is called with the syntax
@@ -264,9 +254,10 @@ In MessageFormat source, a formatter function is called with the syntax
 argument.
 
 In JavaScript, a formatter is a function called with three parameters:
-  - The **`value`** of the variable; this can be of any user-defined type
-  - The current **`locale`** code
-  - The trimmed **`arg`** string value, or `null` if not set
+
+- The **`value`** of the variable; this can be of any user-defined type
+- The current **`locale`** code
+- The trimmed **`arg`** string value, or `null` if not set
 
 As formatter functions may be used in a precompiled context, they should not
 refer to any variables that are not defined by the function parameters or
@@ -275,24 +266,29 @@ static `MessageFormat.formatters` object, or use
 {@link MessageFormat#addFormatters} to add them to a MessageFormat instance.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en-GB')
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en-GB');
 mf.addFormatters({
-  upcase: function(v) { return v.toUpperCase(); },
-  locale: function(v, lc) { return lc; },
-  prop: function(v, lc, p) { return v[p] }
-})
+  upcase: function(v) {
+    return v.toUpperCase();
+  },
+  locale: function(v, lc) {
+    return lc;
+  },
+  prop: function(v, lc, p) {
+    return v[p];
+  }
+});
 const messages = mf.compile({
   describe: 'This is {VAR, upcase}.',
   locale: 'The current locale is {_, locale}.',
   answer: 'Answer: {obj, prop, a}'
-})
+});
 
-messages.describe({ VAR: 'big' })        // 'This is BIG.'
-messages.locale({})                      // 'The current locale is en-GB.'
-messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'
+messages.describe({ VAR: 'big' }); // 'This is BIG.'
+messages.locale({}); // 'The current locale is en-GB.'
+messages.answer({ obj: { q: 3, a: 42 } }); // 'Answer: 42'
 ```
-
 
 ## Nesting
 
@@ -311,19 +307,18 @@ All types of messageformat statements may be nested within each other, to unlimi
 }
 ```
 
-
 ## Escaping
 
 The characters `{` and `}` must be escaped with `'quotes'` to be included in the output as literal characters. Within plural statements, `#` must also be similarly escaped. The utility function {@link MessageFormat.escape} may help with this.
 
 ```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
+const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 const messages = mf.compile({
   esc: "'{' {S, plural, other{# is a '#'}} '}'",
   var: MessageFormat.escape('Use {var} for variables')
-})
+});
 
-messages.esc({ S: 5 })    // '{ 5 is a # }'
-messages.var({ var: 5 })  // 'Use {var} for variables'
+messages.esc({ S: 5 }); // '{ 5 is a # }'
+messages.var({ var: 5 }); // 'Use {var} for variables'
 ```

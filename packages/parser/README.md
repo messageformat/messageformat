@@ -1,4 +1,4 @@
-# messageformat-parser  <a href="http://travis-ci.org/messageformat/parser"><img align="right" alt="Build Status" src="https://secure.travis-ci.org/messageformat/parser.png"></a>
+# messageformat-parser <a href="http://travis-ci.org/messageformat/parser"><img align="right" alt="Build Status" src="https://secure.travis-ci.org/messageformat/parser.png"></a>
 
 A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat].
 Outputs an AST defined by [parser.pegjs].
@@ -36,20 +36,18 @@ precedes a curly brace `{}`, or a pound symbol `#` if inside a plural format. A
 literal apostrophe `'` is represented by either a single `'` or a doubled `''`
 apostrophe character.
 
-[ICU MessageFormat]: https://messageformat.github.io/guide/
+[icu messageformat]: https://messageformat.github.io/guide/
 [messageformat]: https://messageformat.github.io/
 [parser.pegjs]: ./parser.pegjs
-[PEG.js]: http://pegjs.org/
-[Unicode CLDR]: http://cldr.unicode.org/index/cldr-spec/plural-rules
+[peg.js]: http://pegjs.org/
+[unicode cldr]: http://cldr.unicode.org/index/cldr-spec/plural-rules
 [apostrophe mode]: http://www.icu-project.org/apiref/icu4c/messagepattern_8h.html#af6e0757e0eb81c980b01ee5d68a9978b
-
 
 ## Installation
 
 ```sh
 npm install messageformat-parser
 ```
-
 
 ## Usage
 
@@ -109,7 +107,6 @@ npm install messageformat-parser
 
 For more example usage, please take a look at our [test suite](./test.js).
 
-
 ## Structure
 
 The output of `parse()` is a `Token` array:
@@ -161,8 +158,8 @@ type Octothorpe = {
 type Identifier = string  // not containing whitespace or control characters
 ```
 
-
 ## License & Contributor License Agreement
-Released under the MIT license. See the [messageformat README][CLA] for details.
 
-[CLA]: https://github.com/messageformat/messageformat.js#contributor-license-agreement
+Released under the MIT license. See the [messageformat README][cla] for details.
+
+[cla]: https://github.com/messageformat/messageformat.js#contributor-license-agreement

@@ -4,8 +4,8 @@ These docs are hosted by [GitHub Pages] at [messageformat.github.io/messageforma
 
 To re-build the docs, run `make docs` in the project root. As the links are slightly prettified (dropping the .html extensions), if you want to view them locally, you may want to run something like `npx http-server` in this directory.
 
-[GitHub Pages]: https://pages.github.com/
+[github pages]: https://pages.github.com/
 [messageformat.github.io/messageformat]: https://messageformat.github.io/messageformat/
-[JSDoc]: http://usejsdoc.org/
+[jsdoc]: http://usejsdoc.org/
 [custom fork]: https://github.com/messageformat/docstrap
-[DocStrap]: https://docstrap.github.io/docstrap/
+[docstrap]: https://docstrap.github.io/docstrap/
