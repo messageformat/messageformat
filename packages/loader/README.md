@@ -87,7 +87,7 @@ messages['ordinal-example']({ N: 1 });
 - [messageformat](https://messageformat.github.io/)
 - Loaders:
   - [Webpack v1](https://webpack.github.io/docs/using-loaders.html)
-  - [Webpack v2/3/4](https://webpack.js.org/concepts/loaders/)
+  - [Webpack v2+](https://webpack.js.org/concepts/loaders/)
 
 ## License
 
