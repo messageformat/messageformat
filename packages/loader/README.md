@@ -1,4 +1,6 @@
-# ICU MessageFormat loader for webpack
+# ICU MessageFormat loader for Webpack
+
+Loader that parses input JSON & YAML objects of strings as objects of JavaScript message functions with a matching structure, using [`messageformat`](https://messageformat.github.io/messageformat/).
 
 ## Installation
 
@@ -14,7 +16,8 @@ For a working demo of the loader, run `npm install` in the `example/` directory,
 
 ```js
 {
-  test: /\bmessages\.json$/,
+  test: /\bmessages\.(json|ya?ml)$/,
+  type: 'javascript/auto', // required by Webpack 4
   loader: require.resolve('messageformat-loader'),
   options: {
     biDiSupport: false,
@@ -28,7 +31,9 @@ For a working demo of the loader, run `npm install` in the `example/` directory,
 }
 ```
 
-If you’re using Webpack 4, you must include `type: 'javascript/auto'` in loader configuration to [properly parse JSON files](https://webpack.js.org/configuration/module/#rule-type).
+If you’re using Webpack 4, you must include `type: 'javascript/auto'` in the loader configuration to [properly parse JSON files](https://webpack.js.org/configuration/module/#rule-type).
+
+Uses [`yaml`](https://eemeli.org/yaml/) to parse input, which allows for full JSON & YAML support. As a side effect, also supports `#comments` in JSON files.
 
 The default option values are shown, and are not required. [See below](#options) for more information on them. As Webpack v1 does not support loader options, you should instead pass the options as query parameters in that environment; `locale` will accept a comma-delimited set of values.
 
@@ -64,7 +69,7 @@ messages['ordinal-example']({ N: 1 });
 
 ## Options
 
-- [`locale`] The [CLDR language code] or codes to pass to [messageformat.js]. If using multiple locales at the same time, exact matches to a locale code in the data structure keys will select that locale within it (as in [`example/src/messages.json`](example/src/messages.json)). Defaults to `en`.
+- [`locale`] The [CLDR language code] or codes to pass to [`messageformat`]. If using multiple locales at the same time, exact matches to a locale code in the data structure keys will select that locale within it (as in [`example/src/messages.json`](example/src/messages.json)). Defaults to `en`.
 - [`convert`] Use `messageformat-convert` to convert non-MessageFormat syntax and plural objects into MessageFormat. Use an object value to configure. Defaults to `false`.
 - [`disablePluralKeyChecks`] By default, messageformat.js throws an error when a statement uses a non-numerical key that will never be matched as a pluralization category for the current locale. Use this argument to disable the validation and allow unused plural keys. Defaults to `false`.
 - [`intlSupport`] Enable or disable support for the default formatters, which require the Intl object. Defaults to `false`.
@@ -74,7 +79,7 @@ messages['ordinal-example']({ N: 1 });
 
 [`locale`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#MessageFormat
 [cldr language code]: http://www.unicode.org/cldr/charts/29/supplemental/language_territory_information.html
-[messageformat.js]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html
+[`messageformat`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html
 [`convert`]: https://github.com/messageformat/messageformat/tree/master/packages/convert
 [`disablepluralkeychecks`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#disablePluralKeyChecks
 [`intlsupport`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#setIntlSupport

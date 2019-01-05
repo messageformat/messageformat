@@ -9,6 +9,8 @@
     "selectformat",
     "messageformat",
     "internationalization",
+    "json",
+    "yaml",
     "loader",
     "webpack"
   ],
@@ -19,7 +21,8 @@
   "main": "index.js",
   "dependencies": {
     "loader-utils": "^1.2.3",
-    "messageformat-convert": "^0.2.0"
+    "messageformat-convert": "^0.2.0",
+    "yaml": "^1.2.0"
   },
   "devDependencies": {
     "messageformat": "^2.0.4"
