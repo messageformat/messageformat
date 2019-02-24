@@ -308,6 +308,11 @@ describe('Plurals', function() {
     ).to.eql(['one', { type: 'octothorpe' }]);
   });
 
+  it('should handle octothorpes with nested plurals', () => {
+    const ast = parse('{x, plural, one{{y, plural, other{}}} other{#}}');
+    expect(ast[0].cases[1].tokens[0]).to.eql({ type: 'octothorpe' });
+  });
+
   describe('options.strict', function() {
     var src = "{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}";
 

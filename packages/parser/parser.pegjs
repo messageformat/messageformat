@@ -1,12 +1,12 @@
 {
-  var inPlural = false;
+  var inPlural = [false];
 }
 
 start = token*
 
 token
   = argument / select / plural / function
-  / '#' & { return inPlural; } { return { type: 'octothorpe' }; }
+  / '#' & { return inPlural[0]; } { return { type: 'octothorpe' }; }
   / str:char+ { return str.join(''); }
 
 argument = '{' _ arg:id _ '}' {
@@ -16,7 +16,8 @@ argument = '{' _ arg:id _ '}' {
     };
   }
 
-select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strict) { inPlural = false; } return m; }) _ ',' _ cases:selectCase+ _ '}' {
+select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strict) { inPlural.unshift(false); } return m; }) _ ',' _ cases:selectCase+ _ '}' {
+    if (options.strict) inPlural.shift()
     return {
       type: 'select',
       arg: arg,
@@ -24,7 +25,7 @@ select = '{' _ arg:id _ ',' _ (m:'select' { if (options.strict) { inPlural = fal
     };
   }
 
-plural = '{' _ arg:id _ ',' _ type:(m:('plural'/'selectordinal') { inPlural = true; return m; } ) _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
+plural = '{' _ arg:id _ ',' _ type:(m:('plural'/'selectordinal') { inPlural.unshift(true); return m; } ) _ ',' _ offset:offset? cases:pluralCase+ _ '}' {
     var ls = ((type === 'selectordinal') ? options.ordinal : options.cardinal)
              || ['zero', 'one', 'two', 'few', 'many', 'other'];
     if (ls && ls.length) cases.forEach(function(c) {
@@ -33,7 +34,7 @@ plural = '{' _ arg:id _ ',' _ type:(m:('plural'/'selectordinal') { inPlural = tr
         ' Valid ' + type + ' keys for this locale are `' + ls.join('`, `') +
         '`, and explicit keys like `=0`.');
     });
-    inPlural = false;
+    inPlural.shift()
     return {
       type: type,
       arg: arg,
@@ -92,7 +93,7 @@ quotedCurly
 
 quoted "escaped string"
   = quotedCurly
-  / quotedOcto:(("'#"str:inapos*"'" { return "#"+str.join(''); }) & { return inPlural; }) { return quotedOcto[0]; }
+  / quotedOcto:(("'#"str:inapos*"'" { return "#"+str.join(''); }) & { return inPlural[0]; }) { return quotedOcto[0]; }
   / "'"
 
 plainChar "plain char" = [^{}#\0-\x08\x0e-\x1f\x7f]
@@ -100,7 +101,7 @@ plainChar "plain char" = [^{}#\0-\x08\x0e-\x1f\x7f]
 char
   = doubleapos
   / quoted
-  / octo:'#' & { return !inPlural; } { return octo; }
+  / octo:'#' & { return !inPlural[0]; } { return octo; }
   / plainChar
 
 digits "integer" = $([0-9]+)
