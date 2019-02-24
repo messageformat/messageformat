@@ -609,7 +609,21 @@ describe('Real World Uses', function() {
       })
     ).to.eql('Al Sexton added themself and 2 other people to their group.');
   });
+
+  it('handles octothorpes with nested plurals', () => {
+    var mf = new MessageFormat('en');
+    const msg = mf.compile(
+      '{HOURS, plural, =0 {{MINUTES, plural, =0 {{SECONDS, plural, =0 {} other {#s}}} other {#m {SECONDS}s}}} other {#h {MINUTES}m {SECONDS}s}}'
+    );
+    const data = {
+      HOURS: 1,
+      MINUTES: 10,
+      SECONDS: 15
+    };
+    expect(msg(data)).to.match(/^1h 10m 15s/);
+  });
 });
+
 describe('Module/CommonJS support', function() {
   var colorSrc = { red: 'red', blue: 'blue', green: 'green' };
   var cf = new MessageFormat('en').compile(colorSrc);
