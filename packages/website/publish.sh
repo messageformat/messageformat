@@ -1,7 +1,9 @@
 #!/bin/bash
 
+GSED=$(which gsed)
+
 # Rename "tutorials" as "pages" and drop .html from links
-sed -i '
+${GSED:-"sed"} -i '
     s/tutorial/page/g
     s/ Tutorial:/:/g
     s/"index\.html"/".\/"/g
@@ -12,5 +14,5 @@ for f in docs/tutorial*; do
 done
 
 cp -r logo docs/
-rm -r ../../docs/
+rm -rf ../../docs/
 mv docs ../../
