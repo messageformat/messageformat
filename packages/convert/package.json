@@ -1,6 +1,6 @@
 {
   "name": "messageformat-convert",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Convert input (e.g. from Rails i18n) into messageformat-compatible JSON",
   "keywords": [
     "messageformat",
@@ -30,6 +30,6 @@
     "make-plural": "^4.3.0"
   },
   "devDependencies": {
-    "messageformat": "^2.0.4"
+    "messageformat": "^2.1.0"
   }
 }

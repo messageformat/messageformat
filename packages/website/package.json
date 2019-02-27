@@ -1,6 +1,6 @@
 {
   "name": "messageformat-website",
-  "version": "2.1.0-monorepo",
+  "version": "2.1.0",
   "description": "MessageFormat documentation website source",
   "private": true,
   "license": "MIT",
@@ -12,7 +12,7 @@
     "start": "jsdoc -c jsdoc-conf.json"
   },
   "dependencies": {
-    "messageformat": "^2.0.4"
+    "messageformat": "^2.1.0"
   },
   "devDependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
