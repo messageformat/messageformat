@@ -11,9 +11,10 @@
     "example": "example"
   },
   "scripts": {
-    "build:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
-    "build": "lerna run build && npm run build:example",
-    "clean": "lerna run clean",
+    "build": "lerna run build --ignore messageformat-website",
+    "docs:build": "lerna run build --scope messageformat-website",
+    "docs:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
+    "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
     "prepare": "lerna bootstrap",
     "pretest": "lerna run build --scope messageformat-parser",

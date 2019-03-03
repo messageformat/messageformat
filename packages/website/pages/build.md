@@ -15,18 +15,15 @@ Compiling messages during your build will allow for a significant decrease in fi
 
 Each of the loaders is similar, supporting a specific file type. Their configuration options vary slightly, depending on the common practices for the format; please see their own documentations for details:
 
-- JSON: [messageformat-loader]
-- .properties: [messageformat-properties-loader] – Used by [Java resource bundles]
-- PO files: [messageformat-po-loader] – Used by [gettext]
-- YAML: [messageformat-yaml-loader] – Used by [Rails i18n]
+- JSON & YAML: [messageformat-loader]
+- .properties: [messageformat-properties-loader] – Format used by [Java resource bundles]
+- PO files: [messageformat-po-loader] – Format used by [gettext]
 
 [messageformat-loader]: https://www.npmjs.com/package/messageformat-loader
 [messageformat-properties-loader]: https://www.npmjs.com/package/messageformat-properties-loader
 [java resource bundles]: https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-
 [messageformat-po-loader]: https://www.npmjs.com/package/messageformat-po-loader
 [gettext]: https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
-[messageformat-yaml-loader]: https://www.npmjs.com/package/messageformat-yaml-loader
-[rails i18n]: http://guides.rubyonrails.org/i18n.html
 
 Using [messageformat-loader] as an example, these enable a JavaScript API that looks like this:
 
