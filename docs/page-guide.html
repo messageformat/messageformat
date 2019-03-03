@@ -46,7 +46,7 @@
 					</li>
 				
 					<li class="nav-item">
-						<a class="nav-link" href="page-build">Build-time Compilation</a>
+						<a class="nav-link" href="page-build">Usage</a>
 					</li>
 				
 					<li class="nav-item">
@@ -59,7 +59,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -93,17 +93,17 @@
 <article>
     <p>This guide aims to provide an introduction to ICU MessageFormat syntax, along
 with minimal code examples that are directly executable in a node.js
-environment. <strong>For production use</strong>, we recommend using <a href="page-build">Build-time Compilation</a> and
+environment. <strong>For production use</strong>, we recommend using <a href="page-build">Usage</a> and
 the <a href="Messages">Messages</a> runtime accessor class.</p>
 <h2>String Lookup</h2><p>The simplest case of MessageFormat involves no formatting, just a string
 passthrough. This may sound silly, but often it's nice to always use the same
 message formatting system when doing translations, and not everything requires
 variables.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-const message = mf.compile('This is a message.')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+const message = mf.compile('This is a message.');
 
-message()  // &quot;This is a message.&quot;</code></pre><p><strong>Note</strong>: if a message <em>does</em> require data to be passed in, an error is thrown if
+message(); // &quot;This is a message.&quot;</code></pre><p><strong>Note</strong>: if a message <em>does</em> require data to be passed in, an error is thrown if
 you do not.</p>
 <h2>Variables</h2><p>The most common way to use MessageFormat is for simple variable replacement.
 MessageFormat may look odd at first, but it's actually fairly simple. One way to
@@ -114,31 +114,30 @@ the first level of brackets brings you into one of several data-driven
 situations. The most simple is variable replacement.</p>
 <p>Simply putting a variable name in between <code>{</code> and <code>}</code> will place that variable
 there in the output.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-const varMessage = mf.compile('His name is {NAME}.')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+const varMessage = mf.compile('His name is {NAME}.');
 
-varMessage({ NAME: 'Jed' })  // 'His name is Jed.'</code></pre><h2>SelectFormat</h2><p>SelectFormat is a lot like a switch statement for your messages. Often it's used
-to select gender in a string. The format of the statement is <code>{varname, select,
-this{...} that{...} other{...}}</code>, where <code>varname</code> matches a key in the data you
+varMessage({ NAME: 'Jed' }); // 'His name is Jed.'</code></pre><h2>SelectFormat</h2><p>SelectFormat is a lot like a switch statement for your messages. Often it's used
+to select gender in a string. The format of the statement is <code>{varname, select, this{...} that{...} other{...}}</code>, where <code>varname</code> matches a key in the data you
 give to the resulting function, and <code>'this'</code> and <code>'that'</code> are some of the
 string-equivalent values that it may have. The <code>other</code> key is required, and is
 selected if no other case matches.</p>
 <p><strong>Note</strong>: Comparison is made using the JavaScript <code>==</code> operator, so if a key is
 left out of the input data, the case <code>undefined{...}</code> would match that.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MesssageFormat('en')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MesssageFormat('en');
 const selectMessage = mf.compile(
   `{ GENDER, select,
        male {He}
        female {She}
        other {They}
    } liked this.`
-)
+);
 
-selectMessage({ GENDER: 'male' })    // 'He liked this.'
-selectMessage({ GENDER: 'female' })  // 'She liked this.'
-selectMessage({})                    // 'They liked this.'</code></pre><h2>PluralFormat</h2><p>PluralFormat is a similar mechanism to SelectFormat, but specific to numerical
+selectMessage({ GENDER: 'male' }); // 'He liked this.'
+selectMessage({ GENDER: 'female' }); // 'She liked this.'
+selectMessage({}); // 'They liked this.'</code></pre><h2>PluralFormat</h2><p>PluralFormat is a similar mechanism to SelectFormat, but specific to numerical
 values. The key that is chosen is generated from the specified input variable by
 a locale-specific <em>plural function</em>.</p>
 <p>The numeric input is mapped to a plural category, some subset of <code>zero</code>, <code>one</code>,
@@ -154,8 +153,8 @@ representation of the number.</p>
 <p>The keyword for cardinal plurals is <code>plural</code>, and for ordinal plurals is
 <code>selectordinal</code>.</p>
 <p>Within a plural statement, <code>#</code> will be replaced by the variable value.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 const messages = mf.compile({
   results: `There { COUNT, plural,
                     =0 {are no results}
@@ -168,18 +167,18 @@ const messages = mf.compile({
                        few {#rd}
                        other {#th}
                      } in the queue.`
-})
+});
 
-messages.results({ COUNT: 0 })    // 'There are no results.'
-messages.results({ COUNT: 1 })    // 'There is one result.'
-messages.results({ COUNT: 100 })  // 'There are 100 results.'
-messages.position({ POS: 1 })     // 'You are 1st in the queue.'
-messages.position({ POS: 33 })    // 'You are 33rd in the queue.'</code></pre><h3>Plural Offset</h3><p>To generate sentences such as &quot;You and 4 others added this to their profiles.&quot;,
+messages.results({ COUNT: 0 }); // 'There are no results.'
+messages.results({ COUNT: 1 }); // 'There is one result.'
+messages.results({ COUNT: 100 }); // 'There are 100 results.'
+messages.position({ POS: 1 }); // 'You are 1st in the queue.'
+messages.position({ POS: 33 }); // 'You are 33rd in the queue.'</code></pre><h3>Plural Offset</h3><p>To generate sentences such as &quot;You and 4 others added this to their profiles.&quot;,
 PluralFormat supports adding an <code>offset</code> to the variable value before
 determining its plural category. Literal/exact matches are tested before
 applying the offset.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 const offsetMessage = mf.compile(
   `You { ADDS, plural, offset:1
          =0 {did not add this}
@@ -187,20 +186,20 @@ const offsetMessage = mf.compile(
          one {and one other person added this}
          other {and # others added this}
        }.`
-)
+);
 
-offsetMessage({ ADDS: 0 })  // 'You did not add this.'
-offsetMessage({ ADDS: 1 })  // 'You added this.'
-offsetMessage({ ADDS: 2 })  // 'You and one other person added this.'
-offsetMessage({ ADDS: 3 })  // 'You and 2 others added this.'</code></pre><h2>Formatters</h2><p>MessageFormat includes date, duration, number, and time formatting functions in
+offsetMessage({ ADDS: 0 }); // 'You did not add this.'
+offsetMessage({ ADDS: 1 }); // 'You added this.'
+offsetMessage({ ADDS: 2 }); // 'You and one other person added this.'
+offsetMessage({ ADDS: 3 }); // 'You and 2 others added this.'</code></pre><h2>Formatters</h2><p>MessageFormat includes date, duration, number, and time formatting functions in
 the style of ICU's <a href="http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html">simpleArg syntax</a>. They are implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl">Intl</a>
 object defined by ECMA-402.</p>
 <p><strong>Note</strong>: Intl is not defined in Node by default until 0.12 and is not available
 in all browsers (in particular, IE &lt;=10 and Safari &lt;=9.1), so you may need to
 use a <a href="https://www.npmjs.com/package/intl">polyfill</a>.</p>
 <h3>date</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat(['en', 'fi'])
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat(['en', 'fi']);
 const messages = mf.compile({
   en: {
     today: 'Today is {T, date}',
@@ -210,26 +209,26 @@ const messages = mf.compile({
   fi: {
     today: 'Tänään on {T, date}'
   }
-})
+});
 
-messages.en.today({ T: Date.now() })  // 'Today is Mar 30, 2018'
-messages.fi.today({ T: Date.now() })  // 'Tänään on 30. maalisk. 2018'
-messages.en.unix({ T: 0 })
-  // 'Unix time started on Thursday, January 1, 1970'
-messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' })
-  // 'HAL 9000 became operational on 1/12/1999'</code></pre><h3>duration</h3><p>Represent a duration in seconds as a string.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
+messages.en.today({ T: Date.now() }); // 'Today is Mar 30, 2018'
+messages.fi.today({ T: Date.now() }); // 'Tänään on 30. maalisk. 2018'
+messages.en.unix({ T: 0 });
+// 'Unix time started on Thursday, January 1, 1970'
+messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' });
+// 'HAL 9000 became operational on 1/12/1999'</code></pre><h3>duration</h3><p>Represent a duration in seconds as a string.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat();
 const messages = mf.compile({
   since: 'It has been {D, duration}',
   countdown: 'Countdown: {D, duration}'
-})
+});
 
-messages.since({ D: 123 })             // 'It has been 2:03'
-messages.countdown({ D: -151200.42 })  // 'Countdown: -42:00:00.420'</code></pre><h3>number</h3><p>Supported parameters are <code>integer</code>, <code>percent</code> , or <code>currency</code>. To specify a non-default currency, use <code>currency:CODE</code>.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-mf.currency = 'EUR'  // needs to be set before first compile() call
+messages.since({ D: 123 }); // 'It has been 2:03'
+messages.countdown({ D: -151200.42 }); // 'Countdown: -42:00:00.420'</code></pre><h3>number</h3><p>Supported parameters are <code>integer</code>, <code>percent</code> , or <code>currency</code>. To specify a non-default currency, use <code>currency:CODE</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+mf.currency = 'EUR'; // needs to be set before first compile() call
 const messages = mf.compile({
   almost: '{N} is almost {N, number, integer}',
   complete: '{P, number, percent} complete',
@@ -237,12 +236,12 @@ const messages = mf.compile({
     eur: 'The total is {V, number, currency}.',
     gbp: 'The total is {V, number, currency:GBP}.'
   }
-})
+});
 
-messages.almost({ N: 3.14 })       // '3.14 is almost 3'
-messages.complete({ P: 0.99 })     // '99% complete'
-messages.currency.eur({ V: 5.5 })  // 'The total is €5.50.'
-messages.currency.gbp({ V: 5.5 })  // 'The total is £5.50.'</code></pre><h3>time</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
+messages.almost({ N: 3.14 }); // '3.14 is almost 3'
+messages.complete({ P: 0.99 }); // '99% complete'
+messages.currency.eur({ V: 5.5 }); // 'The total is €5.50.'
+messages.currency.gbp({ V: 5.5 }); // 'The total is £5.50.'</code></pre><h3>time</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
 const mf = new MessageFormat(['en', 'fi'])
 const messages = mf.compile({
@@ -272,22 +271,28 @@ refer to any variables that are not defined by the function parameters or
 within the function body. To add your own formatters, either add them to the
 static <code>MessageFormat.formatters</code> object, or use
 <a href="MessageFormat.html#addFormatters">MessageFormat#addFormatters</a> to add them to a MessageFormat instance.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en-GB')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en-GB');
 mf.addFormatters({
-  upcase: function(v) { return v.toUpperCase(); },
-  locale: function(v, lc) { return lc; },
-  prop: function(v, lc, p) { return v[p] }
-})
+  upcase: function(v) {
+    return v.toUpperCase();
+  },
+  locale: function(v, lc) {
+    return lc;
+  },
+  prop: function(v, lc, p) {
+    return v[p];
+  }
+});
 const messages = mf.compile({
   describe: 'This is {VAR, upcase}.',
   locale: 'The current locale is {_, locale}.',
   answer: 'Answer: {obj, prop, a}'
-})
+});
 
-messages.describe({ VAR: 'big' })        // 'This is BIG.'
-messages.locale({})                      // 'The current locale is en-GB.'
-messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'</code></pre><h2>Nesting</h2><p>All types of messageformat statements may be nested within each other, to unlimited depth:</p>
+messages.describe({ VAR: 'big' }); // 'This is BIG.'
+messages.locale({}); // 'The current locale is en-GB.'
+messages.answer({ obj: { q: 3, a: 42 } }); // 'Answer: 42'</code></pre><h2>Nesting</h2><p>All types of messageformat statements may be nested within each other, to unlimited depth:</p>
 <pre class="prettyprint source lang-text"><code>{ SEL1, select,
   other {
     { PLUR1, plural,
@@ -298,15 +303,15 @@ messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'</code></pre><h2>Nesting
     }
   }
 }</code></pre><h2>Escaping</h2><p>The characters <code>{</code> and <code>}</code> must be escaped with <code>'quotes'</code> to be included in the output as literal characters. Within plural statements, <code>#</code> must also be similarly escaped. The utility function <a href="MessageFormat.html#.escape">MessageFormat.escape</a> may help with this.</p>
-<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
+<pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
 const messages = mf.compile({
   esc: &quot;'{' {S, plural, other{# is a '#'}} '}'&quot;,
   var: MessageFormat.escape('Use {var} for variables')
-})
+});
 
-messages.esc({ S: 5 })    // '{ 5 is a # }'
-messages.var({ var: 5 })  // 'Use {var} for variables'</code></pre>
+messages.esc({ S: 5 }); // '{ 5 is a # }'
+messages.var({ var: 5 }); // 'Use {var} for variables'</code></pre>
 </article>
 
 </section>

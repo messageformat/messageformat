@@ -46,7 +46,7 @@
 					</li>
 				
 					<li class="nav-item">
-						<a class="nav-link" href="page-build">Build-time Compilation</a>
+						<a class="nav-link" href="page-build">Usage</a>
 					</li>
 				
 					<li class="nav-item">
@@ -59,7 +59,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -89,7 +89,9 @@
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript ">/** Represent a number as an integer, percent or currency value
+            class="sunlight-highlight-javascript ">/* global CURRENCY, Intl */
+
+/** Represent a number as an integer, percent or currency value
  *
  *  Available in MessageFormat strings as `{VAR, number, integer|percent|currency}`.
  *  Internally, calls Intl.NumberFormat with appropriate parameters. `currency` will
@@ -118,26 +120,27 @@
  */
 
 function number(value, lc, arg) {
-  var a = arg &amp;&amp; arg.split(':') || []
+  var a = (arg &amp;&amp; arg.split(':')) || [];
   var opt = {
     integer: { maximumFractionDigits: 0 },
     percent: { style: 'percent' },
     currency: {
       style: 'currency',
-      currency: a[1] &amp;&amp; a[1].trim() || CURRENCY,
+      currency: (a[1] &amp;&amp; a[1].trim()) || CURRENCY,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }
-  }
-  return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value)
+  };
+  return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value);
 }
 
 module.exports = function(mf) {
-  var parts = number.toString()
+  var parts = number
+    .toString()
     .replace('CURRENCY', JSON.stringify(mf.currency || 'USD'))
-    .match(/\(([^)]*)\)[^{]*{([\s\S]*)}/)
-  return new Function(parts[1], parts[2])
-}
+    .match(/\(([^)]*)\)[^{]*{([\s\S]*)}/);
+  return new Function(parts[1], parts[2]);
+};
 </pre>
     </article>
 </section>

@@ -46,7 +46,7 @@
 					</li>
 				
 					<li class="nav-item">
-						<a class="nav-link" href="page-build">Build-time Compilation</a>
+						<a class="nav-link" href="page-build">Usage</a>
 					</li>
 				
 					<li class="nav-item">
@@ -59,7 +59,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -130,12 +130,21 @@ function duration(value) {
     }
   }
   var first = parts.shift();
-  return sign + first + ':' + parts.map(function(n) {
-    return n &lt; 10 ? '0' + String(n) : String(n)
-  }).join(':');
+  return (
+    sign +
+    first +
+    ':' +
+    parts
+      .map(function(n) {
+        return n &lt; 10 ? '0' + String(n) : String(n);
+      })
+      .join(':')
+  );
 }
 
-module.exports = function () { return duration; }
+module.exports = function() {
+  return duration;
+};
 </pre>
     </article>
 </section>

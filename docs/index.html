@@ -46,7 +46,7 @@
 					</li>
 				
 					<li class="nav-item">
-						<a class="nav-link" href="page-build">Build-time Compilation</a>
+						<a class="nav-link" href="page-build">Usage</a>
 					</li>
 				
 					<li class="nav-item">
@@ -59,7 +59,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -120,15 +120,15 @@
   =0 {no results}
   one {1 result}
   other {# results}
-}.`</code></pre><p>You'll get these results:</p>
-<pre class="prettyprint source lang-js"><code>const MessageFormat = require('messageformat')
-const mf = new MessageFormat('en')
-const msg = mf.compile(msgSrc)
+}.`;</code></pre><p>You'll get these results:</p>
+<pre class="prettyprint source lang-js"><code>const MessageFormat = require('messageformat');
+const mf = new MessageFormat('en');
+const msg = mf.compile(msgSrc);
 
-msg({ GENDER: 'male', RES: 1 })    // 'He found 1 result.'
-msg({ GENDER: 'female', RES: 1 })  // 'She found 1 result.'
-msg({ GENDER: 'male', RES: 0 })    // 'He found no results.'
-msg({ RES: 2 })                    // 'They found 2 results.'</code></pre><h2>Getting Started</h2><p>To install just the core package, use:</p>
+msg({ GENDER: 'male', RES: 1 }); // 'He found 1 result.'
+msg({ GENDER: 'female', RES: 1 }); // 'She found 1 result.'
+msg({ GENDER: 'male', RES: 0 }); // 'He found no results.'
+msg({ RES: 2 }); // 'They found 2 results.'</code></pre><h2>Getting Started</h2><p>To install just the core package, use:</p>
 <pre class="prettyprint source"><code>npm install messageformat</code></pre><p>This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our <a href="https://messageformat.github.io/messageformat/page-guide">Format Guide</a> will help with the ICU MessageFormat Syntax, and the <a href="https://messageformat.github.io/messageformat/page-build">Build-time Compilation Guide</a> provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.</p></article>
     </section>
 

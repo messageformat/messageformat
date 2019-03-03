@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>messageformat: Build-time Compilation</title>
+	<title>messageformat: Usage</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -46,7 +46,7 @@
 					</li>
 				
 					<li class="nav-item">
-						<a class="nav-link" href="page-build">Build-time Compilation</a>
+						<a class="nav-link" href="page-build">Usage</a>
 					</li>
 				
 					<li class="nav-item">
@@ -59,7 +59,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.0.5</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -87,7 +87,7 @@
 <header>
     
 
-    <h1 class="page-title">Build-time Compilation</h1>
+    <h1 class="page-title">Usage</h1>
 </header>
 
 <article>
@@ -101,10 +101,9 @@
 <p>Compiling messages during your build will allow for a significant decrease in filesize and execution time, as all that's required to run on the client are the final compiled functions.</p>
 <h2>Webpack loaders</h2><p>Each of the loaders is similar, supporting a specific file type. Their configuration options vary slightly, depending on the common practices for the format; please see their own documentations for details:</p>
 <ul>
-<li>JSON: <a href="https://www.npmjs.com/package/messageformat-loader">messageformat-loader</a></li>
-<li>.properties: <a href="https://www.npmjs.com/package/messageformat-properties-loader">messageformat-properties-loader</a> – Used by <a href="https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-">Java resource bundles</a></li>
-<li>PO files: <a href="https://www.npmjs.com/package/messageformat-po-loader">messageformat-po-loader</a> – Used by <a href="https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html">gettext</a></li>
-<li>YAML: <a href="https://www.npmjs.com/package/messageformat-yaml-loader">messageformat-yaml-loader</a> – Used by <a href="http://guides.rubyonrails.org/i18n.html">Rails i18n</a></li>
+<li>JSON &amp; YAML: <a href="https://www.npmjs.com/package/messageformat-loader">messageformat-loader</a></li>
+<li>.properties: <a href="https://www.npmjs.com/package/messageformat-properties-loader">messageformat-properties-loader</a> – Format used by <a href="https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-">Java resource bundles</a></li>
+<li>PO files: <a href="https://www.npmjs.com/package/messageformat-po-loader">messageformat-po-loader</a> – Format used by <a href="https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html">gettext</a></li>
 </ul>
 <p>Using <a href="https://www.npmjs.com/package/messageformat-loader">messageformat-loader</a> as an example, these enable a JavaScript API that looks like this:</p>
 <div class="panel panel-default">
@@ -181,22 +180,23 @@ set in package.json or messageformat.rc.json.</code></pre><h2>Using compiled mes
 import msgData from './messages.json'
 const messages = new Messages(msgData, 'en')  // sets default locale
 
-messages.hasMessage('a')                // true
-messages.hasObject('c')                 // true
-messages.get('b', { COUNT: 3 })         // 'This has 3 users.'
-messages.get(['c', 'd'], { P: 0.314 })  // 'We have 31% code coverage.'
+messages.hasMessage('a') // true
+messages.hasObject('c') // true
+messages.get('b', { COUNT: 3 }) // 'This has 3 users.'
+messages.get(['c', 'd'], { P: 0.314 }) // 'We have 31% code coverage.'
 
-messages.get('e')                       // 'e'
+messages.get('e') // 'e'
 messages.setFallback('en', ['foo', 'fi'])
-messages.get('e')                       // 'Minä puhun vain suomea.'
+messages.get('e') // 'Minä puhun vain suomea.'
 
 messages.locale = 'fi'
-messages.hasMessage('a')                // false
-messages.hasMessage('a', 'en')          // true
-messages.hasMessage('a', null, true)    // true
-messages.hasObject('c')                 // false
-messages.get('b', { COUNT: 3 })         // 'Tällä on 3 käyttäjää.'
-messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'</code></pre>
+messages.hasMessage('a') // false
+messages.hasMessage('a', 'en') // true
+messages.hasMessage('a', null, true) // true
+messages.hasObject('c') // false
+messages.get('b', { COUNT: 3 }) // 'Tällä on 3 käyttäjää.'
+messages.get('c').d({ P: 0.628 }) // 'We have 63% code coverage.'</code></pre>
+
   </div>
 </div>
 </article>
