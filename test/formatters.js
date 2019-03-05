@@ -5,6 +5,8 @@ if (typeof require !== 'undefined') {
 
 describe('Formatters', () => {
   describe('date', () => {
+    const tzOffsetInMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+
     let mf;
     beforeEach(() => {
       mf = new MessageFormat(['en', 'fi']);
@@ -12,7 +14,7 @@ describe('Formatters', () => {
 
     it('default', () => {
       const msg = mf.compile('Today is {T, date}');
-      const data = { T: Date.parse('2016-02-21') };
+      const data = { T: Date.parse('2016-02-21') + tzOffsetInMs };
       expect(msg(data)).to.eql('Today is Feb 21, 2016');
     });
 
@@ -24,7 +26,7 @@ describe('Formatters', () => {
 
     it('argument', () => {
       const msg = mf.compile('Unix time started on {T, date, full}');
-      const data = { T: 0 };
+      const data = { T: tzOffsetInMs };
       expect(msg(data)).to.eql(
         'Unix time started on Thursday, January 1, 1970'
       );
