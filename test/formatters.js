@@ -5,7 +5,7 @@ if (typeof require !== 'undefined') {
 
 describe('Formatters', () => {
   describe('date', () => {
-    const tzOffsetInMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+    const tzOffsetInMs = new Date().getTimezoneOffset() * 60 * 1000;
 
     let mf;
     beforeEach(() => {
