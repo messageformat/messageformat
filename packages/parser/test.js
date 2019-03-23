@@ -354,15 +354,15 @@ describe('Ordinals', function() {
   });
 });
 describe('Functions', function() {
-  it('should require lower-case type', function() {
+  it('should allow upper-case type, except for built-ins', function() {
     expect(function() {
       parse('{var,date}');
     }).to.not.throwError();
     expect(function() {
       parse('{var,Date}');
-    }).to.throwError();
+    }).to.not.throwError();
     expect(function() {
-      parse('{var,daTe}');
+      parse('{var,Select}');
     }).to.throwError();
     expect(function() {
       parse('{var,9ate}');

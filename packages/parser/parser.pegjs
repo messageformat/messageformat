@@ -70,7 +70,17 @@ pluralKey
 functionKey
   = 'number' / 'date' / 'time' / 'spellout' / 'ordinal' / 'duration'
   / ! 'select' ! 'plural' ! 'selectordinal' key:id
-    & { return !options.strict && key.toLowerCase() === key && !/^\d/.test(key) }
+    & {
+      if (options.strict || /^\d/.test(key)) return false
+      switch (key.toLowerCase()) {
+        case 'select':
+        case 'plural':
+        case 'selectordinal':
+          return false
+        default:
+          return true
+      }
+    }
     { return key }
 
 functionParam
