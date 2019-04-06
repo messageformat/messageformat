@@ -17,7 +17,7 @@
     "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
     "prepare": "lerna bootstrap",
-    "pretest": "lerna run build --scope messageformat-parser",
+    "pretest": "lerna run build --scope messageformat-parser --scope messageformat",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
     "test:browser": "lerna run build --scope messageformat && serve",
