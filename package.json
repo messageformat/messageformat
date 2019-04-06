@@ -72,15 +72,15 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^5.11.1",
-    "eslint-config-prettier": "^3.3.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-prettier": "^3.0.1",
     "expect.js": "^0.3.1",
-    "lerna": "^3.6.0",
-    "mocha": "^5.2.0",
-    "prettier": "^1.15.3",
-    "rimraf": "^2.6.2",
-    "serve": "^10.1.1",
-    "tmp": "0.0.33"
+    "lerna": "^3.13.1",
+    "mocha": "^6.0.2",
+    "prettier": "^1.16.4",
+    "rimraf": "^2.6.3",
+    "serve": "^11.0.0",
+    "tmp": "^0.1.0"
   }
 }
