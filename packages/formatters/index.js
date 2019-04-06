@@ -24,7 +24,6 @@
  * {@link MessageFormat#addFormatters} to add it to a MessageFormat instance.
  *
  * @class Formatters
- * @private
  * @hideconstructor
  */
 

@@ -12,7 +12,8 @@
     "start": "jsdoc -c jsdoc-conf.json"
   },
   "dependencies": {
-    "messageformat": "^2.1.0"
+    "messageformat": "^2.1.0",
+    "messageformat-formatters": "^2.0.0-rc.1"
   },
   "devDependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
