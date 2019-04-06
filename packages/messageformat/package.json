@@ -27,15 +27,31 @@
     "messageformat.js.map",
     "messages.js"
   ],
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "6.5.0"
+          }
+        }
+      ]
+    ]
+  },
   "dependencies": {
     "make-plural": "^4.3.0",
     "messageformat-parser": "^4.1.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
   },
   "scripts": {
+    "prebuild": "babel src -d lib",
     "build": "webpack --mode production"
   },
   "browser": {
