@@ -1,8 +1,8 @@
 import Compiler from './compiler';
 import { funcname, propname } from './utils';
+import { getAllPlurals, getPlural } from './plurals';
 
 var formatters = require('./formatters');
-var Plurals = require('./plurals');
 var Runtime = require('./runtime');
 
 /**
@@ -35,11 +35,11 @@ var Runtime = require('./runtime');
 function MessageFormat(locale) {
   this.pluralFuncs = {};
   if (typeof locale === 'string') {
-    this.pluralFuncs[locale] = Plurals.get(locale);
+    this.pluralFuncs[locale] = getPlural(locale);
     this.defaultLocale = locale;
   } else if (Array.isArray(locale)) {
     locale.forEach(function(lc) {
-      this.pluralFuncs[lc] = Plurals.get(lc);
+      this.pluralFuncs[lc] = getPlural(lc);
     }, this);
     this.defaultLocale = locale[0];
   } else {
@@ -327,13 +327,13 @@ MessageFormat.prototype.compile = function(messages, locale) {
   var pf = {};
   if (Object.keys(this.pluralFuncs).length === 0) {
     if (locale) {
-      var pfn0 = Plurals.get(locale, this.noPluralKeyChecks);
+      var pfn0 = getPlural(locale, this.noPluralKeyChecks);
       if (!pfn0)
         throw new Error('Locale ' + JSON.stringify(locale) + ' not found!');
       pf[locale] = pfn0;
     } else {
       locale = this.defaultLocale;
-      pf = Plurals.getAll(this.noPluralKeyChecks);
+      pf = getAllPlurals(this.noPluralKeyChecks);
     }
   } else if (locale) {
     var pfn1 = this.pluralFuncs[locale];
