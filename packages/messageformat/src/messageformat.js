@@ -1,9 +1,9 @@
 import Compiler from './compiler';
 import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
+import Runtime from './runtime';
 
 var formatters = require('./formatters');
-var Runtime = require('./runtime');
 
 /**
  * Create a new MessageFormat compiler
