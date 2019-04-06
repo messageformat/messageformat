@@ -1,4 +1,3 @@
-var reserved = require('reserved-words');
 var parse = require('messageformat-parser').parse;
 
 /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
@@ -20,42 +19,65 @@ function Compiler(mf) {
 
 module.exports = Compiler;
 
+var reservedES3 = {
+  break: true,
+  continue: true,
+  delete: true,
+  else: true,
+  for: true,
+  function: true,
+  if: true,
+  in: true,
+  new: true,
+  return: true,
+  this: true,
+  typeof: true,
+  var: true,
+  void: true,
+  while: true,
+  with: true,
+  case: true,
+  catch: true,
+  default: true,
+  do: true,
+  finally: true,
+  instanceof: true,
+  switch: true,
+  throw: true,
+  try: true
+};
+
+// in addition to reservedES3
+var reservedES5 = {
+  debugger: true,
+  class: true,
+  enum: true,
+  extends: true,
+  super: true,
+  const: true,
+  export: true,
+  import: true,
+  null: true,
+  true: true,
+  false: true,
+  implements: true,
+  let: true,
+  private: true,
+  public: true,
+  yield: true,
+  interface: true,
+  package: true,
+  protected: true,
+  static: true
+};
+
 /** Utility function for quoting an Object's key value if required
  *
  *  Quotes the key if it contains invalid characters or is an
  *  ECMAScript 3rd Edition reserved word (for IE8).
  */
 Compiler.propname = function(key, obj) {
-  if (
-    /^[A-Z_$][0-9A-Z_$]*$/i.test(key) &&
-    [
-      'break',
-      'continue',
-      'delete',
-      'else',
-      'for',
-      'function',
-      'if',
-      'in',
-      'new',
-      'return',
-      'this',
-      'typeof',
-      'var',
-      'void',
-      'while',
-      'with',
-      'case',
-      'catch',
-      'default',
-      'do',
-      'finally',
-      'instanceof',
-      'switch',
-      'throw',
-      'try'
-    ].indexOf(key) < 0
-  ) {
+  if (/^[A-Z_$][0-9A-Z_$]*$/i.test(key) && !reservedES3[key]) {
     return obj ? obj + '.' + key : key;
   } else {
     var jkey = JSON.stringify(key);
@@ -67,7 +89,7 @@ Compiler.propname = function(key, obj) {
  */
 Compiler.funcname = function(key) {
   var fn = key.trim().replace(/\W+/g, '_');
-  return reserved.check(fn, 'es2015', true) || /^\d/.test(fn) ? '_' + fn : fn;
+  return reservedES3[fn] || reservedES5[fn] || /^\d/.test(fn) ? '_' + fn : fn;
 };
 
 /** Utility formatter function for enforcing Bidi Structured Text by using UCC

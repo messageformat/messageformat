@@ -29,8 +29,7 @@
   ],
   "dependencies": {
     "make-plural": "^4.3.0",
-    "messageformat-parser": "^4.1.0",
-    "reserved-words": "^0.1.2"
+    "messageformat-parser": "^4.1.0"
   },
   "devDependencies": {
     "webpack": "^4.29.6",
