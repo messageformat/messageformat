@@ -1,4 +1,4 @@
-var Compiler = require('./compiler');
+import { funcname, propname } from './utils';
 
 /** A set of utility functions that are called by the compiled Javascript
  *  functions, these are included locally in the output of {@link
@@ -112,7 +112,7 @@ Runtime.prototype.toString = function(pluralFuncs, compiler) {
     for (var i in o) {
       if (level === 0)
         s.push('var ' + i + ' = ' + _stringify(o[i], level + 1) + ';\n');
-      else s.push(Compiler.propname(i) + ': ' + _stringify(o[i], level + 1));
+      else s.push(propname(i) + ': ' + _stringify(o[i], level + 1));
     }
     if (level === 0) return s.join('');
     if (s.length === 0) return '{}';
@@ -123,7 +123,7 @@ Runtime.prototype.toString = function(pluralFuncs, compiler) {
 
   var obj = {};
   Object.keys(compiler.locales).forEach(function(lc) {
-    obj[Compiler.funcname(lc)] = pluralFuncs[lc];
+    obj[funcname(lc)] = pluralFuncs[lc];
   });
   Object.keys(compiler.runtime).forEach(function(fn) {
     obj[fn] = this[fn];

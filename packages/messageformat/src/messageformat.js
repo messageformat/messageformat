@@ -1,4 +1,6 @@
-var Compiler = require('./compiler');
+import Compiler from './compiler';
+import { funcname, propname } from './utils';
+
 var formatters = require('./formatters');
 var Plurals = require('./plurals');
 var Runtime = require('./runtime');
@@ -315,7 +317,7 @@ MessageFormat.prototype.compile = function(messages, locale) {
         '\n' +
           indent +
           '  ' +
-          Compiler.propname(k) +
+          propname(k) +
           ': ' +
           _stringify(obj[k], level + 1)
       );
@@ -355,7 +357,7 @@ MessageFormat.prototype.compile = function(messages, locale) {
   if (typeof messages != 'object') {
     var fn = new Function(
       'number, plural, select, fmt',
-      Compiler.funcname(locale),
+      funcname(locale),
       'return ' + obj
     );
     var rt = this.runtime;
@@ -380,7 +382,7 @@ MessageFormat.prototype.compile = function(messages, locale) {
           '(function (root, G) {',
           '  if (typeof define === "function" && define.amd) { define(G); }',
           '  else if (typeof exports === "object") { module.exports = G; }',
-          '  else { ' + Compiler.propname(global, 'root') + ' = G; }',
+          '  else { ' + propname(global, 'root') + ' = G; }',
           '})(this, ' + objStr + ');'
         ].join('\n')
       );
