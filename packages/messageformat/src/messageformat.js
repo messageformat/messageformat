@@ -1,9 +1,8 @@
+import Formatters from 'messageformat-formatters';
 import Compiler from './compiler';
 import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
 import Runtime from './runtime';
-
-var formatters = require('./formatters');
 
 class MessageFormat {
   /**
@@ -32,7 +31,7 @@ class MessageFormat {
     return String(str).replace(esc, "'$&'");
   }
 
-  static formatters = formatters;
+  static formatters = Formatters;
 
   /**
    * Create a new MessageFormat compiler
