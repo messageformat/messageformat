@@ -20,7 +20,7 @@
     "pretest": "lerna run build --scope messageformat-parser",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
-    "test:browser": "lerna run build:browser --scope messageformat && serve",
+    "test:browser": "lerna run build --scope messageformat && serve",
     "test": "lerna run test && mocha"
   },
   "prettier": {

@@ -21,12 +21,10 @@
   "repository": "messageformat/messageformat",
   "main": "lib/messageformat.js",
   "files": [
-    "example",
     "index.d.ts",
     "lib",
     "messageformat.js",
-    "messageformat.min.js",
-    "messageformat.min.js.map",
+    "messageformat.js.map",
     "messages.js"
   ],
   "dependencies": {
@@ -35,14 +33,11 @@
     "reserved-words": "^0.1.2"
   },
   "devDependencies": {
-    "browserify": "^16.2.3",
-    "uglify-js": "^3.5.3"
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "build:browser": "browserify lib/messageformat.js -s MessageFormat -o messageformat.js",
-    "build:minify": "uglifyjs messageformat.js --compress --mangle --output messageformat.min.js --source-map \"url='messageformat.min.js.map'\"",
-    "build": "npm run build:browser && npm run build:minify",
-    "clean": "rimraf messageformat.*js*"
+    "build": "webpack --mode production"
   },
   "browser": {
     "fs": false
