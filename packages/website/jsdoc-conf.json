@@ -1,8 +1,12 @@
 {
   "source": {
     "include": [
-      "node_modules/messageformat/lib/",
-      "node_modules/messageformat/lib/formatters/",
+      "node_modules/messageformat/src/messageformat.js",
+      "node_modules/messageformat/src/runtime.js",
+      "node_modules/messageformat/src/formatters/date.js",
+      "node_modules/messageformat/src/formatters/duration.js",
+      "node_modules/messageformat/src/formatters/number.js",
+      "node_modules/messageformat/src/formatters/time.js",
       "node_modules/messageformat/messages.js"
     ]
   },
