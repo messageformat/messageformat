@@ -19,7 +19,7 @@
   "license": "MIT",
   "homepage": "https://messageformat.github.io/messageformat/",
   "repository": "messageformat/messageformat",
-  "main": "lib/messageformat.js",
+  "main": "index.js",
   "files": [
     "index.d.ts",
     "lib",

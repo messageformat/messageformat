@@ -5,6 +5,7 @@ module.exports = {
     path: __dirname,
     globalObject: 'this',
     library: 'MessageFormat',
+    libraryExport: 'default',
     libraryTarget: 'umd'
   },
   devtool: 'source-map',
