@@ -5,21 +5,19 @@
     <title>messageformat Test Suite</title>
     <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
     <script src="../../node_modules/mocha/mocha.js"></script>
-    <script src="../../node_modules/expect.js/index.js"></script>
+    <script src="./chai.js"></script>
     <script>
       mocha.setup('bdd');
+      expect = chai.expect;
     </script>
     <script src="../../packages/messageformat/messageformat.js"></script>
     <script src="../messageformat.js"></script>
     <script src="../formatters.js"></script>
   </head>
   <body>
-    <h1>messageformat Test Suite</h1>
     <div id="mocha"></div>
     <script>
-      window.onload = function() {
-        mocha.run().globals(['MessageFormat']);
-      };
+      mocha.run();
     </script>
   </body>
 </html>
