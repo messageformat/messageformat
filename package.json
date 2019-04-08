@@ -68,6 +68,18 @@
         "rules": {
           "no-unused-vars": 0
         }
+      },
+      {
+        "files": [
+          "test/browser/*.js"
+        ],
+        "env": {
+          "node": true,
+          "es6": true
+        },
+        "rules": {
+          "camelcase": 0
+        }
       }
     ]
   },

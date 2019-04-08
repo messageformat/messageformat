@@ -15,14 +15,14 @@ before_script:
 
 script:
   - npm test
-  - npm run lint
 
 jobs:
   include:
-    - stage: BrowserStack
+    - stage: ESLint & BrowserStack
       node_js: node
       script:
         - npm run build
+        - npm run lint
         - npx serve &
         - sleep 2
         - npx mocha-selenium-bridge -d ./test/browser/browserstack-driver.js http://localhost:5000/test/browser/selenium.html
