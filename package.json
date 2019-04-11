@@ -17,10 +17,10 @@
     "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
     "prepare": "lerna bootstrap",
-    "pretest": "lerna run build --scope messageformat-parser",
+    "pretest": "lerna run build --scope messageformat-parser --scope messageformat",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
-    "test:browser": "lerna run build:browser --scope messageformat && serve",
+    "test:browser": "lerna run build --scope messageformat && serve",
     "test": "lerna run test && mocha"
   },
   "prettier": {
@@ -72,6 +72,7 @@
     ]
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-prettier": "^3.0.1",

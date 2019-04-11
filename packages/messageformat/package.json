@@ -21,28 +21,71 @@
   "repository": "messageformat/messageformat",
   "main": "lib/messageformat.js",
   "files": [
-    "example",
     "index.d.ts",
     "lib",
     "messageformat.js",
-    "messageformat.min.js",
-    "messageformat.min.js.map",
+    "messageformat.js.map",
     "messages.js"
   ],
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "6.5.0"
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "commonjs": true,
+      "es6": true
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/*.js"
+        ],
+        "parser": "babel-eslint"
+      },
+      {
+        "files": [
+          "webpack.config.js"
+        ],
+        "env": {
+          "node": true
+        }
+      }
+    ]
+  },
   "dependencies": {
     "make-plural": "^4.3.0",
-    "messageformat-parser": "^4.1.0",
-    "reserved-words": "^0.1.2"
+    "messageformat-formatters": "^2.0.0-rc.1",
+    "messageformat-parser": "^4.1.0"
   },
   "devDependencies": {
-    "browserify": "^16.2.3",
-    "uglify-js": "^3.5.3"
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/preset-env": "^7.4.3",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "scripts": {
-    "build:browser": "browserify lib/messageformat.js -s MessageFormat -o messageformat.js",
-    "build:minify": "uglifyjs messageformat.js --compress --mangle --output messageformat.min.js --source-map \"url='messageformat.min.js.map'\"",
-    "build": "npm run build:browser && npm run build:minify",
-    "clean": "rimraf messageformat.*js*"
+    "prebuild": "babel src -d lib",
+    "build": "webpack --mode production"
   },
   "browser": {
     "fs": false

@@ -24,13 +24,12 @@
  * {@link MessageFormat#addFormatters} to add it to a MessageFormat instance.
  *
  * @class Formatters
- * @private
  * @hideconstructor
  */
 
 module.exports = {
-  date: require('./date'),
-  duration: require('./duration'),
-  number: require('./number'),
-  time: require('./time')
+  date: require('./lib/date'),
+  duration: require('./lib/duration'),
+  number: require('./lib/number'),
+  time: require('./lib/time')
 };

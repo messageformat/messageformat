@@ -1,5 +1,5 @@
-var categories = require('make-plural/umd/pluralCategories');
-var plurals = require('make-plural/umd/plurals');
+import pluralCategories from 'make-plural/umd/pluralCategories';
+import plurals from 'make-plural/umd/plurals';
 
 /**
  * @class
@@ -13,38 +13,34 @@ function wrapPluralFunc(lc, pf, noPluralKeyChecks) {
   var fn = function() {
     return pf.apply(this, arguments);
   };
-  fn.toString = function() {
-    return pf.toString();
-  };
+  fn.toString = () => pf.toString();
   if (noPluralKeyChecks) {
     fn.cardinal = [];
     fn.ordinal = [];
   } else {
-    var pc = categories[lc] || {};
+    const pc = pluralCategories[lc] || {};
     fn.cardinal = pc.cardinal;
     fn.ordinal = pc.ordinal;
   }
   return fn;
 }
 
-function get(locale, noPluralKeyChecks) {
-  for (var l = locale; l; l = l.replace(/[-_]?[^-_]*$/, '')) {
-    var pf = plurals[l];
-    if (pf) return wrapPluralFunc(l, pf, noPluralKeyChecks);
+export function getPlural(locale, noPluralKeyChecks) {
+  for (let lc = String(locale); lc; lc = lc.replace(/[-_]?[^-_]*$/, '')) {
+    const pf = plurals[lc];
+    if (pf) return wrapPluralFunc(lc, pf, noPluralKeyChecks);
   }
   throw new Error(
     'Localisation function not found for locale ' + JSON.stringify(locale)
   );
 }
 
-function getAll(noPluralKeyChecks) {
-  return Object.keys(plurals).reduce(function(locales, lc) {
+export function getAllPlurals(noPluralKeyChecks) {
+  const locales = {};
+  const keys = Object.keys(plurals);
+  for (let i = 0; i < keys.length; ++i) {
+    const lc = keys[i];
     locales[lc] = wrapPluralFunc(lc, plurals[lc], noPluralKeyChecks);
-    return locales;
-  }, {});
+  }
+  return locales;
 }
-
-module.exports = {
-  get: get,
-  getAll: getAll
-};
