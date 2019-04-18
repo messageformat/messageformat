@@ -3,6 +3,11 @@ if (typeof require !== 'undefined') {
   var MessageFormat = require('../packages/messageformat');
 }
 
+// MS Edge adds LTR/RTL marks around Date#toLocale*String parts
+function dropBiDi(str) {
+  return str.replace(/[\u200e\u200f]/g, '');
+}
+
 describe('Formatters', () => {
   describe('date', () => {
     let mf;
@@ -12,28 +17,31 @@ describe('Formatters', () => {
 
     it('default', () => {
       const msg = mf.compile('Today is {T, date}');
-      const data = { T: Date.parse('2016-02-21') };
-      expect(msg(data)).to.eql('Today is Feb 21, 2016');
+      const data = { T: new Date(2016, 1, 21) };
+      expect(dropBiDi(msg(data))).to.eql('Today is Feb 21, 2016');
     });
 
     it('set locale', () => {
       const msg = mf.compile('Tänään on {T, date}', 'fi');
-      const data = { T: Date.parse('2016-02-21') };
-      expect(msg(data)).to.match(/^Tänään on .*2016/);
+      const data = { T: new Date(2016, 1, 21) };
+      expect(dropBiDi(msg(data))).to.match(/^Tänään on .*2016/);
     });
 
     it('argument', () => {
       const msg = mf.compile('Unix time started on {T, date, full}');
       const data = { T: 0 };
-      expect(msg(data)).to.eql(
+      expect(dropBiDi(msg(data))).to.be.oneOf([
+        'Unix time started on Wednesday, December 31, 1969',
         'Unix time started on Thursday, January 1, 1970'
-      );
+      ]);
     });
 
     it('complex', () => {
       const msg = mf.compile('{sys} became operational on {d0, date, short}');
-      const data = { sys: 'HAL 9000', d0: '12 January 1999' };
-      expect(msg(data)).to.eql('HAL 9000 became operational on 1/12/1999');
+      const data = { sys: 'HAL 9000', d0: new Date(1999, 0, 12) };
+      expect(dropBiDi(msg(data))).to.eql(
+        'HAL 9000 became operational on 1/12/1999'
+      );
     });
   });
 
@@ -104,22 +112,26 @@ describe('Formatters', () => {
     it('default', () => {
       const msg = mf.compile('The time is now {T, time}');
       const data = { T: 978384385000 };
-      expect(msg(data)).to.match(/^The time is now \d\d?:\d\d:25 PM$/);
+      expect(dropBiDi(msg(data))).to.match(
+        /^The time is now \d\d?:\d\d:25 PM$/
+      );
     });
 
     it('set locale', () => {
       const msg = mf.compile('Kello on nyt {T, time}', 'fi');
       const data = { T: 978384385000 };
-      expect(msg(data)).to.match(/^Kello on nyt \d\d?.\d\d.25/);
+      expect(dropBiDi(msg(data))).to.match(/^Kello on nyt \d\d?.\d\d.25/);
     });
 
     it('full time & date', () => {
       const msg = mf.compile(
         'The Eagle landed at {T, time, full} on {T, date, full}'
       );
-      const data = { T: '1969-07-20 20:17:40 UTC' };
-      expect(msg(data)).to.match(
-        /^The Eagle landed at \d\d?:\d\d:40 .M \S+ on \w+day, July \d\d, 1969$/
+      const time = new Date(1969, 6, 20, 20, 17, 40);
+      time.setMinutes(time.getMinutes() + time.getTimezoneOffset());
+      const data = { T: time };
+      expect(dropBiDi(msg(data))).to.match(
+        /^The Eagle landed at \d\d?:\d\d:40 [AP]M \S+ on \w+day, July \d\d, 1969$/
       );
     });
   });
