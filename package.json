@@ -73,12 +73,17 @@
         "files": [
           "test/browser/*.js"
         ],
+        "parserOptions": {
+          "ecmaVersion": 2017
+        },
         "env": {
-          "node": true,
-          "es6": true
+          "es6": true,
+          "mocha": true,
+          "node": true
         },
         "rules": {
-          "camelcase": 0
+          "camelcase": 0,
+          "no-console": 0
         }
       }
     ]
