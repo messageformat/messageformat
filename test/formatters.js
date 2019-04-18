@@ -32,7 +32,8 @@ describe('Formatters', function() {
       const data = { T: 0 };
       expect(dropBiDi(msg(data))).to.be.oneOf([
         'Unix time started on Wednesday, December 31, 1969',
-        'Unix time started on Thursday, January 1, 1970'
+        'Unix time started on Thursday, January 1, 1970',
+        'Unix time started on Thursday, January 01, 1970' // IE 11
       ]);
     });
 
@@ -79,7 +80,8 @@ describe('Formatters', function() {
     it('percent', function() {
       const msg = mf.compile('{P, number, percent} complete');
       const data = { P: 0.99 };
-      expect(msg(data)).to.eql('99% complete');
+      // IE 11 inserts a non-breaking space before the % char
+      expect(msg(data)).to.be.oneOf(['99% complete', '99\xa0% complete']);
     });
 
     it('default currency', function() {
@@ -131,7 +133,7 @@ describe('Formatters', function() {
       time.setMinutes(time.getMinutes() + time.getTimezoneOffset());
       const data = { T: time };
       expect(dropBiDi(msg(data))).to.match(
-        /^The Eagle landed at \d\d?:\d\d:40 [AP]M \S+ on \w+day, July \d\d, 1969$/
+        /^The Eagle landed at \d\d?:\d\d:40 [AP]M( \S+)? on \w+day, July \d\d, 1969$/
       );
     });
   });
