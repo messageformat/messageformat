@@ -23,4 +23,4 @@ jobs:
       script:
         - npm run build
         - npm run lint
-        - npx mocha test/browser/browserstack-tests.js
+        - npm run test:browserstack
