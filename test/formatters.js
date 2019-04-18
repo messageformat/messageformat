@@ -1,5 +1,5 @@
 if (typeof require !== 'undefined') {
-  var expect = require('expect.js');
+  var expect = require('chai').expect;
   var MessageFormat = require('../packages/messageformat');
 }
 
@@ -133,7 +133,7 @@ describe('Formatters', () => {
     it('should throw an error when using an undefined formatting function', () => {
       expect(() => {
         mf.compile('This is {VAR,uppercase}.');
-      }).to.throwError();
+      }).to.throw();
     });
 
     it('should use formatting functions - set in MessageFormat.formatters', () => {

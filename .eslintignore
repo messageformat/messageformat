@@ -7,3 +7,4 @@ package-lock.json
 /packages/messageformat/lib/*
 /packages/messageformat/messageformat.*
 /packages/parser/parser.js
+/test/browser/chai.js

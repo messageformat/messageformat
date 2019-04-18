@@ -1,5 +1,5 @@
 if (typeof require !== 'undefined') {
-  var expect = require('expect.js');
+  var expect = require('chai').expect;
   var Messages = require('../packages/messageformat/messages');
   var MessageFormat = require('../packages/messageformat');
 }
@@ -30,7 +30,7 @@ describe('Messages', () => {
   });
 
   it('constructor', () => {
-    expect(messages).to.be.a(Messages);
+    expect(messages).to.be.an.instanceof(Messages);
     expect(messages.locale).to.eql('en');
     expect(messages.defaultLocale).to.eql('en');
     expect(messages.availableLocales).to.eql(['en', 'fi']);
@@ -43,51 +43,51 @@ describe('Messages', () => {
   });
 
   it('defaultLocale', () => {
-    expect(messages.defaultLocale).to.be('en');
+    expect(messages.defaultLocale).to.equal('en');
     messages.defaultLocale = 'fi-FI';
-    expect(messages.defaultLocale).to.be('fi');
+    expect(messages.defaultLocale).to.equal('fi');
     messages._data['sv-SE'] = {};
     messages.defaultLocale = 'sv';
-    expect(messages.defaultLocale).to.be('sv-SE');
+    expect(messages.defaultLocale).to.equal('sv-SE');
     messages.defaultLocale = 'foo';
-    expect(messages.defaultLocale).to.be(null);
+    expect(messages.defaultLocale).to.equal(null);
   });
 
   it('locale', () => {
-    expect(messages.locale).to.be('en');
+    expect(messages.locale).to.equal('en');
     messages.locale = 'fi-FI';
-    expect(messages.locale).to.be('fi');
+    expect(messages.locale).to.equal('fi');
     messages._data['sv-SE'] = {};
     messages.locale = 'sv';
-    expect(messages.locale).to.be('sv-SE');
+    expect(messages.locale).to.equal('sv-SE');
     messages.locale = 'foo';
-    expect(messages.locale).to.be(null);
+    expect(messages.locale).to.equal(null);
   });
 
   it('hasMessage', () => {
-    expect(messages.hasMessage('a')).to.be(true);
-    expect(messages.hasMessage('c')).to.be(false);
+    expect(messages.hasMessage('a')).to.equal(true);
+    expect(messages.hasMessage('c')).to.equal(false);
     messages.locale = 'fi';
-    expect(messages.hasMessage('a')).to.be(false);
-    expect(messages.hasMessage('a', 'en')).to.be(true);
-    expect(messages.hasMessage('a', null, true)).to.be(true);
+    expect(messages.hasMessage('a')).to.equal(false);
+    expect(messages.hasMessage('a', 'en')).to.equal(true);
+    expect(messages.hasMessage('a', null, true)).to.equal(true);
   });
 
   it('hasObject', () => {
-    expect(messages.hasObject('a')).to.be(false);
-    expect(messages.hasObject('c')).to.be(true);
+    expect(messages.hasObject('a')).to.equal(false);
+    expect(messages.hasObject('c')).to.equal(true);
     messages.locale = 'fi';
-    expect(messages.hasObject('c')).to.be(false);
-    expect(messages.hasObject('c', 'en')).to.be(true);
-    expect(messages.hasObject('c', null, true)).to.be(true);
+    expect(messages.hasObject('c')).to.equal(false);
+    expect(messages.hasObject('c', 'en')).to.equal(true);
+    expect(messages.hasObject('c', null, true)).to.equal(true);
   });
 
   it('resolveLocale', () => {
-    expect(messages.resolveLocale('en')).to.be('en');
-    expect(messages.resolveLocale('en-US')).to.be('en');
-    expect(messages.resolveLocale('sv')).to.be(null);
+    expect(messages.resolveLocale('en')).to.equal('en');
+    expect(messages.resolveLocale('en-US')).to.equal('en');
+    expect(messages.resolveLocale('sv')).to.equal(null);
     messages._data['sv-SE'] = {};
-    expect(messages.resolveLocale('sv')).to.be('sv-SE');
+    expect(messages.resolveLocale('sv')).to.equal('sv-SE');
   });
 
   it('get/set fallback', () => {
@@ -121,10 +121,10 @@ describe('Messages', () => {
     expect(messages.get('c')).to.have.property('d');
     messages.locale = 'fi';
     expect(messages.get('c')).to.have.property('d');
-    expect(messages.get('c').d({ P: 0.628 })).to.eql(
+    expect(messages.get('c').d({ P: 0.628 })).to.equal(
       'We have 63% code coverage.'
     );
-    expect(messages.get([])).to.only.have.keys(['b', 'e']);
+    expect(messages.get([])).to.have.keys('b', 'e');
   });
 
   it('addMessages', () => {
@@ -135,7 +135,7 @@ describe('Messages', () => {
     messages.locale = 'sv';
     expect(messages.get('e')).to.eql('Jag pratar lite svenska.');
     expect(messages.getFallback()).to.eql(['en']);
-    expect(messages.get([])).to.only.have.key('e');
+    expect(messages.get([])).to.have.keys('e');
     messages.addMessages(() => 'z', null, ['x', 'y']);
     expect(messages.get(['x', 'y'])).to.eql('z');
   });

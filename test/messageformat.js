@@ -1,5 +1,5 @@
 if (typeof require !== 'undefined') {
-  var expect = require('expect.js');
+  var expect = require('chai').expect;
   var MessageFormat = require('../packages/messageformat');
 }
 
@@ -10,7 +10,7 @@ describe('new MessageFormat()', () => {
 
   it('should be a constructor', () => {
     const mf = new MessageFormat('en');
-    expect(mf).to.be.a(MessageFormat);
+    expect(mf).to.be.an.instanceof(MessageFormat);
   });
 
   it('should have a compile() function', () => {
@@ -29,7 +29,7 @@ describe('new MessageFormat()', () => {
   });
 
   it('should bail on non-existing locales', () => {
-    expect(() => new MessageFormat('lawlz')).to.throwError();
+    expect(() => new MessageFormat('lawlz')).to.throw();
   });
 
   it('should default to `en` when no locale is passed into the constructor', () => {
@@ -56,17 +56,15 @@ describe('compile()', () => {
   });
 
   it('throws an error when no `other` option is found - plurals', () => {
-    expect(() => mf.compile('{X, plural, someoption{a}}')).to.throwError();
+    expect(() => mf.compile('{X, plural, someoption{a}}')).to.throw();
   });
 
   it('throws an error when no `other` option is found - selects', () => {
-    expect(() => mf.compile('{X, select, someoption{a}}')).to.throwError();
+    expect(() => mf.compile('{X, select, someoption{a}}')).to.throw();
   });
 
   it('throws an error when no `other` option is found - selectordinals', () => {
-    expect(() =>
-      mf.compile('{X, selectordinal, someoption{a}}')
-    ).to.throwError();
+    expect(() => mf.compile('{X, selectordinal, someoption{a}}')).to.throw();
   });
 
   it('does not throw an error when no `other` option is found - plurals with custom pluralFunc', () => {
@@ -74,7 +72,7 @@ describe('compile()', () => {
     fake.cardinal = ['some'];
     fake.ordinal = ['few'];
     mf = new MessageFormat({ fake });
-    expect(() => mf.compile('{X, plural, some{a}}')).to.not.throwError();
+    expect(() => mf.compile('{X, plural, some{a}}')).to.not.throw();
   });
 
   it('should use the locale plural function', () => {
@@ -83,7 +81,7 @@ describe('compile()', () => {
       '{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}'
     );
     expect(mfunc.toString()).to.match(/\bcy\b/);
-    expect(mfunc({ num: 5 })).to.be('+');
+    expect(mfunc({ num: 5 })).to.equal('+');
   });
 
   it('should use the locale selectordinal function', () => {
@@ -92,27 +90,27 @@ describe('compile()', () => {
       '{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}'
     );
     expect(mfunc.toString()).to.match(/\bcy\b/);
-    expect(mfunc({ num: 5 })).to.be('5,6');
+    expect(mfunc({ num: 5 })).to.equal('5,6');
   });
 
   it('should have configurable # parsing support', () => {
     const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
     const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
-    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('3');
-    expect(mf.compile(msg)({ X: 'x' })).to.eql('x');
-    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.eql('#');
-    expect(mf.compile(msg2)({ X: 'x' })).to.eql('#');
+    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
+    expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+    expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     mf.setStrictNumberSign(true);
-    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('#');
+    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
     expect(() => {
       mf.compile(msg)({ X: 'x' });
-    }).to.throwError(/\bX\b.*non-numerical value/);
-    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.eql("'#'");
+    }).to.throw(/\bX\b.*non-numerical value/);
+    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
     mf.setStrictNumberSign(false);
-    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.eql('3');
-    expect(mf.compile(msg)({ X: 'x' })).to.eql('x');
-    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.eql('#');
-    expect(mf.compile(msg2)({ X: 'x' })).to.eql('#');
+    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
+    expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+    expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
   });
 
   it('can compile an object of messages into a function', () => {
@@ -158,9 +156,9 @@ describe('compile()', () => {
       en: mf.en.compile('{count} {count, plural, other{users}}'),
       ru: mf.ru.compile('{count} {count, plural, other{пользователей}}')
     };
-    expect(() => cf.en({ count: 12 })).to.not.throwError();
+    expect(() => cf.en({ count: 12 })).to.not.throw();
     expect(cf.en({ count: 12 })).to.eql('12 users');
-    expect(() => cf.ru({ count: 13 })).to.not.throwError();
+    expect(() => cf.ru({ count: 13 })).to.not.throw();
     expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
   });
 
@@ -306,19 +304,19 @@ describe('Basic Message Formatting', function() {
     });
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({ val: 0 })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({ val: 1 })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({ val: 2 })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({ val: 3 })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({})
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
   });
 
   it('obeys selectordinal functions', function() {
@@ -331,25 +329,25 @@ describe('Basic Message Formatting', function() {
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({
         val: 0
       })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({
         val: 1
       })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({
         val: 2
       })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({
         val: 3
       })
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
     expect(
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({})
-    ).to.be('res: wasfew');
+    ).to.equal('res: wasfew');
   });
 
   it('only calculates the offset from non-literals', function() {
@@ -378,7 +376,7 @@ describe('Basic Message Formatting', function() {
     var mfunc = mf.compile('{NEEDSDATAYO}');
     expect(function() {
       var z = mfunc();
-    }).to.throwError();
+    }).to.throw();
   });
 
   it("should not throw an error when you don't pass it any data, but it expects none", function() {
@@ -386,7 +384,7 @@ describe('Basic Message Formatting', function() {
     var mfunc = mf.compile('Just a string');
     expect(function() {
       var z = mfunc();
-    }).to.not.throwError();
+    }).to.not.throw();
   });
 
   it('should be able to disable plural checks', function() {
@@ -395,12 +393,12 @@ describe('Basic Message Formatting', function() {
     var msg = '{X, plural, zero{none} one{one} other{some: #}}';
     expect(function() {
       mf0.compile(msg);
-    }).to.throwError();
+    }).to.throw();
     mf0.disablePluralKeyChecks();
     expect(mf0.compile(msg)({ X: 0 })).to.eql('some: 0');
     expect(function() {
       mf1.compile(msg);
-    }).to.throwError();
+    }).to.throw();
   });
 
   it('should add control codes to bidirectional text', function() {
@@ -458,10 +456,10 @@ describe('Basic Message Formatting', function() {
     );
     expect(function() {
       var x = mfunc({});
-    }).to.throwError(/\bENEMIES\b.*non-numerical value/);
+    }).to.throw(/\bENEMIES\b.*non-numerical value/);
     expect(function() {
       var x = mfunc({ FRIENDS: 0 });
-    }).to.throwError(/\bENEMIES\b.*non-numerical value/);
+    }).to.throw(/\bENEMIES\b.*non-numerical value/);
     expect(mfunc({ ENEMIES: 1 })).to.eql(
       'I have undefined friends but one nemesis.'
     );
@@ -645,7 +643,7 @@ describe('Module/CommonJS support', function() {
             var colors = require(path);
             var gm = /^global\.(.*)/i.exec(moduleFmt);
             if (gm) {
-              expect(colors.red).to.be(undefined);
+              expect(colors.red).to.equal(undefined);
               colors = global[gm[1]];
             }
             expect(colors).to.be.an('object');

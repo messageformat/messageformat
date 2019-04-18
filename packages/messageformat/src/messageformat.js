@@ -4,7 +4,7 @@ import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
 import Runtime from './runtime';
 
-class MessageFormat {
+export default class MessageFormat {
   /**
    * The default locale
    *
@@ -389,6 +389,3 @@ class MessageFormat {
     return result;
   }
 }
-
-// CommonJS export for require('messageformat')
-module.exports = MessageFormat;
