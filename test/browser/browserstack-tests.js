@@ -64,6 +64,7 @@ describe('Browser tests', function() {
 Testing ${title}...`);
       const driver = buildDriver(browser);
       const code = await bridgeTests(driver, reporter, URL);
+      driver.quit();
       if (code > 0) throw new Error(`Failed ${code} tests`);
       if (code < 0) throw new Error(`MSB error ${code}`);
     });
