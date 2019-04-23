@@ -80,8 +80,12 @@ describe('Formatters', function() {
     it('percent', function() {
       const msg = mf.compile('{P, number, percent} complete');
       const data = { P: 0.99 };
-      // IE 11 inserts a non-breaking space before the % char
-      expect(msg(data)).to.be.oneOf(['99% complete', '99\xa0% complete']);
+      // IE 11 may insert a space or non-breaking space before the % char
+      expect(msg(data)).to.be.oneOf([
+        '99% complete',
+        '99 % complete',
+        '99\xa0% complete'
+      ]);
     });
 
     it('default currency', function() {
