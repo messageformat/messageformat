@@ -3,79 +3,91 @@ if (typeof require !== 'undefined') {
   var MessageFormat = require('../packages/messageformat');
 }
 
-describe('new MessageFormat()', () => {
-  it('should exist', () => {
+describe('new MessageFormat()', function() {
+  it('should exist', function() {
     expect(MessageFormat).to.be.a('function');
   });
 
-  it('should be a constructor', () => {
+  it('should be a constructor', function() {
     const mf = new MessageFormat('en');
     expect(mf).to.be.an.instanceof(MessageFormat);
   });
 
-  it('should have a compile() function', () => {
+  it('should have a compile() function', function() {
     const mf = new MessageFormat('en');
     expect(mf.compile).to.be.a('function');
   });
 
-  it('should fallback when a base pluralFunc exists', () => {
+  it('should fallback when a base pluralFunc exists', function() {
     const mf = new MessageFormat('en-x-test1-test2');
     expect(mf.pluralFuncs['en-x-test1-test2']).to.be.a('function');
   });
 
-  it('should fallback when a base pluralFunc exists (underscores)', () => {
+  it('should fallback when a base pluralFunc exists (underscores)', function() {
     const mf = new MessageFormat('en_x_test1_test2');
     expect(mf.pluralFuncs['en_x_test1_test2']).to.be.a('function');
   });
 
-  it('should bail on non-existing locales', () => {
-    expect(() => new MessageFormat('lawlz')).to.throw();
+  it('should bail on non-existing locales', function() {
+    expect(function() {
+      new MessageFormat('lawlz');
+    }).to.throw();
   });
 
-  it('should default to `en` when no locale is passed into the constructor', () => {
+  it('should default to `en` when no locale is passed into the constructor', function() {
     expect(new MessageFormat().defaultLocale).to.eql('en');
   });
 });
 
-describe('compile()', () => {
+describe('compile()', function() {
   let mf;
-  beforeEach(() => {
+  beforeEach(function() {
     mf = new MessageFormat('en');
   });
 
-  it('should exist', () => {
+  it('should exist', function() {
     expect(mf.compile).to.be.a('function');
   });
 
-  it('compiles a string to a function', () => {
+  it('compiles a string to a function', function() {
     expect(mf.compile('test')).to.be.a('function');
   });
 
-  it('can output a non-formatted string', () => {
+  it('can output a non-formatted string', function() {
     expect(mf.compile('This is a string.')()).to.eql('This is a string.');
   });
 
-  it('throws an error when no `other` option is found - plurals', () => {
-    expect(() => mf.compile('{X, plural, someoption{a}}')).to.throw();
+  it('throws an error when no `other` option is found - plurals', function() {
+    expect(function() {
+      mf.compile('{X, plural, someoption{a}}');
+    }).to.throw();
   });
 
-  it('throws an error when no `other` option is found - selects', () => {
-    expect(() => mf.compile('{X, select, someoption{a}}')).to.throw();
+  it('throws an error when no `other` option is found - selects', function() {
+    expect(function() {
+      mf.compile('{X, select, someoption{a}}');
+    }).to.throw();
   });
 
-  it('throws an error when no `other` option is found - selectordinals', () => {
-    expect(() => mf.compile('{X, selectordinal, someoption{a}}')).to.throw();
+  it('throws an error when no `other` option is found - selectordinals', function() {
+    expect(function() {
+      mf.compile('{X, selectordinal, someoption{a}}');
+    }).to.throw();
   });
 
-  it('does not throw an error when no `other` option is found - plurals with custom pluralFunc', () => {
-    const fake = (x, ord) => (ord ? 'few' : 'some');
+  it('does not throw an error when no `other` option is found - plurals with custom pluralFunc', function() {
+    function fake(x, ord) {
+      return ord ? 'few' : 'some';
+    }
     fake.cardinal = ['some'];
     fake.ordinal = ['few'];
-    mf = new MessageFormat({ fake });
-    expect(() => mf.compile('{X, plural, some{a}}')).to.not.throw();
+    mf = new MessageFormat({ fake: fake });
+    expect(function() {
+      mf.compile('{X, plural, some{a}}');
+    }).to.not.throw();
   });
 
-  it('should use the locale plural function', () => {
+  it('should use the locale plural function', function() {
     mf = new MessageFormat('cy');
     const mfunc = mf.compile(
       '{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}'
@@ -84,7 +96,7 @@ describe('compile()', () => {
     expect(mfunc({ num: 5 })).to.equal('+');
   });
 
-  it('should use the locale selectordinal function', () => {
+  it('should use the locale selectordinal function', function() {
     mf = new MessageFormat('cy');
     const mfunc = mf.compile(
       '{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}'
@@ -93,7 +105,7 @@ describe('compile()', () => {
     expect(mfunc({ num: 5 })).to.equal('5,6');
   });
 
-  it('should have configurable # parsing support', () => {
+  it('should have configurable # parsing support', function() {
     const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
     const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
     expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
@@ -102,7 +114,7 @@ describe('compile()', () => {
     expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     mf.setStrictNumberSign(true);
     expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
-    expect(() => {
+    expect(function() {
       mf.compile(msg)({ X: 'x' });
     }).to.throw(/\bX\b.*non-numerical value/);
     expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
@@ -113,7 +125,7 @@ describe('compile()', () => {
     expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
   });
 
-  it('can compile an object of messages into a function', () => {
+  it('can compile an object of messages into a function', function() {
     const data = {
       key: 'I have {FRIENDS, plural, one{one friend} other{# friends}}.'
     };
@@ -126,7 +138,7 @@ describe('compile()', () => {
     expect(mfunc.key({ FRIENDS: 2 })).to.eql('I have 2 friends.');
   });
 
-  it('can compile an object enclosing reserved JavaScript words used as keys in quotes', () => {
+  it('can compile an object enclosing reserved JavaScript words used as keys in quotes', function() {
     const data = {
       default: 'default is a JavaScript reserved word so should be quoted',
       unreserved:
@@ -147,7 +159,7 @@ describe('compile()', () => {
     );
   });
 
-  it('can be instantiated multiple times for multiple languages', () => {
+  it('can be instantiated multiple times for multiple languages', function() {
     const mf = {
       en: new MessageFormat('en'),
       ru: new MessageFormat('ru')
@@ -156,15 +168,23 @@ describe('compile()', () => {
       en: mf.en.compile('{count} {count, plural, other{users}}'),
       ru: mf.ru.compile('{count} {count, plural, other{пользователей}}')
     };
-    expect(() => cf.en({ count: 12 })).to.not.throw();
+    expect(function() {
+      cf.en({ count: 12 });
+    }).to.not.throw();
     expect(cf.en({ count: 12 })).to.eql('12 users');
-    expect(() => cf.ru({ count: 13 })).to.not.throw();
+    expect(function() {
+      cf.ru({ count: 13 });
+    }).to.not.throw();
     expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
   });
 
-  it('can support multiple languages', () => {
+  function printLocale(v, lc) {
+    return lc;
+  }
+
+  it('can support multiple languages', function() {
     mf = new MessageFormat(['en', 'fr', 'ru']);
-    mf.addFormatters({ lc: (v, lc) => lc });
+    mf.addFormatters({ lc: printLocale });
     const cf = mf.compile({
       fr: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
@@ -173,9 +193,9 @@ describe('compile()', () => {
     expect(cf.ru({ count: 12 })).to.eql('3');
   });
 
-  it('defaults to supporting all languages: compile({ fr, ru })', () => {
+  it('defaults to supporting all languages: compile({ fr, ru })', function() {
     mf = new MessageFormat();
-    mf.addFormatters({ lc: (v, lc) => lc });
+    mf.addFormatters({ lc: printLocale });
     const cf = mf.compile({
       fr: 'Locale: {_, lc}',
       xx: 'Locale: {_, lc}',
@@ -186,9 +206,9 @@ describe('compile()', () => {
     expect(cf.ru({ count: 12 })).to.eql('3');
   });
 
-  it('defaults to supporting all languages: compile(src, locale)', () => {
+  it('defaults to supporting all languages: compile(src, locale)', function() {
     mf = new MessageFormat();
-    mf.addFormatters({ lc: (v, lc) => lc });
+    mf.addFormatters({ lc: printLocale });
     const cf0 = mf.compile('Locale: {_, lc}', 'fr');
     expect(cf0({})).to.eql('Locale: fr');
     const cf1 = mf.compile(
@@ -608,7 +628,7 @@ describe('Real World Uses', function() {
     ).to.eql('Al Sexton added themself and 2 other people to their group.');
   });
 
-  it('handles octothorpes with nested plurals', () => {
+  it('handles octothorpes with nested plurals', function() {
     var mf = new MessageFormat('en');
     const msg = mf.compile(
       '{HOURS, plural, =0 {{MINUTES, plural, =0 {{SECONDS, plural, =0 {} other {#s}}} other {#m {SECONDS}s}}} other {#h {MINUTES}m {SECONDS}s}}'

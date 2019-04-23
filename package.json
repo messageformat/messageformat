@@ -20,7 +20,10 @@
     "pretest": "lerna run build --scope messageformat-parser --scope messageformat",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
-    "test:browser": "npm run pretest && serve",
+    "test:browserstack": "npm run pretest && mocha test/browser/browserstack-tests.js",
+    "test:chrome": "npm run pretest && mocha-selenium-bridge -b chrome test/browser/selenium.html",
+    "test:firefox": "npm run pretest && mocha-selenium-bridge -b firefox test/browser/selenium.html",
+    "test:serve": "npm run pretest && serve",
     "test": "lerna run test && mocha --exclude test/browser"
   },
   "prettier": {
@@ -68,6 +71,23 @@
         "rules": {
           "no-unused-vars": 0
         }
+      },
+      {
+        "files": [
+          "test/browser/*.js"
+        ],
+        "parserOptions": {
+          "ecmaVersion": 2017
+        },
+        "env": {
+          "es6": true,
+          "mocha": true,
+          "node": true
+        },
+        "rules": {
+          "camelcase": 0,
+          "no-console": 0
+        }
       }
     ]
   },
@@ -77,11 +97,14 @@
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-prettier": "^3.0.1",
-    "lerna": "^3.13.1",
-    "mocha": "^6.0.2",
-    "prettier": "^1.16.4",
+    "lerna": "^3.13.3",
+    "mocha": "^6.1.3",
+    "mocha-selenium-bridge": "^0.1.0",
+    "prettier": "^1.17.0",
     "rimraf": "^2.6.3",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "serve": "^11.0.0",
+    "serve-handler": "^6.0.0",
     "tmp": "^0.1.0"
   }
 }
