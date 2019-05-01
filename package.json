@@ -34,68 +34,6 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "commonjs": true
-    },
-    "plugins": [
-      "prettier"
-    ],
-    "extends": [
-      "eslint:recommended",
-      "prettier"
-    ],
-    "rules": {
-      "array-callback-return": "error",
-      "camelcase": "error",
-      "consistent-return": "error",
-      "eqeqeq": [
-        "error",
-        "smart"
-      ],
-      "no-constant-condition": [
-        "error",
-        {
-          "checkLoops": false
-        }
-      ],
-      "no-implicit-globals": "error",
-      "prettier/prettier": "error"
-    },
-    "overrides": [
-      {
-        "files": [
-          "test/*.js"
-        ],
-        "env": {
-          "browser": true,
-          "es6": true,
-          "mocha": true
-        },
-        "rules": {
-          "no-unused-vars": 0
-        }
-      },
-      {
-        "files": [
-          "test/browser/*.js"
-        ],
-        "parserOptions": {
-          "ecmaVersion": 2017
-        },
-        "env": {
-          "es6": true,
-          "mocha": true,
-          "node": true
-        },
-        "rules": {
-          "camelcase": 0,
-          "no-console": 0
-        }
-      }
-    ]
-  },
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
