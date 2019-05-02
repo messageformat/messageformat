@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/messageformat/messageformat/compare/messageformat-parser@4.1.0...messageformat-parser@4.1.1) (2019-05-02)
+
+
+### Bug Fixes
+
+* Update dependencies ([11fd29b](https://github.com/messageformat/messageformat/commit/11fd29b))
+* **parser:** Allow non-lowercase custom formatter names, as long as they do not mask plural/select/selectordinal ([a38b181](https://github.com/messageformat/messageformat/commit/a38b181)), closes [#230](https://github.com/messageformat/messageformat/issues/230)
+
+
+
+
+
 # 4.1.0 (2019-03-03)
 
 

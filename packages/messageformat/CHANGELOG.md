@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/messageformat/messageformat/compare/messageformat@2.1.0...messageformat@2.2.0) (2019-05-02)
+
+
+### Bug Fixes
+
+* **messageformat:** Build Web export from src with babel-loader, configured with browser targets ([3548009](https://github.com/messageformat/messageformat/commit/3548009))
+* **messageformat:** Refactor/fix UMD/CommonJS exports ([41f6145](https://github.com/messageformat/messageformat/commit/41f6145))
+
+
+### Features
+
+* **formatters:** Split into its own package from messageformat ([ed36829](https://github.com/messageformat/messageformat/commit/ed36829))
+* **messageformat:** Drop dependency on reserved-words, inlining data ([bfc2d89](https://github.com/messageformat/messageformat/commit/bfc2d89))
+* **messageformat:** Move sources to src/, use Babel as transpiler targeting Node 6.5 ([d06553c](https://github.com/messageformat/messageformat/commit/d06553c))
+* **messageformat:** Refactor compiler.js as ES6, splitting out utils.js ([91dc2ac](https://github.com/messageformat/messageformat/commit/91dc2ac))
+* **messageformat:** Refactor messageformat.js as ES6 ([d29470f](https://github.com/messageformat/messageformat/commit/d29470f))
+* **messageformat:** Refactor plurals.js as ES6 ([2a93ebf](https://github.com/messageformat/messageformat/commit/2a93ebf))
+* **messageformat:** Refactor runtime.js as ES6 ([05125e0](https://github.com/messageformat/messageformat/commit/05125e0))
+* **messageformat:** Replace Browserify + UglifyJS with Webpack as build tool ([620ca59](https://github.com/messageformat/messageformat/commit/620ca59))
+
+
+
+
+
 # 2.1.0 (2019-03-03)
 
 

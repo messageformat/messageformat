@@ -1,6 +1,6 @@
 {
   "name": "messageformat-formatters",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0",
   "description": "Formatters for messageformat",
   "keywords": [
     "icu",
@@ -11,8 +11,8 @@
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/messageformat/messageformat.git",
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
     "directory": "packages/formatters"
   },
   "main": "index.js",
