@@ -1,5 +1,13 @@
 {
   "packages": ["packages/*"],
   "version": "independent",
-  "ignoreChanges": ["**/test/**", "**/*test.js", "**/*.md"]
+  "ignoreChanges": ["**/test/**", "**/*test.js", "**/*.md"],
+  "command": {
+    "version": {
+      "commitHooks": false,
+      "conventionalCommits": true,
+      "message": "chore(release): Publish",
+      "push": false
+    }
+  }
 }
