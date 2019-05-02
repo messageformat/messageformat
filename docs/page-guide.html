@@ -36,7 +36,7 @@
 			<li class="dropdown">
 				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+					<li><a href="Formatters">Formatters</a></li><li><a href="Messages">Messages</a></li><li><a href="module.exports_module.exports">module.exports#module.exports</a></li>
 				</ul>
 			</li>
 			
@@ -54,12 +54,19 @@
 					</li>
 				
 			
+			<li class="dropdown">
+				<a href="global" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#disablePluralKeyChecks">disablePluralKeyChecks</a></li><li><a href="global.html#escape">escape</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -270,7 +277,7 @@ argument.</p>
 refer to any variables that are not defined by the function parameters or
 within the function body. To add your own formatters, either add them to the
 static <code>MessageFormat.formatters</code> object, or use
-<a href="MessageFormat.html#addFormatters">MessageFormat#addFormatters</a> to add them to a MessageFormat instance.</p>
+MessageFormat#addFormatters to add them to a MessageFormat instance.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat('en-GB');
 mf.addFormatters({
@@ -302,7 +309,7 @@ messages.answer({ obj: { q: 3, a: 42 } }); // 'Answer: 42'</code></pre><h2>Nesti
       }
     }
   }
-}</code></pre><h2>Escaping</h2><p>The characters <code>{</code> and <code>}</code> must be escaped with <code>'quotes'</code> to be included in the output as literal characters. Within plural statements, <code>#</code> must also be similarly escaped. The utility function <a href="MessageFormat.html#.escape">MessageFormat.escape</a> may help with this.</p>
+}</code></pre><h2>Escaping</h2><p>The characters <code>{</code> and <code>}</code> must be escaped with <code>'quotes'</code> to be included in the output as literal characters. Within plural statements, <code>#</code> must also be similarly escaped. The utility function MessageFormat.escape may help with this.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat('en');
 const messages = mf.compile({

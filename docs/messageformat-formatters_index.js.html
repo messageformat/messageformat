@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>messageformat Tutorials</title>
+	<title>messageformat Source: messageformat-formatters/index.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -86,103 +86,55 @@
 <div class="row">
 
 	
-	<div class="col-md-8">
+	<div class="col-md-12">
 	
 		<div id="main">
 			
 
-	<h1 class="page-title">Tutorials</h1>
+		<h1 class="page-title">Source: messageformat-formatters/index.js</h1>
+    
 <section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">/**
+ * @classdesc
+ * Default number formatting functions in the style of ICU's
+ * {@link http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html simpleArg syntax}
+ * implemented using the
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl Intl}
+ * object defined by ECMA-402.
+ *
+ * In MessageFormat source, a formatter function is called with the syntax
+ * `{var, name, arg}`, where `var` is a variable, `name` is the formatter name
+ * (by default, either `date`, `duration`, `number` or `time`; `spellout` and
+ * `ordinal` are not supported by default), and `arg` is an optional string
+ * argument.
+ *
+ * In JavaScript, a formatter is a function called with three parameters:
+ *   - The **`value`** of the variable; this can be of any user-defined type
+ *   - The current **`locale`** code
+ *   - The trimmed **`arg`** string value, or `null` if not set
+ *
+ * As formatter functions may be used in a precompiled context, they should not
+ * refer to any variables that are not defined by the function parameters or
+ * within the function body. To add your own formatter, either add it to the
+ * static `MessageFormat.formatters` object, or use
+ * {@link MessageFormat#addFormatters} to add it to a MessageFormat instance.
+ *
+ * @class Formatters
+ * @hideconstructor
+ */
 
-<header>
-    
-        
-    
-</header>
-
-
-<article>
-    <div class="container-overview">
-    
-        
-
-        
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="Formatters">Formatters</a></dt>
-            <dd></dd>
-        
-            <dt><a href="Messages">Messages</a></dt>
-            <dd></dd>
-        
-            <dt><a href="module.exports_module.exports">exports</a></dt>
-            <dd></dd>
-        </dl>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
+module.exports = {
+  date: require('./lib/date'),
+  duration: require('./lib/duration'),
+  number: require('./lib/number'),
+  time: require('./lib/time')
+};
+</pre>
+    </article>
 </section>
+
 
 
 
@@ -192,10 +144,6 @@
 
 	<div class="clearfix"></div>
 
-	
-		<div class="col-md-3">
-			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
-		</div>
 	
 
 </div>

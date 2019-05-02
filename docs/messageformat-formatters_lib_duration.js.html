@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>messageformat Source: lib/formatters/time.js</title>
+	<title>messageformat Source: messageformat-formatters/lib/duration.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -36,7 +36,7 @@
 			<li class="dropdown">
 				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+					<li><a href="Formatters">Formatters</a></li><li><a href="Messages">Messages</a></li><li><a href="module.exports_module.exports">module.exports#module.exports</a></li>
 				</ul>
 			</li>
 			
@@ -54,12 +54,19 @@
 					</li>
 				
 			
+			<li class="dropdown">
+				<a href="global" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#disablePluralKeyChecks">disablePluralKeyChecks</a></li><li><a href="global.html#escape">escape</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -84,49 +91,66 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: lib/formatters/time.js</h1>
+		<h1 class="page-title">Source: messageformat-formatters/lib/duration.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript ">/** Represent a time as a short/default/long string
+            class="sunlight-highlight-javascript ">/**
+ * Represent a duration in seconds as a string
  *
- * The input value needs to be in a form that the
- * {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date Date object}
- * can process using its single-argument form, `new Date(value)`.
+ * Input should be a finite number; output will include one or two `:`
+ * separators, and match the pattern `hhhh:mm:ss`, possibly with a leading `-`
+ * for negative values and a trailing `.sss` part for non-integer input
  *
  * @memberof Formatters
- * @param {number|string} value - Either a Unix epoch time in milliseconds, or a string value representing a date
- * @param {string} [type='default'] - One of `'short'`, `'default'`, `'long'` , or `full`
+ * @param {number|string} value - A finite number, or its string representation
  *
  * @example
- * var mf = new MessageFormat(['en', 'fi']);
+ * var mf = new MessageFormat();
  *
- * mf.compile('The time is now {T, time}')({ T: Date.now() })
- * // 'The time is now 11:26:35 PM'
+ * mf.compile('It has been {D, duration}')({ D: 123 })
+ * // 'It has been 2:03'
  *
- * mf.compile('Kello on nyt {T, time}', 'fi')({ T: Date.now() })
- * // 'Kello on nyt 23.26.35'
- *
- * var cf = mf.compile('The Eagle landed at {T, time, full} on {T, date, full}');
- * cf({ T: '1969-07-20 20:17:40 UTC' })
- * // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
+ * mf.compile('Countdown: {D, duration}')({ D: -151200.42 })
+ * // 'Countdown: -42:00:00.420'
  */
-function time(v, lc, p) {
-  var o = { second: 'numeric', minute: 'numeric', hour: 'numeric' };
-  switch (p) {
-    case 'full':
-    case 'long':
-      o.timeZoneName = 'short';
-      break;
-    case 'short':
-      delete o.second;
+function duration(value) {
+  if (!isFinite(value)) return String(value);
+  var sign = '';
+  if (value &lt; 0) {
+    sign = '-';
+    value = Math.abs(value);
+  } else {
+    value = Number(value);
   }
-  return new Date(v).toLocaleTimeString(lc, o);
+  var sec = value % 60;
+  var parts = [Math.round(sec) === sec ? sec : sec.toFixed(3)];
+  if (value &lt; 60) {
+    parts.unshift(0); // at least one : is required
+  } else {
+    value = Math.round((value - parts[0]) / 60);
+    parts.unshift(value % 60); // minutes
+    if (value >= 60) {
+      value = Math.round((value - parts[0]) / 60);
+      parts.unshift(value); // hours
+    }
+  }
+  var first = parts.shift();
+  return (
+    sign +
+    first +
+    ':' +
+    parts
+      .map(function(n) {
+        return n &lt; 10 ? '0' + String(n) : String(n);
+      })
+      .join(':')
+  );
 }
 
 module.exports = function() {
-  return time;
+  return duration;
 };
 </pre>
     </article>

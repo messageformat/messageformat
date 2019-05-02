@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>messageformat Source: lib/formatters/number.js</title>
+	<title>messageformat Source: messageformat-formatters/lib/date.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -36,7 +36,7 @@
 			<li class="dropdown">
 				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+					<li><a href="Formatters">Formatters</a></li><li><a href="Messages">Messages</a></li><li><a href="module.exports_module.exports">module.exports#module.exports</a></li>
 				</ul>
 			</li>
 			
@@ -54,12 +54,19 @@
 					</li>
 				
 			
+			<li class="dropdown">
+				<a href="global" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#disablePluralKeyChecks">disablePluralKeyChecks</a></li><li><a href="global.html#escape">escape</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -84,62 +91,55 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: lib/formatters/number.js</h1>
+		<h1 class="page-title">Source: messageformat-formatters/lib/date.js</h1>
     
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript ">/* global CURRENCY, Intl */
+            class="sunlight-highlight-javascript ">/* eslint-disable no-fallthrough */
 
-/** Represent a number as an integer, percent or currency value
+/** Represent a date as a short/default/long/full string
  *
- *  Available in MessageFormat strings as `{VAR, number, integer|percent|currency}`.
- *  Internally, calls Intl.NumberFormat with appropriate parameters. `currency` will
- *  default to USD; to change, set `MessageFormat#currency` to the appropriate
- *  three-letter currency code, or use the `currency:EUR` form of the argument.
+ * The input value needs to be in a form that the
+ * {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date Date object}
+ * can process using its single-argument form, `new Date(value)`.
  *
  * @memberof Formatters
- * @param {number} value - The value to operate on
- * @param {string} type - One of `'integer'`, `'percent'` , `'currency'`, or `/currency:[A-Z]{3}/`
+ * @param {number|string} value - Either a Unix epoch time in milliseconds, or a string value representing a date
+ * @param {string} [type='default'] - One of `'short'`, `'default'`, `'long'` , or `full`
  *
  * @example
- * var mf = new MessageFormat('en');
- * mf.currency = 'EUR';  // needs to be set before first compile() call
+ * var mf = new MessageFormat(['en', 'fi']);
  *
- * mf.compile('{N} is almost {N, number, integer}')({ N: 3.14 })
- * // '3.14 is almost 3'
+ * mf.compile('Today is {T, date}')({ T: Date.now() })
+ * // 'Today is Feb 21, 2016'
  *
- * mf.compile('{P, number, percent} complete')({ P: 0.99 })
- * // '99% complete'
+ * mf.compile('Tänään on {T, date}', 'fi')({ T: Date.now() })
+ * // 'Tänään on 21. helmikuuta 2016'
  *
- * mf.compile('The total is {V, number, currency}.')({ V: 5.5 })
- * // 'The total is €5.50.'
+ * mf.compile('Unix time started on {T, date, full}')({ T: 0 })
+ * // 'Unix time started on Thursday, January 1, 1970'
  *
- * mf.compile('The total is {V, number, currency:GBP}.')({ V: 5.5 })
- * // 'The total is £5.50.'
+ * var cf = mf.compile('{sys} became operational on {d0, date, short}');
+ * cf({ sys: 'HAL 9000', d0: '12 January 1999' })
+ * // 'HAL 9000 became operational on 1/12/1999'
  */
-
-function number(value, lc, arg) {
-  var a = (arg &amp;&amp; arg.split(':')) || [];
-  var opt = {
-    integer: { maximumFractionDigits: 0 },
-    percent: { style: 'percent' },
-    currency: {
-      style: 'currency',
-      currency: (a[1] &amp;&amp; a[1].trim()) || CURRENCY,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }
-  };
-  return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value);
+function date(v, lc, p) {
+  var o = { day: 'numeric', month: 'short', year: 'numeric' };
+  switch (p) {
+    case 'full':
+      o.weekday = 'long';
+    case 'long':
+      o.month = 'long';
+      break;
+    case 'short':
+      o.month = 'numeric';
+  }
+  return new Date(v).toLocaleDateString(lc, o);
 }
 
-module.exports = function(mf) {
-  var parts = number
-    .toString()
-    .replace('CURRENCY', JSON.stringify(mf.currency || 'USD'))
-    .match(/\(([^)]*)\)[^{]*{([\s\S]*)}/);
-  return new Function(parts[1], parts[2]);
+module.exports = function() {
+  return date;
 };
 </pre>
     </article>

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>messageformat Source: lib/formatters/duration.js</title>
+	<title>messageformat Class: exports</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -36,7 +36,7 @@
 			<li class="dropdown">
 				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
+					<li><a href="Formatters">Formatters</a></li><li><a href="Messages">Messages</a></li><li><a href="module.exports_module.exports">module.exports#module.exports</a></li>
 				</ul>
 			</li>
 			
@@ -54,12 +54,19 @@
 					</li>
 				
 			
+			<li class="dropdown">
+				<a href="global" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#disablePluralKeyChecks">disablePluralKeyChecks</a></li><li><a href="global.html#escape">escape</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.1.0</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -79,76 +86,218 @@
 <div class="row">
 
 	
-	<div class="col-md-12">
+	<div class="col-md-8">
 	
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: lib/formatters/duration.js</h1>
-    
+	<h1 class="page-title">Class: exports</h1>
 <section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript ">/**
- * Represent a duration in seconds as a string
- *
- * Input should be a finite number; output will include one or two `:`
- * separators, and match the pattern `hhhh:mm:ss`, possibly with a leading `-`
- * for negative values and a trailing `.sss` part for non-integer input
- *
- * @memberof Formatters
- * @param {number|string} value - A finite number, or its string representation
- *
- * @example
- * var mf = new MessageFormat();
- *
- * mf.compile('It has been {D, duration}')({ D: 123 })
- * // 'It has been 2:03'
- *
- * mf.compile('Countdown: {D, duration}')({ D: -151200.42 })
- * // 'Countdown: -42:00:00.420'
- */
-function duration(value) {
-  if (!isFinite(value)) return String(value);
-  var sign = '';
-  if (value &lt; 0) {
-    sign = '-';
-    value = Math.abs(value);
-  } else {
-    value = Number(value);
-  }
-  var sec = value % 60;
-  var parts = [Math.round(sec) === sec ? sec : sec.toFixed(3)];
-  if (value &lt; 60) {
-    parts.unshift(0); // at least one : is required
-  } else {
-    value = Math.round((value - parts[0]) / 60);
-    parts.unshift(value % 60); // minutes
-    if (value >= 60) {
-      value = Math.round((value - parts[0]) / 60);
-      parts.unshift(value); // hours
-    }
-  }
-  var first = parts.shift();
-  return (
-    sign +
-    first +
-    ':' +
-    parts
-      .map(function(n) {
-        return n &lt; 10 ? '0' + String(n) : String(n);
-      })
-      .join(':')
-  );
-}
 
-module.exports = function() {
-  return duration;
-};
-</pre>
-    </article>
+<header>
+    
+        
+            <hr>
+            <div class="class-description"><p>MessageFormat-to-JavaScript compiler</p>
+<pre class="prettyprint source"><code>import MessageFormat from 'messageformat'</code></pre></div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+
+<hr>
+<dt>
+    <h4 class="name" id="exports"><span class="type-signature"></span>new exports( [locale])</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Create a new MessageFormat compiler</p>
+<p>If set, the <code>locale</code> parameter limits the compiler to use a subset of the 204
+languages' pluralisation rules made available by the Unicode CLDR.</p>
+<p>Leaving <code>locale</code> undefined or using an array of strings will create a
+MessageFormat instance with multi-language support. To select which to use,
+use the second parameter of <code>compile()</code>, or use
+message keys corresponding to your locales. The default locale will be the
+first entry of the array, or <code><a href="MessageFormat.html#.defaultLocale">defaultLocale</a></code>
+if not set.</p>
+<p>A string <code>locale</code> will create a single-locale MessageFormat instance.</p>
+<p>Using an object <code>locale</code> with all properties of type <code>function</code> allows for
+the use of custom or externally defined pluralisation rules; in this case</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>locale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Array.&lt;string></span>
+|
+
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The locale(s) to use</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat_src_messageformat.js">messageformat/src/messageformat.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
 </section>
-
 
 
 
@@ -158,6 +307,10 @@ module.exports = function() {
 
 	<div class="clearfix"></div>
 
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
 	
 
 </div>

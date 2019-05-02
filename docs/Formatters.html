@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>messageformat Class: Formatters</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.flatly.css">
+
+	<link rel='apple-touch-icon' sizes='180x180' href='logo/favicon-180.png'>
+<link rel='icon' type='image/png' sizes='32x32' href='logo/favicon-32.png'>
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="./"><img class="branding-logo" src="logo/messageformat.svg"
+		alt="logo"/>messageformat</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="Formatters">Formatters</a></li><li><a href="Messages">Messages</a></li><li><a href="module.exports_module.exports">module.exports#module.exports</a></li>
+				</ul>
+			</li>
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-about">About</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-build">Usage</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link" href="page-guide">Format Guide</a>
+					</li>
+				
+			
+			<li class="dropdown">
+				<a href="global" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#disablePluralKeyChecks">disablePluralKeyChecks</a></li><li><a href="global.html#escape">escape</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+        
+          <ul class="nav navbar-nav navbar-right">
+            
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
+            
+            <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
+              <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <title>messageformat on GitHub</title>
+                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+            </a></li>
+          </ul>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: Formatters</h1>
+<section>
+
+<header>
+    
+        
+            <hr>
+            <div class="class-description"><p>Default number formatting functions in the style of ICU's
+<a href="http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html">simpleArg syntax</a>
+implemented using the
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl">Intl</a>
+object defined by ECMA-402.</p>
+<p>In MessageFormat source, a formatter function is called with the syntax
+<code>{var, name, arg}</code>, where <code>var</code> is a variable, <code>name</code> is the formatter name
+(by default, either <code>date</code>, <code>duration</code>, <code>number</code> or <code>time</code>; <code>spellout</code> and
+<code>ordinal</code> are not supported by default), and <code>arg</code> is an optional string
+argument.</p>
+<p>In JavaScript, a formatter is a function called with three parameters:</p>
+<ul>
+<li>The <strong><code>value</code></strong> of the variable; this can be of any user-defined type</li>
+<li>The current <strong><code>locale</code></strong> code</li>
+<li>The trimmed <strong><code>arg</code></strong> string value, or <code>null</code> if not set</li>
+</ul>
+<p>As formatter functions may be used in a precompiled context, they should not
+refer to any variables that are not defined by the function parameters or
+within the function body. To add your own formatter, either add it to the
+static <code>MessageFormat.formatters</code> object, or use
+MessageFormat#addFormatters to add it to a MessageFormat instance.</p></div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat-formatters_index.js">messageformat-formatters/index.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+
+<hr>
+<dt>
+    <h4 class="name" id=".date"><span class="type-signature">&lt;static> </span>date(value [, type])</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Represent a date as a short/default/long/full string</p>
+<p>The input value needs to be in a form that the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date">Date object</a>
+can process using its single-argument form, <code>new Date(value)</code>.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+|
+
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Either a Unix epoch time in milliseconds, or a string value representing a date</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'default'
+                
+                </td>
+            
+
+            <td class="description last"><p>One of <code>'short'</code>, <code>'default'</code>, <code>'long'</code> , or <code>full</code></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat-formatters_lib_date.js">messageformat-formatters/lib/date.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat([&#x27;en&#x27;, &#x27;fi&#x27;]);
+
+mf.compile(&#x27;Today is {T, date}&#x27;)({ T: Date.now() })
+// &#x27;Today is Feb 21, 2016&#x27;
+
+mf.compile(&#x27;Tänään on {T, date}&#x27;, &#x27;fi&#x27;)({ T: Date.now() })
+// &#x27;Tänään on 21. helmikuuta 2016&#x27;
+
+mf.compile(&#x27;Unix time started on {T, date, full}&#x27;)({ T: 0 })
+// &#x27;Unix time started on Thursday, January 1, 1970&#x27;
+
+var cf = mf.compile(&#x27;{sys} became operational on {d0, date, short}&#x27;);
+cf({ sys: &#x27;HAL 9000&#x27;, d0: &#x27;12 January 1999&#x27; })
+// &#x27;HAL 9000 became operational on 1/12/1999&#x27;</pre>
+
+
+    
+</dd>
+
+        
+            
+
+<hr>
+<dt>
+    <h4 class="name" id=".duration"><span class="type-signature">&lt;static> </span>duration(value)</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Represent a duration in seconds as a string</p>
+<p>Input should be a finite number; output will include one or two <code>:</code>
+separators, and match the pattern <code>hhhh:mm:ss</code>, possibly with a leading <code>-</code>
+for negative values and a trailing <code>.sss</code> part for non-integer input</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+|
+
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A finite number, or its string representation</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat-formatters_lib_duration.js">messageformat-formatters/lib/duration.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat();
+
+mf.compile(&#x27;It has been {D, duration}&#x27;)({ D: 123 })
+// &#x27;It has been 2:03&#x27;
+
+mf.compile(&#x27;Countdown: {D, duration}&#x27;)({ D: -151200.42 })
+// &#x27;Countdown: -42:00:00.420&#x27;</pre>
+
+
+    
+</dd>
+
+        
+            
+
+<hr>
+<dt>
+    <h4 class="name" id=".number"><span class="type-signature">&lt;static> </span>number(value, type)</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Represent a number as an integer, percent or currency value</p>
+<p> Available in MessageFormat strings as <code>{VAR, number, integer|percent|currency}</code>.
+ Internally, calls Intl.NumberFormat with appropriate parameters. <code>currency</code> will
+ default to USD; to change, set <code>MessageFormat#currency</code> to the appropriate
+ three-letter currency code, or use the <code>currency:EUR</code> form of the argument.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to operate on</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>One of <code>'integer'</code>, <code>'percent'</code> , <code>'currency'</code>, or <code>/currency:[A-Z]{3}/</code></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat-formatters_lib_number.js">messageformat-formatters/lib/number.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat(&#x27;en&#x27;);
+mf.currency = &#x27;EUR&#x27;;  // needs to be set before first compile() call
+
+mf.compile(&#x27;{N} is almost {N, number, integer}&#x27;)({ N: 3.14 })
+// &#x27;3.14 is almost 3&#x27;
+
+mf.compile(&#x27;{P, number, percent} complete&#x27;)({ P: 0.99 })
+// &#x27;99% complete&#x27;
+
+mf.compile(&#x27;The total is {V, number, currency}.&#x27;)({ V: 5.5 })
+// &#x27;The total is €5.50.&#x27;
+
+mf.compile(&#x27;The total is {V, number, currency:GBP}.&#x27;)({ V: 5.5 })
+// &#x27;The total is £5.50.&#x27;</pre>
+
+
+    
+</dd>
+
+        
+            
+
+<hr>
+<dt>
+    <h4 class="name" id=".time"><span class="type-signature">&lt;static> </span>time(value [, type])</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Represent a time as a short/default/long string</p>
+<p>The input value needs to be in a form that the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date">Date object</a>
+can process using its single-argument form, <code>new Date(value)</code>.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+|
+
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Either a Unix epoch time in milliseconds, or a string value representing a date</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'default'
+                
+                </td>
+            
+
+            <td class="description last"><p>One of <code>'short'</code>, <code>'default'</code>, <code>'long'</code> , or <code>full</code></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat-formatters_lib_time.js">messageformat-formatters/lib/time.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">var mf = new MessageFormat([&#x27;en&#x27;, &#x27;fi&#x27;]);
+
+mf.compile(&#x27;The time is now {T, time}&#x27;)({ T: Date.now() })
+// &#x27;The time is now 11:26:35 PM&#x27;
+
+mf.compile(&#x27;Kello on nyt {T, time}&#x27;, &#x27;fi&#x27;)({ T: Date.now() })
+// &#x27;Kello on nyt 23.26.35&#x27;
+
+var cf = mf.compile(&#x27;The Eagle landed at {T, time, full} on {T, date, full}&#x27;);
+cf({ T: &#x27;1969-07-20 20:17:40 UTC&#x27; })
+// &#x27;The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969&#x27;</pre>
+
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+
+<footer>
+
+
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".page-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+
+</body>
+</html>
