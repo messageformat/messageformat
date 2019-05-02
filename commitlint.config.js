@@ -4,7 +4,7 @@ module.exports = {
     'subject-case': [
       2,
       'never',
-      ['upper-case', 'camel-case', 'kebab-case', 'pascal-case', 'snake-case']
+      ['upper-case', 'camel-case', 'kebab-case', 'snake-case']
     ]
   }
 };
