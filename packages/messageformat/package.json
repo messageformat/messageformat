@@ -20,6 +20,7 @@
   "homepage": "https://messageformat.github.io/messageformat/",
   "repository": "messageformat/messageformat",
   "main": "index.js",
+  "browser": "./messageformat.js",
   "files": [
     "index.d.ts",
     "lib",
@@ -86,8 +87,5 @@
   "scripts": {
     "prebuild": "babel src -d lib",
     "build": "webpack --mode production"
-  },
-  "browser": {
-    "fs": false
   }
 }
