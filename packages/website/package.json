@@ -12,7 +12,7 @@
     "start": "jsdoc -c jsdoc-conf.json"
   },
   "dependencies": {
-    "messageformat": "^2.2.0",
+    "messageformat": "^2.2.1",
     "messageformat-formatters": "^2.0.0"
   },
   "devDependencies": {

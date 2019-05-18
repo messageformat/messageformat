@@ -37,7 +37,7 @@
     "uv": "^1.0.7"
   },
   "devDependencies": {
-    "messageformat": "^2.1.0"
+    "messageformat": "^2.2.1"
   },
   "peerDependencies": {
     "messageformat": "2.x"

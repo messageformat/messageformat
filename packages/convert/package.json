@@ -30,6 +30,6 @@
     "make-plural": "^4.3.0"
   },
   "devDependencies": {
-    "messageformat": "^2.1.0"
+    "messageformat": "^2.2.1"
   }
 }

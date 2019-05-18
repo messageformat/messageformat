@@ -33,7 +33,7 @@
     ]
   },
   "dependencies": {
-    "messageformat": "^2.1.0",
+    "messageformat": "^2.2.1",
     "messageformat-loader": "^0.8.0",
     "webpack": "^3.12.0"
   }
