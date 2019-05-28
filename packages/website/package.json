@@ -17,6 +17,6 @@
   },
   "devDependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
-    "jsdoc": "^3.5.5"
+    "jsdoc": "^3.6.2"
   }
 }
