@@ -66,7 +66,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.1</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -102,7 +102,8 @@
 with minimal code examples that are directly executable in a node.js
 environment. <strong>For production use</strong>, we recommend using <a href="page-build">Usage</a> and
 the <a href="Messages">Messages</a> runtime accessor class.</p>
-<h2>String Lookup</h2><p>The simplest case of MessageFormat involves no formatting, just a string
+<h2>String Lookup</h2>
+<p>The simplest case of MessageFormat involves no formatting, just a string
 passthrough. This may sound silly, but often it's nice to always use the same
 message formatting system when doing translations, and not everything requires
 variables.</p>
@@ -110,9 +111,12 @@ variables.</p>
 const mf = new MessageFormat('en');
 const message = mf.compile('This is a message.');
 
-message(); // &quot;This is a message.&quot;</code></pre><p><strong>Note</strong>: if a message <em>does</em> require data to be passed in, an error is thrown if
+message(); // &quot;This is a message.&quot;
+</code></pre>
+<p><strong>Note</strong>: if a message <em>does</em> require data to be passed in, an error is thrown if
 you do not.</p>
-<h2>Variables</h2><p>The most common way to use MessageFormat is for simple variable replacement.
+<h2>Variables</h2>
+<p>The most common way to use MessageFormat is for simple variable replacement.
 MessageFormat may look odd at first, but it's actually fairly simple. One way to
 think about the <code>{</code> and <code>}</code> is that every level of them bring you into and
 out-of &quot;literal&quot; and &quot;code&quot; mode.</p>
@@ -125,7 +129,10 @@ there in the output.</p>
 const mf = new MessageFormat('en');
 const varMessage = mf.compile('His name is {NAME}.');
 
-varMessage({ NAME: 'Jed' }); // 'His name is Jed.'</code></pre><h2>SelectFormat</h2><p>SelectFormat is a lot like a switch statement for your messages. Often it's used
+varMessage({ NAME: 'Jed' }); // 'His name is Jed.'
+</code></pre>
+<h2>SelectFormat</h2>
+<p>SelectFormat is a lot like a switch statement for your messages. Often it's used
 to select gender in a string. The format of the statement is <code>{varname, select, this{...} that{...} other{...}}</code>, where <code>varname</code> matches a key in the data you
 give to the resulting function, and <code>'this'</code> and <code>'that'</code> are some of the
 string-equivalent values that it may have. The <code>other</code> key is required, and is
@@ -144,7 +151,10 @@ const selectMessage = mf.compile(
 
 selectMessage({ GENDER: 'male' }); // 'He liked this.'
 selectMessage({ GENDER: 'female' }); // 'She liked this.'
-selectMessage({}); // 'They liked this.'</code></pre><h2>PluralFormat</h2><p>PluralFormat is a similar mechanism to SelectFormat, but specific to numerical
+selectMessage({}); // 'They liked this.'
+</code></pre>
+<h2>PluralFormat</h2>
+<p>PluralFormat is a similar mechanism to SelectFormat, but specific to numerical
 values. The key that is chosen is generated from the specified input variable by
 a locale-specific <em>plural function</em>.</p>
 <p>The numeric input is mapped to a plural category, some subset of <code>zero</code>, <code>one</code>,
@@ -180,7 +190,10 @@ messages.results({ COUNT: 0 }); // 'There are no results.'
 messages.results({ COUNT: 1 }); // 'There is one result.'
 messages.results({ COUNT: 100 }); // 'There are 100 results.'
 messages.position({ POS: 1 }); // 'You are 1st in the queue.'
-messages.position({ POS: 33 }); // 'You are 33rd in the queue.'</code></pre><h3>Plural Offset</h3><p>To generate sentences such as &quot;You and 4 others added this to their profiles.&quot;,
+messages.position({ POS: 33 }); // 'You are 33rd in the queue.'
+</code></pre>
+<h3>Plural Offset</h3>
+<p>To generate sentences such as &quot;You and 4 others added this to their profiles.&quot;,
 PluralFormat supports adding an <code>offset</code> to the variable value before
 determining its plural category. Literal/exact matches are tested before
 applying the offset.</p>
@@ -198,13 +211,17 @@ const offsetMessage = mf.compile(
 offsetMessage({ ADDS: 0 }); // 'You did not add this.'
 offsetMessage({ ADDS: 1 }); // 'You added this.'
 offsetMessage({ ADDS: 2 }); // 'You and one other person added this.'
-offsetMessage({ ADDS: 3 }); // 'You and 2 others added this.'</code></pre><h2>Formatters</h2><p>MessageFormat includes date, duration, number, and time formatting functions in
+offsetMessage({ ADDS: 3 }); // 'You and 2 others added this.'
+</code></pre>
+<h2>Formatters</h2>
+<p>MessageFormat includes date, duration, number, and time formatting functions in
 the style of ICU's <a href="http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html">simpleArg syntax</a>. They are implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl">Intl</a>
 object defined by ECMA-402.</p>
 <p><strong>Note</strong>: Intl is not defined in Node by default until 0.12 and is not available
 in all browsers (in particular, IE &lt;=10 and Safari &lt;=9.1), so you may need to
 use a <a href="https://www.npmjs.com/package/intl">polyfill</a>.</p>
-<h3>date</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
+<h3>date</h3>
+<p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat(['en', 'fi']);
 const messages = mf.compile({
@@ -223,7 +240,10 @@ messages.fi.today({ T: Date.now() }); // 'Tänään on 30. maalisk. 2018'
 messages.en.unix({ T: 0 });
 // 'Unix time started on Thursday, January 1, 1970'
 messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' });
-// 'HAL 9000 became operational on 1/12/1999'</code></pre><h3>duration</h3><p>Represent a duration in seconds as a string.</p>
+// 'HAL 9000 became operational on 1/12/1999'
+</code></pre>
+<h3>duration</h3>
+<p>Represent a duration in seconds as a string.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat();
 const messages = mf.compile({
@@ -232,7 +252,10 @@ const messages = mf.compile({
 });
 
 messages.since({ D: 123 }); // 'It has been 2:03'
-messages.countdown({ D: -151200.42 }); // 'Countdown: -42:00:00.420'</code></pre><h3>number</h3><p>Supported parameters are <code>integer</code>, <code>percent</code> , or <code>currency</code>. To specify a non-default currency, use <code>currency:CODE</code>.</p>
+messages.countdown({ D: -151200.42 }); // 'Countdown: -42:00:00.420'
+</code></pre>
+<h3>number</h3>
+<p>Supported parameters are <code>integer</code>, <code>percent</code> , or <code>currency</code>. To specify a non-default currency, use <code>currency:CODE</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat('en');
 mf.currency = 'EUR'; // needs to be set before first compile() call
@@ -248,7 +271,10 @@ const messages = mf.compile({
 messages.almost({ N: 3.14 }); // '3.14 is almost 3'
 messages.complete({ P: 0.99 }); // '99% complete'
 messages.currency.eur({ V: 5.5 }); // 'The total is €5.50.'
-messages.currency.gbp({ V: 5.5 }); // 'The total is £5.50.'</code></pre><h3>time</h3><p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
+messages.currency.gbp({ V: 5.5 }); // 'The total is £5.50.'
+</code></pre>
+<h3>time</h3>
+<p>Supported parameters are <code>short</code>, <code>default</code>, <code>long</code> , or <code>full</code>.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat')
 const mf = new MessageFormat(['en', 'fi'])
 const messages = mf.compile({
@@ -262,7 +288,10 @@ const messages = mf.compile({
 messages.now.en({ T: Date.now() })  // 'The time is now 11:26:35 PM'
 messages.now.fi({ T: Date.now() })  // 'Kello on nyt 23.26.35'
 messages.eagle({ T: '1969-07-20 20:17:40 UTC' })
-  // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'</code></pre><h3>Custom Formatters</h3><p>In MessageFormat source, a formatter function is called with the syntax
+  // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
+</code></pre>
+<h3>Custom Formatters</h3>
+<p>In MessageFormat source, a formatter function is called with the syntax
 <code>{var, name, arg}</code>, where <code>var</code> is a variable, <code>name</code> is the formatter name
 (by default, either <code>date</code>, <code>duration</code>, <code>number</code> or <code>time</code>; <code>spellout</code> and
 <code>ordinal</code> are not supported by default), and <code>arg</code> is an optional string
@@ -299,7 +328,10 @@ const messages = mf.compile({
 
 messages.describe({ VAR: 'big' }); // 'This is BIG.'
 messages.locale({}); // 'The current locale is en-GB.'
-messages.answer({ obj: { q: 3, a: 42 } }); // 'Answer: 42'</code></pre><h2>Nesting</h2><p>All types of messageformat statements may be nested within each other, to unlimited depth:</p>
+messages.answer({ obj: { q: 3, a: 42 } }); // 'Answer: 42'
+</code></pre>
+<h2>Nesting</h2>
+<p>All types of messageformat statements may be nested within each other, to unlimited depth:</p>
 <pre class="prettyprint source lang-text"><code>{ SEL1, select,
   other {
     { PLUR1, plural,
@@ -309,7 +341,10 @@ messages.answer({ obj: { q: 3, a: 42 } }); // 'Answer: 42'</code></pre><h2>Nesti
       }
     }
   }
-}</code></pre><h2>Escaping</h2><p>The characters <code>{</code> and <code>}</code> must be escaped with <code>'quotes'</code> to be included in the output as literal characters. Within plural statements, <code>#</code> must also be similarly escaped. The utility function MessageFormat.escape may help with this.</p>
+}
+</code></pre>
+<h2>Escaping</h2>
+<p>The characters <code>{</code> and <code>}</code> must be escaped with <code>'quotes'</code> to be included in the output as literal characters. Within plural statements, <code>#</code> must also be similarly escaped. The utility function MessageFormat.escape may help with this.</p>
 <pre class="prettyprint source lang-javascript"><code>const MessageFormat = require('messageformat');
 const mf = new MessageFormat('en');
 const messages = mf.compile({
@@ -318,7 +353,8 @@ const messages = mf.compile({
 });
 
 messages.esc({ S: 5 }); // '{ 5 is a # }'
-messages.var({ var: 5 }); // 'Use {var} for variables'</code></pre>
+messages.var({ var: 5 }); // 'Use {var} for variables'
+</code></pre>
 </article>
 
 </section>

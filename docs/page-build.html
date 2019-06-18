@@ -66,7 +66,7 @@
         
           <ul class="nav navbar-nav navbar-right">
             
-              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.0</a></li>
+              <li><a href="https://github.com/messageformat/messageformat/releases">2.2.1</a></li>
             
             <li class="navbar-github-icon"><a href="https://github.com/messageformat/messageformat">
               <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -106,7 +106,8 @@
 <li>Our <strong>JavaScript API</strong>, in particular MessageFormat#compile</li>
 </ul>
 <p>Compiling messages during your build will allow for a significant decrease in filesize and execution time, as all that's required to run on the client are the final compiled functions.</p>
-<h2>Webpack loaders</h2><p>Each of the loaders is similar, supporting a specific file type. Their configuration options vary slightly, depending on the common practices for the format; please see their own documentations for details:</p>
+<h2>Webpack loaders</h2>
+<p>Each of the loaders is similar, supporting a specific file type. Their configuration options vary slightly, depending on the common practices for the format; please see their own documentations for details:</p>
 <ul>
 <li>JSON &amp; YAML: <a href="https://www.npmjs.com/package/messageformat-loader">messageformat-loader</a></li>
 <li>.properties: <a href="https://www.npmjs.com/package/messageformat-properties-loader">messageformat-properties-loader</a> – Format used by <a href="https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-">Java resource bundles</a></li>
@@ -117,12 +118,11 @@
   <div class="panel-heading">messages.json</div>
   <div class="panel-body">
     <pre class="prettyprint source lang-javascript"><code>{
-  &quot;time&quot;: &quot;{0} took {1} ms to complete.&quot;,
-  &quot;ordinal&quot;: &quot;The {N, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} message.&quot;
+  "time": "{0} took {1} ms to complete.",
+  "ordinal": "The {N, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} message."
 }</code></pre>
   </div>
 </div>
-
 <div class="panel panel-default">
   <div class="panel-heading">example.js</div>
   <div class="panel-body">
@@ -131,9 +131,9 @@ messages.ordinal(['Sweeping', 42])  // 'Sweeping took 42 ms to complete.'
 messages.ordinal({ N: 1 })          // 'The 1st message.'</code></pre>
   </div>
 </div>
-
 <p>During the build, the loader will compile your messages into their respective functions, and package only those into the webpack output.</p>
-<h2>CLI Compiler</h2><p><a href="https://www.npmjs.com/package/messageformat-cli">messageformat-cli</a> is available as a separate package, and is easy to integrate into any build environment that can execute external commands, such as <a href="https://github.com/facebook/create-react-app">create-react-app</a>. In addition to command-line options, the CLI can read configuration from <code>package.json</code> and <code>messageformat.rc.json</code> files; see its documentation for more information.</p>
+<h2>CLI Compiler</h2>
+<p><a href="https://www.npmjs.com/package/messageformat-cli">messageformat-cli</a> is available as a separate package, and is easy to integrate into any build environment that can execute external commands, such as <a href="https://github.com/facebook/create-react-app">create-react-app</a>. In addition to command-line options, the CLI can read configuration from <code>package.json</code> and <code>messageformat.rc.json</code> files; see its documentation for more information.</p>
 <pre class="prettyprint source lang-text"><code>$ npm install messageformat messageformat-cli
 $ npx messageformat
 
@@ -158,52 +158,50 @@ recursively scanned for all .json and .properties files.
         Write output to the file of. If undefined or '-', prints to stdout
 
 See the messageformat-cli README for more options. Configuration may also be
-set in package.json or messageformat.rc.json.</code></pre><h2>Using compiled messageformat output</h2><p>The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's <code>example/i18n.js</code> sample output includes a function <code>en.sub.folder.plural.test()</code>, which was compiled from the <code>test</code> key in the source file <code>example/en/sub/folder/plural.json</code>. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.</p>
+set in package.json or messageformat.rc.json.
+</code></pre>
+<h2>Using compiled messageformat output</h2>
+<p>The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's <code>example/i18n.js</code> sample output includes a function <code>en.sub.folder.plural.test()</code>, which was compiled from the <code>test</code> key in the source file <code>example/en/sub/folder/plural.json</code>. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.</p>
 <p>In development use, it may then prove problematic to use the messageformat compiled messages directly, as mistakes in message keys will throw errors when they are called as functions, along with errors from missing properties for messages using variables. To that end, the library includes <strong><a href="Messages">Messages</a></strong>, a utility accessor library that helps with common usage patterns, as well as making it easier to load message data dynamically.</p>
 <p>It works like this (using <a href="https://www.npmjs.com/package/messageformat-loader">messageformat-loader</a>, configured for <code>en</code> and <code>fi</code> locales):</p>
 <div class="panel panel-default">
   <div class="panel-heading">messages.json</div>
   <div class="panel-body">
     <pre class="prettyprint source lang-javascript"><code>{
-  &quot;en&quot;: {
-    &quot;a&quot;: &quot;A {TYPE} example.&quot;,
-    &quot;b&quot;: &quot;This has {COUNT, plural, one{one user} other{# users}}.&quot;,
-    &quot;c&quot;: {
-      &quot;d&quot;: &quot;We have {P, number, percent} code coverage.&quot;
+  "en": {
+    "a": "A {TYPE} example.",
+    "b": "This has {COUNT, plural, one{one user} other{# users}}.",
+    "c": {
+      "d": "We have {P, number, percent} code coverage."
     }
   },
-  &quot;fi&quot;: {
-    &quot;b&quot;: &quot;Tällä on {COUNT, plural, one{yksi käyttäjä} other{# käyttäjää}}.&quot;,
-    &quot;e&quot;: &quot;Minä puhun vain suomea.&quot;
+  "fi": {
+    "b": "Tällä on {COUNT, plural, one{yksi käyttäjä} other{# käyttäjää}}.",
+    "e": "Minä puhun vain suomea."
   }
 }</code></pre>
   </div>
 </div>
-
 <div class="panel panel-default">
   <div class="panel-heading">example.js</div>
   <div class="panel-body">
     <pre class="prettyprint source lang-javascript"><code>import Messages from 'messageformat/messages'
 import msgData from './messages.json'
 const messages = new Messages(msgData, 'en')  // sets default locale
-
-messages.hasMessage('a') // true
+<p>messages.hasMessage('a') // true
 messages.hasObject('c') // true
 messages.get('b', { COUNT: 3 }) // 'This has 3 users.'
-messages.get(['c', 'd'], { P: 0.314 }) // 'We have 31% code coverage.'
-
-messages.get('e') // 'e'
+messages.get(['c', 'd'], { P: 0.314 }) // 'We have 31% code coverage.'</p>
+<p>messages.get('e') // 'e'
 messages.setFallback('en', ['foo', 'fi'])
-messages.get('e') // 'Minä puhun vain suomea.'
-
-messages.locale = 'fi'
+messages.get('e') // 'Minä puhun vain suomea.'</p>
+<p>messages.locale = 'fi'
 messages.hasMessage('a') // false
 messages.hasMessage('a', 'en') // true
 messages.hasMessage('a', null, true) // true
 messages.hasObject('c') // false
 messages.get('b', { COUNT: 3 }) // 'Tällä on 3 käyttäjää.'
-messages.get('c').d({ P: 0.628 }) // 'We have 63% code coverage.'</code></pre>
-
+messages.get('c').d({ P: 0.628 }) // 'We have 63% code coverage.'</code></pre></p>
   </div>
 </div>
 </article>
