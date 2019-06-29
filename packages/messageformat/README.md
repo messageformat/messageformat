@@ -1,5 +1,5 @@
 <div class="main-title">
-<img align="right" width="100" height="100" src="logo/messageformat.svg">
+<img align="right" width="100" height="100" src="https://messageformat.github.io/messageformat/logo/messageformat.svg">
 <a class="badge" href="http://travis-ci.org/messageformat/messageformat"><img src="https://secure.travis-ci.org/messageformat/messageformat.svg" alt="Build Status"></a>
 <h1>messageformat</h1>
 </div>
@@ -14,8 +14,8 @@ There is a good slide-deck on [Plural and Gender in Translated Messages](https:/
 
 Using messageformat, you can separate your code from your text formatting, while enabling much more humane expressions. In other words, you won't need to see this anymore in your output:
 
-> There are 1 results.  
-> There are 2 result(s).  
+> There are 1 results.<br>
+> There are 2 result(s).<br>
 > Number of results: 3.
 
 On a more fundamental level, messageformat and its associated tools can help you build an effective workflow for UI texts and translations, keeping message sources in human-friendly formats, compiling them into JavaScript during your build phase, and making them easy to use from your application code.
