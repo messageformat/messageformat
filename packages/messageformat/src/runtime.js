@@ -50,7 +50,7 @@ export default class Runtime {
 
   constructor(mf) {
     this.mf = mf;
-    this.setStrictNumber(mf.strictNumberSign);
+    this.setStrictNumber(mf.options.strictNumberSign);
   }
 
   /** Utility function for `{N, plural|selectordinal, ...}`

@@ -61,13 +61,18 @@ export default class MessageFormat {
    * ```
    */
   constructor(locale) {
+    this.options = {
+      biDiSupport: false,
+      pluralKeyChecks: true,
+      strictNumberSign: false
+    };
     this.pluralFuncs = {};
     if (typeof locale === 'string') {
-      this.pluralFuncs[locale] = getPlural(locale);
+      this.pluralFuncs[locale] = getPlural(locale, this.options);
       this.defaultLocale = locale;
     } else if (Array.isArray(locale)) {
       locale.forEach(lc => {
-        this.pluralFuncs[lc] = getPlural(lc);
+        this.pluralFuncs[lc] = getPlural(lc, this.options);
       });
       this.defaultLocale = locale[0];
     } else {
@@ -85,6 +90,7 @@ export default class MessageFormat {
         this.hasCustomPluralFuncs = true;
       } else {
         this.defaultLocale = MessageFormat.defaultLocale;
+        this.hasCustomPluralFuncs = false;
       }
     }
     this.fmt = {};
@@ -160,7 +166,7 @@ export default class MessageFormat {
    * mf.compile(msg)({ X: 0 })  // '0 answers'
    */
   disablePluralKeyChecks() {
-    this.noPluralKeyChecks = true;
+    this.options.pluralKeyChecks = false;
     for (const lc in this.pluralFuncs) {
       const pf = this.pluralFuncs[lc];
       if (pf) {
@@ -194,7 +200,7 @@ export default class MessageFormat {
    *   // 'first >> SECOND >> THIRD'
    */
   setBiDiSupport(enable) {
-    this.bidiSupport = !!enable || typeof enable == 'undefined';
+    this.options.biDiSupport = !!enable || typeof enable == 'undefined';
     return this;
   }
 
@@ -232,8 +238,8 @@ export default class MessageFormat {
    * messages.pastry({ X: 3, P: 'pie' })  // '# pies'
    */
   setStrictNumberSign(enable) {
-    this.strictNumberSign = !!enable || typeof enable == 'undefined';
-    this.runtime.setStrictNumber(this.strictNumberSign);
+    this.options.strictNumberSign = !!enable || typeof enable == 'undefined';
+    this.runtime.setStrictNumber(this.options.strictNumberSign);
     return this;
   }
 
@@ -332,7 +338,7 @@ export default class MessageFormat {
     let pf = {};
     if (Object.keys(this.pluralFuncs).length === 0) {
       if (locale) {
-        const pfn0 = getPlural(locale, this.noPluralKeyChecks);
+        const pfn0 = getPlural(locale, this.options);
         if (!pfn0) {
           const lcs = JSON.stringify(locale);
           throw new Error(`Locale ${lcs} not found!`);
@@ -340,7 +346,7 @@ export default class MessageFormat {
         pf[locale] = pfn0;
       } else {
         locale = this.defaultLocale;
-        pf = getAllPlurals(this.noPluralKeyChecks);
+        pf = getAllPlurals(this.options);
       }
     } else if (locale) {
       const pfn1 = this.pluralFuncs[locale];
