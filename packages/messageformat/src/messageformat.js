@@ -51,10 +51,9 @@ export default class MessageFormat {
    * Using an object `locale` with all properties of type `function` allows for
    * the use of custom or externally defined pluralisation rules; in this case
    *
-   * @class
-   * @param {string|string[]|Object} [locale] - The locale(s) to use
-   *
+   * @class MessageFormat
    * @classdesc MessageFormat-to-JavaScript compiler
+   * @param {string|string[]|Object} [locale] - The locale(s) to use
    *
    * ```
    * import MessageFormat from 'messageformat'

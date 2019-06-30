@@ -36,7 +36,7 @@
 			<li class="dropdown">
 				<a href="classes.list" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Formatters">Formatters</a></li><li><a href="Messages">Messages</a></li><li><a href="module.exports_module.exports">module.exports#module.exports</a></li>
+					<li><a href="Formatters">Formatters</a></li><li><a href="MessageFormat">MessageFormat</a></li><li><a href="Messages">Messages</a></li>
 				</ul>
 			</li>
 			
@@ -149,10 +149,9 @@ export default class MessageFormat {
    * Using an object `locale` with all properties of type `function` allows for
    * the use of custom or externally defined pluralisation rules; in this case
    *
-   * @class
-   * @param {string|string[]|Object} [locale] - The locale(s) to use
-   *
+   * @class MessageFormat
    * @classdesc MessageFormat-to-JavaScript compiler
+   * @param {string|string[]|Object} [locale] - The locale(s) to use
    *
    * ```
    * import MessageFormat from 'messageformat'
