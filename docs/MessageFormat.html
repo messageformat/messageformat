@@ -54,13 +54,6 @@
 					</li>
 				
 			
-			<li class="dropdown">
-				<a href="global" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="global.html#disablePluralKeyChecks">disablePluralKeyChecks</a></li><li><a href="global.html#escape">escape</a></li>
-				</ul>
-			</li>
-			
 		</ul>
         
         
@@ -125,7 +118,7 @@
 languages' pluralisation rules made available by the Unicode CLDR.</p>
 <p>Leaving <code>locale</code> undefined or using an array of strings will create a
 MessageFormat instance with multi-language support. To select which to use,
-use the second parameter of <code>compile()</code>, or use
+use the second parameter of <code><a href="MessageFormat.html#compile">compile()</a></code>, or use
 message keys corresponding to your locales. The default locale will be the
 first entry of the array, or <code><a href="MessageFormat.html#.defaultLocale">defaultLocale</a></code>
 if not set.</p>
@@ -381,7 +374,229 @@ of its instance counterpart, <code>MessageFormat#defaultLocale</code>.</p>
 
 <hr>
 <dt>
-    <h4 class="name" id=".addFormatters"><span class="type-signature">&lt;static> </span>addFormatters(fmt)</h4>
+    <h4 class="name" id=".escape"><span class="type-signature">&lt;static> </span>escape(str [, octothorpe])</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Escape special characaters</p>
+<p>Surround the characters <code>{</code> and <code>}</code> in the input string with 'quotes'.
+This will allow those characters to not be considered as MessageFormat
+control characters.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The input string</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>octothorpe</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Include <code>#</code> in the escaped characters</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat_src_messageformat.js">messageformat/src/messageformat.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The escaped string</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+
+<hr>
+<dt>
+    <h4 class="name" id="addFormatters"><span class="type-signature"></span>addFormatters(fmt)</h4>
     
     
 </dt>
@@ -573,7 +788,7 @@ messages.answer({ obj: {q: 3, a: 42} })  // &#x27;Answer: 42&#x27;</pre>
 
 <hr>
 <dt>
-    <h4 class="name" id=".compile"><span class="type-signature">&lt;static> </span>compile(messages [, locale])</h4>
+    <h4 class="name" id="compile"><span class="type-signature"></span>compile(messages [, locale])</h4>
     
     
 </dt>
@@ -850,7 +1065,140 @@ messages.b({ COUNT: 3 })              // &#x27;This has 3 members.&#x27;</pre>
 
 <hr>
 <dt>
-    <h4 class="name" id=".setBiDiSupport"><span class="type-signature">&lt;static> </span>setBiDiSupport( [enable])</h4>
+    <h4 class="name" id="disablePluralKeyChecks"><span class="type-signature"></span>disablePluralKeyChecks()</h4>
+    
+    
+</dt>
+
+<dd>
+
+    
+    <div class="description">
+        <p>Disable the validation of plural &amp; selectordinal keys</p>
+<p>Previous versions of messageformat allowed the use of plural &amp;
+selectordinal statements with any keys; now we throw an error when a
+statement uses a non-numerical key that will never be matched as a
+pluralization category for the current locale.</p>
+<p>Use this method to disable the validation and allow usage as previously.
+To re-enable, you'll need to create a new MessageFormat instance.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="messageformat_src_messageformat.js">messageformat/src/messageformat.js</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The MessageFormat instance, to allow for chaining</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MessageFormat">MessageFormat</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">const mf = new MessageFormat(&#x27;en&#x27;)
+const msg = &#x27;{X, plural, zero{no answers} one{an answer} other{# answers}}&#x27;
+
+mf.compile(msg)
+// Error: Invalid key &#x60;zero&#x60; for argument &#x60;X&#x60;. Valid plural keys for this
+//        locale are &#x60;one&#x60;, &#x60;other&#x60;, and explicit keys like &#x60;=0&#x60;.
+
+mf.disablePluralKeyChecks()
+mf.compile(msg)({ X: 0 })  // &#x27;0 answers&#x27;</pre>
+
+
+    
+</dd>
+
+        
+            
+
+<hr>
+<dt>
+    <h4 class="name" id="setBiDiSupport"><span class="type-signature"></span>setBiDiSupport( [enable])</h4>
     
     
 </dt>
@@ -1055,7 +1403,7 @@ mf.compile(&#x27;{0} &gt;&gt; {1} &gt;&gt; {2}&#x27;)([&#x27;first&#x27;, &#x27;
 
 <hr>
 <dt>
-    <h4 class="name" id=".setStrictNumberSign"><span class="type-signature">&lt;static> </span>setStrictNumberSign( [enable])</h4>
+    <h4 class="name" id="setStrictNumberSign"><span class="type-signature"></span>setStrictNumberSign( [enable])</h4>
     
     
 </dt>

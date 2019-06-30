@@ -22,6 +22,7 @@ export default class MessageFormat {
    *  This will allow those characters to not be considered as MessageFormat
    *  control characters.
    *
+   * @memberof MessageFormat
    * @param {string} str - The input string
    * @param {boolean} [octothorpe=false] - Include `#` in the escaped characters
    * @returns {string} The escaped string
@@ -105,6 +106,7 @@ export default class MessageFormat {
    * Formatting functions should not have side effects.
    *
    * @memberof MessageFormat
+   * @instance
    * @param {Object.<string,function>} fmt - A map of formatting functions
    * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
    *
@@ -142,6 +144,8 @@ export default class MessageFormat {
    * Use this method to disable the validation and allow usage as previously.
    * To re-enable, you'll need to create a new MessageFormat instance.
    *
+   * @memberof MessageFormat
+   * @instance
    * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
    *
    * @example
@@ -174,6 +178,7 @@ export default class MessageFormat {
    * @see http://cldr.unicode.org/development/development-process/design-proposals/bidi-handling-of-structured-text
    *
    * @memberof MessageFormat
+   * @instance
    * @param {boolean} [enable=true]
    * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
    *
@@ -204,6 +209,7 @@ export default class MessageFormat {
    * throw a runtime error if `#` is used with non-numeric input.
    *
    * @memberof MessageFormat
+   * @instance
    * @param {boolean} [enable=true]
    * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
    *
@@ -268,6 +274,7 @@ export default class MessageFormat {
    * your input includes any 2-3 letter strings that are not locale identifiers.
    *
    * @memberof MessageFormat
+   * @instance
    * @param {string|Object} messages - The input message(s) to be compiled, in ICU MessageFormat
    * @param {string} [locale] - A locale to use for the messages
    * @returns {function|Object} The first match found for the given locale(s)
