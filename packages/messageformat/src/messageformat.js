@@ -4,6 +4,19 @@ import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
 import Runtime from './runtime';
 
+function stringifyObject(obj, level) {
+  if (!level) level = 0;
+  if (typeof obj != 'object') return obj;
+  let indent = '';
+  for (let i = 0; i < level; ++i) indent += '  ';
+  const o = [];
+  for (const k in obj) {
+    const v = stringifyObject(obj[k], level + 1);
+    o.push(`\n${indent}  ${propname(k)}: ${v}`);
+  }
+  return `{${o.join(',')}\n${indent}}`;
+}
+
 export default class MessageFormat {
   /**
    * The default locale
@@ -116,6 +129,32 @@ export default class MessageFormat {
     throw new Error(`Formatting function ${JSON.stringify(key)} not found`);
   }
 
+  /** @private */
+  getPluralFuncs(locale) {
+    if (Object.keys(this.pluralFuncs).length === 0) {
+      if (locale) {
+        // no locale in ctor, but given as compile() arg
+        const pf = getPlural(locale);
+        if (!pf) throw new Error(`Locale ${JSON.stringify(locale)} not found`);
+        return { locale, pluralFuncs: { [locale]: pf } };
+      } else {
+        // no locale at all
+        return { locale: this.defaultLocale, pluralFuncs: getAllPlurals() };
+      }
+    } else if (locale) {
+      // locales defined in ctor as well as compile() args
+      const pf = this.pluralFuncs[locale];
+      if (!pf) {
+        const pfk = JSON.stringify(Object.keys(this.pluralFuncs));
+        throw new Error(`Locale ${JSON.stringify(locale)} not found in ${pfk}`);
+      }
+      return { locale, pluralFuncs: { [locale]: pf } };
+    } else {
+      // locales defined in ctor but not in compile() args
+      return { locale: this.defaultLocale, pluralFuncs: this.pluralFuncs };
+    }
+  }
+
   /**
    * Compile messages into storable functions
    *
@@ -194,49 +233,11 @@ export default class MessageFormat {
    * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
    * messages.b({ COUNT: 3 })              // 'This has 3 members.'
    */
-  compile(messages, locale) {
-    function _stringify(obj, level) {
-      if (!level) level = 0;
-      if (typeof obj != 'object') return obj;
-      let indent = '';
-      for (let i = 0; i < level; ++i) indent += '  ';
-      const o = [];
-      for (const k in obj) {
-        const v = _stringify(obj[k], level + 1);
-        o.push(`\n${indent}  ${propname(k)}: ${v}`);
-      }
-      return `{${o.join(',')}\n${indent}}`;
-    }
-
-    let pf = {};
-    if (Object.keys(this.pluralFuncs).length === 0) {
-      if (locale) {
-        const pfn0 = getPlural(locale);
-        if (!pfn0) {
-          const lcs = JSON.stringify(locale);
-          throw new Error(`Locale ${lcs} not found!`);
-        }
-        pf[locale] = pfn0;
-      } else {
-        locale = this.defaultLocale;
-        pf = getAllPlurals();
-      }
-    } else if (locale) {
-      const pfn1 = this.pluralFuncs[locale];
-      if (!pfn1) {
-        const lcs = JSON.stringify(locale);
-        const pfs = JSON.stringify(this.pluralFuncs);
-        throw new Error(`Locale ${lcs} not found in ${pfs}!`);
-      }
-      pf[locale] = pfn1;
-    } else {
-      locale = this.defaultLocale;
-      pf = this.pluralFuncs;
-    }
-
+  compile(messages, lc) {
+    const { locale, pluralFuncs } = this.getPluralFuncs(lc);
     const compiler = new Compiler(this);
-    const obj = compiler.compile(messages, locale, pf);
-    const runtime = new Runtime(this.options, compiler, pf);
+    const obj = compiler.compile(messages, locale, pluralFuncs);
+    const runtime = new Runtime(this.options, compiler, pluralFuncs);
 
     if (typeof messages != 'object') {
       const fn = new Function(
@@ -249,33 +250,29 @@ export default class MessageFormat {
         runtime.plural,
         runtime.select,
         compiler.formatters,
-        pf[locale]
+        pluralFuncs[locale]
       );
     }
 
-    const rtStr = String(runtime) + '\n';
-    const objStr = _stringify(obj);
-    const result = new Function(rtStr + 'return ' + objStr)();
+    const rtStr = runtime.toString();
+    const objStr = stringifyObject(obj);
+    const result = new Function(`${rtStr}\nreturn ${objStr}`)();
     // eslint-disable-next-line no-prototype-builtins
     if (result.hasOwnProperty('toString'))
       throw new Error('The top-level message key `toString` is reserved');
 
     result.toString = function(global) {
       if (!global || global === 'export default') {
-        return rtStr + 'export default ' + objStr;
+        return `${rtStr}\nexport default ${objStr}`;
       } else if (global.indexOf('.') > -1) {
-        return rtStr + global + ' = ' + objStr;
+        return `${rtStr}\n${global} = ${objStr}`;
       } else {
-        return (
-          rtStr +
-          [
-            '(function (root, G) {',
-            '  if (typeof define === "function" && define.amd) { define(G); }',
-            '  else if (typeof exports === "object") { module.exports = G; }',
-            '  else { ' + propname(global, 'root') + ' = G; }',
-            '})(this, ' + objStr + ');'
-          ].join('\n')
-        );
+        return `${rtStr}
+(function (root, G) {
+  if (typeof define === "function" && define.amd) { define(G); }
+  else if (typeof exports === "object") { module.exports = G; }
+  else { ${propname(global, 'root')} = G; }
+})(this, ${objStr});`;
       }
     };
     return result;
