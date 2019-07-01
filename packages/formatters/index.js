@@ -19,9 +19,8 @@
  *
  * As formatter functions may be used in a precompiled context, they should not
  * refer to any variables that are not defined by the function parameters or
- * within the function body. To add your own formatter, either add it to the
- * static `MessageFormat.formatters` object, or use
- * {@link MessageFormat#addFormatters} to add it to a MessageFormat instance.
+ * within the function body. To add your own formatter, use the
+ * `customFormatters` option of the MessageFormat constructor.
  *
  * @class Formatters
  * @hideconstructor
