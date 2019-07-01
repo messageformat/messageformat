@@ -44,10 +44,6 @@ Write output to the file _`of`_. If unspecified or `-`, prints to stdout.
 
 Set of characters by which the file path is split into output object keys. [default: `._/` or `._\` depending on platform]
 
-### `--disable-plural-key-checks`
-
-By default, messageformat throws an error when a statement uses a non-numerical key that will never be matched as a pluralization category for the current locale. Use this argument to disable the validation and allow unused plural keys. [default: `false`]
-
 ### `--eslint-disable`
 
 Add an `/* eslint-disable */` comment as the first line of the output, to silence [ESLint](https://eslint.org/) warnings. [default: `false`]

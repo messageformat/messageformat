@@ -16,7 +16,6 @@ const uv = require('uv');
 
 const knownOpts = {
   delimiters: [String, Array],
-  'disable-plural-key-checks': Boolean,
   'esline-disable': Boolean,
   extensions: [String, Array],
   help: Boolean,
@@ -32,7 +31,6 @@ const shortHands = {
   l: ['--locale'],
   n: ['--namespace'],
   o: ['--outfile'],
-  p: ['--disable-plural-key-checks'],
   s: ['--simplify']
 };
 
@@ -87,7 +85,6 @@ if (options.help || options.include.length === 0) {
   );
   if (options.simplify) simplify(input);
   const mf = new MessageFormat(options.locale);
-  if (options['disable-plural-key-checks']) mf.disablePluralKeyChecks();
   let output = mf.compile(input).toString(options.namespace);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   if (options.outfile && options.outfile !== '-') {

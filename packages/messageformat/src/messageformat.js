@@ -61,8 +61,6 @@ export default class MessageFormat {
    *   when mixing LTR and RTL text
    * @param {Object} [options.customFormatters] - Map of custom formatting
    *   functions to include. See the {@tutorial guide} for more details.
-   * @param {boolean} [options.pluralKeyChecks=true] - Validate plural and
-   *   selectordinal case keys according to the current locale
    * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
    *   within a plural or selectordinal case, rather than in any inner select
    *   case as well.
@@ -76,18 +74,17 @@ export default class MessageFormat {
       {
         biDiSupport: false,
         customFormatters: null,
-        pluralKeyChecks: true,
         strictNumberSign: false
       },
       options
     );
     this.pluralFuncs = {};
     if (typeof locale === 'string') {
-      this.pluralFuncs[locale] = getPlural(locale, this.options);
+      this.pluralFuncs[locale] = getPlural(locale);
       this.defaultLocale = locale;
     } else if (Array.isArray(locale)) {
       locale.forEach(lc => {
-        this.pluralFuncs[lc] = getPlural(lc, this.options);
+        this.pluralFuncs[lc] = getPlural(lc);
       });
       this.defaultLocale = locale[0];
     } else {
@@ -112,44 +109,6 @@ export default class MessageFormat {
     }
     this.fmt = Object.assign({}, this.options.customFormatters);
     this.runtime = new Runtime(this);
-  }
-
-  /**
-   * Disable the validation of plural & selectordinal keys
-   *
-   * Previous versions of messageformat allowed the use of plural &
-   * selectordinal statements with any keys; now we throw an error when a
-   * statement uses a non-numerical key that will never be matched as a
-   * pluralization category for the current locale.
-   *
-   * Use this method to disable the validation and allow usage as previously.
-   * To re-enable, you'll need to create a new MessageFormat instance.
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
-   *
-   * @example
-   * const mf = new MessageFormat('en')
-   * const msg = '{X, plural, zero{no answers} one{an answer} other{# answers}}'
-   *
-   * mf.compile(msg)
-   * // Error: Invalid key `zero` for argument `X`. Valid plural keys for this
-   * //        locale are `one`, `other`, and explicit keys like `=0`.
-   *
-   * mf.disablePluralKeyChecks()
-   * mf.compile(msg)({ X: 0 })  // '0 answers'
-   */
-  disablePluralKeyChecks() {
-    this.options.pluralKeyChecks = false;
-    for (const lc in this.pluralFuncs) {
-      const pf = this.pluralFuncs[lc];
-      if (pf) {
-        pf.cardinal = [];
-        pf.ordinal = [];
-      }
-    }
-    return this;
   }
 
   /**
@@ -313,7 +272,7 @@ export default class MessageFormat {
     let pf = {};
     if (Object.keys(this.pluralFuncs).length === 0) {
       if (locale) {
-        const pfn0 = getPlural(locale, this.options);
+        const pfn0 = getPlural(locale);
         if (!pfn0) {
           const lcs = JSON.stringify(locale);
           throw new Error(`Locale ${lcs} not found!`);
@@ -321,7 +280,7 @@ export default class MessageFormat {
         pf[locale] = pfn0;
       } else {
         locale = this.defaultLocale;
-        pf = getAllPlurals(this.options);
+        pf = getAllPlurals();
       }
     } else if (locale) {
       const pfn1 = this.pluralFuncs[locale];

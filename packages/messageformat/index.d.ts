@@ -10,7 +10,6 @@ declare namespace MessageFormat {
   interface Options {
     biDiSupport?: boolean;
     customFormatters?: { [name: string]: Formatter };
-    pluralKeyChecks?: boolean;
     strictNumberSign?: boolean;
   }
 }
@@ -20,7 +19,6 @@ declare class MessageFormat {
     locales?: { [locale: string]: Function } | string[] | string,
     options?: MessageFormat.Options
   );
-  disablePluralKeyChecks: () => this;
   setBiDiSupport: (enable: boolean) => this;
   setStrictNumberSign: (enable: boolean) => this;
   compile: (

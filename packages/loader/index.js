@@ -17,12 +17,6 @@ module.exports = function(content) {
   if (typeof locale === 'string' && locale.indexOf(',') !== -1)
     locale = locale.split(',');
   var messageFormat = new MessageFormat(locale);
-  if (options.disablePluralKeyChecks) {
-    messageFormat.disablePluralKeyChecks();
-  }
-  if (options.intlSupport) {
-    messageFormat.setIntlSupport(true);
-  }
   if (options.biDiSupport) {
     messageFormat.setBiDiSupport();
   }

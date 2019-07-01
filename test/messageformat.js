@@ -429,25 +429,12 @@ describe('Basic Message Formatting', function() {
     }).to.not.throw();
   });
 
-  describe('should be able to disable plural checks', function() {
+  it('should check plural cases according to locale', function() {
+    var mf = new MessageFormat('en');
     var msg = '{X, plural, zero{none} one{one} other{some: #}}';
-
-    it('checks enabled by default', function() {
-      var mf = new MessageFormat('en');
-      expect(function() {
-        mf.compile(msg);
-      }).to.throw();
-    });
-
-    it('{ pluralKeyChecks: false }', function() {
-      var mf = new MessageFormat('en', { pluralKeyChecks: false });
-      expect(mf.compile(msg)({ X: 0 })).to.eql('some: 0');
-    });
-
-    it('.disablePluralKeyChecks()', function() {
-      var mf = new MessageFormat('en').disablePluralKeyChecks();
-      expect(mf.compile(msg)({ X: 0 })).to.eql('some: 0');
-    });
+    expect(function() {
+      mf.compile(msg);
+    }).to.throw();
   });
 
   describe('should add control codes to bidirectional text', function() {
