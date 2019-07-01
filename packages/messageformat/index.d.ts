@@ -20,7 +20,6 @@ declare class MessageFormat {
     locales?: { [locale: string]: Function } | string[] | string,
     options?: MessageFormat.Options
   );
-  addFormatters: (format: { [name: string]: MessageFormat.Formatter }) => this;
   disablePluralKeyChecks: () => this;
   setBiDiSupport: (enable: boolean) => this;
   setStrictNumberSign: (enable: boolean) => this;

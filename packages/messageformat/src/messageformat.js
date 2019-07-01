@@ -115,51 +115,6 @@ export default class MessageFormat {
   }
 
   /**
-   * Add custom formatter functions to this MessageFormat instance. See the
-   * {@tutorial guide} for more details.
-   *
-   * The general syntax for calling a formatting function in MessageFormat is
-   * `{var, fn[, arg]}`, where `var` is the variable that will be set by the
-   * user code, `fn` determines the formatting function, and `arg` is an
-   * optional string argument.
-   *
-   * In JavaScript, each formatting function is called with three parameters;
-   * the variable value `v`, the current locale `lc`, and `arg` as a string, or
-   * undefined if not set. `arg` will be trimmed of surrounding whitespace.
-   * Formatting functions should not have side effects.
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @param {Object.<string,function>} fmt - A map of formatting functions
-   * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
-   *
-   * @example
-   * const mf = new MessageFormat('en-GB')
-   * mf.addFormatters({
-   *   upcase: function(v) { return v.toUpperCase() },
-   *   locale: function(v, lc) { return lc },
-   *   prop: function(v, lc, p) { return v[p] }
-   * })
-   * const messages = mf.compile({
-   *   describe: 'This is {VAR, upcase}.',
-   *   locale: 'The current locale is {_, locale}.',
-   *   answer: 'Answer: {obj, prop, a}'
-   * }
-   *
-   * messages.describe({ VAR: 'big' })        // 'This is BIG.'
-   * messages.locale({})                      // 'The current locale is en-GB.'
-   * messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'
-   */
-  addFormatters(fmt) {
-    const fmtKeys = Object.keys(fmt);
-    for (let i = 0; i < fmtKeys.length; ++i) {
-      const name = fmtKeys[i];
-      this.fmt[name] = fmt[name];
-    }
-    return this;
-  }
-
-  /**
    * Disable the validation of plural & selectordinal keys
    *
    * Previous versions of messageformat allowed the use of plural &
