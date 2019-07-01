@@ -108,7 +108,6 @@ export default class MessageFormat {
       }
     }
     this.fmt = Object.assign({}, this.options.customFormatters);
-    this.runtime = new Runtime(this);
   }
 
   /**
@@ -231,6 +230,7 @@ export default class MessageFormat {
 
     const compiler = new Compiler(this);
     const obj = compiler.compile(messages, locale, pf);
+    const runtime = new Runtime(this, compiler, pf);
 
     if (typeof messages != 'object') {
       const fn = new Function(
@@ -238,11 +238,16 @@ export default class MessageFormat {
         funcname(locale),
         'return ' + obj
       );
-      const rt = this.runtime;
-      return fn(rt.number, rt.plural, rt.select, this.fmt, pf[locale]);
+      return fn(
+        runtime.number,
+        runtime.plural,
+        runtime.select,
+        this.fmt,
+        pf[locale]
+      );
     }
 
-    const rtStr = this.runtime.toString(pf, compiler) + '\n';
+    const rtStr = String(runtime) + '\n';
     const objStr = _stringify(obj);
     const result = new Function(rtStr + 'return ' + objStr)();
     // eslint-disable-next-line no-prototype-builtins
