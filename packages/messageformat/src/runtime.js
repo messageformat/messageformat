@@ -12,7 +12,7 @@ export default class Runtime {
   /** Utility function for `#` in plural rules
    *
    *  Will throw an Error if `value` has a non-numeric value and `offset` is
-   *  non-zero or {@link MessageFormat#setStrictNumberSign} is set.
+   *  non-zero or the `strictNumberSign` option is set.
    *
    * @function Runtime#number
    * @param {number} value - The value to operate on

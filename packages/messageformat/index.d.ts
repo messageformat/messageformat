@@ -19,8 +19,6 @@ declare class MessageFormat {
     locales?: { [locale: string]: Function } | string[] | string,
     options?: MessageFormat.Options
   );
-  setBiDiSupport: (enable: boolean) => this;
-  setStrictNumberSign: (enable: boolean) => this;
   compile: (
     messages: MessageFormat.SrcMessage,
     locale?: string
