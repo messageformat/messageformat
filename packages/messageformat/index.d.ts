@@ -6,11 +6,19 @@ declare namespace MessageFormat {
   interface SrcObject {
     [key: string]: SrcMessage;
   }
+
+  interface Options {
+    biDiSupport?: boolean;
+    customFormatters?: { [name: string]: Formatter };
+    pluralKeyChecks?: boolean;
+    strictNumberSign?: boolean;
+  }
 }
 
 declare class MessageFormat {
   constructor(
-    message?: { [pluralFuncs: string]: Function } | string[] | string
+    locales?: { [locale: string]: Function } | string[] | string,
+    options?: MessageFormat.Options
   );
   addFormatters: (format: { [name: string]: MessageFormat.Formatter }) => this;
   disablePluralKeyChecks: () => this;
