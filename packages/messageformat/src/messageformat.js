@@ -32,8 +32,6 @@ export default class MessageFormat {
     return String(str).replace(esc, "'$&'");
   }
 
-  static formatters = Formatters;
-
   /**
    * Create a new MessageFormat compiler
    *
@@ -73,7 +71,7 @@ export default class MessageFormat {
     this.options = Object.assign(
       {
         biDiSupport: false,
-        customFormatters: null,
+        customFormatters: {},
         strictNumberSign: false
       },
       options
@@ -107,7 +105,15 @@ export default class MessageFormat {
         this.hasCustomPluralFuncs = false;
       }
     }
-    this.fmt = Object.assign({}, this.options.customFormatters);
+  }
+
+  /** @private */
+  getFormatter(key) {
+    const cf = this.options.customFormatters[key];
+    if (cf) return cf;
+    const df = Formatters[key];
+    if (df) return df(this);
+    throw new Error(`Formatting function ${JSON.stringify(key)} not found`);
   }
 
   /**
@@ -230,7 +236,7 @@ export default class MessageFormat {
 
     const compiler = new Compiler(this);
     const obj = compiler.compile(messages, locale, pf);
-    const runtime = new Runtime(this, compiler, pf);
+    const runtime = new Runtime(this.options, compiler, pf);
 
     if (typeof messages != 'object') {
       const fn = new Function(
@@ -242,7 +248,7 @@ export default class MessageFormat {
         runtime.number,
         runtime.plural,
         runtime.select,
-        this.fmt,
+        compiler.formatters,
         pf[locale]
       );
     }

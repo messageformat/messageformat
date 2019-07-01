@@ -100,17 +100,6 @@ export default class Compiler {
         break;
 
       case 'function':
-        if (
-          !(token.key in this.mf.fmt) &&
-          token.key in this.mf.constructor.formatters
-        ) {
-          const fmt = this.mf.constructor.formatters[token.key];
-          this.mf.fmt[token.key] = fmt(this.mf);
-        }
-        if (!this.mf.fmt[token.key])
-          throw new Error(
-            `Formatting function ${JSON.stringify(token.key)} not found!`
-          );
         args.push(JSON.stringify(this.lc));
         if (token.param) {
           if (plural && this.mf.options.strictNumberSign) plural = null;
@@ -118,7 +107,7 @@ export default class Compiler {
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
         }
         fn = propname(token.key, 'fmt');
-        this.formatters[token.key] = true;
+        this.formatters[token.key] = this.mf.getFormatter(token.key);
         break;
 
       case 'octothorpe':

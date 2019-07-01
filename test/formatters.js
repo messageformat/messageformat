@@ -154,7 +154,7 @@ describe('Formatters', function() {
       }).to.throw();
     });
 
-    it('should use formatting functions - set in MessageFormat.formatters', function() {
+    it('should use default formatting functions', function() {
       let msg = mf.compile('The date is {VAR,date}.');
       expect(msg({ VAR: '2010-12-31' })).to.contain('2010');
       msg = mf.compile('Countdown: {VAR, duration}.');

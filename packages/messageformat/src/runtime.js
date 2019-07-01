@@ -48,9 +48,8 @@ export default class Runtime {
     return value - (offset || 0);
   };
 
-  constructor(mf, compiler, pluralFuncs) {
-    this.formatters = mf.fmt;
-    this.number = mf.options.strictNumberSign
+  constructor({ strictNumberSign }, compiler, pluralFuncs) {
+    this.number = strictNumberSign
       ? Runtime.strictNumber
       : Runtime.defaultNumber;
     this.compiler = compiler;
@@ -117,13 +116,8 @@ export default class Runtime {
       const fn = rtKeys[i];
       obj[fn] = this[fn];
     }
-    const fmtKeys = Object.keys(this.compiler.formatters);
-    if (fmtKeys.length > 0) {
-      obj.fmt = {};
-      for (let i = 0; i < fmtKeys.length; ++i) {
-        const fk = fmtKeys[i];
-        obj.fmt[fk] = this.formatters[fk];
-      }
+    if (Object.keys(this.compiler.formatters).length > 0) {
+      obj.fmt = this.compiler.formatters;
     }
     return _stringify(obj, 0);
   }
