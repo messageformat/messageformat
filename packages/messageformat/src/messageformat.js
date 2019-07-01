@@ -55,17 +55,29 @@ export default class MessageFormat {
    * @class MessageFormat
    * @classdesc MessageFormat-to-JavaScript compiler
    * @param {string|string[]|Object} [locale] - The locale(s) to use
+   * @param {Object} [options] - Compiler options
+   * @param {boolean} [options.biDiSupport=false] - Add Unicode control
+   *   characters to all input parts to preserve the integrity of the output
+   *   when mixing LTR and RTL text
+   * @param {boolean} [options.pluralKeyChecks=true] - Validate plural and
+   *   selectordinal case keys according to the current locale
+   * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
+   *   within a plural or selectordinal case, rather than in any inner select
+   *   case as well.
    *
    * ```
    * import MessageFormat from 'messageformat'
    * ```
    */
-  constructor(locale) {
-    this.options = {
-      biDiSupport: false,
-      pluralKeyChecks: true,
-      strictNumberSign: false
-    };
+  constructor(locale, options) {
+    this.options = Object.assign(
+      {
+        biDiSupport: false,
+        pluralKeyChecks: true,
+        strictNumberSign: false
+      },
+      options
+    );
     this.pluralFuncs = {};
     if (typeof locale === 'string') {
       this.pluralFuncs[locale] = getPlural(locale, this.options);
