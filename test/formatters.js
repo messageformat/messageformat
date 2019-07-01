@@ -161,6 +161,14 @@ describe('Formatters', function() {
       expect(msg({ VAR: -151200.42 })).to.eql('Countdown: -42:00:00.420.');
     });
 
+    it('should use formatting functions - set by customFormatters option', function() {
+      mf = new MessageFormat('en', {
+        customFormatters: { uppercase: v => v.toUpperCase() }
+      });
+      const msg = mf.compile('This is {VAR,uppercase}.');
+      expect(msg({ VAR: 'big' })).to.eql('This is BIG.');
+    });
+
     it('should use formatting functions - set by #addFormatters()', function() {
       mf.addFormatters({
         uppercase: function(v) {
@@ -171,11 +179,9 @@ describe('Formatters', function() {
       expect(msg({ VAR: 'big' })).to.eql('This is BIG.');
     });
 
-    it('should use formatting functions for object input - set by #addFormatters()', function() {
-      mf.addFormatters({
-        uppercase: function(v) {
-          return v.toUpperCase();
-        }
+    it('should use formatting functions for object input - set by customFormatters option', function() {
+      mf = new MessageFormat('en', {
+        customFormatters: { uppercase: v => v.toUpperCase() }
       });
       const msg = mf.compile(['This is {VAR,uppercase}.', 'Other string']);
       expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
@@ -183,11 +189,8 @@ describe('Formatters', function() {
 
     describe('arguments', function() {
       beforeEach(function() {
-        mf = new MessageFormat('en');
-        mf.addFormatters({
-          arg: function(v, lc, arg) {
-            return arg;
-          }
+        mf = new MessageFormat('en', {
+          customFormatters: { arg: (v, lc, arg) => arg }
         });
       });
 

@@ -205,13 +205,10 @@ describe('compile()', function() {
     expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
   });
 
-  function printLocale(v, lc) {
-    return lc;
-  }
+  const customFormatters = { lc: (v, lc) => lc };
 
   it('can support multiple languages', function() {
-    mf = new MessageFormat(['en', 'fr', 'ru']);
-    mf.addFormatters({ lc: printLocale });
+    mf = new MessageFormat(['en', 'fr', 'ru'], { customFormatters });
     const cf = mf.compile({
       fr: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
@@ -221,8 +218,7 @@ describe('compile()', function() {
   });
 
   it('defaults to supporting all languages: compile({ fr, ru })', function() {
-    mf = new MessageFormat();
-    mf.addFormatters({ lc: printLocale });
+    mf = new MessageFormat(null, { customFormatters });
     const cf = mf.compile({
       fr: 'Locale: {_, lc}',
       xx: 'Locale: {_, lc}',
@@ -234,8 +230,7 @@ describe('compile()', function() {
   });
 
   it('defaults to supporting all languages: compile(src, locale)', function() {
-    mf = new MessageFormat();
-    mf.addFormatters({ lc: printLocale });
+    mf = new MessageFormat(null, { customFormatters });
     const cf0 = mf.compile('Locale: {_, lc}', 'fr');
     expect(cf0({})).to.eql('Locale: fr');
     const cf1 = mf.compile(

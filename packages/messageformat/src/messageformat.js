@@ -59,6 +59,8 @@ export default class MessageFormat {
    * @param {boolean} [options.biDiSupport=false] - Add Unicode control
    *   characters to all input parts to preserve the integrity of the output
    *   when mixing LTR and RTL text
+   * @param {Object} [options.customFormatters] - Map of custom formatting
+   *   functions to include. See the {@tutorial guide} for more details.
    * @param {boolean} [options.pluralKeyChecks=true] - Validate plural and
    *   selectordinal case keys according to the current locale
    * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
@@ -73,6 +75,7 @@ export default class MessageFormat {
     this.options = Object.assign(
       {
         biDiSupport: false,
+        customFormatters: null,
         pluralKeyChecks: true,
         strictNumberSign: false
       },
@@ -105,7 +108,7 @@ export default class MessageFormat {
         this.hasCustomPluralFuncs = false;
       }
     }
-    this.fmt = {};
+    this.fmt = Object.assign({}, this.options.customFormatters);
     this.runtime = new Runtime(this);
   }
 
