@@ -16,16 +16,13 @@ module.exports = function(content) {
   }
   if (typeof locale === 'string' && locale.indexOf(',') !== -1)
     locale = locale.split(',');
-  var messageFormat = new MessageFormat(locale);
-  if (options.biDiSupport) {
-    messageFormat.setBiDiSupport();
+  const mfOpt = {};
+  if (options.biDiSupport) mfOpt.biDiSupport = true;
+  if (options.customFormatters || options.formatters) {
+    mfOpt.customFormatters = options.customFormatters || options.formatters;
   }
-  if (options.formatters) {
-    messageFormat.addFormatters(options.formatters);
-  }
-  if (options.strictNumberSign) {
-    messageFormat.setStrictNumberSign();
-  }
+  if (options.strictNumberSign) mfOpt.strictNumberSign = true;
+  var messageFormat = new MessageFormat(locale, mfOpt);
   var messageFunctions = messageFormat.compile(messages);
 
   this.cacheable && this.cacheable();

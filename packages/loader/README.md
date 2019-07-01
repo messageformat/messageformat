@@ -69,17 +69,14 @@ messages['ordinal-example']({ N: 1 });
 
 - [`locale`] The [CLDR language code] or codes to pass to [`messageformat`]. If using multiple locales at the same time, exact matches to a locale code in the data structure keys will select that locale within it (as in [`example/src/messages.json`](example/src/messages.json)). Defaults to `en`.
 - [`convert`] Use `messageformat-convert` to convert non-MessageFormat syntax and plural objects into MessageFormat. Use an object value to configure. Defaults to `false`.
-- [`biDiSupport`] Enable or disable the addition of Unicode control characters to all input to preserve the integrity of the output when mixing LTR and RTL text. Defaults to `false`.
-- [`formatters`] Add custom formatter functions to this MessageFormat instance.
-- [`strictNumberSign`] Follow the stricter ICU MessageFormat spec and throw a runtime error if # is used with non-numeric input. Defaults to `false`.
+- `biDiSupport` Enable or disable the addition of Unicode control characters to all input to preserve the integrity of the output when mixing LTR and RTL text. Defaults to `false`.
+- `customFormatters` Add custom formatter functions to this MessageFormat instance.
+- `strictNumberSign` Follow the stricter ICU MessageFormat spec and throw a runtime error if # is used with non-numeric input. Defaults to `false`.
 
 [`locale`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#MessageFormat
 [cldr language code]: http://www.unicode.org/cldr/charts/29/supplemental/language_territory_information.html
 [`messageformat`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html
 [`convert`]: https://github.com/messageformat/messageformat/tree/master/packages/convert
-[`bidisupport`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#setBiDiSupport
-[`formatters`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#addFormatters
-[`strictnumbersign`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#setStrictNumberSign
 
 ## Links
 
