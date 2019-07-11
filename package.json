@@ -37,20 +37,20 @@
   "devDependencies": {
     "@commitlint/cli": "^7.6.1",
     "@commitlint/config-conventional": "^7.6.0",
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "^10.0.2",
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^2.3.0",
-    "lerna": "^3.14.1",
+    "husky": "^2.7.0",
+    "lerna": "^3.15.0",
     "mocha": "^6.1.4",
     "mocha-selenium-bridge": "^0.1.0",
-    "prettier": "^1.17.1",
+    "prettier": "^1.18.2",
     "rimraf": "^2.6.3",
-    "selenium-webdriver": "^4.0.0-alpha.1",
-    "serve": "^11.0.1",
-    "serve-handler": "^6.0.1",
+    "selenium-webdriver": "^4.0.0-alpha.4",
+    "serve": "^11.1.0",
+    "serve-handler": "^6.1.0",
     "tmp": "^0.1.0"
   }
 }
