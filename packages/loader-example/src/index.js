@@ -1,4 +1,4 @@
-import messages from './messages.json';
+import messages from './messages.yaml';
 
 function component() {
   const element = document.createElement('div');
