@@ -8,7 +8,7 @@
   "repository": "messageformat/messageformat",
   "main": "dist/index.js",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack --mode=none"
   },
   "eslintConfig": {
     "env": {
@@ -35,6 +35,7 @@
   "dependencies": {
     "messageformat": "^2.2.1",
     "messageformat-loader": "^0.8.0",
-    "webpack": "^3.12.0"
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.5"
   }
 }
