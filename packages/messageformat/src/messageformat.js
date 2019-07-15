@@ -71,16 +71,18 @@ export default class MessageFormat {
       });
       this.defaultLocale = locale[0];
     } else {
-      for (const lc in locale)
-        if (locale.hasOwnProperty(lc)) {
+      if (locale) {
+        const lcKeys = Object.keys(locale);
+        for (let i = 0; i < lcKeys.length; ++i) {
+          const lc = lcKeys[i];
           if (typeof locale[lc] !== 'function') {
-            throw new Error(
-              'Expected function value for locale ' + JSON.stringify(lc)
-            );
+            const errMsg = 'Expected function value for locale ' + String(lc);
+            throw new Error(errMsg);
           }
           this.pluralFuncs[lc] = locale[lc];
           if (!this.defaultLocale) this.defaultLocale = lc;
         }
+      }
       if (this.defaultLocale) {
         this.hasCustomPluralFuncs = true;
       } else {
@@ -128,8 +130,11 @@ export default class MessageFormat {
    * messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'
    */
   addFormatters(fmt) {
-    for (const name in fmt)
-      if (fmt.hasOwnProperty(name)) this.fmt[name] = fmt[name];
+    const fmtKeys = Object.keys(fmt);
+    for (let i = 0; i < fmtKeys.length; ++i) {
+      const name = fmtKeys[i];
+      this.fmt[name] = fmt[name];
+    }
     return this;
   }
 
@@ -371,6 +376,7 @@ export default class MessageFormat {
     const rtStr = this.runtime.toString(pf, compiler) + '\n';
     const objStr = _stringify(obj);
     const result = new Function(rtStr + 'return ' + objStr)();
+    // eslint-disable-next-line no-prototype-builtins
     if (result.hasOwnProperty('toString'))
       throw new Error('The top-level message key `toString` is reserved');
 
