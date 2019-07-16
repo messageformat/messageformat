@@ -106,7 +106,7 @@ const rtlRegExp = new RegExp('^' + rtlLanguages.join('|^'));
  *
  * @private
  */
-export function bidiMarkText(text, locale) {
+export function biDiMarkText(text, locale) {
   const isLocaleRTL = rtlRegExp.test(locale);
   const mark = JSON.stringify(isLocaleRTL ? '\u200F' : '\u200E');
   return `${mark} + ${text} + ${mark}`;

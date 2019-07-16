@@ -105,24 +105,51 @@ describe('compile()', function() {
     expect(mfunc({ num: 5 })).to.equal('5,6');
   });
 
-  it('should have configurable # parsing support', function() {
+  describe('should have configurable # parsing support', function() {
     const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
     const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
-    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
-    expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
-    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
-    expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
-    mf.setStrictNumberSign(true);
-    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
-    expect(function() {
-      mf.compile(msg)({ X: 'x' });
-    }).to.throw(/\bX\b.*non-numerical value/);
-    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
-    mf.setStrictNumberSign(false);
-    expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
-    expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
-    expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
-    expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
+
+    it('false by default', function() {
+      const mf = new MessageFormat('en');
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
+    });
+
+    it('{ strictNumberSign: true }', function() {
+      const mf = new MessageFormat('en', { strictNumberSign: true });
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
+      expect(function() {
+        mf.compile(msg)({ X: 'x' });
+      }).to.throw(/\bX\b.*non-numerical value/);
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
+    });
+
+    it('{ strictNumberSign: false }', function() {
+      const mf = new MessageFormat('en', { strictNumberSign: false });
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
+    });
+
+    it('.setStrictNumberSign(true)', function() {
+      const mf = new MessageFormat('en').setStrictNumberSign(true);
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
+      expect(function() {
+        mf.compile(msg)({ X: 'x' });
+      }).to.throw(/\bX\b.*non-numerical value/);
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
+    });
+
+    it('.setStrictNumberSign(false)', function() {
+      const mf = new MessageFormat('en').setStrictNumberSign(false);
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
+    });
   });
 
   it('can compile an object of messages into a function', function() {
@@ -178,13 +205,10 @@ describe('compile()', function() {
     expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
   });
 
-  function printLocale(v, lc) {
-    return lc;
-  }
+  const customFormatters = { lc: (v, lc) => lc };
 
   it('can support multiple languages', function() {
-    mf = new MessageFormat(['en', 'fr', 'ru']);
-    mf.addFormatters({ lc: printLocale });
+    mf = new MessageFormat(['en', 'fr', 'ru'], { customFormatters });
     const cf = mf.compile({
       fr: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
@@ -194,8 +218,7 @@ describe('compile()', function() {
   });
 
   it('defaults to supporting all languages: compile({ fr, ru })', function() {
-    mf = new MessageFormat();
-    mf.addFormatters({ lc: printLocale });
+    mf = new MessageFormat(null, { customFormatters });
     const cf = mf.compile({
       fr: 'Locale: {_, lc}',
       xx: 'Locale: {_, lc}',
@@ -207,8 +230,7 @@ describe('compile()', function() {
   });
 
   it('defaults to supporting all languages: compile(src, locale)', function() {
-    mf = new MessageFormat();
-    mf.addFormatters({ lc: printLocale });
+    mf = new MessageFormat(null, { customFormatters });
     const cf0 = mf.compile('Locale: {_, lc}', 'fr');
     expect(cf0({})).to.eql('Locale: fr');
     const cf1 = mf.compile(
@@ -407,31 +429,52 @@ describe('Basic Message Formatting', function() {
     }).to.not.throw();
   });
 
-  it('should be able to disable plural checks', function() {
-    var mf0 = new MessageFormat('en');
-    var mf1 = new MessageFormat('en');
+  describe('should be able to disable plural checks', function() {
     var msg = '{X, plural, zero{none} one{one} other{some: #}}';
-    expect(function() {
-      mf0.compile(msg);
-    }).to.throw();
-    mf0.disablePluralKeyChecks();
-    expect(mf0.compile(msg)({ X: 0 })).to.eql('some: 0');
-    expect(function() {
-      mf1.compile(msg);
-    }).to.throw();
+
+    it('checks enabled by default', function() {
+      var mf = new MessageFormat('en');
+      expect(function() {
+        mf.compile(msg);
+      }).to.throw();
+    });
+
+    it('{ pluralKeyChecks: false }', function() {
+      var mf = new MessageFormat('en', { pluralKeyChecks: false });
+      expect(mf.compile(msg)({ X: 0 })).to.eql('some: 0');
+    });
+
+    it('.disablePluralKeyChecks()', function() {
+      var mf = new MessageFormat('en').disablePluralKeyChecks();
+      expect(mf.compile(msg)({ X: 0 })).to.eql('some: 0');
+    });
   });
 
-  it('should add control codes to bidirectional text', function() {
+  describe('should add control codes to bidirectional text', function() {
     var msg = '{0} >> {1}';
     var data = ['Hello! English', 'Hello \u0647\u0644\u0627\u060d'];
-    var mfEn = new MessageFormat('en').setBiDiSupport(true);
-    var mfEg = new MessageFormat('ar-EG').setBiDiSupport(true);
-    expect(mfEn.compile(msg)(data)).to.equal(
-      '\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e'
-    );
-    expect(mfEg.compile(msg)(data)).to.equal(
-      '\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f'
-    );
+
+    it('{ biDiSupport: true }', function() {
+      var mfEn = new MessageFormat('en', { biDiSupport: true });
+      var mfEg = new MessageFormat('ar-EG', { biDiSupport: true });
+      expect(mfEn.compile(msg)(data)).to.equal(
+        '\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e'
+      );
+      expect(mfEg.compile(msg)(data)).to.equal(
+        '\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f'
+      );
+    });
+
+    it('.setBiDiSupport(true)', function() {
+      var mfEn = new MessageFormat('en').setBiDiSupport(true);
+      var mfEg = new MessageFormat('ar-EG').setBiDiSupport(true);
+      expect(mfEn.compile(msg)(data)).to.equal(
+        '\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e'
+      );
+      expect(mfEg.compile(msg)(data)).to.equal(
+        '\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f'
+      );
+    });
   });
 
   it('should allow for a simple select', function() {

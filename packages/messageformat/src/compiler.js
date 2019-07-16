@@ -1,5 +1,5 @@
 import { parse } from 'messageformat-parser';
-import { bidiMarkText, funcname, propname } from './utils';
+import { biDiMarkText, funcname, propname } from './utils';
 
 /** @private */
 export default class Compiler {
@@ -35,7 +35,7 @@ export default class Compiler {
     if (typeof src != 'object') {
       this.lc = lc;
       const pc = plurals[lc] || { cardinal: [], ordinal: [] };
-      pc.strict = !!this.mf.strictNumberSign;
+      pc.strict = !!this.mf.options.strictNumberSign;
       const r = parse(src, pc).map(token => this.token(token));
       return `function(d) { return ${r.join(' + ') || '""'}; }`;
     } else {
@@ -70,11 +70,13 @@ export default class Compiler {
     let args = [propname(token.arg, 'd')];
     switch (token.type) {
       case 'argument':
-        return this.mf.bidiSupport ? bidiMarkText(args[0], this.lc) : args[0];
+        return this.mf.options.biDiSupport
+          ? biDiMarkText(args[0], this.lc)
+          : args[0];
 
       case 'select':
         fn = 'select';
-        if (plural && this.mf.strictNumberSign) plural = null;
+        if (plural && this.mf.options.strictNumberSign) plural = null;
         args.push(this.cases(token, plural));
         this.runtime.select = true;
         break;
@@ -111,7 +113,7 @@ export default class Compiler {
           );
         args.push(JSON.stringify(this.lc));
         if (token.param) {
-          if (plural && this.mf.strictNumberSign) plural = null;
+          if (plural && this.mf.options.strictNumberSign) plural = null;
           const s = token.param.tokens.map(tok => this.token(tok, plural));
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
         }

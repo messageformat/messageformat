@@ -55,19 +55,39 @@ export default class MessageFormat {
    * @class MessageFormat
    * @classdesc MessageFormat-to-JavaScript compiler
    * @param {string|string[]|Object} [locale] - The locale(s) to use
+   * @param {Object} [options] - Compiler options
+   * @param {boolean} [options.biDiSupport=false] - Add Unicode control
+   *   characters to all input parts to preserve the integrity of the output
+   *   when mixing LTR and RTL text
+   * @param {Object} [options.customFormatters] - Map of custom formatting
+   *   functions to include. See the {@tutorial guide} for more details.
+   * @param {boolean} [options.pluralKeyChecks=true] - Validate plural and
+   *   selectordinal case keys according to the current locale
+   * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
+   *   within a plural or selectordinal case, rather than in any inner select
+   *   case as well.
    *
    * ```
    * import MessageFormat from 'messageformat'
    * ```
    */
-  constructor(locale) {
+  constructor(locale, options) {
+    this.options = Object.assign(
+      {
+        biDiSupport: false,
+        customFormatters: null,
+        pluralKeyChecks: true,
+        strictNumberSign: false
+      },
+      options
+    );
     this.pluralFuncs = {};
     if (typeof locale === 'string') {
-      this.pluralFuncs[locale] = getPlural(locale);
+      this.pluralFuncs[locale] = getPlural(locale, this.options);
       this.defaultLocale = locale;
     } else if (Array.isArray(locale)) {
       locale.forEach(lc => {
-        this.pluralFuncs[lc] = getPlural(lc);
+        this.pluralFuncs[lc] = getPlural(lc, this.options);
       });
       this.defaultLocale = locale[0];
     } else {
@@ -87,9 +107,10 @@ export default class MessageFormat {
         this.hasCustomPluralFuncs = true;
       } else {
         this.defaultLocale = MessageFormat.defaultLocale;
+        this.hasCustomPluralFuncs = false;
       }
     }
-    this.fmt = {};
+    this.fmt = Object.assign({}, this.options.customFormatters);
     this.runtime = new Runtime(this);
   }
 
@@ -165,7 +186,7 @@ export default class MessageFormat {
    * mf.compile(msg)({ X: 0 })  // '0 answers'
    */
   disablePluralKeyChecks() {
-    this.noPluralKeyChecks = true;
+    this.options.pluralKeyChecks = false;
     for (const lc in this.pluralFuncs) {
       const pf = this.pluralFuncs[lc];
       if (pf) {
@@ -199,7 +220,7 @@ export default class MessageFormat {
    *   // 'first >> SECOND >> THIRD'
    */
   setBiDiSupport(enable) {
-    this.bidiSupport = !!enable || typeof enable == 'undefined';
+    this.options.biDiSupport = !!enable || typeof enable == 'undefined';
     return this;
   }
 
@@ -237,8 +258,8 @@ export default class MessageFormat {
    * messages.pastry({ X: 3, P: 'pie' })  // '# pies'
    */
   setStrictNumberSign(enable) {
-    this.strictNumberSign = !!enable || typeof enable == 'undefined';
-    this.runtime.setStrictNumber(this.strictNumberSign);
+    this.options.strictNumberSign = !!enable || typeof enable == 'undefined';
+    this.runtime.setStrictNumber(this.options.strictNumberSign);
     return this;
   }
 
@@ -337,7 +358,7 @@ export default class MessageFormat {
     let pf = {};
     if (Object.keys(this.pluralFuncs).length === 0) {
       if (locale) {
-        const pfn0 = getPlural(locale, this.noPluralKeyChecks);
+        const pfn0 = getPlural(locale, this.options);
         if (!pfn0) {
           const lcs = JSON.stringify(locale);
           throw new Error(`Locale ${lcs} not found!`);
@@ -345,7 +366,7 @@ export default class MessageFormat {
         pf[locale] = pfn0;
       } else {
         locale = this.defaultLocale;
-        pf = getAllPlurals(this.noPluralKeyChecks);
+        pf = getAllPlurals(this.options);
       }
     } else if (locale) {
       const pfn1 = this.pluralFuncs[locale];
