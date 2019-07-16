@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "common-prefix": "1.1.0",
-    "make-plural": "^4.3.0"
+    "make-plural": "^5.0.0"
   },
   "devDependencies": {
     "messageformat": "^2.2.1"
