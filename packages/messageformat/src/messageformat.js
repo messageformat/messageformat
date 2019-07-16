@@ -104,8 +104,7 @@ export default class MessageFormat {
         for (let i = 0; i < lcKeys.length; ++i) {
           const lc = lcKeys[i];
           if (typeof locale[lc] !== 'function') {
-            const errMsg = 'Expected function value for locale ' + String(lc);
-            throw new Error(errMsg);
+            throw new Error(`Expected function value for locale ${lc}`);
           }
           this.pluralFuncs[lc] = locale[lc];
           if (!this.defaultLocale) this.defaultLocale = lc;

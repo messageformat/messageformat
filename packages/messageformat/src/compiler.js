@@ -41,8 +41,7 @@ export default class Compiler {
     } else {
       const result = {};
       for (var key in src) {
-        // eslint-disable-next-line no-prototype-builtins
-        var lcKey = plurals.hasOwnProperty(key) ? key : lc;
+        var lcKey = key in plurals ? key : lc;
         result[key] = this.compile(src[key], lcKey, plurals);
       }
       return result;
