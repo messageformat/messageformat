@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/messageformat/messageformat/compare/messageformat-cli@2.1.0...messageformat-cli@2.1.1) (2019-07-17)
+
+
+### Bug Fixes
+
+* Update dependencies ([b4907b5](https://github.com/messageformat/messageformat/commit/b4907b5))
+* Update dependencies ([c395452](https://github.com/messageformat/messageformat/commit/c395452))
+
+
+
+
+
 # 2.1.0 (2019-03-03)
 
 

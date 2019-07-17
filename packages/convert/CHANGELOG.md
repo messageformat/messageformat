@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/messageformat/messageformat/compare/messageformat-convert@0.3.0...messageformat-convert@0.3.1) (2019-07-17)
+
+
+### Bug Fixes
+
+* Update dependencies ([b4907b5](https://github.com/messageformat/messageformat/commit/b4907b5))
+* Update dependencies ([c395452](https://github.com/messageformat/messageformat/commit/c395452))
+
+
+
+
+
 # 0.3.0 (2019-03-03)
 
 
