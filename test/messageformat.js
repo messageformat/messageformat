@@ -111,8 +111,8 @@ describe('compile()', function() {
 
     it('false by default', function() {
       const mf = new MessageFormat('en');
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
@@ -120,16 +120,17 @@ describe('compile()', function() {
     it('{ strictNumberSign: true }', function() {
       const mf = new MessageFormat('en', { strictNumberSign: true });
       expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
-      expect(function() {
-        mf.compile(msg)({ X: 'x' });
-      }).to.throw(/\bX\b.*non-numerical value/);
+      expect(() => mf.compile(msg)({ X: 'x' })).to.throw(/\bX\b.*not a number/);
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
+      expect(() => mf.compile(msg2)({ X: 'x' })).to.throw(
+        /\bX\b.*not a number/
+      );
     });
 
     it('{ strictNumberSign: false }', function() {
       const mf = new MessageFormat('en', { strictNumberSign: false });
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
@@ -476,15 +477,9 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FRIENDS: 0, ENEMIES: 0 })).to.eql(
       'I have 0 friends but no enemies.'
     );
-    expect(function() {
-      var x = mfunc({});
-    }).to.throw(/\bENEMIES\b.*non-numerical value/);
-    expect(function() {
-      var x = mfunc({ FRIENDS: 0 });
-    }).to.throw(/\bENEMIES\b.*non-numerical value/);
-    expect(mfunc({ ENEMIES: 1 })).to.eql(
-      'I have undefined friends but one nemesis.'
-    );
+    expect(() => mfunc({})).to.throw(/\bENEMIES\b.*not a number/);
+    expect(() => mfunc({ FRIENDS: 0 })).to.throw(/\bENEMIES\b.*not a number/);
+    expect(mfunc({ ENEMIES: 1 })).to.eql('I have NaN friends but one nemesis.');
   });
 
   it('should not expose prototype members - selects', function() {
