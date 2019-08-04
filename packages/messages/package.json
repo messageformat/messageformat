@@ -1,0 +1,45 @@
+{
+  "name": "messageformat-messages",
+  "version": "2.3.0",
+  "description": "Simple accessor class for messageformat",
+  "keywords": [
+    "i18n",
+    "icu",
+    "messageformat",
+    "internationalization"
+  ],
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://messageformat.github.io/",
+  "repository": "messageformat/messageformat",
+  "main": "lib/messages.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "babel src -d lib"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "exclude": [
+            "transform-typeof-symbol"
+          ]
+        }
+      ]
+    ]
+  },
+  "browserslist": [
+    "last 1 version",
+    "> 1%",
+    "maintained node versions",
+    "not dead"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5"
+  }
+}

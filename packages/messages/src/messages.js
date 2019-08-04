@@ -2,7 +2,7 @@
  * @classdesc Accessor for compiled MessageFormat functions
  *
  * ```
- * import Messages from 'messageformat/messages'
+ * import Messages from 'messageformat-messages'
  * ```
  *
  * @class
@@ -31,7 +31,7 @@
  *
  * ...
  *
- * var Messages = require('messageformat/messages');
+ * var Messages = require('messageformat-messages');
  * var msgData = require('./messages');
  * var messages = new Messages(msgData, 'en');
  *
