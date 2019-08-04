@@ -1,7 +1,7 @@
 {
   "name": "messageformat-loader-example",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Small example for messageformat-loader",
   "author": "Eemeli Aro <eemeli@gmail.com>",
   "license": "MIT",
@@ -33,8 +33,8 @@
     ]
   },
   "dependencies": {
-    "messageformat": "^2.2.1",
-    "messageformat-loader": "^0.8.0",
+    "messageformat": "^2.3.0",
+    "messageformat-loader": "^0.8.1",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.5"
   }

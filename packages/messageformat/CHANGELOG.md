@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/messageformat/messageformat/compare/messageformat@2.2.1...messageformat@2.3.0) (2019-07-17)
+
+
+### Bug Fixes
+
+* Update dependencies ([b4907b5](https://github.com/messageformat/messageformat/commit/b4907b5))
+* Update dependencies ([c395452](https://github.com/messageformat/messageformat/commit/c395452))
+
+
+### Features
+
+* **messageformat:** Add customFormatters to constructor options ([03b3b4f](https://github.com/messageformat/messageformat/commit/03b3b4f))
+* **messageformat:** Add internal options object ([4741c9a](https://github.com/messageformat/messageformat/commit/4741c9a))
+* **messageformat:** Add options as second constructor argument ([ec08716](https://github.com/messageformat/messageformat/commit/ec08716))
+* **messageformat:** Update index.d.ts ([6df0797](https://github.com/messageformat/messageformat/commit/6df0797))
+
+
+
+
+
 ## [2.2.1](https://github.com/messageformat/messageformat/compare/messageformat@2.2.0...messageformat@2.2.1) (2019-05-18)
 
 

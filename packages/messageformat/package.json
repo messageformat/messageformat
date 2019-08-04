@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "keywords": [
     "i18n",
@@ -72,8 +72,8 @@
   },
   "dependencies": {
     "make-plural": "^5.0.0",
-    "messageformat-formatters": "^2.0.0",
-    "messageformat-parser": "^4.1.1"
+    "messageformat-formatters": "^2.0.1",
+    "messageformat-parser": "^4.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",

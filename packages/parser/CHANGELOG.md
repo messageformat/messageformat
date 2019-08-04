@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/messageformat/messageformat/compare/messageformat-parser@4.1.1...messageformat-parser@4.1.2) (2019-07-17)
+
+
+### Bug Fixes
+
+* Update dependencies ([b4907b5](https://github.com/messageformat/messageformat/commit/b4907b5))
+
+
+
+
+
 ## [4.1.1](https://github.com/messageformat/messageformat/compare/messageformat-parser@4.1.0...messageformat-parser@4.1.1) (2019-05-02)
 
 
