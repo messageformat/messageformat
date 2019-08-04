@@ -20,13 +20,15 @@
     "build": "babel src -d lib"
   },
   "babel": {
+    "comments": false,
     "presets": [
       [
         "@babel/preset-env",
         {
           "exclude": [
             "transform-typeof-symbol"
-          ]
+          ],
+          "loose": true
         }
       ]
     ]
