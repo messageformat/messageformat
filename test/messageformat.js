@@ -689,3 +689,46 @@ describe('Module/CommonJS support', function() {
     });
   }
 });
+
+describe('{ returnType: "values" }', function() {
+  var mf;
+  before(function() {
+    mf = new MessageFormat('en', { returnType: 'values' });
+  });
+
+  it('simple message', function() {
+    var msg = mf.compile('msg');
+    expect(msg()).to.eql(['msg']);
+  });
+
+  it('variable with string value', function() {
+    var msg = mf.compile('msg {foo}');
+    expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'FOO']);
+  });
+
+  it('variable with object value', function() {
+    var msg = mf.compile('{foo} bar');
+    var foo = {};
+    expect(msg({ foo })[0]).to.equal(foo);
+  });
+
+  it('select string', function() {
+    var msg = mf.compile('msg {foo, select, FOO{bar} other{baz}}');
+    expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'bar']);
+  });
+
+  it('select variable', function() {
+    var msg = mf.compile('msg {foo, select, FOO{{bar}} other{baz}}');
+    expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', 'BAR']);
+  });
+
+  it('select multiple', function() {
+    var msg = mf.compile('msg {foo, select, FOO{{bar} end} other{baz}}');
+    expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', ['BAR', ' end']]);
+  });
+
+  it('plural number', function() {
+    var msg = mf.compile('{num} {num, plural, one{one} other{#{num}}}');
+    expect(msg({ num: 42 })).to.eql([42, ' ', [42, 42]]);
+  });
+});
