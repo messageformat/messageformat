@@ -4,6 +4,19 @@ import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
 import Runtime from './runtime';
 
+function stringifyObject(obj, level) {
+  if (!level) level = 0;
+  if (typeof obj != 'object') return obj;
+  let indent = '';
+  for (let i = 0; i < level; ++i) indent += '  ';
+  const o = [];
+  for (const k in obj) {
+    const v = stringifyObject(obj[k], level + 1);
+    o.push(`\n${indent}  ${propname(k)}: ${v}`);
+  }
+  return `{${o.join(',')}\n${indent}}`;
+}
+
 export default class MessageFormat {
   /**
    * The default locale
@@ -32,8 +45,6 @@ export default class MessageFormat {
     return String(str).replace(esc, "'$&'");
   }
 
-  static formatters = Formatters;
-
   /**
    * Create a new MessageFormat compiler
    *
@@ -61,8 +72,6 @@ export default class MessageFormat {
    *   when mixing LTR and RTL text
    * @param {Object} [options.customFormatters] - Map of custom formatting
    *   functions to include. See the {@tutorial guide} for more details.
-   * @param {boolean} [options.pluralKeyChecks=true] - Validate plural and
-   *   selectordinal case keys according to the current locale
    * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
    *   within a plural or selectordinal case, rather than in any inner select
    *   case as well.
@@ -75,19 +84,18 @@ export default class MessageFormat {
     this.options = Object.assign(
       {
         biDiSupport: false,
-        customFormatters: null,
-        pluralKeyChecks: true,
+        customFormatters: {},
         strictNumberSign: false
       },
       options
     );
     this.pluralFuncs = {};
     if (typeof locale === 'string') {
-      this.pluralFuncs[locale] = getPlural(locale, this.options);
+      this.pluralFuncs[locale] = getPlural(locale);
       this.defaultLocale = locale;
     } else if (Array.isArray(locale)) {
       locale.forEach(lc => {
-        this.pluralFuncs[lc] = getPlural(lc, this.options);
+        this.pluralFuncs[lc] = getPlural(lc);
       });
       this.defaultLocale = locale[0];
     } else {
@@ -96,8 +104,7 @@ export default class MessageFormat {
         for (let i = 0; i < lcKeys.length; ++i) {
           const lc = lcKeys[i];
           if (typeof locale[lc] !== 'function') {
-            const errMsg = 'Expected function value for locale ' + String(lc);
-            throw new Error(errMsg);
+            throw new Error(`Expected function value for locale ${lc}`);
           }
           this.pluralFuncs[lc] = locale[lc];
           if (!this.defaultLocale) this.defaultLocale = lc;
@@ -110,157 +117,41 @@ export default class MessageFormat {
         this.hasCustomPluralFuncs = false;
       }
     }
-    this.fmt = Object.assign({}, this.options.customFormatters);
-    this.runtime = new Runtime(this);
   }
 
-  /**
-   * Add custom formatter functions to this MessageFormat instance. See the
-   * {@tutorial guide} for more details.
-   *
-   * The general syntax for calling a formatting function in MessageFormat is
-   * `{var, fn[, arg]}`, where `var` is the variable that will be set by the
-   * user code, `fn` determines the formatting function, and `arg` is an
-   * optional string argument.
-   *
-   * In JavaScript, each formatting function is called with three parameters;
-   * the variable value `v`, the current locale `lc`, and `arg` as a string, or
-   * undefined if not set. `arg` will be trimmed of surrounding whitespace.
-   * Formatting functions should not have side effects.
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @param {Object.<string,function>} fmt - A map of formatting functions
-   * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
-   *
-   * @example
-   * const mf = new MessageFormat('en-GB')
-   * mf.addFormatters({
-   *   upcase: function(v) { return v.toUpperCase() },
-   *   locale: function(v, lc) { return lc },
-   *   prop: function(v, lc, p) { return v[p] }
-   * })
-   * const messages = mf.compile({
-   *   describe: 'This is {VAR, upcase}.',
-   *   locale: 'The current locale is {_, locale}.',
-   *   answer: 'Answer: {obj, prop, a}'
-   * }
-   *
-   * messages.describe({ VAR: 'big' })        // 'This is BIG.'
-   * messages.locale({})                      // 'The current locale is en-GB.'
-   * messages.answer({ obj: {q: 3, a: 42} })  // 'Answer: 42'
-   */
-  addFormatters(fmt) {
-    const fmtKeys = Object.keys(fmt);
-    for (let i = 0; i < fmtKeys.length; ++i) {
-      const name = fmtKeys[i];
-      this.fmt[name] = fmt[name];
-    }
-    return this;
+  /** @private */
+  getFormatter(key) {
+    const cf = this.options.customFormatters[key];
+    if (cf) return cf;
+    const df = Formatters[key];
+    if (df) return df(this);
+    throw new Error(`Formatting function ${JSON.stringify(key)} not found`);
   }
 
-  /**
-   * Disable the validation of plural & selectordinal keys
-   *
-   * Previous versions of messageformat allowed the use of plural &
-   * selectordinal statements with any keys; now we throw an error when a
-   * statement uses a non-numerical key that will never be matched as a
-   * pluralization category for the current locale.
-   *
-   * Use this method to disable the validation and allow usage as previously.
-   * To re-enable, you'll need to create a new MessageFormat instance.
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
-   *
-   * @example
-   * const mf = new MessageFormat('en')
-   * const msg = '{X, plural, zero{no answers} one{an answer} other{# answers}}'
-   *
-   * mf.compile(msg)
-   * // Error: Invalid key `zero` for argument `X`. Valid plural keys for this
-   * //        locale are `one`, `other`, and explicit keys like `=0`.
-   *
-   * mf.disablePluralKeyChecks()
-   * mf.compile(msg)({ X: 0 })  // '0 answers'
-   */
-  disablePluralKeyChecks() {
-    this.options.pluralKeyChecks = false;
-    for (const lc in this.pluralFuncs) {
-      const pf = this.pluralFuncs[lc];
-      if (pf) {
-        pf.cardinal = [];
-        pf.ordinal = [];
+  /** @private */
+  getPluralFuncs(locale) {
+    if (Object.keys(this.pluralFuncs).length === 0) {
+      if (locale) {
+        // no locale in ctor, but given as compile() arg
+        const pf = getPlural(locale);
+        if (!pf) throw new Error(`Locale ${JSON.stringify(locale)} not found`);
+        return { locale, pluralFuncs: { [locale]: pf } };
+      } else {
+        // no locale at all
+        return { locale: this.defaultLocale, pluralFuncs: getAllPlurals() };
       }
+    } else if (locale) {
+      // locales defined in ctor as well as compile() args
+      const pf = this.pluralFuncs[locale];
+      if (!pf) {
+        const pfk = JSON.stringify(Object.keys(this.pluralFuncs));
+        throw new Error(`Locale ${JSON.stringify(locale)} not found in ${pfk}`);
+      }
+      return { locale, pluralFuncs: { [locale]: pf } };
+    } else {
+      // locales defined in ctor but not in compile() args
+      return { locale: this.defaultLocale, pluralFuncs: this.pluralFuncs };
     }
-    return this;
-  }
-
-  /**
-   * Enable or disable the addition of Unicode control characters to all input
-   * to preserve the integrity of the output when mixing LTR and RTL text.
-   *
-   * @see http://cldr.unicode.org/development/development-process/design-proposals/bidi-handling-of-structured-text
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @param {boolean} [enable=true]
-   * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
-   *
-   * @example
-   * // upper case stands for RTL characters, output is shown as rendered
-   * const mf = new MessageFormat('en')
-   *
-   * mf.compile('{0} >> {1} >> {2}')(['first', 'SECOND', 'THIRD'])
-   *   // 'first >> THIRD << SECOND'
-   *
-   * mf.setBiDiSupport(true)
-   * mf.compile('{0} >> {1} >> {2}')(['first', 'SECOND', 'THIRD'])
-   *   // 'first >> SECOND >> THIRD'
-   */
-  setBiDiSupport(enable) {
-    this.options.biDiSupport = !!enable || typeof enable == 'undefined';
-    return this;
-  }
-
-  /**
-   * According to the ICU MessageFormat spec, a `#` character directly inside a
-   * `plural` or `selectordinal` statement should be replaced by the number
-   * matching the surrounding statement. By default, messageformat will replace
-   * `#` signs with the value of the nearest surrounding `plural` or
-   * `selectordinal` statement.
-   *
-   * Set this to true to follow the stricter ICU MessageFormat spec, and to
-   * throw a runtime error if `#` is used with non-numeric input.
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @param {boolean} [enable=true]
-   * @returns {MessageFormat} The MessageFormat instance, to allow for chaining
-   *
-   * @example
-   * const mf = new MessageFormat('en')
-   * const src = {
-   *   cookie: '#: {X, plural, =0{no cookies} one{a cookie} other{# cookies}}',
-   *   pastry: `{X, plural,
-   *     one {{P, select, cookie{a cookie} other{a pie}}}
-   *     other {{P, select, cookie{# cookies} other{# pies}}}
-   *   }`
-   * }
-   * let messages = mf.compile(src)
-   *
-   * messages.cookie({ X: 3 })            // '#: 3 cookies'
-   * messages.pastry({ X: 3, P: 'pie' })  // '3 pies'
-   *
-   * mf.setStrictNumberSign(true)
-   * messages = mf.compile(src)
-   * messages.pastry({ X: 3, P: 'pie' })  // '# pies'
-   */
-  setStrictNumberSign(enable) {
-    this.options.strictNumberSign = !!enable || typeof enable == 'undefined';
-    this.runtime.setStrictNumber(this.options.strictNumberSign);
-    return this;
   }
 
   /**
@@ -341,48 +232,11 @@ export default class MessageFormat {
    * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
    * messages.b({ COUNT: 3 })              // 'This has 3 members.'
    */
-  compile(messages, locale) {
-    function _stringify(obj, level) {
-      if (!level) level = 0;
-      if (typeof obj != 'object') return obj;
-      let indent = '';
-      for (let i = 0; i < level; ++i) indent += '  ';
-      const o = [];
-      for (const k in obj) {
-        const v = _stringify(obj[k], level + 1);
-        o.push(`\n${indent}  ${propname(k)}: ${v}`);
-      }
-      return `{${o.join(',')}\n${indent}}`;
-    }
-
-    let pf = {};
-    if (Object.keys(this.pluralFuncs).length === 0) {
-      if (locale) {
-        const pfn0 = getPlural(locale, this.options);
-        if (!pfn0) {
-          const lcs = JSON.stringify(locale);
-          throw new Error(`Locale ${lcs} not found!`);
-        }
-        pf[locale] = pfn0;
-      } else {
-        locale = this.defaultLocale;
-        pf = getAllPlurals(this.options);
-      }
-    } else if (locale) {
-      const pfn1 = this.pluralFuncs[locale];
-      if (!pfn1) {
-        const lcs = JSON.stringify(locale);
-        const pfs = JSON.stringify(this.pluralFuncs);
-        throw new Error(`Locale ${lcs} not found in ${pfs}!`);
-      }
-      pf[locale] = pfn1;
-    } else {
-      locale = this.defaultLocale;
-      pf = this.pluralFuncs;
-    }
-
+  compile(messages, lc) {
+    const { locale, pluralFuncs } = this.getPluralFuncs(lc);
     const compiler = new Compiler(this);
-    const obj = compiler.compile(messages, locale, pf);
+    const obj = compiler.compile(messages, locale, pluralFuncs);
+    const runtime = new Runtime(this.options, compiler, pluralFuncs);
 
     if (typeof messages != 'object') {
       const fn = new Function(
@@ -390,33 +244,34 @@ export default class MessageFormat {
         funcname(locale),
         'return ' + obj
       );
-      const rt = this.runtime;
-      return fn(rt.number, rt.plural, rt.select, this.fmt, pf[locale]);
+      return fn(
+        runtime.number,
+        runtime.plural,
+        runtime.select,
+        compiler.formatters,
+        pluralFuncs[locale]
+      );
     }
 
-    const rtStr = this.runtime.toString(pf, compiler) + '\n';
-    const objStr = _stringify(obj);
-    const result = new Function(rtStr + 'return ' + objStr)();
+    const rtStr = runtime.toString();
+    const objStr = stringifyObject(obj);
+    const result = new Function(`${rtStr}\nreturn ${objStr}`)();
     // eslint-disable-next-line no-prototype-builtins
     if (result.hasOwnProperty('toString'))
       throw new Error('The top-level message key `toString` is reserved');
 
     result.toString = function(global) {
       if (!global || global === 'export default') {
-        return rtStr + 'export default ' + objStr;
+        return `${rtStr}\nexport default ${objStr}`;
       } else if (global.indexOf('.') > -1) {
-        return rtStr + global + ' = ' + objStr;
+        return `${rtStr}\n${global} = ${objStr}`;
       } else {
-        return (
-          rtStr +
-          [
-            '(function (root, G) {',
-            '  if (typeof define === "function" && define.amd) { define(G); }',
-            '  else if (typeof exports === "object") { module.exports = G; }',
-            '  else { ' + propname(global, 'root') + ' = G; }',
-            '})(this, ' + objStr + ');'
-          ].join('\n')
-        );
+        return `${rtStr}
+(function (root, G) {
+  if (typeof define === "function" && define.amd) { define(G); }
+  else if (typeof exports === "object") { module.exports = G; }
+  else { ${propname(global, 'root')} = G; }
+})(this, ${objStr});`;
       }
     };
     return result;

@@ -133,23 +133,6 @@ describe('compile()', function() {
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
-
-    it('.setStrictNumberSign(true)', function() {
-      const mf = new MessageFormat('en').setStrictNumberSign(true);
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
-      expect(function() {
-        mf.compile(msg)({ X: 'x' });
-      }).to.throw(/\bX\b.*non-numerical value/);
-      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
-    });
-
-    it('.setStrictNumberSign(false)', function() {
-      const mf = new MessageFormat('en').setStrictNumberSign(false);
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal(3);
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('x');
-      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
-      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
-    });
   });
 
   it('can compile an object of messages into a function', function() {
@@ -429,25 +412,12 @@ describe('Basic Message Formatting', function() {
     }).to.not.throw();
   });
 
-  describe('should be able to disable plural checks', function() {
+  it('should check plural cases according to locale', function() {
+    var mf = new MessageFormat('en');
     var msg = '{X, plural, zero{none} one{one} other{some: #}}';
-
-    it('checks enabled by default', function() {
-      var mf = new MessageFormat('en');
-      expect(function() {
-        mf.compile(msg);
-      }).to.throw();
-    });
-
-    it('{ pluralKeyChecks: false }', function() {
-      var mf = new MessageFormat('en', { pluralKeyChecks: false });
-      expect(mf.compile(msg)({ X: 0 })).to.eql('some: 0');
-    });
-
-    it('.disablePluralKeyChecks()', function() {
-      var mf = new MessageFormat('en').disablePluralKeyChecks();
-      expect(mf.compile(msg)({ X: 0 })).to.eql('some: 0');
-    });
+    expect(function() {
+      mf.compile(msg);
+    }).to.throw();
   });
 
   describe('should add control codes to bidirectional text', function() {
@@ -457,17 +427,6 @@ describe('Basic Message Formatting', function() {
     it('{ biDiSupport: true }', function() {
       var mfEn = new MessageFormat('en', { biDiSupport: true });
       var mfEg = new MessageFormat('ar-EG', { biDiSupport: true });
-      expect(mfEn.compile(msg)(data)).to.equal(
-        '\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e'
-      );
-      expect(mfEg.compile(msg)(data)).to.equal(
-        '\u200fHello! English\u200f >> \u200fHello \u0647\u0644\u0627\u060d\u200f'
-      );
-    });
-
-    it('.setBiDiSupport(true)', function() {
-      var mfEn = new MessageFormat('en').setBiDiSupport(true);
-      var mfEg = new MessageFormat('ar-EG').setBiDiSupport(true);
       expect(mfEn.compile(msg)(data)).to.equal(
         '\u200eHello! English\u200e >> \u200eHello \u0647\u0644\u0627\u060d\u200e'
       );

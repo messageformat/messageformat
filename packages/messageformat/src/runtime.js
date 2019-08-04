@@ -4,7 +4,7 @@ import { funcname, propname } from './utils';
  *  functions, these are included locally in the output of {@link
  *  MessageFormat#compile compile()}.
  *
- * @class
+ * @class Runtime
  * @private
  * @param {MessageFormat} mf - A MessageFormat instance
  */
@@ -12,7 +12,7 @@ export default class Runtime {
   /** Utility function for `#` in plural rules
    *
    *  Will throw an Error if `value` has a non-numeric value and `offset` is
-   *  non-zero or {@link MessageFormat#setStrictNumberSign} is set.
+   *  non-zero or the `strictNumberSign` option is set.
    *
    * @function Runtime#number
    * @param {number} value - The value to operate on
@@ -48,9 +48,12 @@ export default class Runtime {
     return value - (offset || 0);
   };
 
-  constructor(mf) {
-    this.mf = mf;
-    this.setStrictNumber(mf.options.strictNumberSign);
+  constructor({ strictNumberSign }, compiler, pluralFuncs) {
+    this.number = strictNumberSign
+      ? Runtime.strictNumber
+      : Runtime.defaultNumber;
+    this.compiler = compiler;
+    this.pluralFuncs = pluralFuncs;
   }
 
   /** Utility function for `{N, plural|selectordinal, ...}`
@@ -79,25 +82,8 @@ export default class Runtime {
     return {}.hasOwnProperty.call(data, value) ? data[value] : data.other;
   };
 
-  /** Set how strictly the {@link number} method parses its input.
-   *
-   *  According to the ICU MessageFormat spec, `#` can only be used to replace a
-   *  number input of a `plural` statement. By default, messageformat does not
-   *  throw a runtime error if you use non-numeric argument with a `plural` rule,
-   *  unless rule also includes a non-zero `offset`.
-   *
-   *  This is called by {@link MessageFormat#setStrictNumberSign} to follow the
-   *  stricter ICU MessageFormat spec.
-   *
-   * @private
-   * @param {boolean} [enable=false]
-   */
-  setStrictNumber(enable) {
-    this.number = enable ? Runtime.strictNumber : Runtime.defaultNumber;
-  }
-
   /** @private */
-  toString(pluralFuncs, compiler) {
+  toString() {
     function _stringify(o, level) {
       if (typeof o != 'object') {
         const funcStr = o.toString().replace(/^(function )\w*/, '$1');
@@ -120,23 +106,18 @@ export default class Runtime {
     }
 
     const obj = {};
-    const lcKeys = Object.keys(compiler.locales);
+    const lcKeys = Object.keys(this.compiler.locales);
     for (let i = 0; i < lcKeys.length; ++i) {
       const lc = lcKeys[i];
-      obj[funcname(lc)] = pluralFuncs[lc];
+      obj[funcname(lc)] = this.pluralFuncs[lc];
     }
-    const rtKeys = Object.keys(compiler.runtime);
+    const rtKeys = Object.keys(this.compiler.runtime);
     for (let i = 0; i < rtKeys.length; ++i) {
       const fn = rtKeys[i];
       obj[fn] = this[fn];
     }
-    const fmtKeys = Object.keys(compiler.formatters);
-    if (fmtKeys.length > 0) {
-      obj.fmt = {};
-      for (let i = 0; i < fmtKeys.length; ++i) {
-        const fk = fmtKeys[i];
-        obj.fmt[fk] = this.mf.fmt[fk];
-      }
+    if (Object.keys(this.compiler.formatters).length > 0) {
+      obj.fmt = this.compiler.formatters;
     }
     return _stringify(obj, 0);
   }

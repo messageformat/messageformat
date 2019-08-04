@@ -154,7 +154,7 @@ describe('Formatters', function() {
       }).to.throw();
     });
 
-    it('should use formatting functions - set in MessageFormat.formatters', function() {
+    it('should use default formatting functions', function() {
       let msg = mf.compile('The date is {VAR,date}.');
       expect(msg({ VAR: '2010-12-31' })).to.contain('2010');
       msg = mf.compile('Countdown: {VAR, duration}.');
@@ -164,16 +164,6 @@ describe('Formatters', function() {
     it('should use formatting functions - set by customFormatters option', function() {
       mf = new MessageFormat('en', {
         customFormatters: { uppercase: v => v.toUpperCase() }
-      });
-      const msg = mf.compile('This is {VAR,uppercase}.');
-      expect(msg({ VAR: 'big' })).to.eql('This is BIG.');
-    });
-
-    it('should use formatting functions - set by #addFormatters()', function() {
-      mf.addFormatters({
-        uppercase: function(v) {
-          return v.toUpperCase();
-        }
       });
       const msg = mf.compile('This is {VAR,uppercase}.');
       expect(msg({ VAR: 'big' })).to.eql('This is BIG.');

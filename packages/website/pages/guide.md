@@ -261,14 +261,12 @@ In JavaScript, a formatter is a function called with three parameters:
 
 As formatter functions may be used in a precompiled context, they should not
 refer to any variables that are not defined by the function parameters or
-within the function body. To add your own formatters, either add them to the
-static `MessageFormat.formatters` object, or use
-{@link MessageFormat#addFormatters} to add them to a MessageFormat instance.
+within the function body. To add your own formatter, use the `customFormatters`
+option of the MessageFormat constructor.
 
 ```javascript
 const MessageFormat = require('messageformat');
-const mf = new MessageFormat('en-GB');
-mf.addFormatters({
+const customFormatters = {
   upcase: function(v) {
     return v.toUpperCase();
   },
@@ -278,7 +276,8 @@ mf.addFormatters({
   prop: function(v, lc, p) {
     return v[p];
   }
-});
+};
+const mf = new MessageFormat('en-GB', { customFormatters });
 const messages = mf.compile({
   describe: 'This is {VAR, upcase}.',
   locale: 'The current locale is {_, locale}.',
