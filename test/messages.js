@@ -1,6 +1,6 @@
 if (typeof require !== 'undefined') {
   var expect = require('chai').expect;
-  var Messages = require('../packages/messages');
+  var Messages = require('../packages/runtime/messages');
   var MessageFormat = require('../packages/messageformat');
 }
 

@@ -12,7 +12,7 @@
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
   "repository": "messageformat/messageformat",
-  "main": "lib/messages.js",
+  "main": "lib/runtime",
   "files": [
     "lib/"
   ],
@@ -23,6 +23,14 @@
   },
   "babel": {
     "comments": false,
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ]
+    ],
     "presets": [
       [
         "@babel/preset-env",
@@ -45,6 +53,9 @@
     "env": {
       "browser": true,
       "es6": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
     }
   }
 }

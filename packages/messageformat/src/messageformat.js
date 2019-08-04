@@ -1,8 +1,9 @@
 import Formatters from 'messageformat-formatters';
+import Runtime from 'messageformat-runtime';
 import Compiler from './compiler';
+import stringifyDependencies from './stringify-dependencies';
 import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
-import Runtime from './runtime';
 
 function stringifyObject(obj, level) {
   if (!level) level = 0;
@@ -240,7 +241,7 @@ export default class MessageFormat {
     const { locale, pluralFuncs } = this.getPluralFuncs(lc);
     const compiler = new Compiler(this);
     const obj = compiler.compile(messages, locale, pluralFuncs);
-    const runtime = new Runtime(this.options, compiler, pluralFuncs);
+    const runtime = new Runtime(this.options);
 
     if (typeof messages != 'object') {
       const fn = new Function(
@@ -257,7 +258,7 @@ export default class MessageFormat {
       );
     }
 
-    const rtStr = runtime.toString();
+    const rtStr = stringifyDependencies(compiler, pluralFuncs, runtime);
     const objStr = stringifyObject(obj);
     const result = new Function(`${rtStr}\nreturn ${objStr}`)();
     // eslint-disable-next-line no-prototype-builtins

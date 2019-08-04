@@ -16,7 +16,7 @@
     "docs:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
     "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
-    "pretest": "lerna run build --scope messageformat-parser --scope messageformat --scope messageformat-runtime",
+    "pretest": "lerna run build --scope messageformat-parser --scope messageformat-runtime --scope messageformat",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
     "test:browserstack": "npm run pretest && mocha test/browser/browserstack-tests.js",

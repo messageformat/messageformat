@@ -6,6 +6,6 @@ package-lock.json
 /packages/loader-example/dist/bundle.js
 /packages/messageformat/lib/*
 /packages/messageformat/messageformat.*
-/packages/messages/lib/*
 /packages/parser/parser.js
+/packages/runtime/lib/*
 /test/browser/chai.js

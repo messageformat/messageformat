@@ -1,9 +1,5 @@
-/* eslint-env browser */
-
-import { funcname, propname } from './utils';
-
 /** @private */
-function _nf(lc) {
+export function _nf(lc) {
   return _nf[lc] || (_nf[lc] = new Intl.NumberFormat(lc));
 }
 
@@ -44,12 +40,10 @@ export default class Runtime {
     return f;
   };
 
-  constructor({ strictNumberSign }, compiler, pluralFuncs) {
+  constructor({ strictNumberSign }) {
     this.number = strictNumberSign
       ? Runtime.strictNumber
       : Runtime.defaultNumber;
-    this.compiler = compiler;
-    this.pluralFuncs = pluralFuncs;
   }
 
   /** Utility function for `{N, plural|selectordinal, ...}`
@@ -77,46 +71,4 @@ export default class Runtime {
   select = function(value, data) {
     return {}.hasOwnProperty.call(data, value) ? data[value] : data.other;
   };
-
-  /** @private */
-  toString() {
-    function _stringify(o, level) {
-      if (typeof o != 'object') {
-        const funcStr = o.toString().replace(/^(function )\w*/, '$1');
-        const funcIndent = /([ \t]*)\S.*$/.exec(funcStr);
-        return funcIndent
-          ? funcStr.replace(new RegExp('^' + funcIndent[1], 'mg'), '')
-          : funcStr;
-      }
-      const s = [];
-      for (let i in o) {
-        const v = _stringify(o[i], level + 1);
-        s.push(level === 0 ? `var ${i} = ${v};\n` : `${propname(i)}: ${v}`);
-      }
-      if (level === 0) return s.join('');
-      if (s.length === 0) return '{}';
-      let indent = '  ';
-      while (--level) indent += '  ';
-      const oc = s.join(',\n').replace(/^/gm, indent);
-      return `{\n${oc}\n}`;
-    }
-
-    const obj = {};
-    const lcKeys = Object.keys(this.compiler.locales);
-    for (let i = 0; i < lcKeys.length; ++i) {
-      const lc = lcKeys[i];
-      obj[funcname(lc)] = this.pluralFuncs[lc];
-    }
-    const rtKeys = Object.keys(this.compiler.runtime);
-    for (let i = 0; i < rtKeys.length; ++i) {
-      const fn = rtKeys[i];
-      // Cache for Intl.NumberFormat; name may change during minification
-      if (fn === 'number') obj[_nf.name] = _nf;
-      obj[fn] = this[fn];
-    }
-    if (Object.keys(this.compiler.formatters).length > 0) {
-      obj.fmt = this.compiler.formatters;
-    }
-    return _stringify(obj, 0);
-  }
 }
