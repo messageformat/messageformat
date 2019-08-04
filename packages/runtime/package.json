@@ -13,6 +13,7 @@
   "homepage": "https://messageformat.github.io/",
   "repository": "messageformat/messageformat",
   "main": "lib/runtime",
+  "sideEffects": false,
   "files": [
     "lib/"
   ],

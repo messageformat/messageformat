@@ -13,6 +13,8 @@ export default class Compiler {
    */
   constructor(mf) {
     this.mf = mf;
+    this.strict = !!mf.options.strictNumberSign;
+
     this.lc = null;
     this.locales = {};
     this.runtime = {};
@@ -35,7 +37,7 @@ export default class Compiler {
     if (typeof src != 'object') {
       this.lc = lc;
       const pc = plurals[lc] || { cardinal: [], ordinal: [] };
-      pc.strict = !!this.mf.options.strictNumberSign;
+      pc.strict = this.strict;
       const r = parse(src, pc).map(token => this.token(token));
       return `function(d) { return ${this.concatenate(r, true)}; }`;
     } else {
@@ -83,7 +85,7 @@ export default class Compiler {
 
       case 'select':
         fn = 'select';
-        if (plural && this.mf.options.strictNumberSign) plural = null;
+        if (plural && this.strict) plural = null;
         args.push(this.cases(token, plural));
         this.runtime.select = true;
         break;
@@ -109,7 +111,7 @@ export default class Compiler {
       case 'function':
         args.push(JSON.stringify(this.lc));
         if (token.param) {
-          if (plural && this.mf.options.strictNumberSign) plural = null;
+          if (plural && this.strict) plural = null;
           const s = token.param.tokens.map(tok => this.token(tok, plural));
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
         }
@@ -119,14 +121,18 @@ export default class Compiler {
 
       case 'octothorpe':
         if (!plural) return '"#"';
-        fn = 'number';
         args = [
           JSON.stringify(this.lc),
           propname(plural.arg, 'd'),
-          plural.offset || '0',
-          JSON.stringify(plural.arg)
+          plural.offset || '0'
         ];
-        this.runtime.number = true;
+        if (this.strict) {
+          fn = 'strictNumber';
+          args.push(JSON.stringify(plural.arg));
+        } else {
+          fn = 'number';
+        }
+        this.runtime[fn] = true;
         break;
     }
 

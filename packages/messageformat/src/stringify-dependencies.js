@@ -1,7 +1,7 @@
-import { _nf } from 'messageformat-runtime';
+import * as Runtime from 'messageformat-runtime';
 import { funcname, propname } from './utils';
 
-export default function stringifyDependencies(compiler, pluralFuncs, runtime) {
+export default function stringifyDependencies(compiler, pluralFuncs) {
   function _stringify(o, level) {
     if (typeof o != 'object') {
       const funcStr = o.toString().replace(/^(function )\w*/, '$1');
@@ -32,9 +32,8 @@ export default function stringifyDependencies(compiler, pluralFuncs, runtime) {
   const rtKeys = Object.keys(compiler.runtime);
   for (let i = 0; i < rtKeys.length; ++i) {
     const fn = rtKeys[i];
-    // Cache for Intl.NumberFormat; name may change during minification
-    if (fn === 'number') obj[_nf.name] = _nf;
-    obj[fn] = runtime[fn];
+    if (fn === 'number' || fn === 'strictNumber') obj._nf = Runtime._nf;
+    obj[fn] = Runtime[fn];
   }
   if (Object.keys(compiler.formatters).length > 0) {
     obj.fmt = compiler.formatters;

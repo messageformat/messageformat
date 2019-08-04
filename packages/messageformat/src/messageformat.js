@@ -1,5 +1,5 @@
 import Formatters from 'messageformat-formatters';
-import Runtime from 'messageformat-runtime';
+import * as Runtime from 'messageformat-runtime';
 import Compiler from './compiler';
 import stringifyDependencies from './stringify-dependencies';
 import { funcname, propname } from './utils';
@@ -241,24 +241,26 @@ export default class MessageFormat {
     const { locale, pluralFuncs } = this.getPluralFuncs(lc);
     const compiler = new Compiler(this);
     const obj = compiler.compile(messages, locale, pluralFuncs);
-    const runtime = new Runtime(this.options);
 
     if (typeof messages != 'object') {
+      const rtNumber = this.options.strictNumberSign
+        ? Runtime.strictNumber
+        : Runtime.number;
       const fn = new Function(
-        'number, plural, select, fmt',
+        `${rtNumber.name}, plural, select, fmt`,
         funcname(locale),
         'return ' + obj
       );
       return fn(
-        runtime.number,
-        runtime.plural,
-        runtime.select,
+        rtNumber,
+        Runtime.plural,
+        Runtime.select,
         compiler.formatters,
         pluralFuncs[locale]
       );
     }
 
-    const rtStr = stringifyDependencies(compiler, pluralFuncs, runtime);
+    const rtStr = stringifyDependencies(compiler, pluralFuncs);
     const objStr = stringifyObject(obj);
     const result = new Function(`${rtStr}\nreturn ${objStr}`)();
     // eslint-disable-next-line no-prototype-builtins

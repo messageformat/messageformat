@@ -469,7 +469,7 @@ describe('Basic Message Formatting', function() {
   });
 
   it("should reject number injections of numbers that don't exist", function() {
-    var mf = new MessageFormat('en');
+    var mf = new MessageFormat('en', { strictNumberSign: true });
     var mfunc = mf.compile(
       'I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, offset:1 ' +
         '=0{no enemies} =1{one nemesis} one{two enemies} other{one nemesis and # enemies}}}}.'
@@ -477,9 +477,9 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FRIENDS: 0, ENEMIES: 0 })).to.eql(
       'I have 0 friends but no enemies.'
     );
-    expect(() => mfunc({})).to.throw(/\bENEMIES\b.*not a number/);
+    expect(() => mfunc({})).to.throw(/\bFRIENDS\b.*not a number/);
     expect(() => mfunc({ FRIENDS: 0 })).to.throw(/\bENEMIES\b.*not a number/);
-    expect(mfunc({ ENEMIES: 1 })).to.eql('I have NaN friends but one nemesis.');
+    expect(() => mfunc({ ENEMIES: 1 })).to.throw(/\bFRIENDS\b.*not a number/);
   });
 
   it('should not expose prototype members - selects', function() {
