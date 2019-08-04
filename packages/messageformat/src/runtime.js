@@ -1,4 +1,11 @@
+/* eslint-env browser */
+
 import { funcname, propname } from './utils';
+
+/** @private */
+function _nf(lc) {
+  return _nf[lc] || (_nf[lc] = new Intl.NumberFormat(lc));
+}
 
 /** A set of utility functions that are called by the compiled Javascript
  *  functions, these are included locally in the output of {@link
@@ -23,7 +30,7 @@ export default class Runtime {
    * @returns {string} The result of applying the offset to the input value
    */
   static defaultNumber = function(lc, value, offset, name) {
-    var f = new Intl.NumberFormat(lc).format(value - offset);
+    var f = _nf(lc).format(value - offset);
     if (f === 'NaN' && offset)
       throw new Error('`' + name + '` or its offset is not a number');
     return f;
@@ -31,7 +38,7 @@ export default class Runtime {
 
   /** @private */
   static strictNumber = function(lc, value, offset, name) {
-    var f = new Intl.NumberFormat(lc).format(value - offset);
+    var f = _nf(lc).format(value - offset);
     if (f === 'NaN')
       throw new Error('`' + name + '` or its offset is not a number');
     return f;
@@ -103,6 +110,8 @@ export default class Runtime {
     const rtKeys = Object.keys(this.compiler.runtime);
     for (let i = 0; i < rtKeys.length; ++i) {
       const fn = rtKeys[i];
+      // Cache for Intl.NumberFormat; name may change during minification
+      if (fn === 'number') obj[_nf.name] = _nf;
       obj[fn] = this[fn];
     }
     if (Object.keys(this.compiler.formatters).length > 0) {
