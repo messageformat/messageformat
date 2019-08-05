@@ -1,5 +1,6 @@
 import { parse } from 'messageformat-parser';
-import { biDiMarkText, funcname, propname } from './utils';
+import { identifier, property } from 'safe-identifier';
+import { biDiMarkText } from './utils';
 
 /** @private */
 export default class Compiler {
@@ -56,7 +57,7 @@ export default class Compiler {
     const r = token.cases.map(({ key, tokens }) => {
       if (key === 'other') needOther = false;
       const s = tokens.map(tok => this.token(tok, plural));
-      return `${propname(key)}: ${this.concatenate(s, false)}`;
+      return `${property(null, key)}: ${this.concatenate(s, false)}`;
     });
     if (needOther)
       throw new Error("No 'other' form found in " + JSON.stringify(token));
@@ -76,7 +77,7 @@ export default class Compiler {
     if (typeof token == 'string') return JSON.stringify(token);
 
     let fn;
-    let args = [propname(token.arg, 'd')];
+    let args = [property('d', token.arg)];
     switch (token.type) {
       case 'argument':
         return this.mf.options.biDiSupport
@@ -92,7 +93,7 @@ export default class Compiler {
 
       case 'selectordinal':
         fn = 'plural';
-        args.push(0, funcname(this.lc), this.cases(token, token), 1);
+        args.push(0, identifier(this.lc), this.cases(token, token), 1);
         this.locales[this.lc] = true;
         this.runtime.plural = true;
         break;
@@ -101,7 +102,7 @@ export default class Compiler {
         fn = 'plural';
         args.push(
           token.offset || 0,
-          funcname(this.lc),
+          identifier(this.lc),
           this.cases(token, token)
         );
         this.locales[this.lc] = true;
@@ -115,7 +116,7 @@ export default class Compiler {
           const s = token.param.tokens.map(tok => this.token(tok, plural));
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
         }
-        fn = propname(token.key, 'fmt');
+        fn = property('fmt', token.key);
         this.formatters[token.key] = this.mf.getFormatter(token.key);
         break;
 
@@ -123,7 +124,7 @@ export default class Compiler {
         if (!plural) return '"#"';
         args = [
           JSON.stringify(this.lc),
-          propname(plural.arg, 'd'),
+          property('d', plural.arg),
           plural.offset || '0'
         ];
         if (this.strict) {

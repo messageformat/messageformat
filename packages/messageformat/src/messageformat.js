@@ -1,8 +1,8 @@
 import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
+import { identifier, property } from 'safe-identifier';
 import Compiler from './compiler';
 import stringifyDependencies from './stringify-dependencies';
-import { funcname, propname } from './utils';
 import { getAllPlurals, getPlural } from './plurals';
 
 function stringifyObject(obj, level) {
@@ -13,7 +13,7 @@ function stringifyObject(obj, level) {
   const o = [];
   for (const k in obj) {
     const v = stringifyObject(obj[k], level + 1);
-    o.push(`\n${indent}  ${propname(k)}: ${v}`);
+    o.push(`\n${indent}  ${property(null, k)}: ${v}`);
   }
   return `{${o.join(',')}\n${indent}}`;
 }
@@ -248,7 +248,7 @@ export default class MessageFormat {
         : Runtime.number;
       const fn = new Function(
         `${rtNumber.name}, plural, select, fmt`,
-        funcname(locale),
+        identifier(locale),
         'return ' + obj
       );
       return fn(
@@ -277,7 +277,7 @@ export default class MessageFormat {
 (function (root, G) {
   if (typeof define === "function" && define.amd) { define(G); }
   else if (typeof exports === "object") { module.exports = G; }
-  else { ${propname(global, 'root')} = G; }
+  else { ${property('root', global)} = G; }
 })(this, ${objStr});`;
       }
     };

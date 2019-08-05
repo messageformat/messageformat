@@ -74,7 +74,8 @@
     "make-plural": "^5.0.0",
     "messageformat-formatters": "file:../formatters",
     "messageformat-parser": "file:../parser",
-    "messageformat-runtime": "file:../runtime"
+    "messageformat-runtime": "file:../runtime",
+    "safe-identifier": "^0.2.0"
   },
   "scripts": {
     "prebuild": "babel src -d lib",

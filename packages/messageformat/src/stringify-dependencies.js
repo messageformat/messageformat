@@ -1,5 +1,5 @@
 import * as Runtime from 'messageformat-runtime';
-import { funcname, propname } from './utils';
+import { identifier, property } from 'safe-identifier';
 
 export default function stringifyDependencies(compiler, pluralFuncs) {
   function _stringify(o, level) {
@@ -13,7 +13,7 @@ export default function stringifyDependencies(compiler, pluralFuncs) {
     const s = [];
     for (let i in o) {
       const v = _stringify(o[i], level + 1);
-      s.push(level === 0 ? `var ${i} = ${v};\n` : `${propname(i)}: ${v}`);
+      s.push(level === 0 ? `var ${i} = ${v};\n` : `${property(null, i)}: ${v}`);
     }
     if (level === 0) return s.join('');
     if (s.length === 0) return '{}';
@@ -27,7 +27,7 @@ export default function stringifyDependencies(compiler, pluralFuncs) {
   const lcKeys = Object.keys(compiler.locales);
   for (let i = 0; i < lcKeys.length; ++i) {
     const lc = lcKeys[i];
-    obj[funcname(lc)] = pluralFuncs[lc];
+    obj[identifier(lc)] = pluralFuncs[lc];
   }
   const rtKeys = Object.keys(compiler.runtime);
   for (let i = 0; i < rtKeys.length; ++i) {
