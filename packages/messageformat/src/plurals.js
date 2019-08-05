@@ -53,3 +53,8 @@ export function getAllPlurals(firstLocale) {
   keys.unshift(firstLocale);
   return keys.map(getPlural);
 }
+
+export function hasPlural(locale) {
+  const lc = normalize(locale);
+  return lc in plurals;
+}

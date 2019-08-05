@@ -2,7 +2,7 @@ import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
 import { property } from 'safe-identifier';
 import Compiler from './compiler';
-import { getAllPlurals, getPlural } from './plurals';
+import { getAllPlurals, getPlural, hasPlural } from './plurals';
 import { stringifyDependencies, stringifyObject } from './stringify';
 
 export default class MessageFormat {
@@ -31,6 +31,19 @@ export default class MessageFormat {
   static escape(str, octothorpe) {
     const esc = octothorpe ? /[#{}]/g : /[{}]/g;
     return String(str).replace(esc, "'$&'");
+  }
+
+  /**
+   * Returns a subset of `locales` consisting of those for which MessageFormat
+   * has built-in plural category support.
+   *
+   * @memberof MessageFormat
+   * @param {(string|string[])} locales
+   * @returns {string[]}
+   */
+  static supportedLocalesOf(locales) {
+    const la = Array.isArray(locales) ? locales : [locales];
+    return la.filter(hasPlural);
   }
 
   /**

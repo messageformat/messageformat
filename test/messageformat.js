@@ -3,11 +3,22 @@ if (typeof require !== 'undefined') {
   var MessageFormat = require('../packages/messageformat');
 }
 
-describe('new MessageFormat()', function() {
-  it('should exist', function() {
+describe('static MessageFormat', () => {
+  it('should exist', () => {
     expect(MessageFormat).to.be.a('function');
   });
 
+  it('should have a supportedLocalesOf() function', () => {
+    expect(MessageFormat.supportedLocalesOf).to.be.a('function');
+  });
+
+  it('should have a working supportedLocalesOf() function', () => {
+    const lc = MessageFormat.supportedLocalesOf(['fi', 'xx', 'en-CA']);
+    expect(lc).to.eql(['fi', 'en-CA']);
+  });
+});
+
+describe('new MessageFormat()', function() {
   it('should be a constructor', function() {
     const mf = new MessageFormat('en');
     expect(mf).to.be.an.instanceof(MessageFormat);
