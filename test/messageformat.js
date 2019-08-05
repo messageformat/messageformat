@@ -62,6 +62,13 @@ describe('new MessageFormat()', function() {
     expect(opt.plurals[0].cardinals).to.equal(fake.cardinals);
     expect(opt.plurals[0].ordinals).to.equal(fake.ordinals);
   });
+
+  it('should include all locales for "*"', function() {
+    const mf = new MessageFormat('*');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en');
+    expect(opt.plurals).to.have.lengthOf.above(100);
+  });
 });
 
 describe('compile()', function() {
@@ -232,6 +239,18 @@ describe('compile()', function() {
     });
     expect(cf.xx({})).to.eql('Locale: en');
     expect(cf.fr({})).to.eql('Locale: en');
+  });
+
+  it('supports all languages with locale "*"', function() {
+    mf = new MessageFormat('*', { customFormatters });
+    const cf = mf.compile({
+      fr: 'Locale: {_, lc}',
+      xx: 'Locale: {_, lc}',
+      ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
+    });
+    expect(cf.fr({})).to.eql('Locale: fr');
+    expect(cf.xx({})).to.eql('Locale: en');
+    expect(cf.ru({ count: 12 })).to.eql('3');
   });
 });
 

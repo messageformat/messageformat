@@ -2,7 +2,7 @@ import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
 import { property } from 'safe-identifier';
 import Compiler from './compiler';
-import { getPlural } from './plurals';
+import { getAllPlurals, getPlural } from './plurals';
 import { stringifyDependencies, stringifyObject } from './stringify';
 
 export default class MessageFormat {
@@ -45,6 +45,12 @@ export default class MessageFormat {
    * functions instead, optionally providing them with the properties:
    * `cardinals: string[]`, `ordinals: string[]`, `getSource: () => string`.
    *
+   * If `locale` has the special value `'*'`, it will match *all* available
+   * locales. This may be useful if you want your messages to be completely
+   * determined by your data, but may provide surprising results if your
+   * input message object includes any 2-3 character keys that are not locale
+   * identifiers.
+   *
    * @class MessageFormat
    * @classdesc MessageFormat-to-JavaScript compiler
    * @param {string|string[]|function[]} [locale] - The locale(s) to use
@@ -75,12 +81,18 @@ export default class MessageFormat {
       },
       options
     );
-    this.plurals = (Array.isArray(locale)
-      ? locale.map(getPlural)
-      : [getPlural(locale || MessageFormat.defaultLocale)]
-    ).filter(Boolean);
-    if (this.plurals.length === 0)
-      this.plurals.push(getPlural(MessageFormat.defaultLocale));
+    if (locale === '*') {
+      this.plurals = getAllPlurals(MessageFormat.defaultLocale);
+    } else if (Array.isArray(locale)) {
+      this.plurals = locale.map(getPlural).filter(Boolean);
+    } else if (locale) {
+      const pl = getPlural(locale);
+      if (pl) this.plurals = [pl];
+    }
+    if (!this.plurals || this.plurals.length === 0) {
+      const pl = getPlural(MessageFormat.defaultLocale);
+      this.plurals = [pl];
+    }
   }
 
   /**

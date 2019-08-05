@@ -47,3 +47,9 @@ export function getPlural(locale) {
     })
   };
 }
+
+export function getAllPlurals(firstLocale) {
+  const keys = Object.keys(plurals).filter(key => key !== firstLocale);
+  keys.unshift(firstLocale);
+  return keys.map(getPlural);
+}
