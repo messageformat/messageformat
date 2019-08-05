@@ -18,24 +18,49 @@ describe('new MessageFormat()', function() {
     expect(mf.compile).to.be.a('function');
   });
 
+  it('should have a resolvedOptions() function', function() {
+    const mf = new MessageFormat('en');
+    expect(mf.resolvedOptions).to.be.a('function');
+  });
+
   it('should fallback when a base pluralFunc exists', function() {
     const mf = new MessageFormat('en-x-test1-test2');
-    expect(mf.pluralFuncs['en-x-test1-test2']).to.be.a('function');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en-x-test1-test2');
+    expect(opt.plurals[0].getCategory).to.be.a('function');
   });
 
   it('should fallback when a base pluralFunc exists (underscores)', function() {
     const mf = new MessageFormat('en_x_test1_test2');
-    expect(mf.pluralFuncs['en_x_test1_test2']).to.be.a('function');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en_x_test1_test2');
+    expect(opt.plurals[0].getCategory).to.be.a('function');
   });
 
-  it('should bail on non-existing locales', function() {
-    expect(function() {
-      new MessageFormat('lawlz');
-    }).to.throw();
+  it('should fallback on non-existing locales', function() {
+    const mf = new MessageFormat('lawlz');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en');
   });
 
   it('should default to `en` when no locale is passed into the constructor', function() {
-    expect(new MessageFormat().defaultLocale).to.eql('en');
+    const mf = new MessageFormat('lawlz');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en');
+  });
+
+  it('should accept custom plural functions', function() {
+    function fake(x, ord) {
+      return ord ? 'few' : 'some';
+    }
+    fake.cardinals = ['some'];
+    fake.ordinals = ['few'];
+    const mf = new MessageFormat([fake]);
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('fake');
+    expect(opt.plurals[0].getCategory).to.equal(fake);
+    expect(opt.plurals[0].cardinals).to.equal(fake.cardinals);
+    expect(opt.plurals[0].ordinals).to.equal(fake.ordinals);
   });
 });
 
@@ -79,12 +104,10 @@ describe('compile()', function() {
     function fake(x, ord) {
       return ord ? 'few' : 'some';
     }
-    fake.cardinal = ['some'];
-    fake.ordinal = ['few'];
-    mf = new MessageFormat({ fake: fake });
-    expect(function() {
-      mf.compile('{X, plural, some{a}}');
-    }).to.not.throw();
+    fake.cardinals = ['some'];
+    fake.ordinals = ['few'];
+    mf = new MessageFormat([fake]);
+    expect(() => mf.compile('{X, plural, some{a}}')).to.not.throw();
   });
 
   it('should use the locale plural function', function() {
@@ -201,31 +224,14 @@ describe('compile()', function() {
     expect(cf.ru({ count: 12 })).to.eql('3');
   });
 
-  it('defaults to supporting all languages: compile({ fr, ru })', function() {
+  it('defaults to supporting only English', function() {
     mf = new MessageFormat(null, { customFormatters });
     const cf = mf.compile({
-      fr: 'Locale: {_, lc}',
       xx: 'Locale: {_, lc}',
-      ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
+      fr: 'Locale: {_, lc}'
     });
-    expect(cf.fr({})).to.eql('Locale: fr');
     expect(cf.xx({})).to.eql('Locale: en');
-    expect(cf.ru({ count: 12 })).to.eql('3');
-  });
-
-  it('defaults to supporting all languages: compile(src, locale)', function() {
-    mf = new MessageFormat(null, { customFormatters });
-    const cf0 = mf.compile('Locale: {_, lc}', 'fr');
-    expect(cf0({})).to.eql('Locale: fr');
-    const cf1 = mf.compile(
-      {
-        fr: 'Locale: {_, lc}',
-        en: '{count, plural, one{1} few{2} many{3} other{x:#}}'
-      },
-      'ru-RU'
-    );
-    expect(cf1.fr({})).to.eql('Locale: ru-RU');
-    expect(cf1.en({ count: 12 })).to.eql('3');
+    expect(cf.fr({})).to.eql('Locale: en');
   });
 });
 
@@ -323,10 +329,8 @@ describe('Basic Message Formatting', function() {
   });
 
   it('obeys plural functions', function() {
-    var mf = new MessageFormat({
-      fake: function(x) {
-        return 'few';
-      }
+    const mf = new MessageFormat(function fake(x) {
+      return 'few';
     });
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({ val: 0 })
@@ -346,10 +350,8 @@ describe('Basic Message Formatting', function() {
   });
 
   it('obeys selectordinal functions', function() {
-    var mf = new MessageFormat({
-      fake: function(x, ord) {
-        return ord ? 'few' : 'other';
-      }
+    const mf = new MessageFormat(function fake(x, ord) {
+      return ord ? 'few' : 'other';
     });
     expect(
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({

@@ -1,22 +1,9 @@
 import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
-import { identifier, property } from 'safe-identifier';
+import { property } from 'safe-identifier';
 import Compiler from './compiler';
-import stringifyDependencies from './stringify-dependencies';
-import { getAllPlurals, getPlural } from './plurals';
-
-function stringifyObject(obj, level) {
-  if (!level) level = 0;
-  if (typeof obj != 'object') return obj;
-  let indent = '';
-  for (let i = 0; i < level; ++i) indent += '  ';
-  const o = [];
-  for (const k in obj) {
-    const v = stringifyObject(obj[k], level + 1);
-    o.push(`\n${indent}  ${property(null, k)}: ${v}`);
-  }
-  return `{${o.join(',')}\n${indent}}`;
-}
+import { getPlural } from './plurals';
+import { stringifyDependencies, stringifyObject } from './stringify';
 
 export default class MessageFormat {
   /**
@@ -49,24 +36,18 @@ export default class MessageFormat {
   /**
    * Create a new MessageFormat compiler
    *
-   * If set, the `locale` parameter limits the compiler to use a subset of the 204
-   * languages' pluralisation rules made available by the Unicode CLDR.
+   * `locale` defines the locale or locales supported by this MessageFormat
+   * instance. If given multiple valid locales, the first will be the default.
+   * If `locale` is empty, it will fall back to `MessageFormat.defaultLocale`.
    *
-   * Leaving `locale` undefined or using an array of strings will create a
-   * MessageFormat instance with multi-language support. To select which to use,
-   * use the second parameter of `{@link MessageFormat#compile compile()}`, or use
-   * message keys corresponding to your locales. The default locale will be the
-   * first entry of the array, or `{@link MessageFormat.defaultLocale defaultLocale}`
-   * if not set.
-   *
-   * A string `locale` will create a single-locale MessageFormat instance.
-   *
-   * Using an object `locale` with all properties of type `function` allows for
-   * the use of custom or externally defined pluralisation rules; in this case
+   * String `locale` values will be matched to plural categorisation functions
+   * provided by the Unicode CLDR. If defining your own instead, use named
+   * functions instead, optionally providing them with the properties:
+   * `cardinals: string[]`, `ordinals: string[]`, `getSource: () => string`.
    *
    * @class MessageFormat
    * @classdesc MessageFormat-to-JavaScript compiler
-   * @param {string|string[]|Object} [locale] - The locale(s) to use
+   * @param {string|string[]|function[]} [locale] - The locale(s) to use
    * @param {Object} [options] - Compiler options
    * @param {('string'|'values')} [options.returnType='string'] - Return type of
    *   compiled functions; either a concatenated string or an array (possibly
@@ -94,34 +75,38 @@ export default class MessageFormat {
       },
       options
     );
-    this.pluralFuncs = {};
-    if (typeof locale === 'string') {
-      this.pluralFuncs[locale] = getPlural(locale);
-      this.defaultLocale = locale;
-    } else if (Array.isArray(locale)) {
-      locale.forEach(lc => {
-        this.pluralFuncs[lc] = getPlural(lc);
-      });
-      this.defaultLocale = locale[0];
-    } else {
-      if (locale) {
-        const lcKeys = Object.keys(locale);
-        for (let i = 0; i < lcKeys.length; ++i) {
-          const lc = lcKeys[i];
-          if (typeof locale[lc] !== 'function') {
-            throw new Error(`Expected function value for locale ${lc}`);
-          }
-          this.pluralFuncs[lc] = locale[lc];
-          if (!this.defaultLocale) this.defaultLocale = lc;
-        }
-      }
-      if (this.defaultLocale) {
-        this.hasCustomPluralFuncs = true;
-      } else {
-        this.defaultLocale = MessageFormat.defaultLocale;
-        this.hasCustomPluralFuncs = false;
-      }
-    }
+    this.plurals = (Array.isArray(locale)
+      ? locale.map(getPlural)
+      : [getPlural(locale || MessageFormat.defaultLocale)]
+    ).filter(Boolean);
+    if (this.plurals.length === 0)
+      this.plurals.push(getPlural(MessageFormat.defaultLocale));
+  }
+
+  /**
+   * @typedef {Object} MessageFormat~ResolvedOptions
+   * @property {boolean} biDiSupport - Whether Unicode control characters be
+   *   added to all input parts to preserve the integrity of the output when
+   *   mixing LTR and RTL text
+   * @property {object} customFormatters - Map of custom formatting functions
+   * @property {string} locale - The default locale
+   * @property {object[]} plurals - All of the supported plurals
+   * @property {boolean} strictNumberSign - Is `#` only allowed directly within
+   *   a plural or selectordinal case
+   */
+
+  /**
+   * Returns a new object with properties reflecting the default locale,
+   * plurals, and other options computed during initialization.
+   *
+   * @returns {MessageFormat~ResolvedOptions}
+   */
+  resolvedOptions() {
+    return {
+      ...this.options,
+      locale: this.plurals[0].locale,
+      plurals: this.plurals
+    };
   }
 
   /** @private */
@@ -131,32 +116,6 @@ export default class MessageFormat {
     const df = Formatters[key];
     if (df) return df(this);
     throw new Error(`Formatting function ${JSON.stringify(key)} not found`);
-  }
-
-  /** @private */
-  getPluralFuncs(locale) {
-    if (Object.keys(this.pluralFuncs).length === 0) {
-      if (locale) {
-        // no locale in ctor, but given as compile() arg
-        const pf = getPlural(locale);
-        if (!pf) throw new Error(`Locale ${JSON.stringify(locale)} not found`);
-        return { locale, pluralFuncs: { [locale]: pf } };
-      } else {
-        // no locale at all
-        return { locale: this.defaultLocale, pluralFuncs: getAllPlurals() };
-      }
-    } else if (locale) {
-      // locales defined in ctor as well as compile() args
-      const pf = this.pluralFuncs[locale];
-      if (!pf) {
-        const pfk = JSON.stringify(Object.keys(this.pluralFuncs));
-        throw new Error(`Locale ${JSON.stringify(locale)} not found in ${pfk}`);
-      }
-      return { locale, pluralFuncs: { [locale]: pf } };
-    } else {
-      // locales defined in ctor but not in compile() args
-      return { locale: this.defaultLocale, pluralFuncs: this.pluralFuncs };
-    }
   }
 
   /**
@@ -180,25 +139,13 @@ export default class MessageFormat {
    * pattern that sets the value of `global` if used outside of AMD and CommonJS
    * loaders.
    *
-   * If `locale` is not set, it will default to
-   * `{@link MessageFormat.defaultLocale defaultLocale}`; using a key at any
-   * depth of `messages` that is a declared locale will set its child elements to
-   * use that locale.
-   *
-   * If `locale` is set, it is used for all messages, ignoring any otherwise
-   * matching locale keys. If the constructor declared any locales, `locale`
-   * needs to be one of them.
-   *
-   * If `compile()` is called with a `messages` object on a MessageFormat
-   * instance that does not specify any locales, it will match keys to *all* 204
-   * available locales. This is really useful if you want your messages to be
-   * completely determined by your data, but may provide surprising results if
-   * your input includes any 2-3 letter strings that are not locale identifiers.
+   * If this MessageFormat instance has been initialized with support for more
+   * than one locale, using a key that matches the locale's identifier at any
+   * depth of a `messages` object will set its child elements to use that locale.
    *
    * @memberof MessageFormat
    * @instance
    * @param {string|Object} messages - The input message(s) to be compiled, in ICU MessageFormat
-   * @param {string} [locale] - A locale to use for the messages
    * @returns {function|Object} The first match found for the given locale(s)
    *
    * @example
@@ -237,30 +184,34 @@ export default class MessageFormat {
    * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
    * messages.b({ COUNT: 3 })              // 'This has 3 members.'
    */
-  compile(messages, lc) {
-    const { locale, pluralFuncs } = this.getPluralFuncs(lc);
+  compile(messages) {
     const compiler = new Compiler(this);
-    const obj = compiler.compile(messages, locale, pluralFuncs);
+    const plural = this.plurals[0];
 
-    if (typeof messages != 'object') {
-      const rtNumber = this.options.strictNumberSign
-        ? Runtime.strictNumber
-        : Runtime.number;
+    if (typeof messages !== 'object') {
+      const numFn = this.options.strictNumberSign ? 'strictNumber' : 'number';
       const fn = new Function(
-        `${rtNumber.name}, plural, select, fmt`,
-        identifier(locale),
-        'return ' + obj
+        numFn,
+        'plural',
+        'select',
+        'fmt',
+        plural.id,
+        'return ' + compiler.compile(messages, plural)
       );
       return fn(
-        rtNumber,
+        Runtime[numFn],
         Runtime.plural,
         Runtime.select,
         compiler.formatters,
-        pluralFuncs[locale]
+        plural.getCategory
       );
     }
 
-    const rtStr = stringifyDependencies(compiler, pluralFuncs);
+    const cp = {};
+    if (this.plurals.length > 1)
+      for (const pl of this.plurals) cp[pl.lc] = cp[pl.locale] = pl;
+    const obj = compiler.compile(messages, plural, cp);
+    const rtStr = stringifyDependencies(compiler, this.plurals);
     const objStr = stringifyObject(obj);
     const result = new Function(`${rtStr}\nreturn ${objStr}`)();
     // eslint-disable-next-line no-prototype-builtins
