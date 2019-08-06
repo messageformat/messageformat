@@ -7,8 +7,7 @@
       "node_modules/messageformat-formatters/lib/date.js",
       "node_modules/messageformat-formatters/lib/duration.js",
       "node_modules/messageformat-formatters/lib/number.js",
-      "node_modules/messageformat-formatters/lib/time.js",
-      "node_modules/messageformat/messages.js"
+      "node_modules/messageformat-formatters/lib/time.js"
     ]
   },
   "plugins": ["plugins/markdown"],
