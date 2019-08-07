@@ -42,7 +42,7 @@ module.exports = function(content) {
   }
   if (options.strictNumberSign) mfOpt.strictNumberSign = true;
   var messageFormat = new MessageFormat(locale, mfOpt);
-  var messageFunctions = messageFormat.compile(messages);
+  var messageFunctions = messageFormat.compileModule(messages);
 
   this.cacheable && this.cacheable();
   this.value = [messageFunctions];

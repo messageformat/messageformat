@@ -85,7 +85,7 @@ if (options.help || options.include.length === 0) {
   );
   if (options.simplify) simplify(input);
   const mf = new MessageFormat(options.locale);
-  let output = mf.compile(input).toString(options.namespace);
+  let output = mf.compileModule(input).toString(options.namespace);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   if (options.outfile && options.outfile !== '-') {
     fs.writeFileSync(path.resolve(options.outfile), output);
