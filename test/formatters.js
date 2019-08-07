@@ -169,17 +169,6 @@ describe('Formatters', function() {
       expect(msg({ VAR: 'big' })).to.eql('This is BIG.');
     });
 
-    it('should use formatting functions for object input - set by customFormatters option', function() {
-      mf = new MessageFormat('en', {
-        customFormatters: { uppercase: v => v.toUpperCase() }
-      });
-      const msg = mf.compileModule([
-        'This is {VAR,uppercase}.',
-        'Other string'
-      ]);
-      expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
-    });
-
     describe('arguments', function() {
       beforeEach(function() {
         mf = new MessageFormat('en', {
