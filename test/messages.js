@@ -1,13 +1,14 @@
-if (typeof require !== 'undefined') {
-  var expect = require('chai').expect;
-  var Messages = require('../packages/runtime/messages');
-  var MessageFormat = require('../packages/messageformat');
-}
+if (typeof require === 'undefined') return;
+
+const expect = require('chai').expect;
+const Messages = require('../packages/runtime/messages');
+const MessageFormat = require('../packages/messageformat');
+const { getModule } = require('./build-module');
 
 describe('Messages', () => {
   let msgData, messages;
 
-  before(() => {
+  before(async () => {
     const mf = new MessageFormat(['en', 'fi']);
     const msgSet = {
       en: {
@@ -22,7 +23,7 @@ describe('Messages', () => {
         e: 'Minä puhun vain suomea.'
       }
     };
-    msgData = mf.compileModule(msgSet);
+    msgData = await getModule(mf, msgSet);
   });
 
   beforeEach(() => {
@@ -127,10 +128,10 @@ describe('Messages', () => {
     expect(messages.get([])).to.have.keys('b', 'e');
   });
 
-  it('addMessages', () => {
+  it('addMessages', async () => {
     const mf = new MessageFormat('sv');
     const sv = { e: 'Jag pratar lite svenska.' };
-    messages.addMessages(mf.compileModule(sv), 'sv');
+    messages.addMessages(await getModule(mf, sv), 'sv');
     expect(messages.availableLocales).to.eql(['en', 'fi', 'sv']);
     messages.locale = 'sv';
     expect(messages.get('e')).to.eql('Jag pratar lite svenska.');

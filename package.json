@@ -69,7 +69,7 @@
     "selenium-webdriver": "^4.0.0-alpha.4",
     "serve": "^11.1.0",
     "serve-handler": "^6.1.0",
-    "tmp": "^0.1.0",
+    "tmp-promise": "^2.0.2",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2"
   }

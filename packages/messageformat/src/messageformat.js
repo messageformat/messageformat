@@ -1,6 +1,5 @@
 import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
-import { property } from 'safe-identifier';
 import Compiler from './compiler';
 import { getAllPlurals, getPlural, hasPlural } from './plurals';
 import { stringifyDependencies, stringifyObject } from './stringify';
@@ -183,20 +182,12 @@ export default class MessageFormat {
   }
 
   /**
-   * Compile a collection of messages into storable functions
+   * Compile a collection of messages into an ES module
    *
    * With `messages` as a hierarchical structure of ICU MessageFormat strings,
-   * the output of `compile()` will match that structure, with each string
-   * replaced by its corresponding JavaScript function.
-   *
-   * The output object will have a `toString(global)` method that may be used to
-   * store or cache the compiled functions to disk, for later inclusion in any
-   * JS environment, without a local MessageFormat instance required. If its
-   * `global` parameter is null or undefined, the result is an ES6 module with a
-   * default export. If `global` is a string containing `.`, the result will be
-   * a script setting its value. Otherwise, the output defaults to an UMD
-   * pattern that sets the value of `global` if used outside of AMD and CommonJS
-   * loaders.
+   * the output of `compile()` will be the source code of an ES module with a
+   * default export matching the input structure, with each string replaced by
+   * its corresponding JS function.
    *
    * If this MessageFormat instance has been initialized with support for more
    * than one locale, using a key that matches the locale's identifier at any
@@ -204,35 +195,24 @@ export default class MessageFormat {
    *
    * @memberof MessageFormat
    * @instance
-   * @param {Object} messages - The input messages to be compiled
-   * @returns {Object} - The compiled object
+   * @param {object} messages - The input messages to be compiled
+   * @returns {string} - String representation of the compiled module
    *
    * @example
-   * const mf = new MessageFormat(['en', 'fi'])
-   * const messages = mf.compileModule({
-   *   en: { a: 'A {TYPE} example.',
-   *         b: 'This is the {COUNT, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} example.' },
-   *   fi: { a: '{TYPE} esimerkki.',
-   *         b: 'Tämä on {COUNT, selectordinal, other{#.}} esimerkki.' }
-   * })
+   * import fs from 'fs'
    *
-   * messages.en.b({ COUNT: 2 })  // 'This is the 2nd example.'
-   * messages.fi.b({ COUNT: 2 })  // 'Tämä on 2. esimerkki.'
-   *
-   * @example
-   * const fs = require('fs')
    * const mf = new MessageFormat('en')
    * const msgSet = {
    *   a: 'A {TYPE} example.',
    *   b: 'This has {COUNT, plural, one{one member} other{# members}}.',
    *   c: 'We have {P, number, percent} code coverage.'
    * }
-   * const msgStr = mf.compileModule(msgSet).toString('module.exports')
-   * fs.writeFileSync('messages.js', msgStr)
+   * const msgModule = mf.compileModule(msgSet)
+   * fs.writeFileSync('messages.js', msgModule)
    *
    * ...
    *
-   * const messages = require('./messages')
+   * import messages from './messages'
    *
    * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
    * messages.b({ COUNT: 3 })              // 'This has 3 members.'
@@ -245,25 +225,6 @@ export default class MessageFormat {
     const obj = compiler.compile(messages, this.plurals[0], cp);
     const rtStr = stringifyDependencies(compiler, this.plurals);
     const objStr = stringifyObject(obj);
-    const result = new Function(`${rtStr}\nreturn ${objStr}`)();
-    // eslint-disable-next-line no-prototype-builtins
-    if (result.hasOwnProperty('toString'))
-      throw new Error('The top-level message key `toString` is reserved');
-
-    result.toString = function(global) {
-      if (!global || global === 'export default') {
-        return `${rtStr}\nexport default ${objStr}`;
-      } else if (global.indexOf('.') > -1) {
-        return `${rtStr}\n${global} = ${objStr}`;
-      } else {
-        return `${rtStr}
-(function (root, G) {
-  if (typeof define === "function" && define.amd) { define(G); }
-  else if (typeof exports === "object") { module.exports = G; }
-  else { ${property('root', global)} = G; }
-})(this, ${objStr});`;
-      }
-    };
-    return result;
+    return `${rtStr}\nexport default ${objStr}`;
   }
 }
