@@ -22,7 +22,7 @@ describe('Messages', () => {
         e: 'Minä puhun vain suomea.'
       }
     };
-    msgData = mf.compile(msgSet);
+    msgData = mf.compileModule(msgSet);
   });
 
   beforeEach(() => {
@@ -130,7 +130,7 @@ describe('Messages', () => {
   it('addMessages', () => {
     const mf = new MessageFormat('sv');
     const sv = { e: 'Jag pratar lite svenska.' };
-    messages.addMessages(mf.compile(sv), 'sv');
+    messages.addMessages(mf.compileModule(sv), 'sv');
     expect(messages.availableLocales).to.eql(['en', 'fi', 'sv']);
     messages.locale = 'sv';
     expect(messages.get('e')).to.eql('Jag pratar lite svenska.');

@@ -144,23 +144,57 @@ export default class MessageFormat {
   }
 
   /**
-   * Compile messages into storable functions
+   * Compile a message into a function
    *
-   * If `messages` is a single string including ICU MessageFormat declarations,
-   * the result of `compile()` is a function taking a single Object parameter
-   * `d` representing each of the input's defined variables.
+   * Given a string `message` with ICU MessageFormat declarations, the result is
+   * a function taking a single Object parameter representing each of the
+   * input's defined variables, using the first valid locale.
    *
-   * If `messages` is a hierarchical structure of such strings, the output of
-   * `compile()` will match that structure, with each string replaced by its
-   * corresponding JavaScript function.
+   * @memberof MessageFormat
+   * @instance
+   * @param {string} message - The input message to be compiled, in ICU MessageFormat
+   * @returns {function} - The compiled function
    *
-   * If the input `messages` -- and therefore the output -- of `compile()` is an
-   * object, the output object will have a `toString(global)` method that may be
-   * used to store or cache the compiled functions to disk, for later inclusion
-   * in any JS environment, without a local MessageFormat instance required. If
-   * its `global` parameter is null or undefined, the result is an ES6 module
-   * with a default export. If `global` is a string containing `.`, the result
-   * will be a script setting its value. Otherwise, the output defaults to an UMD
+   * @example
+   * const mf = new MessageFormat('en')
+   * const msg = mf.compile('A {TYPE} example.')
+   *
+   * msg({ TYPE: 'simple' })  // 'A simple example.'
+   */
+  compile(message) {
+    const compiler = new Compiler(this);
+    const plural = this.plurals[0];
+    const numFn = this.options.strictNumberSign ? 'strictNumber' : 'number';
+    const fn = new Function(
+      numFn,
+      'plural',
+      'select',
+      'fmt',
+      plural.id,
+      'return ' + compiler.compile(message, plural)
+    );
+    return fn(
+      Runtime[numFn],
+      Runtime.plural,
+      Runtime.select,
+      compiler.formatters,
+      plural.getCategory
+    );
+  }
+
+  /**
+   * Compile a collection of messages into storable functions
+   *
+   * With `messages` as a hierarchical structure of ICU MessageFormat strings,
+   * the output of `compile()` will match that structure, with each string
+   * replaced by its corresponding JavaScript function.
+   *
+   * The output object will have a `toString(global)` method that may be used to
+   * store or cache the compiled functions to disk, for later inclusion in any
+   * JS environment, without a local MessageFormat instance required. If its
+   * `global` parameter is null or undefined, the result is an ES6 module with a
+   * default export. If `global` is a string containing `.`, the result will be
+   * a script setting its value. Otherwise, the output defaults to an UMD
    * pattern that sets the value of `global` if used outside of AMD and CommonJS
    * loaders.
    *
@@ -170,18 +204,12 @@ export default class MessageFormat {
    *
    * @memberof MessageFormat
    * @instance
-   * @param {string|Object} messages - The input message(s) to be compiled, in ICU MessageFormat
-   * @returns {function|Object} The first match found for the given locale(s)
-   *
-   * @example
-   * const mf = new MessageFormat('en')
-   * const msg = mf.compile('A {TYPE} example.')
-   *
-   * msg({ TYPE: 'simple' })  // 'A simple example.'
+   * @param {Object} messages - The input messages to be compiled
+   * @returns {Object} - The compiled object
    *
    * @example
    * const mf = new MessageFormat(['en', 'fi'])
-   * const messages = mf.compile({
+   * const messages = mf.compileModule({
    *   en: { a: 'A {TYPE} example.',
    *         b: 'This is the {COUNT, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} example.' },
    *   fi: { a: '{TYPE} esimerkki.',
@@ -199,7 +227,7 @@ export default class MessageFormat {
    *   b: 'This has {COUNT, plural, one{one member} other{# members}}.',
    *   c: 'We have {P, number, percent} code coverage.'
    * }
-   * const msgStr = mf.compile(msgSet).toString('module.exports')
+   * const msgStr = mf.compileModule(msgSet).toString('module.exports')
    * fs.writeFileSync('messages.js', msgStr)
    *
    * ...
@@ -209,33 +237,12 @@ export default class MessageFormat {
    * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
    * messages.b({ COUNT: 3 })              // 'This has 3 members.'
    */
-  compile(messages) {
-    const compiler = new Compiler(this);
-    const plural = this.plurals[0];
-
-    if (typeof messages !== 'object') {
-      const numFn = this.options.strictNumberSign ? 'strictNumber' : 'number';
-      const fn = new Function(
-        numFn,
-        'plural',
-        'select',
-        'fmt',
-        plural.id,
-        'return ' + compiler.compile(messages, plural)
-      );
-      return fn(
-        Runtime[numFn],
-        Runtime.plural,
-        Runtime.select,
-        compiler.formatters,
-        plural.getCategory
-      );
-    }
-
+  compileModule(messages) {
     const cp = {};
     if (this.plurals.length > 1)
       for (const pl of this.plurals) cp[pl.lc] = cp[pl.locale] = pl;
-    const obj = compiler.compile(messages, plural, cp);
+    const compiler = new Compiler(this);
+    const obj = compiler.compile(messages, this.plurals[0], cp);
     const rtStr = stringifyDependencies(compiler, this.plurals);
     const objStr = stringifyObject(obj);
     const result = new Function(`${rtStr}\nreturn ${objStr}`)();

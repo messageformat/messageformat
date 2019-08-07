@@ -173,7 +173,10 @@ describe('Formatters', function() {
       mf = new MessageFormat('en', {
         customFormatters: { uppercase: v => v.toUpperCase() }
       });
-      const msg = mf.compile(['This is {VAR,uppercase}.', 'Other string']);
+      const msg = mf.compileModule([
+        'This is {VAR,uppercase}.',
+        'Other string'
+      ]);
       expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
     });
 

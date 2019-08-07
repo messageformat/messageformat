@@ -79,6 +79,6 @@
   },
   "scripts": {
     "prebuild": "babel src -d lib",
-    "build": "webpack --mode production"
+    "build": "webpack --mode none"
   }
 }

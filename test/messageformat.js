@@ -176,12 +176,15 @@ describe('compile()', function() {
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
   });
+});
 
+describe('compileModule()', function() {
   it('can compile an object of messages into a function', function() {
     const data = {
       key: 'I have {FRIENDS, plural, one{one friend} other{# friends}}.'
     };
-    const mfunc = mf.compile(data);
+    const mf = new MessageFormat('en');
+    const mfunc = mf.compileModule(data);
     expect(mfunc).to.be.an('object');
     expect(mfunc.toString()).to.match(/\bkey\b/);
 
@@ -196,7 +199,8 @@ describe('compile()', function() {
       unreserved:
         'unreserved is not a JavaScript reserved word so should not be quoted'
     };
-    const mfunc = mf.compile(data);
+    const mf = new MessageFormat('en');
+    const mfunc = mf.compileModule(data);
     expect(mfunc.toString()).to.match(/"default"/);
     expect(mfunc.toString()).to.match(/[^"]unreserved[^"]/);
 
@@ -217,8 +221,8 @@ describe('compile()', function() {
       ru: new MessageFormat('ru')
     };
     const cf = {
-      en: mf.en.compile('{count} {count, plural, other{users}}'),
-      ru: mf.ru.compile('{count} {count, plural, other{пользователей}}')
+      en: mf.en.compileModule('{count} {count, plural, other{users}}'),
+      ru: mf.ru.compileModule('{count} {count, plural, other{пользователей}}')
     };
     expect(function() {
       cf.en({ count: 12 });
@@ -233,8 +237,8 @@ describe('compile()', function() {
   const customFormatters = { lc: (v, lc) => lc };
 
   it('can support multiple languages', function() {
-    mf = new MessageFormat(['en', 'fr', 'ru'], { customFormatters });
-    const cf = mf.compile({
+    const mf = new MessageFormat(['en', 'fr', 'ru'], { customFormatters });
+    const cf = mf.compileModule({
       fr: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
     });
@@ -243,8 +247,8 @@ describe('compile()', function() {
   });
 
   it('defaults to supporting only English', function() {
-    mf = new MessageFormat(null, { customFormatters });
-    const cf = mf.compile({
+    const mf = new MessageFormat(null, { customFormatters });
+    const cf = mf.compileModule({
       xx: 'Locale: {_, lc}',
       fr: 'Locale: {_, lc}'
     });
@@ -253,8 +257,8 @@ describe('compile()', function() {
   });
 
   it('supports all languages with locale "*"', function() {
-    mf = new MessageFormat('*', { customFormatters });
-    const cf = mf.compile({
+    const mf = new MessageFormat('*', { customFormatters });
+    const cf = mf.compileModule({
       fr: 'Locale: {_, lc}',
       xx: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
@@ -673,7 +677,7 @@ describe('Real World Uses', function() {
 
 describe('Module/CommonJS support', function() {
   var colorSrc = { red: 'red', blue: 'blue', green: 'green' };
-  var cf = new MessageFormat('en').compile(colorSrc);
+  var cf = new MessageFormat('en').compileModule(colorSrc);
 
   it('should default to ES6', function() {
     var str = cf.toString();
