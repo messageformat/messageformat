@@ -1,5 +1,5 @@
-import pluralCategories from 'make-plural/umd/pluralCategories';
-import plurals from 'make-plural/umd/plurals';
+import * as pluralCategories from 'make-plural/pluralCategories';
+import * as plurals from 'make-plural/plurals';
 import { identifier } from 'safe-identifier';
 
 function normalize(locale) {
@@ -25,7 +25,7 @@ export function getPlural(locale) {
       getCategory: locale,
       cardinals: locale.cardinals || [],
       ordinals: locale.ordinals || [],
-      getSource: locale.getSource || (() => String(locale))
+      getSource: locale.getSource || (() => ({ source: String(locale) }))
     };
   }
   const lc = normalize(locale);
@@ -40,11 +40,7 @@ export function getPlural(locale) {
     getCategory,
     cardinals: cardinal || [],
     ordinals: ordinal || [],
-    getSource: () => ({
-      import: identifier(lc),
-      package: 'make-plural/es6/plurals',
-      source: String(getCategory)
-    })
+    getSource: () => ({ module: 'make-plural/plurals' })
   };
 }
 

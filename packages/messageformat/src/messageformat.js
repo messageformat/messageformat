@@ -55,7 +55,7 @@ export default class MessageFormat {
    * String `locale` values will be matched to plural categorisation functions
    * provided by the Unicode CLDR. If defining your own instead, use named
    * functions instead, optionally providing them with the properties:
-   * `cardinals: string[]`, `ordinals: string[]`, `getSource: () => string`.
+   * `cardinals: string[]`, `ordinals: string[]`, `getSource: () => ({ source: string })`.
    *
    * If `locale` has the special value `'*'`, it will match *all* available
    * locales. This may be useful if you want your messages to be completely

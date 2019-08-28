@@ -14,9 +14,16 @@ async function getModule(mf, messages) {
   const src = mf.compileModule(messages);
   const options = { plugins: ['@babel/plugin-transform-modules-commonjs'] };
   const { code } = await babel.transformAsync(src, options);
-  const { fd, path } = await tmp.file({ postfix: '.js' });
+  const { cleanup, fd, path } = await tmp.file({
+    dir: __dirname,
+    postfix: '.js'
+  });
   await write(fd, code, 0, 'utf8');
-  return require(path).default;
+  try {
+    return require(path).default;
+  } finally {
+    cleanup();
+  }
 }
 
 describe('compileModule()', function() {

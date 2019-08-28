@@ -71,7 +71,7 @@
     ]
   },
   "dependencies": {
-    "make-plural": "^5.0.0",
+    "make-plural": "^6.0.0-beta.1",
     "messageformat-formatters": "file:../formatters",
     "messageformat-parser": "file:../parser",
     "messageformat-runtime": "file:../runtime",
