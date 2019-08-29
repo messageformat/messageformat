@@ -1,8 +1,9 @@
-var loaderUtils = require('loader-utils');
-var MessageFormat = require('messageformat');
-var convert = require('messageformat-convert');
-var path = require('path');
-var YAML = require('yaml');
+const loaderUtils = require('loader-utils');
+const MessageFormat = require('messageformat');
+const compileModule = require('messageformat/compile-module');
+const convert = require('messageformat-convert');
+const path = require('path');
+const YAML = require('yaml');
 
 function localeFromResourcePath(resourcePath, locales) {
   const parts = resourcePath.split(/[._/\\]+/);
@@ -18,7 +19,7 @@ function localeFromResourcePath(resourcePath, locales) {
   return locale || locales;
 }
 
-module.exports = function(content) {
+module.exports = function loadMessages(content) {
   var messages = YAML.parse(content);
   var options = loaderUtils.getOptions(this) || {};
   var locale = options.locale;
@@ -42,10 +43,5 @@ module.exports = function(content) {
   }
   if (options.strictNumberSign) mfOpt.strictNumberSign = true;
   var messageFormat = new MessageFormat(locale, mfOpt);
-  var messageFunctions = messageFormat.compileModule(messages);
-
-  this.cacheable && this.cacheable();
-  this.value = [messageFunctions];
-
-  return messageFunctions.toString('module.exports');
+  return compileModule(messageFormat, messages);
 };
