@@ -1,28 +1,31 @@
+import Formatters from 'messageformat-formatters';
 import { parse } from 'messageformat-parser';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
+
+function getFormatter(options, key) {
+  const cf = options.customFormatters[key];
+  if (cf) return cf;
+  const df = Formatters[key];
+  if (df) return df(options);
+  throw new Error(`Formatting function not found: ${key}`);
+}
 
 /** @private */
 export default class Compiler {
   /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
    *
    * @private
-   * @param {MessageFormat} mf - A MessageFormat instance
+   * @param {object} options - A MessageFormat options object
    * @property {object} locales - The locale identifiers that are used by the compiled functions
    * @property {object} runtime - Names of the core runtime functions that are used by the compiled functions
    * @property {object} formatters - The formatter functions that are used by the compiled functions
    */
-  constructor(mf) {
-    this.options = {
-      biDiSupport: !!mf.options.biDiSupport,
-      cardinal: null,
-      ordinal: null,
-      returnType: mf.options.returnType,
-      strict: !!mf.options.strictNumberSign
-    };
-    this.getFormatter = key => mf.getFormatter(key);
+  constructor(options) {
+    this.options = options;
     this.lc = null;
     this.locale = null;
+    this.parserOptions = null;
 
     this.locales = {};
     this.runtime = {};
@@ -51,12 +54,14 @@ export default class Compiler {
       return result;
     }
 
-    this.defaultPlural = plural.default;
     this.lc = plural.id;
     this.locale = plural.locale;
-    this.options.cardinal = plural.cardinals;
-    this.options.ordinal = plural.ordinals;
-    const r = parse(src, this.options).map(token => this.token(token));
+    this.parserOptions = {
+      cardinal: plural.cardinals,
+      ordinal: plural.ordinals,
+      strict: this.options.strictNumberSign
+    };
+    const r = parse(src, this.parserOptions).map(token => this.token(token));
     return `function(d) { return ${this.concatenate(r, true)}; }`;
   }
 
@@ -70,7 +75,7 @@ export default class Compiler {
     });
     if (needOther) {
       const { type } = token;
-      const { cardinal, ordinal } = this.options;
+      const { cardinal, ordinal } = this.parserOptions;
       if (
         type === 'select' ||
         (type === 'plural' && cardinal.includes('other')) ||
@@ -103,7 +108,7 @@ export default class Compiler {
 
       case 'select':
         fn = 'select';
-        if (plural && this.options.strict) plural = null;
+        if (plural && this.options.strictNumberSign) plural = null;
         args.push(this.cases(token, plural));
         this.runtime.select = true;
         break;
@@ -129,12 +134,12 @@ export default class Compiler {
       case 'function':
         args.push(JSON.stringify(this.lc));
         if (token.param) {
-          if (plural && this.options.strict) plural = null;
+          if (plural && this.options.strictNumberSign) plural = null;
           const s = token.param.tokens.map(tok => this.token(tok, plural));
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
         }
         fn = property('fmt', token.key);
-        this.formatters[token.key] = this.getFormatter(token.key);
+        this.formatters[token.key] = getFormatter(this.options, token.key);
         break;
 
       case 'octothorpe':
@@ -144,7 +149,7 @@ export default class Compiler {
           property('d', plural.arg),
           plural.offset || '0'
         ];
-        if (this.options.strict) {
+        if (this.options.strictNumberSign) {
           fn = 'strictNumber';
           args.push(JSON.stringify(plural.arg));
         } else {

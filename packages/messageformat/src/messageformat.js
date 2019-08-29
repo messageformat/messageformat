@@ -1,4 +1,3 @@
-import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
 import Compiler from './compiler';
 import { getAllPlurals, getPlural, hasPlural } from './plurals';
@@ -135,15 +134,6 @@ export default class MessageFormat {
     };
   }
 
-  /** @private */
-  getFormatter(key) {
-    const cf = this.options.customFormatters[key];
-    if (cf) return cf;
-    const df = Formatters[key];
-    if (df) return df(this.options);
-    throw new Error(`Formatting function ${JSON.stringify(key)} not found`);
-  }
-
   /**
    * Compile a message into a function
    *
@@ -163,7 +153,7 @@ export default class MessageFormat {
    * msg({ TYPE: 'simple' })  // 'A simple example.'
    */
   compile(message) {
-    const compiler = new Compiler(this);
+    const compiler = new Compiler(this.options);
     const plural = this.plurals[0];
     const numFn = this.options.strictNumberSign ? 'strictNumber' : 'number';
     const fn = new Function(

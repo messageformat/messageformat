@@ -89,7 +89,7 @@ export default function compileModule(messageformat, messages) {
   const cp = {};
   if (plurals.length > 1)
     for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
-  const compiler = new Compiler(messageformat);
+  const compiler = new Compiler(messageformat.options);
   const obj = compiler.compile(messages, plurals[0], cp);
   const rtStr = stringifyDependencies(compiler, plurals);
   const objStr = stringifyObject(obj);
