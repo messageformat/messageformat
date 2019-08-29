@@ -12,8 +12,7 @@
  * @param {string} type - One of `'integer'`, `'percent'` , `'currency'`, or `/currency:[A-Z]{3}/`
  *
  * @example
- * var mf = new MessageFormat('en');
- * mf.currency = 'EUR';  // needs to be set before first compile() call
+ * var mf = new MessageFormat('en', { currency: 'EUR'});
  *
  * mf.compile('{N} is almost {N, number, integer}')({ N: 3.14 })
  * // '3.14 is almost 3'
@@ -43,10 +42,10 @@ function number(value, lc, arg) {
   return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value);
 }
 
-module.exports = function(mf) {
+module.exports = function(opt) {
   var parts = number
     .toString()
-    .replace('CURRENCY', JSON.stringify(mf.currency || 'USD'))
+    .replace('CURRENCY', JSON.stringify(opt.currency || 'USD'))
     .match(/\(([^)]*)\)[^{]*{([\s\S]*)}/);
   return new Function(parts[1], parts[2]);
 };

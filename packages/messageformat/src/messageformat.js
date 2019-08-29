@@ -72,6 +72,8 @@ export default class MessageFormat {
    * @param {boolean} [options.biDiSupport=false] - Add Unicode control
    *   characters to all input parts to preserve the integrity of the output
    *   when mixing LTR and RTL text
+   * @param {string} [options.currency='USD'] - The currency to use when
+   *   formatting `{V, number, currency}`
    * @param {Object} [options.customFormatters] - Map of custom formatting
    *   functions to include. See the {@tutorial guide} for more details.
    * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
@@ -86,6 +88,7 @@ export default class MessageFormat {
     this.options = Object.assign(
       {
         biDiSupport: false,
+        currency: 'USD',
         customFormatters: {},
         returnType: 'string',
         strictNumberSign: false
@@ -137,7 +140,7 @@ export default class MessageFormat {
     const cf = this.options.customFormatters[key];
     if (cf) return cf;
     const df = Formatters[key];
-    if (df) return df(this);
+    if (df) return df(this.options);
     throw new Error(`Formatting function ${JSON.stringify(key)} not found`);
   }
 
