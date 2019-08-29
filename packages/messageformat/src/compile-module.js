@@ -1,7 +1,8 @@
 import * as Runtime from 'messageformat-runtime';
 import { property } from 'safe-identifier';
+import Compiler from './compiler';
 
-export function stringifyDependencies(compiler, plurals) {
+function stringifyDependencies(compiler, plurals) {
   const imports = {};
   const vars = {};
 
@@ -38,7 +39,7 @@ export function stringifyDependencies(compiler, plurals) {
   return is.concat(vs).join('\n');
 }
 
-export function stringifyObject(obj, level = 0) {
+function stringifyObject(obj, level = 0) {
   if (typeof obj !== 'object') return obj;
   const indent = '  '.repeat(level);
   const o = Object.keys(obj).map(key => {
@@ -46,4 +47,51 @@ export function stringifyObject(obj, level = 0) {
     return `\n${indent}  ${property(null, key)}: ${v}`;
   });
   return `{${o.join(',')}\n${indent}}`;
+}
+
+/**
+ * Compile a collection of messages into an ES module
+ *
+ * With `messages` as a hierarchical structure of ICU MessageFormat strings,
+ * the output of `compile()` will be the source code of an ES module with a
+ * default export matching the input structure, with each string replaced by
+ * its corresponding JS function.
+ *
+ * If this MessageFormat instance has been initialized with support for more
+ * than one locale, using a key that matches the locale's identifier at any
+ * depth of a `messages` object will set its child elements to use that locale.
+ *
+ * @param {MessageFormat} messageformat - A MessageFormat instance
+ * @param {object} messages - The input messages to be compiled
+ * @returns {string} - String representation of the compiled module
+ *
+ * @example
+ * import fs from 'fs'
+ *
+ * const mf = new MessageFormat('en')
+ * const msgSet = {
+ *   a: 'A {TYPE} example.',
+ *   b: 'This has {COUNT, plural, one{one member} other{# members}}.',
+ *   c: 'We have {P, number, percent} code coverage.'
+ * }
+ * const msgModule = compileModule(mf, msgSet)
+ * fs.writeFileSync('messages.js', msgModule)
+ *
+ * ...
+ *
+ * import messages from './messages'
+ *
+ * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
+ * messages.b({ COUNT: 3 })              // 'This has 3 members.'
+ */
+export default function compileModule(messageformat, messages) {
+  const { plurals } = messageformat;
+  const cp = {};
+  if (plurals.length > 1)
+    for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
+  const compiler = new Compiler(messageformat);
+  const obj = compiler.compile(messages, plurals[0], cp);
+  const rtStr = stringifyDependencies(compiler, plurals);
+  const objStr = stringifyObject(obj);
+  return `${rtStr}\nexport default ${objStr}`;
 }

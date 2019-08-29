@@ -2,7 +2,6 @@ import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
 import Compiler from './compiler';
 import { getAllPlurals, getPlural, hasPlural } from './plurals';
-import { stringifyDependencies, stringifyObject } from './compile-module';
 
 export default class MessageFormat {
   /**
@@ -179,52 +178,5 @@ export default class MessageFormat {
       compiler.formatters,
       plural.getCategory
     );
-  }
-
-  /**
-   * Compile a collection of messages into an ES module
-   *
-   * With `messages` as a hierarchical structure of ICU MessageFormat strings,
-   * the output of `compile()` will be the source code of an ES module with a
-   * default export matching the input structure, with each string replaced by
-   * its corresponding JS function.
-   *
-   * If this MessageFormat instance has been initialized with support for more
-   * than one locale, using a key that matches the locale's identifier at any
-   * depth of a `messages` object will set its child elements to use that locale.
-   *
-   * @memberof MessageFormat
-   * @instance
-   * @param {object} messages - The input messages to be compiled
-   * @returns {string} - String representation of the compiled module
-   *
-   * @example
-   * import fs from 'fs'
-   *
-   * const mf = new MessageFormat('en')
-   * const msgSet = {
-   *   a: 'A {TYPE} example.',
-   *   b: 'This has {COUNT, plural, one{one member} other{# members}}.',
-   *   c: 'We have {P, number, percent} code coverage.'
-   * }
-   * const msgModule = mf.compileModule(msgSet)
-   * fs.writeFileSync('messages.js', msgModule)
-   *
-   * ...
-   *
-   * import messages from './messages'
-   *
-   * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
-   * messages.b({ COUNT: 3 })              // 'This has 3 members.'
-   */
-  compileModule(messages) {
-    const cp = {};
-    if (this.plurals.length > 1)
-      for (const pl of this.plurals) cp[pl.lc] = cp[pl.locale] = pl;
-    const compiler = new Compiler(this);
-    const obj = compiler.compile(messages, this.plurals[0], cp);
-    const rtStr = stringifyDependencies(compiler, this.plurals);
-    const objStr = stringifyObject(obj);
-    return `${rtStr}\nexport default ${objStr}`;
   }
 }

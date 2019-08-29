@@ -6,12 +6,13 @@ const fs = require('fs');
 const tmp = require('tmp-promise');
 const { promisify } = require('util');
 const MessageFormat = require('../packages/messageformat');
+const compileModule = require('../packages/messageformat/compile-module');
 
 module.exports = { getModule };
 
 const write = promisify(fs.write);
 async function getModule(mf, messages) {
-  const src = mf.compileModule(messages);
+  const src = compileModule(mf, messages);
   const options = { plugins: ['@babel/plugin-transform-modules-commonjs'] };
   const { code } = await babel.transformAsync(src, options);
   const { cleanup, fd, path } = await tmp.file({
