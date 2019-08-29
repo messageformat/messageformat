@@ -1,6 +1,6 @@
 import { parse } from 'messageformat-parser';
 import { identifier, property } from 'safe-identifier';
-import { biDiMarkText } from './utils';
+import { biDiMarkText } from './bidi-mark-text';
 
 /** @private */
 export default class Compiler {

@@ -2,7 +2,7 @@ import Formatters from 'messageformat-formatters';
 import * as Runtime from 'messageformat-runtime';
 import Compiler from './compiler';
 import { getAllPlurals, getPlural, hasPlural } from './plurals';
-import { stringifyDependencies, stringifyObject } from './stringify';
+import { stringifyDependencies, stringifyObject } from './compile-module';
 
 export default class MessageFormat {
   /**
