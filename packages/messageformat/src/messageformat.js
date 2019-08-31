@@ -67,6 +67,9 @@ export default class MessageFormat {
    * @classdesc MessageFormat-to-JavaScript compiler
    * @param {string|string[]|Object} [locale] - The locale(s) to use
    * @param {Object} [options] - Compiler options
+   * @param {('string'|'values')} [options.returnType='string'] - Return type of
+   *   compiled functions; either a concatenated string or an array (possibly
+   *   hierarchical) of values
    * @param {boolean} [options.biDiSupport=false] - Add Unicode control
    *   characters to all input parts to preserve the integrity of the output
    *   when mixing LTR and RTL text
@@ -85,6 +88,7 @@ export default class MessageFormat {
       {
         biDiSupport: false,
         customFormatters: {},
+        returnType: 'string',
         strictNumberSign: false
       },
       options
