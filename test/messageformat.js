@@ -724,6 +724,6 @@ describe('{ returnType: "values" }', function() {
 
   it('plural number', function() {
     var msg = mf.compile('{num} {num, plural, one{one} other{#{num}}}');
-    expect(msg({ num: 42 })).to.eql([42, ' ', [42, 42]]);
+    expect(msg({ num: 42 })).to.eql([42, ' ', ['42', 42]]);
   });
 });
