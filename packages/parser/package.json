@@ -40,11 +40,6 @@
       }
     ]
   },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^6.1.4",
-    "pegjs": "^0.10.0"
-  },
   "scripts": {
     "build": "pegjs parser.pegjs",
     "prepublishOnly": "npm test",

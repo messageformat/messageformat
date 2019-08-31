@@ -16,7 +16,6 @@
     "docs:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
     "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
-    "prepare": "lerna bootstrap",
     "pretest": "lerna run build --scope messageformat-parser --scope messageformat --scope messageformat-messages",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
@@ -34,23 +33,44 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
+  "dependencies": {
+    "messageformat": "file:packages/messageformat",
+    "messageformat-cli": "file:packages/cli",
+    "messageformat-convert": "file:packages/convert",
+    "messageformat-formatters": "file:packages/formatters",
+    "messageformat-loader": "file:packages/loader",
+    "messageformat-loader-example": "file:packages/loader-example",
+    "messageformat-messages": "file:packages/messages",
+    "messageformat-parser": "file:packages/parser",
+    "messageformat-website": "file:packages/website"
+  },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.5.0",
+    "@babel/preset-env": "^7.4.5",
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
     "babel-eslint": "^10.0.2",
+    "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "eslint": "^6.0.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "husky": "^3.0.0",
+    "jsdoc-to-markdown": "^5.0.0",
     "lerna": "^3.15.0",
     "mocha": "^6.1.4",
     "mocha-selenium-bridge": "^0.1.0",
+    "pegjs": "^0.10.0",
     "prettier": "^1.18.2",
     "rimraf": "^2.6.3",
     "selenium-webdriver": "^4.0.0-alpha.4",
     "serve": "^11.1.0",
     "serve-handler": "^6.1.0",
-    "tmp": "^0.1.0"
+    "tmp": "^0.1.0",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2"
   }
 }
