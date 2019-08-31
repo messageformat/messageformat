@@ -1,4 +1,11 @@
+/* eslint-env browser */
+
 import { funcname, propname } from './utils';
+
+/** @private */
+function _nf(lc) {
+  return _nf[lc] || (_nf[lc] = new Intl.NumberFormat(lc));
+}
 
 /** A set of utility functions that are called by the compiled Javascript
  *  functions, these are included locally in the output of {@link
@@ -9,43 +16,32 @@ import { funcname, propname } from './utils';
  * @param {MessageFormat} mf - A MessageFormat instance
  */
 export default class Runtime {
-  /** Utility function for `#` in plural rules
+  /**
+   * Utility function for `#` in plural rules
    *
-   *  Will throw an Error if `value` has a non-numeric value and `offset` is
-   *  non-zero or the `strictNumberSign` option is set.
+   * Will throw an Error if `value` has a non-numeric value and the
+   * `strictNumberSign` option is set
    *
    * @function Runtime#number
+   * @param {string} lc - The current locale
    * @param {number} value - The value to operate on
+   * @param {number} offset - An offset, set by the surrounding context
    * @param {string} name - The name of the argument, used for error reporting
-   * @param {number} [offset=0] - An optional offset, set by the surrounding context
-   * @returns {number|string} The result of applying the offset to the input value
+   * @returns {string} The result of applying the offset to the input value
    */
-  static defaultNumber = function(value, name, offset) {
-    if (!offset) return value;
-    if (isNaN(value))
-      throw new Error(
-        "Can't apply offset:" +
-          offset +
-          ' to argument `' +
-          name +
-          '` with non-numerical value ' +
-          JSON.stringify(value) +
-          '.'
-      );
-    return value - offset;
+  static defaultNumber = function(lc, value, offset, name) {
+    var f = _nf(lc).format(value - offset);
+    if (f === 'NaN' && offset)
+      throw new Error('`' + name + '` or its offset is not a number');
+    return f;
   };
 
   /** @private */
-  static strictNumber = function(value, name, offset) {
-    if (isNaN(value))
-      throw new Error(
-        'Argument `' +
-          name +
-          '` has non-numerical value ' +
-          JSON.stringify(value) +
-          '.'
-      );
-    return value - (offset || 0);
+  static strictNumber = function(lc, value, offset, name) {
+    var f = _nf(lc).format(value - offset);
+    if (f === 'NaN')
+      throw new Error('`' + name + '` or its offset is not a number');
+    return f;
   };
 
   constructor({ strictNumberSign }, compiler, pluralFuncs) {
@@ -114,6 +110,8 @@ export default class Runtime {
     const rtKeys = Object.keys(this.compiler.runtime);
     for (let i = 0; i < rtKeys.length; ++i) {
       const fn = rtKeys[i];
+      // Cache for Intl.NumberFormat; name may change during minification
+      if (fn === 'number') obj[_nf.name] = _nf;
       obj[fn] = this[fn];
     }
     if (Object.keys(this.compiler.formatters).length > 0) {

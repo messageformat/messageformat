@@ -112,8 +112,12 @@ export default class Compiler {
       case 'octothorpe':
         if (!plural) return '"#"';
         fn = 'number';
-        args = [propname(plural.arg, 'd'), JSON.stringify(plural.arg)];
-        if (plural.offset) args.push(plural.offset);
+        args = [
+          JSON.stringify(this.lc),
+          propname(plural.arg, 'd'),
+          plural.offset || '0',
+          JSON.stringify(plural.arg)
+        ];
         this.runtime.number = true;
         break;
     }
