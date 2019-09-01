@@ -4,11 +4,11 @@
   <input type="button" value="en" id="en" />
   <input type="button" value="fr" id="fr" />
 
-  <script src="i18n.js"></script>
+  <script src="messages.js"></script>
   <script>
     function showContents(lc) {
-      var colors = window.i18n[lc].colors;
-      var plural = window.i18n[lc].sub.folder.plural;
+      var colors = window.messages.default[lc].colors;
+      var plural = window.messages.default[lc].sub.folder.plural;
       var el = document.getElementById('content');
       el.innerHTML = '';
       [

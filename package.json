@@ -13,7 +13,9 @@
   "scripts": {
     "build": "lerna run build --ignore messageformat-website",
     "docs:build": "lerna run build --scope messageformat-website",
-    "docs:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
+    "predocs:example": "messageformat -l en,fr example/ -o example/messages.mjs",
+    "docs:example": "webpack example/messages.mjs --output-library messages --mode production -o example/messages.js",
+    "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
     "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
     "pretest": "lerna run build --scope messageformat-parser --scope messageformat-runtime --scope messageformat",
