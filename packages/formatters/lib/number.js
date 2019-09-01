@@ -27,7 +27,7 @@
  * // 'The total is £5.50.'
  */
 
-function number(value, lc, arg, defaultCurrency) {
+function numberFmt(value, lc, arg, defaultCurrency) {
   var a = (arg && arg.split(':')) || [];
   var opt = {
     integer: { maximumFractionDigits: 0 },
@@ -42,4 +42,21 @@ function number(value, lc, arg, defaultCurrency) {
   return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value);
 }
 
-module.exports = number;
+function numberCurrency(value, lc, arg) {
+  return new Intl.NumberFormat(lc, {
+    style: 'currency',
+    currency: arg,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value);
+}
+
+function numberInteger(value, lc) {
+  return new Intl.NumberFormat(lc, { maximumFractionDigits: 0 }).format(value);
+}
+
+function numberPercent(value, lc) {
+  return new Intl.NumberFormat(lc, { style: 'percent' }).format(value);
+}
+
+module.exports = { numberCurrency, numberFmt, numberInteger, numberPercent };

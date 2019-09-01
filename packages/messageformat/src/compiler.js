@@ -130,6 +130,10 @@ export default class Compiler {
         break;
 
       case 'function':
+        if (token.key === 'number') {
+          fn = this.addNumberFormatter(token, args, plural);
+          break;
+        }
         args.push(JSON.stringify(this.lc));
         if (token.param) {
           if (plural && this.options.strictNumberSign) plural = null;
@@ -161,5 +165,61 @@ export default class Compiler {
 
     if (!fn) throw new Error('Parser error for token ' + JSON.stringify(token));
     return `${fn}(${args.join(', ')})`;
+  }
+
+  addNumberFormatter({ key, param }, args, plural) {
+    const lc = JSON.stringify(this.lc);
+    if (!param) {
+      // {var, number} can use runtime number()
+      args.unshift(lc);
+      args.push('0');
+      return 'number';
+    }
+
+    args.push(lc);
+    const fmtArg0 = param.tokens[0];
+    if (param.tokens.length === 1 && typeof fmtArg0 === 'string') {
+      // Use arg-specific formatters for common cases
+      switch (fmtArg0.trim()) {
+        case 'currency':
+          args.push(JSON.stringify(this.options.currency));
+          this.formatters.numberCurrency = getFormatter(
+            this.options,
+            'numberCurrency'
+          );
+          return 'fmt.numberCurrency';
+
+        case 'integer':
+          this.formatters.numberInteger = getFormatter(
+            this.options,
+            'numberInteger'
+          );
+          return 'fmt.numberInteger';
+
+        case 'percent':
+          this.formatters.numberPercent = getFormatter(
+            this.options,
+            'numberPercent'
+          );
+          return 'fmt.numberPercent';
+      }
+
+      const cm = fmtArg0.match(/^\s*currency:([A-Z]+)\s*$/);
+      if (cm) {
+        args.push(JSON.stringify(cm[1]));
+        this.formatters.numberCurrency = getFormatter(
+          this.options,
+          'numberCurrency'
+        );
+        return 'fmt.numberCurrency';
+      }
+    }
+
+    if (plural && this.options.strictNumberSign) plural = null;
+    const s = param.tokens.map(tok => this.token(tok, plural));
+    args.push('(' + (s.join(' + ') || '""') + ').trim()');
+    args.push(JSON.stringify(this.options.currency));
+    this.formatters.numberFmt = getFormatter(this.options, 'numberFmt');
+    return 'fmt.numberFmt';
   }
 }

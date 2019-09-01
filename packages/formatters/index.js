@@ -26,9 +26,19 @@
  * @hideconstructor
  */
 
+const {
+  numberCurrency,
+  numberFmt,
+  numberInteger,
+  numberPercent
+} = require('./lib/number');
+
 module.exports = {
   date: require('./lib/date'),
   duration: require('./lib/duration'),
-  number: require('./lib/number'),
+  number: numberFmt,
+  numberCurrency,
+  numberInteger,
+  numberPercent,
   time: require('./lib/time')
 };
