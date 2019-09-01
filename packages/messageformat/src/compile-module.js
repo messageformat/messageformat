@@ -1,6 +1,7 @@
-import * as Runtime from 'messageformat-runtime';
 import { property } from 'safe-identifier';
 import Compiler from './compiler';
+
+const RUNTIME = 'messageformat-runtime';
 
 function stringifyDependencies(compiler, plurals) {
   const imports = {};
@@ -18,8 +19,8 @@ function stringifyDependencies(compiler, plurals) {
   }
 
   for (const fn of Object.keys(compiler.runtime)) {
-    if (fn === 'number' || fn === 'strictNumber') vars._nf = Runtime._nf;
-    vars[fn] = Runtime[fn];
+    const prev = imports[RUNTIME];
+    imports[RUNTIME] = prev ? [...prev, fn] : [fn];
   }
 
   const fmt = Object.entries(compiler.formatters).map(
