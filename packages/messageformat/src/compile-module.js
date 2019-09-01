@@ -1,29 +1,11 @@
 import { property } from 'safe-identifier';
 import Compiler from './compiler';
 
-const RUNTIME = 'messageformat-runtime';
-
-function stringifyDependencies(compiler, plurals) {
+function stringifyRuntime(runtime) {
   const imports = {};
   const vars = {};
 
-  for (const lc of Object.keys(compiler.locales)) {
-    const plural = plurals.find(pl => pl.id === lc);
-    const { module, source } = plural.getSource();
-    if (module) {
-      const prev = imports[module];
-      imports[module] = prev ? [...prev, lc] : [lc];
-    } else {
-      vars[lc] = source;
-    }
-  }
-
-  for (const fn of Object.keys(compiler.runtime)) {
-    const prev = imports[RUNTIME];
-    imports[RUNTIME] = prev ? [...prev, fn] : [fn];
-  }
-
-  for (const [name, fn] of Object.entries(compiler.formatters)) {
+  for (const [name, fn] of Object.entries(runtime)) {
     if (fn.module) {
       const prev = imports[fn.module];
       imports[fn.module] = prev ? [...prev, name] : [name];
@@ -95,8 +77,8 @@ export default function compileModule(messageformat, messages) {
   if (plurals.length > 1)
     for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
   const compiler = new Compiler(messageformat.options);
-  const obj = compiler.compile(messages, plurals[0], cp);
-  const rtStr = stringifyDependencies(compiler, plurals);
-  const objStr = stringifyObject(obj);
-  return `${rtStr}\nexport default ${objStr}`;
+  const msgObj = compiler.compile(messages, plurals[0], cp);
+  const msgStr = stringifyObject(msgObj);
+  const rtStr = stringifyRuntime(compiler.runtime);
+  return `${rtStr}\nexport default ${msgStr}`;
 }

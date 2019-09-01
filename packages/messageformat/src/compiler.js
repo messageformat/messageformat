@@ -1,18 +1,11 @@
 import { parse } from 'messageformat-parser';
+import * as Runtime from 'messageformat-runtime';
 import * as Formatters from 'messageformat-runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 
-function getFormatter(options, key) {
-  const cf = options.customFormatters[key];
-  if (cf) return cf;
-  const df = Formatters[key];
-  if (df) {
-    df.module = 'messageformat-runtime/lib/formatters';
-    return df;
-  }
-  throw new Error(`Formatting function not found: ${key}`);
-}
+const RUNTIME_MODULE = 'messageformat-runtime';
+const FORMATTER_MODULE = 'messageformat-runtime/lib/formatters';
 
 export default class Compiler {
   /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
@@ -24,13 +17,8 @@ export default class Compiler {
    */
   constructor(options) {
     this.options = options;
-    this.lc = null;
-    this.locale = null;
-    this.parserOptions = null;
-
-    this.locales = {};
+    this.plural = null;
     this.runtime = {};
-    this.formatters = {};
   }
 
   /** Recursively compile a string or a tree of strings to JavaScript function sources
@@ -54,51 +42,36 @@ export default class Compiler {
       return result;
     }
 
-    this.lc = plural.id;
-    this.locale = plural.locale;
-    this.parserOptions = {
+    this.plural = plural;
+    const parserOptions = {
       cardinal: plural.cardinals,
       ordinal: plural.ordinals,
       strict: this.options.strictNumberSign
     };
-    const r = parse(src, this.parserOptions).map(token => this.token(token));
-    for (const fmt of Object.keys(this.formatters)) {
-      const errType =
-        plurals && plurals[fmt]
-          ? 'plural identifiers'
-          : this.runtime[fmt]
-          ? 'runtime functions'
-          : identifier(fmt) !== fmt
-          ? 'JavaScript'
-          : null;
-      if (errType)
-        throw new TypeError(`Formatter name is reserved (${errType}): ${fmt}`);
-    }
+    const r = parse(src, parserOptions).map(token => this.token(token));
     return `function(d) { return ${this.concatenate(r, true)}; }`;
   }
 
-  /** @private */
-  cases(token, plural) {
+  cases(token, pluralToken) {
     let needOther = true;
     const r = token.cases.map(({ key, tokens }) => {
       if (key === 'other') needOther = false;
-      const s = tokens.map(tok => this.token(tok, plural));
+      const s = tokens.map(tok => this.token(tok, pluralToken));
       return `${property(null, key)}: ${this.concatenate(s, false)}`;
     });
     if (needOther) {
       const { type } = token;
-      const { cardinal, ordinal } = this.parserOptions;
+      const { cardinals, ordinals } = this.plural;
       if (
         type === 'select' ||
-        (type === 'plural' && cardinal.includes('other')) ||
-        (type === 'selectordinal' && ordinal.includes('other'))
+        (type === 'plural' && cardinals.includes('other')) ||
+        (type === 'selectordinal' && ordinals.includes('other'))
       )
         throw new Error(`No 'other' form found in ${JSON.stringify(token)}`);
     }
     return `{ ${r.join(', ')} }`;
   }
 
-  /** @private */
   concatenate(tokens, root) {
     const asValues = this.options.returnType === 'values';
     return asValues && (root || tokens.length > 1)
@@ -106,8 +79,7 @@ export default class Compiler {
       : tokens.join(' + ') || '""';
   }
 
-  /** @private */
-  token(token, plural) {
+  token(token, pluralToken) {
     if (typeof token == 'string') return JSON.stringify(token);
 
     let fn;
@@ -115,65 +87,65 @@ export default class Compiler {
     switch (token.type) {
       case 'argument':
         return this.options.biDiSupport
-          ? biDiMarkText(args[0], this.lc)
+          ? biDiMarkText(args[0], this.plural.id)
           : args[0];
 
       case 'select':
         fn = 'select';
-        if (plural && this.options.strictNumberSign) plural = null;
-        args.push(this.cases(token, plural));
-        this.runtime.select = true;
+        if (pluralToken && this.options.strictNumberSign) pluralToken = null;
+        args.push(this.cases(token, pluralToken));
+        this.setRuntimeFn('select');
         break;
 
       case 'selectordinal':
         fn = 'plural';
-        args.push(0, identifier(this.lc), this.cases(token, token), 1);
-        this.locales[this.lc] = true;
-        this.runtime.plural = true;
+        args.push(0, identifier(this.plural.id), this.cases(token, token), 1);
+        this.setLocale(this.plural.id);
+        this.setRuntimeFn('plural');
         break;
 
       case 'plural':
         fn = 'plural';
         args.push(
           token.offset || 0,
-          identifier(this.lc),
+          identifier(this.plural.id),
           this.cases(token, token)
         );
-        this.locales[this.lc] = true;
-        this.runtime.plural = true;
+        this.setLocale(this.plural.id);
+        this.setRuntimeFn('plural');
         break;
 
       case 'function':
         if (token.key === 'number') {
-          fn = this.addNumberFormatter(token, args, plural);
+          fn = this.setNumberFormatter(token, args, pluralToken);
           break;
         }
-        args.push(JSON.stringify(this.lc));
+        args.push(JSON.stringify(this.plural.locale));
         if (token.param) {
-          if (plural && this.options.strictNumberSign) plural = null;
-          const s = token.param.tokens.map(tok => this.token(tok, plural));
+          if (pluralToken && this.options.strictNumberSign) pluralToken = null;
+          const s = token.param.tokens.map(tok => this.token(tok, pluralToken));
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
           if (token.key === 'number')
             args.push(JSON.stringify(this.options.currency));
         }
         fn = token.key;
-        this.formatters[token.key] = getFormatter(this.options, token.key);
+        this.setFormatter(fn);
         break;
 
       case 'octothorpe':
-        if (!plural) return '"#"';
+        if (!pluralToken) return '"#"';
         args = [
-          JSON.stringify(this.locale),
-          property('d', plural.arg),
-          plural.offset || '0'
+          JSON.stringify(this.plural.locale),
+          property('d', pluralToken.arg),
+          pluralToken.offset || '0'
         ];
         if (this.options.strictNumberSign) {
           fn = 'strictNumber';
-          args.push(JSON.stringify(plural.arg));
+          args.push(JSON.stringify(pluralToken.arg));
         } else {
           fn = 'number';
         }
-        this.runtime[fn] = true;
+        this.setRuntimeFn(fn);
         break;
     }
 
@@ -181,13 +153,57 @@ export default class Compiler {
     return `${fn}(${args.join(', ')})`;
   }
 
-  /** @private */
-  addNumberFormatter({ param }, args, plural) {
-    const lc = JSON.stringify(this.lc);
+  runtimeIncludes(key, type) {
+    const prev = this.runtime[key];
+    if (!prev) return false;
+    if (prev.type === type) return true;
+    if (identifier(key) !== key)
+      throw new SyntaxError(`Reserved word used as ${type} identifier: ${key}`);
+    throw new TypeError(
+      `Cannot override ${prev.type} runtime function as ${type}: ${key}`
+    );
+  }
+
+  setLocale(key) {
+    if (this.runtimeIncludes(key, 'locale')) return;
+    const pf = this.plural.getCategory;
+    pf.type = 'locale';
+    this.runtime[key] = pf;
+  }
+
+  setRuntimeFn(key) {
+    if (this.runtimeIncludes(key, 'runtime')) return;
+    const rf = Runtime[key];
+    rf.module = RUNTIME_MODULE;
+    rf.type = 'runtime';
+    this.runtime[key] = rf;
+  }
+
+  setFormatter(key) {
+    if (this.runtimeIncludes(key, 'formatter')) return;
+    const cf = this.options.customFormatters[key];
+    if (cf) {
+      cf.type = 'formatter';
+      this.runtime[key] = cf;
+    } else {
+      const df = Formatters[key];
+      if (df) {
+        df.module = FORMATTER_MODULE;
+        df.type = 'formatter';
+        this.runtime[key] = df;
+      } else {
+        throw new Error(`Formatting function not found: ${key}`);
+      }
+    }
+  }
+
+  setNumberFormatter({ param }, args, plural) {
+    const lc = JSON.stringify(this.plural.locale);
     if (!param) {
       // {var, number} can use runtime number(lc, var, offset)
       args.unshift(lc);
       args.push('0');
+      this.setRuntimeFn('number');
       return 'number';
     }
 
@@ -216,7 +232,7 @@ export default class Compiler {
         }
       }
       if (fn) {
-        this.formatters[fn] = getFormatter(this.options, fn);
+        this.setFormatter(fn);
         return fn;
       }
     }
@@ -225,7 +241,7 @@ export default class Compiler {
     const s = param.tokens.map(tok => this.token(tok, plural));
     args.push('(' + (s.join(' + ') || '""') + ').trim()');
     args.push(JSON.stringify(this.options.currency));
-    this.formatters.numberFmt = getFormatter(this.options, 'numberFmt');
+    this.setFormatter('numberFmt');
     return 'numberFmt';
   }
 }

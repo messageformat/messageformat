@@ -1,4 +1,3 @@
-import * as Runtime from 'messageformat-runtime';
 import Compiler from './compiler';
 import { getAllPlurals, getPlural, hasPlural } from './plurals';
 
@@ -53,7 +52,8 @@ export default class MessageFormat {
    * String `locale` values will be matched to plural categorisation functions
    * provided by the Unicode CLDR. If defining your own instead, use named
    * functions instead, optionally providing them with the properties:
-   * `cardinals: string[]`, `ordinals: string[]`, `getSource: () => ({ source: string })`.
+   * `cardinals: string[]`, `ordinals: string[]`, `module: string` (to import
+   * the formatter as a runtime dependency, rather than inlining its source).
    *
    * If `locale` has the special value `'*'`, it will match *all* available
    * locales. This may be useful if you want your messages to be completely
@@ -154,15 +154,10 @@ export default class MessageFormat {
    */
   compile(message) {
     const compiler = new Compiler(this.options);
-    const plural = this.plurals[0];
-    const fnBody = 'return ' + compiler.compile(message, plural);
-    const nfArgs = [plural.id];
-    const fnArgs = [plural.getCategory];
-    for (const key of Object.keys(compiler.runtime)) {
-      nfArgs.push(key);
-      fnArgs.push(Runtime[key]);
-    }
-    for (const [key, fmt] of Object.entries(compiler.formatters)) {
+    const fnBody = 'return ' + compiler.compile(message, this.plurals[0]);
+    const nfArgs = [];
+    const fnArgs = [];
+    for (const [key, fmt] of Object.entries(compiler.runtime)) {
       nfArgs.push(key);
       fnArgs.push(fmt);
     }
