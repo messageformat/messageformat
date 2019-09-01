@@ -133,7 +133,7 @@ describe('Messages', () => {
     const sv = { e: 'Jag pratar lite svenska.' };
     messages.addMessages(await getModule(mf, sv), 'sv');
     expect(messages.availableLocales).to.eql(['en', 'fi', 'sv']);
-    messages.locale = 'sv';
+    await (() => (messages.locale = 'sv'))();
     expect(messages.get('e')).to.eql('Jag pratar lite svenska.');
     expect(messages.getFallback()).to.eql(['en']);
     expect(messages.get([])).to.have.keys('e');
