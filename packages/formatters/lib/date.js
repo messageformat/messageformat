@@ -40,6 +40,4 @@ function date(v, lc, p) {
   return new Date(v).toLocaleDateString(lc, o);
 }
 
-module.exports = function() {
-  return date;
-};
+module.exports = date;

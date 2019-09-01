@@ -27,14 +27,14 @@
  * // 'The total is £5.50.'
  */
 
-function number(value, lc, arg) {
+function number(value, lc, arg, defaultCurrency) {
   var a = (arg && arg.split(':')) || [];
   var opt = {
     integer: { maximumFractionDigits: 0 },
     percent: { style: 'percent' },
     currency: {
       style: 'currency',
-      currency: (a[1] && a[1].trim()) || CURRENCY,
+      currency: (a[1] && a[1].trim()) || defaultCurrency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }
@@ -42,10 +42,4 @@ function number(value, lc, arg) {
   return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value);
 }
 
-module.exports = function(opt) {
-  var parts = number
-    .toString()
-    .replace('CURRENCY', JSON.stringify(opt.currency || 'USD'))
-    .match(/\(([^)]*)\)[^{]*{([\s\S]*)}/);
-  return new Function(parts[1], parts[2]);
-};
+module.exports = number;

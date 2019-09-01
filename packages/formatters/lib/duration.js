@@ -51,6 +51,4 @@ function duration(value) {
   );
 }
 
-module.exports = function() {
-  return duration;
-};
+module.exports = duration;

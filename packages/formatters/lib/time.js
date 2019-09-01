@@ -34,6 +34,4 @@ function time(v, lc, p) {
   return new Date(v).toLocaleTimeString(lc, o);
 }
 
-module.exports = function() {
-  return time;
-};
+module.exports = time;
