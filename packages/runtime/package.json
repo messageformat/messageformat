@@ -15,34 +15,15 @@
   "main": "lib/runtime",
   "sideEffects": false,
   "files": [
-    "lib/"
+    "lib/",
+    "messages.*"
   ],
   "scripts": {
-    "build": "babel src -d lib",
+    "build:cjs": "MODULE_TYPE=cjs babel src -d lib",
+    "build:mjs": "MODULE_TYPE=mjs babel src -d lib --keep-file-extension",
+    "build": "npm run build:cjs && npm run build:mjs",
     "docs": "jsdoc2md -f src/messages.js > README.md",
     "prepublishOnly": "npm run build && npm run docs"
-  },
-  "babel": {
-    "comments": false,
-    "plugins": [
-      [
-        "@babel/plugin-proposal-class-properties",
-        {
-          "loose": true
-        }
-      ]
-    ],
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "exclude": [
-            "transform-typeof-symbol"
-          ],
-          "loose": true
-        }
-      ]
-    ]
   },
   "browserslist": [
     "last 1 version",

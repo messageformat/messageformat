@@ -1,1 +1,1 @@
-module.exports = require('./lib/messages');
+module.exports = require('./lib/messages').default;

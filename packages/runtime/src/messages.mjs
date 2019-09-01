@@ -62,7 +62,7 @@
  * messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'
  * ```
  */
-class Messages {
+export default class Messages {
   constructor(msgData, defaultLocale) {
     this._data = {};
     this._fallback = {};
@@ -305,5 +305,3 @@ function _has(data, lc, key, fallback, type) {
   }
   return false;
 }
-
-module.exports = Messages;
