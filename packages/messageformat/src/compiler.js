@@ -4,16 +4,19 @@ import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 
 function getFormatter(options, key) {
-  const fn = options.customFormatters[key] || Formatters[key];
-  if (!fn) throw new Error(`Formatting function not found: ${key}`);
-  return fn;
+  const cf = options.customFormatters[key];
+  if (cf) return cf;
+  const df = Formatters[key];
+  if (df) {
+    df.module = 'messageformat-runtime/lib/formatters';
+    return df;
+  }
+  throw new Error(`Formatting function not found: ${key}`);
 }
 
-/** @private */
 export default class Compiler {
   /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
    *
-   * @private
    * @param {object} options - A MessageFormat options object
    * @property {object} locales - The locale identifiers that are used by the compiled functions
    * @property {object} runtime - Names of the core runtime functions that are used by the compiled functions
@@ -37,7 +40,6 @@ export default class Compiler {
    *  the compile-time checks for plural & selectordinal keys while maintaining
    *  multi-locale support, use falsy values in `plurals`.
    *
-   * @private
    * @param {string|object} src - the source for which the JS code should be generated
    * @param {object} plural - the default locale
    * @param {object} plurals - a map of pluralization keys for all available locales
@@ -60,6 +62,18 @@ export default class Compiler {
       strict: this.options.strictNumberSign
     };
     const r = parse(src, this.parserOptions).map(token => this.token(token));
+    for (const fmt of Object.keys(this.formatters)) {
+      const errType =
+        plurals && plurals[fmt]
+          ? 'plural identifiers'
+          : this.runtime[fmt]
+          ? 'runtime functions'
+          : identifier(fmt) !== fmt
+          ? 'JavaScript'
+          : null;
+      if (errType)
+        throw new TypeError(`Formatter name is reserved (${errType}): ${fmt}`);
+    }
     return `function(d) { return ${this.concatenate(r, true)}; }`;
   }
 
@@ -142,7 +156,7 @@ export default class Compiler {
           if (token.key === 'number')
             args.push(JSON.stringify(this.options.currency));
         }
-        fn = property('fmt', token.key);
+        fn = token.key;
         this.formatters[token.key] = getFormatter(this.options, token.key);
         break;
 
@@ -167,10 +181,11 @@ export default class Compiler {
     return `${fn}(${args.join(', ')})`;
   }
 
-  addNumberFormatter({ key, param }, args, plural) {
+  /** @private */
+  addNumberFormatter({ param }, args, plural) {
     const lc = JSON.stringify(this.lc);
     if (!param) {
-      // {var, number} can use runtime number()
+      // {var, number} can use runtime number(lc, var, offset)
       args.unshift(lc);
       args.push('0');
       return 'number';
@@ -180,38 +195,29 @@ export default class Compiler {
     const fmtArg0 = param.tokens[0];
     if (param.tokens.length === 1 && typeof fmtArg0 === 'string') {
       // Use arg-specific formatters for common cases
+      let fn;
       switch (fmtArg0.trim()) {
         case 'currency':
           args.push(JSON.stringify(this.options.currency));
-          this.formatters.numberCurrency = getFormatter(
-            this.options,
-            'numberCurrency'
-          );
-          return 'fmt.numberCurrency';
-
+          fn = 'numberCurrency';
+          break;
         case 'integer':
-          this.formatters.numberInteger = getFormatter(
-            this.options,
-            'numberInteger'
-          );
-          return 'fmt.numberInteger';
-
+          fn = 'numberInteger';
+          break;
         case 'percent':
-          this.formatters.numberPercent = getFormatter(
-            this.options,
-            'numberPercent'
-          );
-          return 'fmt.numberPercent';
+          fn = 'numberPercent';
+          break;
+        default: {
+          const cm = fmtArg0.match(/^\s*currency:([A-Z]+)\s*$/);
+          if (cm) {
+            args.push(JSON.stringify(cm[1]));
+            fn = 'numberCurrency';
+          }
+        }
       }
-
-      const cm = fmtArg0.match(/^\s*currency:([A-Z]+)\s*$/);
-      if (cm) {
-        args.push(JSON.stringify(cm[1]));
-        this.formatters.numberCurrency = getFormatter(
-          this.options,
-          'numberCurrency'
-        );
-        return 'fmt.numberCurrency';
+      if (fn) {
+        this.formatters[fn] = getFormatter(this.options, fn);
+        return fn;
       }
     }
 
@@ -220,6 +226,6 @@ export default class Compiler {
     args.push('(' + (s.join(' + ') || '""') + ').trim()');
     args.push(JSON.stringify(this.options.currency));
     this.formatters.numberFmt = getFormatter(this.options, 'numberFmt');
-    return 'fmt.numberFmt';
+    return 'numberFmt';
   }
 }

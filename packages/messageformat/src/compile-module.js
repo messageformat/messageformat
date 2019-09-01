@@ -23,10 +23,14 @@ function stringifyDependencies(compiler, plurals) {
     imports[RUNTIME] = prev ? [...prev, fn] : [fn];
   }
 
-  const fmt = Object.entries(compiler.formatters).map(
-    ([name, fn]) => `${property(null, name)}: ${String(fn)}`
-  );
-  if (fmt.length > 0) vars.fmt = `{\n${fmt.join(',\n')}\n}`;
+  for (const [name, fn] of Object.entries(compiler.formatters)) {
+    if (fn.module) {
+      const prev = imports[fn.module];
+      imports[fn.module] = prev ? [...prev, name] : [name];
+    } else {
+      vars[name] = String(fn);
+    }
+  }
 
   const is = Object.entries(imports).map(
     ([module, names]) =>

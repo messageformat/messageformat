@@ -155,21 +155,18 @@ export default class MessageFormat {
   compile(message) {
     const compiler = new Compiler(this.options);
     const plural = this.plurals[0];
-    const numFn = this.options.strictNumberSign ? 'strictNumber' : 'number';
-    const fn = new Function(
-      numFn,
-      'plural',
-      'select',
-      'fmt',
-      plural.id,
-      'return ' + compiler.compile(message, plural)
-    );
-    return fn(
-      Runtime[numFn],
-      Runtime.plural,
-      Runtime.select,
-      compiler.formatters,
-      plural.getCategory
-    );
+    const fnBody = 'return ' + compiler.compile(message, plural);
+    const nfArgs = [plural.id];
+    const fnArgs = [plural.getCategory];
+    for (const key of Object.keys(compiler.runtime)) {
+      nfArgs.push(key);
+      fnArgs.push(Runtime[key]);
+    }
+    for (const [key, fmt] of Object.entries(compiler.formatters)) {
+      nfArgs.push(key);
+      fnArgs.push(fmt);
+    }
+    const fn = new Function(...nfArgs, fnBody);
+    return fn.apply(null, fnArgs);
   }
 }
