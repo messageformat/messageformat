@@ -1,5 +1,3 @@
-/* global CURRENCY, Intl */
-
 /** Represent a number as an integer, percent or currency value
  *
  *  Available in MessageFormat strings as `{VAR, number, integer|percent|currency}`.
@@ -27,7 +25,7 @@
  * // 'The total is £5.50.'
  */
 
-function numberFmt(value, lc, arg, defaultCurrency) {
+export function numberFmt(value, lc, arg, defaultCurrency) {
   var a = (arg && arg.split(':')) || [];
   var opt = {
     integer: { maximumFractionDigits: 0 },
@@ -42,7 +40,7 @@ function numberFmt(value, lc, arg, defaultCurrency) {
   return new Intl.NumberFormat(lc, opt[a[0]] || {}).format(value);
 }
 
-function numberCurrency(value, lc, arg) {
+export function numberCurrency(value, lc, arg) {
   return new Intl.NumberFormat(lc, {
     style: 'currency',
     currency: arg,
@@ -51,12 +49,10 @@ function numberCurrency(value, lc, arg) {
   }).format(value);
 }
 
-function numberInteger(value, lc) {
+export function numberInteger(value, lc) {
   return new Intl.NumberFormat(lc, { maximumFractionDigits: 0 }).format(value);
 }
 
-function numberPercent(value, lc) {
+export function numberPercent(value, lc) {
   return new Intl.NumberFormat(lc, { style: 'percent' }).format(value);
 }
-
-module.exports = { numberCurrency, numberFmt, numberInteger, numberPercent };

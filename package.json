@@ -37,7 +37,6 @@
     "messageformat": "file:packages/messageformat",
     "messageformat-cli": "file:packages/cli",
     "messageformat-convert": "file:packages/convert",
-    "messageformat-formatters": "file:packages/formatters",
     "messageformat-loader": "file:packages/loader",
     "messageformat-loader-example": "file:packages/loader-example",
     "messageformat-parser": "file:packages/parser",

@@ -1,5 +1,5 @@
-import Formatters from 'messageformat-formatters';
 import { parse } from 'messageformat-parser';
+import * as Formatters from 'messageformat-runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 

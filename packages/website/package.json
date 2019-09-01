@@ -15,6 +15,6 @@
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.6.2",
     "messageformat": "file:../messageformat",
-    "messageformat-formatters": "file:../formatters"
+    "messageformat-runtime": "file:../runtime"
   }
 }
