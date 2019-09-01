@@ -8,8 +8,6 @@
  * @module messageformat-messages
  */
 
-module.exports = Messages;
-
 /**
  * @alias module:messageformat-messages
  *
@@ -75,7 +73,7 @@ class Messages {
       }
     });
     this.locale = defaultLocale;
-    this._defaultLocale = this._locale;
+    this._defaultLocale = this.locale;
   }
 
   /**
