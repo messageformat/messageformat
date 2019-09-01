@@ -4,11 +4,9 @@ import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 
 function getFormatter(options, key) {
-  const cf = options.customFormatters[key];
-  if (cf) return cf;
-  const df = Formatters[key];
-  if (df) return df(options);
-  throw new Error(`Formatting function not found: ${key}`);
+  const fn = options.customFormatters[key] || Formatters[key];
+  if (!fn) throw new Error(`Formatting function not found: ${key}`);
+  return fn;
 }
 
 /** @private */
@@ -137,6 +135,8 @@ export default class Compiler {
           if (plural && this.options.strictNumberSign) plural = null;
           const s = token.param.tokens.map(tok => this.token(tok, plural));
           args.push('(' + (s.join(' + ') || '""') + ').trim()');
+          if (token.key === 'number')
+            args.push(JSON.stringify(this.options.currency));
         }
         fn = property('fmt', token.key);
         this.formatters[token.key] = getFormatter(this.options, token.key);
