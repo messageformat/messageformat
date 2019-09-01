@@ -25,6 +25,9 @@
     "docs": "jsdoc2md -f src/messages.js > README.md",
     "prepublishOnly": "npm run build && npm run docs"
   },
+  "dependencies": {
+    "make-plural": "^6.0.0-beta.1"
+  },
   "browserslist": [
     "last 1 version",
     "> 1%",

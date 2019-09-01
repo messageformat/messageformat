@@ -2,7 +2,7 @@ import * as PluralCategories from 'make-plural/pluralCategories';
 import * as Plurals from 'make-plural/plurals';
 import { identifier } from 'safe-identifier';
 
-const PLURAL_MODULE = 'make-plural/plurals';
+const PLURAL_MODULE = 'messageformat-runtime/lib/plurals';
 
 function normalize(locale) {
   if (typeof locale !== 'string' || locale.length < 2)
