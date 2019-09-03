@@ -71,7 +71,7 @@
     ]
   },
   "dependencies": {
-    "make-plural": "^6.0.0-beta.1",
+    "make-plural": "^6.0.0-beta.3",
     "messageformat-parser": "file:../parser",
     "messageformat-runtime": "file:../runtime",
     "safe-identifier": "^0.2.0"
