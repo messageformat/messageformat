@@ -329,6 +329,16 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ NUM: 2 })).to.eql('b');
   });
 
+  it('supports selectordinal with offset', function() {
+    var mf = new MessageFormat('en');
+    var mfunc = mf.compile(
+      '{NUM, selectordinal, offset:1 =0{literal} one{one} other{other}}'
+    );
+    expect(mfunc({ NUM: 0 })).to.eql('literal');
+    expect(mfunc({ NUM: 1 })).to.eql('other');
+    expect(mfunc({ NUM: 2 })).to.eql('one');
+  });
+
   it('should obey `i=0 and v=0` rules', function() {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('{NUM, plural, one{a} other{b}}');

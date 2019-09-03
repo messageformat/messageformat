@@ -99,7 +99,12 @@ export default class Compiler {
 
       case 'selectordinal':
         fn = 'plural';
-        args.push(0, identifier(this.plural.id), this.cases(token, token), 1);
+        args.push(
+          token.offset || 0,
+          identifier(this.plural.id),
+          this.cases(token, token),
+          1
+        );
         this.setLocale(this.plural.id);
         this.setRuntimeFn('plural');
         break;
