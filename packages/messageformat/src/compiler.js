@@ -5,6 +5,8 @@ import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 
 const RUNTIME_MODULE = 'messageformat-runtime';
+const CARDINAL_MODULE = 'messageformat-runtime/lib/cardinals';
+const PLURAL_MODULE = 'messageformat-runtime/lib/plurals';
 const FORMATTER_MODULE = 'messageformat-runtime/lib/formatters';
 
 export default class Compiler {
@@ -105,7 +107,7 @@ export default class Compiler {
           this.cases(token, token),
           1
         );
-        this.setLocale(this.plural.id);
+        this.setLocale(this.plural.id, true);
         this.setRuntimeFn('plural');
         break;
 
@@ -116,7 +118,7 @@ export default class Compiler {
           identifier(this.plural.id),
           this.cases(token, token)
         );
-        this.setLocale(this.plural.id);
+        this.setLocale(this.plural.id, false);
         this.setRuntimeFn('plural');
         break;
 
@@ -160,8 +162,7 @@ export default class Compiler {
 
   runtimeIncludes(key, type) {
     const prev = this.runtime[key];
-    if (!prev) return false;
-    if (prev.type === type) return true;
+    if (!prev || prev.type === type) return prev;
     if (identifier(key) !== key)
       throw new SyntaxError(`Reserved word used as ${type} identifier: ${key}`);
     throw new TypeError(
@@ -169,9 +170,22 @@ export default class Compiler {
     );
   }
 
-  setLocale(key) {
-    if (this.runtimeIncludes(key, 'locale')) return;
-    const pf = this.plural.getCategory;
+  setLocale(key, ord) {
+    const prev = this.runtimeIncludes(key, 'locale');
+    const { getCardinal, getPlural, isDefault } = this.plural;
+    let pf;
+    if (!ord && isDefault && getCardinal) {
+      if (prev) return;
+      pf = n => getCardinal(n);
+      pf.module = CARDINAL_MODULE;
+      pf.toString = () => String(getCardinal);
+    } else {
+      // overwrite a previous cardinal-only locale function
+      if (prev && (!isDefault || prev.module === PLURAL_MODULE)) return;
+      pf = (n, ord) => getPlural(n, ord);
+      pf.module = isDefault ? PLURAL_MODULE : getPlural.module;
+      pf.toString = () => String(getPlural);
+    }
     pf.type = 'locale';
     this.runtime[key] = pf;
   }

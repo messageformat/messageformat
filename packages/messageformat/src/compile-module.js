@@ -18,8 +18,10 @@ function stringifyRuntime(runtime) {
     ([module, names]) =>
       `import { ${names.sort().join(', ')} } from '${module}';`
   );
-  const vs = Object.entries(vars).map(
-    ([id, value]) => `const ${id} = ${value};`
+  const vs = Object.entries(vars).map(([id, value]) =>
+    new RegExp(`^function ${id}\\b`).test(value)
+      ? value
+      : `const ${id} = ${value};`
   );
 
   if (is.length > 0 && vs.length > 0) is.push('');

@@ -1,8 +1,7 @@
+import * as Cardinals from 'make-plural/cardinals';
 import * as PluralCategories from 'make-plural/pluralCategories';
 import * as Plurals from 'make-plural/plurals';
 import { identifier } from 'safe-identifier';
-
-const PLURAL_MODULE = 'messageformat-runtime/lib/plurals';
 
 function normalize(locale) {
   if (typeof locale !== 'string' || locale.length < 2)
@@ -20,31 +19,29 @@ export function getPlural(locale) {
   if (typeof locale === 'function') {
     const lc = normalize(locale.name);
     return {
-      default: false,
+      isDefault: false,
       id: identifier(lc),
       lc,
       locale: locale.name,
-      getCategory: locale,
+      getPlural: locale,
       cardinals: locale.cardinals || [],
       ordinals: locale.ordinals || []
     };
   }
   const lc = normalize(locale);
-  const pluralFn = Plurals[lc];
-  if (!pluralFn) return null;
-  const getCategory = (n, ord) => pluralFn(n, ord);
-  getCategory.module = PLURAL_MODULE;
-  getCategory.toString = () => String(pluralFn);
-  const categories = PluralCategories[lc] || {};
-  return {
-    default: true,
-    id: identifier(lc),
-    lc,
-    locale,
-    getCategory,
-    cardinals: categories.cardinal || [],
-    ordinals: categories.ordinal || []
-  };
+  if (lc in Plurals) {
+    return {
+      isDefault: true,
+      id: identifier(lc),
+      lc,
+      locale,
+      getCardinal: Cardinals[lc],
+      getPlural: Plurals[lc],
+      cardinals: PluralCategories[lc].cardinal,
+      ordinals: PluralCategories[lc].ordinal
+    };
+  }
+  return null;
 }
 
 export function getAllPlurals(firstLocale) {

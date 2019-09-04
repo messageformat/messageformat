@@ -38,14 +38,14 @@ describe('new MessageFormat()', function() {
     const mf = new MessageFormat('en-x-test1-test2');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en-x-test1-test2');
-    expect(opt.plurals[0].getCategory).to.be.a('function');
+    expect(opt.plurals[0].getPlural).to.be.a('function');
   });
 
   it('should fallback when a base pluralFunc exists (underscores)', function() {
     const mf = new MessageFormat('en_x_test1_test2');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en_x_test1_test2');
-    expect(opt.plurals[0].getCategory).to.be.a('function');
+    expect(opt.plurals[0].getPlural).to.be.a('function');
   });
 
   it('should fallback on non-existing locales', function() {
@@ -69,7 +69,7 @@ describe('new MessageFormat()', function() {
     const mf = new MessageFormat([fake]);
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('fake');
-    expect(opt.plurals[0].getCategory).to.equal(fake);
+    expect(opt.plurals[0].getPlural).to.equal(fake);
     expect(opt.plurals[0].cardinals).to.equal(fake.cardinals);
     expect(opt.plurals[0].ordinals).to.equal(fake.ordinals);
   });

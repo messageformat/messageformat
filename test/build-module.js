@@ -126,4 +126,43 @@ describe('compileModule()', function() {
     ]);
     expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
   });
+
+  it('should import cardinal-only plural by default', async () => {
+    const mf = new MessageFormat('en');
+    const msg = '{foo, plural, one{one} other{other}}';
+    const src = compileModule(mf, { msg });
+    expect(src).to.match(
+      /import { en } from 'messageformat-runtime\/lib\/cardinals'/
+    );
+  });
+
+  it('should import combined plural if required', async () => {
+    const mf = new MessageFormat('en');
+    const msg = '{foo, selectordinal, one{one} other{other}}';
+    const src = compileModule(mf, { msg });
+    expect(src).to.match(
+      /import { en } from 'messageformat-runtime\/lib\/plurals'/
+    );
+  });
+
+  it('should inline custom plural by default', async () => {
+    function lc() {
+      return 'other';
+    }
+    const mf = new MessageFormat(lc);
+    const msg = '{foo, plural, one{one} other{other}}';
+    const src = compileModule(mf, { msg });
+    expect(src).to.match(/\nfunction lc\b/);
+  });
+
+  it('should import custom plural if defined with module', async () => {
+    function lc() {
+      return 'other';
+    }
+    lc.module = 'custom-module';
+    const mf = new MessageFormat(lc);
+    const msg = '{foo, plural, one{one} other{other}}';
+    const src = compileModule(mf, { msg });
+    expect(src).to.match(/import { lc } from 'custom-module'/);
+  });
 });
