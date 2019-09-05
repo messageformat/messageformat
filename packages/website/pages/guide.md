@@ -123,7 +123,7 @@ messages.position({ POS: 33 }); // 'You are 33rd in the queue.'
 ### Plural Offset
 
 To generate sentences such as "You and 4 others added this to their profiles.",
-PluralFormat supports adding an `offset` to the variable value before
+PluralFormat supports subtracting an `offset` from the variable value before
 determining its plural category. Literal/exact matches are tested before
 applying the offset.
 
