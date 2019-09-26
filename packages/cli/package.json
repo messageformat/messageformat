@@ -36,9 +36,6 @@
     "nopt": "^4.0.1",
     "uv": "^1.0.7"
   },
-  "devDependencies": {
-    "messageformat": "^2.3.0"
-  },
   "peerDependencies": {
     "messageformat": "2.x"
   }

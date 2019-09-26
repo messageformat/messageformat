@@ -72,17 +72,8 @@
   },
   "dependencies": {
     "make-plural": "^5.0.0",
-    "messageformat-formatters": "^2.0.1",
-    "messageformat-parser": "^4.1.2"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.5",
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
-    "babel-loader": "^8.0.6",
-    "webpack": "^4.32.2",
-    "webpack-cli": "^3.3.2"
+    "messageformat-formatters": "file:../formatters",
+    "messageformat-parser": "file:../parser"
   },
   "scripts": {
     "prebuild": "babel src -d lib",

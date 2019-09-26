@@ -33,9 +33,7 @@
     ]
   },
   "dependencies": {
-    "messageformat": "^2.3.0",
-    "messageformat-loader": "^0.8.1",
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.5"
+    "messageformat": "file:../messageformat",
+    "messageformat-loader": "file:../loader"
   }
 }
