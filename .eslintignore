@@ -2,10 +2,10 @@ node_modules/
 package.json
 package-lock.json
 /docs/
-/example/i18n.js
+/example/messages.js
 /packages/loader-example/dist/bundle.js
 /packages/messageformat/lib/*
 /packages/messageformat/messageformat.*
-/packages/messages/lib/*
 /packages/parser/parser.js
+/packages/runtime/lib/*
 /test/browser/chai.js

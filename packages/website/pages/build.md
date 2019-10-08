@@ -112,7 +112,7 @@ It works like this (using [messageformat-loader], configured for `en` and `fi` l
 <div class="panel panel-default">
   <div class="panel-heading">example.js</div>
   <div class="panel-body">
-    <pre class="prettyprint source lang-javascript"><code>import Messages from 'messageformat-messages'
+    <pre class="prettyprint source lang-javascript"><code>import Messages from 'messageformat-runtime/messages'
 import msgData from './messages.json'
 const messages = new Messages(msgData, 'en')  // sets default locale
 

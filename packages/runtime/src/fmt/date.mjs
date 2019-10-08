@@ -1,5 +1,3 @@
-/* eslint-disable no-fallthrough */
-
 /** Represent a date as a short/default/long/full string
  *
  * The input value needs to be in a form that the
@@ -26,8 +24,9 @@
  * cf({ sys: 'HAL 9000', d0: '12 January 1999' })
  * // 'HAL 9000 became operational on 1/12/1999'
  */
-function date(v, lc, p) {
+export function date(v, lc, p) {
   var o = { day: 'numeric', month: 'short', year: 'numeric' };
+  /* eslint-disable no-fallthrough */
   switch (p) {
     case 'full':
       o.weekday = 'long';
@@ -39,7 +38,3 @@ function date(v, lc, p) {
   }
   return new Date(v).toLocaleDateString(lc, o);
 }
-
-module.exports = function() {
-  return date;
-};

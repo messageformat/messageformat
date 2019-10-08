@@ -1,7 +1,7 @@
 {
-  "name": "messageformat-messages",
+  "name": "messageformat-runtime",
   "version": "2.3.0",
-  "description": "Simple accessor class for messageformat",
+  "description": "Runtime components of messageformat",
   "keywords": [
     "i18n",
     "icu",
@@ -12,28 +12,21 @@
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
   "repository": "messageformat/messageformat",
-  "main": "lib/messages.js",
+  "main": "lib/runtime",
+  "sideEffects": false,
   "files": [
-    "lib/"
+    "lib/",
+    "messages.*"
   ],
   "scripts": {
-    "build": "babel src -d lib",
+    "build:cjs": "MODULE_TYPE=cjs babel src -d lib",
+    "build:mjs": "MODULE_TYPE=mjs babel src -d lib --keep-file-extension",
+    "build": "npm run build:cjs && npm run build:mjs",
     "docs": "jsdoc2md -f src/messages.js > README.md",
     "prepublishOnly": "npm run build && npm run docs"
   },
-  "babel": {
-    "comments": false,
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "exclude": [
-            "transform-typeof-symbol"
-          ],
-          "loose": true
-        }
-      ]
-    ]
+  "dependencies": {
+    "make-plural": "^6.0.0-beta.3"
   },
   "browserslist": [
     "last 1 version",
@@ -45,6 +38,9 @@
     "env": {
       "browser": true,
       "es6": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
     }
   }
 }

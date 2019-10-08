@@ -2,12 +2,11 @@
   "source": {
     "include": [
       "node_modules/messageformat/src/messageformat.js",
-      "node_modules/messageformat/src/runtime.js",
-      "node_modules/messageformat-formatters/index.js",
-      "node_modules/messageformat-formatters/lib/date.js",
-      "node_modules/messageformat-formatters/lib/duration.js",
-      "node_modules/messageformat-formatters/lib/number.js",
-      "node_modules/messageformat-formatters/lib/time.js"
+      "node_modules/messageformat-runtime/src/formatters.mjs",
+      "node_modules/messageformat-runtime/src/fmt/date.mjs",
+      "node_modules/messageformat-runtime/src/fmt/duration.mjs",
+      "node_modules/messageformat-runtime/src/fmt/number.mjs",
+      "node_modules/messageformat-runtime/src/fmt/time.mjs"
     ]
   },
   "plugins": ["plugins/markdown"],

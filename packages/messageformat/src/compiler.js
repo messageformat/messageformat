@@ -1,22 +1,26 @@
 import { parse } from 'messageformat-parser';
-import { biDiMarkText, funcname, propname } from './utils';
+import * as Runtime from 'messageformat-runtime';
+import * as Formatters from 'messageformat-runtime/lib/formatters';
+import { identifier, property } from 'safe-identifier';
+import { biDiMarkText } from './bidi-mark-text';
 
-/** @private */
+const RUNTIME_MODULE = 'messageformat-runtime';
+const CARDINAL_MODULE = 'messageformat-runtime/lib/cardinals';
+const PLURAL_MODULE = 'messageformat-runtime/lib/plurals';
+const FORMATTER_MODULE = 'messageformat-runtime/lib/formatters';
+
 export default class Compiler {
   /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
    *
-   * @private
-   * @param {MessageFormat} mf - A MessageFormat instance
+   * @param {object} options - A MessageFormat options object
    * @property {object} locales - The locale identifiers that are used by the compiled functions
    * @property {object} runtime - Names of the core runtime functions that are used by the compiled functions
    * @property {object} formatters - The formatter functions that are used by the compiled functions
    */
-  constructor(mf) {
-    this.mf = mf;
-    this.lc = null;
-    this.locales = {};
+  constructor(options) {
+    this.options = options;
+    this.plural = null;
     this.runtime = {};
-    this.formatters = {};
   }
 
   /** Recursively compile a string or a tree of strings to JavaScript function sources
@@ -26,111 +30,237 @@ export default class Compiler {
    *  the compile-time checks for plural & selectordinal keys while maintaining
    *  multi-locale support, use falsy values in `plurals`.
    *
-   * @private
    * @param {string|object} src - the source for which the JS code should be generated
-   * @param {string} lc - the default locale
+   * @param {object} plural - the default locale
    * @param {object} plurals - a map of pluralization keys for all available locales
    */
-  compile(src, lc, plurals) {
-    if (typeof src != 'object') {
-      this.lc = lc;
-      const pc = plurals[lc] || { cardinal: [], ordinal: [] };
-      pc.strict = !!this.mf.options.strictNumberSign;
-      const r = parse(src, pc).map(token => this.token(token));
-      return `function(d) { return ${this.concatenate(r, true)}; }`;
-    } else {
+  compile(src, plural, plurals) {
+    if (typeof src === 'object') {
       const result = {};
-      for (var key in src) {
-        var lcKey = key in plurals ? key : lc;
-        result[key] = this.compile(src[key], lcKey, plurals);
+      for (const key of Object.keys(src)) {
+        const pl = plurals[key] || plural;
+        result[key] = this.compile(src[key], pl, plurals);
       }
       return result;
     }
+
+    this.plural = plural;
+    const parserOptions = {
+      cardinal: plural.cardinals,
+      ordinal: plural.ordinals,
+      strict: this.options.strictNumberSign
+    };
+    const r = parse(src, parserOptions).map(token => this.token(token));
+    return `function(d) { return ${this.concatenate(r, true)}; }`;
   }
 
-  /** @private */
-  cases(token, plural) {
-    let needOther = token.type === 'select' || !this.mf.hasCustomPluralFuncs;
+  cases(token, pluralToken) {
+    let needOther = true;
     const r = token.cases.map(({ key, tokens }) => {
       if (key === 'other') needOther = false;
-      const s = tokens.map(tok => this.token(tok, plural));
-      return `${propname(key)}: ${this.concatenate(s, false)}`;
+      const s = tokens.map(tok => this.token(tok, pluralToken));
+      return `${property(null, key)}: ${this.concatenate(s, false)}`;
     });
-    if (needOther)
-      throw new Error("No 'other' form found in " + JSON.stringify(token));
+    if (needOther) {
+      const { type } = token;
+      const { cardinals, ordinals } = this.plural;
+      if (
+        type === 'select' ||
+        (type === 'plural' && cardinals.includes('other')) ||
+        (type === 'selectordinal' && ordinals.includes('other'))
+      )
+        throw new Error(`No 'other' form found in ${JSON.stringify(token)}`);
+    }
     return `{ ${r.join(', ')} }`;
   }
 
-  /** @private */
   concatenate(tokens, root) {
-    const asValues = this.mf.options.returnType === 'values';
+    const asValues = this.options.returnType === 'values';
     return asValues && (root || tokens.length > 1)
       ? '[' + tokens.join(', ') + ']'
       : tokens.join(' + ') || '""';
   }
 
-  /** @private */
-  token(token, plural) {
+  token(token, pluralToken) {
     if (typeof token == 'string') return JSON.stringify(token);
 
     let fn;
-    let args = [propname(token.arg, 'd')];
+    let args = [property('d', token.arg)];
     switch (token.type) {
       case 'argument':
-        return this.mf.options.biDiSupport
-          ? biDiMarkText(args[0], this.lc)
+        return this.options.biDiSupport
+          ? biDiMarkText(args[0], this.plural.id)
           : args[0];
 
       case 'select':
         fn = 'select';
-        if (plural && this.mf.options.strictNumberSign) plural = null;
-        args.push(this.cases(token, plural));
-        this.runtime.select = true;
+        if (pluralToken && this.options.strictNumberSign) pluralToken = null;
+        args.push(this.cases(token, pluralToken));
+        this.setRuntimeFn('select');
         break;
 
       case 'selectordinal':
         fn = 'plural';
-        args.push(0, funcname(this.lc), this.cases(token, token), 1);
-        this.locales[this.lc] = true;
-        this.runtime.plural = true;
+        args.push(
+          token.offset || 0,
+          identifier(this.plural.id),
+          this.cases(token, token),
+          1
+        );
+        this.setLocale(this.plural.id, true);
+        this.setRuntimeFn('plural');
         break;
 
       case 'plural':
         fn = 'plural';
         args.push(
           token.offset || 0,
-          funcname(this.lc),
+          identifier(this.plural.id),
           this.cases(token, token)
         );
-        this.locales[this.lc] = true;
-        this.runtime.plural = true;
+        this.setLocale(this.plural.id, false);
+        this.setRuntimeFn('plural');
         break;
 
       case 'function':
-        args.push(JSON.stringify(this.lc));
-        if (token.param) {
-          if (plural && this.mf.options.strictNumberSign) plural = null;
-          const s = token.param.tokens.map(tok => this.token(tok, plural));
-          args.push('(' + (s.join(' + ') || '""') + ').trim()');
+        if (token.key === 'number') {
+          fn = this.setNumberFormatter(token, args, pluralToken);
+          break;
         }
-        fn = propname(token.key, 'fmt');
-        this.formatters[token.key] = this.mf.getFormatter(token.key);
+        args.push(JSON.stringify(this.plural.locale));
+        if (token.param) {
+          if (pluralToken && this.options.strictNumberSign) pluralToken = null;
+          const s = token.param.tokens.map(tok => this.token(tok, pluralToken));
+          args.push('(' + (s.join(' + ') || '""') + ').trim()');
+          if (token.key === 'number')
+            args.push(JSON.stringify(this.options.currency));
+        }
+        fn = token.key;
+        this.setFormatter(fn);
         break;
 
       case 'octothorpe':
-        if (!plural) return '"#"';
-        fn = 'number';
+        if (!pluralToken) return '"#"';
         args = [
-          JSON.stringify(this.lc),
-          propname(plural.arg, 'd'),
-          plural.offset || '0',
-          JSON.stringify(plural.arg)
+          JSON.stringify(this.plural.locale),
+          property('d', pluralToken.arg),
+          pluralToken.offset || '0'
         ];
-        this.runtime.number = true;
+        if (this.options.strictNumberSign) {
+          fn = 'strictNumber';
+          args.push(JSON.stringify(pluralToken.arg));
+        } else {
+          fn = 'number';
+        }
+        this.setRuntimeFn(fn);
         break;
     }
 
     if (!fn) throw new Error('Parser error for token ' + JSON.stringify(token));
     return `${fn}(${args.join(', ')})`;
+  }
+
+  runtimeIncludes(key, type) {
+    const prev = this.runtime[key];
+    if (!prev || prev.type === type) return prev;
+    if (identifier(key) !== key)
+      throw new SyntaxError(`Reserved word used as ${type} identifier: ${key}`);
+    throw new TypeError(
+      `Cannot override ${prev.type} runtime function as ${type}: ${key}`
+    );
+  }
+
+  setLocale(key, ord) {
+    const prev = this.runtimeIncludes(key, 'locale');
+    const { getCardinal, getPlural, isDefault } = this.plural;
+    let pf;
+    if (!ord && isDefault && getCardinal) {
+      if (prev) return;
+      pf = n => getCardinal(n);
+      pf.module = CARDINAL_MODULE;
+      pf.toString = () => String(getCardinal);
+    } else {
+      // overwrite a previous cardinal-only locale function
+      if (prev && (!isDefault || prev.module === PLURAL_MODULE)) return;
+      pf = (n, ord) => getPlural(n, ord);
+      pf.module = isDefault ? PLURAL_MODULE : getPlural.module;
+      pf.toString = () => String(getPlural);
+    }
+    pf.type = 'locale';
+    this.runtime[key] = pf;
+  }
+
+  setRuntimeFn(key) {
+    if (this.runtimeIncludes(key, 'runtime')) return;
+    const rf = Runtime[key];
+    rf.module = RUNTIME_MODULE;
+    rf.type = 'runtime';
+    this.runtime[key] = rf;
+  }
+
+  setFormatter(key) {
+    if (this.runtimeIncludes(key, 'formatter')) return;
+    const cf = this.options.customFormatters[key];
+    if (cf) {
+      cf.type = 'formatter';
+      this.runtime[key] = cf;
+    } else {
+      const df = Formatters[key];
+      if (df) {
+        df.module = FORMATTER_MODULE;
+        df.type = 'formatter';
+        this.runtime[key] = df;
+      } else {
+        throw new Error(`Formatting function not found: ${key}`);
+      }
+    }
+  }
+
+  setNumberFormatter({ param }, args, plural) {
+    const lc = JSON.stringify(this.plural.locale);
+    if (!param) {
+      // {var, number} can use runtime number(lc, var, offset)
+      args.unshift(lc);
+      args.push('0');
+      this.setRuntimeFn('number');
+      return 'number';
+    }
+
+    args.push(lc);
+    const fmtArg0 = param.tokens[0];
+    if (param.tokens.length === 1 && typeof fmtArg0 === 'string') {
+      // Use arg-specific formatters for common cases
+      let fn;
+      switch (fmtArg0.trim()) {
+        case 'currency':
+          args.push(JSON.stringify(this.options.currency));
+          fn = 'numberCurrency';
+          break;
+        case 'integer':
+          fn = 'numberInteger';
+          break;
+        case 'percent':
+          fn = 'numberPercent';
+          break;
+        default: {
+          const cm = fmtArg0.match(/^\s*currency:([A-Z]+)\s*$/);
+          if (cm) {
+            args.push(JSON.stringify(cm[1]));
+            fn = 'numberCurrency';
+          }
+        }
+      }
+      if (fn) {
+        this.setFormatter(fn);
+        return fn;
+      }
+    }
+
+    if (plural && this.options.strictNumberSign) plural = null;
+    const s = param.tokens.map(tok => this.token(tok, plural));
+    args.push('(' + (s.join(' + ') || '""') + ').trim()');
+    args.push(JSON.stringify(this.options.currency));
+    this.setFormatter('numberFmt');
+    return 'numberFmt';
   }
 }

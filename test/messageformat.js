@@ -3,11 +3,22 @@ if (typeof require !== 'undefined') {
   var MessageFormat = require('../packages/messageformat');
 }
 
-describe('new MessageFormat()', function() {
-  it('should exist', function() {
+describe('static MessageFormat', () => {
+  it('should exist', () => {
     expect(MessageFormat).to.be.a('function');
   });
 
+  it('should have a supportedLocalesOf() function', () => {
+    expect(MessageFormat.supportedLocalesOf).to.be.a('function');
+  });
+
+  it('should have a working supportedLocalesOf() function', () => {
+    const lc = MessageFormat.supportedLocalesOf(['fi', 'xx', 'en-CA']);
+    expect(lc).to.eql(['fi', 'en-CA']);
+  });
+});
+
+describe('new MessageFormat()', function() {
   it('should be a constructor', function() {
     const mf = new MessageFormat('en');
     expect(mf).to.be.an.instanceof(MessageFormat);
@@ -18,24 +29,56 @@ describe('new MessageFormat()', function() {
     expect(mf.compile).to.be.a('function');
   });
 
+  it('should have a resolvedOptions() function', function() {
+    const mf = new MessageFormat('en');
+    expect(mf.resolvedOptions).to.be.a('function');
+  });
+
   it('should fallback when a base pluralFunc exists', function() {
     const mf = new MessageFormat('en-x-test1-test2');
-    expect(mf.pluralFuncs['en-x-test1-test2']).to.be.a('function');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en-x-test1-test2');
+    expect(opt.plurals[0].getPlural).to.be.a('function');
   });
 
   it('should fallback when a base pluralFunc exists (underscores)', function() {
     const mf = new MessageFormat('en_x_test1_test2');
-    expect(mf.pluralFuncs['en_x_test1_test2']).to.be.a('function');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en_x_test1_test2');
+    expect(opt.plurals[0].getPlural).to.be.a('function');
   });
 
-  it('should bail on non-existing locales', function() {
-    expect(function() {
-      new MessageFormat('lawlz');
-    }).to.throw();
+  it('should fallback on non-existing locales', function() {
+    const mf = new MessageFormat('lawlz');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en');
   });
 
   it('should default to `en` when no locale is passed into the constructor', function() {
-    expect(new MessageFormat().defaultLocale).to.eql('en');
+    const mf = new MessageFormat('lawlz');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en');
+  });
+
+  it('should accept custom plural functions', function() {
+    function fake(x, ord) {
+      return ord ? 'few' : 'some';
+    }
+    fake.cardinals = ['some'];
+    fake.ordinals = ['few'];
+    const mf = new MessageFormat([fake]);
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('fake');
+    expect(opt.plurals[0].getPlural).to.equal(fake);
+    expect(opt.plurals[0].cardinals).to.equal(fake.cardinals);
+    expect(opt.plurals[0].ordinals).to.equal(fake.ordinals);
+  });
+
+  it('should include all locales for "*"', function() {
+    const mf = new MessageFormat('*');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).to.equal('en');
+    expect(opt.plurals).to.have.lengthOf.above(100);
   });
 });
 
@@ -79,12 +122,10 @@ describe('compile()', function() {
     function fake(x, ord) {
       return ord ? 'few' : 'some';
     }
-    fake.cardinal = ['some'];
-    fake.ordinal = ['few'];
-    mf = new MessageFormat({ fake: fake });
-    expect(function() {
-      mf.compile('{X, plural, some{a}}');
-    }).to.not.throw();
+    fake.cardinals = ['some'];
+    fake.ordinals = ['few'];
+    mf = new MessageFormat([fake]);
+    expect(() => mf.compile('{X, plural, some{a}}')).to.not.throw();
   });
 
   it('should use the locale plural function', function() {
@@ -134,98 +175,6 @@ describe('compile()', function() {
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
-  });
-
-  it('can compile an object of messages into a function', function() {
-    const data = {
-      key: 'I have {FRIENDS, plural, one{one friend} other{# friends}}.'
-    };
-    const mfunc = mf.compile(data);
-    expect(mfunc).to.be.an('object');
-    expect(mfunc.toString()).to.match(/\bkey\b/);
-
-    expect(mfunc.key).to.be.a('function');
-    expect(mfunc.key({ FRIENDS: 1 })).to.eql('I have one friend.');
-    expect(mfunc.key({ FRIENDS: 2 })).to.eql('I have 2 friends.');
-  });
-
-  it('can compile an object enclosing reserved JavaScript words used as keys in quotes', function() {
-    const data = {
-      default: 'default is a JavaScript reserved word so should be quoted',
-      unreserved:
-        'unreserved is not a JavaScript reserved word so should not be quoted'
-    };
-    const mfunc = mf.compile(data);
-    expect(mfunc.toString()).to.match(/"default"/);
-    expect(mfunc.toString()).to.match(/[^"]unreserved[^"]/);
-
-    expect(mfunc['default']).to.be.a('function');
-    expect(mfunc['default']()).to.eql(
-      'default is a JavaScript reserved word so should be quoted'
-    );
-
-    expect(mfunc.unreserved).to.be.a('function');
-    expect(mfunc.unreserved()).to.eql(
-      'unreserved is not a JavaScript reserved word so should not be quoted'
-    );
-  });
-
-  it('can be instantiated multiple times for multiple languages', function() {
-    const mf = {
-      en: new MessageFormat('en'),
-      ru: new MessageFormat('ru')
-    };
-    const cf = {
-      en: mf.en.compile('{count} {count, plural, other{users}}'),
-      ru: mf.ru.compile('{count} {count, plural, other{пользователей}}')
-    };
-    expect(function() {
-      cf.en({ count: 12 });
-    }).to.not.throw();
-    expect(cf.en({ count: 12 })).to.eql('12 users');
-    expect(function() {
-      cf.ru({ count: 13 });
-    }).to.not.throw();
-    expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
-  });
-
-  const customFormatters = { lc: (v, lc) => lc };
-
-  it('can support multiple languages', function() {
-    mf = new MessageFormat(['en', 'fr', 'ru'], { customFormatters });
-    const cf = mf.compile({
-      fr: 'Locale: {_, lc}',
-      ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
-    });
-    expect(cf.fr({})).to.eql('Locale: fr');
-    expect(cf.ru({ count: 12 })).to.eql('3');
-  });
-
-  it('defaults to supporting all languages: compile({ fr, ru })', function() {
-    mf = new MessageFormat(null, { customFormatters });
-    const cf = mf.compile({
-      fr: 'Locale: {_, lc}',
-      xx: 'Locale: {_, lc}',
-      ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
-    });
-    expect(cf.fr({})).to.eql('Locale: fr');
-    expect(cf.xx({})).to.eql('Locale: en');
-    expect(cf.ru({ count: 12 })).to.eql('3');
-  });
-
-  it('defaults to supporting all languages: compile(src, locale)', function() {
-    mf = new MessageFormat(null, { customFormatters });
-    const cf0 = mf.compile('Locale: {_, lc}', 'fr');
-    expect(cf0({})).to.eql('Locale: fr');
-    const cf1 = mf.compile(
-      {
-        fr: 'Locale: {_, lc}',
-        en: '{count, plural, one{1} few{2} many{3} other{x:#}}'
-      },
-      'ru-RU'
-    );
-    expect(cf1.fr({})).to.eql('Locale: ru-RU');
-    expect(cf1.en({ count: 12 })).to.eql('3');
   });
 });
 
@@ -323,10 +272,8 @@ describe('Basic Message Formatting', function() {
   });
 
   it('obeys plural functions', function() {
-    var mf = new MessageFormat({
-      fake: function(x) {
-        return 'few';
-      }
+    const mf = new MessageFormat(function fake(x) {
+      return 'few';
     });
     expect(
       mf.compile('res: {val, plural, few{wasfew} other{failed}}')({ val: 0 })
@@ -346,10 +293,8 @@ describe('Basic Message Formatting', function() {
   });
 
   it('obeys selectordinal functions', function() {
-    var mf = new MessageFormat({
-      fake: function(x, ord) {
-        return ord ? 'few' : 'other';
-      }
+    const mf = new MessageFormat(function fake(x, ord) {
+      return ord ? 'few' : 'other';
     });
     expect(
       mf.compile('res: {val, selectordinal, few{wasfew} other{failed}}')({
@@ -382,6 +327,16 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ NUM: 0 })).to.eql('a');
     expect(mfunc({ NUM: 1 })).to.eql('c');
     expect(mfunc({ NUM: 2 })).to.eql('b');
+  });
+
+  it('supports selectordinal with offset', function() {
+    var mf = new MessageFormat('en');
+    var mfunc = mf.compile(
+      '{NUM, selectordinal, offset:1 =0{literal} one{one} other{other}}'
+    );
+    expect(mfunc({ NUM: 0 })).to.eql('literal');
+    expect(mfunc({ NUM: 1 })).to.eql('other');
+    expect(mfunc({ NUM: 2 })).to.eql('one');
   });
 
   it('should obey `i=0 and v=0` rules', function() {
@@ -469,7 +424,7 @@ describe('Basic Message Formatting', function() {
   });
 
   it("should reject number injections of numbers that don't exist", function() {
-    var mf = new MessageFormat('en');
+    var mf = new MessageFormat('en', { strictNumberSign: true });
     var mfunc = mf.compile(
       'I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, offset:1 ' +
         '=0{no enemies} =1{one nemesis} one{two enemies} other{one nemesis and # enemies}}}}.'
@@ -477,9 +432,9 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FRIENDS: 0, ENEMIES: 0 })).to.eql(
       'I have 0 friends but no enemies.'
     );
-    expect(() => mfunc({})).to.throw(/\bENEMIES\b.*not a number/);
+    expect(() => mfunc({})).to.throw(/\bFRIENDS\b.*not a number/);
     expect(() => mfunc({ FRIENDS: 0 })).to.throw(/\bENEMIES\b.*not a number/);
-    expect(mfunc({ ENEMIES: 1 })).to.eql('I have NaN friends but one nemesis.');
+    expect(() => mfunc({ ENEMIES: 1 })).to.throw(/\bFRIENDS\b.*not a number/);
   });
 
   it('should not expose prototype members - selects', function() {
@@ -498,6 +453,7 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FRIENDS: 'toString' })).to.eql('I have friends.');
   });
 });
+
 describe('Real World Uses', function() {
   it('can correctly pull in a different pluralization rule set', function() {
     // note, cy.js was included in the html file for the browser
@@ -637,52 +593,6 @@ describe('Real World Uses', function() {
     };
     expect(msg(data)).to.match(/^1h 10m 15s/);
   });
-});
-
-describe('Module/CommonJS support', function() {
-  var colorSrc = { red: 'red', blue: 'blue', green: 'green' };
-  var cf = new MessageFormat('en').compile(colorSrc);
-
-  it('should default to ES6', function() {
-    var str = cf.toString();
-    expect(str).to.match(/export default/);
-  });
-
-  if (typeof require !== 'undefined') {
-    ['module.exports', 'global.i18n', 'umd'].forEach(function(moduleFmt) {
-      it('should work with `' + moduleFmt + '`', function(done) {
-        var fs = require('fs');
-        var tmp = require('tmp');
-        tmp.file({ postfix: '.js' }, function(err, path, fd) {
-          if (err) throw err;
-          fs.write(fd, cf.toString(moduleFmt), 0, 'utf8', function(err) {
-            if (err) throw err;
-            var colors = require(path);
-            var gm = /^global\.(.*)/i.exec(moduleFmt);
-            if (gm) {
-              expect(colors.red).to.equal(undefined);
-              colors = global[gm[1]];
-            }
-            expect(colors).to.be.an('object');
-            expect(colors.red()).to.eql('red');
-            expect(colors.blue()).to.eql('blue');
-            expect(colors.green()).to.eql('green');
-            done();
-          });
-        });
-      });
-    });
-  } else {
-    var moduleFmt = 'window.i18n';
-    it('should work with `' + moduleFmt + '`', function() {
-      eval(cf.toString(moduleFmt));
-      expect(window).to.have.property('i18n');
-      var colors = window.i18n;
-      expect(colors.red()).to.eql('red');
-      expect(colors.blue()).to.eql('blue');
-      expect(colors.green()).to.eql('green');
-    });
-  }
 });
 
 describe('{ returnType: "values" }', function() {

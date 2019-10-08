@@ -10,6 +10,7 @@ const dotProperties = require('dot-properties');
 const fs = require('fs');
 const glob = require('glob');
 const MessageFormat = require('messageformat');
+const compileModule = require('messageformat/compile-module');
 const nopt = require('nopt');
 const path = require('path');
 const uv = require('uv');
@@ -20,7 +21,6 @@ const knownOpts = {
   extensions: [String, Array],
   help: Boolean,
   locale: [String, Array],
-  namespace: String,
   outfile: String,
   simplify: Boolean
 };
@@ -29,7 +29,6 @@ const shortHands = {
   e: ['--extensions'],
   h: ['--help'],
   l: ['--locale'],
-  n: ['--namespace'],
   o: ['--outfile'],
   s: ['--simplify']
 };
@@ -85,7 +84,7 @@ if (options.help || options.include.length === 0) {
   );
   if (options.simplify) simplify(input);
   const mf = new MessageFormat(options.locale);
-  let output = mf.compile(input).toString(options.namespace);
+  let output = compileModule(mf, input);
   if (options['eslint-disable']) output = '/* eslint-disable */\n' + output;
   if (options.outfile && options.outfile !== '-') {
     fs.writeFileSync(path.resolve(options.outfile), output);
@@ -98,19 +97,13 @@ function printUsage() {
   let usage = `usage: *messageformat* [options] [_input_, ...]
 
 Parses the _input_ JSON and .properties files of MessageFormat strings into
-a JS module of corresponding hierarchical functions. Input directories are
+an ES module of corresponding hierarchical functions. Input directories are
 recursively scanned for all .json and .properties files.
 
   *-l* _lc_, *--locale*=_lc_
         The locale(s) _lc_ to include; if multiple, selected by matching
         message key. If not set, path keys matching any locale code will set
         the active locale, starting with a default 'en' locale.
-
-  *-n* _ns_, *--namespace*=_ns_
-        By default, output is an ES6 module with a default export; set _ns_
-        to support other environments. If _ns_ does not contain a '.', the
-        output follows an UMD pattern. For CommonJS module output, use
-        *--namespace=module.exports*.
 
   *-o* _of_, *--outfile*=_of_
         Write output to the file _of_. If undefined or '-', prints to stdout

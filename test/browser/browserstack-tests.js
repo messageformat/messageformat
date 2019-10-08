@@ -16,7 +16,7 @@ const bsConfig = {
 };
 
 const browsers = [
-  { browserName: 'Chrome', browser_version: '49.0' },
+  { browserName: 'Chrome', browser_version: '54.0' },
   { browserName: 'Firefox', browser_version: '66.0' },
   { browserName: 'IE', browser_version: '11.0' },
   { browserName: 'Edge', browser_version: '17.0' }

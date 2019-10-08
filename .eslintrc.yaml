@@ -18,10 +18,12 @@ rules:
 
 overrides:
   - files: [test/*.js]
+    parserOptions: { ecmaVersion: 2017 }
     env:
       browser: true
       es6: true
       mocha: true
+      node: true
     rules:
       no-unused-vars: 0
 

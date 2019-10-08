@@ -95,14 +95,14 @@ describe('Formatters', function() {
     });
 
     it('currency', function() {
-      mf.currency = 'EUR';
+      mf = new MessageFormat('en', { currency: 'EUR' });
       const msg = mf.compile('The total is {V, number, currency}.');
       const data = { V: 5.5 };
       expect(msg(data)).to.eql('The total is €5.50.');
     });
 
     it('currency:GBP', function() {
-      mf.currency = 'EUR';
+      mf = new MessageFormat('en', { currency: 'EUR' });
       const msg = mf.compile('The total is {V, number, currency:GBP}.');
       const data = { V: 5.5 };
       expect(msg(data)).to.eql('The total is £5.50.');
@@ -167,14 +167,6 @@ describe('Formatters', function() {
       });
       const msg = mf.compile('This is {VAR,uppercase}.');
       expect(msg({ VAR: 'big' })).to.eql('This is BIG.');
-    });
-
-    it('should use formatting functions for object input - set by customFormatters option', function() {
-      mf = new MessageFormat('en', {
-        customFormatters: { uppercase: v => v.toUpperCase() }
-      });
-      const msg = mf.compile(['This is {VAR,uppercase}.', 'Other string']);
-      expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
     });
 
     describe('arguments', function() {

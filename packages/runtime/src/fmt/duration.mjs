@@ -17,7 +17,7 @@
  * mf.compile('Countdown: {D, duration}')({ D: -151200.42 })
  * // 'Countdown: -42:00:00.420'
  */
-function duration(value) {
+export function duration(value) {
   if (!isFinite(value)) return String(value);
   var sign = '';
   if (value < 0) {
@@ -50,7 +50,3 @@ function duration(value) {
       .join(':')
   );
 }
-
-module.exports = function() {
-  return duration;
-};

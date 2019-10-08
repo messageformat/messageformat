@@ -13,10 +13,12 @@
   "scripts": {
     "build": "lerna run build --ignore messageformat-website",
     "docs:build": "lerna run build --scope messageformat-website",
-    "docs:example": "./packages/cli/messageformat.js -l en,fr -n i18n -o example/i18n.js example/",
+    "predocs:example": "messageformat -l en,fr example/ -o example/messages.mjs",
+    "docs:example": "webpack example/messages.mjs --output-library messages --mode production -o example/messages.js",
+    "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
     "docs": "npm run docs:build && npm run docs:example",
     "lint": "eslint '**/*.js'",
-    "pretest": "lerna run build --scope messageformat-parser --scope messageformat --scope messageformat-messages",
+    "pretest": "lerna run build --scope messageformat-parser --scope messageformat-runtime --scope messageformat",
     "prettier": "prettier --write '**/*.{html,js,json,md,ts}'",
     "start": "node -i -r ./scripts/start.js",
     "test:browserstack": "npm run pretest && mocha test/browser/browserstack-tests.js",
@@ -37,11 +39,10 @@
     "messageformat": "file:packages/messageformat",
     "messageformat-cli": "file:packages/cli",
     "messageformat-convert": "file:packages/convert",
-    "messageformat-formatters": "file:packages/formatters",
     "messageformat-loader": "file:packages/loader",
     "messageformat-loader-example": "file:packages/loader-example",
-    "messageformat-messages": "file:packages/messages",
     "messageformat-parser": "file:packages/parser",
+    "messageformat-runtime": "file:packages/runtime",
     "messageformat-website": "file:packages/website"
   },
   "devDependencies": {
@@ -61,6 +62,7 @@
     "husky": "^3.0.0",
     "jsdoc-to-markdown": "^5.0.0",
     "lerna": "^3.15.0",
+    "make-plural": "^6.0.0-beta.1",
     "mocha": "^6.1.4",
     "mocha-selenium-bridge": "^0.1.0",
     "pegjs": "^0.10.0",
@@ -69,7 +71,7 @@
     "selenium-webdriver": "^4.0.0-alpha.4",
     "serve": "^11.1.0",
     "serve-handler": "^6.1.0",
-    "tmp": "^0.1.0",
+    "tmp-promise": "^2.0.2",
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2"
   }
