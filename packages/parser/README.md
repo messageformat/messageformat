@@ -1,4 +1,4 @@
-# messageformat-parser <a href="http://travis-ci.org/messageformat/parser"><img align="right" alt="Build Status" src="https://secure.travis-ci.org/messageformat/parser.png"></a>
+# messageformat-parser
 
 A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat].
 Outputs an AST defined by [parser.pegjs].
@@ -158,8 +158,10 @@ type Octothorpe = {
 type Identifier = string  // not containing whitespace or control characters
 ```
 
-## License & Contributor License Agreement
+---
 
-Released under the MIT license. See the [messageformat README][cla] for details.
+[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
 
-[cla]: https://github.com/messageformat/messageformat.js#contributor-license-agreement
+<a href="https://openjsf.org">
+<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
+</a>
