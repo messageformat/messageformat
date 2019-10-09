@@ -1,4 +1,5 @@
 .*
-/example/messages.*
 node_modules/
-packages/website/docs/
+/example/messages.*
+/packages/website/docs/
+/test/browser/polyfill.js
