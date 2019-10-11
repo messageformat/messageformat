@@ -3,25 +3,21 @@ import { getAllPlurals, getPlural, hasPlural } from './plurals';
 
 export default class MessageFormat {
   /**
-   * The default locale
-   *
-   * Used by the constructor when no `locale` has been set to initialise the value
-   * of its instance counterpart, `MessageFormat#defaultLocale`.
+   * Used by the constructor when no `locale` argument is given.
    *
    * @memberof MessageFormat
    * @default 'en'
    */
   static defaultLocale = 'en';
 
-  /** Escape special characaters
-   *
-   *  Surround the characters `{` and `}` in the input string with 'quotes'.
-   *  This will allow those characters to not be considered as MessageFormat
-   *  control characters.
+  /**
+   * Escape special characaters by surrounding the characters `{` and `}` in the
+   * input string with 'quotes'. This will allow those characters to not be
+   * considered as MessageFormat control characters.
    *
    * @memberof MessageFormat
    * @param {string} str - The input string
-   * @param {boolean} [octothorpe=false] - Include `#` in the escaped characters
+   * @param {boolean} [octothorpe=false] - Also escape `#`
    * @returns {string} The escaped string
    */
   static escape(str, octothorpe) {
@@ -43,45 +39,49 @@ export default class MessageFormat {
   }
 
   /**
-   * Create a new MessageFormat compiler
-   *
-   * `locale` defines the locale or locales supported by this MessageFormat
-   * instance. If given multiple valid locales, the first will be the default.
-   * If `locale` is empty, it will fall back to `MessageFormat.defaultLocale`.
-   *
-   * String `locale` values will be matched to plural categorisation functions
-   * provided by the Unicode CLDR. If defining your own instead, use named
-   * functions instead, optionally providing them with the properties:
-   * `cardinals: string[]`, `ordinals: string[]`, `module: string` (to import
-   * the formatter as a runtime dependency, rather than inlining its source).
-   *
-   * If `locale` has the special value `'*'`, it will match *all* available
-   * locales. This may be useful if you want your messages to be completely
-   * determined by your data, but may provide surprising results if your
-   * input message object includes any 2-3 character keys that are not locale
-   * identifiers.
-   *
-   * @class MessageFormat
-   * @classdesc MessageFormat-to-JavaScript compiler
-   * @param {string|string[]|function[]} [locale] - The locale(s) to use
-   * @param {Object} [options] - Compiler options
-   * @param {('string'|'values')} [options.returnType='string'] - Return type of
+   * @typedef {Object} MessageFormat~Options - The shape of the options object
+   *   that may be used as the second argument of the constructor.
+   * @property {('string'|'values')} [returnType='string'] - Return type of
    *   compiled functions; either a concatenated string or an array (possibly
    *   hierarchical) of values
-   * @param {boolean} [options.biDiSupport=false] - Add Unicode control
-   *   characters to all input parts to preserve the integrity of the output
-   *   when mixing LTR and RTL text
-   * @param {string} [options.currency='USD'] - The currency to use when
-   *   formatting `{V, number, currency}`
-   * @param {Object} [options.customFormatters] - Map of custom formatting
-   *   functions to include. See the {@tutorial guide} for more details.
-   * @param {boolean} [options.strictNumberSign=false] - Allow `#` only directly
+   * @property {boolean} [biDiSupport=false] - Add Unicode control characters to
+   *   all input parts to preserve the integrity of the output when mixing LTR
+   *   and RTL text
+   * @property {string} [currency='USD'] - The currency to use when formatting
+   *   `{V, number, currency}`
+   * @property {Object} [customFormatters] - Map of custom formatting functions
+   *   to include. See the {@tutorial guide} for more details.
+   * @property {boolean} [strictNumberSign=false] - Allow `#` only directly
    *   within a plural or selectordinal case, rather than in any inner select
    *   case as well.
+   */
+
+  /**
+   * Create a new MessageFormat compiler
    *
    * ```
    * import MessageFormat from 'messageformat'
    * ```
+   *
+   * @class MessageFormat
+   * @classdesc MessageFormat-to-JavaScript compiler
+   * @param {string|Array} [locale]
+   *   Define the locale or locales supported by this MessageFormat instance. If
+   *   given multiple valid locales, the first will be the default. If `locale`
+   *   is empty, it will fall back to `MessageFormat.defaultLocale`.
+   *
+   *   String `locale` values will be matched to plural categorisation functions
+   *   provided by the Unicode CLDR. If defining your own instead, use named
+   *   functions instead, optionally providing them with the properties:
+   *   `cardinals: string[]`, `ordinals: string[]`, `module: string` (to import
+   *   the formatter as a runtime dependency, rather than inlining its source).
+   *
+   *   If `locale` has the special value `'*'`, it will match *all* available
+   *   locales. This may be useful if you want your messages to be completely
+   *   determined by your data, but may provide surprising results if your input
+   *   message object includes any 2-3 character keys that are not locale
+   *   identifiers.
+   * @param {MessageFormat~Options} [options] - Compiler options
    */
   constructor(locale, options) {
     this.options = Object.assign(
@@ -124,6 +124,8 @@ export default class MessageFormat {
    * Returns a new object with properties reflecting the default locale,
    * plurals, and other options computed during initialization.
    *
+   * @memberof MessageFormat
+   * @instance
    * @returns {MessageFormat~ResolvedOptions}
    */
   resolvedOptions() {

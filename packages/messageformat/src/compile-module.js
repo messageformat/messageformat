@@ -39,23 +39,30 @@ function stringifyObject(obj, level = 0) {
 }
 
 /**
- * Compile a collection of messages into an ES module
+ * Compile a collection of messages into an ES module.
+ *
+ * ```
+ * import compileModule from 'messageformat/compile-module'
+ * ```
  *
  * With `messages` as a hierarchical structure of ICU MessageFormat strings,
- * the output of `compile()` will be the source code of an ES module with a
- * default export matching the input structure, with each string replaced by
+ * the output of `compileModule()` will be the source code of an ES module with
+ * a default export matching the input structure, with each string replaced by
  * its corresponding JS function.
  *
  * If this MessageFormat instance has been initialized with support for more
  * than one locale, using a key that matches the locale's identifier at any
  * depth of a `messages` object will set its child elements to use that locale.
  *
+ * @function compileModule
  * @param {MessageFormat} messageformat - A MessageFormat instance
  * @param {object} messages - The input messages to be compiled
  * @returns {string} - String representation of the compiled module
  *
  * @example
  * import fs from 'fs'
+ * import MessageFormat from 'messageformat'
+ * import compileModule from 'messageformat/compile-module'
  *
  * const mf = new MessageFormat('en')
  * const msgSet = {
