@@ -6,6 +6,7 @@ module.exports = {
   source: {
     include: [
       require.resolve('messageformat/src/messageformat.js'),
+      require.resolve('messageformat/src/compile-module.js'),
       require.resolve('messageformat-runtime/src/formatters.mjs'),
       require.resolve('messageformat-runtime/src/fmt/date.mjs'),
       require.resolve('messageformat-runtime/src/fmt/duration.mjs'),
