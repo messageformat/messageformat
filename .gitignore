@@ -1,3 +1,4 @@
 .*
 /example/messages.*
 node_modules/
+packages/website/docs/

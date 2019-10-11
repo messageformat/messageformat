@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm start && ./publish.sh",
     "clean": "rimraf docs/",
-    "start": "jsdoc -c jsdoc-conf.json"
+    "start": "jsdoc -c jsdoc.config.js"
   },
   "dependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
