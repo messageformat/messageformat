@@ -1,7 +1,5 @@
-if (typeof require !== 'undefined') {
-  var expect = require('chai').expect;
-  var MessageFormat = require('../packages/messageformat');
-}
+const expect = require('chai').expect;
+const MessageFormat = require('../packages/messageformat');
 
 // MS Edge adds LTR/RTL marks around Date#toLocale*String parts
 function dropBiDi(str) {

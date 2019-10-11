@@ -2,4 +2,4 @@
 node_modules/
 /example/messages.*
 /packages/website/docs/
-/test/browser/polyfill.js
+/test/browser/bundle.js*

@@ -18,6 +18,5 @@ jobs:
     - stage: ESLint & BrowserStack
       node_js: node
       script:
-        - npm run build
         - npm run lint
-        - npm run test:browserstack
+        - npm run test:browsers

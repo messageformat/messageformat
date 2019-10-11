@@ -1,7 +1,5 @@
-if (typeof require !== 'undefined') {
-  var expect = require('chai').expect;
-  var MessageFormat = require('../packages/messageformat');
-}
+const expect = require('chai').expect;
+const MessageFormat = require('../packages/messageformat');
 
 describe('static MessageFormat', () => {
   it('should exist', () => {
