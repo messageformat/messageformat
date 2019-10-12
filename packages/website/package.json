@@ -11,6 +11,12 @@
     "clean": "rimraf docs/",
     "start": "jsdoc -c jsdoc.config.js"
   },
+  "eslintConfig": {
+    "env": {
+      "commonjs": true,
+      "es6": true
+    }
+  },
   "dependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.6.2",

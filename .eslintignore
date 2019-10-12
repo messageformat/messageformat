@@ -8,4 +8,5 @@ package-lock.json
 /packages/messageformat/messageformat.*
 /packages/parser/parser.js
 /packages/runtime/lib/*
+/packages/website/docs/
 /test/browser/chai.js

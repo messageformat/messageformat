@@ -1,6 +1,6 @@
-const path = require('path')
+const path = require('path');
 
-const templateDir = path.dirname(require.resolve('ink-docstrap/package.json'))
+const templateDir = path.dirname(require.resolve('ink-docstrap/package.json'));
 
 module.exports = {
   source: {
