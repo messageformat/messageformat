@@ -1,16 +1,26 @@
 const { oneLine } = require('common-tags');
 const fs = require('fs');
 const path = require('path');
+const YAML = require('yaml');
 const yargs = require('yargs');
 
 module.exports = function getOptions() {
   let cfg = {};
-  try {
-    cfg = require(path.resolve('messageformat.rc.js'));
-  } catch (e) {
+  for (const fn of [
+    'messageformat.rc.js',
+    'messageformat.rc.json',
+    'messageformat.rc.yaml',
+    'messageformat.rc.yml'
+  ]) {
     try {
-      const cfgPath = path.resolve('messageformat.rc.json');
-      cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+      const cfgPath = path.resolve(fn);
+      if (fn.endsWith('.js')) {
+        cfg = require(cfgPath);
+      } else {
+        const src = fs.readFileSync(cfgPath, 'utf8');
+        cfg = YAML.parse(src);
+      }
+      break;
     } catch (e) {
       /* ignore errors */
     }
@@ -18,11 +28,15 @@ module.exports = function getOptions() {
   const usage = [
     '$0 [input, ...] [options]',
     oneLine`
-      Parses input JSON and .properties files of MessageFormat strings
+      Parses input JSON, YAML, and .properties files of MessageFormat strings
       into an ES module of corresponding hierarchical functions. Input
-      directories are recursively scanned for all .json and .properties files.
+      directories are recursively scanned for all files matching the supported
+      extensions.
     `,
-    'Configuration may also be set in package.json or messageformat.rc.{js,json}.'
+    oneLine`
+      Configuration may also be set under the package.json "messageformat" key or
+      messageformat.rc.{js,json,yaml}.
+    `
   ].join('\n\n');
 
   return yargs
@@ -42,7 +56,7 @@ module.exports = function getOptions() {
       extensions: {
         alias: 'e',
         array: true,
-        default: ['.json', '.properties']
+        default: ['.json', '.properties', '.yaml', '.yml']
       },
       locale: {
         alias: 'l',

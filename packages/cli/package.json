@@ -39,6 +39,7 @@
     "dot-properties": "^0.3.1",
     "glob": "^7.1.4",
     "uv": "^1.0.7",
+    "yaml": "^1.7.1",
     "yargs": "^14.2.0"
   },
   "peerDependencies": {

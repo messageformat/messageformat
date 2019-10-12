@@ -3,6 +3,7 @@ const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 const uv = require('uv');
+const YAML = require('yaml');
 
 function listFiles(include, extensions) {
   const ls = [];
@@ -35,8 +36,13 @@ function parseFile(fn, ext, sep) {
       const src = raw.toString(uv(raw) ? 'utf8' : 'latin1');
       return dotProperties.parse(src, sep.test('.'));
     }
-    default:
+    case '.js':
+    case '.cjs':
       return require(fn);
+    default: {
+      const src = fs.readFileSync(fn, 'utf8');
+      return YAML.parse(src, { prettyErrors: true });
+    }
   }
 }
 
