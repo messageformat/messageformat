@@ -6,10 +6,14 @@ const yargs = require('yargs');
 module.exports = function getOptions() {
   let cfg = {};
   try {
-    const cfgPath = path.resolve('messageformat.rc.json');
-    cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    cfg = require(path.resolve('messageformat.rc.js'));
   } catch (e) {
-    /* ignore errors */
+    try {
+      const cfgPath = path.resolve('messageformat.rc.json');
+      cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    } catch (e) {
+      /* ignore errors */
+    }
   }
   const usage = [
     '$0 [input, ...] [options]',
@@ -18,7 +22,7 @@ module.exports = function getOptions() {
       into an ES module of corresponding hierarchical functions. Input
       directories are recursively scanned for all .json and .properties files.
     `,
-    'Configuration may also be set in package.json or messageformat.rc.json.'
+    'Configuration may also be set in package.json or messageformat.rc.{js,json}.'
   ].join('\n\n');
 
   return yargs
