@@ -61,7 +61,6 @@ module.exports = function getOptions() {
       locale: {
         alias: 'l',
         array: true,
-        default: ['*'],
         desc: oneLine`
           The locale(s) to include; if multiple, selected by matching message key.
           If not set, path keys matching any locale code will set the active
@@ -72,7 +71,8 @@ module.exports = function getOptions() {
         desc: oneLine`
           Options to pass to the MessageFormat constructor via its second argument.
           Use dot-notation to set values, e.g. --options.currency=EUR. For custom
-          formatters, you'll need to set their values in a JS config file.
+          formatters, string values will be require()'d based on the current
+          working directory.
         `
       },
       outfile: {
@@ -99,10 +99,28 @@ module.exports = function getOptions() {
         return ext.map(x => x.trim().replace(/^([^.]*\.)?/, '.'));
       },
       locale(locales) {
-        return locales.reduce(
+        const ls = locales.reduce(
           (locales, lc) => locales.concat(lc.split(/[ ,]+/)),
           []
         );
+        return ls.length > 0 ? ls : '*';
+      },
+      options(opt) {
+        if (opt.customFormatters) {
+          const cf = opt.customFormatters;
+          if (typeof cf === 'string') {
+            const cp = cf[0] === '.' ? path.resolve(cf) : cf;
+            opt.customFormatters = require(cp);
+          } else {
+            for (const [name, fn] of Object.entries(cf)) {
+              if (typeof fn === 'string') {
+                const fp = fn[0] === '.' ? path.resolve(fn) : fn;
+                cf[name] = require(fp);
+              }
+            }
+          }
+        }
+        return opt;
       },
       _(input) {
         if (input.length === 0)
