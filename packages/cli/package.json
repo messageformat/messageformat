@@ -16,8 +16,12 @@
   "homepage": "https://messageformat.github.io/",
   "repository": "messageformat/messageformat",
   "bin": {
-    "messageformat": "./messageformat.js"
+    "messageformat": "./cli.js"
   },
+  "files": [
+    "cli.js",
+    "lib/"
+  ],
   "engines": {
     "node": ">=6.0"
   },
@@ -31,10 +35,11 @@
     }
   },
   "dependencies": {
+    "common-tags": "^2.0.0-alpha.1",
     "dot-properties": "^0.3.1",
     "glob": "^7.1.4",
-    "nopt": "^4.0.1",
-    "uv": "^1.0.7"
+    "uv": "^1.0.7",
+    "yargs": "^14.2.0"
   },
   "peerDependencies": {
     "messageformat": "2.x"
