@@ -14,6 +14,7 @@ const {
   'eslint-disable': eslintDisable,
   extensions,
   locale,
+  options,
   outfile,
   simplify,
   _: include
@@ -21,7 +22,7 @@ const {
 const input = readInput(include, extensions, delimiters);
 if (simplify) simplifyInput(input);
 
-const mf = new MessageFormat(locale);
+const mf = new MessageFormat(locale, options);
 let output = compileModule(mf, input);
 if (eslintDisable) output = '/* eslint-disable */\n' + output;
 

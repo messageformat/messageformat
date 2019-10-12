@@ -49,10 +49,17 @@ module.exports = function getOptions() {
         array: true,
         default: ['*'],
         desc: oneLine`
-        The locale(s) to include; if multiple, selected by matching message key.
-        If not set, path keys matching any locale code will set the active
-        locale, starting with a default 'en' locale.
-      `
+          The locale(s) to include; if multiple, selected by matching message key.
+          If not set, path keys matching any locale code will set the active
+          locale, starting with a default 'en' locale.
+        `
+      },
+      options: {
+        desc: oneLine`
+          Options to pass to the MessageFormat constructor via its second argument.
+          Use dot-notation to set values, e.g. --options.currency=EUR. For custom
+          formatters, you'll need to set their values in a JS config file.
+        `
       },
       outfile: {
         alias: 'o',
