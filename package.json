@@ -13,7 +13,7 @@
   "scripts": {
     "build": "lerna run build --ignore messageformat-website",
     "docs:build": "lerna run build --scope messageformat-website",
-    "predocs:example": "messageformat -l en,fr example/ -o example/messages.mjs",
+    "predocs:example": "messageformat example/ --locale en fr --outfile example/messages.mjs",
     "docs:example": "webpack example/messages.mjs --output-library messages --mode production -o example/messages.js",
     "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
     "docs": "npm run docs:build && npm run docs:example",
