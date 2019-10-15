@@ -22,11 +22,11 @@
   "main": "index.js",
   "browser": "./messageformat.js",
   "files": [
+    "compile-module.js",
     "index.d.ts",
     "lib",
     "messageformat.js",
-    "messageformat.js.map",
-    "messages.js"
+    "messageformat.js.map"
   ],
   "babel": {
     "presets": [
