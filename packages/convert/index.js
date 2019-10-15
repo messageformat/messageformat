@@ -1,5 +1,5 @@
 const common = require('common-prefix');
-const pluralCategories = require('make-plural/umd/pluralCategories');
+const pluralCategories = require('make-plural/pluralCategories');
 
 const cldrPluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
