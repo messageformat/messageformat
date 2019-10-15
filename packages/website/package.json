@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
-    "jsdoc": "^3.6.2",
+    "jsdoc": "^3.6.3",
     "messageformat": "file:../messageformat",
     "messageformat-runtime": "file:../runtime"
   }

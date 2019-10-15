@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "common-tags": "^2.0.0-alpha.1",
-    "dot-properties": "^0.3.1",
+    "dot-properties": "^0.3.2",
     "glob": "^7.1.4",
-    "uv": "^1.0.7",
+    "uv": "^1.0.8",
     "yaml": "^1.7.1",
     "yargs": "^14.2.0"
   },
