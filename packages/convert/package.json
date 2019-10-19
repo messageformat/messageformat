@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "common-prefix": "1.1.0",
-    "make-plural": "^6.0.0-beta.3"
+    "make-plural": "^6.0.1"
   }
 }
