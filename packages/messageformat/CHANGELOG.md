@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.1](https://github.com/messageformat/messageformat/compare/messageformat@3.0.0-beta.0...messageformat@3.0.0-beta.1) (2019-10-15)
+
+
+### Bug Fixes
+
+* **messageformat:** Include compile-module in npm package ([0b8aafe](https://github.com/messageformat/messageformat/commit/0b8aafe6871eceb9cbe067953b787c0719e81289))
+
+
+
+
+
 # [3.0.0-beta.0](https://github.com/messageformat/messageformat/compare/messageformat@2.3.0...messageformat@3.0.0-beta.0) (2019-10-15)
 
 
