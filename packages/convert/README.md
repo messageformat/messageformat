@@ -85,3 +85,11 @@ The object returned by the function contains the following fields:
 
 [cldr pluralisation language]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [messageformat]: https://messageformat.github.io/
+
+---
+
+[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+
+<a href="https://openjsf.org">
+<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
+</a>

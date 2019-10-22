@@ -1,6 +1,6 @@
 {
   "name": "messageformat-runtime",
-  "version": "2.3.0",
+  "version": "3.0.0-beta.0",
   "description": "Runtime components of messageformat",
   "keywords": [
     "i18n",
@@ -22,7 +22,7 @@
     "build:cjs": "MODULE_TYPE=cjs babel src -d lib",
     "build:mjs": "MODULE_TYPE=mjs babel src -d lib --keep-file-extension",
     "build": "npm run build:cjs && npm run build:mjs",
-    "docs": "jsdoc2md -f src/messages.js > README.md",
+    "docs": "jsdoc2md -c jsdoc.config.json -f src/messages.mjs > README.md",
     "prepublishOnly": "npm run build && npm run docs"
   },
   "dependencies": {

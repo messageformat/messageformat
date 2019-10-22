@@ -3,6 +3,115 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.0](https://github.com/messageformat/messageformat/compare/messageformat@2.3.0...messageformat@3.0.0-beta.0) (2019-10-15)
+
+
+### Bug Fixes
+
+* **messageformat:** Adjust for formatter API change ([a811e81](https://github.com/messageformat/messageformat/commit/a811e811b1b41a2bd481e9aa23cbede03d3d0089))
+* **messageformat:** Support selectordinal with offset ([27d61f7](https://github.com/messageformat/messageformat/commit/27d61f7e6399424a35359766dfda037a22603802))
+* **runtime:** Cache Intl.NumberFormat instances for # ([81d1f59](https://github.com/messageformat/messageformat/commit/81d1f59b5d63d3fbfcb882dd10b98bb3de6d4965))
+
+
+### Features
+
+* Add choice between string & values array output ([#242](https://github.com/messageformat/messageformat/issues/242)) ([3e642f0](https://github.com/messageformat/messageformat/commit/3e642f0e0ca9a9e6078455fd8986b98129d0672f))
+* Add special-casing for common number formatters ([39d02e9](https://github.com/messageformat/messageformat/commit/39d02e9aeca06ee6b7696c02bb3a72c6277620ad))
+* Always apply locale-specific checks to plural cases ([d5d746c](https://github.com/messageformat/messageformat/commit/d5d746c873504e5146d37be72bd1214b6d52c48f))
+* **messageformat:** Add special locale "*" to match all of them ([f691d4b](https://github.com/messageformat/messageformat/commit/f691d4b9c200db8d6e42b5c2f901511e04dca942))
+* Drop MessageFormat#addFormatters() ([af0b0ba](https://github.com/messageformat/messageformat/commit/af0b0ba827a9d3684ed9ac9d346b50676674eb73))
+* Drop MessageFormat#setBiDiSupport() & #setStrictNumberSign() ([309826d](https://github.com/messageformat/messageformat/commit/309826d2b4669a2cbf90196045ed11e8c42c12cb))
+* **runtime:** Refactor, dropping class wrapper ([0ba6ebb](https://github.com/messageformat/messageformat/commit/0ba6ebb61a4d13500a836a28969204490964d429))
+* Merge formatters into runtime ([1cef20b](https://github.com/messageformat/messageformat/commit/1cef20b576e14f46f268de6e9e1a688f00993f40))
+* Move runtime to its package; split stringify-dependencies from it ([fbc10a5](https://github.com/messageformat/messageformat/commit/fbc10a5fed14ddde4170d4e20290497e2aaac3b9))
+* Refactor formatter caching during compilation ([315b7af](https://github.com/messageformat/messageformat/commit/315b7afdf3b68ff402787c5ba0d47500c8d33d06))
+* Stop reusing runtime ([c7a7879](https://github.com/messageformat/messageformat/commit/c7a7879e2db4dafec68f40c93bba1603d98a80c6))
+* Update to make-plural v5 ([851f698](https://github.com/messageformat/messageformat/commit/851f6984787f3dced3ea7c01127bf4a218dc9be7))
+* Use cardinal-only plurals where appropriate ([e499b1f](https://github.com/messageformat/messageformat/commit/e499b1f81d0fce5503e4c7a19b792400d499d483))
+* **messages:** Split messageformat-messages into its own package ([b49b40b](https://github.com/messageformat/messageformat/commit/b49b40bff1a7943a8f33b677705e873af1ccca54))
+* Use the options object to set the default currency ([7430532](https://github.com/messageformat/messageformat/commit/74305327926ecf003217a86c585418062d71ab16))
+* **messageformat:** Add runtime dependency on make-plural@6 ([2f56ef3](https://github.com/messageformat/messageformat/commit/2f56ef3cdf61d4c1e2341ff20ca136fe98c43e13))
+* **messageformat:** Add runtime dependency on messageformat-runtime ([92e6fe5](https://github.com/messageformat/messageformat/commit/92e6fe523e82bad3c3ed4f09a5b6e73885fc182a))
+* **messageformat:** Add static supportedLocalesOf() method ([f2834f8](https://github.com/messageformat/messageformat/commit/f2834f81b8181aaae2bbd842352efda30829c1a2))
+* **messageformat:** Always format # as number ([20d6fdb](https://github.com/messageformat/messageformat/commit/20d6fdbc9a30e49aa0bbad3a7bcc07625cb9d008))
+* **messageformat:** Import formatters in runtime ([f9b7d50](https://github.com/messageformat/messageformat/commit/f9b7d50f4614ffea5164414081238e77a5b62f48))
+* **messageformat:** Make compileModule() into a separate function ([d4a060f](https://github.com/messageformat/messageformat/commit/d4a060ff4c1f72fe682206f0bd296bc6268834e5))
+* **messageformat:** Move getFormatter() to compiler.js ([76018ff](https://github.com/messageformat/messageformat/commit/76018fff179561277ff1afe4673d8d2e3f50af4d))
+* **messageformat:** Output module string directly from compileModule() ([380c690](https://github.com/messageformat/messageformat/commit/380c690d1cd1977178227781374ca3de398df938))
+* **messageformat:** Publish identifier utils as "safe-identifier" ([6d57cdd](https://github.com/messageformat/messageformat/commit/6d57cddb9fb218de1a028d9eb219584bcee2c826))
+* **messageformat:** Refactor compiler output ([8901d9a](https://github.com/messageformat/messageformat/commit/8901d9a436031d60cb1ac74d8816fa48890a5e76))
+* **messageformat:** Refactor plurals, and a few other things ([36429af](https://github.com/messageformat/messageformat/commit/36429af15bff93320915173e214433dc192e37c6))
+* **messageformat:** Refactor/clean up compile() internals ([1127c99](https://github.com/messageformat/messageformat/commit/1127c99279664b3aeb0c0db9fb3734d7862a6d20))
+* **messageformat:** Split compileModule() from compile() ([32f6b52](https://github.com/messageformat/messageformat/commit/32f6b5282aa1eacbea87bbb9e05946c366b5caed))
+* **runtime:** Add make-plural as an explicit dependency ([95509a7](https://github.com/messageformat/messageformat/commit/95509a7c2fc0caffd4255d6e22bf4132c401ce9c))
+
+
+### BREAKING CHANGES
+
+* This drops/deprecates the messageformat-formatters
+package, moving its exports to messageformat-runtime/lib/formatters.
+* Use the customFormatters constructor option instead.
+* **messageformat:** The module compiler now needs to be imported separately
+when used.
+
+Before:
+    import MessageFormat from 'messageformat'
+    const mf = new MessageFormat('en')
+    mf.compileModule(...)
+
+Now:
+    import MessageFormat from 'messageformat'
+    import compileModule from 'messageformat/compile-module'
+    const mf = new MessageFormat('en')
+    compileModule(mf, ...)
+* **messageformat:** This change introduces import statements into the
+module output.
+* **messageformat:** Before, compiled modules could be directly used, and
+included a built-in stringifier. Now, compiled modules are output as the
+source code of an ES module.
+* **messageformat:** This refactors a core API, separating the compilation
+of individual messages vs. collections of messages.
+* **messageformat:** This drops the second locale arg of
+MessageFormat#compile(), and removes the default of supporting all
+locales if initialised with an empty locale. Also, the API for custom
+plural categorisation functions now expects an array rather than an
+object of functions.
+* This changes the API
+
+Before:
+    import MessageFormat from 'messageformat'
+    const mf = new MessageFormat('en')
+    mf.currency = 'EUR'
+    const msg = mf.compile('{V, number, currency}')
+
+Now:
+    import MessageFormat from 'messageformat'
+    const mf = new MessageFormat('en', { currency: 'EUR' })
+    const msg = mf.compile('{V, number, currency}')
+* **messageformat:** Previously, non-numeric values used as plural arguments
+could be referred to using # while keeping their original value. With
+this change, they now get converted to numbers and then formatted,
+probably coming out as "NaN" instead.
+* **messages:** Previously, messages were a part of the core
+messageformat package. To use them, messageformat needed to be installed
+as a runtime rather than dev dependency. For clarity, it's here
+separated into its own package.
+* This drops MessageFormat.formatters as well as
+MessageFormat#fmt, which had public visibility but were not explicitly
+documented as public.
+* This removes the MessageFormat#runtime instance
+* Use the biDiSupport & strictNumberSign constructor
+options instead.
+* This removes both the pluralKeyChecks option, as well
+as the disablePluralKeyChecks() method. To avoid the checks, pass in your
+own plural category function.
+* **runtime:** This drops the error-throwing from the non-strict
+number() variant.
+
+
+
+
+
 # [2.3.0](https://github.com/messageformat/messageformat/compare/messageformat@2.2.1...messageformat@2.3.0) (2019-07-17)
 
 

@@ -1,3 +1,5 @@
+Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+
 ## Features
 
 - Handles arbitrary nesting of pluralization and select rules
@@ -15,7 +17,7 @@
 
 You may use this software under the MIT License:
 
-> Copyright 2012-2018 Alex Sexton, Eemeli Aro, and Contributors
+> Copyright OpenJS Foundation and contributors, <https://openjsf.org/>
 >
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the
@@ -38,13 +40,9 @@ You may use this software under the MIT License:
 
 ## Contributor License Agreement
 
-We require all contributions to be covered under the JS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions, you have the legal right to contribute and you are transferring the copyright of your works to the JavaScript Foundation.
+We require all code contributions to be covered under the OpenJS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions and that you have the legal right to contribute them under our MIT license. If you've not previously signed the CLA, our bot will provide you with instructions for how to do so.
 
-If you are an unfamiliar contributor to the committer assessing your pull request, it is best to make it clear how you are covered by a CLA in the notes of the pull request. The committer will verify your status.
-
-If your GitHub user id you are submitting your pull request from differs from the e-mail address which you have signed your CLA under, you should specifically note what you have your CLA filed under (and for CCLA that you are listed under your company's authorised contributors).
-
-## Authors
+## Core Contributors
 
 - Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - [alexsexton.com](http://alexsexton.com/)
 - Eemeli Aro - [@eemeli_aro](http://twitter.com/eemeli_aro) - [github.com/eemeli](https://github.com/eemeli)

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0-beta.0](https://github.com/messageformat/messageformat/compare/messageformat-loader-example@0.3.0...messageformat-loader-example@0.4.0-beta.0) (2019-10-15)
+
+
+### Features
+
+* **loader:** Update for changed API ([2196b43](https://github.com/messageformat/messageformat/commit/2196b43bbba3a9681488e60ad3bcb1472952c7f1))
+
+
+
+
+
 # [0.3.0](https://github.com/messageformat/messageformat/compare/messageformat-loader-example@0.2.0...messageformat-loader-example@0.3.0) (2019-07-17)
 
 

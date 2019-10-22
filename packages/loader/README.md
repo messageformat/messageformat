@@ -85,6 +85,10 @@ messages['ordinal-example']({ N: 1 });
   - [Webpack v1](https://webpack.github.io/docs/using-loaders.html)
   - [Webpack v2+](https://webpack.js.org/concepts/loaders/)
 
-## License
+---
 
-MIT
+[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+
+<a href="https://openjsf.org">
+<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
+</a>
