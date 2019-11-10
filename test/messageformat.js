@@ -143,37 +143,6 @@ describe('compile()', function() {
     expect(mfunc.toString()).to.match(/\bcy\b/);
     expect(mfunc({ num: 5 })).to.equal('5,6');
   });
-
-  describe('should have configurable # parsing support', function() {
-    const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
-    const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
-
-    it('false by default', function() {
-      const mf = new MessageFormat('en');
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
-      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
-      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
-    });
-
-    it('{ strictNumberSign: true }', function() {
-      const mf = new MessageFormat('en', { strictNumberSign: true });
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
-      expect(() => mf.compile(msg)({ X: 'x' })).to.throw(/\bX\b.*not a number/);
-      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
-      expect(() => mf.compile(msg2)({ X: 'x' })).to.throw(
-        /\bX\b.*not a number/
-      );
-    });
-
-    it('{ strictNumberSign: false }', function() {
-      const mf = new MessageFormat('en', { strictNumberSign: false });
-      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
-      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
-      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
-    });
-  });
 });
 
 describe('Basic Message Formatting', function() {
@@ -593,45 +562,75 @@ describe('Real World Uses', function() {
   });
 });
 
-describe('{ returnType: "values" }', function() {
-  var mf;
-  before(function() {
-    mf = new MessageFormat('en', { returnType: 'values' });
+describe('Options', () => {
+  describe('returnType: "values"', () => {
+    const mf = new MessageFormat('en', { returnType: 'values' });
+
+    it('simple message', function() {
+      const msg = mf.compile('msg');
+      expect(msg()).to.eql(['msg']);
+    });
+
+    it('variable with string value', function() {
+      const msg = mf.compile('msg {foo}');
+      expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'FOO']);
+    });
+
+    it('variable with object value', function() {
+      const msg = mf.compile('{foo} bar');
+      const foo = {};
+      expect(msg({ foo })[0]).to.equal(foo);
+    });
+
+    it('select string', function() {
+      const msg = mf.compile('msg {foo, select, FOO{bar} other{baz}}');
+      expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'bar']);
+    });
+
+    it('select variable', function() {
+      const msg = mf.compile('msg {foo, select, FOO{{bar}} other{baz}}');
+      expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', 'BAR']);
+    });
+
+    it('select multiple', function() {
+      const msg = mf.compile('msg {foo, select, FOO{{bar} end} other{baz}}');
+      expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', ['BAR', ' end']]);
+    });
+
+    it('plural number', function() {
+      const msg = mf.compile('{num} {num, plural, one{one} other{#{num}}}');
+      expect(msg({ num: 42 })).to.eql([42, ' ', ['42', 42]]);
+    });
   });
 
-  it('simple message', function() {
-    var msg = mf.compile('msg');
-    expect(msg()).to.eql(['msg']);
-  });
+  describe('strictNumberSign', () => {
+    const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
+    const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
 
-  it('variable with string value', function() {
-    var msg = mf.compile('msg {foo}');
-    expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'FOO']);
-  });
+    it('false by default', function() {
+      const mf = new MessageFormat('en');
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
+    });
 
-  it('variable with object value', function() {
-    var msg = mf.compile('{foo} bar');
-    var foo = {};
-    expect(msg({ foo })[0]).to.equal(foo);
-  });
+    it('{ strictNumberSign: true }', function() {
+      const mf = new MessageFormat('en', { strictNumberSign: true });
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
+      expect(() => mf.compile(msg)({ X: 'x' })).to.throw(/\bX\b.*not a number/);
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal("'#'");
+      expect(() => mf.compile(msg2)({ X: 'x' })).to.throw(
+        /\bX\b.*not a number/
+      );
+    });
 
-  it('select string', function() {
-    var msg = mf.compile('msg {foo, select, FOO{bar} other{baz}}');
-    expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'bar']);
-  });
-
-  it('select variable', function() {
-    var msg = mf.compile('msg {foo, select, FOO{{bar}} other{baz}}');
-    expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', 'BAR']);
-  });
-
-  it('select multiple', function() {
-    var msg = mf.compile('msg {foo, select, FOO{{bar} end} other{baz}}');
-    expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', ['BAR', ' end']]);
-  });
-
-  it('plural number', function() {
-    var msg = mf.compile('{num} {num, plural, one{one} other{#{num}}}');
-    expect(msg({ num: 42 })).to.eql([42, ' ', ['42', 42]]);
+    it('{ strictNumberSign: false }', function() {
+      const mf = new MessageFormat('en', { strictNumberSign: false });
+      expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
+      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
+      expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
+      expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
+    });
   });
 });
