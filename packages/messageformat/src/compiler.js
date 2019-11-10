@@ -50,8 +50,14 @@ export default class Compiler {
       ordinal: plural.ordinals,
       strict: this.options.strictNumberSign
     };
+    this.arguments = [];
     const r = parse(src, parserOptions).map(token => this.token(token));
-    return `function(d) { return ${this.concatenate(r, true)}; }`;
+    let reqArgs = '';
+    if (this.options.requireAllArguments && this.arguments.length > 0) {
+      this.setRuntimeFn('reqArgs');
+      reqArgs = `reqArgs(${JSON.stringify(this.arguments)}, d); `;
+    }
+    return `function(d) { ${reqArgs}return ${this.concatenate(r, true)}; }`;
   }
 
   cases(token, pluralToken) {
@@ -85,6 +91,7 @@ export default class Compiler {
     if (typeof token == 'string') return JSON.stringify(token);
 
     let fn;
+    this.arguments.push(token.arg);
     let args = [property('d', token.arg)];
     switch (token.type) {
       case 'argument':

@@ -563,6 +563,64 @@ describe('Real World Uses', function() {
 });
 
 describe('Options', () => {
+  describe('requireAllArguments: true', () => {
+    const mf = new MessageFormat('en', { requireAllArguments: true });
+    const noFoo = "Message requires argument 'foo'";
+
+    it('no arguments object', () => {
+      const msg = mf.compile('{foo}');
+      expect(() => msg()).to.throw(noFoo);
+    });
+
+    it('empty arguments object', () => {
+      const msg = mf.compile('{foo}');
+      expect(() => msg({})).to.throw(noFoo);
+    });
+
+    it('undefined value', () => {
+      const msg = mf.compile('{foo}');
+      expect(() => msg({ foo: undefined })).to.throw(noFoo);
+    });
+
+    it('null value', () => {
+      const msg = mf.compile('{foo}');
+      expect(msg({ foo: null })).to.eql(null);
+    });
+
+    it('empty string value', () => {
+      const msg = mf.compile('{foo}');
+      expect(msg({ foo: '' })).to.eql('');
+    });
+
+    it('missing second argument', () => {
+      const msg = mf.compile('{bar} {foo}');
+      expect(() => msg({ bar: 'BAR' })).to.throw(noFoo);
+    });
+
+    it('missing select argument (default to other)', () => {
+      const mf0 = new MessageFormat('en');
+      const msg = mf0.compile('{foo, select, other{FOO}}');
+      expect(msg({})).to.eql('FOO');
+    });
+
+    it('missing select argument', () => {
+      const msg = mf.compile('{foo, select, other{FOO}}');
+      expect(() => msg({})).to.throw(noFoo);
+    });
+
+    it('missing argument inside select case (default ignored)', () => {
+      const mf0 = new MessageFormat('en');
+      const msg = mf0.compile('{bar, select, bar{{foo}} other{OTHER}}');
+      expect(msg({ bar: null })).to.eql('OTHER');
+      expect(msg({ bar: 'bar' })).to.eql(undefined);
+    });
+
+    it('missing argument inside select case', () => {
+      const msg = mf.compile('{bar, select, bar{{foo}} other{OTHER}}');
+      expect(() => msg({ bar: null })).to.throw(noFoo);
+    });
+  });
+
   describe('returnType: "values"', () => {
     const mf = new MessageFormat('en', { returnType: 'values' });
 
