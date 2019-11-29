@@ -49,7 +49,7 @@ export default class MessageFormat {
    * @property {Object} [customFormatters] - Map of custom formatting functions
    *   to include. See the {@tutorial guide} for more details.
    * @property {boolean} [requireAllArguments=false] - Require all message
-   *   arguments to be set with a non-empty value
+   *   arguments to be set with a defined value
    * @property {('string'|'values')} [returnType='string'] - Return type of
    *   compiled functions; either a concatenated string or an array (possibly
    *   hierarchical) of values
