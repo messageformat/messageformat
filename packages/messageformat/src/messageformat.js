@@ -41,9 +41,6 @@ export default class MessageFormat {
   /**
    * @typedef {Object} MessageFormat~Options - The shape of the options object
    *   that may be used as the second argument of the constructor.
-   * @property {('string'|'values')} [returnType='string'] - Return type of
-   *   compiled functions; either a concatenated string or an array (possibly
-   *   hierarchical) of values
    * @property {boolean} [biDiSupport=false] - Add Unicode control characters to
    *   all input parts to preserve the integrity of the output when mixing LTR
    *   and RTL text
@@ -51,6 +48,11 @@ export default class MessageFormat {
    *   `{V, number, currency}`
    * @property {Object} [customFormatters] - Map of custom formatting functions
    *   to include. See the {@tutorial guide} for more details.
+   * @property {boolean} [requireAllArguments=false] - Require all message
+   *   arguments to be set with a defined value
+   * @property {('string'|'values')} [returnType='string'] - Return type of
+   *   compiled functions; either a concatenated string or an array (possibly
+   *   hierarchical) of values
    * @property {boolean} [strictNumberSign=false] - Allow `#` only directly
    *   within a plural or selectordinal case, rather than in any inner select
    *   case as well.

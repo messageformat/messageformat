@@ -65,3 +65,17 @@ export function plural(value, offset, lcfunc, data, isOrdinal) {
 export function select(value, data) {
   return {}.hasOwnProperty.call(data, value) ? data[value] : data.other;
 }
+
+/**
+ * Checks that all required arguments are set to defined values
+ *
+ * Throws on failure; otherwise returns undefined
+ *
+ * @param {string[]} keys - The required keys
+ * @param {Object.<string,string>} data - The data object being checked
+ */
+export function reqArgs(keys, data) {
+  for (var i = 0; i < keys.length; ++i)
+    if (!data || data[keys[i]] === undefined)
+      throw new Error(`Message requires argument '${keys[i]}'`);
+}
