@@ -1,3 +1,7 @@
+import {
+  getFormatter,
+  getFormatterSource
+} from 'messageformat-number-skeleton';
 import { parse } from 'messageformat-parser';
 import * as Runtime from 'messageformat-runtime';
 import * as Formatters from 'messageformat-runtime/lib/formatters';
@@ -224,43 +228,50 @@ export default class Compiler {
   }
 
   setNumberFormatter({ param }, args, plural) {
-    const lc = JSON.stringify(this.plural.locale);
+    const { locale } = this.plural;
+
     if (!param) {
       // {var, number} can use runtime number(lc, var, offset)
-      args.unshift(lc);
+      args.unshift(JSON.stringify(locale));
       args.push('0');
       this.setRuntimeFn('number');
       return 'number';
     }
 
-    args.push(lc);
-    const fmtArg0 = param.tokens[0];
-    if (param.tokens.length === 1 && typeof fmtArg0 === 'string') {
-      // Use arg-specific formatters for common cases
-      let fn;
-      switch (fmtArg0.trim()) {
+    args.push(JSON.stringify(locale));
+    if (param.tokens.length === 1 && typeof param.tokens[0] === 'string') {
+      const fmtArg = param.tokens[0].trim();
+
+      switch (fmtArg) {
         case 'currency':
           args.push(JSON.stringify(this.options.currency));
-          fn = 'numberCurrency';
-          break;
+          this.setFormatter('numberCurrency');
+          return 'numberCurrency';
         case 'integer':
-          fn = 'numberInteger';
-          break;
+          this.setFormatter('numberInteger');
+          return 'numberInteger';
         case 'percent':
-          fn = 'numberPercent';
-          break;
-        default: {
-          const cm = fmtArg0.match(/^\s*currency:([A-Z]+)\s*$/);
-          if (cm) {
-            args.push(JSON.stringify(cm[1]));
-            fn = 'numberCurrency';
-          }
-        }
+          this.setFormatter('numberPercent');
+          return 'numberPercent';
       }
-      if (fn) {
-        this.setFormatter(fn);
-        return fn;
+
+      // TODO: Deprecate
+      const cm = fmtArg.match(/^currency:([A-Z]+)$/);
+      if (cm) {
+        args.push(JSON.stringify(cm[1]));
+        this.setFormatter('numberCurrency');
+        return 'numberCurrency';
       }
+
+      const key = identifier(fmtArg, true);
+      if (!this.runtimeIncludes(key, 'formatter')) {
+        const { currency } = this.options;
+        const fmt = getFormatter(locale, fmtArg, currency);
+        fmt.toString = () => getFormatterSource(locale, fmtArg, currency);
+        fmt.type = 'formatter';
+        this.runtime[key] = fmt;
+      }
+      return key;
     }
 
     if (plural && this.options.strictNumberSign) plural = null;

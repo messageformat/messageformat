@@ -127,6 +127,16 @@ describe('compileModule()', function() {
     expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
   });
 
+  it('supports number formatters', async function() {
+    const mf = new MessageFormat('en');
+    const msg = await getModule(mf, [
+      'Your balance is {VAR, number, ¤#,##0.00;(¤#,##0.00)}.',
+      'The sparrow flew {VAR, number, :: measure-unit/length-meter unit-width-full-name}'
+    ]);
+    expect(msg[0]({ VAR: -3.27 })).to.eql('Your balance is ($3.27).');
+    expect(msg[1]({ VAR: 42 })).to.eql('The sparrow flew 42 meters');
+  });
+
   it('should import cardinal-only plural by default', async () => {
     const mf = new MessageFormat('en');
     const msg = '{foo, plural, one{one} other{other}}';

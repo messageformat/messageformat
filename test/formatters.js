@@ -140,6 +140,102 @@ describe('Formatters', function() {
     });
   });
 
+  describe('Number patterns', () => {
+    const cases = {
+      '#,##0.##': { value: 1234.567, lc: 'fr', exp: '1 234,57' },
+      '#,##0.###': { value: 1234.567, lc: 'fr', exp: '1 234,567' },
+      '###0.#####': { value: 1234.567, lc: 'fr', exp: '1234,567' },
+      '###0.0000#': { value: 1234.567, lc: 'fr', exp: '1234,5670' },
+      '00000.0000': { value: 1234.567, lc: 'fr', exp: '01234,5670' },
+      '#,##0.00 ¤': {
+        value: 1234.567,
+        lc: 'fr',
+        cur: 'EUR',
+        exp: '1 234,57 €'
+      },
+      '##,##0.00 ¤': {
+        value: 1234.567,
+        lc: 'fr',
+        cur: 'JPY',
+        exp: '1 234,57 JPY'
+      },
+      "'#'#": { value: 123, lc: 'en', exp: '#123' },
+      //"# o''clock": { value: 12, lc: 'en', exp: "12 o'clock" },
+      '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00' },
+      '¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CAD 12.00' },
+      '¤¤¤': { value: 5, lc: 'en', cur: 'CAD', exp: '5.00 Canadian dollars' },
+      '¤¤¤¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: '$12.00' },
+      '¤#,##0.00;(¤#,##0.00)': {
+        value: -3.27,
+        lc: 'en',
+        cur: 'USD',
+        exp: '($3.27)'
+      },
+      '0.###E0': { value: 1234, lc: 'en', exp: '1.234E3' },
+      '00.###E0': { value: 0.00123, lc: 'en', exp: '01.23E-3' },
+      '##0.####E0': { value: 12345, lc: 'en', exp: '12.345E3' },
+      '@@': { value: 12345, lc: 'en', exp: '12,000' },
+      '@@@': { value: 0.12345, lc: 'en', exp: '0.123' },
+      '@@##': { value: 3.14159, lc: 'en', exp: '3.142' },
+      '@@###': { value: 1.23004, lc: 'en', exp: '1.23' },
+      '@##': { value: 0.1203, lc: 'en', exp: '0.12' },
+      '#,#@#': { value: 1234, lc: 'en', exp: '1,200' },
+      '#,#50': { value: 1230, lc: 'en', exp: '1,250' },
+      '#,##0.65': { value: 1.234, lc: 'en', exp: '1.3' }
+    };
+
+    for (const [src, { value, lc, cur, exp }] of Object.entries(cases)) {
+      it(src, () => {
+        const mf = new MessageFormat(lc, cur ? { currency: cur } : null);
+        const msg = mf.compile(`{value, number, ${src}}`);
+        expect(msg({ value }).replace(/\s/g, ' ')).to.equal(exp);
+      });
+    }
+  });
+
+  describe('Number skeletons', () => {
+    const cases = [
+      ['percent', 42, '42%'],
+      ['.00', 42, '42.00'],
+      ['percent .00', 42, '42.00%'],
+      ['scale/100', 42, '4,200'],
+      ['percent scale/100', 42, '4,200%'],
+      ['measure-unit/length-meter', 42, '42 m'],
+      ['measure-unit/length-meter unit-width-full-name', 42, '42 meters'],
+      ['currency/CAD', 42, 'CA$42.00'],
+      ['currency/CAD unit-width-narrow', 42, '$42.00'],
+      ['compact-short', 42, '42'],
+      ['compact-long', 42, '42'],
+      ['compact-short currency/CAD', 42, 'CA$42'],
+      ['group-min2', 42, '42', [{}]],
+      ['sign-always', 42, '+42'],
+      ['sign-except-zero', 42, '+42'],
+      ['sign-accounting currency/CAD', -42, '(CA$42.00)']
+    ];
+
+    for (const [src, value, expected] of cases) {
+      it(src, () => {
+        const mf = new MessageFormat('en');
+        const msg = mf.compile(`{value, number, :: ${src}}`);
+        expect(msg({ value })).to.equal(expected);
+      });
+    }
+
+    it('foo (error)', () => {
+      const mf = new MessageFormat('en');
+      expect(() => mf.compile('{value, number, :: foo}')).to.throw(
+        'Unknown stem: foo'
+      );
+    });
+
+    it('.00/@@/@@ (error)', () => {
+      const mf = new MessageFormat('en');
+      expect(() => mf.compile('{value, number, :: .00/@@/@@}')).to.throw(
+        'Token .00 only supports one option (got 2)'
+      );
+    });
+  });
+
   describe('Custom formatters', function() {
     let mf;
     beforeEach(function() {
