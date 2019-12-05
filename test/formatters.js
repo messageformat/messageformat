@@ -156,12 +156,6 @@ describe('Formatters', function() {
         cur: 'EUR',
         exp: '1 234,57 €'
       },
-      '##,##0.00 ¤': {
-        value: 1234.567,
-        lc: 'fr',
-        cur: 'JPY',
-        exp: '1 234,57 JPY'
-      },
       "'#'#": { value: 123, lc: 'en', exp: '#123' },
       //"# o''clock": { value: 12, lc: 'en', exp: "12 o'clock" },
       '@@': { value: 12345, lc: 'en', exp: '12,000' },
@@ -202,11 +196,8 @@ describe('Formatters', function() {
 
   describe('Number skeletons', () => {
     const cases = [
-      ['percent', 42, '42%'],
       ['.00', 42, '42.00'],
-      ['percent .00', 42, '42.00%'],
       ['scale/100', 42, '4,200'],
-      ['percent scale/100', 42, '4,200%'],
       ['compact-short', 42, '42'],
       ['compact-long', 42, '42'],
       ['group-min2', 42, '42', [{}]]
@@ -231,6 +222,14 @@ describe('Formatters', function() {
         expect(msg({ value })).to.equal(expected);
       });
     }
+
+    it('percent .00', () => {
+      const mf = new MessageFormat('en');
+      const msg = mf.compile(`{value, number, :: percent .00}`);
+      // IE 11 may add a blank space before the % sign
+      const res = msg({ value: 42 }).replace(' %', '%');
+      expect(res).to.equal('42.00%');
+    });
 
     it('foo (error)', () => {
       const mf = new MessageFormat('en');
