@@ -1,14 +1,19 @@
 language: node_js
 node_js:
-  - 'node'
-  - 'lts/*'
-  - '8'
+  - "node"
+  - "lts/*"
+  - "8"
 
 addons:
   browserstack:
     username: eemeliaro2
     access_key:
-      secure: 'Vb1k4A+1vG1Vk3XxQDOvyt6bEzraxZIQTsYlLxTtNX7sf/g6r1Sf7DjN4+F4Hp6VnckAOTJce6L2cUba3XDeNylrtdQmgCw6mtHR5qguokVaN4r800rNgtrBabBI9RhSXsShjJPM8zBHrNF0jVZ/nSh6w6jiHuh2tDqmQjsuaNc='
+      secure: "Vb1k4A+1vG1Vk3XxQDOvyt6bEzraxZIQTsYlLxTtNX7sf/g6r1Sf7DjN4+F4Hp6VnckAOTJce6L2cUba3XDeNylrtdQmgCw6mtHR5qguokVaN4r800rNgtrBabBI9RhSXsShjJPM8zBHrNF0jVZ/nSh6w6jiHuh2tDqmQjsuaNc="
+
+before_install:
+  # Required for Node.js v12 & older
+  - npm install -g full-icu
+  - export NODE_ICU_DATA=`node-full-icu-path 2>/dev/null`
 
 script:
   - npm test
