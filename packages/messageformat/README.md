@@ -52,7 +52,7 @@ msg({ RES: 2 }); // 'They found 2 results.'
 ## Getting Started
 
 ```
-npm install --save-dev messageformat
+npm install --save-dev messageformat@next
 npm install --save messageformat-runtime
 ```
 

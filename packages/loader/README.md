@@ -5,7 +5,7 @@ Loader that parses input JSON & YAML objects of strings as objects of JavaScript
 ## Installation
 
 ```
-npm install messageformat messageformat-loader
+npm install messageformat@next messageformat-loader@next
 ```
 
 ## Usage
