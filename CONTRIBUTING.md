@@ -16,4 +16,4 @@ We like automated tools. In addition to our Node.js tests, our [CI](https://trav
 
 ## Contributor License Agreement
 
-We require all code contributions to be covered under the OpenJS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions and that you have the legal right to contribute them under our MIT license. If you've not previously signed the CLA, our bot will provide you with instructions for how to do so.
+We require all code contributions to be covered under the OpenJS Foundation's [Contributor License Agreement](https://cla.js.foundation/messageformat/messageformat). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions and that you have the legal right to contribute them under our MIT license. If you've not previously signed the CLA, our bot will provide you with instructions for how to do so.
