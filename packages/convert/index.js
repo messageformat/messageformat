@@ -1,5 +1,5 @@
-const common = require('common-prefix');
 const pluralCategories = require('make-plural/pluralCategories');
+const commonLength = require('./lib/common-length');
 
 const cldrPluralCategories = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
@@ -51,24 +51,19 @@ const isPluralObject = (data, locale, { verbose }) => {
 const getPluralMessage = (data, options) => {
   const keys = Object.keys(data);
   const messages = keys.map(key => getMessageFormat(data[key], options));
-  const prefix = common(messages);
-  const suffixLength = common(
-    messages.map(msg =>
-      msg
-        .split('')
-        .reverse()
-        .join('')
-    )
-  ).length;
-  const suffix = suffixLength > 0 ? messages[0].slice(-suffixLength) : '';
-  const cut =
-    suffixLength > 0
-      ? msg => msg.slice(prefix.length, -suffixLength)
-      : prefix
-      ? msg => msg.slice(prefix.length)
-      : msg => msg;
-  const pc = keys.map((key, i) => `${key}{${cut(messages[i])}}`);
+  const c0 = commonLength(messages, false);
+  const c1 = commonLength(messages, true);
+
+  const prefix = messages[0].slice(0, c0);
+  const suffix = c1 > 0 ? messages[0].slice(-c1) : '';
   const pv = options.pluralVariable;
+  const pc = keys.map((key, i) => {
+    let msg = messages[i];
+    if (c1 > 0) msg = msg.slice(c0, -c1);
+    else if (c0 > 0) msg = msg.slice(c0);
+    return `${key}{${msg}}`;
+  });
+
   return `${prefix}{${pv}, plural, ${pc.join(' ')}}${suffix}`;
 };
 
