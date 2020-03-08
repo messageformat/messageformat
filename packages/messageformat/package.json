@@ -62,6 +62,17 @@
       },
       {
         "files": [
+          "rollup.config.js"
+        ],
+        "env": {
+          "node": true
+        },
+        "parserOptions": {
+          "sourceType": "module"
+        }
+      },
+      {
+        "files": [
           "webpack.config.js"
         ],
         "env": {
@@ -78,7 +89,8 @@
     "safe-identifier": "^0.3.1"
   },
   "scripts": {
-    "prebuild": "babel src -d lib",
-    "build": "webpack --mode none"
+    "prebuild": "babel src -d lib --ignore src/bidi-mark-text.js,src/compiler.js",
+    "build": "rollup src/compiler.js -co lib/compiler.js",
+    "postbuild": "webpack --mode none"
   }
 }
