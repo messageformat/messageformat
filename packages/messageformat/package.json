@@ -83,7 +83,7 @@
   },
   "dependencies": {
     "make-plural": "^6.0.1",
-    "messageformat-number-skeleton": "^0.1.1",
+    "messageformat-number-skeleton": "^0.2.0",
     "messageformat-parser": "file:../parser",
     "messageformat-runtime": "file:../runtime",
     "safe-identifier": "^0.3.1"

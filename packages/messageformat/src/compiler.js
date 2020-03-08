@@ -1,6 +1,6 @@
 import {
-  getFormatter,
-  getFormatterSource
+  getNumberFormatter,
+  getNumberFormatterSource
 } from 'messageformat-number-skeleton';
 import { parse } from 'messageformat-parser';
 import * as Runtime from 'messageformat-runtime';
@@ -266,8 +266,8 @@ export default class Compiler {
       const key = identifier(fmtArg, true);
       if (!this.runtimeIncludes(key, 'formatter')) {
         const { currency } = this.options;
-        const fmt = getFormatter(locale, fmtArg, currency);
-        fmt.toString = () => getFormatterSource(locale, fmtArg, currency);
+        const fmt = getNumberFormatter(locale, fmtArg, currency);
+        fmt.toString = () => getNumberFormatterSource(locale, fmtArg, currency);
         fmt.type = 'formatter';
         this.runtime[key] = fmt;
       }
