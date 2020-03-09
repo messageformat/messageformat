@@ -1,1 +1,1 @@
-module.exports = require('./lib/compile-module').default;
+module.exports = require('./lib/compile-module');

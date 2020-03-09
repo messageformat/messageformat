@@ -19,12 +19,12 @@
   "license": "MIT",
   "homepage": "https://messageformat.github.io/messageformat/",
   "repository": "messageformat/messageformat",
-  "main": "index.js",
+  "main": "lib/messageformat.js",
   "browser": "./messageformat.js",
   "files": [
     "compile-module.js",
     "index.d.ts",
-    "lib",
+    "lib/",
     "messageformat.js",
     "messageformat.js.map"
   ],
@@ -89,8 +89,6 @@
     "safe-identifier": "^0.3.1"
   },
   "scripts": {
-    "prebuild": "babel src -d lib --ignore src/bidi-mark-text.js,src/compiler.js",
-    "build": "rollup src/compiler.js -co lib/compiler.js",
-    "postbuild": "webpack --mode none"
+    "build": "rollup -c"
   }
 }
