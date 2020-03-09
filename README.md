@@ -20,7 +20,7 @@ This monorepo consists of the following packages that make up our JS implementat
 ## Getting Started
 
 ```
-npm install --save-dev messageformat
+npm install --save-dev messageformat@next
 npm install --save messageformat-runtime
 ```
 
