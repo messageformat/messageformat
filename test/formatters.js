@@ -143,6 +143,36 @@ describe('Formatters', function() {
     });
   });
 
+  describe('Date skeletons', () => {
+    const isIE11 =
+      typeof window !== 'undefined' &&
+      !!window.MSInputMethodContext &&
+      !!document.documentMode;
+    const testDate = isIE11 ? it.skip : it;
+
+    // 2006 Jan 2, 15:04:05.789 in local time
+    const date = new Date(2006, 0, 2, 15, 4, 5, 789);
+
+    const cases = {
+      GGGGyMMMM: { exp: 'January 2006 Anno Domini' },
+      GGGGGyyMMMMM: { exp: 'J 06 A' },
+      GrMMMdd: { exp: 'Jan 02, 2006 AD' },
+      GMMd: { exp: '01/2 AD' },
+      Mk: { exp: '1, 15' },
+      hamszzzz: { exp: /^3:0?4:0?5 PM [A-Z]/ }
+    };
+
+    const mf = new MessageFormat('en');
+    for (const [src, { exp }] of Object.entries(cases)) {
+      testDate(src, () => {
+        const msg = mf.compile(`{date, date, ::${src}}`);
+        const res = msg({ date });
+        if (typeof exp === 'string') expect(res).to.equal(exp);
+        else expect(res).to.match(exp);
+      });
+    }
+  });
+
   describe('Number patterns', () => {
     const cases = {
       '#,##0.##': { value: 1234.567, lc: 'fr', exp: '1 234,57' },
@@ -226,8 +256,9 @@ describe('Formatters', function() {
     it('percent .00', () => {
       const mf = new MessageFormat('en');
       const msg = mf.compile(`{value, number, :: percent .00}`);
-      // IE 11 may add a blank space before the % sign
-      const res = msg({ value: 42 }).replace(' %', '%');
+      const res = msg({ value: 42 })
+        .replace(/\u2004/g, '') // IE 11
+        .replace(/\s%/, '%'); // IE 11
       expect(res).to.equal('42.00%');
     });
 

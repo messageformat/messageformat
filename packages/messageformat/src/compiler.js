@@ -1,4 +1,8 @@
 import {
+  getDateFormatter,
+  getDateFormatterSource
+} from 'messageformat-date-skeleton';
+import {
   getNumberFormatter,
   getNumberFormatterSource
 } from 'messageformat-number-skeleton';
@@ -134,20 +138,28 @@ export default class Compiler {
         break;
 
       case 'function':
-        if (token.key === 'number') {
-          fn = this.setNumberFormatter(token, args, pluralToken);
-          break;
+        switch (token.key) {
+          case 'date':
+            fn = this.setDateFormatter(token, args, pluralToken);
+            break;
+          case 'number':
+            fn = this.setNumberFormatter(token, args, pluralToken);
+            break;
+          default:
+            args.push(JSON.stringify(this.plural.locale));
+            if (token.param) {
+              if (pluralToken && this.options.strictNumberSign)
+                pluralToken = null;
+              const s = token.param.tokens.map(tok =>
+                this.token(tok, pluralToken)
+              );
+              args.push('(' + (s.join(' + ') || '""') + ').trim()');
+              if (token.key === 'number')
+                args.push(JSON.stringify(this.options.currency));
+            }
+            fn = token.key;
+            this.setFormatter(fn);
         }
-        args.push(JSON.stringify(this.plural.locale));
-        if (token.param) {
-          if (pluralToken && this.options.strictNumberSign) pluralToken = null;
-          const s = token.param.tokens.map(tok => this.token(tok, pluralToken));
-          args.push('(' + (s.join(' + ') || '""') + ').trim()');
-          if (token.key === 'number')
-            args.push(JSON.stringify(this.options.currency));
-        }
-        fn = token.key;
-        this.setFormatter(fn);
         break;
 
       case 'octothorpe':
@@ -227,6 +239,32 @@ export default class Compiler {
     }
   }
 
+  setDateFormatter({ param }, args, plural) {
+    const { locale } = this.plural;
+
+    const argStyle = param && param.tokens.length === 1 && param.tokens[0];
+    if (typeof argStyle === 'string' && /^\s*::/.test(argStyle)) {
+      const argSkeletonText = argStyle.trim().substr(2);
+      const key = identifier(`date_${locale}_${argSkeletonText}`, true);
+      if (!this.runtimeIncludes(key, 'formatter')) {
+        const fmt = getDateFormatter(locale, argSkeletonText);
+        fmt.toString = () => getDateFormatterSource(locale, argSkeletonText);
+        fmt.type = 'formatter';
+        this.runtime[key] = fmt;
+      }
+      return key;
+    }
+
+    args.push(JSON.stringify(locale));
+    if (param) {
+      if (plural && this.options.strictNumberSign) plural = null;
+      const s = param.tokens.map(tok => this.token(tok, plural));
+      args.push('(' + (s.join(' + ') || '""') + ').trim()');
+    }
+    this.setFormatter('date');
+    return 'date';
+  }
+
   setNumberFormatter({ param }, args, plural) {
     const { locale } = this.plural;
 
@@ -263,7 +301,7 @@ export default class Compiler {
         return 'numberCurrency';
       }
 
-      const key = identifier(fmtArg, true);
+      const key = identifier(`number_${locale}_${fmtArg}`, true);
       if (!this.runtimeIncludes(key, 'formatter')) {
         const { currency } = this.options;
         const fmt = getNumberFormatter(locale, fmtArg, currency);
