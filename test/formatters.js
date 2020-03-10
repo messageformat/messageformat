@@ -158,9 +158,12 @@ describe('Formatters', function() {
       GGGGGyyMMMMM: { exp: 'J 06 A' },
       GrMMMdd: { exp: 'Jan 02, 2006 AD' },
       GMMd: { exp: '01/2 AD' },
-      Mk: { exp: '1, 15' },
       hamszzzz: { exp: /^3:0?4:0?5 PM [A-Z]/ }
     };
+    if (NODE_VERSION >= 12)
+      Object.assign(cases, {
+        Mk: { exp: '1, 15' } // Node 8 says '3 PM' for k
+      });
 
     const mf = new MessageFormat('en');
     for (const [src, { exp }] of Object.entries(cases)) {
