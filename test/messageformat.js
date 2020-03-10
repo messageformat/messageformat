@@ -668,7 +668,7 @@ describe('Options', () => {
     it('false by default', function() {
       const mf = new MessageFormat('en');
       expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
+      expect(mf.compile(msg)({ X: 'x' })).to.be.oneOf(['NaN', '-NaN']); // Edge 18
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
@@ -686,7 +686,7 @@ describe('Options', () => {
     it('{ strictNumberSign: false }', function() {
       const mf = new MessageFormat('en', { strictNumberSign: false });
       expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
-      expect(mf.compile(msg)({ X: 'x' })).to.equal('NaN');
+      expect(mf.compile(msg)({ X: 'x' })).to.be.oneOf(['NaN', '-NaN']); // Edge 18
       expect(mf.compile(msg2)({ X: 3, Y: 5 })).to.equal('#');
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
