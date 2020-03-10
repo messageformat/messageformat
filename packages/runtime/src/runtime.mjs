@@ -34,10 +34,9 @@ export function number(lc, value, offset) {
  * @returns {string} The result of applying the offset to the input value
  */
 export function strictNumber(lc, value, offset, name) {
-  var f = _nf(lc).format(value - offset);
-  if (f === 'NaN')
-    throw new Error('`' + name + '` or its offset is not a number');
-  return f;
+  var n = value - offset;
+  if (isNaN(n)) throw new Error('`' + name + '` or its offset is not a number');
+  return _nf(lc).format(n);
 }
 
 /** Utility function for `{N, plural|selectordinal, ...}`
