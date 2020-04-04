@@ -153,29 +153,37 @@ object defined by ECMA-402.
 
 **Note**: Intl is not defined in Node by default until 0.12 and is not available
 in all browsers (in particular, IE <=10 and Safari <=9.1), so you may need to
-use a [polyfill].
+use a [polyfill]. Also, even relatively recent versions of browsers may have
+incomplete or non-standard support for all advanced features used by the date
+and number formatter skeletons.
 
 [simplearg syntax]: http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html
 [intl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
 [polyfill]: https://www.npmjs.com/package/intl
 
-### date
+### date and time
 
-Supported parameters are `short`, `default`, `long` , or `full`.
+For simple cases, both `date` and `time` support the parameters `short`, `default`, `long` , and `full`. For more precide date and time formatting, use `date` with a `::`-prefixed [DateFormat skeleton string](http://userguide.icu-project.org/formatparse/datetime) like `{T, date, ::hamszzzz}`
 
 ```javascript
 const MessageFormat = require('messageformat');
 const mf = new MessageFormat(['en', 'fi']);
 const messages = mf.compile({
   en: {
+    eagle: 'The Eagle landed at {T, time, full} on {T, date, full}',
+    now: 'The time is now {T, time}',
     today: 'Today is {T, date}',
     unix: 'Unix time started on {T, date, full}',
     uptime: '{sys} became operational on {d0, date, short}'
   },
   fi: {
+    now: 'Kello on nyt {T, time}',
     today: 'Tänään on {T, date}'
   }
 });
+
+messages.en.now({ T: Date.now() }); // 'The time is now 11:26:35 PM'
+messages.fi.now({ T: Date.now() }); // 'Kello on nyt 23.26.35'
 
 messages.en.today({ T: Date.now() }); // 'Today is Mar 30, 2018'
 messages.fi.today({ T: Date.now() }); // 'Tänään on 30. maalisk. 2018'
@@ -183,6 +191,9 @@ messages.en.unix({ T: 0 });
 // 'Unix time started on Thursday, January 1, 1970'
 messages.en.uptime({ sys: 'HAL 9000', d0: '12 January 1999' });
 // 'HAL 9000 became operational on 1/12/1999'
+
+messages.en.eagle({ T: '1969-07-20 20:17:40 UTC' });
+// 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
 ```
 
 ### duration
@@ -203,7 +214,7 @@ messages.countdown({ D: -151200.42 }); // 'Countdown: -42:00:00.420'
 
 ### number
 
-Supported parameters are `integer`, `percent` , or `currency`. To specify a non-default currency, use `currency:CODE`.
+Supported simple parameters are `integer`, `percent` , or `currency`. For more options, use a [NumberFormat skeleton string](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md). Most [NumberFormat patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns) are also supported.
 
 ```javascript
 const MessageFormat = require('messageformat');
@@ -214,7 +225,7 @@ const messages = mf.compile({
   complete: '{P, number, percent} complete',
   currency: {
     eur: 'The total is {V, number, currency}.',
-    gbp: 'The total is {V, number, currency:GBP}.'
+    gbp: 'The total is {V, number, ::currency/GBP unit-width-narrow}.'
   }
 });
 
@@ -222,27 +233,6 @@ messages.almost({ N: 3.14 }); // '3.14 is almost 3'
 messages.complete({ P: 0.99 }); // '99% complete'
 messages.currency.eur({ V: 5.5 }); // 'The total is €5.50.'
 messages.currency.gbp({ V: 5.5 }); // 'The total is £5.50.'
-```
-
-### time
-
-Supported parameters are `short`, `default`, `long` , or `full`.
-
-```javascript
-const MessageFormat = require('messageformat')
-const mf = new MessageFormat(['en', 'fi'])
-const messages = mf.compile({
-  now: {
-    en: 'The time is now {T, time}',
-    fi: 'Kello on nyt {T, time}'
-  },
-  eagle: 'The Eagle landed at {T, time, full} on {T, date, full}'
-}
-
-messages.now.en({ T: Date.now() })  // 'The time is now 11:26:35 PM'
-messages.now.fi({ T: Date.now() })  // 'Kello on nyt 23.26.35'
-messages.eagle({ T: '1969-07-20 20:17:40 UTC' })
-  // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
 ```
 
 ### Custom Formatters
