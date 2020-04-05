@@ -80,6 +80,7 @@
     "serve": "^11.2.0",
     "serve-handler": "^6.1.2",
     "tmp-promise": "^2.0.2",
+    "typescript": "^3.8.3",
     "webpack": "^4.41.1",
     "webpack-cli": "^3.3.10"
   }
