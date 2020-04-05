@@ -1,14 +1,11 @@
-/** Represent a time as a short/default/long string
+/**
+ * Represent a time as a short/default/long string
  *
- * The input value needs to be in a form that the
- * {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date Date object}
- * can process using its single-argument form, `new Date(value)`.
- *
- * @memberof Formatters
- * @param {number|string} value - Either a Unix epoch time in milliseconds, or a string value representing a date
- * @param {string} [type='default'] - One of `'short'`, `'default'`, `'long'` , or `full`
+ * @param value Either a Unix epoch time in milliseconds, or a string value
+ *   representing a date. Parsed with `new Date(value)`
  *
  * @example
+ * ```js
  * var mf = new MessageFormat(['en', 'fi']);
  *
  * mf.compile('The time is now {T, time}')({ T: Date.now() })
@@ -20,10 +17,20 @@
  * var cf = mf.compile('The Eagle landed at {T, time, full} on {T, date, full}');
  * cf({ T: '1969-07-20 20:17:40 UTC' })
  * // 'The Eagle landed at 10:17:40 PM GMT+2 on Sunday, July 20, 1969'
+ * ```
  */
-export function time(v, lc, p) {
-  var o = { second: 'numeric', minute: 'numeric', hour: 'numeric' };
-  switch (p) {
+export function time(
+  value: number | string,
+  lc: string | string[],
+  size?: 'short' | 'default' | 'long' | 'full'
+) {
+  const o: Intl.DateTimeFormatOptions = {
+    second: 'numeric',
+    minute: 'numeric',
+    hour: 'numeric'
+  };
+  /* eslint-disable no-fallthrough */
+  switch (size) {
     case 'full':
     case 'long':
       o.timeZoneName = 'short';
@@ -31,5 +38,5 @@ export function time(v, lc, p) {
     case 'short':
       delete o.second;
   }
-  return new Date(v).toLocaleTimeString(lc, o);
+  return new Date(value).toLocaleTimeString(lc, o);
 }
