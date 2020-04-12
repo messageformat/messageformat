@@ -15,7 +15,7 @@ This monorepo consists of the following packages that make up our JS implementat
 - [messageformat-loader-example](packages/loader-example/) - Usage example for the loader
 - [messageformat-parser](packages/parser/) - Parses MessageFormat source strings into an AST
 - [messageformat-runtime](packages/runtime/) - Runtime dependencies of compiled message modules
-- [messageformat-website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/)
+- [messageformat-website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/messageformat/v3/)
 
 ## Getting Started
 
@@ -26,8 +26,8 @@ npm install --save messageformat-runtime
 
 This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.
 
-[format guide]: https://messageformat.github.io/messageformat/page-guide
-[usage guide]: https://messageformat.github.io/messageformat/page-build
+[format guide]: https://messageformat.github.io/messageformat/v3/page-guide
+[usage guide]: https://messageformat.github.io/messageformat/v3/page-build
 
 ---
 

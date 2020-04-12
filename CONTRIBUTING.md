@@ -1,6 +1,6 @@
 # Contributing to `messageformat`
 
-We welcome all relevant issues and pull requests, and aim to provide a constructive environment. If something is not clear and you have looked at our [documentation site](https://messageformat.github.io/), then it probably counts as a bug of some sort.
+We welcome all relevant issues and pull requests, and aim to provide a constructive environment. If something is not clear and you have looked at our [documentation site](https://messageformat.github.io/messageformat/v3/), then it probably counts as a bug of some sort.
 
 Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
 

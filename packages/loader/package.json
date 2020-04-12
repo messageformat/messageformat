@@ -16,7 +16,7 @@
   ],
   "author": "Clayton Watts <cletusw@gmail.com> (https://github.com/cletusw)",
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/",
+  "homepage": "https://messageformat.github.io/messageformat/v3/",
   "repository": "messageformat/messageformat",
   "main": "index.js",
   "eslintConfig": {

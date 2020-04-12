@@ -1,6 +1,6 @@
 # ICU MessageFormat loader for Webpack
 
-Loader that parses input JSON & YAML objects of strings as objects of JavaScript message functions with a matching structure, using [`messageformat`](https://messageformat.github.io/messageformat/).
+Loader that parses input JSON & YAML objects of strings as objects of JavaScript message functions with a matching structure, using [`messageformat`](https://messageformat.github.io/messageformat/v3/).
 
 ## Installation
 
@@ -73,14 +73,14 @@ messages['ordinal-example']({ N: 1 });
 - `customFormatters` Add custom formatter functions to this MessageFormat instance.
 - `strictNumberSign` Follow the stricter ICU MessageFormat spec and throw a runtime error if # is used with non-numeric input. Defaults to `false`.
 
-[`locale`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html#MessageFormat
+[`locale`]: https://messageformat.github.io/messageformat/v3/MessageFormat#MessageFormat
 [cldr language code]: http://www.unicode.org/cldr/charts/29/supplemental/language_territory_information.html
-[`messageformat`]: https://messageformat.github.io/messageformat.js/doc/MessageFormat.html
+[`messageformat`]: https://messageformat.github.io/messageformat/v3/MessageFormat
 [`convert`]: https://github.com/messageformat/messageformat/tree/master/packages/convert
 
 ## Links
 
-- [messageformat](https://messageformat.github.io/)
+- [messageformat v3](https://messageformat.github.io/messageformat/v3/)
 - Loaders:
   - [Webpack v1](https://webpack.github.io/docs/using-loaders.html)
   - [Webpack v2+](https://webpack.js.org/concepts/loaders/)
