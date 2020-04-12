@@ -30,8 +30,8 @@ async function getModule(mf, messages) {
   }
 }
 
-describe('compileModule()', function() {
-  it('can compile an object of messages', async function() {
+describe('compileModule()', function () {
+  it('can compile an object of messages', async function () {
     const data = {
       key: 'I have {FRIENDS, plural, one{one friend} other{# friends}}.'
     };
@@ -43,7 +43,7 @@ describe('compileModule()', function() {
     expect(mfunc.key({ FRIENDS: 2 })).to.eql('I have 2 friends.');
   });
 
-  it('can compile an object enclosing reserved JavaScript words used as keys in quotes', async function() {
+  it('can compile an object enclosing reserved JavaScript words used as keys in quotes', async function () {
     const data = {
       default: 'default is a JavaScript reserved word so should be quoted',
       unreserved:
@@ -63,7 +63,7 @@ describe('compileModule()', function() {
     );
   });
 
-  it('can be instantiated multiple times for multiple languages', async function() {
+  it('can be instantiated multiple times for multiple languages', async function () {
     const mf = {
       en: new MessageFormat('en'),
       ru: new MessageFormat('ru')
@@ -75,11 +75,11 @@ describe('compileModule()', function() {
         '{count} {count, plural, other{пользователей}}'
       )
     };
-    expect(function() {
+    expect(function () {
       cf.en({ count: 12 });
     }).to.not.throw();
     expect(cf.en({ count: 12 })).to.eql('12 users');
-    expect(function() {
+    expect(function () {
       cf.ru({ count: 13 });
     }).to.not.throw();
     expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
@@ -87,7 +87,7 @@ describe('compileModule()', function() {
 
   const customFormatters = { lc: (v, lc) => lc };
 
-  it('can support multiple languages', async function() {
+  it('can support multiple languages', async function () {
     const mf = new MessageFormat(['en', 'fr', 'ru'], { customFormatters });
     const cf = await getModule(mf, {
       fr: 'Locale: {_, lc}',
@@ -97,7 +97,7 @@ describe('compileModule()', function() {
     expect(cf.ru({ count: 12 })).to.eql('3');
   });
 
-  it('defaults to supporting only English', async function() {
+  it('defaults to supporting only English', async function () {
     const mf = new MessageFormat(null, { customFormatters });
     const cf = await getModule(mf, {
       xx: 'Locale: {_, lc}',
@@ -107,7 +107,7 @@ describe('compileModule()', function() {
     expect(cf.fr({})).to.eql('Locale: en');
   });
 
-  it('supports all languages with locale "*"', async function() {
+  it('supports all languages with locale "*"', async function () {
     const mf = new MessageFormat('*', { customFormatters });
     const cf = await getModule(mf, {
       fr: 'Locale: {_, lc}',
@@ -119,7 +119,7 @@ describe('compileModule()', function() {
     expect(cf.ru({ count: 12 })).to.eql('3');
   });
 
-  it('should support custom formatter functions', async function() {
+  it('should support custom formatter functions', async function () {
     const mf = new MessageFormat('en', {
       customFormatters: { uppercase: v => v.toUpperCase() }
     });
@@ -131,7 +131,7 @@ describe('compileModule()', function() {
   });
 
   if (NODE_VERSION >= 12) {
-    it('supports number formatters', async function() {
+    it('supports number formatters', async function () {
       const mf = new MessageFormat('en');
       const msg = await getModule(mf, [
         'Your balance is {VAR, number, ¤#,##0.00;(¤#,##0.00)}.',

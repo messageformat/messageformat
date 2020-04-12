@@ -4,5 +4,8 @@ package-lock.json
 /example/i18n.js
 /packages/*/CHANGELOG.md
 /packages/loader-example/dist/bundle.js
+/packages/messageformat/lib/
 /packages/messageformat/messageformat.*
 /packages/parser/parser.js
+/packages/runtime/lib/
+/packages/website/docs/

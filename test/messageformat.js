@@ -16,49 +16,49 @@ describe('static MessageFormat', () => {
   });
 });
 
-describe('new MessageFormat()', function() {
-  it('should be a constructor', function() {
+describe('new MessageFormat()', function () {
+  it('should be a constructor', function () {
     const mf = new MessageFormat('en');
     expect(mf).to.be.an.instanceof(MessageFormat);
   });
 
-  it('should have a compile() function', function() {
+  it('should have a compile() function', function () {
     const mf = new MessageFormat('en');
     expect(mf.compile).to.be.a('function');
   });
 
-  it('should have a resolvedOptions() function', function() {
+  it('should have a resolvedOptions() function', function () {
     const mf = new MessageFormat('en');
     expect(mf.resolvedOptions).to.be.a('function');
   });
 
-  it('should fallback when a base pluralFunc exists', function() {
+  it('should fallback when a base pluralFunc exists', function () {
     const mf = new MessageFormat('en-x-test1-test2');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en-x-test1-test2');
     expect(opt.plurals[0].getPlural).to.be.a('function');
   });
 
-  it('should fallback when a base pluralFunc exists (underscores)', function() {
+  it('should fallback when a base pluralFunc exists (underscores)', function () {
     const mf = new MessageFormat('en_x_test1_test2');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en_x_test1_test2');
     expect(opt.plurals[0].getPlural).to.be.a('function');
   });
 
-  it('should fallback on non-existing locales', function() {
+  it('should fallback on non-existing locales', function () {
     const mf = new MessageFormat('lawlz');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en');
   });
 
-  it('should default to `en` when no locale is passed into the constructor', function() {
+  it('should default to `en` when no locale is passed into the constructor', function () {
     const mf = new MessageFormat('lawlz');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en');
   });
 
-  it('should accept custom plural functions', function() {
+  it('should accept custom plural functions', function () {
     function fake(x, ord) {
       return ord ? 'few' : 'some';
     }
@@ -72,7 +72,7 @@ describe('new MessageFormat()', function() {
     expect(opt.plurals[0].ordinals).to.equal(fake.ordinals);
   });
 
-  it('should include all locales for "*"', function() {
+  it('should include all locales for "*"', function () {
     const mf = new MessageFormat('*');
     const opt = mf.resolvedOptions();
     expect(opt.locale).to.equal('en');
@@ -80,43 +80,43 @@ describe('new MessageFormat()', function() {
   });
 });
 
-describe('compile()', function() {
+describe('compile()', function () {
   let mf;
-  beforeEach(function() {
+  beforeEach(function () {
     mf = new MessageFormat('en');
   });
 
-  it('should exist', function() {
+  it('should exist', function () {
     expect(mf.compile).to.be.a('function');
   });
 
-  it('compiles a string to a function', function() {
+  it('compiles a string to a function', function () {
     expect(mf.compile('test')).to.be.a('function');
   });
 
-  it('can output a non-formatted string', function() {
+  it('can output a non-formatted string', function () {
     expect(mf.compile('This is a string.')()).to.eql('This is a string.');
   });
 
-  it('throws an error when no `other` option is found - plurals', function() {
-    expect(function() {
+  it('throws an error when no `other` option is found - plurals', function () {
+    expect(function () {
       mf.compile('{X, plural, someoption{a}}');
     }).to.throw();
   });
 
-  it('throws an error when no `other` option is found - selects', function() {
-    expect(function() {
+  it('throws an error when no `other` option is found - selects', function () {
+    expect(function () {
       mf.compile('{X, select, someoption{a}}');
     }).to.throw();
   });
 
-  it('throws an error when no `other` option is found - selectordinals', function() {
-    expect(function() {
+  it('throws an error when no `other` option is found - selectordinals', function () {
+    expect(function () {
       mf.compile('{X, selectordinal, someoption{a}}');
     }).to.throw();
   });
 
-  it('does not throw an error when no `other` option is found - plurals with custom pluralFunc', function() {
+  it('does not throw an error when no `other` option is found - plurals with custom pluralFunc', function () {
     function fake(x, ord) {
       return ord ? 'few' : 'some';
     }
@@ -126,7 +126,7 @@ describe('compile()', function() {
     expect(() => mf.compile('{X, plural, some{a}}')).to.not.throw();
   });
 
-  it('should use the locale plural function', function() {
+  it('should use the locale plural function', function () {
     mf = new MessageFormat('cy');
     const mfunc = mf.compile(
       '{num, plural, zero{0} one{1} two{2} few{3} many{6} other{+}}'
@@ -135,7 +135,7 @@ describe('compile()', function() {
     expect(mfunc({ num: 5 })).to.equal('+');
   });
 
-  it('should use the locale selectordinal function', function() {
+  it('should use the locale selectordinal function', function () {
     mf = new MessageFormat('cy');
     const mfunc = mf.compile(
       '{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}'
@@ -145,20 +145,20 @@ describe('compile()', function() {
   });
 });
 
-describe('Basic Message Formatting', function() {
-  it('gets non-ascii character all the way through.', function() {
+describe('Basic Message Formatting', function () {
+  it('gets non-ascii character all the way through.', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile('中{test}中国话不用彁字。')({ test: '☺' })).to.eql(
       '中☺中国话不用彁字。'
     );
   });
 
-  it('escapes double quotes', function() {
+  it('escapes double quotes', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile('She said "Hello"')()).to.eql('She said "Hello"');
   });
 
-  it('should handle apostrophes correctly', function() {
+  it('should handle apostrophes correctly', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile("I see '{many}'")()).to.eql('I see {many}');
     expect(mf.compile("I said '{''Wow!''}'")()).to.eql("I said {'Wow!'}");
@@ -166,13 +166,13 @@ describe('Basic Message Formatting', function() {
     expect(mf.compile("I don''t know")()).to.eql("I don't know");
   });
 
-  it('accepts escaped special characters', function() {
+  it('accepts escaped special characters', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile("'{'")()).to.eql('{');
     expect(mf.compile("'}'")()).to.eql('}');
   });
 
-  it('accepts special characters escaped with MessageFormat.escape', function() {
+  it('accepts special characters escaped with MessageFormat.escape', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile(MessageFormat.escape('{'))()).to.eql('{');
     expect(mf.compile(MessageFormat.escape('}'))()).to.eql('}');
@@ -180,7 +180,7 @@ describe('Basic Message Formatting', function() {
     expect(mf.compile(MessageFormat.escape('#', true))()).to.eql("'#'");
   });
 
-  it('should get escaped brackets all the way out the other end', function() {
+  it('should get escaped brackets all the way out the other end', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile("'{{{'")()).to.eql('{{{');
     expect(mf.compile("'}}}'")()).to.eql('}}}');
@@ -190,12 +190,12 @@ describe('Basic Message Formatting', function() {
     ).to.eql('{{{4}}}');
   });
 
-  it('can substitute named variables', function() {
+  it('can substitute named variables', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile('The var is {VAR}.')({ VAR: 5 })).to.eql('The var is 5.');
   });
 
-  it('can substitute positional variables', function() {
+  it('can substitute positional variables', function () {
     var mf = new MessageFormat('en');
     expect(mf.compile('The var is {0}.')({ '0': 5 })).to.eql('The var is 5.');
     expect(mf.compile('The var is {0}.')([5])).to.eql('The var is 5.');
@@ -207,7 +207,7 @@ describe('Basic Message Formatting', function() {
     );
   });
 
-  it('can substitute shorthand variables', function() {
+  it('can substitute shorthand variables', function () {
     var mf = new MessageFormat('en');
     expect(
       mf.compile('{VAR, plural, other{The var is #.}}')({ VAR: 5 })
@@ -226,19 +226,19 @@ describe('Basic Message Formatting', function() {
     ).to.eql('The var is 5.');
   });
 
-  it('allows escaped shorthand variable: #', function() {
+  it('allows escaped shorthand variable: #', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile("{X, plural, other{# is a '#'}}");
     expect(mfunc({ X: 3 })).to.eql('3 is a #');
   });
 
-  it('should not substitute octothorpes that are outside of curly braces', function() {
+  it('should not substitute octothorpes that are outside of curly braces', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('This is an octothorpe: #');
     expect(mfunc({ X: 3 })).to.eql('This is an octothorpe: #');
   });
 
-  it('obeys plural functions', function() {
+  it('obeys plural functions', function () {
     const mf = new MessageFormat(function fake(x) {
       return 'few';
     });
@@ -259,7 +259,7 @@ describe('Basic Message Formatting', function() {
     ).to.equal('res: wasfew');
   });
 
-  it('obeys selectordinal functions', function() {
+  it('obeys selectordinal functions', function () {
     const mf = new MessageFormat(function fake(x, ord) {
       return ord ? 'few' : 'other';
     });
@@ -288,7 +288,7 @@ describe('Basic Message Formatting', function() {
     ).to.equal('res: wasfew');
   });
 
-  it('only calculates the offset from non-literals', function() {
+  it('only calculates the offset from non-literals', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('{NUM, plural, offset:1 =0{a} one{b} other{c}}');
     expect(mfunc({ NUM: 0 })).to.eql('a');
@@ -296,7 +296,7 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ NUM: 2 })).to.eql('b');
   });
 
-  it('supports selectordinal with offset', function() {
+  it('supports selectordinal with offset', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
       '{NUM, selectordinal, offset:1 =0{literal} one{one} other{other}}'
@@ -306,48 +306,48 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ NUM: 2 })).to.eql('one');
   });
 
-  it('should obey `i=0 and v=0` rules', function() {
+  it('should obey `i=0 and v=0` rules', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('{NUM, plural, one{a} other{b}}');
     expect(mfunc({ NUM: '1' })).to.eql('a');
     expect(mfunc({ NUM: '1.0' })).to.eql('b');
   });
 
-  it('should give priority to literals', function() {
+  it('should give priority to literals', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('{NUM, plural, =34{a} one{b} other{c}}');
     expect(mfunc({ NUM: 34 })).to.eql('a');
   });
 
-  it("should throw an error when you don't pass it any data, but it expects it", function() {
+  it("should throw an error when you don't pass it any data, but it expects it", function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('{NEEDSDATAYO}');
-    expect(function() {
+    expect(function () {
       var z = mfunc();
     }).to.throw();
   });
 
-  it("should not throw an error when you don't pass it any data, but it expects none", function() {
+  it("should not throw an error when you don't pass it any data, but it expects none", function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile('Just a string');
-    expect(function() {
+    expect(function () {
       var z = mfunc();
     }).to.not.throw();
   });
 
-  it('should check plural cases according to locale', function() {
+  it('should check plural cases according to locale', function () {
     var mf = new MessageFormat('en');
     var msg = '{X, plural, zero{none} one{one} other{some: #}}';
-    expect(function() {
+    expect(function () {
       mf.compile(msg);
     }).to.throw();
   });
 
-  describe('should add control codes to bidirectional text', function() {
+  describe('should add control codes to bidirectional text', function () {
     var msg = '{0} >> {1}';
     var data = ['Hello! English', 'Hello \u0647\u0644\u0627\u060d'];
 
-    it('{ biDiSupport: true }', function() {
+    it('{ biDiSupport: true }', function () {
       var mfEn = new MessageFormat('en', { biDiSupport: true });
       var mfEg = new MessageFormat('ar-EG', { biDiSupport: true });
       expect(mfEn.compile(msg)(data)).to.equal(
@@ -359,7 +359,7 @@ describe('Basic Message Formatting', function() {
     });
   });
 
-  it('should allow for a simple select', function() {
+  it('should allow for a simple select', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
       'I am {FEELING, select, a{happy} b{sad} other{indifferent}}.'
@@ -370,7 +370,7 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({})).to.eql('I am indifferent.');
   });
 
-  it('should allow for a simple plural form', function() {
+  it('should allow for a simple plural form', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
       'I have {FRIENDS, plural, one{one friend} other{# friends}}.'
@@ -380,7 +380,7 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FRIENDS: 2 })).to.eql('I have 2 friends.');
   });
 
-  it('should allow for a simple selectordinal form', function() {
+  it('should allow for a simple selectordinal form', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
       'The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor.'
@@ -390,7 +390,7 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FLOOR: 2 })).to.eql('The 2nd floor.');
   });
 
-  it("should reject number injections of numbers that don't exist", function() {
+  it("should reject number injections of numbers that don't exist", function () {
     var mf = new MessageFormat('en', { strictNumberSign: true });
     var mfunc = mf.compile(
       'I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, offset:1 ' +
@@ -404,7 +404,7 @@ describe('Basic Message Formatting', function() {
     expect(() => mfunc({ ENEMIES: 1 })).to.throw(/\bFRIENDS\b.*not a number/);
   });
 
-  it('should not expose prototype members - selects', function() {
+  it('should not expose prototype members - selects', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
       'I am {FEELING, select, a{happy} hasOwnProperty{evil} other{indifferent}}.'
@@ -412,7 +412,7 @@ describe('Basic Message Formatting', function() {
     expect(mfunc({ FEELING: 'toString' })).to.eql('I am indifferent.');
   });
 
-  it('should not expose prototype members - plurals', function() {
+  it('should not expose prototype members - plurals', function () {
     var mf = new MessageFormat('en');
     var mfunc = mf.compile(
       'I have {FRIENDS, plural, one{one friend} other{friends}}.'
@@ -421,8 +421,8 @@ describe('Basic Message Formatting', function() {
   });
 });
 
-describe('Real World Uses', function() {
-  it('can correctly pull in a different pluralization rule set', function() {
+describe('Real World Uses', function () {
+  it('can correctly pull in a different pluralization rule set', function () {
     // note, cy.js was included in the html file for the browser
     // and then in the common.js file
     var mf = new MessageFormat('cy');
@@ -438,7 +438,7 @@ describe('Real World Uses', function() {
     expect(mfunc({ NUM: 42 })).to.eql('omg42');
   });
 
-  it('can parse complex, real-world messages with nested selects and plurals with offsets', function() {
+  it('can parse complex, real-world messages with nested selects and plurals with offsets', function () {
     var input =
       '' +
       '{PERSON} added {PLURAL_NUM_PEOPLE, plural, offset:1' +
@@ -548,7 +548,7 @@ describe('Real World Uses', function() {
     ).to.eql('Al Sexton added themself and 2 other people to their group.');
   });
 
-  it('handles octothorpes with nested plurals', function() {
+  it('handles octothorpes with nested plurals', function () {
     var mf = new MessageFormat('en');
     const msg = mf.compile(
       '{HOURS, plural, =0 {{MINUTES, plural, =0 {{SECONDS, plural, =0 {} other {#s}}} other {#m {SECONDS}s}}} other {#h {MINUTES}m {SECONDS}s}}'
@@ -624,38 +624,38 @@ describe('Options', () => {
   describe('returnType: "values"', () => {
     const mf = new MessageFormat('en', { returnType: 'values' });
 
-    it('simple message', function() {
+    it('simple message', function () {
       const msg = mf.compile('msg');
       expect(msg()).to.eql(['msg']);
     });
 
-    it('variable with string value', function() {
+    it('variable with string value', function () {
       const msg = mf.compile('msg {foo}');
       expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'FOO']);
     });
 
-    it('variable with object value', function() {
+    it('variable with object value', function () {
       const msg = mf.compile('{foo} bar');
       const foo = {};
       expect(msg({ foo })[0]).to.equal(foo);
     });
 
-    it('select string', function() {
+    it('select string', function () {
       const msg = mf.compile('msg {foo, select, FOO{bar} other{baz}}');
       expect(msg({ foo: 'FOO' })).to.eql(['msg ', 'bar']);
     });
 
-    it('select variable', function() {
+    it('select variable', function () {
       const msg = mf.compile('msg {foo, select, FOO{{bar}} other{baz}}');
       expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', 'BAR']);
     });
 
-    it('select multiple', function() {
+    it('select multiple', function () {
       const msg = mf.compile('msg {foo, select, FOO{{bar} end} other{baz}}');
       expect(msg({ foo: 'FOO', bar: 'BAR' })).to.eql(['msg ', ['BAR', ' end']]);
     });
 
-    it('plural number', function() {
+    it('plural number', function () {
       const msg = mf.compile('{num} {num, plural, one{one} other{#{num}}}');
       expect(msg({ num: 42 })).to.eql([42, ' ', ['42', 42]]);
     });
@@ -665,7 +665,7 @@ describe('Options', () => {
     const msg = '{X, plural, one{#} other{{Y, select, other{#}}}}';
     const msg2 = "{X, plural, one{#} other{{Y, select, other{'#'}}}}";
 
-    it('false by default', function() {
+    it('false by default', function () {
       const mf = new MessageFormat('en');
       expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
       expect(mf.compile(msg)({ X: 'x' })).to.be.oneOf(['NaN', '-NaN']); // Edge 18
@@ -673,7 +673,7 @@ describe('Options', () => {
       expect(mf.compile(msg2)({ X: 'x' })).to.equal('#');
     });
 
-    it('{ strictNumberSign: true }', function() {
+    it('{ strictNumberSign: true }', function () {
       const mf = new MessageFormat('en', { strictNumberSign: true });
       expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('#');
       expect(() => mf.compile(msg)({ X: 'x' })).to.throw(/\bX\b.*not a number/);
@@ -683,7 +683,7 @@ describe('Options', () => {
       );
     });
 
-    it('{ strictNumberSign: false }', function() {
+    it('{ strictNumberSign: false }', function () {
       const mf = new MessageFormat('en', { strictNumberSign: false });
       expect(mf.compile(msg)({ X: 3, Y: 5 })).to.equal('3');
       expect(mf.compile(msg)({ X: 'x' })).to.be.oneOf(['NaN', '-NaN']); // Edge 18

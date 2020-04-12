@@ -257,13 +257,13 @@ option of the MessageFormat constructor.
 ```javascript
 const MessageFormat = require('messageformat');
 const customFormatters = {
-  upcase: function(v) {
+  upcase: function (v) {
     return v.toUpperCase();
   },
-  locale: function(v, lc) {
+  locale: function (v, lc) {
     return lc;
   },
-  prop: function(v, lc, p) {
+  prop: function (v, lc, p) {
     return v[p];
   }
 };

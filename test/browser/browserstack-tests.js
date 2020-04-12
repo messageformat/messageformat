@@ -43,7 +43,7 @@ function buildDriver(browser) {
     .build();
 }
 
-describe('Browser tests', function() {
+describe('Browser tests', function () {
   this.timeout(120 * 1000);
 
   let server;

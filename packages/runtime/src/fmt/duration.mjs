@@ -44,7 +44,7 @@ export function duration(value) {
     first +
     ':' +
     parts
-      .map(function(n) {
+      .map(function (n) {
         return n < 10 ? '0' + String(n) : String(n);
       })
       .join(':')
