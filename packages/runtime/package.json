@@ -26,7 +26,7 @@
     "prepublishOnly": "npm run build && npm run docs"
   },
   "dependencies": {
-    "make-plural": "^6.0.1"
+    "make-plural": "^6.2.1"
   },
   "browserslist": [
     "last 1 version",

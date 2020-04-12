@@ -82,12 +82,12 @@
     ]
   },
   "dependencies": {
-    "make-plural": "^6.0.1",
-    "messageformat-date-skeleton": "^0.1.0",
-    "messageformat-number-skeleton": "^0.2.0",
+    "make-plural": "^6.2.1",
+    "messageformat-date-skeleton": "^0.1.1",
+    "messageformat-number-skeleton": "^0.2.1",
     "messageformat-parser": "file:../parser",
     "messageformat-runtime": "file:../runtime",
-    "safe-identifier": "^0.3.1"
+    "safe-identifier": "^0.4.1"
   },
   "scripts": {
     "build": "rollup -c"
