@@ -5,7 +5,11 @@
   "private": true,
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
-  "repository": "messageformat/messageformat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/website"
+  },
   "scripts": {
     "build": "npm start && ./publish.sh",
     "clean": "rimraf docs/",

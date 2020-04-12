@@ -18,7 +18,11 @@
   ],
   "license": "MIT",
   "homepage": "https://messageformat.github.io/messageformat/v3/",
-  "repository": "messageformat/messageformat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/messageformat"
+  },
   "main": "lib/messageformat.js",
   "browser": "./messageformat.js",
   "files": [
