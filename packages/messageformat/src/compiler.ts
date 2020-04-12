@@ -6,47 +6,74 @@ import {
   getNumberFormatter,
   getNumberFormatterSource
 } from 'messageformat-number-skeleton';
-import { parse } from 'messageformat-parser';
+import {
+  parse,
+  FunctionArg,
+  Octothorpe,
+  Plural,
+  Select,
+  Token
+} from 'messageformat-parser';
 import * as Runtime from 'messageformat-runtime';
 import * as Formatters from 'messageformat-runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
+import { MessageFormatOptions } from './messageformat';
+import { PluralObject } from './plurals';
 
 const RUNTIME_MODULE = 'messageformat-runtime';
 const CARDINAL_MODULE = 'messageformat-runtime/lib/cardinals';
 const PLURAL_MODULE = 'messageformat-runtime/lib/plurals';
 const FORMATTER_MODULE = 'messageformat-runtime/lib/formatters';
 
+type RuntimeType = 'formatter' | 'locale' | 'runtime';
+interface RuntimeEntry {
+  (...args: any): string | void;
+  module?: string | null;
+  toString?: () => string;
+  type?: RuntimeType;
+}
+export interface RuntimeMap {
+  [key: string]: Required<RuntimeEntry>;
+}
+
+export interface StringStructure {
+  [key: string]: StringStructure | string;
+}
+
 export default class Compiler {
-  /** Creates a new message compiler. Called internally from {@link MessageFormat#compile}.
-   *
-   * @param {object} options - A MessageFormat options object
-   * @property {object} locales - The locale identifiers that are used by the compiled functions
-   * @property {object} runtime - Names of the core runtime functions that are used by the compiled functions
-   * @property {object} formatters - The formatter functions that are used by the compiled functions
-   */
-  constructor(options) {
+  arguments: string[] = [];
+  options: Required<MessageFormatOptions>;
+  // @ts-ignore Always set in compile()
+  plural: PluralObject;
+  runtime: RuntimeMap = {};
+
+  constructor(options: Required<MessageFormatOptions>) {
     this.options = options;
-    this.plural = null;
-    this.runtime = {};
   }
 
-  /** Recursively compile a string or a tree of strings to JavaScript function sources
+  /**
+   * Recursively compile a string or a tree of strings to JavaScript function
+   * sources
    *
-   *  If `src` is an object with a key that is also present in `plurals`, the key
-   *  in question will be used as the locale identifier for its value. To disable
-   *  the compile-time checks for plural & selectordinal keys while maintaining
-   *  multi-locale support, use falsy values in `plurals`.
+   * If `src` is an object with a key that is also present in `plurals`, the key
+   * in question will be used as the locale identifier for its value. To disable
+   * the compile-time checks for plural & selectordinal keys while maintaining
+   * multi-locale support, use falsy values in `plurals`.
    *
-   * @param {string|object} src - the source for which the JS code should be generated
-   * @param {object} plural - the default locale
-   * @param {object} plurals - a map of pluralization keys for all available locales
+   * @param src The source for which the JS code should be generated
+   * @param plural The default locale
+   * @param plurals A map of pluralization keys for all available locales
    */
-  compile(src, plural, plurals) {
+  compile(
+    src: string | StringStructure,
+    plural: PluralObject,
+    plurals?: { [key: string]: PluralObject }
+  ) {
     if (typeof src === 'object') {
-      const result = {};
+      const result: StringStructure = {};
       for (const key of Object.keys(src)) {
-        const pl = plurals[key] || plural;
+        const pl = (plurals && plurals[key]) || plural;
         result[key] = this.compile(src[key], pl, plurals);
       }
       return result;
@@ -59,7 +86,7 @@ export default class Compiler {
       strict: this.options.strictNumberSign
     };
     this.arguments = [];
-    const r = parse(src, parserOptions).map(token => this.token(token));
+    const r = parse(src, parserOptions).map(token => this.token(token, null));
     let reqArgs = '';
     if (this.options.requireAllArguments && this.arguments.length > 0) {
       this.setRuntimeFn('reqArgs');
@@ -68,7 +95,7 @@ export default class Compiler {
     return `function(d) { ${reqArgs}return ${this.concatenate(r, true)}; }`;
   }
 
-  cases(token, pluralToken) {
+  cases(token: Plural | Select, pluralToken: Plural | null) {
     let needOther = true;
     const r = token.cases.map(({ key, tokens }) => {
       if (key === 'other') needOther = false;
@@ -88,24 +115,27 @@ export default class Compiler {
     return `{ ${r.join(', ')} }`;
   }
 
-  concatenate(tokens, root) {
+  concatenate(tokens: string[], root: boolean) {
     const asValues = this.options.returnType === 'values';
     return asValues && (root || tokens.length > 1)
       ? '[' + tokens.join(', ') + ']'
       : tokens.join(' + ') || '""';
   }
 
-  token(token, pluralToken) {
+  token(token: Token | Octothorpe, pluralToken: Plural | null) {
     if (typeof token == 'string') return JSON.stringify(token);
 
-    let fn;
-    this.arguments.push(token.arg);
-    let args = [property('d', token.arg)];
+    const { id, lc } = this.plural;
+    let args: (number | string)[], fn: string;
+    if ('arg' in token) {
+      this.arguments.push(token.arg);
+      args = [property('d', token.arg)];
+    } else args = [];
     switch (token.type) {
       case 'argument':
         return this.options.biDiSupport
-          ? biDiMarkText(args[0], this.plural.id)
-          : args[0];
+          ? biDiMarkText(String(args[0]), lc)
+          : String(args[0]);
 
       case 'select':
         fn = 'select';
@@ -116,24 +146,15 @@ export default class Compiler {
 
       case 'selectordinal':
         fn = 'plural';
-        args.push(
-          token.offset || 0,
-          identifier(this.plural.id),
-          this.cases(token, token),
-          1
-        );
-        this.setLocale(this.plural.id, true);
+        args.push(token.offset || 0, id, this.cases(token, token), 1);
+        this.setLocale(id, true);
         this.setRuntimeFn('plural');
         break;
 
       case 'plural':
         fn = 'plural';
-        args.push(
-          token.offset || 0,
-          identifier(this.plural.id),
-          this.cases(token, token)
-        );
-        this.setLocale(this.plural.id, false);
+        args.push(token.offset || 0, id, this.cases(token, token));
+        this.setLocale(id, false);
         this.setRuntimeFn('plural');
         break;
 
@@ -172,10 +193,11 @@ export default class Compiler {
         if (this.options.strictNumberSign) {
           fn = 'strictNumber';
           args.push(JSON.stringify(pluralToken.arg));
+          this.setRuntimeFn('strictNumber');
         } else {
           fn = 'number';
+          this.setRuntimeFn('number');
         }
-        this.setRuntimeFn(fn);
         break;
     }
 
@@ -183,7 +205,7 @@ export default class Compiler {
     return `${fn}(${args.join(', ')})`;
   }
 
-  runtimeIncludes(key, type) {
+  runtimeIncludes(key: string, type: RuntimeType) {
     const prev = this.runtime[key];
     if (!prev || prev.type === type) return prev;
     if (identifier(key) !== key)
@@ -193,53 +215,60 @@ export default class Compiler {
     );
   }
 
-  setLocale(key, ord) {
+  setLocale(key: string, ord: boolean) {
     const prev = this.runtimeIncludes(key, 'locale');
     const { getCardinal, getPlural, isDefault } = this.plural;
-    let pf;
+    let pf: RuntimeEntry, module, toString;
     if (!ord && isDefault && getCardinal) {
       if (prev) return;
-      pf = n => getCardinal(n);
-      pf.module = CARDINAL_MODULE;
-      pf.toString = () => String(getCardinal);
+      pf = (n: string | number) => getCardinal(n);
+      module = CARDINAL_MODULE;
+      toString = () => String(getCardinal);
     } else {
       // overwrite a previous cardinal-only locale function
       if (prev && (!isDefault || prev.module === PLURAL_MODULE)) return;
-      pf = (n, ord) => getPlural(n, ord);
-      pf.module = isDefault ? PLURAL_MODULE : getPlural.module;
-      pf.toString = () => String(getPlural);
+      pf = (n: string | number, ord?: boolean) => getPlural(n, ord);
+      module = isDefault ? PLURAL_MODULE : getPlural.module || null;
+      toString = () => String(getPlural);
     }
-    pf.type = 'locale';
-    this.runtime[key] = pf;
+    this.runtime[key] = Object.assign(pf, { module, toString, type: 'locale' });
   }
 
-  setRuntimeFn(key) {
+  setRuntimeFn(
+    key: 'number' | 'plural' | 'select' | 'strictNumber' | 'reqArgs'
+  ) {
     if (this.runtimeIncludes(key, 'runtime')) return;
-    const rf = Runtime[key];
-    rf.module = RUNTIME_MODULE;
-    rf.type = 'runtime';
-    this.runtime[key] = rf;
+    const rf: RuntimeEntry = Runtime[key];
+    this.runtime[key] = Object.assign(rf, {
+      module: RUNTIME_MODULE,
+      type: 'runtime'
+    });
   }
 
-  setFormatter(key) {
+  setFormatter(key: string) {
     if (this.runtimeIncludes(key, 'formatter')) return;
-    const cf = this.options.customFormatters[key];
+    const cf: RuntimeEntry = this.options.customFormatters[key];
     if (cf) {
-      cf.type = 'formatter';
-      this.runtime[key] = cf;
+      this.runtime[key] = Object.assign(cf, {
+        module: null,
+        type: 'formatter'
+      });
+    } else if (isFormatterKey(key)) {
+      const df: RuntimeEntry = Formatters[key];
+      this.runtime[key] = Object.assign(df, {
+        module: FORMATTER_MODULE,
+        type: 'formatter'
+      });
     } else {
-      const df = Formatters[key];
-      if (df) {
-        df.module = FORMATTER_MODULE;
-        df.type = 'formatter';
-        this.runtime[key] = df;
-      } else {
-        throw new Error(`Formatting function not found: ${key}`);
-      }
+      throw new Error(`Formatting function not found: ${key}`);
     }
   }
 
-  setDateFormatter({ param }, args, plural) {
+  setDateFormatter(
+    { param }: FunctionArg,
+    args: (number | string)[],
+    plural: Plural | null
+  ) {
     const { locale } = this.plural;
 
     const argStyle = param && param.tokens.length === 1 && param.tokens[0];
@@ -247,10 +276,12 @@ export default class Compiler {
       const argSkeletonText = argStyle.trim().substr(2);
       const key = identifier(`date_${locale}_${argSkeletonText}`, true);
       if (!this.runtimeIncludes(key, 'formatter')) {
-        const fmt = getDateFormatter(locale, argSkeletonText);
-        fmt.toString = () => getDateFormatterSource(locale, argSkeletonText);
-        fmt.type = 'formatter';
-        this.runtime[key] = fmt;
+        const fmt: RuntimeEntry = getDateFormatter(locale, argSkeletonText);
+        this.runtime[key] = Object.assign(fmt, {
+          module: null,
+          toString: () => getDateFormatterSource(locale, argSkeletonText),
+          type: 'formatter'
+        });
       }
       return key;
     }
@@ -265,7 +296,11 @@ export default class Compiler {
     return 'date';
   }
 
-  setNumberFormatter({ param }, args, plural) {
+  setNumberFormatter(
+    { param }: FunctionArg,
+    args: (number | string)[],
+    plural: Plural | null
+  ) {
     const { locale } = this.plural;
 
     if (!param) {
@@ -304,10 +339,12 @@ export default class Compiler {
       const key = identifier(`number_${locale}_${fmtArg}`, true);
       if (!this.runtimeIncludes(key, 'formatter')) {
         const { currency } = this.options;
-        const fmt = getNumberFormatter(locale, fmtArg, currency);
-        fmt.toString = () => getNumberFormatterSource(locale, fmtArg, currency);
-        fmt.type = 'formatter';
-        this.runtime[key] = fmt;
+        const fmt: RuntimeEntry = getNumberFormatter(locale, fmtArg, currency);
+        this.runtime[key] = Object.assign(fmt, {
+          module: null,
+          toString: () => getNumberFormatterSource(locale, fmtArg, currency),
+          type: 'formatter'
+        });
       }
       return key;
     }
@@ -319,4 +356,8 @@ export default class Compiler {
     this.setFormatter('numberFmt');
     return 'numberFmt';
   }
+}
+
+function isFormatterKey(key: string): key is keyof typeof Formatters {
+  return key in Formatters;
 }
