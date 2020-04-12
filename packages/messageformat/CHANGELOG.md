@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.2](https://github.com/messageformat/messageformat/compare/messageformat@3.0.0-beta.1...messageformat@3.0.0-beta.2) (2020-04-12)
+
+
+### Bug Fixes
+
+* Update make-plural dependency to 6.0.1 ([fb5ceaf](https://github.com/messageformat/messageformat/commit/fb5ceafccfc75bfcda6941e815ffbba18a419b9d))
+
+
+### Features
+
+* **build:** Replace Webpack with Rollup as messageformat bundler ([#278](https://github.com/messageformat/messageformat/issues/278)) ([a6b7a34](https://github.com/messageformat/messageformat/commit/a6b7a347d7fc26c61f2dca628fca91908f504f18))
+* **compiler:** Add requireAllArguments option to compiler ([#267](https://github.com/messageformat/messageformat/issues/267)) ([eb4f194](https://github.com/messageformat/messageformat/commit/eb4f194759629332c80e695a0a9ef64b6e51a422))
+* **messageformat:** Add support for date skeletons ([#279](https://github.com/messageformat/messageformat/issues/279)) ([6283a68](https://github.com/messageformat/messageformat/commit/6283a689eeb1b32a937441715181460d86d01ade))
+* **messageformat:** Add support for number patterns & skeletons ([#272](https://github.com/messageformat/messageformat/issues/272)) ([c1aef99](https://github.com/messageformat/messageformat/commit/c1aef998ee2417f319bd2e426e1e56c3e73ede3b))
+
+
+
+
+
 # [3.0.0-beta.1](https://github.com/messageformat/messageformat/compare/messageformat@3.0.0-beta.0...messageformat@3.0.0-beta.1) (2019-10-15)
 
 

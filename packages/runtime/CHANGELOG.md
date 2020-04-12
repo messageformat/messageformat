@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.1](https://github.com/messageformat/messageformat/compare/messageformat-runtime@3.0.0-beta.0...messageformat-runtime@3.0.0-beta.1) (2020-04-12)
+
+
+### Bug Fixes
+
+* **runtime:** Use actual isNaN() check in strictNumber() ([d5a55b4](https://github.com/messageformat/messageformat/commit/d5a55b4d5f0bf21af46a494bf7e16d8ba62657ff))
+* Update make-plural dependency to 6.0.1 ([fb5ceaf](https://github.com/messageformat/messageformat/commit/fb5ceafccfc75bfcda6941e815ffbba18a419b9d))
+
+
+### Features
+
+* **compiler:** Add requireAllArguments option to compiler ([#267](https://github.com/messageformat/messageformat/issues/267)) ([eb4f194](https://github.com/messageformat/messageformat/commit/eb4f194759629332c80e695a0a9ef64b6e51a422))
+* **runtime:** Add typings for messages ([#265](https://github.com/messageformat/messageformat/issues/265)) ([9be7e9d](https://github.com/messageformat/messageformat/commit/9be7e9d6598673b90ed39ff6ffc56e83ce5d33ef))
+
+
+
+
+
 # 3.0.0-beta.0 (2019-10-15)
 
 

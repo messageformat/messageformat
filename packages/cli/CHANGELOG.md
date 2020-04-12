@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-beta.1](https://github.com/messageformat/messageformat/compare/messageformat-cli@3.0.0-beta.0...messageformat-cli@3.0.0-beta.1) (2020-04-12)
+
+**Note:** Version bump only for package messageformat-cli
+
+
+
+
+
 # [3.0.0-beta.0](https://github.com/messageformat/messageformat/compare/messageformat-cli@2.1.1...messageformat-cli@3.0.0-beta.0) (2019-10-15)
 
 
