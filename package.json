@@ -11,6 +11,7 @@
     "example": "example"
   },
   "scripts": {
+    "clean": "git clean -fdxe node_modules",
     "build": "lerna run build --ignore messageformat-website",
     "docs:build": "lerna run build --scope messageformat-website",
     "predocs:example": "messageformat example/ --locale en fr --outfile example/messages.mjs",
