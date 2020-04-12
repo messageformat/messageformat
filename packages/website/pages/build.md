@@ -55,7 +55,7 @@ During the build, the loader will compile your messages into their respective fu
 [create-react-app]: https://github.com/facebook/create-react-app
 
 ```text
-$ npm install messageformat messageformat-cli
+$ npm install messageformat@next messageformat-cli@next
 $ npx messageformat
 
 usage: messageformat [options] [input, ...]

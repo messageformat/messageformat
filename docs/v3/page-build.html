@@ -127,7 +127,7 @@ messages.ordinal({ N: 1 })          // 'The 1st message.'</code></pre>
 <p>During the build, the loader will compile your messages into their respective functions, and package only those into the webpack output.</p>
 <h2>CLI Compiler</h2>
 <p><a href="https://www.npmjs.com/package/messageformat-cli">messageformat-cli</a> is available as a separate package, and is easy to integrate into any build environment that can execute external commands, such as <a href="https://github.com/facebook/create-react-app">create-react-app</a>. In addition to command-line options, the CLI can read configuration from <code>package.json</code> and <code>messageformat.rc.json</code> files; see its documentation for more information.</p>
-<pre class="prettyprint source lang-text"><code>$ npm install messageformat messageformat-cli
+<pre class="prettyprint source lang-text"><code>$ npm install messageformat@next messageformat-cli@next
 $ npx messageformat
 
 usage: messageformat [options] [input, ...]
