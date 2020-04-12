@@ -1,6 +1,5 @@
 {
   "name": "messageformat-website",
-  "version": "3.0.0-beta.1",
   "description": "MessageFormat documentation website source",
   "private": true,
   "license": "MIT",
