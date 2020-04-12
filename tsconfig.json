@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "listEmittedFiles": true,
     "module": "ESNext",
     "moduleResolution": "node",
     "noImplicitReturns": true,

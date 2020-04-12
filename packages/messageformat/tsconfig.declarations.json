@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "lib",
+    "emitDeclarationOnly": true,
+    "removeComments": false
+  },
+  "exclude": ["src/bidi-mark-text.ts"]
+}

@@ -27,31 +27,9 @@
   "browser": "./messageformat.js",
   "files": [
     "compile-module.js",
-    "index.d.ts",
     "lib/",
-    "messageformat.js",
-    "messageformat.js.map"
+    "messageformat.js"
   ],
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "6.5.0"
-          }
-        }
-      ]
-    ],
-    "plugins": [
-      [
-        "@babel/plugin-proposal-class-properties",
-        {
-          "loose": true
-        }
-      ]
-    ]
-  },
   "eslintConfig": {
     "env": {
       "commonjs": true,
@@ -94,6 +72,7 @@
     "safe-identifier": "^0.4.1"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "postbuild": "tsc -p tsconfig.declarations.json"
   }
 }

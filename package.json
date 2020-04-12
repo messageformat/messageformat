@@ -59,6 +59,7 @@
     "@commitlint/config-conventional": "^8.2.0",
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
+    "@rollup/plugin-typescript": "^4.1.0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
@@ -80,6 +81,7 @@
     "serve": "^11.2.0",
     "serve-handler": "^6.1.2",
     "tmp-promise": "^2.0.2",
+    "tslib": "^1.11.1",
     "typescript": "^3.8.3",
     "webpack": "^4.41.1",
     "webpack-cli": "^3.3.10"
