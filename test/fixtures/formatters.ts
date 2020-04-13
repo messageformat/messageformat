@@ -10,6 +10,33 @@ import { TestCase } from './messageformat';
 //   !!window.MSInputMethodContext &&
 //   !!document.documentMode;
 
+export function customFormatterCases(): TestCase[] {
+  const arg = (v: string, lc: string, arg: string) => arg;
+  const uppercase = (v: string) => v.toUpperCase();
+  return [
+    {
+      options: { customFormatters: { uppercase } },
+      src: 'This is {VAR,uppercase}.',
+      exp: [[{ VAR: 'big' }, 'This is BIG.']]
+    },
+    {
+      options: { customFormatters: { arg } },
+      src: 'This is {_, arg, X, Y }.',
+      exp: [[{}, 'This is X, Y.']]
+    },
+    {
+      options: { customFormatters: { arg } },
+      src: 'This is {_, arg, {VAR, select, x{X} other{Y}}}.',
+      exp: [[{ VAR: 'x' }, 'This is X.']]
+    },
+    {
+      options: { customFormatters: { arg } },
+      src: 'This is {VAR, plural, one{} other{{_, arg, #}}}.',
+      exp: [[{ VAR: 99 }, 'This is 99.']]
+    }
+  ];
+}
+
 export function dateSkeletonCases(): TestCase[] {
   // 2006 Jan 2, 15:04:05.789 in local time
   const date = new Date(2006, 0, 2, 15, 4, 5, 789);

@@ -1,6 +1,6 @@
 import compileModule from './compile-module';
 import MessageFormat from './messageformat';
-import { getModule } from './fixtures/get-message-module';
+import { getModule } from '../../../test/fixtures/get-message-module';
 import { PluralFunction } from './plurals';
 
 const NODE_VERSION =

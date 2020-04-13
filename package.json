@@ -26,8 +26,8 @@
     "test:chrome": "npm run pretest:browsers && mocha-selenium-bridge -b chrome test/browser/selenium.html",
     "test:firefox": "npm run pretest:browsers && mocha-selenium-bridge -b firefox test/browser/selenium.html",
     "test:serve": "npm run pretest:browsers && serve",
-    "pretest": "lerna run build --scope messageformat-parser --scope messageformat-runtime --scope messageformat",
-    "test": "lerna run test && mocha --exclude test/browser"
+    "pretest": "lerna run build --scope messageformat-parser",
+    "test": "jest"
   },
   "prettier": {
     "arrowParens": "avoid",

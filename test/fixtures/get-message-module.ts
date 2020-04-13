@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import { file } from 'tmp-promise';
 import { promisify } from 'util';
-import compileModule, { MessageModule } from '../compile-module';
-import { StringStructure } from '../compiler';
-import MessageFormat from '../messageformat';
+import compileModule, { MessageModule } from 'messageformat/src/compile-module';
+import { StringStructure } from 'messageformat/src/compiler';
+import MessageFormat from 'messageformat';
 
 const write = promisify(fs.write);
 

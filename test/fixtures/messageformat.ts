@@ -1,6 +1,7 @@
-import MessageFormat from '../messageformat';
-import { PluralFunction } from '../plurals';
+import MessageFormat from 'messageformat';
+import { PluralFunction } from 'messageformat/src/plurals';
 import {
+  customFormatterCases,
   dateSkeletonCases,
   numberPatternCases,
   numberSkeletonCases
@@ -542,29 +543,7 @@ export const getTestCases = (MF: typeof MessageFormat) =>
       })()
     ],
 
-    'Custom formatters': [
-      {
-        options: { customFormatters: { uppercase: v => v.toUpperCase() } },
-        src: 'This is {VAR,uppercase}.',
-        exp: [[{ VAR: 'big' }, 'This is BIG.']]
-      },
-      {
-        options: { customFormatters: { arg: (v, lc, arg) => arg } },
-        src: 'This is {_, arg, X, Y }.',
-        exp: [[{}, 'This is X, Y.']]
-      },
-      {
-        options: { customFormatters: { arg: (v, lc, arg) => arg } },
-        src: 'This is {_, arg, {VAR, select, x{X} other{Y}}}.',
-        exp: [[{ VAR: 'x' }, 'This is X.']]
-      },
-      {
-        options: { customFormatters: { arg: (v, lc, arg) => arg } },
-        src: 'This is {VAR, plural, one{} other{{_, arg, #}}}.',
-        exp: [[{ VAR: 99 }, 'This is 99.']]
-      }
-    ],
-
+    'Custom formatters': customFormatterCases(),
     'Date skeletons': dateSkeletonCases(),
     'Number patterns': numberPatternCases(),
     'Number skeletons': numberSkeletonCases()

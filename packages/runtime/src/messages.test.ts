@@ -1,6 +1,6 @@
 import Messages from './messages';
 import MessageFormat from 'messageformat';
-import { getModule } from '../../messageformat/src/fixtures/get-message-module';
+import { getModule } from '../../../test/fixtures/get-message-module';
 import { MessageModule } from 'messageformat/src/compile-module'; // FIXME
 
 const msgSet = {
