@@ -1,5 +1,10 @@
 import MessageFormat from '../messageformat';
 import { PluralFunction } from '../plurals';
+import {
+  dateSkeletonCases,
+  numberPatternCases,
+  numberSkeletonCases
+} from './formatters';
 
 export type TestCase = {
   locale?: string | PluralFunction;
@@ -443,5 +448,124 @@ export const getTestCases = (MF: typeof MessageFormat) =>
           [{ ENEMIES: 1 }, { error: /\bFRIENDS\b.*not a number/ }]
         ]
       }
-    ]
+    ],
+
+    'Date formatter': [
+      {
+        src: 'Today is {T, date}',
+        exp: [[{ T: new Date(2016, 1, 21) }, 'Today is Feb 21, 2016']]
+      },
+      {
+        locale: 'fi',
+        src: 'Tänään on {T, date}',
+        exp: [[{ T: new Date(2016, 1, 21) }, /^Tänään on .*2016/]]
+      },
+      {
+        src: 'Unix time started on {T, date, full}',
+        exp: [
+          [
+            { T: 0 }, // IE 11 may print 01
+            /Unix time started on (Wednesday, December 31, 1969|Thursday, January 0?1, 1970)/
+          ]
+        ]
+      },
+      {
+        src: '{sys} became operational on {d0, date, short}',
+        exp: [
+          [
+            { sys: 'HAL 9000', d0: new Date(1999, 0, 12) },
+            'HAL 9000 became operational on 1/12/1999'
+          ]
+        ]
+      }
+    ],
+
+    'Duration formatter': [
+      {
+        src: 'It has been {D, duration}',
+        exp: [[{ D: 123 }, 'It has been 2:03']]
+      },
+      {
+        src: 'Countdown: {D, duration}',
+        exp: [[{ D: -151200.42 }, 'Countdown: -42:00:00.420']]
+      }
+    ],
+
+    'Number formatter': [
+      {
+        src: '{N} is almost {N, number, integer}',
+        exp: [[{ N: 3.14 }, '3.14 is almost 3']]
+      },
+      {
+        src: '{P, number, percent} complete',
+        exp: [[{ P: 0.99 }, /99( |\xa0)?% complete/]]
+        // IE 11 may insert a space or non-breaking space before the % char
+      },
+      {
+        src: 'The total is {V, number, currency}.',
+        exp: [[{ V: 5.5 }, 'The total is $5.50.']]
+      },
+      {
+        options: { currency: 'EUR' },
+        src: 'The total is {V, number, currency}.',
+        exp: [[{ V: 5.5 }, 'The total is €5.50.']]
+      },
+      {
+        options: { currency: 'EUR' },
+        src: 'The total is {V, number, currency:GBP}.',
+        exp: [[{ V: 5.5 }, 'The total is £5.50.']]
+      }
+    ],
+
+    'Time formatter': [
+      {
+        src: 'The time is now {T, time}',
+        exp: [[{ T: 978384385000 }, /^The time is now \d\d?:\d\d:25 PM$/]]
+      },
+      {
+        locale: 'fi',
+        src: 'Kello on nyt {T, time}',
+        exp: [[{ T: 978384385000 }, /^Kello on nyt \d\d?.\d\d.25/]]
+      },
+      (() => {
+        const time = new Date(1969, 6, 20, 20, 17, 40);
+        time.setMinutes(time.getMinutes() + time.getTimezoneOffset());
+        return {
+          src: 'The Eagle landed at {T, time, full} on {T, date, full}',
+          exp: [
+            [
+              { T: time },
+              /^The Eagle landed at \d\d?:\d\d:40 [AP]M( \S+)? on \w+day, July \d\d, 1969$/
+            ]
+          ]
+        };
+      })()
+    ],
+
+    'Custom formatters': [
+      {
+        options: { customFormatters: { uppercase: v => v.toUpperCase() } },
+        src: 'This is {VAR,uppercase}.',
+        exp: [[{ VAR: 'big' }, 'This is BIG.']]
+      },
+      {
+        options: { customFormatters: { arg: (v, lc, arg) => arg } },
+        src: 'This is {_, arg, X, Y }.',
+        exp: [[{}, 'This is X, Y.']]
+      },
+      {
+        options: { customFormatters: { arg: (v, lc, arg) => arg } },
+        src: 'This is {_, arg, {VAR, select, x{X} other{Y}}}.',
+        exp: [[{ VAR: 'x' }, 'This is X.']]
+      },
+      {
+        options: { customFormatters: { arg: (v, lc, arg) => arg } },
+        src: 'This is {VAR, plural, one{} other{{_, arg, #}}}.',
+        exp: [[{ VAR: 99 }, 'This is 99.']]
+      }
+    ],
+
+    'Date skeletons': dateSkeletonCases(),
+    'Number patterns': numberPatternCases(),
+    'Number skeletons': numberSkeletonCases()
   } as { [title: string]: TestCase[] });

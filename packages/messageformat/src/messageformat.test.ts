@@ -85,30 +85,50 @@ describe('compile() errors', () => {
     const mf = new MessageFormat('en');
     const src = '{X, select, foo{a}}';
     expect(() => mf.compile(src)).toThrow(/No 'other' form found/);
-  })
+  });
 
   test('Missing other in plural', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, one{a}}';
     expect(() => mf.compile(src)).toThrow(/No 'other' form found/);
-  })
+  });
 
   test('Invalid plural key', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, foo{a}}';
     expect(() => mf.compile(src)).toThrow(/Invalid key `foo`/);
-  })
+  });
 
   test('Invalid selectordinal key', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, foo{a}}';
     expect(() => mf.compile(src)).toThrow(/Invalid key `foo`/);
-  })
+  });
 
   test('Invalid plural key for locale', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, zero{none} one{one} other{some: #}}';
     expect(() => mf.compile(src)).toThrow(/Invalid key `zero`/);
+  });
+
+  test('Undefined formatting function', () => {
+    const mf = new MessageFormat('en');
+    const src = 'This is {VAR,uppercase}.';
+    expect(() => mf.compile(src)).toThrow();
+  });
+
+  test('Unknown number skeleton stem', () => {
+    const mf = new MessageFormat('en');
+    const src = '{value, number, :: foo}';
+    expect(() => mf.compile(src)).toThrow('Unknown stem: foo');
+  });
+
+  test('Number skeleton .00/@@/@@', () => {
+    const mf = new MessageFormat('en');
+    const src = '{value, number, :: .00/@@/@@}';
+    expect(() => mf.compile(src)).toThrow(
+      'Token .00 only supports one option (got 2)'
+    );
   });
 });
 
