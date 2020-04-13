@@ -10,6 +10,7 @@ import {
 export type TestCase = {
   locale?: string | PluralFunction;
   options?: object;
+  skip?: string[],
   src: string;
   exp: Array<
     [any, string | RegExp | { error: true | string | RegExp } | any[]]

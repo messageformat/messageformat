@@ -1,7 +1,22 @@
-import { expect } from 'chai'
+import { expect } from 'chai';
 import MessageFormat from 'messageformat';
 import { PluralFunction } from 'messageformat/src/plurals';
 import { getTestCases } from '../fixtures/messageformat';
+
+const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+const isIE11 =
+  typeof window !== 'undefined' &&
+  !!window.MSInputMethodContext &&
+  // @ts-ignore
+  !!document.documentMode;
+
+var isEdge = !isIE11 && !!window.StyleMedia;
+
+// const NODE_VERSION = typeof process === 'undefined' ? 99 : parseInt(process.version.slice(1));
+
+// MS Edge adds LTR/RTL marks around Date#toLocale*String parts
+// function dropBiDi(str) { return str.replace(/[\u200e\u200f]/g, ''); }
 
 describe('static MessageFormat', () => {
   it('should exist', () => {
@@ -61,7 +76,9 @@ describe('new MessageFormat()', () => {
   });
 
   it('should accept custom plural functions', () => {
-    const fake: PluralFunction = (_, ord) => (ord ? 'few' : 'many');
+    const fake: PluralFunction = function fake(_, ord) {
+      return ord ? 'few' : 'many';
+    };
     fake.cardinals = ['many'];
     fake.ordinals = ['few'];
     const mf = new MessageFormat([fake]);
@@ -135,7 +152,11 @@ describe('compile() errors', () => {
 
 for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
   describe(title, () => {
-    for (const { locale, options, src, exp } of cases) {
+    for (const { locale, options, src, exp, skip } of cases) {
+      if (skip) {
+        if (isEdge && skip.includes('edge')) continue;
+        if (isFirefox && skip.includes('ff')) continue;
+      }
       let name = src;
       if (locale || options) {
         const opt = [locale || 'en'];
@@ -169,4 +190,3 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
     }
   });
 }
-
