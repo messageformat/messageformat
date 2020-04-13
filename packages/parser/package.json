@@ -34,10 +34,11 @@
     "overrides": [
       {
         "files": [
-          "test.js"
+          "parser.test.js"
         ],
         "env": {
-          "mocha": true
+          "jest": true,
+          "node": true
         },
         "rules": {
           "no-unused-vars": 0
@@ -47,7 +48,6 @@
   },
   "scripts": {
     "build": "pegjs parser.pegjs",
-    "prepublishOnly": "npm test",
-    "test": "mocha"
+    "prepublishOnly": "npm test"
   }
 }

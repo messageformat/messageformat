@@ -18,20 +18,13 @@ rules:
   prettier/prettier: error
 
 overrides:
-  - files: [test/*.js]
+  - files: [test/browser/*.js]
     parserOptions: { ecmaVersion: 2017 }
     env:
       browser: true
       mocha: true
       node: true
     rules:
-      no-unused-vars: 0
-
-  - files: [test/browser/*.js]
-    parserOptions: { ecmaVersion: 2017 }
-    env:
-      mocha: true
-      node: true
-    rules:
       camelcase: 0
       no-console: 0
+      no-unused-vars: 0

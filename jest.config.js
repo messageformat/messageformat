@@ -2,7 +2,11 @@ const { defaults } = require('jest-config');
 
 module.exports = {
   collectCoverage: true,
-  coveragePathIgnorePatterns: ['/node_modules/', '/fixtures/'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/fixtures/',
+    '/parser/parser.js'
+  ],
   moduleFileExtensions: ['mjs', ...defaults.moduleFileExtensions],
   moduleNameMapper: {
     '^messageformat$': '<rootDir>/packages/messageformat/src/messageformat.ts',
