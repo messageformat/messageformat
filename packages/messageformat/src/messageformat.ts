@@ -7,6 +7,8 @@ import {
   PluralObject
 } from './plurals';
 
+export type MessageFunction = (param?: object) => string | any[];
+
 /**
  * The shape of the options object that may be used as the second argument of
  * the constructor.
@@ -193,6 +195,6 @@ export default class MessageFormat {
       fnArgs.push(fmt);
     }
     const fn = new Function(...nfArgs, fnBody);
-    return fn.apply(null, fnArgs);
+    return fn.apply(null, fnArgs) as MessageFunction;
   }
 }

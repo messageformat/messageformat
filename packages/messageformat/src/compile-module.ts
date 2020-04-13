@@ -1,7 +1,14 @@
 import { property } from 'safe-identifier';
 import Compiler, { RuntimeMap, StringStructure } from './compiler';
-import MessageFormat from './messageformat';
+import MessageFormat, { MessageFunction } from './messageformat';
 import { PluralObject } from './plurals';
+
+export { MessageFunction }
+export type MessageModule<T> = T extends string
+  ? MessageFunction
+  : {
+      [P in keyof T]: MessageModule<T[P]>;
+    };
 
 function stringifyRuntime(runtime: RuntimeMap) {
   const imports: { [key: string]: string[] } = {};
