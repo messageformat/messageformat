@@ -3,4 +3,4 @@ coverage/
 node_modules/
 /example/messages.*
 /packages/website/docs/
-/test/browser/bundle.js*
+/test/browser/dist/

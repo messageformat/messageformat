@@ -4,11 +4,16 @@
     <meta charset="utf-8" />
     <title>messageformat Test Suite</title>
     <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+    <script src="dist/ie11-polyfills.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../node_modules/mocha-selenium-bridge/browser/reporter.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../packages/messageformat/messageformat.js"></script>
     <script>
+      if (navigator.webdriver) mocha.reporter(Bridge)
       mocha.setup('bdd');
     </script>
-    <script src="./bundle.js"></script>
+    <script src="dist/browser-tests.js"></script>
   </head>
   <body>
     <div id="mocha"></div>

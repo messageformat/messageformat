@@ -18,7 +18,7 @@ rules:
   prettier/prettier: error
 
 overrides:
-  - files: [test/browser/*.js]
+  - files: [test/*.js]
     parserOptions: { ecmaVersion: 2017 }
     env:
       browser: true

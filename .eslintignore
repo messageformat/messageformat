@@ -10,4 +10,4 @@ package-lock.json
 /packages/runtime/esm/*
 /packages/runtime/lib/*
 /packages/website/docs/
-/test/browser/chai.js
+/test/browser/dist/

@@ -11,7 +11,7 @@ import { TestCase } from './messageformat';
 //   !!document.documentMode;
 
 export function customFormatterCases(): TestCase[] {
-  const arg = (v: string, lc: string, arg: string) => arg;
+  const arg = (_v: string, _lc: string, arg: string) => arg;
   const uppercase = (v: string) => v.toUpperCase();
   return [
     {

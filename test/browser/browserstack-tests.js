@@ -5,7 +5,7 @@ const { Builder } = require('selenium-webdriver');
 const handler = require('serve-handler');
 
 const PORT = 3000;
-const URL = `http://localhost:${PORT}/test/browser/selenium.html`;
+const URL = `http://localhost:${PORT}/test/browser/test.html`;
 
 const bsConfig = {
   project: 'messageformat',
