@@ -1,6 +1,7 @@
 root: true
 env:
   commonjs: true
+  es6: true
 plugins:
   - prettier
 extends:
@@ -21,7 +22,6 @@ overrides:
     parserOptions: { ecmaVersion: 2017 }
     env:
       browser: true
-      es6: true
       mocha: true
       node: true
     rules:
@@ -30,7 +30,6 @@ overrides:
   - files: [test/browser/*.js]
     parserOptions: { ecmaVersion: 2017 }
     env:
-      es6: true
       mocha: true
       node: true
     rules:

@@ -38,7 +38,8 @@
     "overrides": [
       {
         "files": [
-          "src/*.js"
+          "src/**/*.js",
+          "src/**/*.mjs"
         ],
         "parser": "babel-eslint"
       },

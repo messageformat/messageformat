@@ -6,5 +6,5 @@
     "emitDeclarationOnly": true,
     "removeComments": false
   },
-  "exclude": ["src/bidi-mark-text.ts"]
+  "exclude": ["**/*.test.ts"]
 }
