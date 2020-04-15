@@ -15,13 +15,11 @@ before_install:
   - npm install -g full-icu
   - export NODE_ICU_DATA=`node-full-icu-path 2>/dev/null`
 
-script:
-  - npm test
-
 jobs:
   include:
     - stage: ESLint & BrowserStack
       node_js: node
       script:
         - npm run lint
+        - npm run build
         - npm run test:browsers
