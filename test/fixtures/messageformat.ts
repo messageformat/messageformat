@@ -10,7 +10,7 @@ import {
 export type TestCase = {
   locale?: string | PluralFunction;
   options?: object;
-  skip?: string[],
+  skip?: string[];
   src: string;
   exp: Array<
     [any, string | RegExp | { error: true | string | RegExp } | any[]]
@@ -55,7 +55,10 @@ export const getTestCases = (MF: typeof MessageFormat) =>
 
     'Custom locales': [
       {
-        locale: (_: number) => 'few',
+        // Explicit function name required by IE 11
+        locale: function locale(_: number) {
+          return 'few';
+        },
         src: 'res: {val, plural, few{wasfew} other{failed}}',
         exp: [
           [{ val: 0 }, 'res: wasfew'],
@@ -67,7 +70,10 @@ export const getTestCases = (MF: typeof MessageFormat) =>
       },
 
       {
-        locale: (_: number, ord: boolean) => (ord ? 'few' : 'other'),
+        // Explicit function name required by IE 11
+        locale: function locale(_: number, ord: boolean) {
+          return ord ? 'few' : 'other';
+        },
         src: 'res: {val, selectordinal, few{wasfew} other{failed}}',
         exp: [
           [{ val: 0 }, 'res: wasfew'],
@@ -455,24 +461,28 @@ export const getTestCases = (MF: typeof MessageFormat) =>
     'Date formatter': [
       {
         src: 'Today is {T, date}',
+        skip: ['ie'],
         exp: [[{ T: new Date(2016, 1, 21) }, 'Today is Feb 21, 2016']]
       },
       {
         locale: 'fi',
         src: 'Tänään on {T, date}',
+        skip: ['ie'],
         exp: [[{ T: new Date(2016, 1, 21) }, /^Tänään on .*2016/]]
       },
       {
         src: 'Unix time started on {T, date, full}',
+        skip: ['ie'],
         exp: [
           [
-            { T: 0 }, // IE 11 may print 01
-            /Unix time started on (Wednesday, December 31, 1969|Thursday, January 0?1, 1970)/
+            { T: 0 },
+            /Unix time started on (Wednesday, December 31, 1969|Thursday, January 1, 1970)/
           ]
         ]
       },
       {
         src: '{sys} became operational on {d0, date, short}',
+        skip: ['ie'],
         exp: [
           [
             { sys: 'HAL 9000', d0: new Date(1999, 0, 12) },
@@ -522,11 +532,13 @@ export const getTestCases = (MF: typeof MessageFormat) =>
     'Time formatter': [
       {
         src: 'The time is now {T, time}',
+        skip: ['ie'],
         exp: [[{ T: 978384385000 }, /^The time is now \d\d?:\d\d:25 PM$/]]
       },
       {
         locale: 'fi',
         src: 'Kello on nyt {T, time}',
+        skip: ['ie'],
         exp: [[{ T: 978384385000 }, /^Kello on nyt \d\d?.\d\d.25/]]
       },
       (() => {
@@ -534,6 +546,7 @@ export const getTestCases = (MF: typeof MessageFormat) =>
         time.setMinutes(time.getMinutes() + time.getTimezoneOffset());
         return {
           src: 'The Eagle landed at {T, time, full} on {T, date, full}',
+          skip: ['ie'],
           exp: [
             [
               { T: time },

@@ -40,7 +40,8 @@ export function dateSkeletonCases(): TestCase[] {
   };
   return Object.entries(cases).map(([fmt, { exp }]) => ({
     src: `{date, date, ::${fmt}}`,
-    exp: [[{ date }, exp]]
+    exp: [[{ date }, exp]],
+    skip: ['ie']
   }));
 }
 
@@ -75,20 +76,47 @@ export function numberPatternCases(): TestCase[] {
     '#,#@#': { value: 1234, lc: 'en', exp: '1,200' },
     '#,#50': { value: 1230, lc: 'en', exp: '1,250' },
     '#,##0.65': { value: 1.234, lc: 'en', exp: '1.3' },
-    '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00' }, // Node 12
-    '¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: /^CAD\s12.00$/ }, // Node 12
-    '¤¤¤': { value: 5, lc: 'en', cur: 'CAD', exp: '5.00 Canadian dollars' }, // Node 12
-    '¤¤¤¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: '$12.00', skip:['edge','ff'] }, // Node 12
+    '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00', skip: ['ie'] },
+    '¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: /^CAD\s12.00$/ },
+    '¤¤¤': {
+      value: 5,
+      lc: 'en',
+      cur: 'CAD',
+      exp: '5.00 Canadian dollars',
+      skip: ['ie']
+    },
+    '¤¤¤¤¤': {
+      value: 12,
+      lc: 'en',
+      cur: 'CAD',
+      exp: '$12.00',
+      skip: ['ie', 'edge', 'ff']
+    },
     '¤#,##0.00;(¤#,##0.00)': {
       value: -3.27,
       lc: 'en',
       cur: 'USD',
       exp: '($3.27)',
-      skip: ['edge','ff']
-    }, // Node 12
-    '0.###E0': { value: 1234, lc: 'en', exp: '1.234E3', skip: ['edge','ff'] }, // Node 12
-    '00.###E0': { value: 0.00123, lc: 'en', exp: '01.23E-3', skip: ['edge','ff'] }, // Node 12
-    '##0.####E0': { value: 12345, lc: 'en', exp: '12.345E3', skip: ['edge','ff'] } // Node 12
+      skip: ['ie', 'edge', 'ff']
+    },
+    '0.###E0': {
+      value: 1234,
+      lc: 'en',
+      exp: '1.234E3',
+      skip: ['ie', 'edge', 'ff']
+    },
+    '00.###E0': {
+      value: 0.00123,
+      lc: 'en',
+      exp: '01.23E-3',
+      skip: ['ie', 'edge', 'ff']
+    },
+    '##0.####E0': {
+      value: 12345,
+      lc: 'en',
+      exp: '12.345E3',
+      skip: ['ie', 'edge', 'ff']
+    }
   };
   return Object.entries(cases).map(([fmt, { value, lc, cur, exp, skip }]) => ({
     locale: lc,
@@ -112,27 +140,35 @@ export function numberSkeletonCases(): TestCase[] {
     'compact-short': { value: 42, exp: '42' },
     'compact-long': { value: 42, exp: '42' },
     'group-min2': { value: 42, exp: '42' },
-    'measure-unit/length-meter': { value: 42, exp: '42 m', skip: ['edge','ff'] }, // Node 12
+    'measure-unit/length-meter': {
+      value: 42,
+      exp: '42 m',
+      skip: ['ie', 'edge', 'ff']
+    },
     'measure-unit/length-meter unit-width-full-name': {
       value: 42,
       exp: '42 meters',
-      skip: ['edge','ff']
-    }, // Node 12
-    'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ff'] }, // Node 12
+      skip: ['ie', 'edge', 'ff']
+    },
+    'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ie', 'ff'] },
     'currency/CAD unit-width-narrow': {
       value: 42,
       exp: '$42.00',
-      skip: ['edge','ff']
-    }, // Node 12
-    'compact-short currency/CAD': { value: 42, exp: 'CA$42', skip: ['edge','ff'] }, // Node 12
-    'sign-always': { value: 42, exp: '+42', skip: ['edge','ff'] }, // Node 12
-    'sign-except-zero': { value: 42, exp: '+42', skip: ['edge','ff'] }, // Node 12
+      skip: ['ie', 'edge', 'ff']
+    },
+    'compact-short currency/CAD': {
+      value: 42,
+      exp: 'CA$42',
+      skip: ['ie', 'edge', 'ff']
+    },
+    'sign-always': { value: 42, exp: '+42', skip: ['ie', 'edge', 'ff'] },
+    'sign-except-zero': { value: 42, exp: '+42', skip: ['ie', 'edge', 'ff'] },
     'sign-accounting currency/CAD': {
       value: -42,
       exp: '(CA$42.00)',
-      skip: ['edge','ff']
-    }, // Node 12
-    'percent .00': { value: 42, exp: '42.00%' } // IE 11: res.replace(/\u2004/g, '').replace(/\s%/, '%');
+      skip: ['ie', 'edge', 'ff']
+    },
+    'percent .00': { value: 42, exp: '42.00%', skip: ['ie'] }
   };
   return Object.entries(cases).map(([fmt, { value, exp, skip }]) => ({
     src: `{value, number, :: ${fmt}}`,

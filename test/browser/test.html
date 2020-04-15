@@ -10,7 +10,9 @@
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../packages/messageformat/messageformat.js"></script>
     <script>
-      if (navigator.webdriver) mocha.reporter(Bridge)
+      // navigator.webdriver isn't supported on IE 11
+      var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+      if (isIE11 || navigator.webdriver) mocha.reporter(Bridge)
       mocha.setup('bdd');
     </script>
     <script src="dist/browser-tests.js"></script>

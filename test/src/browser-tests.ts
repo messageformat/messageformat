@@ -3,15 +3,10 @@ import MessageFormat from 'messageformat';
 import { PluralFunction } from 'messageformat/src/plurals';
 import { getTestCases } from '../fixtures/messageformat';
 
+// @ts-ignore
+const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+const isEdge = !isIE11 && !!window.StyleMedia;
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
-const isIE11 =
-  typeof window !== 'undefined' &&
-  !!window.MSInputMethodContext &&
-  // @ts-ignore
-  !!document.documentMode;
-
-var isEdge = !isIE11 && !!window.StyleMedia;
 
 // const NODE_VERSION = typeof process === 'undefined' ? 99 : parseInt(process.version.slice(1));
 
@@ -154,6 +149,7 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
   describe(title, () => {
     for (const { locale, options, src, exp, skip } of cases) {
       if (skip) {
+        if (isIE11 && skip.includes('ie')) continue;
         if (isEdge && skip.includes('edge')) continue;
         if (isFirefox && skip.includes('ff')) continue;
       }
