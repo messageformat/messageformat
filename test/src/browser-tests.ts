@@ -8,11 +8,6 @@ const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 const isEdge = !isIE11 && !!window.StyleMedia;
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-// const NODE_VERSION = typeof process === 'undefined' ? 99 : parseInt(process.version.slice(1));
-
-// MS Edge adds LTR/RTL marks around Date#toLocale*String parts
-// function dropBiDi(str) { return str.replace(/[\u200e\u200f]/g, ''); }
-
 describe('static MessageFormat', () => {
   it('should exist', () => {
     expect(MessageFormat).to.be.an.instanceof(Function);

@@ -132,9 +132,14 @@ describe('compile() errors', () => {
   });
 });
 
+const isNode10 = process.version.startsWith('v10')
+
 for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
   describe(title, () => {
-    for (const { locale, options, src, exp } of cases) {
+    for (const { locale, options, src, exp, skip } of cases) {
+      if (skip) {
+        if (isNode10 && skip.includes('node10')) continue;
+      }
       let name = src;
       if (locale || options) {
         const opt = [locale || 'en'];

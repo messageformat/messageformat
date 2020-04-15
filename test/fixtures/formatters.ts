@@ -30,18 +30,18 @@ export function customFormatterCases(): TestCase[] {
 export function dateSkeletonCases(): TestCase[] {
   // 2006 Jan 2, 15:04:05.789 in local time
   const date = new Date(2006, 0, 2, 15, 4, 5, 789);
-  const cases = {
+  const cases: { [key: string]: { exp: string | RegExp; skip?: string[] } } = {
     GGGGyMMMM: { exp: 'January 2006 Anno Domini' },
     GGGGGyyMMMMM: { exp: 'J 06 A' },
     GrMMMdd: { exp: 'Jan 02, 2006 AD' },
     GMMd: { exp: '01/2 AD' },
     hamszzzz: { exp: /^3:0?4:0?5 PM [A-Z]/ },
-    Mk: { exp: '1, 15' } // Node 8 says '3 PM' for k
+    Mk: { exp: '1, 15', skip: ['node10'] }
   };
-  return Object.entries(cases).map(([fmt, { exp }]) => ({
+  return Object.entries(cases).map(([fmt, { exp, skip }]) => ({
     src: `{date, date, ::${fmt}}`,
     exp: [[{ date }, exp]],
-    skip: ['ie']
+    skip: (skip || []).concat(['ie'])
   }));
 }
 
@@ -90,32 +90,32 @@ export function numberPatternCases(): TestCase[] {
       lc: 'en',
       cur: 'CAD',
       exp: '$12.00',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     '¤#,##0.00;(¤#,##0.00)': {
       value: -3.27,
       lc: 'en',
       cur: 'USD',
       exp: '($3.27)',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     '0.###E0': {
       value: 1234,
       lc: 'en',
       exp: '1.234E3',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     '00.###E0': {
       value: 0.00123,
       lc: 'en',
       exp: '01.23E-3',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     '##0.####E0': {
       value: 12345,
       lc: 'en',
       exp: '12.345E3',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     }
   };
   return Object.entries(cases).map(([fmt, { value, lc, cur, exp, skip }]) => ({
@@ -143,30 +143,38 @@ export function numberSkeletonCases(): TestCase[] {
     'measure-unit/length-meter': {
       value: 42,
       exp: '42 m',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     'measure-unit/length-meter unit-width-full-name': {
       value: 42,
       exp: '42 meters',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ie', 'ff'] },
     'currency/CAD unit-width-narrow': {
       value: 42,
       exp: '$42.00',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     'compact-short currency/CAD': {
       value: 42,
       exp: 'CA$42',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
-    'sign-always': { value: 42, exp: '+42', skip: ['ie', 'edge', 'ff'] },
-    'sign-except-zero': { value: 42, exp: '+42', skip: ['ie', 'edge', 'ff'] },
+    'sign-always': {
+      value: 42,
+      exp: '+42',
+      skip: ['ie', 'edge', 'ff', 'node10']
+    },
+    'sign-except-zero': {
+      value: 42,
+      exp: '+42',
+      skip: ['ie', 'edge', 'ff', 'node10']
+    },
     'sign-accounting currency/CAD': {
       value: -42,
       exp: '(CA$42.00)',
-      skip: ['ie', 'edge', 'ff']
+      skip: ['ie', 'edge', 'ff', 'node10']
     },
     'percent .00': { value: 42, exp: '42.00%', skip: ['ie'] }
   };
