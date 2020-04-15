@@ -1,3 +1,4 @@
+import babel from 'rollup-plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
@@ -24,6 +25,7 @@ const nodeLib = {
   plugins: [resolve(), typescript()]
 };
 
+const browserTargets = '> 0.5%, last 2 versions, Firefox ESR, not dead';
 const browserBundle = {
   input: 'src/messageformat.ts',
   output: {
@@ -31,7 +33,12 @@ const browserBundle = {
     format: 'umd',
     name: 'MessageFormat'
   },
-  plugins: [resolve(), typescript({ target: 'ES5' }), commonjs()]
+  plugins: [
+    resolve(),
+    typescript({ target: 'ES5' }),
+    babel({ presets: [['@babel/preset-env', { targets: browserTargets }]] }),
+    commonjs()
+  ]
 };
 
 export default [nodeLib, browserBundle];
