@@ -1,11 +1,14 @@
 root: true
 env:
-  commonjs: true
   es6: true
+  node: true
+parserOptions:
+  ecmaVersion: 2017
+  sourceType: script
 plugins:
   - prettier
 extends:
-  - 'eslint:recommended'
+  - "eslint:recommended"
   - prettier
 
 rules:
@@ -18,13 +21,9 @@ rules:
   prettier/prettier: error
 
 overrides:
-  - files: [test/*.js]
-    parserOptions: { ecmaVersion: 2017 }
-    env:
-      browser: true
-      mocha: true
-      node: true
-    rules:
-      camelcase: 0
-      no-console: 0
-      no-unused-vars: 0
+  - files:
+      - rollup.config.js
+      - packages/loader-example/src/*.js
+      - test/src/*.js
+    parserOptions:
+      sourceType: module

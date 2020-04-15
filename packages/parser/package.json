@@ -26,26 +26,6 @@
     "parser.d.ts",
     "codemod-fix-backslash-escapes.js"
   ],
-  "eslintConfig": {
-    "env": {
-      "commonjs": true,
-      "es6": true
-    },
-    "overrides": [
-      {
-        "files": [
-          "parser.test.js"
-        ],
-        "env": {
-          "jest": true,
-          "node": true
-        },
-        "rules": {
-          "no-unused-vars": 0
-        }
-      }
-    ]
-  },
   "scripts": {
     "build": "pegjs parser.pegjs",
     "prepublishOnly": "npm test"

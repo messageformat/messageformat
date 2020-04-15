@@ -1,3 +1,6 @@
+/* eslint-env mocha */
+/* eslint-disable camelcase */
+
 const http = require('http');
 const reporter = require('mocha/lib/reporters').min;
 const bridgeTests = require('mocha-selenium-bridge');

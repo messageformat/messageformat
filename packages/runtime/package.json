@@ -78,14 +78,5 @@
     "> 1%",
     "maintained node versions",
     "not dead"
-  ],
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es6": true
-    },
-    "parserOptions": {
-      "sourceType": "module"
-    }
-  }
+  ]
 }

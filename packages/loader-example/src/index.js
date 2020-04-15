@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 import messages from './messages.yaml';
 
 function component() {

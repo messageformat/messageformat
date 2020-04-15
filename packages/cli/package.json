@@ -29,15 +29,6 @@
   "engines": {
     "node": ">=6.0"
   },
-  "eslintConfig": {
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "rules": {
-      "no-console": 0
-    }
-  },
   "dependencies": {
     "common-tags": "^2.0.0-alpha.1",
     "dot-properties": "^0.3.2",

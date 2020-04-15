@@ -1,3 +1,5 @@
+/* eslint-disable no-control-regex */
+
 const R0 = [
   { src: /[%#]{(\w+)}/g, tgt: '\x02$1\x03' },
   { src: /[\\{}#]/g, tgt: '\\$&' },
