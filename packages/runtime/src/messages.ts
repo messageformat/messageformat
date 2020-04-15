@@ -1,6 +1,4 @@
-import { MessageFunction } from 'messageformat'
-
-export { MessageFunction }
+export type MessageFunction = (param?: object) => string | any[];
 export interface MessageData {
   [key: string]: MessageData | MessageFunction | string;
 }
