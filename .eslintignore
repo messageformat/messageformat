@@ -3,7 +3,7 @@ package.json
 package-lock.json
 /docs/
 /example/messages.js
-/packages/loader-example/dist/bundle.js
+/packages/webpack-loader-example/dist/bundle.js
 /packages/messageformat/lib/*
 /packages/messageformat/messageformat.*
 /packages/parser/parser.js

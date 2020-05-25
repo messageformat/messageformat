@@ -11,8 +11,8 @@ This monorepo consists of the following packages that make up our JS implementat
 - [messageformat](packages/messageformat/) - The core library that transpiles MessageFormat strings into JavaScript functions
 - [messageformat-cli](packages/cli/) - A command-line client for the library
 - [messageformat-convert](packages/convert/) - Converts other localization formats into MessageFormat
-- [messageformat-loader](packages/loader/) - Webpack loader for JSON & YAML message files
-- [messageformat-loader-example](packages/loader-example/) - Usage example for the loader
+- [messageformat-loader](packages/webpack-loader/) - Webpack loader for JSON & YAML message files
+- [messageformat-loader-example](packages/webpack-loader-example/) - Usage example for the loader
 - [messageformat-parser](packages/parser/) - Parses MessageFormat source strings into an AST
 - [messageformat-runtime](packages/runtime/) - Runtime dependencies of compiled message modules
 - [messageformat-website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/messageformat/v3/)

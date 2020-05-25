@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",
-    "directory": "packages/loader-example"
+    "directory": "packages/webpack-loader-example"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "messageformat": "file:../messageformat",
-    "messageformat-loader": "file:../loader"
+    "messageformat-loader": "file:../webpack-loader"
   }
 }

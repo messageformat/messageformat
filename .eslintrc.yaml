@@ -23,7 +23,7 @@ rules:
 overrides:
   - files:
       - rollup.config.js
-      - packages/loader-example/src/*.js
+      - packages/webpack-loader-example/src/*.js
       - test/src/*.js
     parserOptions:
       sourceType: module
