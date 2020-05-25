@@ -27,3 +27,7 @@ overrides:
       - test/src/*.js
     parserOptions:
       sourceType: module
+  - files:
+      - packages/rollup-plugin/*.js
+    parserOptions:
+      ecmaVersion: 2018

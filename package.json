@@ -47,7 +47,8 @@
     "messageformat-loader-example": "file:packages/webpack-loader-example",
     "messageformat-parser": "file:packages/parser",
     "messageformat-runtime": "file:packages/runtime",
-    "messageformat-website": "file:packages/website"
+    "messageformat-website": "file:packages/website",
+    "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
