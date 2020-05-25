@@ -56,7 +56,8 @@ module.exports = function mfPlugin({
         ? parse(src, propKeyPath)
         : YAML.parse(src);
       const mf = new MessageFormat(getLocale(id), mfOpt);
-      return compileModule(mf, messages);
+      const code = compileModule(mf, messages);
+      return { code, moduleSideEffects: false, syntheticNamedExports: true };
     }
   };
 };
