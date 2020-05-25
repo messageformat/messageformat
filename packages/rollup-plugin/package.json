@@ -27,6 +27,7 @@
   "type": "commonjs",
   "dependencies": {
     "@rollup/pluginutils": "^3.0.10",
+    "dot-properties": "^1.0.1",
     "messageformat-convert": "file:../convert",
     "yaml": "^1.10.0"
   },
