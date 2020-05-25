@@ -3,7 +3,7 @@ import * as PluralCategories from 'make-plural/pluralCategories';
 import * as Plurals from 'make-plural/plurals';
 import { identifier } from 'safe-identifier';
 
-function normalize(locale) {
+function normalize(locale: string) {
   if (typeof locale !== 'string' || locale.length < 2)
     throw new RangeError(`Invalid language tag: ${locale}`);
 
@@ -15,7 +15,27 @@ function normalize(locale) {
   return m ? m[0] : locale;
 }
 
-export function getPlural(locale) {
+export interface PluralFunction {
+  (value: number | string, ord?: boolean): Plurals.PluralCategory;
+  cardinals?: Plurals.PluralCategory[];
+  ordinals?: Plurals.PluralCategory[];
+  module?: string;
+}
+
+export interface PluralObject {
+  isDefault: boolean;
+  id: string;
+  lc: string;
+  locale: string;
+  getCardinal?: (value: string | number) => Plurals.PluralCategory;
+  getPlural: PluralFunction;
+  cardinals: Plurals.PluralCategory[];
+  ordinals: Plurals.PluralCategory[];
+}
+
+export function getPlural(
+  locale: string | PluralFunction
+): PluralObject | null {
   if (typeof locale === 'function') {
     const lc = normalize(locale.name);
     return {
@@ -29,28 +49,33 @@ export function getPlural(locale) {
     };
   }
   const lc = normalize(locale);
-  if (lc in Plurals) {
+  const id = identifier(lc);
+  if (isPluralId(id)) {
     return {
       isDefault: true,
-      id: identifier(lc),
+      id,
       lc,
       locale,
-      getCardinal: Cardinals[lc],
-      getPlural: Plurals[lc],
-      cardinals: PluralCategories[lc].cardinal,
-      ordinals: PluralCategories[lc].ordinal
+      getCardinal: Cardinals[id],
+      getPlural: Plurals[id],
+      cardinals: PluralCategories[id].cardinal,
+      ordinals: PluralCategories[id].ordinal
     };
   }
   return null;
 }
 
-export function getAllPlurals(firstLocale) {
+export function getAllPlurals(firstLocale: string) {
   const keys = Object.keys(Plurals).filter(key => key !== firstLocale);
   keys.unshift(firstLocale);
-  return keys.map(getPlural);
+  return keys.map(getPlural) as PluralObject[];
 }
 
-export function hasPlural(locale) {
+export function hasPlural(locale: string) {
   const lc = normalize(locale);
-  return lc in Plurals;
+  return identifier(lc) in Plurals;
+}
+
+function isPluralId(id: string): id is keyof typeof Plurals {
+  return id in Plurals;
 }

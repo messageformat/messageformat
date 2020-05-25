@@ -1,4 +1,3 @@
-package.json
 package-lock.json
 /docs/
 /example/i18n.js
@@ -9,3 +8,4 @@ package-lock.json
 /packages/parser/parser.js
 /packages/runtime/lib/
 /packages/website/docs/
+/test/browser/dist/

@@ -1,34 +1,10 @@
-if (typeof require === 'undefined') return;
-
-const babel = require('@babel/core');
-const expect = require('chai').expect;
-const fs = require('fs');
-const tmp = require('tmp-promise');
-const { promisify } = require('util');
-const MessageFormat = require('../packages/messageformat');
-const compileModule = require('../packages/messageformat/compile-module');
-
-module.exports = { getModule };
+import compileModule from './compile-module';
+import MessageFormat from './messageformat';
+import { getModule } from '../../../test/fixtures/get-message-module';
+import { PluralFunction } from './plurals';
 
 const NODE_VERSION =
   typeof process === 'undefined' ? 99 : parseInt(process.version.slice(1));
-
-const write = promisify(fs.write);
-async function getModule(mf, messages) {
-  const src = compileModule(mf, messages);
-  const options = { plugins: ['@babel/plugin-transform-modules-commonjs'] };
-  const { code } = await babel.transformAsync(src, options);
-  const { cleanup, fd, path } = await tmp.file({
-    dir: __dirname,
-    postfix: '.js'
-  });
-  await write(fd, code, 0, 'utf8');
-  try {
-    return require(path).default;
-  } finally {
-    cleanup();
-  }
-}
 
 describe('compileModule()', function () {
   it('can compile an object of messages', async function () {
@@ -37,10 +13,10 @@ describe('compileModule()', function () {
     };
     const mf = new MessageFormat('en');
     const mfunc = await getModule(mf, data);
-    expect(mfunc).to.be.an('object');
-    expect(mfunc.key).to.be.a('function');
-    expect(mfunc.key({ FRIENDS: 1 })).to.eql('I have one friend.');
-    expect(mfunc.key({ FRIENDS: 2 })).to.eql('I have 2 friends.');
+    expect(mfunc).toBeInstanceOf(Object);
+    expect(mfunc.key).toBeInstanceOf(Function);
+    expect(mfunc.key({ FRIENDS: 1 })).toBe('I have one friend.');
+    expect(mfunc.key({ FRIENDS: 2 })).toBe('I have 2 friends.');
   });
 
   it('can compile an object enclosing reserved JavaScript words used as keys in quotes', async function () {
@@ -52,13 +28,13 @@ describe('compileModule()', function () {
     const mf = new MessageFormat('en');
     const mfunc = await getModule(mf, data);
 
-    expect(mfunc['default']).to.be.a('function');
-    expect(mfunc['default']()).to.eql(
+    expect(mfunc['default']).toBeInstanceOf(Function);
+    expect(mfunc['default']()).toBe(
       'default is a JavaScript reserved word so should be quoted'
     );
 
-    expect(mfunc.unreserved).to.be.a('function');
-    expect(mfunc.unreserved()).to.eql(
+    expect(mfunc.unreserved).toBeInstanceOf(Function);
+    expect(mfunc.unreserved()).toBe(
       'unreserved is not a JavaScript reserved word so should not be quoted'
     );
   });
@@ -69,20 +45,21 @@ describe('compileModule()', function () {
       ru: new MessageFormat('ru')
     };
     const cf = {
-      en: await getModule(mf.en, '{count} {count, plural, other{users}}'),
-      ru: await getModule(
-        mf.ru,
-        '{count} {count, plural, other{пользователей}}'
-      )
+      en: await getModule(mf.en, {
+        msg: '{count} {count, plural, other{users}}'
+      }),
+      ru: await getModule(mf.ru, {
+        msg: '{count} {count, plural, other{пользователей}}'
+      })
     };
     expect(function () {
-      cf.en({ count: 12 });
-    }).to.not.throw();
-    expect(cf.en({ count: 12 })).to.eql('12 users');
+      cf.en.msg({ count: 12 });
+    }).not.toThrow();
+    expect(cf.en.msg({ count: 12 })).toBe('12 users');
     expect(function () {
-      cf.ru({ count: 13 });
-    }).to.not.throw();
-    expect(cf.ru({ count: 13 })).to.eql('13 пользователей');
+      cf.ru.msg({ count: 13 });
+    }).not.toThrow();
+    expect(cf.ru.msg({ count: 13 })).toBe('13 пользователей');
   });
 
   const customFormatters = { lc: (v, lc) => lc };
@@ -93,8 +70,8 @@ describe('compileModule()', function () {
       fr: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
     });
-    expect(cf.fr({})).to.eql('Locale: fr');
-    expect(cf.ru({ count: 12 })).to.eql('3');
+    expect(cf.fr({})).toBe('Locale: fr');
+    expect(cf.ru({ count: 12 })).toBe('3');
   });
 
   it('defaults to supporting only English', async function () {
@@ -103,8 +80,8 @@ describe('compileModule()', function () {
       xx: 'Locale: {_, lc}',
       fr: 'Locale: {_, lc}'
     });
-    expect(cf.xx({})).to.eql('Locale: en');
-    expect(cf.fr({})).to.eql('Locale: en');
+    expect(cf.xx({})).toBe('Locale: en');
+    expect(cf.fr({})).toBe('Locale: en');
   });
 
   it('supports all languages with locale "*"', async function () {
@@ -114,31 +91,31 @@ describe('compileModule()', function () {
       xx: 'Locale: {_, lc}',
       ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
     });
-    expect(cf.fr({})).to.eql('Locale: fr');
-    expect(cf.xx({})).to.eql('Locale: en');
-    expect(cf.ru({ count: 12 })).to.eql('3');
+    expect(cf.fr({})).toBe('Locale: fr');
+    expect(cf.xx({})).toBe('Locale: en');
+    expect(cf.ru({ count: 12 })).toBe('3');
   });
 
   it('should support custom formatter functions', async function () {
     const mf = new MessageFormat('en', {
       customFormatters: { uppercase: v => v.toUpperCase() }
     });
-    const msg = await getModule(mf, [
-      'This is {VAR,uppercase}.',
-      'Other string'
-    ]);
-    expect(msg[0]({ VAR: 'big' })).to.eql('This is BIG.');
+    const msg = await getModule(mf, {
+      0: 'This is {VAR,uppercase}.',
+      1: 'Other string'
+    });
+    expect(msg[0]({ VAR: 'big' })).toBe('This is BIG.');
   });
 
   if (NODE_VERSION >= 12) {
     it('supports number formatters', async function () {
       const mf = new MessageFormat('en');
-      const msg = await getModule(mf, [
-        'Your balance is {VAR, number, ¤#,##0.00;(¤#,##0.00)}.',
-        'The sparrow flew {VAR, number, :: measure-unit/length-meter unit-width-full-name}'
-      ]);
-      expect(msg[0]({ VAR: -3.27 })).to.eql('Your balance is ($3.27).');
-      expect(msg[1]({ VAR: 42 })).to.eql('The sparrow flew 42 meters');
+      const msg = await getModule(mf, {
+        0: 'Your balance is {VAR, number, ¤#,##0.00;(¤#,##0.00)}.',
+        1: 'The sparrow flew {VAR, number, :: measure-unit/length-meter unit-width-full-name}'
+      });
+      expect(msg[0]({ VAR: -3.27 })).toBe('Your balance is ($3.27).');
+      expect(msg[1]({ VAR: 42 })).toBe('The sparrow flew 42 meters');
     });
   }
 
@@ -146,7 +123,7 @@ describe('compileModule()', function () {
     const mf = new MessageFormat('en');
     const msg = '{foo, plural, one{one} other{other}}';
     const src = compileModule(mf, { msg });
-    expect(src).to.match(
+    expect(src).toMatch(
       /import { en } from 'messageformat-runtime\/lib\/cardinals'/
     );
   });
@@ -155,29 +132,27 @@ describe('compileModule()', function () {
     const mf = new MessageFormat('en');
     const msg = '{foo, selectordinal, one{one} other{other}}';
     const src = compileModule(mf, { msg });
-    expect(src).to.match(
+    expect(src).toMatch(
       /import { en } from 'messageformat-runtime\/lib\/plurals'/
     );
   });
 
   it('should inline custom plural by default', async () => {
-    function lc() {
+    const lc: PluralFunction = function lc() {
       return 'other';
-    }
+    };
     const mf = new MessageFormat(lc);
     const msg = '{foo, plural, one{one} other{other}}';
     const src = compileModule(mf, { msg });
-    expect(src).to.match(/\nfunction lc\b/);
+    expect(src).toMatch(/\bfunction lc\b/);
   });
 
   it('should import custom plural if defined with module', async () => {
-    function lc() {
-      return 'other';
-    }
+    const lc: PluralFunction = () => 'other';
     lc.module = 'custom-module';
     const mf = new MessageFormat(lc);
     const msg = '{foo, plural, one{one} other{other}}';
     const src = compileModule(mf, { msg });
-    expect(src).to.match(/import { lc } from 'custom-module'/);
+    expect(src).toMatch(/import { lc } from 'custom-module'/);
   });
 });

@@ -27,64 +27,9 @@
   "browser": "./messageformat.js",
   "files": [
     "compile-module.js",
-    "index.d.ts",
     "lib/",
-    "messageformat.js",
-    "messageformat.js.map"
+    "messageformat.js"
   ],
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "6.5.0"
-          }
-        }
-      ]
-    ],
-    "plugins": [
-      [
-        "@babel/plugin-proposal-class-properties",
-        {
-          "loose": true
-        }
-      ]
-    ]
-  },
-  "eslintConfig": {
-    "env": {
-      "commonjs": true,
-      "es6": true
-    },
-    "overrides": [
-      {
-        "files": [
-          "src/*.js"
-        ],
-        "parser": "babel-eslint"
-      },
-      {
-        "files": [
-          "rollup.config.js"
-        ],
-        "env": {
-          "node": true
-        },
-        "parserOptions": {
-          "sourceType": "module"
-        }
-      },
-      {
-        "files": [
-          "webpack.config.js"
-        ],
-        "env": {
-          "node": true
-        }
-      }
-    ]
-  },
   "dependencies": {
     "make-plural": "^6.2.1",
     "messageformat-date-skeleton": "^0.1.1",
@@ -94,6 +39,7 @@
     "safe-identifier": "^0.4.1"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "postbuild": "tsc -p tsconfig.declarations.json"
   }
 }

@@ -1,9 +1,18 @@
 import { property } from 'safe-identifier';
-import Compiler from './compiler';
+import Compiler, { RuntimeMap, StringStructure } from './compiler';
+import MessageFormat, { MessageFunction } from './messageformat';
+import { PluralObject } from './plurals';
 
-function stringifyRuntime(runtime) {
-  const imports = {};
-  const vars = {};
+export { MessageFunction }
+export type MessageModule<T> = T extends string
+  ? MessageFunction
+  : {
+      [P in keyof T]: MessageModule<T[P]>;
+    };
+
+function stringifyRuntime(runtime: RuntimeMap) {
+  const imports: { [key: string]: string[] } = {};
+  const vars: { [key: string]: string } = {};
 
   for (const [name, fn] of Object.entries(runtime)) {
     if (fn.module) {
@@ -28,7 +37,7 @@ function stringifyRuntime(runtime) {
   return is.concat(vs).join('\n');
 }
 
-function stringifyObject(obj, level = 0) {
+function stringifyObject(obj: string | StringStructure, level = 0): string {
   if (typeof obj !== 'object') return obj;
   const indent = '  '.repeat(level);
   const o = Object.keys(obj).map(key => {
@@ -41,7 +50,7 @@ function stringifyObject(obj, level = 0) {
 /**
  * Compile a collection of messages into an ES module.
  *
- * ```
+ * ```js
  * import compileModule from 'messageformat/compile-module'
  * ```
  *
@@ -54,12 +63,8 @@ function stringifyObject(obj, level = 0) {
  * than one locale, using a key that matches the locale's identifier at any
  * depth of a `messages` object will set its child elements to use that locale.
  *
- * @function compileModule
- * @param {MessageFormat} messageformat - A MessageFormat instance
- * @param {object} messages - The input messages to be compiled
- * @returns {string} - String representation of the compiled module
- *
  * @example
+ * ```js
  * import fs from 'fs'
  * import MessageFormat from 'messageformat'
  * import compileModule from 'messageformat/compile-module'
@@ -79,10 +84,14 @@ function stringifyObject(obj, level = 0) {
  *
  * messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
  * messages.b({ COUNT: 3 })              // 'This has 3 members.'
+ * ```
  */
-export default function compileModule(messageformat, messages) {
+export default function compileModule(
+  messageformat: MessageFormat,
+  messages: StringStructure
+) {
   const { plurals } = messageformat;
-  const cp = {};
+  const cp: { [key: string]: PluralObject } = {};
   if (plurals.length > 1)
     for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
   const compiler = new Compiler(messageformat.options);

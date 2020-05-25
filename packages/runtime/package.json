@@ -16,16 +16,57 @@
     "url": "https://github.com/messageformat/messageformat.git",
     "directory": "packages/runtime"
   },
-  "main": "lib/runtime",
-  "sideEffects": false,
   "files": [
+    "esm/",
     "lib/",
-    "messages.*"
+    "messages.js"
   ],
+  "type": "commonjs",
+  "main": "./lib/runtime.js",
+  "exports": {
+    ".": [
+      {
+        "import": "./esm/runtime.js"
+      },
+      "./lib/runtime.js"
+    ],
+    "./lib/cardinals": [
+      {
+        "import": "./esm/cardinals.js"
+      },
+      "./lib/cardinals.js"
+    ],
+    "./lib/formatters": [
+      {
+        "import": "./esm/formatters.js"
+      },
+      "./lib/formatters.js"
+    ],
+    "./lib/plurals": [
+      {
+        "import": "./esm/plurals.js"
+      },
+      "./lib/plurals.js"
+    ],
+    "./messages": [
+      {
+        "import": "./esm/messages.js"
+      },
+      "./messages.js"
+    ]
+  },
+  "browser": {
+    "./lib/runtime.js": "./esm/runtime.js",
+    "./lib/cardinals.js": "./esm/cardinals.js",
+    "./lib/formatters.js": "./esm/formatters.js",
+    "./lib/plurals.js": "./esm/plurals.js",
+    "./messages.js": "./esm/messages.js"
+  },
+  "sideEffects": false,
   "scripts": {
-    "build:cjs": "MODULE_TYPE=cjs babel src -d lib",
-    "build:mjs": "MODULE_TYPE=mjs babel src -d lib --keep-file-extension",
-    "build": "npm run build:cjs && npm run build:mjs",
+    "build:cjs": "tsc --declaration --module CommonJS --outDir lib",
+    "build:esm": "tsc --module ES6 --outDir esm",
+    "build": "npm run build:cjs && npm run build:esm",
     "docs": "jsdoc2md -c jsdoc.config.json -f src/messages.mjs > README.md",
     "prepublishOnly": "npm run build && npm run docs"
   },
@@ -37,14 +78,5 @@
     "> 1%",
     "maintained node versions",
     "not dead"
-  ],
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es6": true
-    },
-    "parserOptions": {
-      "sourceType": "module"
-    }
-  }
+  ]
 }

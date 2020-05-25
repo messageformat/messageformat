@@ -19,16 +19,6 @@
   "engines": {
     "node": ">=6.0"
   },
-  "eslintConfig": {
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "rules": {
-      "no-console": 0,
-      "no-control-regex": 0
-    }
-  },
   "dependencies": {
     "make-plural": "^6.0.1"
   }

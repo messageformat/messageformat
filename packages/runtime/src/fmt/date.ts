@@ -1,14 +1,11 @@
-/** Represent a date as a short/default/long/full string
+/**
+ * Represent a date as a short/default/long/full string
  *
- * The input value needs to be in a form that the
- * {@link https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Date Date object}
- * can process using its single-argument form, `new Date(value)`.
- *
- * @memberof Formatters
- * @param {number|string} value - Either a Unix epoch time in milliseconds, or a string value representing a date
- * @param {string} [type='default'] - One of `'short'`, `'default'`, `'long'` , or `full`
+ * @param value Either a Unix epoch time in milliseconds, or a string value
+ *   representing a date. Parsed with `new Date(value)`
  *
  * @example
+ * ```js
  * var mf = new MessageFormat(['en', 'fi']);
  *
  * mf.compile('Today is {T, date}')({ T: Date.now() })
@@ -23,11 +20,20 @@
  * var cf = mf.compile('{sys} became operational on {d0, date, short}');
  * cf({ sys: 'HAL 9000', d0: '12 January 1999' })
  * // 'HAL 9000 became operational on 1/12/1999'
+ * ```
  */
-export function date(v, lc, p) {
-  var o = { day: 'numeric', month: 'short', year: 'numeric' };
+export function date(
+  value: number | string,
+  lc: string | string[],
+  size?: 'short' | 'default' | 'long' | 'full'
+) {
+  const o: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  };
   /* eslint-disable no-fallthrough */
-  switch (p) {
+  switch (size) {
     case 'full':
       o.weekday = 'long';
     case 'long':
@@ -36,5 +42,5 @@ export function date(v, lc, p) {
     case 'short':
       o.month = 'numeric';
   }
-  return new Date(v).toLocaleDateString(lc, o);
+  return new Date(value).toLocaleDateString(lc, o);
 }

@@ -1,3 +1,6 @@
+/* eslint-env mocha */
+/* eslint-disable camelcase */
+
 const http = require('http');
 const reporter = require('mocha/lib/reporters').min;
 const bridgeTests = require('mocha-selenium-bridge');
@@ -5,7 +8,7 @@ const { Builder } = require('selenium-webdriver');
 const handler = require('serve-handler');
 
 const PORT = 3000;
-const URL = `http://localhost:${PORT}/test/browser/selenium.html`;
+const URL = `http://localhost:${PORT}/test/browser/test.html`;
 
 const bsConfig = {
   project: 'messageformat',
@@ -20,6 +23,7 @@ const browsers = [
   { browserName: 'Firefox', browser_version: '71.0' },
   { browserName: 'IE', browser_version: '11.0' },
   { browserName: 'Edge', browser_version: '18.0' }
+
   // { browserName: 'Safari', browser_version: '12.0' }
   // {
   //   browserName: 'android',
@@ -63,7 +67,7 @@ describe('Browser tests', function () {
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 Testing ${title}...`);
       const driver = buildDriver(browser);
-      const code = await bridgeTests(driver, reporter, URL);
+      const code = await bridgeTests(driver, reporter, URL, { timeout: 20000 });
       driver.quit();
       if (code > 0) throw new Error(`Failed ${code} tests`);
       if (code < 0) throw new Error(`MSB error ${code}`);
