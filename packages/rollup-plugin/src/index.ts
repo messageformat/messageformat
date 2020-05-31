@@ -1,26 +1,33 @@
-const { createFilter } = require('@rollup/pluginutils');
-const { parse } = require('dot-properties');
-const { readFile } = require('fs');
-const MessageFormat = require('messageformat');
-const compileModule = require('messageformat/compile-module');
-const uv = require('uv');
-const YAML = require('yaml');
+import { createFilter, FilterPattern } from '@rollup/pluginutils';
+import { parse } from 'dot-properties';
+import { readFile } from 'fs';
+import MessageFormat, { MessageFormatOptions } from 'messageformat';
+import compileModule from 'messageformat/compile-module';
+import uv from 'uv';
+import YAML from 'yaml';
 
-module.exports = function mfPlugin({
+interface PluginArgs extends MessageFormatOptions {
+  exclude?: FilterPattern;
+  include?: FilterPattern;
+  locales?: string | string[];
+  propKeyPath?: boolean;
+}
+
+export default function mfPlugin({
   exclude,
   include,
   locales,
   propKeyPath = true,
   ...mfOpt
-} = {}) {
-  let getLocale;
+}: PluginArgs = {}) {
+  let getLocale: (id: string) => string[] | null;
   if (!locales) {
     if (!include) include = [/\.properties$/, /\bmessages\.(json|yaml|yml)$/];
     getLocale = () => null;
   } else {
     const lca = Array.isArray(locales) ? locales : [locales];
     if (!include) {
-      const ls = `[._-](${lca.join('|')})`;
+      const ls = `[./_-](${lca.join('|')})`;
       include = [
         /\.properties$/,
         new RegExp(`\\bmessages(${ls})?\\.(json|yaml|yml)$`)
@@ -37,7 +44,7 @@ module.exports = function mfPlugin({
   return {
     name: 'messageformat',
 
-    load(id) {
+    load(id: string) {
       if (!id.endsWith('.properties') || !filter(id)) return null;
       return new Promise((resolve, reject) =>
         readFile(id, (err, buffer) => {
@@ -50,7 +57,7 @@ module.exports = function mfPlugin({
       );
     },
 
-    transform(src, id) {
+    transform(src: string, id: string) {
       if (!filter(id)) return null;
       const messages = id.endsWith('.properties')
         ? parse(src, propKeyPath)

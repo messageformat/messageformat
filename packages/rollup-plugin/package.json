@@ -23,8 +23,15 @@
     "url": "https://github.com/messageformat/messageformat.git",
     "directory": "packages/rollup-plugin"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
+  "files": [
+    "lib/"
+  ],
   "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
   "dependencies": {
     "@rollup/pluginutils": "^3.0.10",
     "dot-properties": "^1.0.1",
