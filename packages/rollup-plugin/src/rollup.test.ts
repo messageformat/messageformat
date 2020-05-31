@@ -37,3 +37,14 @@ test('.properties with Latin-1 encoding', async () => {
   expect(output).toMatchObject([{ fileName: 'properties.js' }]);
   expect(output[0].code).toMatchSnapshot()
 });
+
+test('README sample', async () => {
+  const bundle = await rollup({
+    external,
+    input: resolve(fixtures, 'readme-sample.js'),
+    plugins: [plugin({ locales: ['en', 'fr'] })]
+  });
+  const { output } = await bundle.generate({ format: 'es' });
+  expect(output).toMatchObject([{ fileName: 'readme-sample.js' }]);
+  expect(output[0].code).toMatchSnapshot()
+});

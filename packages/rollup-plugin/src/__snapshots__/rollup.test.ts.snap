@@ -16,6 +16,18 @@ console.log(messages);
 "
 `;
 
+exports[`README sample 1`] = `
+"import { plural, number } from 'messageformat-runtime';
+import { fr as fr$1 } from 'messageformat-runtime/lib/cardinals';
+
+var fr = {
+  message_intro: function(d) { return plural(d.count, 0, fr$1, { one: \\"Votre message se trouve ici.\\", other: \\"Vos \\" + number(\\"fr\\", d.count, 0) + \\" messages se trouvent ici.\\" }) + \\"\\\\n\\"; }
+};
+
+fr.message_intro({ count: 3 });
+"
+`;
+
 exports[`YAML with default import 1`] = `
 "import { plural, number, select } from 'messageformat-runtime';
 import { en, fi } from 'messageformat-runtime/lib/plurals';
