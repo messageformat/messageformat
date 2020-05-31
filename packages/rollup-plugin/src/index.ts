@@ -1,3 +1,4 @@
+import { LoadResult } from 'rollup'
 import { createFilter, FilterPattern } from '@rollup/pluginutils';
 import { parse } from 'dot-properties';
 import { readFile } from 'fs';
@@ -46,7 +47,7 @@ export default function mfPlugin({
 
     load(id: string) {
       if (!id.endsWith('.properties') || !filter(id)) return null;
-      return new Promise((resolve, reject) =>
+      return new Promise<LoadResult>((resolve, reject) =>
         readFile(id, (err, buffer) => {
           if (err) reject(err);
           else {
