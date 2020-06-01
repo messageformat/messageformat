@@ -127,7 +127,7 @@ export default class MessageFormat {
    *   identifiers.
    */
   constructor(
-    locale: string | PluralFunction | (string | PluralFunction)[],
+    locale: string | PluralFunction | (string | PluralFunction)[] | null,
     options?: MessageFormatOptions
   ) {
     this.options = Object.assign(

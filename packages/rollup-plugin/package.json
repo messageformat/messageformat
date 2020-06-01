@@ -1,0 +1,43 @@
+{
+  "name": "rollup-plugin-messageformat",
+  "version": "1.0.0-beta",
+  "description": "Rollup plugin for MessageFormat",
+  "keywords": [
+    "i18n",
+    "pluralformat",
+    "icu",
+    "selectformat",
+    "messageformat",
+    "internationalization",
+    "json",
+    "yaml",
+    "rollup-plugin"
+  ],
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://messageformat.github.io/messageformat/v3/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/rollup-plugin"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib/"
+  ],
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^3.0.10",
+    "dot-properties": "^1.0.1",
+    "messageformat": "file:../messageformat",
+    "messageformat-convert": "file:../convert",
+    "uv": "^1.2.1",
+    "yaml": "^1.10.0"
+  }
+}

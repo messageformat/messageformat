@@ -1,0 +1,5 @@
+message_intro: |
+  {count, plural,
+    one {Votre message se trouve ici.}
+    other {Vos # messages se trouvent ici.}
+  }

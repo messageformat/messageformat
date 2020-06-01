@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.properties with Latin-1 encoding 1`] = `
+"import { plural, number, select } from 'messageformat-runtime';
+import { fi } from 'messageformat-runtime/lib/plurals';
+
+var messages = {
+  simple: function(d) { return \\"Yksinkertainen viesti.\\"; },
+  \\"var\\": function(d) { return \\"Viesti jossa \\" + d.X + \\".\\"; },
+  plural: function(d) { return \\"Sinulla \\" + plural(d.N, 0, fi, { \\"0\\": \\"ei ole viestejä\\", one: \\"on 1 viesti\\", other: \\"on \\" + number(\\"fi\\", d.N, 0) + \\" viestiä\\" }) + \\".\\"; },
+  select: function(d) { return select(d.GENDER, { other: \\"Hän\\" }) + \\" lähetti sinulle viestin.\\"; },
+  ordinal: function(d) { return plural(d.N, 0, fi, { other: number(\\"fi\\", d.N, 0) + \\".\\" }, 1) + \\" viesti.\\"; }
+};
+
+console.log(messages);
+"
+`;
+
+exports[`README sample 1`] = `
+"import { plural, number } from 'messageformat-runtime';
+import { fr as fr$1 } from 'messageformat-runtime/lib/cardinals';
+
+var fr = {
+  message_intro: function(d) { return plural(d.count, 0, fr$1, { one: \\"Votre message se trouve ici.\\", other: \\"Vos \\" + number(\\"fr\\", d.count, 0) + \\" messages se trouvent ici.\\" }) + \\"\\\\n\\"; }
+};
+
+fr.message_intro({ count: 3 });
+"
+`;
+
+exports[`YAML with default import 1`] = `
+"import { plural, number, select } from 'messageformat-runtime';
+import { en, fi } from 'messageformat-runtime/lib/plurals';
+
+var messages = {
+  en: {
+    simple: function(d) { return \\"A simple message.\\"; },
+    \\"var\\": function(d) { return \\"Message with \\" + d.X + \\".\\"; },
+    plural: function(d) { return \\"You have \\" + plural(d.N, 0, en, { \\"0\\": \\"no messages\\", one: \\"1 message\\", other: number(\\"en\\", d.N, 0) + \\" messages\\" }) + \\".\\"; },
+    select: function(d) { return select(d.GENDER, { male: \\"He has\\", female: \\"She has\\", other: \\"They have\\" }) + \\" sent you a message.\\"; },
+    ordinal: function(d) { return \\"The \\" + plural(d.N, 0, en, { one: \\"1st\\", two: \\"2nd\\", few: \\"3rd\\", other: number(\\"en\\", d.N, 0) + \\"th\\" }, 1) + \\" message.\\"; }
+  },
+  fi: {
+    simple: function(d) { return \\"Yksinkertainen viesti.\\"; },
+    \\"var\\": function(d) { return \\"Viesti jossa \\" + d.X + \\".\\"; },
+    plural: function(d) { return \\"Sinulla \\" + plural(d.N, 0, fi, { \\"0\\": \\"ei ole viestejä\\", one: \\"on 1 viesti\\", other: \\"on \\" + number(\\"fi\\", d.N, 0) + \\" viestiä\\" }) + \\".\\"; },
+    select: function(d) { return select(d.GENDER, { other: \\"Hän\\" }) + \\" lähetti sinulle viestin.\\"; },
+    ordinal: function(d) { return plural(d.N, 0, fi, { other: number(\\"fi\\", d.N, 0) + \\".\\" }, 1) + \\" viesti.\\"; }
+  }
+};
+
+console.log(messages);
+"
+`;
+
+exports[`YAML with named import 1`] = `
+"import { plural, number, select } from 'messageformat-runtime';
+import { en, fi } from 'messageformat-runtime/lib/plurals';
+
+var messages = {
+  en: {
+    simple: function(d) { return \\"A simple message.\\"; },
+    \\"var\\": function(d) { return \\"Message with \\" + d.X + \\".\\"; },
+    plural: function(d) { return \\"You have \\" + plural(d.N, 0, en, { \\"0\\": \\"no messages\\", one: \\"1 message\\", other: number(\\"en\\", d.N, 0) + \\" messages\\" }) + \\".\\"; },
+    select: function(d) { return select(d.GENDER, { male: \\"He has\\", female: \\"She has\\", other: \\"They have\\" }) + \\" sent you a message.\\"; },
+    ordinal: function(d) { return \\"The \\" + plural(d.N, 0, en, { one: \\"1st\\", two: \\"2nd\\", few: \\"3rd\\", other: number(\\"en\\", d.N, 0) + \\"th\\" }, 1) + \\" message.\\"; }
+  },
+  fi: {
+    simple: function(d) { return \\"Yksinkertainen viesti.\\"; },
+    \\"var\\": function(d) { return \\"Viesti jossa \\" + d.X + \\".\\"; },
+    plural: function(d) { return \\"Sinulla \\" + plural(d.N, 0, fi, { \\"0\\": \\"ei ole viestejä\\", one: \\"on 1 viesti\\", other: \\"on \\" + number(\\"fi\\", d.N, 0) + \\" viestiä\\" }) + \\".\\"; },
+    select: function(d) { return select(d.GENDER, { other: \\"Hän\\" }) + \\" lähetti sinulle viestin.\\"; },
+    ordinal: function(d) { return plural(d.N, 0, fi, { other: number(\\"fi\\", d.N, 0) + \\".\\" }, 1) + \\" viesti.\\"; }
+  }
+};
+
+console.log(messages.fi);
+"
+`;

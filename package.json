@@ -43,11 +43,12 @@
     "messageformat": "file:packages/messageformat",
     "messageformat-cli": "file:packages/cli",
     "messageformat-convert": "file:packages/convert",
-    "messageformat-loader": "file:packages/loader",
-    "messageformat-loader-example": "file:packages/loader-example",
+    "messageformat-loader": "file:packages/webpack-loader",
+    "messageformat-loader-example": "file:packages/webpack-loader-example",
     "messageformat-parser": "file:packages/parser",
     "messageformat-runtime": "file:packages/runtime",
-    "messageformat-website": "file:packages/website"
+    "messageformat-website": "file:packages/website",
+    "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
@@ -67,6 +68,7 @@
     "babel-jest": "^25.3.0",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
+    "common-tags": "^2.0.0-alpha.1",
     "core-js": "^3.5.0",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
@@ -76,6 +78,7 @@
     "jest-ts-webcompat-resolver": "^1.0.0",
     "jsdoc-to-markdown": "^5.0.3",
     "lerna": "^3.19.0",
+    "memfs": "^3.2.0",
     "mocha": "^7.1.1",
     "mocha-selenium-bridge": "^0.2.0",
     "pegjs": "^0.10.0",
