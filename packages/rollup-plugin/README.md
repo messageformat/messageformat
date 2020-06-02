@@ -5,7 +5,7 @@ File import plugin for [Rollup](https://rollupjs.org/) that lets you `import` JS
 ## Installation
 
 ```
-npm install --save-dev rollup-plugin-messageformat@next
+npm install --save-dev rollup-plugin-messageformat
 ```
 
 Internally, the plugin uses [messageformat@3](https://messageformat.github.io/messageformat/v3/), which has a runtime component. If you're intending to publish you bundle for others, you should also include that as a dependency:
