@@ -132,13 +132,16 @@ describe('compile() errors', () => {
   });
 });
 
-const isNode10 = process.version.startsWith('v10')
+const isNode10 = process.version.startsWith('v10');
+const isNode12 = process.version.startsWith('v12');
 
 for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
   describe(title, () => {
     for (const { locale, options, src, exp, skip } of cases) {
+      let desc: Mocha.SuiteFunction | Mocha.PendingSuiteFunction = describe;
       if (skip) {
-        if (isNode10 && skip.includes('node10')) continue;
+        if (isNode10 && skip.includes('node10')) desc = describe.skip;
+        if (isNode12 && skip.includes('node12')) desc = describe.skip;
       }
       let name = src;
       if (locale || options) {
@@ -147,7 +150,7 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
           opt.push(`${key}: ${value}`);
         name = `[${opt.join(', ')}] ${src}`;
       }
-      describe(name, () => {
+      desc(name, () => {
         for (const [param, res] of exp) {
           const strParam = [];
           if (param && typeof param === 'object')

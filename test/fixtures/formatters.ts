@@ -55,16 +55,42 @@ export function numberPatternCases(): TestCase[] {
       exp: string | RegExp;
     };
   } = {
-    '#,##0.##': { value: 1234.567, lc: 'fr', exp: /^1\s234,57$/ },
-    '#,##0.###': { value: 1234.567, lc: 'fr', exp: /^1\s234,567$/ },
-    '###0.#####': { value: 1234.567, lc: 'fr', exp: '1234,567' },
-    '###0.0000#': { value: 1234.567, lc: 'fr', exp: '1234,5670' },
-    '00000.0000': { value: 1234.567, lc: 'fr', exp: '01234,5670' },
+    '#,##0.##': {
+      value: 1234.567,
+      lc: 'fr',
+      exp: /^1\s234,57$/,
+      skip: ['node10', 'node12']
+    },
+    '#,##0.###': {
+      value: 1234.567,
+      lc: 'fr',
+      exp: /^1\s234,567$/,
+      skip: ['node10', 'node12']
+    },
+    '###0.#####': {
+      value: 1234.567,
+      lc: 'fr',
+      exp: '1234,567',
+      skip: ['node10', 'node12']
+    },
+    '###0.0000#': {
+      value: 1234.567,
+      lc: 'fr',
+      exp: '1234,5670',
+      skip: ['node10', 'node12']
+    },
+    '00000.0000': {
+      value: 1234.567,
+      lc: 'fr',
+      exp: '01234,5670',
+      skip: ['node10', 'node12']
+    },
     '#,##0.00 ¤': {
       value: 1234.567,
       lc: 'fr',
       cur: 'EUR',
-      exp: /^1\s234,57\s€$/
+      exp: /^1\s234,57\s€$/,
+      skip: ['node10', 'node12']
     },
     "'#'#": { value: 123, lc: 'en', exp: '#123' },
     //"# o''clock": { value: 12, lc: 'en', exp: "12 o'clock" },
