@@ -19,7 +19,7 @@ export async function getModule<T extends StringStructure>(
   });
   await write(fd, src, 0, 'utf8');
   try {
-    const mod = await import(path)
+    const mod = await import(path);
     return mod.default as MessageModule<T>;
   } finally {
     cleanup();

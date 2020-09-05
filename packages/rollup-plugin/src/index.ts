@@ -1,4 +1,4 @@
-import { LoadResult } from 'rollup'
+import { LoadResult } from 'rollup';
 import { createFilter, FilterPattern } from '@rollup/pluginutils';
 import { parse } from 'dot-properties';
 import { readFile } from 'fs';
@@ -102,4 +102,4 @@ export default function mfPlugin({
       return { code, moduleSideEffects: false, syntheticNamedExports: true };
     }
   };
-};
+}

@@ -14,11 +14,11 @@ Internally, the plugin uses [messageformat@3](https://messageformat.github.io/me
 npm install messageformat-runtime@next
 ```
 
-
 ## Usage
 
 With this config:
 
+<!-- prettier-ignore -->
 ```js
 // rollup.config.js
 import messageformat from 'rollup-plugin-messageformat'
@@ -42,6 +42,7 @@ message_intro: |
   }
 ```
 
+<!-- prettier-ignore -->
 ```js
 // src/app.js
 import fr from '../messages/fr.yaml'
@@ -52,6 +53,7 @@ fr.message_intro({ count: 3 })
 
 You'll get this output:
 
+<!-- prettier-ignore -->
 ```js
 import { plural, number } from 'messageformat-runtime';
 import { fr as fr$1 } from 'messageformat-runtime/lib/cardinals';
@@ -95,7 +97,7 @@ Define the message locale or locales. If given multiple valid locales, the
 first will be the default. Messages under matching locale keys or in a file
 with a name that includes a locale key will use that for pluralisation.
 
-If `locales` has the special value `'*'`, it will match *all* available
+If `locales` has the special value `'*'`, it will match _all_ available
 locales. This may be useful if you want your messages to be completely
 determined by your data, but may provide surprising results if your input
 message object includes any 2-3 character keys that are not locale

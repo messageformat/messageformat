@@ -6,6 +6,8 @@ package-lock.json
 /packages/messageformat/lib/
 /packages/messageformat/messageformat.*
 /packages/parser/lib/
+/packages/rollup-plugin/lib/
+/packages/runtime/esm/
 /packages/runtime/lib/
 /packages/website/docs/
 /test/browser/dist/

@@ -8,7 +8,7 @@ parserOptions:
 plugins:
   - prettier
 extends:
-  - "eslint:recommended"
+  - 'eslint:recommended'
   - prettier
 
 rules:

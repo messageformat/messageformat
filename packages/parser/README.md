@@ -117,6 +117,7 @@ For more example usage, please take a look at our [test suite](src/parser.test.t
 
 The output of `parse()` is a `Token` array:
 
+<!-- prettier-ignore -->
 ```typescript
 type Token = Content | Argument | Select | Function
 
