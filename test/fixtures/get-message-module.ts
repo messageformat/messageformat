@@ -14,6 +14,7 @@ export async function getModule<T extends StringStructure>(
   const src = compileModule(mf, messages);
   const { cleanup, fd, path } = await file({
     dir: __dirname,
+    tmpdir: __dirname,
     postfix: '.mjs'
   });
   await write(fd, src, 0, 'utf8');
