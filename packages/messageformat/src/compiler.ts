@@ -8,9 +8,8 @@ import {
 } from 'messageformat-number-skeleton';
 import {
   parse,
-  FunctionArg,
+  Function,
   Octothorpe,
-  Plural,
   Select,
   Token
 } from 'messageformat-parser';
@@ -95,12 +94,15 @@ export default class Compiler {
     return `function(d) { ${reqArgs}return ${this.concatenate(r, true)}; }`;
   }
 
-  cases(token: Plural | Select, pluralToken: Plural | null) {
+  cases(token: Select, pluralToken: Select | null) {
     let needOther = true;
     const r = token.cases.map(({ key, tokens }) => {
       if (key === 'other') needOther = false;
       const s = tokens.map(tok => this.token(tok, pluralToken));
-      return `${property(null, key)}: ${this.concatenate(s, false)}`;
+      return `${property(null, key.replace(/^=/, ''))}: ${this.concatenate(
+        s,
+        false
+      )}`;
     });
     if (needOther) {
       const { type } = token;
@@ -122,8 +124,8 @@ export default class Compiler {
       : tokens.join(' + ') || '""';
   }
 
-  token(token: Token | Octothorpe, pluralToken: Plural | null) {
-    if (typeof token == 'string') return JSON.stringify(token);
+  token(token: Token | Octothorpe, pluralToken: Select | null) {
+    if (token.type == 'content') return JSON.stringify(token.value);
 
     const { id, lc } = this.plural;
     let args: (number | string)[], fn: string;
@@ -146,14 +148,14 @@ export default class Compiler {
 
       case 'selectordinal':
         fn = 'plural';
-        args.push(token.offset || 0, id, this.cases(token, token), 1);
+        args.push(token.pluralOffset || 0, id, this.cases(token, token), 1);
         this.setLocale(id, true);
         this.setRuntimeFn('plural');
         break;
 
       case 'plural':
         fn = 'plural';
-        args.push(token.offset || 0, id, this.cases(token, token));
+        args.push(token.pluralOffset || 0, id, this.cases(token, token));
         this.setLocale(id, false);
         this.setRuntimeFn('plural');
         break;
@@ -171,9 +173,7 @@ export default class Compiler {
             if (token.param) {
               if (pluralToken && this.options.strictNumberSign)
                 pluralToken = null;
-              const s = token.param.tokens.map(tok =>
-                this.token(tok, pluralToken)
-              );
+              const s = token.param.map(tok => this.token(tok, pluralToken));
               args.push('(' + (s.join(' + ') || '""') + ').trim()');
               if (token.key === 'number')
                 args.push(JSON.stringify(this.options.currency));
@@ -188,7 +188,7 @@ export default class Compiler {
         args = [
           JSON.stringify(this.plural.locale),
           property('d', pluralToken.arg),
-          pluralToken.offset || '0'
+          pluralToken.pluralOffset || 0
         ];
         if (this.options.strictNumberSign) {
           fn = 'strictNumber';
@@ -265,15 +265,19 @@ export default class Compiler {
   }
 
   setDateFormatter(
-    { param }: FunctionArg,
+    { param }: Function,
     args: (number | string)[],
-    plural: Plural | null
+    plural: Select | null
   ) {
     const { locale } = this.plural;
 
-    const argStyle = param && param.tokens.length === 1 && param.tokens[0];
-    if (typeof argStyle === 'string' && /^\s*::/.test(argStyle)) {
-      const argSkeletonText = argStyle.trim().substr(2);
+    const argStyle = param && param.length === 1 && param[0];
+    if (
+      argStyle &&
+      argStyle.type === 'content' &&
+      /^\s*::/.test(argStyle.value)
+    ) {
+      const argSkeletonText = argStyle.value.trim().substr(2);
       const key = identifier(`date_${locale}_${argSkeletonText}`, true);
       if (!this.runtimeIncludes(key, 'formatter')) {
         const fmt: RuntimeEntry = getDateFormatter(locale, argSkeletonText);
@@ -287,9 +291,9 @@ export default class Compiler {
     }
 
     args.push(JSON.stringify(locale));
-    if (param) {
+    if (param && param.length > 0) {
       if (plural && this.options.strictNumberSign) plural = null;
-      const s = param.tokens.map(tok => this.token(tok, plural));
+      const s = param.map(tok => this.token(tok, plural));
       args.push('(' + (s.join(' + ') || '""') + ').trim()');
     }
     this.setFormatter('date');
@@ -297,9 +301,9 @@ export default class Compiler {
   }
 
   setNumberFormatter(
-    { param }: FunctionArg,
+    { param }: Function,
     args: (number | string)[],
-    plural: Plural | null
+    plural: Select | null
   ) {
     const { locale } = this.plural;
 
@@ -312,8 +316,8 @@ export default class Compiler {
     }
 
     args.push(JSON.stringify(locale));
-    if (param.tokens.length === 1 && typeof param.tokens[0] === 'string') {
-      const fmtArg = param.tokens[0].trim();
+    if (param.length === 1 && param[0].type === 'content') {
+      const fmtArg = param[0].value.trim();
 
       switch (fmtArg) {
         case 'currency':
@@ -350,7 +354,7 @@ export default class Compiler {
     }
 
     if (plural && this.options.strictNumberSign) plural = null;
-    const s = param.tokens.map(tok => this.token(tok, plural));
+    const s = param.map(tok => this.token(tok, plural));
     args.push('(' + (s.join(' + ') || '""') + ').trim()');
     args.push(JSON.stringify(this.options.currency));
     this.setFormatter('numberFmt');
