@@ -64,6 +64,7 @@
     "@rollup/plugin-typescript": "^5.0.2",
     "@types/chai": "^4.2.12",
     "@types/jest": "^26.0.13",
+    "@types/moo": "^0.5.3",
     "babel-eslint": "^10.0.2",
     "babel-jest": "^26.3.0",
     "babel-loader": "^8.0.6",

@@ -26,6 +26,9 @@
     "parser.d.ts",
     "codemod-fix-backslash-escapes.js"
   ],
+  "dependencies": {
+    "moo": "^0.5.1"
+  },
   "scripts": {
     "build": "pegjs parser.pegjs",
     "prepublishOnly": "npm test"
