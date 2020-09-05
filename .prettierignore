@@ -5,7 +5,7 @@ package-lock.json
 /packages/webpack-loader-example/dist/bundle.js
 /packages/messageformat/lib/
 /packages/messageformat/messageformat.*
-/packages/parser/parser.js
+/packages/parser/lib/
 /packages/runtime/lib/
 /packages/website/docs/
 /test/browser/dist/

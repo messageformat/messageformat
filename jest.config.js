@@ -12,6 +12,7 @@ module.exports = {
     '^messageformat$': '<rootDir>/packages/messageformat/src/messageformat.ts',
     '^messageformat/compile-module$':
       '<rootDir>/packages/messageformat/src/compile-module.ts',
+    '^messageformat-parser$': '<rootDir>/packages/parser/src/parser.ts',
     '^messageformat-runtime$': '<rootDir>/packages/runtime/src/runtime.ts',
     '^messageformat-runtime/lib/(.*)$': '<rootDir>/packages/runtime/src/$1.ts'
   },

@@ -5,7 +5,7 @@ export const states: { [state: string]: Rules } = {
     doubleapos: { match: "''", value: () => "'" },
     quoted: {
       lineBreaks: true,
-      match: /'[{}#][^]*?(?<!')'(?!')/u,
+      match: /'[{}#](?:[^]*?[^'])?'(?!')/u,
       value: src => src.slice(1, -1).replace(/''/g, "'")
     },
     argument: {
@@ -15,7 +15,7 @@ export const states: { [state: string]: Rules } = {
       value: src => src.substring(1).trim()
     },
     octothorpe: '#',
-    end: { lineBreaks: true, match: /\}\s*/u, pop: 1 },
+    end: { match: '}', pop: 1 },
     content: { lineBreaks: true, match: /[^][^{}#']*/u }
   },
   arg: {
@@ -41,16 +41,16 @@ export const states: { [state: string]: Rules } = {
   select: {
     offset: {
       lineBreaks: true,
-      match: /offset\s*:\s*\d+\s*/u,
+      match: /\s*offset\s*:\s*\d+\s*/u,
       value: src => src.split(':')[1].trim()
     },
     case: {
       lineBreaks: true,
-      match: /(?:=\d+|[^\p{Pat_Syn}\p{Pat_WS}]+)\s*\{\s*/u,
+      match: /\s*(?:=\d+|[^\p{Pat_Syn}\p{Pat_WS}]+)\s*\{/u,
       push: 'body',
       value: src => src.substring(0, src.indexOf('{')).trim()
     },
-    end: { match: '}', pop: 1 }
+    end: { match: /\s*\}/u, pop: 1 }
   }
 };
 

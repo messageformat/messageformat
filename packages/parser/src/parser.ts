@@ -1,15 +1,9 @@
 import { lexer } from './lexer.js';
 import { Lexer, Token as LexerToken } from 'moo';
 
-export interface Context {
-  offset: number;
-  line: number;
-  col: number;
-  text: string;
-  lineBreaks: number;
-}
+export type Token = Content | Argument | Select | Function;
 
-export type BodyToken = Content | Argument | Select | Function | Octothorpe;
+export type BodyToken = Token | Octothorpe;
 
 export interface Content {
   type: 'content';
@@ -37,17 +31,25 @@ export interface SelectCase {
   ctx: Context;
 }
 
-export interface Octothorpe {
-  type: 'octothorpe';
-  ctx: Context;
-}
-
 export interface Function {
   type: 'function';
   arg: string;
   key: string;
   param?: BodyToken[];
   ctx: Context;
+}
+
+export interface Octothorpe {
+  type: 'octothorpe';
+  ctx: Context;
+}
+
+export interface Context {
+  offset: number;
+  line: number;
+  col: number;
+  text: string;
+  lineBreaks: number;
 }
 
 const getContext = (lt: LexerToken): Context => ({
@@ -126,15 +128,16 @@ class Parser {
   }
 
   checkSelectKey(lt: LexerToken, type: Select['type'], key: string) {
-    let err = '';
     if (key[0] === '=') {
-      if (type === 'select') err = `The case ${key} is not valid with select`;
-    } else if (type === 'plural' && !this.cardinalKeys.includes(key)) {
-      err = `The plural case ${key} is not valid in this locale`;
-    } else if (type === 'selectordinal' && !this.ordinalKeys.includes(key)) {
-      err = `The selectordinal case ${key} is not valid in this locale`;
+      if (type === 'select')
+        throw new ParseError(lt, `The case ${key} is not valid with select`);
+    } else if (type !== 'select') {
+      const keys = type === 'plural' ? this.cardinalKeys : this.ordinalKeys;
+      if (keys.length > 0 && !keys.includes(key)) {
+        const msg = `The ${type} case ${key} is not valid in this locale`;
+        throw new ParseError(lt, msg);
+      }
     }
-    if (err) throw new ParseError(lt, err);
   }
 
   parseSelect(
@@ -202,7 +205,7 @@ class Parser {
         /* istanbul ignore if: never happens */
         if (end.type !== 'end')
           throw new ParseError(end, `Unexpected lexer token: ${end.type}`);
-        ctx.text += '}';
+        ctx.text += end.text;
         if (isSelectType(argType.value.toLowerCase()))
           throw new ParseError(
             argType,
