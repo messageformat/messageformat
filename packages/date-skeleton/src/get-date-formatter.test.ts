@@ -5,14 +5,14 @@ import { parseDateTokens } from './tokens';
 const date = new Date(2006, 0, 2, 15, 4, 5, 789);
 
 const tests: {
-  [src: string]: { expected: string | RegExp; errors?: string[] };
+  [src: string]: { expected: string | string[] | RegExp; errors?: string[] };
 } = {
   GGGGyMMMM: { expected: 'January 2006 Anno Domini' },
   GGGGGyyMMMMM: { expected: 'J 06 A' },
   GrMMMdd: { expected: 'Jan 02, 2006 AD' },
   GMMd: { expected: '01/2 AD' },
   "u..''LLLLLL'foo'''do": {
-    expected: '2 2006',
+    expected: ['2 2006', '2006 (day: 2)'],
     errors: [
       'Extended year is not supported; falling back to year:numeric',
       'Ignoring string part: ..',
@@ -60,8 +60,12 @@ const tests: {
   }
 };
 
-const assertExpected = (res: string, exp: string | RegExp) =>
-  exp instanceof RegExp ? expect(res).toMatch(exp) : expect(res).toEqual(exp);
+const assertExpected = (res: string, exp: string | string[] | RegExp) =>
+  Array.isArray(exp)
+    ? expect(exp).toContain(res)
+    : exp instanceof RegExp
+    ? expect(res).toMatch(exp)
+    : expect(res).toEqual(exp);
 
 describe('Examples', () => {
   for (const [src, { expected, errors }] of Object.entries(tests)) {
@@ -110,7 +114,11 @@ describe('Options', () => {
   test('calendar locale subtag', () => {
     const onError = jest.fn();
     const fmt = getDateFormatter('en-GB-u-ca-islamic', 'yMMMMd', onError);
-    expect(fmt(date)).toEqual('2 Dhuʻl-Hijjah 1426');
+    expect([
+      '2 Dhuʻl-Hijjah 1426',
+      'Dhuʻl-Hijjah 2, 1426',
+      'Dhuʻl-Hijjah 2, 1426 AH'
+    ]).toContain(fmt(date));
     expect(onError).not.toHaveBeenCalled();
   });
 
