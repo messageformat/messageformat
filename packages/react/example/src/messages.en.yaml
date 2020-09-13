@@ -1,0 +1,14 @@
+locales:
+  en: English
+  fi: Finnish
+select-locale: Select language
+
+error-title: Error messages
+errors:
+  only-english: This message is only available in English
+  equal-to: The value must be {count}
+  wrong-length: |
+    Your message is the wrong length (should be {length, plural,
+      one {1 character}
+      other {# characters}
+    })

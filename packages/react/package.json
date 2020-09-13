@@ -1,0 +1,36 @@
+{
+  "name": "@messageformat/react",
+  "version": "0.6.2",
+  "description": "React hooks and other bindings for messages",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/react"
+  },
+  "keywords": [
+    "i18n",
+    "React",
+    "context",
+    "messages",
+    "messageformat",
+    "provider"
+  ],
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://messageformat.github.io/",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  }
+}

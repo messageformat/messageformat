@@ -1,0 +1,14 @@
+locales:
+  en: englanti
+  fi: suomi
+select-locale: Valitse kieli
+
+error-title: Virheviestit
+errors:
+  only-finnish: Tämä viesti on saatavilla vain suomeksi
+  equal-to: Arvon pitää olla {count}
+  wrong-length: |
+    Viestisi on väärän pituinen (pitäisi olla {length, plural,
+      one {1 merkki}
+      other {# merkkiä}
+    })
