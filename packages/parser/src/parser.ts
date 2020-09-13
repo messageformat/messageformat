@@ -74,7 +74,8 @@
 import { lexer } from './lexer.js';
 import { Lexer, Token as LexerToken } from 'moo';
 
-type Token = Content | PlainArg | FunctionArg | Select | Octothorpe;
+/** @internal */
+export type Token = Content | PlainArg | FunctionArg | Select | Octothorpe;
 
 /**
  * Text content of the message

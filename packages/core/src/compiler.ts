@@ -8,8 +8,7 @@ import {
 } from '@messageformat/number-skeleton';
 import {
   parse,
-  Function,
-  Octothorpe,
+  FunctionArg,
   Select,
   Token
 } from '@messageformat/parser';
@@ -124,7 +123,7 @@ export default class Compiler {
       : tokens.join(' + ') || '""';
   }
 
-  token(token: Token | Octothorpe, pluralToken: Select | null) {
+  token(token: Token, pluralToken: Select | null) {
     if (token.type == 'content') return JSON.stringify(token.value);
 
     const { id, lc } = this.plural;
@@ -265,7 +264,7 @@ export default class Compiler {
   }
 
   setDateFormatter(
-    { param }: Function,
+    { param }: FunctionArg,
     args: (number | string)[],
     plural: Select | null
   ) {
@@ -301,7 +300,7 @@ export default class Compiler {
   }
 
   setNumberFormatter(
-    { param }: Function,
+    { param }: FunctionArg,
     args: (number | string)[],
     plural: Select | null
   ) {
