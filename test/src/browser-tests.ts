@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import MessageFormat from 'messageformat';
-import { PluralFunction } from 'messageformat/src/plurals';
+import MessageFormat from '@messageformat/core';
+import { PluralFunction } from '@messageformat/core/src/plurals';
 import { getTestCases } from '../fixtures/messageformat';
 
 // @ts-ignore

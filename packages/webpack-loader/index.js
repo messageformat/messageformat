@@ -1,7 +1,7 @@
 const loaderUtils = require('loader-utils');
-const MessageFormat = require('messageformat');
-const compileModule = require('messageformat/compile-module');
-const convert = require('messageformat-convert');
+const MessageFormat = require('@messageformat/core');
+const compileModule = require('@messageformat/core/compile-module');
+const convert = require('@messageformat/convert');
 const path = require('path');
 const YAML = require('yaml');
 

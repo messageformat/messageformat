@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-website",
+  "name": "@messageformat/website",
   "description": "MessageFormat documentation website source",
   "private": true,
   "license": "MIT",
@@ -17,7 +17,7 @@
   "dependencies": {
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
     "jsdoc": "^3.6.3",
-    "messageformat": "file:../messageformat",
-    "messageformat-runtime": "file:../runtime"
+    "@messageformat/core": "file:../messageformat",
+    "@messageformat/runtime": "file:../runtime"
   }
 }

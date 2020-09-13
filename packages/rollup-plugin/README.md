@@ -11,7 +11,7 @@ npm install --save-dev rollup-plugin-messageformat
 Internally, the plugin uses [messageformat@3](https://messageformat.github.io/messageformat/v3/), which has a runtime component. If you're intending to publish you bundle for others, you should also include that as a dependency:
 
 ```
-npm install messageformat-runtime@next
+npm install @messageformat/runtime
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ import messageformat from 'rollup-plugin-messageformat'
 
 export default {
   entry: 'src/app.js',
-  external: /^messageformat-runtime\b/,
+  external: /^@messageformat\/runtime\b/,
   output: { format: 'es' },
   plugins: [messageformat({ locales: ['en', 'fr'] })]
 }
@@ -55,8 +55,8 @@ You'll get this output:
 
 <!-- prettier-ignore -->
 ```js
-import { plural, number } from 'messageformat-runtime';
-import { fr as fr$1 } from 'messageformat-runtime/lib/cardinals';
+import { plural, number } from '@messageformat/runtime';
+import { fr as fr$1 } from '@messageformat/runtime/lib/cardinals';
 
 var fr = {
   message_intro: function(d) { return plural(d.count, 0, fr$1, {

@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-loader",
+  "name": "@messageformat/loader",
   "version": "1.0.0-beta.1",
   "description": "Webpack loader for MessageFormat",
   "keywords": [
@@ -25,10 +25,10 @@
   "main": "index.js",
   "dependencies": {
     "loader-utils": "^1.2.3",
-    "messageformat-convert": "file:../convert",
+    "@messageformat/convert": "file:../convert",
     "yaml": "^1.7.2"
   },
   "peerDependencies": {
-    "messageformat": "^3.0.0-beta.0"
+    "@messageformat/core": "^3.0.0-beta.0"
   }
 }

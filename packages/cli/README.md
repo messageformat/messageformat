@@ -5,10 +5,10 @@ Parses and compiles the input JSON and [.properties](https://en.wikipedia.org/wi
 ## Installation
 
 ```
-npm install messageformat@next messageformat-cli@next
+npm install @messageformat/core @messageformat/cli
 ```
 
-[`messageformat`](https://www.npmjs.com/package/messageformat) is a peer dependency of `messageformat-cli`, and needs to be installed separately.
+[`@messageformat/core`](https://www.npmjs.com/package/@messageformat/core) is a peer dependency of `@messageformat/cli`, and needs to be installed separately.
 
 ## Usage
 

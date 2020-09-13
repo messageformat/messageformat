@@ -5,7 +5,7 @@ Loader that parses input JSON & YAML objects of strings as objects of JavaScript
 ## Installation
 
 ```
-npm install messageformat@next messageformat-loader@next
+npm install @messageformat/core @messageformat/loader
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ For a working demo of the loader, run `npm install` in the `example/` directory,
 {
   test: /\bmessages\.(json|ya?ml)$/,
   type: 'javascript/auto', // required by Webpack 4
-  loader: require.resolve('messageformat-loader'),
+  loader: require.resolve('@messageformat/loader'),
   options: {
     biDiSupport: false,
     convert: false,
@@ -60,7 +60,7 @@ messages['ordinal-example']({ N: 1 });
 ES5, without configuration:
 
 ```js
-var messages = require('messageformat-loader?locale=en!./messages.json');
+var messages = require('@messageformat/loader?locale=en!./messages.json');
 messages['ordinal-example']({ N: 1 });
 // => 'The 1st message.'
 ```
@@ -68,7 +68,7 @@ messages['ordinal-example']({ N: 1 });
 ## Options
 
 - [`locale`] The [CLDR language code] or codes to pass to [`messageformat`]. If using multiple locales at the same time, exact matches to a locale code in the data structure keys will select that locale within it (as in [`example/src/messages.json`](example/src/messages.json)). Defaults to `en`.
-- [`convert`] Use `messageformat-convert` to convert non-MessageFormat syntax and plural objects into MessageFormat. Use an object value to configure. Defaults to `false`.
+- [`convert`] Use `@messageformat/convert` to convert non-MessageFormat syntax and plural objects into MessageFormat. Use an object value to configure. Defaults to `false`.
 - `biDiSupport` Enable or disable the addition of Unicode control characters to all input to preserve the integrity of the output when mixing LTR and RTL text. Defaults to `false`.
 - `customFormatters` Add custom formatter functions to this MessageFormat instance.
 - `strictNumberSign` Follow the stricter ICU MessageFormat spec and throw a runtime error if # is used with non-numeric input. Defaults to `false`.

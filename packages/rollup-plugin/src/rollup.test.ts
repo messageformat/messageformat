@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import { rollup } from 'rollup';
 import plugin from './index';
 
-const external = /^messageformat-runtime\b/;
+const external = /^@messageformat\/runtime\b/;
 const fixtures = resolve(__dirname, '__fixtures__');
 
 test('YAML with default import', async () => {

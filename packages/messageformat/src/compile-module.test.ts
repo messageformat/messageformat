@@ -124,7 +124,7 @@ describe('compileModule()', function () {
     const msg = '{foo, plural, one{one} other{other}}';
     const src = compileModule(mf, { msg });
     expect(src).toMatch(
-      /import { en } from 'messageformat-runtime\/lib\/cardinals'/
+      /import { en } from '@messageformat\/runtime\/lib\/cardinals'/
     );
   });
 
@@ -133,7 +133,7 @@ describe('compileModule()', function () {
     const msg = '{foo, selectordinal, one{one} other{other}}';
     const src = compileModule(mf, { msg });
     expect(src).toMatch(
-      /import { en } from 'messageformat-runtime\/lib\/plurals'/
+      /import { en } from '@messageformat\/runtime\/lib\/plurals'/
     );
   });
 

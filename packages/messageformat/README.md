@@ -39,7 +39,7 @@ const msgSrc = `{GENDER, select,
 You'll get these results:
 
 ```js
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 const msg = mf.compile(msgSrc);
 
@@ -52,8 +52,8 @@ msg({ RES: 2 }); // 'They found 2 results.'
 ## Getting Started
 
 ```
-npm install --save-dev messageformat@next
-npm install --save messageformat-runtime
+npm install --save-dev @messageformat/core
+npm install --save @messageformat/runtime
 ```
 
 This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.

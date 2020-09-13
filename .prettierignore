@@ -1,4 +1,5 @@
 package-lock.json
+/coverage/
 /docs/
 /example/i18n.js
 /packages/*/CHANGELOG.md

@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-loader-example",
+  "name": "@messageformat/loader-example",
   "private": true,
   "description": "Small example for messageformat-loader",
   "author": "Eemeli Aro <eemeli@gmail.com>",
@@ -14,7 +14,7 @@
     "build": "webpack --mode=none"
   },
   "dependencies": {
-    "messageformat": "file:../messageformat",
-    "messageformat-loader": "file:../webpack-loader"
+    "@messageformat/core": "file:../messageformat",
+    "@messageformat/loader": "file:../webpack-loader"
   }
 }

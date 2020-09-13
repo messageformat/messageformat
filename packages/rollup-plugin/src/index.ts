@@ -2,8 +2,8 @@ import { LoadResult } from 'rollup';
 import { createFilter, FilterPattern } from '@rollup/pluginutils';
 import { parse } from 'dot-properties';
 import { readFile } from 'fs';
-import MessageFormat, { MessageFormatOptions } from 'messageformat';
-import compileModule from 'messageformat/compile-module';
+import MessageFormat, { MessageFormatOptions } from '@messageformat/core';
+import compileModule from '@messageformat/core/compile-module';
 import uv from 'uv';
 import YAML from 'yaml';
 
