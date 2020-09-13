@@ -8,7 +8,7 @@ The experience and subtlety of your program's text can be important. Messageform
 
 This monorepo consists of the following packages that make up our JS implementation of ICU MessageFormat:
 
-- [@messageformat/core](packages/messageformat/) - The core library that transpiles MessageFormat strings into JavaScript functions
+- [@messageformat/core](packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
 - [@messageformat/cli](packages/cli/) - A command-line client for the library
 - [@messageformat/convert](packages/convert/) - Converts other localization formats into MessageFormat
 - [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON & YAML message files

@@ -14,7 +14,7 @@
     "build": "webpack --mode=none"
   },
   "dependencies": {
-    "@messageformat/core": "file:../messageformat",
+    "@messageformat/core": "file:../core",
     "@messageformat/loader": "file:../webpack-loader"
   }
 }

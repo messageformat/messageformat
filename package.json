@@ -40,7 +40,7 @@
   "dependencies": {
     "@messageformat/cli": "file:packages/cli",
     "@messageformat/convert": "file:packages/convert",
-    "@messageformat/core": "file:packages/messageformat",
+    "@messageformat/core": "file:packages/core",
     "@messageformat/loader": "file:packages/webpack-loader",
     "@messageformat/loader-example": "file:packages/webpack-loader-example",
     "@messageformat/parser": "file:packages/parser",

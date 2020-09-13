@@ -9,10 +9,9 @@ module.exports = {
   ],
   moduleFileExtensions: ['mjs', ...defaults.moduleFileExtensions],
   moduleNameMapper: {
-    '^@messageformat/core$':
-      '<rootDir>/packages/messageformat/src/messageformat.ts',
+    '^@messageformat/core$': '<rootDir>/packages/core/src/messageformat.ts',
     '^@messageformat/core/compile-module$':
-      '<rootDir>/packages/messageformat/src/compile-module.ts',
+      '<rootDir>/packages/core/src/compile-module.ts',
     '^@messageformat/parser$': '<rootDir>/packages/parser/src/parser.ts',
     '^@messageformat/runtime$': '<rootDir>/packages/runtime/src/runtime.ts',
     '^@messageformat/runtime/lib/(.*)$': '<rootDir>/packages/runtime/src/$1.ts'
