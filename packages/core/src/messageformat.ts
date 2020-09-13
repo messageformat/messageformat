@@ -7,6 +7,8 @@ import {
   PluralObject
 } from './plurals';
 
+export { PluralFunction }
+
 export type MessageFunction = (param?: object) => string | any[];
 
 /**
