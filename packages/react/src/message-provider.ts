@@ -1,7 +1,9 @@
-//import { FunctionComponentElement, // used in d.ts ProviderProps, // used in d.ts createElement, useContext, useMemo } from 'react';
 import { createElement, useContext, useMemo } from 'react';
 import { MessageContext, MessageObject, defaultValue } from './message-context';
 import { MessageError, ErrorCode, errorMessages } from './message-error';
+
+// @ts-ignore - https://github.com/microsoft/rushstack/issues/1050
+import { FunctionComponentElement, ProviderProps } from 'react';
 
 /** @public */
 export interface MessageProviderProps {
@@ -24,7 +26,8 @@ export interface MessageProviderProps {
 
   /**
    * By default, top-level namespaces defined in a child `MessageProvider` overwrite those defined in a parent.
-   * Set this to {@link https://lodash.com/docs/#merge | _.merge} or some other function with the same arguments as {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign | Object.assign} to allow for deep merges.
+   * Set this to {@link https://lodash.com/docs/#merge | _.merge} or some other function with the same arguments as
+   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign | Object.assign} to allow for deep merges.
    */
   merge?: MessageContext['merge'];
 
@@ -146,16 +149,17 @@ function getPathSep(context: MessageContext, pathSep?: string | null) {
  * )
  * ```
  */
-export function MessageProvider({
-  children,
-  context: propContext,
-  debug,
-  locale = '',
-  merge,
-  messages,
-  onError,
-  pathSep
-}: MessageProviderProps) {
+export function MessageProvider(props: MessageProviderProps) {
+  const {
+    children,
+    context: propContext,
+    debug,
+    locale = '',
+    merge,
+    messages,
+    onError,
+    pathSep
+  } = props;
   let parent = useContext(MessageContext);
   if (propContext) parent = propContext;
   else if (propContext === null) parent = defaultValue;

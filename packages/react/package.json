@@ -28,7 +28,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "extract-api": "api-extractor run --local --verbose"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
