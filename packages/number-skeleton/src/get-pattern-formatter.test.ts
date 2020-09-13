@@ -1,6 +1,9 @@
 import { getNumberFormatter, getNumberFormatterSource } from './get-formatter';
 import { parseNumberPattern } from './parse-pattern';
 
+// Too many divergences in Intl.NumberFormat output on Node.js 10 and earlier
+if (process.version < 'v12') test = test.skip;
+
 const tests: {
   [testSet: string]: {
     [src: string]: {

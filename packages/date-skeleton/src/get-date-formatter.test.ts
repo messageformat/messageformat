@@ -1,6 +1,9 @@
 import { getDateFormatter, getDateFormatterSource } from './get-date-formatter';
 import { parseDateTokens } from './tokens';
 
+// Too many divergences in Intl.DateTimeFormat output on Node.js 10 and earlier
+if (process.version < 'v12') test = test.skip;
+
 // 2006 Jan 2, 15:04:05.789 in local time
 const date = new Date(2006, 0, 2, 15, 4, 5, 789);
 
