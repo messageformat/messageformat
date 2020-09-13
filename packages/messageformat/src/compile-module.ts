@@ -3,7 +3,7 @@ import Compiler, { RuntimeMap, StringStructure } from './compiler';
 import MessageFormat, { MessageFunction } from './messageformat';
 import { PluralObject } from './plurals';
 
-export { MessageFunction }
+export { MessageFunction };
 export type MessageModule<T> = T extends string
   ? MessageFunction
   : {

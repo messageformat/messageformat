@@ -1,9 +1,8 @@
 # messageformat-parser
 
-A [PEG.js] parser for [ICU MessageFormat] strings – part of [messageformat].
-Outputs an AST defined by [parser.pegjs].
+An AST parser for [ICU MessageFormat] strings – part of [messageformat].
 
-The generated `parse(src, [options])` function takes two parameters, first the
+The `parse(src, [options])` function takes two parameters, first the
 string to be parsed, and a second optional parameter `options`, an object with
 the following possible keys:
 
@@ -38,8 +37,6 @@ apostrophe character.
 
 [icu messageformat]: https://messageformat.github.io/guide/
 [messageformat]: https://messageformat.github.io/
-[parser.pegjs]: ./parser.pegjs
-[peg.js]: http://pegjs.org/
 [unicode cldr]: http://cldr.unicode.org/index/cldr-spec/plural-rules
 [apostrophe mode]: http://www.icu-project.org/apiref/icu4c/messagepattern_8h.html#af6e0757e0eb81c980b01ee5d68a9978b
 
@@ -52,110 +49,124 @@ npm install messageformat-parser
 ## Usage
 
 ```js
-> var parse = require('messageformat-parser').parse;
+> const { parse } = require('messageformat-parser')
+// For clarity, the examples below do not show the ctx object included for each token
 
 > parse('So {wow}.')
-[ 'So ', { type: 'argument', arg: 'wow' }, '.' ]
+[ { type: 'content', value: 'So ' },
+  { type: 'argument', arg: 'wow' },
+  { type: 'content', value: '.' } ]
 
 > parse('Such { thing }. { count, selectordinal, one {First} two {Second}' +
         '                  few {Third} other {#th} } word.')
-[ 'Such ',
+[ { type: 'content', value: 'Such ' },
   { type: 'argument', arg: 'thing' },
-  '. ',
+  { type: 'content', value: '. ' },
   { type: 'selectordinal',
     arg: 'count',
-    offset: 0,
-    cases:
-     [ { key: 'one', tokens: [ 'First' ] },
-       { key: 'two', tokens: [ 'Second' ] },
-       { key: 'few', tokens: [ 'Third' ] },
-       { key: 'other', tokens: [ { type: 'octothorpe' }, 'th' ] } ] },
-  ' word.' ]
+    cases: [
+      { key: 'one', tokens: [ { type: 'content', value: 'First' } ] },
+      { key: 'two', tokens: [ { type: 'content', value: 'Second' } ] },
+      { key: 'few', tokens: [ { type: 'content', value: 'Third' } ] },
+      { key: 'other',
+        tokens: [ { type: 'octothorpe' }, { type: 'content', value: 'th' } ] }
+    ] },
+  { type: 'content', value: ' word.' } ]
 
 > parse('Many{type,select,plural{ numbers}selectordinal{ counting}' +
                          'select{ choices}other{ some {type}}}.')
-[ 'Many',
+[ { type: 'content', value: 'Many' },
   { type: 'select',
     arg: 'type',
-    cases:
-     [ { key: 'plural', tokens: [ ' numbers' ] },
-       { key: 'selectordinal', tokens: [ ' counting' ] },
-       { key: 'select', tokens: [ ' choices' ] },
-       { key: 'other', tokens: [ ' some',
-                                 { type: 'argument', arg: 'type' } ] } ] },
-  '.' ]
+    cases: [
+      { key: 'plural', tokens: [ { type: 'content', value: 'numbers' } ] },
+      { key: 'selectordinal', tokens: [ { type: 'content', value: 'counting' } ] },
+      { key: 'select', tokens: [ { type: 'content', value: 'choices' } ] },
+      { key: 'other',
+        tokens: [ { type: 'content', value: 'some ' }, { type: 'argument', arg: 'type' } ] }
+    ] },
+  { type: 'content', value: '.' } ]
 
 > parse('{Such compliance')
-// SyntaxError: Expected ",", "}" or [ \t\n\r] but "c" found.
+// ParseError: invalid syntax at line 1 col 7:
+//
+//  {Such compliance
+//        ^
 
-> var msg = '{words, plural, zero{No words} one{One word} other{# words}}';
-> var englishKeys = { cardinal: [ 'one', 'other' ],
-                      ordinal: [ 'one', 'two', 'few', 'other' ] };
+> const msg = '{words, plural, zero{No words} one{One word} other{# words}}'
 > parse(msg)
 [ { type: 'plural',
     arg: 'words',
-    offset: 0,
-    cases:
-     [ { key: 'zero', tokens: [ 'No words' ] },
-       { key: 'one', tokens: [ 'One word' ] },
-       { key: 'other', tokens: [ { type: 'octothorpe' }, ' words' ] } ] } ]
+    cases: [
+      { key: 'zero', tokens: [ { type: 'content', value: 'No words' } ] },
+      { key: 'one', tokens: [ { type: 'content', value: 'One word' } ] },
+      { key: 'other',
+        tokens: [ { type: 'octothorpe' }, { type: 'content', value: ' words' } ] }
+    ] } ]
 
-> parse(msg, englishKeys)
-// Error: Invalid key `zero` for argument `words`. Valid plural keys for this
-//        locale are `one`, `other`, and explicit keys like `=0`.
+> parse(msg, { cardinal: [ 'one', 'other' ], ordinal: [ 'one', 'two', 'few', 'other' ] })
+// ParseError: The plural case zero is not valid in this locale at line 1 col 17:
+//
+//   {words, plural, zero{
+//                   ^
 ```
 
-For more example usage, please take a look at our [test suite](./test.js).
+For more example usage, please take a look at our [test suite](src/parser.test.ts).
 
 ## Structure
 
 The output of `parse()` is a `Token` array:
 
+<!-- prettier-ignore -->
 ```typescript
-type Token = string | Argument | Plural | Select | Function
+type Token = Content | Argument | Select | Function
 
-type Argument = {
-  type: 'argument',
-  arg: Identifier
+interface Content {
+  type: 'content'
+  value: string
+  ctx: Context
 }
 
-type Plural = {
-  type: 'plural' | 'selectordinal',
-  arg: Identifier,
-  offset: number,
-  cases: PluralCase[]
+interface Argument {
+  type: 'argument'
+  arg: string
+  ctx: Context
 }
 
-type Select = {
-  type: 'select',
-  arg: Identifier,
-  cases: SelectCase[]
+interface Select {
+  type: 'plural' | 'select' | 'selectordinal'
+  arg: string
+  cases: Array<SelectCase>
+  pluralOffset?: number
+  ctx: Context
 }
 
-type Function = {
-  type: 'function',
-  arg: Identifier,
-  key: Identifier,
-  param: {
-    tokens: options.strict ? [string] : (Token | Octothorpe)[]
-  } | null
+interface SelectCase {
+  key: string
+  tokens: Array<Token | Octothorpe>
+  ctx: Context
 }
 
-type PluralCase = {
-  key: 'zero' | 'one' | 'two' | 'few' | 'many' | 'other' | '=0' | '=1' | '=2' | ...,
-  tokens: (Token | Octothorpe)[]
+interface Function {
+  type: 'function'
+  arg: string
+  key: string
+  param?: Array<Token | Octothorpe>
+  ctx: Context
 }
 
-type SelectCase = {
-  key: Identifier,
-  tokens: options.strict ? Token[] : (Token | Octothorpe)[]
-}
-
-type Octothorpe = {
+interface Octothorpe {
   type: 'octothorpe'
+  ctx: Context
 }
 
-type Identifier = string  // not containing whitespace or control characters
+interface Context {
+  offset: number
+  line: number
+  col: number
+  text: string
+  lineBreaks: number
+}
 ```
 
 ---

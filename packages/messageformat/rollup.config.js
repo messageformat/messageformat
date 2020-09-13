@@ -35,9 +35,12 @@ const browserBundle = {
   },
   plugins: [
     resolve(),
-    typescript({ target: 'ES5' }),
-    babel({ presets: [['@babel/preset-env', { targets: browserTargets }]] }),
-    commonjs()
+    commonjs(),
+    typescript({
+      downlevelIteration: true,
+      target: 'ES5'
+    }),
+    babel({ presets: [['@babel/preset-env', { targets: browserTargets }]] })
   ]
 };
 

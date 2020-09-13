@@ -13,7 +13,7 @@ test('YAML with default import', async () => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'yaml-default.js' }]);
-  expect(output[0].code).toMatchSnapshot()
+  expect(output[0].code).toMatchSnapshot();
 });
 
 test('YAML with named import', async () => {
@@ -24,7 +24,7 @@ test('YAML with named import', async () => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'yaml-named.js' }]);
-  expect(output[0].code).toMatchSnapshot()
+  expect(output[0].code).toMatchSnapshot();
 });
 
 test('.properties with Latin-1 encoding', async () => {
@@ -35,7 +35,7 @@ test('.properties with Latin-1 encoding', async () => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'properties.js' }]);
-  expect(output[0].code).toMatchSnapshot()
+  expect(output[0].code).toMatchSnapshot();
 });
 
 test('README sample', async () => {
@@ -46,5 +46,5 @@ test('README sample', async () => {
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'readme-sample.js' }]);
-  expect(output[0].code).toMatchSnapshot()
+  expect(output[0].code).toMatchSnapshot();
 });

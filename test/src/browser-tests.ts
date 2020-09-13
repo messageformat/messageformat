@@ -104,19 +104,25 @@ describe('compile() errors', () => {
   it('Invalid plural key', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, foo{a}}';
-    expect(() => mf.compile(src)).to.throw(/Invalid key `foo`/);
+    expect(() => mf.compile(src)).to.throw(
+      'The plural case foo is not valid in this locale'
+    );
   });
 
   it('Invalid selectordinal key', () => {
     const mf = new MessageFormat('en');
-    const src = '{X, plural, foo{a}}';
-    expect(() => mf.compile(src)).to.throw(/Invalid key `foo`/);
+    const src = '{X, selectordinal, foo{a}}';
+    expect(() => mf.compile(src)).to.throw(
+      'The selectordinal case foo is not valid in this locale'
+    );
   });
 
   it('Invalid plural key for locale', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, zero{none} one{one} other{some: #}}';
-    expect(() => mf.compile(src)).to.throw(/Invalid key `zero`/);
+    expect(() => mf.compile(src)).to.throw(
+      'The plural case zero is not valid in this locale'
+    );
   });
 
   it('Undefined formatting function', () => {

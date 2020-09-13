@@ -92,11 +92,11 @@ describe('load .properties', () => {
   test('throw on error', async () => {
     try {
       await plugin().load('/nonesuch.properties');
-      throw new Error('Should not happen')
+      throw new Error('Should not happen');
     } catch (error) {
-      expect(error.code).toBe('ENOENT')
+      expect(error.code).toBe('ENOENT');
     }
-  })
+  });
 });
 
 describe('transform', () => {
