@@ -67,6 +67,7 @@
     "build:cjs": "tsc --declaration --module CommonJS --outDir lib",
     "build:esm": "tsc --module ES6 --outDir esm",
     "build": "npm run build:cjs && npm run build:esm",
+    "extract-api": "api-extractor run --local --verbose",
     "docs": "jsdoc2md -c jsdoc.config.json -f src/messages.mjs > README.md",
     "prepublishOnly": "npm run build && npm run docs"
   },
