@@ -1,0 +1,29 @@
+{
+  "name": "messageformat-date-skeleton",
+  "version": "0.1.1",
+  "description": "A parser & formatter for ICU DateFormat skeleton strings",
+  "keywords": [
+    "icu",
+    "messageformat",
+    "dateformat",
+    "skeleton",
+    "parser",
+    "formatter"
+  ],
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/messageformat/messageformat/tree/master/packages/date-skeleton#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/skeletons.git",
+    "directory": "packages/date-skeleton"
+  },
+  "files": [
+    "lib/"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc"
+  }
+}

@@ -46,6 +46,7 @@
     "@messageformat/parser": "file:packages/parser",
     "@messageformat/runtime": "file:packages/runtime",
     "@messageformat/website": "file:packages/website",
+    "messageformat-date-skeleton": "file:packages/date-skeleton",
     "messageformat-number-skeleton": "file:packages/number-skeleton",
     "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },

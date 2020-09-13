@@ -34,7 +34,7 @@
     "@messageformat/parser": "file:../parser",
     "@messageformat/runtime": "file:../runtime",
     "make-plural": "^6.2.1",
-    "messageformat-date-skeleton": "^0.1.1",
+    "messageformat-date-skeleton": "file:../date-skeleton",
     "messageformat-number-skeleton": "file:../number-skeleton",
     "safe-identifier": "^0.4.1"
   },

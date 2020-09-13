@@ -6,6 +6,7 @@ package-lock.json
 /example/messages.js
 /packages/core/lib/*
 /packages/core/messageformat.*
+/packages/date-skeleton/lib/*
 /packages/number-skeleton/lib/*
 /packages/parser/lib/*
 /packages/rollup-plugin/lib/*

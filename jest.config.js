@@ -12,6 +12,8 @@ module.exports = {
     '^@messageformat/core$': '<rootDir>/packages/core/src/messageformat.ts',
     '^@messageformat/core/compile-module$':
       '<rootDir>/packages/core/src/compile-module.ts',
+    '^messageformat-date-skeleton$':
+      '<rootDir>/packages/date-skeleton/src/index.ts',
     '^messageformat-number-skeleton$':
       '<rootDir>/packages/number-skeleton/src/index.ts',
     '^@messageformat/parser$': '<rootDir>/packages/parser/src/parser.ts',
