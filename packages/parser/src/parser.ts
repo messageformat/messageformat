@@ -1,9 +1,7 @@
 import { lexer } from './lexer.js';
 import { Lexer, Token as LexerToken } from 'moo';
 
-export type Token = Content | Argument | Select | Function;
-
-export type BodyToken = Token | Octothorpe;
+type Token = Content | PlainArg | FunctionArg | Select | Octothorpe;
 
 export interface Content {
   type: 'content';
@@ -11,9 +9,17 @@ export interface Content {
   ctx: Context;
 }
 
-export interface Argument {
+export interface PlainArg {
   type: 'argument';
   arg: string;
+  ctx: Context;
+}
+
+export interface FunctionArg {
+  type: 'function';
+  arg: string;
+  key: string;
+  param?: Array<Content | PlainArg | FunctionArg | Select | Octothorpe>;
   ctx: Context;
 }
 
@@ -27,15 +33,7 @@ export interface Select {
 
 export interface SelectCase {
   key: string;
-  tokens: BodyToken[];
-  ctx: Context;
-}
-
-export interface Function {
-  type: 'function';
-  arg: string;
-  key: string;
-  param?: BodyToken[];
+  tokens: Array<Content | PlainArg | FunctionArg | Select | Octothorpe>;
   ctx: Context;
 }
 
@@ -63,7 +61,7 @@ const getContext = (lt: LexerToken): Context => ({
 const isSelectType = (type: string): type is Select['type'] =>
   type === 'plural' || type === 'select' || type === 'selectordinal';
 
-function strictArgStyleParam(lt: LexerToken, param: BodyToken[]) {
+function strictArgStyleParam(lt: LexerToken, param: Token[]) {
   let value = '';
   let text = '';
   for (const p of param) {
@@ -182,7 +180,7 @@ class Parser {
   parseArgToken(
     lt: LexerToken,
     inPlural: boolean
-  ): Argument | Select | Function {
+  ): PlainArg | FunctionArg | Select {
     const ctx = getContext(lt);
     const argType = this.lexer.next();
     if (!argType) throw new ParseError(null, 'Unexpected message end');
@@ -255,10 +253,10 @@ class Parser {
   parseBody(
     inPlural: false,
     atRoot: true
-  ): (Content | Argument | Select | Function)[];
-  parseBody(inPlural: boolean): BodyToken[];
-  parseBody(inPlural: boolean, atRoot?: boolean): BodyToken[] {
-    const tokens: BodyToken[] = [];
+  ): Array<Content | PlainArg | FunctionArg | Select>;
+  parseBody(inPlural: boolean): Token[];
+  parseBody(inPlural: boolean, atRoot?: boolean): Token[] {
+    const tokens: Token[] = [];
     let content: Content | null = null;
     for (const lt of this.lexer) {
       if (lt.type === 'argument') {
@@ -338,7 +336,7 @@ export interface ParseOptions {
 export function parse(
   src: string,
   options: ParseOptions = {}
-): (Content | Argument | Select | Function)[] {
+): Array<Content | PlainArg | FunctionArg | Select> {
   const parser = new Parser(src, options);
   return parser.parse();
 }
