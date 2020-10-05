@@ -134,7 +134,7 @@ function readToken(src: string, pos: number) {
  *
  * @example
  * ```js
- * import { parseDateTokens } from 'messageformat-date-skeleton'
+ * import { parseDateTokens } from '@messageformat/date-skeleton'
  *
  * parseDateTokens('GrMMMdd', console.error)
  * // [

@@ -1,4 +1,4 @@
-# messageformat-number-skeleton
+# @messageformat/number-skeleton
 
 Tools for working with [ICU NumberFormat skeletons](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md) and [patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)<!-- -->.
 
@@ -11,7 +11,7 @@ import {
   parseNumberSkeleton,
   Skeleton, // TS only
   Unit // TS only
-} from 'messageformat-number-skeleton';
+} from '@messageformat/number-skeleton';
 ```
 
 The package is released as an ES module only. If using from a CommonJS context, you may need to `import()` it, or use a module loader like [esm](https://www.npmjs.com/package/esm)<!-- -->.

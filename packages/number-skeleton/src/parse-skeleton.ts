@@ -16,7 +16,7 @@ import { TokenParser } from './skeleton-parser/token-parser.js';
  *
  * @example
  * ```js
- * import { parseNumberSkeleton } from 'messageformat-number-skeleton'
+ * import { parseNumberSkeleton } from '@messageformat/number-skeleton'
  *
  * parseNumberSkeleton('compact-short currency/GBP', console.error)
  * // {

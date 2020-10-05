@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-number-skeleton",
+  "name": "@messageformat/number-skeleton",
   "version": "0.2.1",
   "description": "A parser & formatter for ICU NumberFormat skeleton strings & patterns",
   "keywords": [

@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-date-skeleton",
+  "name": "@messageformat/date-skeleton",
   "version": "0.1.1",
   "description": "A parser & formatter for ICU DateFormat skeleton strings",
   "keywords": [
@@ -15,7 +15,7 @@
   "homepage": "https://github.com/messageformat/messageformat/tree/master/packages/date-skeleton#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/messageformat/skeletons.git",
+    "url": "https://github.com/messageformat/messageformat.git",
     "directory": "packages/date-skeleton"
   },
   "files": [

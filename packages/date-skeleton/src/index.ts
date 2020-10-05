@@ -10,7 +10,7 @@
  *   getDateFormatter,
  *   getDateFormatterSource,
  *   parseDateTokens
- * } from 'messageformat-date-skeleton'
+ * } from '@messageformat/date-skeleton'
  * ```
  *
  * The package is released as an ES module only. If using from a CommonJS

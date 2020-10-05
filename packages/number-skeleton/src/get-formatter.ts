@@ -27,7 +27,7 @@ import { Skeleton } from './types/skeleton.js';
  *   parsing error and unsupported feature.
  * @example
  * ```js
- * import { getNumberFormatter } from 'messageformat-number-skeleton'
+ * import { getNumberFormatter } from '@messageformat/number-skeleton'
  *
  * let src = ':: currency/CAD unit-width-narrow'
  * let fmt = getNumberFormatter('en-CA', src, console.error)
@@ -86,7 +86,7 @@ export function getNumberFormatter(
  *   parsing error and unsupported feature.
  * @example
  * ```js
- * import { getNumberFormatterSource } from 'messageformat-number-skeleton'
+ * import { getNumberFormatterSource } from '@messageformat/number-skeleton'
  *
  * getNumberFormatterSource('en', '::percent', console.error)
  * // '(function() {\n' +

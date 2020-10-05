@@ -13,7 +13,7 @@
  *  parseNumberSkeleton,
  *  Skeleton, // TS only
  *  Unit // TS only
- * } from 'messageformat-number-skeleton'
+ * } from '@messageformat/number-skeleton'
  * ```
  *
  * The package is released as an ES module only. If using from a CommonJS

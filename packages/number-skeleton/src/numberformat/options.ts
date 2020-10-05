@@ -36,7 +36,7 @@ export interface NumberFormatOptions extends Intl.NumberFormatOptions {
  * import {
  *   getNumberFormatOptions,
  *   parseNumberSkeleton
- * } from 'messageformat-number-skeleton'
+ * } from '@messageformat/number-skeleton'
  *
  * const src = 'currency/CAD unit-width-narrow'
  * const skeleton = parseNumberSkeleton(src, console.error)

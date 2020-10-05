@@ -99,7 +99,7 @@ function getNegativeAffix(affixTokens: AffixToken[], isPrefix: boolean) {
  *
  * @example
  * ```js
- * import { parseNumberPattern } from 'messageformat-number-skeleton'
+ * import { parseNumberPattern } from '@messageformat/number-skeleton'
  *
  * parseNumberPattern('#,##0.00 ¤', 'EUR', console.error)
  * // {

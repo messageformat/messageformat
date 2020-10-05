@@ -15,7 +15,7 @@ import { parseDateTokens, DateToken } from './tokens.js';
  *   parsing error and unsupported feature.
  * @example
  * ```js
- * import { getDateFormatter } from 'messageformat-date-skeleton'
+ * import { getDateFormatter } from '@messageformat/date-skeleton'
  *
  * // 2006 Jan 2, 15:04:05.789 in local time
  * const date = new Date(2006, 0, 2, 15, 4, 5, 789)
@@ -54,7 +54,7 @@ export function getDateFormatter(
  *   parsing error and unsupported feature.
  * @example
  * ```js
- * import { getDateFormatterSource } from 'messageformat-date-skeleton'
+ * import { getDateFormatterSource } from '@messageformat/date-skeleton'
  *
  * getDateFormatterSource('en-CA', 'GrMMMdd', console.error)
  * // '(function() {\n' +

@@ -1,4 +1,4 @@
-# messageformat-date-skeleton
+# @messageformat/date-skeleton
 
 Tools for working with [ICU DateFormat skeletons](http://userguide.icu-project.org/formatparse/datetime)<!-- -->.
 
@@ -9,7 +9,7 @@ import {
   getDateFormatter,
   getDateFormatterSource,
   parseDateTokens
-} from 'messageformat-date-skeleton';
+} from '@messageformat/date-skeleton';
 ```
 
 The package is released as an ES module only. If using from a CommonJS context, you may need to `import()` it, or use a module loader like [esm](https://www.npmjs.com/package/esm)<!-- -->.
