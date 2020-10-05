@@ -68,7 +68,7 @@ export interface ResolvedMessageFormatOptions
  * MessageFormat-to-JavaScript compiler
  *
  * ```js
- * import MessageFormat from 'messageformat'
+ * import MessageFormat from '@messageformat/core'
  * ```
  */
 export default class MessageFormat {

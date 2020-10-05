@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-website",
+  "name": "@messageformat/website",
   "description": "MessageFormat documentation website source",
   "private": true,
   "license": "MIT",
@@ -15,9 +15,9 @@
     "start": "jsdoc -c jsdoc.config.js"
   },
   "dependencies": {
+    "@messageformat/core": "file:../core",
+    "@messageformat/runtime": "file:../runtime",
     "ink-docstrap": "github:messageformat/docstrap#messageformat",
-    "jsdoc": "^3.6.3",
-    "messageformat": "file:../messageformat",
-    "messageformat-runtime": "file:../runtime"
+    "jsdoc": "^3.6.3"
   }
 }

@@ -33,10 +33,10 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "@messageformat/convert": "file:../convert",
+    "@messageformat/core": "file:../core",
     "@rollup/pluginutils": "^3.0.10",
     "dot-properties": "^1.0.1",
-    "messageformat": "file:../messageformat",
-    "messageformat-convert": "file:../convert",
     "uv": "^1.2.1",
     "yaml": "^1.10.0"
   }

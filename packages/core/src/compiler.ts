@@ -12,18 +12,18 @@ import {
   Octothorpe,
   Select,
   Token
-} from 'messageformat-parser';
-import * as Runtime from 'messageformat-runtime';
-import * as Formatters from 'messageformat-runtime/lib/formatters';
+} from '@messageformat/parser';
+import * as Runtime from '@messageformat/runtime';
+import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 import { MessageFormatOptions } from './messageformat';
 import { PluralObject } from './plurals';
 
-const RUNTIME_MODULE = 'messageformat-runtime';
-const CARDINAL_MODULE = 'messageformat-runtime/lib/cardinals';
-const PLURAL_MODULE = 'messageformat-runtime/lib/plurals';
-const FORMATTER_MODULE = 'messageformat-runtime/lib/formatters';
+const RUNTIME_MODULE = '@messageformat/runtime';
+const CARDINAL_MODULE = '@messageformat/runtime/lib/cardinals';
+const PLURAL_MODULE = '@messageformat/runtime/lib/plurals';
+const FORMATTER_MODULE = '@messageformat/runtime/lib/formatters';
 
 type RuntimeType = 'formatter' | 'locale' | 'runtime';
 interface RuntimeEntry {

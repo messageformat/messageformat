@@ -15,7 +15,7 @@ export default [
       format: 'iife',
       globals: { chai: 'chai', messageformat: 'MessageFormat' }
     },
-    external: ['chai', 'messageformat'],
+    external: ['chai', '@messageformat/core'],
     plugins: [typescript({ target: 'ES5' })]
   }
 ];

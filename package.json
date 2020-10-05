@@ -1,6 +1,5 @@
 {
   "name": "messageformat-monorepo",
-  "version": "2.1.0-monorepo",
   "description": "Messageformat monorepo",
   "private": true,
   "license": "MIT",
@@ -12,8 +11,8 @@
   },
   "scripts": {
     "clean": "git clean -fdxe node_modules",
-    "build": "lerna run build --ignore messageformat-website",
-    "docs:build": "lerna run build --scope messageformat-website",
+    "build": "lerna run build --ignore @messageformat/website",
+    "docs:build": "lerna run build --scope @messageformat/website",
     "predocs:example": "messageformat example/ --locale en fr --outfile example/messages.mjs",
     "docs:example": "webpack example/messages.mjs --output-library messages --mode production -o example/messages.js",
     "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
@@ -39,14 +38,14 @@
     }
   },
   "dependencies": {
-    "messageformat": "file:packages/messageformat",
-    "messageformat-cli": "file:packages/cli",
-    "messageformat-convert": "file:packages/convert",
-    "messageformat-loader": "file:packages/webpack-loader",
-    "messageformat-loader-example": "file:packages/webpack-loader-example",
-    "messageformat-parser": "file:packages/parser",
-    "messageformat-runtime": "file:packages/runtime",
-    "messageformat-website": "file:packages/website",
+    "@messageformat/cli": "file:packages/cli",
+    "@messageformat/convert": "file:packages/convert",
+    "@messageformat/core": "file:packages/core",
+    "@messageformat/loader": "file:packages/webpack-loader",
+    "@messageformat/loader-example": "file:packages/webpack-loader-example",
+    "@messageformat/parser": "file:packages/parser",
+    "@messageformat/runtime": "file:packages/runtime",
+    "@messageformat/website": "file:packages/website",
     "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {

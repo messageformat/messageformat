@@ -1,5 +1,5 @@
 {
-  "name": "messageformat-runtime",
+  "name": "@messageformat/runtime",
   "version": "3.0.0-beta.1",
   "description": "Runtime components of messageformat",
   "keywords": [

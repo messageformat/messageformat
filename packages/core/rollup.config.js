@@ -17,9 +17,9 @@ const nodeLib = {
     'make-plural/plurals',
     // bundling messageformat-date-skeleton
     // bundling messageformat-number-skeleton
-    'messageformat-parser',
-    'messageformat-runtime',
-    'messageformat-runtime/lib/formatters',
+    '@messageformat/parser',
+    '@messageformat/runtime',
+    '@messageformat/runtime/lib/formatters',
     'safe-identifier'
   ],
   plugins: [resolve(), typescript()]

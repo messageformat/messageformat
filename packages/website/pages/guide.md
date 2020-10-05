@@ -11,7 +11,7 @@ message formatting system when doing translations, and not everything requires
 variables.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 const message = mf.compile('This is a message.');
 
@@ -36,7 +36,7 @@ Simply putting a variable name in between `{` and `}` will place that variable
 there in the output.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 const varMessage = mf.compile('His name is {NAME}.');
 
@@ -55,7 +55,7 @@ selected if no other case matches.
 left out of the input data, the case `undefined{...}` would match that.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MesssageFormat('en');
 const selectMessage = mf.compile(
   `{ GENDER, select,
@@ -97,7 +97,7 @@ Within a plural statement, `#` will be replaced by the variable value.
 [cldr table of plural rules]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 const messages = mf.compile({
   results: `There { COUNT, plural,
@@ -128,7 +128,7 @@ determining its plural category. Literal/exact matches are tested before
 applying the offset.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 const offsetMessage = mf.compile(
   `You { ADDS, plural, offset:1
@@ -166,7 +166,7 @@ and number formatter skeletons.
 For simple cases, both `date` and `time` support the parameters `short`, `default`, `long` , and `full`. For more precide date and time formatting, use `date` with a `::`-prefixed [DateFormat skeleton string](http://userguide.icu-project.org/formatparse/datetime) like `{T, date, ::hamszzzz}`
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat(['en', 'fi']);
 const messages = mf.compile({
   en: {
@@ -201,7 +201,7 @@ messages.en.eagle({ T: '1969-07-20 20:17:40 UTC' });
 Represent a duration in seconds as a string.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat();
 const messages = mf.compile({
   since: 'It has been {D, duration}',
@@ -217,7 +217,7 @@ messages.countdown({ D: -151200.42 }); // 'Countdown: -42:00:00.420'
 Supported simple parameters are `integer`, `percent` , or `currency`. For more options, use a [NumberFormat skeleton string](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md). Most [NumberFormat patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns) are also supported.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 mf.currency = 'EUR'; // needs to be set before first compile() call
 const messages = mf.compile({
@@ -255,7 +255,7 @@ within the function body. To add your own formatter, use the `customFormatters`
 option of the MessageFormat constructor.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const customFormatters = {
   upcase: function (v) {
     return v.toUpperCase();
@@ -301,7 +301,7 @@ All types of messageformat statements may be nested within each other, to unlimi
 The characters `{` and `}` must be escaped with `'quotes'` to be included in the output as literal characters. Within plural statements, `#` must also be similarly escaped. The utility function {@link MessageFormat.escape} may help with this.
 
 ```javascript
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat('en');
 const messages = mf.compile({
   esc: "'{' {S, plural, other{# is a '#'}} '}'",

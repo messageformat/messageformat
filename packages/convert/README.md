@@ -1,4 +1,4 @@
-# messageformat-convert
+# @messageformat/convert
 
 Converts hiearachical objects into [messageformat]-compatible JSON. More
 specifically, it:
@@ -17,7 +17,7 @@ used together with [messageformat].
 ### Installation
 
 ```sh
-npm install messageformat-convert
+npm install @messageformat/convert
 ```
 
 If using in an environment that does not natively support ES6 features such as
@@ -26,7 +26,7 @@ object destructuring and arrow functions, you'll want to use a transpiler for th
 ### Usage
 
 ```js
-const convert = require('messageformat-convert');
+const convert = require('@messageformat/convert');
 const { locales, translations } = convert({
   en: {
     format: '%{attribute} %{message}',
@@ -42,7 +42,7 @@ const { locales, translations } = convert({
   }
 });
 
-const MessageFormat = require('messageformat');
+const MessageFormat = require('@messageformat/core');
 const mf = new MessageFormat(locales);
 const messages = mf.compile(translations);
 

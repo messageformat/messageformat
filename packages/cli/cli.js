@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const MessageFormat = require('messageformat');
-const compileModule = require('messageformat/compile-module');
+const MessageFormat = require('@messageformat/core');
+const compileModule = require('@messageformat/core/compile-module');
 const path = require('path');
 
 const getOptions = require('./lib/options');

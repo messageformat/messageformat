@@ -90,8 +90,8 @@ Before:
     mf.compileModule(...)
 
 Now:
-    import MessageFormat from 'messageformat'
-    import compileModule from 'messageformat/compile-module'
+    import MessageFormat from '@messageformat/core'
+    import compileModule from '@messageformat/core/compile-module'
     const mf = new MessageFormat('en')
     compileModule(mf, ...)
 * **messageformat:** This change introduces import statements into the
@@ -115,7 +115,7 @@ Before:
     const msg = mf.compile('{V, number, currency}')
 
 Now:
-    import MessageFormat from 'messageformat'
+    import MessageFormat from '@messageformat/core'
     const mf = new MessageFormat('en', { currency: 'EUR' })
     const msg = mf.compile('{V, number, currency}')
 * **messageformat:** Previously, non-numeric values used as plural arguments

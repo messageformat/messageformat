@@ -1,5 +1,5 @@
 {
-  "name": "messageformat",
+  "name": "@messageformat/core",
   "version": "3.0.0-beta.2",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "keywords": [
@@ -21,7 +21,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",
-    "directory": "packages/messageformat"
+    "directory": "packages/core"
   },
   "main": "lib/messageformat.js",
   "browser": "./messageformat.js",
@@ -31,11 +31,11 @@
     "messageformat.js"
   ],
   "dependencies": {
+    "@messageformat/parser": "file:../parser",
+    "@messageformat/runtime": "file:../runtime",
     "make-plural": "^6.2.1",
     "messageformat-date-skeleton": "^0.1.1",
     "messageformat-number-skeleton": "^0.2.1",
-    "messageformat-parser": "file:../parser",
-    "messageformat-runtime": "file:../runtime",
     "safe-identifier": "^0.4.1"
   },
   "scripts": {

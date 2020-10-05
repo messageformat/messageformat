@@ -8,20 +8,20 @@ The experience and subtlety of your program's text can be important. Messageform
 
 This monorepo consists of the following packages that make up our JS implementation of ICU MessageFormat:
 
-- [messageformat](packages/messageformat/) - The core library that transpiles MessageFormat strings into JavaScript functions
-- [messageformat-cli](packages/cli/) - A command-line client for the library
-- [messageformat-convert](packages/convert/) - Converts other localization formats into MessageFormat
-- [messageformat-loader](packages/webpack-loader/) - Webpack loader for JSON & YAML message files
-- [messageformat-loader-example](packages/webpack-loader-example/) - Usage example for the loader
-- [messageformat-parser](packages/parser/) - Parses MessageFormat source strings into an AST
-- [messageformat-runtime](packages/runtime/) - Runtime dependencies of compiled message modules
-- [messageformat-website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/messageformat/v3/)
+- [@messageformat/core](packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
+- [@messageformat/cli](packages/cli/) - A command-line client for the library
+- [@messageformat/convert](packages/convert/) - Converts other localization formats into MessageFormat
+- [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON & YAML message files
+- [@messageformat/loader-example](packages/webpack-loader-example/) - Usage example for the loader
+- [@messageformat/parser](packages/parser/) - Parses MessageFormat source strings into an AST
+- [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
+- [@messageformat/website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/messageformat/v3/)
 
 ## Getting Started
 
 ```
-npm install --save-dev messageformat@next
-npm install --save messageformat-runtime
+npm install --save-dev @messageformat/core
+npm install --save @messageformat/runtime
 ```
 
 This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.

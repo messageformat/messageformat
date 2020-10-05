@@ -8,14 +8,14 @@ export interface MessageData {
  * [messageformat](https://www.npmjs.com/package/messageformat)
  *
  * ```js
- * import Messages from 'messageformat-runtime/messages'
+ * import Messages from '@messageformat/runtime/messages'
  * ```
  *
  * @example
  * ```js
  * // build.js
  * import fs from 'fs';
- * import MessageFormat from 'messageformat';
+ * import MessageFormat from '@messageformat/core';
  *
  * const mf = new MessageFormat(['en', 'fi']);
  * const msgSet = {
@@ -36,7 +36,7 @@ export interface MessageData {
  *
  * ```js
  * // runtime.js
- * import Messages from 'messageformat-runtime/messages';
+ * import Messages from '@messageformat/runtime/messages';
  * import msgData from './messages';
  *
  * const messages = new Messages(msgData, 'en');

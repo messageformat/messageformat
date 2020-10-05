@@ -1,5 +1,5 @@
-import MessageFormat from 'messageformat';
-import { PluralFunction } from 'messageformat/src/plurals';
+import MessageFormat from '@messageformat/core';
+import { PluralFunction } from '@messageformat/core/src/plurals';
 import {
   customFormatterCases,
   dateSkeletonCases,

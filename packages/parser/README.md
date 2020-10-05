@@ -1,4 +1,4 @@
-# messageformat-parser
+# @messageformat/parser
 
 An AST parser for [ICU MessageFormat] strings – part of [messageformat].
 
@@ -43,13 +43,13 @@ apostrophe character.
 ## Installation
 
 ```sh
-npm install messageformat-parser
+npm install @messageformat/parser
 ```
 
 ## Usage
 
 ```js
-> const { parse } = require('messageformat-parser')
+> const { parse } = require('@messageformat/parser')
 // For clarity, the examples below do not show the ctx object included for each token
 
 > parse('So {wow}.')

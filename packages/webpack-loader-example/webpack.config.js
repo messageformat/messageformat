@@ -13,7 +13,7 @@ module.exports = {
       {
         test: /\bmessages\.(json|ya?ml)$/,
         type: 'javascript/auto',
-        loader: require.resolve('messageformat-loader'),
+        loader: require.resolve('@messageformat/loader'),
         options: {
           biDiSupport: false,
           customFormatters: null,

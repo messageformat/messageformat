@@ -51,7 +51,7 @@ function stringifyObject(obj: string | StringStructure, level = 0): string {
  * Compile a collection of messages into an ES module.
  *
  * ```js
- * import compileModule from 'messageformat/compile-module'
+ * import compileModule from '@messageformat/core/compile-module'
  * ```
  *
  * With `messages` as a hierarchical structure of ICU MessageFormat strings,
@@ -66,8 +66,8 @@ function stringifyObject(obj: string | StringStructure, level = 0): string {
  * @example
  * ```js
  * import fs from 'fs'
- * import MessageFormat from 'messageformat'
- * import compileModule from 'messageformat/compile-module'
+ * import MessageFormat from '@messageformat/core'
+ * import compileModule from '@messageformat/core/compile-module'
  *
  * const mf = new MessageFormat('en')
  * const msgSet = {
