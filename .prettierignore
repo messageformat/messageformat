@@ -5,6 +5,8 @@ package-lock.json
 /packages/*/CHANGELOG.md
 /packages/core/lib/
 /packages/core/messageformat.*
+/packages/date-skeleton/lib/
+/packages/number-skeleton/lib/
 /packages/parser/lib/
 /packages/rollup-plugin/lib/
 /packages/runtime/esm/

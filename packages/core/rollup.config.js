@@ -15,8 +15,8 @@ const nodeLib = {
     'make-plural/cardinals',
     'make-plural/pluralCategories',
     'make-plural/plurals',
-    // bundling messageformat-date-skeleton
-    // bundling messageformat-number-skeleton
+    // bundling @messageformat/date-skeleton
+    // bundling @messageformat/number-skeleton
     '@messageformat/parser',
     '@messageformat/runtime',
     '@messageformat/runtime/lib/formatters',

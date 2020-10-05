@@ -1,11 +1,11 @@
 import {
   getDateFormatter,
   getDateFormatterSource
-} from 'messageformat-date-skeleton';
+} from '@messageformat/date-skeleton';
 import {
   getNumberFormatter,
   getNumberFormatterSource
-} from 'messageformat-number-skeleton';
+} from '@messageformat/number-skeleton';
 import {
   parse,
   Function,

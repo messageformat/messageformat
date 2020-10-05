@@ -1,0 +1,29 @@
+{
+  "name": "@messageformat/number-skeleton",
+  "version": "0.2.1",
+  "description": "A parser & formatter for ICU NumberFormat skeleton strings & patterns",
+  "keywords": [
+    "icu",
+    "messageformat",
+    "numberformatter",
+    "skeleton",
+    "parser",
+    "formatter"
+  ],
+  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/messageformat/messageformat/tree/master/packages/number-skeleton#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/number-skeleton"
+  },
+  "files": [
+    "lib/"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc"
+  }
+}
