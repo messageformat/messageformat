@@ -18,6 +18,7 @@ This monorepo consists of the following packages that make up our JS implementat
 - [@messageformat/loader-example](packages/webpack-loader-example/) - Usage example for the loader
 - [@messageformat/number-skeleton](packages/number-skeleton) - Tools for working with [ICU NumberFormat skeletons]
 - [@messageformat/parser](packages/parser/) - Parses MessageFormat source strings into an AST
+- [@messageformat/react](packages/react/) - React hooks and other bindings for messages
 - [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
 - [@messageformat/website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/messageformat/v3/)
 

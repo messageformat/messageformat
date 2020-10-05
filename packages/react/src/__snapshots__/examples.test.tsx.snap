@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`API Message Example 1`] = `
+<span>
+  Your message here
+</span>
+`;
+
+exports[`API MessageContext Example 1`] = `
+<span>
+  Your message here
+   | 
+  Another message
+</span>
+`;
+
+exports[`API MessageProvider Example 1`] = `
+<span>
+  Your message here
+   | 
+  Another message
+</span>
+`;
+
+exports[`API useMessage Example 1`] = `
+<article>
+  <h1>
+    "fi" ja "en"
+  </h1>
+  <p>
+    Lisää viestisi tähän
+  </p>
+</article>
+`;
+
+exports[`API useMessageGetter Example 1`] = `"Your message here"`;
+
+exports[`README Example 1 1`] = `
+<ul>
+  <li>
+    Your message is important
+  </li>
+  <li>
+    42
+     and 
+    42
+     are equal
+  </li>
+</ul>
+`;
+
+exports[`README Example 2 1`] = `
+Array [
+  "FÖÖ",
+  "FOO",
+  "BÄR",
+  "bar",
+  "QUX",
+  "xyzzy",
+]
+`;
+
+exports[`README Example 3 1`] = `
+Array [
+  <ul>
+    <li>
+      Viestisi on väärän pituinen (pitäisi olla 42 merkkiä)
+    </li>
+    <li>
+      The value must be equal to 13
+    </li>
+  </ul>,
+  <ul>
+    <li>
+      Viestisi on väärän pituinen (pitäisi olla 42 merkkiä)
+    </li>
+    <li>
+      The value must be equal to 13
+    </li>
+  </ul>,
+]
+`;

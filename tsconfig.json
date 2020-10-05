@@ -9,5 +9,5 @@
     "strict": true,
     "target": "ES2017"
   },
-  "exclude": ["**/*.test.ts"]
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }
