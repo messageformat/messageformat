@@ -1,0 +1,35 @@
+name: Node.js
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  active:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with: { node-version: 14.x }
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+
+  maintenance:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install -g full-icu
+      - run: echo "NODE_ICU_DATA=`node-full-icu-path 2>/dev/null`" >> $GITHUB_ENV
+      - run: npm ci
+      - run: npm test
