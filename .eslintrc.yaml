@@ -25,6 +25,10 @@ overrides:
       - rollup.config.js
       - packages/rollup-plugin/src/__fixtures__/*.js
       - packages/webpack-loader-example/src/*.js
-      - test/src/*.js
+      - test/browser/src/*.js
     parserOptions:
       sourceType: module
+  - files:
+      - test/browser/tests/*.js
+    env:
+      mocha: true

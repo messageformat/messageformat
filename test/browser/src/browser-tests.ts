@@ -1,12 +1,17 @@
 import { expect } from 'chai';
 import MessageFormat from '@messageformat/core';
 import { PluralFunction } from '@messageformat/core/src/plurals';
-import { getTestCases } from '../fixtures/messageformat';
+import { getTestCases } from '../../fixtures/messageformat';
 
 // @ts-ignore
 const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 const isEdge = !isIE11 && !!window.StyleMedia;
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+const isSafari = 'safari' in window;
+
+const isV2 =
+  // @ts-ignore signDisplay introduced in Unified API proposal, i.e. "NumberFormat v2"
+  (55).toLocaleString('en-US', { signDisplay: 'always' }) === '+55';
 
 describe('static MessageFormat', () => {
   it('should exist', () => {
@@ -151,8 +156,9 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
     for (const { locale, options, src, exp, skip } of cases) {
       if (skip) {
         if (isIE11 && skip.includes('ie')) continue;
-        if (isEdge && skip.includes('edge')) continue;
         if (isFirefox && skip.includes('ff')) continue;
+        if (isSafari && skip.includes('safari')) continue;
+        if (!isV2 && skip.includes('v1')) continue;
       }
       let name = src;
       if (locale || options) {

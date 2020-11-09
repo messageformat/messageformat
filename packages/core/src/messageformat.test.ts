@@ -140,6 +140,9 @@ describe('compile() errors', () => {
 
 const isNode10 = process.version.startsWith('v10');
 const isNode12 = process.version.startsWith('v12');
+const isV2 =
+  // @ts-ignore signDisplay introduced in Unified API proposal, i.e. "NumberFormat v2"
+  (55).toLocaleString('en-US', { signDisplay: 'always' }) === '+55';
 
 for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
   describe(title, () => {
@@ -148,6 +151,7 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
       if (skip) {
         if (isNode10 && skip.includes('node10')) desc = describe.skip;
         if (isNode12 && skip.includes('node12')) desc = describe.skip;
+        if (!isV2 && skip.includes('v1')) desc = describe.skip;
       }
       let name = src;
       if (locale || options) {
