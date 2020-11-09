@@ -103,7 +103,13 @@ export function numberPatternCases(): TestCase[] {
     '#,#50': { value: 1230, lc: 'en', exp: '1,250' },
     '#,##0.65': { value: 1.234, lc: 'en', exp: '1.3' },
     '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00', skip: ['ie'] },
-    '¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: /^CAD\s12.00$/, skip: ['safari'] },
+    '¤¤': {
+      value: 12,
+      lc: 'en',
+      cur: 'CAD',
+      exp: /^CAD\s12.00$/,
+      skip: ['safari'] // Fixed in Safari 13
+    },
     '¤¤¤': {
       value: 5,
       lc: 'en',
@@ -111,38 +117,17 @@ export function numberPatternCases(): TestCase[] {
       exp: '5.00 Canadian dollars',
       skip: ['ie']
     },
-    '¤¤¤¤¤': {
-      value: 12,
-      lc: 'en',
-      cur: 'CAD',
-      exp: '$12.00',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
+    '¤¤¤¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: '$12.00', skip: ['v1'] },
     '¤#,##0.00;(¤#,##0.00)': {
       value: -3.27,
       lc: 'en',
       cur: 'USD',
       exp: '($3.27)',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
+      skip: ['v1']
     },
-    '0.###E0': {
-      value: 1234,
-      lc: 'en',
-      exp: '1.234E3',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
-    '00.###E0': {
-      value: 0.00123,
-      lc: 'en',
-      exp: '01.23E-3',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
-    '##0.####E0': {
-      value: 12345,
-      lc: 'en',
-      exp: '12.345E3',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    }
+    '0.###E0': { value: 1234, lc: 'en', exp: '1.234E3', skip: ['v1'] },
+    '00.###E0': { value: 0.00123, lc: 'en', exp: '01.23E-3', skip: ['v1'] },
+    '##0.####E0': { value: 12345, lc: 'en', exp: '12.345E3', skip: ['v1'] }
   };
   return Object.entries(cases).map(([fmt, { value, lc, cur, exp, skip }]) => ({
     locale: lc,
@@ -166,41 +151,25 @@ export function numberSkeletonCases(): TestCase[] {
     'compact-short': { value: 42, exp: '42' },
     'compact-long': { value: 42, exp: '42' },
     'group-min2': { value: 42, exp: '42' },
-    'measure-unit/length-meter': {
-      value: 42,
-      exp: '42 m',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
+    'measure-unit/length-meter': { value: 42, exp: '42 m', skip: ['v1'] },
     'measure-unit/length-meter unit-width-full-name': {
       value: 42,
       exp: '42 meters',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
+      skip: ['v1']
     },
     'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ie', 'ff'] },
     'currency/CAD unit-width-narrow': {
       value: 42,
       exp: '$42.00',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
+      skip: ['v1']
     },
-    'compact-short currency/CAD': {
-      value: 42,
-      exp: 'CA$42',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
-    'sign-always': {
-      value: 42,
-      exp: '+42',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
-    'sign-except-zero': {
-      value: 42,
-      exp: '+42',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
-    },
+    'compact-short currency/CAD': { value: 42, exp: 'CA$42', skip: ['v1'] },
+    'sign-always': { value: 42, exp: '+42', skip: ['v1'] },
+    'sign-except-zero': { value: 42, exp: '+42', skip: ['v1'] },
     'sign-accounting currency/CAD': {
       value: -42,
       exp: '(CA$42.00)',
-      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
+      skip: ['v1']
     },
     'percent .00': { value: 42, exp: '42.00%', skip: ['ie'] }
   };

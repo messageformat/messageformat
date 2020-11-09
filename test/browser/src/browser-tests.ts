@@ -9,6 +9,10 @@ const isEdge = !isIE11 && !!window.StyleMedia;
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 const isSafari = 'safari' in window;
 
+const isV2 =
+  // @ts-ignore signDisplay introduced in Unified API proposal, i.e. "NumberFormat v2"
+  (55).toLocaleString('en-US', { signDisplay: 'always' }) === '+55';
+
 describe('static MessageFormat', () => {
   it('should exist', () => {
     expect(MessageFormat).to.be.an.instanceof(Function);
@@ -152,9 +156,9 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
     for (const { locale, options, src, exp, skip } of cases) {
       if (skip) {
         if (isIE11 && skip.includes('ie')) continue;
-        if (isEdge && skip.includes('edge')) continue;
         if (isFirefox && skip.includes('ff')) continue;
         if (isSafari && skip.includes('safari')) continue;
+        if (!isV2 && skip.includes('v1')) continue;
       }
       let name = src;
       if (locale || options) {
