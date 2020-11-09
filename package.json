@@ -72,6 +72,7 @@
     "babel-eslint": "^10.0.2",
     "babel-jest": "^26.3.0",
     "babel-loader": "^8.0.6",
+    "browserstack-local": "^1.4.8",
     "chai": "^4.2.0",
     "common-tags": "^2.0.0-alpha.1",
     "core-js": "^3.5.0",
