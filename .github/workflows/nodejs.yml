@@ -33,3 +33,5 @@ jobs:
       - run: echo "NODE_ICU_DATA=`node-full-icu-path 2>/dev/null`" >> $GITHUB_ENV
       - run: npm ci
       - run: npm test
+      # https://github.com/actions/runner/issues/795
+      - run: echo "NODE_ICU_DATA=" >> $GITHUB_ENV
