@@ -12,7 +12,20 @@ The monorepo uses [Lerna](https://lerna.js.org/) for package management. Each pa
 
 ## Testing & Linting
 
-We like automated tools. In addition to our Node.js tests, our [CI](https://travis-ci.org/messageformat/messageformat) also lints the code and runs the test suite in browser environments provided by [BrowserStack](https://www.browserstack.com/open-source). To run those locally, you'll need either a WebDriver client ([ChromeDriver](https://chromedriver.chromium.org) or [geckodriver](https://firefox-source-docs.mozilla.org/testing/geckodriver/)), or just run the `test:serve` npm script and then open <http://localhost:5000/test/browser/> in your browser.
+We like automated tools.
+In addition to Node.js tests, GitHub Actions also lint the code and run the test suite in browser environments provided by [BrowserStack].
+To run the browser tests locally, do one of the following:
+
+- Install [ChromeDriver] and run `npm run test:chrome`
+- Install [geckodriver] and run `npm run test:firefox`
+- Run `npm run test:serve` and then open <http://localhost:5000/test/browser/test.html> in your browser
+- Ensure that the `BROWSERSTACK_USER` and `BROWSERSTACK_ACCESS_KEY` env vars are set to a valid account and its access key, and run `npm run test:browsers`
+
+Due to relying on Intl.NumberFormat pretty heavily, not all tests will pass in all environments; some will be skipped.
+
+[browserstack]: https://www.browserstack.com/open-source
+[chromedriver]: https://chromedriver.chromium.org
+[geckodriver]: https://firefox-source-docs.mozilla.org/testing/geckodriver/
 
 ## Contributor License Agreement
 

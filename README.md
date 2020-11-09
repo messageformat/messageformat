@@ -1,6 +1,5 @@
 <div class="main-title">
 <img align="right" width="100" height="100" src="https://messageformat.github.io/messageformat/logo/messageformat.svg">
-<a class="badge" href="http://travis-ci.org/messageformat/messageformat"><img src="https://secure.travis-ci.org/messageformat/messageformat.svg" alt="Build Status"></a>
 <h1>messageformat</h1>
 </div>
 
