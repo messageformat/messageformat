@@ -25,21 +25,8 @@ const browsers = [
   { browserName: 'Chrome', browser_version: '78.0' },
   { browserName: 'Firefox', browser_version: '71.0' },
   { browserName: 'IE', browser_version: '11.0' },
-  { browserName: 'Edge', browser_version: '18.0' }
-
-  // { browserName: 'Safari', browser_version: '12.0' }
-  // {
-  //   browserName: 'android',
-  //   device: 'Samsung Galaxy S6',
-  //   realMobile: 'true',
-  //   os_version: '5.0'
-  // },
-  // {
-  //   browserName: 'iPhone',
-  //   device: 'iPhone 6S',
-  //   realMobile: 'true',
-  //   os_version: '11.4'
-  // }
+  { browserName: 'Edge', browser_version: '18.0' },
+  { browserName: 'Safari', browser_version: '12.1' }
 ];
 
 let stopped = false;

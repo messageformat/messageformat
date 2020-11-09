@@ -7,6 +7,7 @@ import { getTestCases } from '../../fixtures/messageformat';
 const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 const isEdge = !isIE11 && !!window.StyleMedia;
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+const isSafari = 'safari' in window;
 
 describe('static MessageFormat', () => {
   it('should exist', () => {
@@ -153,6 +154,7 @@ for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
         if (isIE11 && skip.includes('ie')) continue;
         if (isEdge && skip.includes('edge')) continue;
         if (isFirefox && skip.includes('ff')) continue;
+        if (isSafari && skip.includes('safari')) continue;
       }
       let name = src;
       if (locale || options) {

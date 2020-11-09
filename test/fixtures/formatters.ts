@@ -103,7 +103,7 @@ export function numberPatternCases(): TestCase[] {
     '#,#50': { value: 1230, lc: 'en', exp: '1,250' },
     '#,##0.65': { value: 1.234, lc: 'en', exp: '1.3' },
     '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00', skip: ['ie'] },
-    '¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: /^CAD\s12.00$/ },
+    '¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: /^CAD\s12.00$/, skip: ['safari'] },
     '¤¤¤': {
       value: 5,
       lc: 'en',
@@ -116,32 +116,32 @@ export function numberPatternCases(): TestCase[] {
       lc: 'en',
       cur: 'CAD',
       exp: '$12.00',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     '¤#,##0.00;(¤#,##0.00)': {
       value: -3.27,
       lc: 'en',
       cur: 'USD',
       exp: '($3.27)',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     '0.###E0': {
       value: 1234,
       lc: 'en',
       exp: '1.234E3',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     '00.###E0': {
       value: 0.00123,
       lc: 'en',
       exp: '01.23E-3',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     '##0.####E0': {
       value: 12345,
       lc: 'en',
       exp: '12.345E3',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     }
   };
   return Object.entries(cases).map(([fmt, { value, lc, cur, exp, skip }]) => ({
@@ -169,38 +169,38 @@ export function numberSkeletonCases(): TestCase[] {
     'measure-unit/length-meter': {
       value: 42,
       exp: '42 m',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'measure-unit/length-meter unit-width-full-name': {
       value: 42,
       exp: '42 meters',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ie', 'ff'] },
     'currency/CAD unit-width-narrow': {
       value: 42,
       exp: '$42.00',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'compact-short currency/CAD': {
       value: 42,
       exp: 'CA$42',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'sign-always': {
       value: 42,
       exp: '+42',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'sign-except-zero': {
       value: 42,
       exp: '+42',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'sign-accounting currency/CAD': {
       value: -42,
       exp: '(CA$42.00)',
-      skip: ['ie', 'edge', 'ff', 'node10']
+      skip: ['ie', 'edge', 'ff', 'node10', 'safari']
     },
     'percent .00': { value: 42, exp: '42.00%', skip: ['ie'] }
   };
