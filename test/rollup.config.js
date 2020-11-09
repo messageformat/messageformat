@@ -4,12 +4,12 @@ import typescript from '@rollup/plugin-typescript';
 
 export default [
   {
-    input: 'src/ie11-polyfills.js',
+    input: 'browser/src/ie11-polyfills.js',
     output: { file: 'browser/dist/ie11-polyfills.js', format: 'iife' },
     plugins: [resolve(), commonjs()]
   },
   {
-    input: 'src/browser-tests.ts',
+    input: 'browser/src/browser-tests.ts',
     output: {
       file: 'browser/dist/browser-tests.js',
       format: 'iife',

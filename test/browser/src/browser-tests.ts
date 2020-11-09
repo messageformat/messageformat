@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import MessageFormat from '@messageformat/core';
 import { PluralFunction } from '@messageformat/core/src/plurals';
-import { getTestCases } from '../fixtures/messageformat';
+import { getTestCases } from '../../fixtures/messageformat';
 
 // @ts-ignore
 const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
