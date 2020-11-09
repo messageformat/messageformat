@@ -28,3 +28,7 @@ overrides:
       - test/browser/src/*.js
     parserOptions:
       sourceType: module
+  - files:
+      - test/browser/tests/*.js
+    env:
+      mocha: true

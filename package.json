@@ -21,7 +21,7 @@
     "prettier": "prettier --write .",
     "start": "node -i -r ./scripts/start.js",
     "pretest:browsers": "cd test && rollup -c",
-    "test:browsers": "mocha --require test/browser/browserstack-fixtures.js test/browser/browserstack-tests.js",
+    "test:browsers": "mocha --require test/browser/browserstack-fixtures.js --timeout 120000 test/browser/tests/",
     "test:chrome": "npm run pretest:browsers && mocha-selenium-bridge -b chrome test/browser/test.html",
     "test:firefox": "npm run pretest:browsers && mocha-selenium-bridge -b firefox test/browser/test.html",
     "test:serve": "npm run pretest:browsers && serve",

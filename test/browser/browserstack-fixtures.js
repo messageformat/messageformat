@@ -21,6 +21,7 @@ exports.mochaGlobalSetup = async function () {
       } else resolve();
     });
   });
+  console.log('Starting browser tests...');
 };
 
 exports.mochaGlobalTeardown = async function () {
