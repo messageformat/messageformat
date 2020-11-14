@@ -1,6 +1,7 @@
 .*
 coverage/
 node_modules/
+/docs/_site/
 /example/messages.*
 /packages/website/docs/
 /test/browser/*.log
