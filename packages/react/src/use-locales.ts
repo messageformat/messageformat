@@ -12,10 +12,10 @@ import { MessageContext } from './message-context';
  * import React from 'react'
  * import { MessageProvider, useLocales } from '@messageformat/react'
  *
- * <MessageProvider locale="en" messages={{ foo: 'FOO' }}>
+ * <MessageProvider locale="en" messages={ { foo: 'FOO' } }>
  *   {() => useLocales().join(',') // 'en'
  *   }
- *   <MessageProvider locale="fi" messages={{ foo: 'FÖÖ' }}>
+ *   <MessageProvider locale="fi" messages={ { foo: 'FÖÖ' } }>
  *     {() => useLocales().join(',') // 'fi,en'
  *     }
  *   </MessageProvider>
