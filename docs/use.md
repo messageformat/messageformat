@@ -1,3 +1,11 @@
+---
+title: Usage
+nav_order: 3
+---
+
+# Using messageformat
+{: .no_toc }
+
 Fundamentally, messageformat is a compiler that turns ICU MessageFormat input into JavaScript. While it's certainly possible to use it directly in your client code, that will mean including the full compiler in your client-side code (admittedly, just 15kB when minified & gzipped), and being okay with `new Function` being called for each message string.
 
 The recommended alternative is to use messageformat as a compile-time tool. To that end, we provide three different sorts of solutions:

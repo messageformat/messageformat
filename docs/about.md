@@ -1,3 +1,11 @@
+---
+title: About
+nav_order: 2
+---
+
+# About messageformat
+{: .no_toc }
+
 Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
 
 ## Features

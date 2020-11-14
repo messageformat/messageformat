@@ -1,3 +1,8 @@
+---
+title: Home
+nav_order: 1
+---
+
 <div class="main-title">
 <img align="right" width="100" height="100" src="https://messageformat.github.io/messageformat/logo/messageformat.svg">
 <h1>messageformat</h1>

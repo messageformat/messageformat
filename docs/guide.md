@@ -1,3 +1,19 @@
+---
+title: Format Guide
+nav_order: 4
+---
+
+# {{ page.title }}
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
+
 This guide aims to provide an introduction to ICU MessageFormat syntax, along
 with minimal code examples that are directly executable in a node.js
 environment. **For production use**, we recommend using {@tutorial build} and

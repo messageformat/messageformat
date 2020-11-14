@@ -1,1 +1,6 @@
 remote_theme: pmarsceill/just-the-docs
+
+aux_links:
+  'messageformat on GitHub': https://github.com/messageformat/messageformat
+
+logo: https://messageformat.github.io/messageformat/logo/messageformat.svg
