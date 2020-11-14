@@ -17,6 +17,7 @@
     "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
     "predocs": "lerna run extract-api --stream",
     "docs": "api-documenter markdown -i tmp/ -o docs/api/",
+    "postdocs": "node scripts/set-api-docs-frontmatter docs/api/",
     "lint": "eslint '**/*.js'",
     "prettier": "prettier --write .",
     "start": "node -i -r ./scripts/start.js",
