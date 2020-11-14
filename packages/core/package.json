@@ -40,6 +40,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "postbuild": "tsc -p tsconfig.declarations.json"
+    "postbuild": "tsc -p tsconfig.declarations.json",
+    "extract-api": "api-extractor run --local --verbose"
   }
 }

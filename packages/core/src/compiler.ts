@@ -6,13 +6,7 @@ import {
   getNumberFormatter,
   getNumberFormatterSource
 } from '@messageformat/number-skeleton';
-import {
-  parse,
-  Function,
-  Octothorpe,
-  Select,
-  Token
-} from '@messageformat/parser';
+import { parse, FunctionArg, Select, Token } from '@messageformat/parser';
 import * as Runtime from '@messageformat/runtime';
 import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
@@ -36,6 +30,13 @@ export interface RuntimeMap {
   [key: string]: Required<RuntimeEntry>;
 }
 
+/**
+ * A hierarchical structure of ICU MessageFormat strings
+ *
+ * @public
+ * @remarks
+ * Used in {@link compileModule} arguments
+ */
 export interface StringStructure {
   [key: string]: StringStructure | string;
 }
@@ -60,9 +61,9 @@ export default class Compiler {
    * the compile-time checks for plural & selectordinal keys while maintaining
    * multi-locale support, use falsy values in `plurals`.
    *
-   * @param src The source for which the JS code should be generated
-   * @param plural The default locale
-   * @param plurals A map of pluralization keys for all available locales
+   * @param src - The source for which the JS code should be generated
+   * @param plural - The default locale
+   * @param plurals - A map of pluralization keys for all available locales
    */
   compile(
     src: string | StringStructure,
@@ -124,7 +125,7 @@ export default class Compiler {
       : tokens.join(' + ') || '""';
   }
 
-  token(token: Token | Octothorpe, pluralToken: Select | null) {
+  token(token: Token, pluralToken: Select | null) {
     if (token.type == 'content') return JSON.stringify(token.value);
 
     const { id, lc } = this.plural;
@@ -265,7 +266,7 @@ export default class Compiler {
   }
 
   setDateFormatter(
-    { param }: Function,
+    { param }: FunctionArg,
     args: (number | string)[],
     plural: Select | null
   ) {
@@ -301,7 +302,7 @@ export default class Compiler {
   }
 
   setNumberFormatter(
-    { param }: Function,
+    { param }: FunctionArg,
     args: (number | string)[],
     plural: Select | null
   ) {

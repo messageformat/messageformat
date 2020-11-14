@@ -5,3 +5,4 @@ node_modules/
 /packages/website/docs/
 /test/browser/*.log
 /test/browser/dist/
+/tmp/

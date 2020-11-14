@@ -26,20 +26,21 @@ export function getPath(id?: string | string[], pathSep?: string | null) {
  * The returned value will be `undefined` if not found, or otherwise exactly as set in the `MessageProvider` props.
  *
  * @public
- * @param context - The `MessageContext` instance
  * @param id - The key or key path of the message or message object.
  *   If empty or `[]`, matches the root of the messages object
  * @param locale - If set, overrides the current locale precedence as set by parent MessageProviders.
  */
 export function getMessage(
-  { locales, messages, onError, pathSep }: MessageContext,
+  context: MessageContext,
   id?: string | string[],
   locale?: string | string[]
 ) {
-  if (locale != null) locales = Array.isArray(locale) ? locale : [locale];
+  const { locales, messages, onError, pathSep } = context;
+  const lca =
+    locale == null ? locales : Array.isArray(locale) ? locale : [locale];
   const path = getPath(id, pathSep);
-  for (let i = 0; i < locales.length; ++i) {
-    const lc = locales[i];
+  for (let i = 0; i < lca.length; ++i) {
+    const lc = lca[i];
     const msg = getIn(messages[lc], path);
     if (msg !== undefined) return msg;
   }

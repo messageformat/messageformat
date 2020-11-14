@@ -9,7 +9,7 @@ const nodeLib = {
     messageformat: 'src/messageformat.ts',
     'compile-module': 'src/compile-module.ts'
   },
-  output: { dir: 'lib/', format: 'cjs' },
+  output: { dir: 'lib/', format: 'cjs', exports: 'default' },
   external: [
     './compiler',
     'make-plural/cardinals',

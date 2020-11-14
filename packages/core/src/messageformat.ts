@@ -7,11 +7,19 @@ import {
   PluralObject
 } from './plurals';
 
+export { PluralFunction };
+
+/**
+ * A compiled message function, which may accept an object parameter
+ *
+ * @public
+ */
 export type MessageFunction = (param?: object) => string | any[];
 
 /**
- * The shape of the options object that may be used as the second argument of
- * the constructor.
+ * Options for the MessageFormat constructor
+ *
+ * @public
  */
 export interface MessageFormatOptions {
   /**
@@ -21,25 +29,28 @@ export interface MessageFormatOptions {
    * Default: `false`
    */
   biDiSupport?: boolean;
+
   /**
    * The currency to use when formatting `{V, number, currency}`
    *
    * Default: `USD`
    */
   currency?: string;
+
   /**
-   * Map of custom formatting functions to include. See the {@tutorial guide}
-   * for more details.
+   * Map of custom formatting functions to include.
    */
   customFormatters?: {
     [key: string]: (value: any, locale: string, arg: string | null) => string;
   };
+
   /**
    * Require all message arguments to be set with a defined value
    *
    * Default: `false`
    */
   requireAllArguments?: boolean;
+
   /**
    * Return type of compiled functions; either a concatenated string or an
    * array (possibly hierarchical) of values
@@ -47,6 +58,7 @@ export interface MessageFormatOptions {
    * Default: `'string'`
    */
   returnType?: 'string' | 'values';
+
   /**
    * Allow `#` only directly within a plural or selectordinal case, rather than
    * in any inner select case as well.
@@ -56,6 +68,10 @@ export interface MessageFormatOptions {
   strictNumberSign?: boolean;
 }
 
+/**
+ * Returned by {@link MessageFormat.resolvedOptions}
+ * @public
+ */
 export interface ResolvedMessageFormatOptions
   extends Required<MessageFormatOptions> {
   /** The default locale */
@@ -65,27 +81,43 @@ export interface ResolvedMessageFormatOptions
 }
 
 /**
- * MessageFormat-to-JavaScript compiler
+ * The core MessageFormat-to-JavaScript compiler
  *
+ * @public
+ * @example
  * ```js
  * import MessageFormat from '@messageformat/core'
+ * const mf = new MessageFormat('en')
+ *
+ * const msgSrc = `{GENDER, select,
+ *   male {He} female {She} other {They}
+ * } found {RES, plural,
+ *   =0 {no results} one {1 result} other {# results}
+ * }.`;
+ * const msg = mf.compile(msgSrc)
+ *
+ * msg({ GENDER: 'male', RES: 1 })    // 'He found 1 result.'
+ * msg({ GENDER: 'female', RES: 1 })  // 'She found 1 result.'
+ * msg({ GENDER: 'male', RES: 0 })    // 'He found no results.'
+ * msg({ RES: 2 })                    // 'They found 2 results.'
  * ```
  */
 export default class MessageFormat {
   /**
    * Used by the constructor when no `locale` argument is given.
-   *
    * Default: `'en'`
    */
   static defaultLocale = 'en';
 
   /**
-   * Escape special characaters by surrounding the characters `{` and `}` in the
-   * input string with 'quotes'. This will allow those characters to not be
-   * considered as MessageFormat control characters.
+   * Escape characaters that may be considered as MessageFormat markup
    *
-   * @param str The input string
-   * @param octothorpe Also escape `#`
+   * @remarks
+   * This surrounds the characters `{`, `}` and optionally `#` with 'quotes'.
+   * This will allow those characters to not be considered as MessageFormat control characters.
+   *
+   * @param str - The input string
+   * @param octothorpe - Also escape `#`
    * @returns The escaped string
    */
   static escape(str: string, octothorpe?: boolean) {
@@ -102,32 +134,33 @@ export default class MessageFormat {
     return la.filter(hasPlural);
   }
 
+  /** @internal */
   options: Required<MessageFormatOptions>;
+
+  /** @internal */
   plurals: PluralObject[] = [];
 
   /**
    * Create a new MessageFormat compiler
    *
-   * @param locale
-   *   Define the locale or locales supported by this MessageFormat instance. If
-   *   given multiple valid locales, the first will be the default. If `locale`
-   *   is empty, it will fall back to `MessageFormat.defaultLocale`.
+   * @remarks
+   * If given multiple valid locales, the first will be the default.
+   * If `locale` is empty, it will fall back to `MessageFormat.defaultLocale`.
    *
-   *   String `locale` values will be matched to plural categorisation functions
-   *   provided by the Unicode CLDR. If defining your own instead, use named
-   *   functions, optionally providing them with the properties:
-   *   `cardinals: string[]`, `ordinals: string[]`, and `module: string` (to
-   *   import the formatter as a runtime dependency, rather than inlining its
-   *   source).
+   * String `locale` values will be matched to plural categorisation functions provided by the Unicode CLDR.
+   * If defining your own instead, use named functions, optionally providing them with the properties:
+   * `cardinals: string[]`, `ordinals: string[]`, and `module: string`
+   * (to import the formatter as a runtime dependency, rather than inlining its source).
    *
-   *   If `locale` has the special value `'*'`, it will match *all* available
-   *   locales. This may be useful if you want your messages to be completely
-   *   determined by your data, but may provide surprising results if your input
-   *   message object includes any 2-3 character keys that are not locale
-   *   identifiers.
+   * If `locale` has the special value `'*'`, it will match **all** available locales.
+   * This may be useful if you want your messages to be completely determined by your data,
+   * but may provide surprising results if your input message object includes any 2-3 character keys that are not locale identifiers.
+   *
+   * @param locale - The locale or locales supported by this MessageFormat instance.
+   * @param options - Options for this instance
    */
   constructor(
-    locale: string | PluralFunction | (string | PluralFunction)[] | null,
+    locale: string | PluralFunction | Array<string | PluralFunction> | null,
     options?: MessageFormatOptions
   ) {
     this.options = Object.assign(
@@ -170,11 +203,12 @@ export default class MessageFormat {
   /**
    * Compile a message into a function
    *
+   * @remarks
    * Given a string `message` with ICU MessageFormat declarations, the result is
    * a function taking a single Object parameter representing each of the
    * input's defined variables, using the first valid locale.
    *
-   * @param message The input message to be compiled, in ICU MessageFormat
+   * @param message - The input message to be compiled, in ICU MessageFormat
    * @returns The compiled function
    *
    * @example

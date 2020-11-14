@@ -115,21 +115,27 @@ For more example usage, please take a look at our [test suite](src/parser.test.t
 
 ## Structure
 
-The output of `parse()` is a `Token` array:
+The output of `parse()` is an array of tokens, `Array<Content | PlainArg | FunctionArg | Select>`:
 
 <!-- prettier-ignore -->
 ```typescript
-type Token = Content | Argument | Select | Function
-
 interface Content {
   type: 'content'
   value: string
   ctx: Context
 }
 
-interface Argument {
+interface PlainArg {
   type: 'argument'
   arg: string
+  ctx: Context
+}
+
+interface FunctionArg {
+  type: 'function'
+  arg: string
+  key: string
+  param?: Array<Content | PlainArg | FunctionArg | Select | Octothorpe>
   ctx: Context
 }
 
@@ -143,15 +149,7 @@ interface Select {
 
 interface SelectCase {
   key: string
-  tokens: Array<Token | Octothorpe>
-  ctx: Context
-}
-
-interface Function {
-  type: 'function'
-  arg: string
-  key: string
-  param?: Array<Token | Octothorpe>
+  tokens: Array<Content | PlainArg | FunctionArg | Select | Octothorpe>
   ctx: Context
 }
 

@@ -17,3 +17,4 @@ package-lock.json
 /packages/website/docs/
 /packages/webpack-loader-example/dist/bundle.js
 /test/browser/dist/
+/tmp/

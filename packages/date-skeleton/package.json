@@ -24,6 +24,7 @@
   "type": "module",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "extract-api": "api-extractor run --local --verbose"
   }
 }

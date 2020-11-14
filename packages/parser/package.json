@@ -34,6 +34,7 @@
     "moo": "^0.5.1"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "extract-api": "api-extractor run --local --verbose"
   }
 }
