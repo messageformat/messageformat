@@ -6,88 +6,80 @@ nav_order: 3
 # Using messageformat
 {: .no_toc }
 
-Fundamentally, messageformat is a compiler that turns ICU MessageFormat input into JavaScript. While it's certainly possible to use it directly in your client code, that will mean including the full compiler in your client-side code (admittedly, just 15kB when minified & gzipped), and being okay with `new Function` being called for each message string.
+## Build Tools
 
-The recommended alternative is to use messageformat as a compile-time tool. To that end, we provide three different sorts of solutions:
+Fundamentally, `@messageformat/core` is a compiler that turns ICU MessageFormat input into JavaScript.
+While it's certainly possible to use it directly in your client code, it's really intended for use as a part of your build, unlike other such libraries.
+The main benefits of this are:
 
-- **Webpack loaders** for JSON, .properties, gettext PO, and YAML files
-- **[@messageformat/cli]** for command-line use, supporting JSON and .properties files
-- Our **JavaScript API**, in particular {@link MessageFormat#compile}
+1. Being able to keep the message sources in a human-friendly file format.
+2. Not needing the compiler at all in your client code, saving both bundle size and execution time.
+3. Ensuring that syntax errors are caught during the build, rather than at runtime.
+4. Not needing to call `new Function` during runtime.
 
-Compiling messages during your build will allow for a significant decrease in filesize and execution time, as all that's required to run on the client are the final compiled functions.
+To help achieve this, we provide a [Webpack loader], a [Rollup plugin], and a [command-line tool].
+You may of course also use the [JS API](./api/core.md) of the core package directly.
 
-[webpack]: https://webpack.js.org/
-[@messageformat/cli]: https://www.npmjs.com/package/@messageformat/cli
+[webpack loader]: https://www.npmjs.com/package/@messageformat/loader
+[rollup plugin]: https://www.npmjs.com/package/rollup-plugin-messageformat
+[command-line tool]: https://www.npmjs.com/package/@messageformat/cli
 
-## Webpack loaders
+## Runtime Tools
 
-Each of the loaders is similar, supporting a specific file type. Their configuration options vary slightly, depending on the common practices for the format; please see their own documentations for details:
+With the build tools your messages are made available in your runtime environment as a JavaScript function, which might be enough in some cases.
+Often, though, you'll want additional tooling to actually use the messages.
 
-- JSON & YAML: [@messageformat/loader]
-- .properties: [messageformat-properties-loader] – Format used by [Java resource bundles]
-- PO files: [messageformat-po-loader] – Format used by [gettext]
+For React, [`@messageformat/react`](./api/react.md) provides an efficient front-end for message handling and formatting, mostly based around custom hooks.
+For vanilla JS and otherwise, [`@messageformat/runtime/messages`](./api/runtime.messages.md) provides a generic storage and accessor class.
 
-[@messageformat/loader]: https://www.npmjs.com/package/@messageformat/loader
-[messageformat-properties-loader]: https://www.npmjs.com/package/messageformat-properties-loader
-[java resource bundles]: https://docs.oracle.com/javase/9/docs/api/java/util/ResourceBundle.html#getBundle-java.lang.String-java.util.Locale-java.lang.ClassLoader-
-[messageformat-po-loader]: https://www.npmjs.com/package/messageformat-po-loader
-[gettext]: https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
+## Conversion Tools
 
-Using [@messageformat/loader] as an example, these enable a JavaScript API that looks like this:
+In addition to working with MessageFormat directly, [gettext-to-messageformat](https://www.npmjs.com/package/gettext-to-messageformat) and its accompanying [messageformat-po-loader](https://www.npmjs.com/package/messageformat-po-loader) allow you to work with .po and .mo files, by first converting the gettext sources to ICU MessageFormat.
 
-<div class="panel panel-default">
-  <div class="panel-heading">messages.json</div>
-  <div class="panel-body">
-    <pre class="prettyprint source lang-javascript"><code>{
-  "time": "{0} took {1} ms to complete.",
-  "ordinal": "The {N, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} message."
-}</code></pre>
-  </div>
-</div>
+In a similar vein, [@messageformat/convert](https://www.npmjs.com/package/messageformat-convert) is a configurable tool for converting other message forms to ICU MessageFormat.
+It's used internally by [@messageformat/loader](https://www.npmjs.com/package/@messageformat/loader) and [rollup-plugin-messageformat](https://www.npmjs.com/package/rollup-plugin-messageformat), and with its default settings will convert input matching the Rails i18n spec.
 
-<div class="panel panel-default">
-  <div class="panel-heading">example.js</div>
-  <div class="panel-body">
-    <pre class="prettyprint source lang-javascript"><code>import messages from './messages.json'
-messages.ordinal(['Sweeping', 42])  // 'Sweeping took 42 ms to complete.'
-messages.ordinal({ N: 1 })          // 'The 1st message.'</code></pre>
-  </div>
-</div>
+## Examples
 
-During the build, the loader will compile your messages into their respective functions, and package only those into the webpack output.
+Using either the Webpack or Rollup tooling, the following usage patterns become possible:
 
-## CLI Compiler
+```yaml
+# messages.yaml
+time: '{0} took {1} ms to complete.'
+ordinal: 'The {pos, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} message.'
+```
 
-[@messageformat/cli] is easy to integrate into any build environment that can execute external commands, such as [create-react-app]. In addition to command-line options, the CLI can read configuration from `package.json` and `messageformat.rc.json` files; see its documentation for more information.
+```js
+// plain.js
+import messages from './messages.yaml';
+messages.time(['Sweeping', 42]); // 'Sweeping took 42 ms to complete.'
+messages.ordinal({ pos: 1 }); // 'The 1st message.'
+```
 
-[create-react-app]: https://github.com/facebook/create-react-app
+```js
+// runtime-messages.js
+import Messages from '@messageformat/runtime/messages';
+import msgData from './messages.yaml';
+const messages = new Messages(msgData, 'en');
 
-```text
-$ npm install @messageformat/core @messageformat/cli
-$ npx messageformat
+messages.hasMessage('time'); // true
+messages.get('ordinal', { pos: 3 }); // 'The 3rd message.'
+```
 
-usage: messageformat [options] [input, ...]
+```js
+// react.js
+import React from 'react';
+import { MessageProvider, useMessage } from '@messageformat/react';
+import messages from './messages.yaml';
 
-Parses the input JSON and .properties files of MessageFormat strings into
-a JS module of corresponding hierarchical functions. Input directories are
-recursively scanned for all .json and .properties files.
+const Example = () => useMessage('time', ['The task', 1300]])
+// The task took 1300 ms to complete.
 
-  -l lc, --locale=lc
-        The locale(s) lc to include; if multiple, selected by matching
-        message key. If not set, path keys matching any locale code will set
-        the active locale, starting with a default 'en' locale.
-
-  -n ns, --namespace=ns
-        By default, output is an ES6 module with a default export; set ns
-        to support other environments. If ns does not contain a '.', the
-        output follows an UMD pattern. For CommonJS module output, use
-        --namespace=module.exports.
-
-  -o of, --outfile=of
-        Write output to the file of. If undefined or '-', prints to stdout
-
-See the @messageformat/cli README for more options. Configuration may also be
-set in package.json or messageformat.rc.json.
+export const Wrapper = () => (
+  <MessageProvider messages={messages}>
+    <Example />
+  </MessageProvider>
+);
 ```
 
 ## Using compiled messageformat output
@@ -95,51 +87,3 @@ set in package.json or messageformat.rc.json.
 The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's `example/i18n.js` sample output includes a function `en.sub.folder.plural.test()`, which was compiled from the `test` key in the source file `example/en/sub/folder/plural.json`. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.
 
 In development use, it may then prove problematic to use the messageformat compiled messages directly, as mistakes in message keys will throw errors when they are called as functions, along with errors from missing properties for messages using variables. To that end, the library includes **{@link Messages}**, a utility accessor library that helps with common usage patterns, as well as making it easier to load message data dynamically.
-
-It works like this (using [@messageformat/loader], configured for `en` and `fi` locales):
-
-<div class="panel panel-default">
-  <div class="panel-heading">messages.json</div>
-  <div class="panel-body">
-    <pre class="prettyprint source lang-javascript"><code>{
-  "en": {
-    "a": "A {TYPE} example.",
-    "b": "This has {COUNT, plural, one{one user} other{# users}}.",
-    "c": {
-      "d": "We have {P, number, percent} code coverage."
-    }
-  },
-  "fi": {
-    "b": "Tällä on {COUNT, plural, one{yksi käyttäjä} other{# käyttäjää}}.",
-    "e": "Minä puhun vain suomea."
-  }
-}</code></pre>
-  </div>
-</div>
-
-<div class="panel panel-default">
-  <div class="panel-heading">example.js</div>
-  <div class="panel-body">
-    <pre class="prettyprint source lang-javascript"><code>import Messages from '@messageformat/runtime/messages'
-import msgData from './messages.json'
-const messages = new Messages(msgData, 'en')  // sets default locale
-
-messages.hasMessage('a') // true
-messages.hasObject('c') // true
-messages.get('b', { COUNT: 3 }) // 'This has 3 users.'
-messages.get(['c', 'd'], { P: 0.314 }) // 'We have 31% code coverage.'
-
-messages.get('e') // 'e'
-messages.setFallback('en', ['foo', 'fi'])
-messages.get('e') // 'Minä puhun vain suomea.'
-
-messages.locale = 'fi'
-messages.hasMessage('a') // false
-messages.hasMessage('a', 'en') // true
-messages.hasMessage('a', null, true) // true
-messages.hasObject('c') // false
-messages.get('b', { COUNT: 3 }) // 'Tällä on 3 käyttäjää.'
-messages.get('c').d({ P: 0.628 }) // 'We have 63% code coverage.'</code></pre>
-
-  </div>
-</div>
