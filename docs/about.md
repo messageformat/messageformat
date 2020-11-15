@@ -4,22 +4,50 @@ nav_order: 2
 ---
 
 # About messageformat
-{: .no_toc }
 
-Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://code-of-conduct.openjsf.org/).
 
 ## Features
 
 - Handles arbitrary nesting of pluralization and select rules
-- Supports all ~466 languages included in the Unicode CLDR
+- Supports all ~500 languages included in the Unicode CLDR
 - Works on the server and the client
 - Remarkably useful even for single-language use
-- Speed & efficiency: Can pre-compile messages to JavaScript code
-  - Great for speed: message formatting is just string concatenation
+- Can pre-compile messages to JavaScript code
 - Compatible with other MessageFormat implementations
 - Extendable with custom formatting functions
 - Very whitespace tolerant
 - Supports Unicode, including RTL and mixed LTR/RTL strings
+
+## Packages
+
+The project currently provides the following npm packages, all hosted under the [messageformat GitHub org](https://github.com/messageformat):
+
+- [@messageformat/core](api/core.md) - The core library that transpiles MessageFormat strings into JavaScript functions
+- [@messageformat/cli] - A command-line client for the library
+- [@messageformat/convert] - Converts other localization formats into MessageFormat
+- [@messageformat/date-skeleton](api/date-skeleton.md) - Tools for working with [ICU DateFormat skeletons]
+- [@messageformat/loader] - Webpack loader for message files
+- [@messageformat/number-skeleton](api/number-skeleton.md) - Tools for working with [ICU NumberFormat skeletons]
+- [@messageformat/parser](api/parser.md) - Parses MessageFormat source strings into an AST
+- [@messageformat/react](api/react.md) - React hooks and other bindings for messages
+- [@messageformat/runtime](api/runtime.md) - Runtime dependencies of compiled message modules
+- [gettext-to-messageformat] - Converts gettext input files to ICU MessageFormat
+- [messageformat-po-loader] - Webpack loader for messages in gettext files
+- [messageformat-properties-loader] - Webpack loader for messages in Java .properties files
+- [rollup-plugin-messageformat] - Rollup plugin for message files
+
+Previous versions of the packages under the `@messageformat` npm org were published with names that used `messageformat-` as a prefix.
+
+[@messageformat/cli]: https://www.npmjs.com/package/@messageformat/cli
+[@messageformat/convert]: https://www.npmjs.com/package/@messageformat/convert
+[@messageformat/loader]: https://www.npmjs.com/package/@messageformat/loader
+[gettext-to-messageformat]: https://www.npmjs.com/package/gettext-to-messageformat
+[icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
+[icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
+[messageformat-po-loader]: https://www.npmjs.com/package/messageformat-po-loader
+[messageformat-properties-loader]: https://www.npmjs.com/package/messageformat-properties-loader
+[rollup-plugin-messageformat]: https://www.npmjs.com/package/rollup-plugin-messageformat
 
 ## License
 
@@ -46,9 +74,11 @@ You may use this software under the MIT License:
 > OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 > WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-## Contributor License Agreement
+## Contributing
 
 We require all code contributions to be covered under the OpenJS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions and that you have the legal right to contribute them under our MIT license. If you've not previously signed the CLA, our bot will provide you with instructions for how to do so.
+
+See [CONTRIBUTING.md](https://github.com/messageformat/messageformat/blob/master/CONTRIBUTING.md) in the main repo for more details.
 
 ## Core Contributors
 
@@ -61,5 +91,4 @@ Thanks to:
 
 - [Vincit](https://vincit.fi/en/) - Eemeli's current employer - for letting him do cool stuff like this.
 - [Bazaarvoice](https://github.com/Bazaarvoice) - Alex's previous employer - for letting him do cool stuff like this.
-- Google has an implementation that is similar in Google Closure, the code has been vetted against many of their tests.
 - Norbert Lindenberg for showing Alex how good it can be.
