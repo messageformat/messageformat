@@ -43,7 +43,6 @@
     "@messageformat/core": "file:packages/core",
     "@messageformat/date-skeleton": "file:packages/date-skeleton",
     "@messageformat/loader": "file:packages/webpack-loader",
-    "@messageformat/loader-example": "file:packages/webpack-loader-example",
     "@messageformat/number-skeleton": "file:packages/number-skeleton",
     "@messageformat/parser": "file:packages/parser",
     "@messageformat/react": "file:packages/react",

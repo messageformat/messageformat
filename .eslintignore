@@ -16,6 +16,6 @@ package-lock.json
 /packages/runtime/esm/*
 /packages/runtime/lib/*
 /packages/website/docs/
-/packages/webpack-loader-example/dist/bundle.js
+/packages/webpack-loader/example/dist/
 /test/browser/dist/
 /tmp/

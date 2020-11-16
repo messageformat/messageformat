@@ -1,12 +1,10 @@
-const path = require('path');
-
-const locale = ['en', 'fi'];
+const { resolve } = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: resolve(__dirname, 'src/index.js'),
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: resolve(__dirname, 'dist')
   },
   module: {
     rules: [
@@ -17,7 +15,7 @@ module.exports = {
         options: {
           biDiSupport: false,
           customFormatters: null,
-          locale,
+          locale: ['en', 'fi'],
           strictNumberSign: false
         }
       }

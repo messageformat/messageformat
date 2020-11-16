@@ -26,6 +26,9 @@
     "directory": "packages/webpack-loader"
   },
   "main": "index.js",
+  "scripts": {
+    "example": "webpack --config example/webpack.config.js --mode=none"
+  },
   "dependencies": {
     "@messageformat/convert": "file:../convert",
     "dot-properties": "^1.0.1",
