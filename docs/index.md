@@ -17,6 +17,8 @@ It's built around the ICU MessageFormat standard and supports [all the languages
 This JavaScript project supports and extends all parts of the official Java/C++ implementation, with the exception of the deprecated ChoiceFormat.
 In addition to compiling messages into JavaScript functions, it also provides tooling for making their use easy during both the build and runtime of your site or application.
 
+**Note**: This is the documentation for messageformat v3. [Documentation for messageformat v2]({{ 'v2/' | relative_url }}) is available separately.
+
 ## What problems does it solve?
 
 Using messageformat, you can separate your code from your text formatting, while enabling much more humane expressions.
