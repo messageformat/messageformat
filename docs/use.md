@@ -1,6 +1,7 @@
 ---
 title: Usage
 nav_order: 3
+has_children: true
 ---
 
 # Using messageformat
@@ -81,9 +82,3 @@ export const Wrapper = () => (
   </MessageProvider>
 );
 ```
-
-## Using compiled messageformat output
-
-The output of the loaders and the CLI will be a hierarchical object, made up of the non-identical file and object paths of the input. For example, the messageformat package's `example/i18n.js` sample output includes a function `en.sub.folder.plural.test()`, which was compiled from the `test` key in the source file `example/en/sub/folder/plural.json`. Obviously this is a slightly contribed example, but even in real-world use it's likely that you'll end up with a sufficient number of messages that it makes sense to split them in separate files and/or into some sort of hierarchy.
-
-In development use, it may then prove problematic to use the messageformat compiled messages directly, as mistakes in message keys will throw errors when they are called as functions, along with errors from missing properties for messages using variables. To that end, the library includes **{@link Messages}**, a utility accessor library that helps with common usage patterns, as well as making it easier to load message data dynamically.
