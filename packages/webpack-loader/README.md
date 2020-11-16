@@ -64,7 +64,7 @@ messages['ordinal']({ N: 1 });
 ## Options
 
 - `convert` Use [`@messageformat/convert`][convert] to convert non-MessageFormat syntax and plural objects into MessageFormat. Use an object value to configure. Defaults to `false`.
-- `encoding` File encoding. Defaults to `'auto'`, which will auto-detect `'utf8'` and otherwise use `'latin1'`.
+- `encoding` File encoding. Defaults to `'auto'`, which will attempt to detect `'utf8'`, falling back to `'latin1'`.
 - `locale` The [CLDR language code] or codes to pass to [`MessageFormat`][mf]. If using multiple locales at the same time, exact matches to a locale code in the data structure keys will select that locale within it. Defaults to `'en'`.
 - `propKeyPath` Parse dots `.` in .properties file keys as path separators, resulting in a multi-level message object. Defaults to `true`.
 
