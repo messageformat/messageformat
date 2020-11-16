@@ -14,9 +14,12 @@
     "loader",
     "webpack"
   ],
-  "author": "Clayton Watts <cletusw@gmail.com> (https://github.com/cletusw)",
+  "contributors": [
+    "Clayton Watts <cletusw@gmail.com> (https://github.com/cletusw)",
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/messageformat/v3/",
+  "homepage": "https://messageformat.github.io/messageformat/",
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",
