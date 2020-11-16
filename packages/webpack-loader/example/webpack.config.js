@@ -9,15 +9,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\bmessages\.(json|ya?ml)$/,
+        test: [/\bmessages\.(json|ya?ml)$/, /\.properties$/],
         type: 'javascript/auto',
-        loader: require.resolve('@messageformat/loader'),
-        options: {
-          biDiSupport: false,
-          customFormatters: null,
-          locale: ['en', 'fi'],
-          strictNumberSign: false
-        }
+        loader: '@messageformat/loader',
+        options: { locale: ['en', 'fi'] }
       }
     ]
   }
