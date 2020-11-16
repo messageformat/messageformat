@@ -1,8 +1,8 @@
 const loaderUtils = require('loader-utils');
 const MessageFormat = require('@messageformat/core');
 const compileModule = require('@messageformat/core/compile-module');
-const convert = require('@messageformat/convert');
-const path = require('path');
+const convertToMessageFormat = require('@messageformat/convert');
+const { relative } = require('path');
 const YAML = require('yaml');
 
 function localeFromResourcePath(resourcePath, locales) {
@@ -20,28 +20,22 @@ function localeFromResourcePath(resourcePath, locales) {
 }
 
 module.exports = function loadMessages(content) {
-  var messages = YAML.parse(content);
-  var options = loaderUtils.getOptions(this) || {};
-  var locale = options.locale;
-  if (options.convert) {
-    var cm = convert(messages, options.convert);
-    if (!locale) {
-      locale = cm.locales;
-    }
+  let { convert, locale, ...mfOpt } = loaderUtils.getOptions(this) || {};
+  let messages = YAML.parse(content);
+
+  if (convert) {
+    const cm = convertToMessageFormat(messages, convert);
+    if (!locale) locale = cm.locales;
     messages = cm.translations;
   }
+
   if (typeof locale === 'string' && locale.indexOf(',') !== -1)
     locale = locale.split(',');
   if (Array.isArray(locale) && locale.length > 1) {
-    var relPath = path.relative(process.cwd(), this.resourcePath);
+    const relPath = relative(process.cwd(), this.resourcePath);
     locale = localeFromResourcePath(relPath, locale);
   }
-  const mfOpt = {};
-  if (options.biDiSupport) mfOpt.biDiSupport = true;
-  if (options.customFormatters || options.formatters) {
-    mfOpt.customFormatters = options.customFormatters || options.formatters;
-  }
-  if (options.strictNumberSign) mfOpt.strictNumberSign = true;
-  var messageFormat = new MessageFormat(locale, mfOpt);
+
+  const messageFormat = new MessageFormat(locale, mfOpt);
   return compileModule(messageFormat, messages);
 };
