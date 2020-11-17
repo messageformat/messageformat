@@ -13,8 +13,7 @@ This monorepo consists of the following packages that make up our JS implementat
 - [@messageformat/cli](packages/cli/) - A command-line client for the library
 - [@messageformat/convert](packages/convert/) - Converts other localization formats into MessageFormat
 - [@messageformat/date-skeleton](packages/date-skeleton) - Tools for working with [ICU DateFormat skeletons]
-- [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON & YAML message files
-- [@messageformat/loader-example](packages/webpack-loader-example/) - Usage example for the loader
+- [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON, YAML, & .properties message files
 - [@messageformat/number-skeleton](packages/number-skeleton) - Tools for working with [ICU NumberFormat skeletons]
 - [@messageformat/parser](packages/parser/) - Parses MessageFormat source strings into an AST
 - [@messageformat/react](packages/react/) - React hooks and other bindings for messages

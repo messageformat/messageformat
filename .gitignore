@@ -3,6 +3,7 @@ coverage/
 node_modules/
 /example/messages.*
 /packages/website/docs/
+/packages/webpack-loader/example/dist/
 /test/browser/*.log
 /test/browser/dist/
 /tmp/
