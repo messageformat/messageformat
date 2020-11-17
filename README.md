@@ -20,6 +20,7 @@ This monorepo consists of the following packages that make up our JS implementat
 - [@messageformat/react](packages/react/) - React hooks and other bindings for messages
 - [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
 - [@messageformat/website](packages/website/) - The source of our [documentation site](https://messageformat.github.io/messageformat/v3/)
+- [rollup-plugin-messageformat](packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
 [icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
 [icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
