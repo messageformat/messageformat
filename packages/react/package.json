@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/react",
-  "version": "0.6.2",
+  "version": "1.0.0-beta.1",
   "description": "React hooks and other bindings for messages",
   "repository": {
     "type": "git",

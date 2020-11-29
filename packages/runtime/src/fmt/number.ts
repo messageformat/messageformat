@@ -24,6 +24,13 @@
  * ```
  */
 
+const _nf: Record<string, Intl.NumberFormat> = {};
+function nf(lc: string | string[], opt: Intl.NumberFormatOptions) {
+  const key = String(lc) + JSON.stringify(opt);
+  if (!_nf[key]) _nf[key] = new Intl.NumberFormat(lc, opt);
+  return _nf[key];
+}
+
 export function numberFmt(
   value: number,
   lc: string | string[],
@@ -41,26 +48,23 @@ export function numberFmt(
       maximumFractionDigits: 2
     }
   };
-  return new Intl.NumberFormat(lc, opt[type] || {}).format(value);
+  return nf(lc, opt[type] || {}).format(value);
 }
 
-export function numberCurrency(
+export const numberCurrency = (
   value: number,
   lc: string | string[],
   arg: string
-) {
-  return new Intl.NumberFormat(lc, {
+) =>
+  nf(lc, {
     style: 'currency',
     currency: arg,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value);
-}
 
-export function numberInteger(value: number, lc: string | string[]) {
-  return new Intl.NumberFormat(lc, { maximumFractionDigits: 0 }).format(value);
-}
+export const numberInteger = (value: number, lc: string | string[]) =>
+  nf(lc, { maximumFractionDigits: 0 }).format(value);
 
-export function numberPercent(value: number, lc: string | string[]) {
-  return new Intl.NumberFormat(lc, { style: 'percent' }).format(value);
-}
+export const numberPercent = (value: number, lc: string | string[]) =>
+  nf(lc, { style: 'percent' }).format(value);

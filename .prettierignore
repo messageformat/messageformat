@@ -15,6 +15,6 @@ package-lock.json
 /packages/rollup-plugin/lib/
 /packages/runtime/esm/
 /packages/runtime/lib/
-/packages/webpack-loader-example/dist/bundle.js
+/packages/webpack-loader/example/dist/
 /test/browser/dist/
 /tmp/

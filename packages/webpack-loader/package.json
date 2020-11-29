@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/loader",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Webpack loader for MessageFormat",
   "keywords": [
     "i18n",
@@ -14,18 +14,26 @@
     "loader",
     "webpack"
   ],
-  "author": "Clayton Watts <cletusw@gmail.com> (https://github.com/cletusw)",
+  "contributors": [
+    "Clayton Watts <cletusw@gmail.com> (https://github.com/cletusw)",
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/messageformat/v3/",
+  "homepage": "https://messageformat.github.io/messageformat/",
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",
     "directory": "packages/webpack-loader"
   },
   "main": "index.js",
+  "scripts": {
+    "example": "webpack --config example/webpack.config.js --mode=none"
+  },
   "dependencies": {
-    "loader-utils": "^1.2.3",
     "@messageformat/convert": "file:../convert",
+    "dot-properties": "^1.0.1",
+    "loader-utils": "^1.2.3",
+    "uv": "^1.2.1",
     "yaml": "^1.7.2"
   },
   "peerDependencies": {

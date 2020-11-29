@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/cli",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "MessageFormat CLI",
   "keywords": [
     "i18n",
@@ -31,11 +31,11 @@
   },
   "dependencies": {
     "common-tags": "^2.0.0-alpha.1",
-    "dot-properties": "^0.3.2",
+    "dot-properties": "^1.0.1",
     "glob": "^7.1.4",
     "uv": "^1.0.8",
     "yaml": "^1.7.1",
-    "yargs": "^14.2.0"
+    "yargs": "^16.1.1"
   },
   "peerDependencies": {
     "@messageformat/core": "^3.0.0-beta.0"

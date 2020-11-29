@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.0.0-beta.3 (2020-11-29)
+
+
+### Bug Fixes
+
+* **core:** Adjustments for parser API changes ([6f77589](https://github.com/messageformat/messageformat/commit/6f77589ecae0eea6d965fe32baf92a2e657ecd4f))
+* **core:** Export the types PluralFunction, StringStructure ([588d00a](https://github.com/messageformat/messageformat/commit/588d00ab33b3420932c10d6fde7bf6292bbff4d4))
+
+
+### Features
+
+* Import messageformat-date-skeleton sources ([0788cb3](https://github.com/messageformat/messageformat/commit/0788cb3fc623345b2cd816ce9e78676f922e10be))
+* Import messageformat-number-skeleton sources ([11c7afb](https://github.com/messageformat/messageformat/commit/11c7afb928c6364caa4942de380ed4b8d91a276d))
+* Rename npm packages to use the [@messageformat](https://github.com/messageformat) org ([#290](https://github.com/messageformat/messageformat/issues/290)) ([2e24133](https://github.com/messageformat/messageformat/commit/2e2413300ab000467ecbb53ecd6fa0cc7a38cbcf))
+* Rename packages as @messageformat/date-skeleton & @messageformat/number-skeleton ([05ee7ae](https://github.com/messageformat/messageformat/commit/05ee7aec04152d0795ccd3d5f43717acbe0c9f76))
+
+
+### BREAKING CHANGES
+
+* The packages are renamed to use the @messageformat org:
+- `messageformat` -> `@messageformat/core`
+- `messageformat-cli` -> `@messageformat/cli`
+- `messageformat-convert` -> `@messageformat/convert`
+- `messageformat-loader` -> `@messageformat/webpack-loader`
+- `messageformat-parser` -> `@messageformat/parser`
+- `messageformat-runtime` -> `@messageformat/runtime`
+
+
+
+
+
 # [3.0.0-beta.2](https://github.com/messageformat/messageformat/compare/messageformat@3.0.0-beta.1...messageformat@3.0.0-beta.2) (2020-04-12)
 
 

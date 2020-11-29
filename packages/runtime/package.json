@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/runtime",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "Runtime components of messageformat",
   "keywords": [
     "i18n",
@@ -68,8 +68,7 @@
     "build:esm": "tsc --module ES6 --outDir esm",
     "build": "npm run build:cjs && npm run build:esm",
     "extract-api": "api-extractor run --local --verbose",
-    "docs": "jsdoc2md -c jsdoc.config.json -f src/messages.mjs > README.md",
-    "prepublishOnly": "npm run build && npm run docs"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "make-plural": "^6.2.1"
