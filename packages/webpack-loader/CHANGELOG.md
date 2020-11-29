@@ -1,7 +1,37 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 1.0.0-beta.2 (2020-11-29)
+
+
+### Bug Fixes
+
+* **loader:** Refactor internals, passing more options directly to MF constructor ([5b4e424](https://github.com/messageformat/messageformat/commit/5b4e424941459c25785fffcf3bcaeda2ba514f2a))
+* **loader:** Update example to match updated README ([e96e3dc](https://github.com/messageformat/messageformat/commit/e96e3dc766edf4003e8f404fd77748bfb69b8e7b))
+
+
+### Features
+
+* **loader:** Add support for .properties files + new options ([f3b9d61](https://github.com/messageformat/messageformat/commit/f3b9d6172e3aef5f559bdb8718c89f68c93c3344))
+* **loader:** Move example from private package to webpack-loader/example/ ([2dcb2af](https://github.com/messageformat/messageformat/commit/2dcb2af50b6ba8e72d0348de31480f6b74a895e4))
+* Rename npm packages to use the [@messageformat](https://github.com/messageformat) org ([#290](https://github.com/messageformat/messageformat/issues/290)) ([2e24133](https://github.com/messageformat/messageformat/commit/2e2413300ab000467ecbb53ecd6fa0cc7a38cbcf))
+
+
+### BREAKING CHANGES
+
+* The packages are renamed to use the @messageformat org:
+- `messageformat` -> `@messageformat/core`
+- `messageformat-cli` -> `@messageformat/cli`
+- `messageformat-convert` -> `@messageformat/convert`
+- `messageformat-loader` -> `@messageformat/webpack-loader`
+- `messageformat-parser` -> `@messageformat/parser`
+- `messageformat-runtime` -> `@messageformat/runtime`
+
+
+
+
 
 # [1.0.0-beta.1](https://github.com/messageformat/messageformat/compare/messageformat-loader@1.0.0-beta.0...messageformat-loader@1.0.0-beta.1) (2020-04-12)
 
