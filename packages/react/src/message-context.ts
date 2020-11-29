@@ -1,8 +1,6 @@
-import { createContext } from 'react';
-import { ErrorCode } from './message-error';
-
 // @ts-ignore - https://github.com/microsoft/rushstack/issues/1050
-import { Context } from 'react';
+import { Context, createContext } from 'react';
+import { ErrorCode } from './message-error';
 
 /** @internal */
 export type MessageValue = string | number | boolean | ((props: any) => any);

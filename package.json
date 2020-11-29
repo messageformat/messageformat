@@ -11,12 +11,13 @@
   },
   "scripts": {
     "clean": "git clean -fdxe node_modules",
-    "build": "lerna run build --ignore @messageformat/website",
+    "build": "lerna run build",
     "predocs:example": "messageformat example/ --locale en fr --outfile example/messages.mjs",
     "docs:example": "webpack example/messages.mjs --output-library messages --mode production -o example/messages.js",
     "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
     "predocs": "lerna run extract-api --stream",
     "docs": "api-documenter markdown -i tmp/ -o docs/api/",
+    "postdocs": "node scripts/set-api-docs-frontmatter docs/api/",
     "lint": "eslint '**/*.js'",
     "prettier": "prettier --write .",
     "start": "node -i -r ./scripts/start.js",
@@ -47,7 +48,6 @@
     "@messageformat/parser": "file:packages/parser",
     "@messageformat/react": "file:packages/react",
     "@messageformat/runtime": "file:packages/runtime",
-    "@messageformat/website": "file:packages/website",
     "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {
