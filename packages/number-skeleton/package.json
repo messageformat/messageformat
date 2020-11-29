@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/number-skeleton",
-  "version": "0.2.1",
+  "version": "1.0.0-beta.0",
   "description": "A parser & formatter for ICU NumberFormat skeleton strings & patterns",
   "keywords": [
     "icu",
