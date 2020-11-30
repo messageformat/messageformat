@@ -12,7 +12,7 @@
   ],
   "author": "Eemeli Aro <eemeli@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/messageformat/messageformat/tree/master/packages/number-skeleton#readme",
+  "homepage": "http://messageformat.github.io/messageformat/api/number-skeleton/",
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",

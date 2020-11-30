@@ -14,7 +14,7 @@
     "Adrian Vogelsgesang <adrian.vogelsgesang@tum.de>"
   ],
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/",
+  "homepage": "http://messageformat.github.io/messageformat/api/parser/",
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",

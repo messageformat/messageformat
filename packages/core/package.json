@@ -17,7 +17,7 @@
     "Eemeli Aro <eemeli@gmail.com>"
   ],
   "license": "MIT",
-  "homepage": "https://messageformat.github.io/messageformat/v3/",
+  "homepage": "http://messageformat.github.io/messageformat/api/core/",
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",
