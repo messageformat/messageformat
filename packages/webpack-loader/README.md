@@ -2,10 +2,19 @@
 
 Loader that parses input JSON, YAML and Java .properties files consisting of messages as objects of JavaScript message functions with a matching structure, using [`messageformat`](https://messageformat.github.io/).
 
+This package was previously named [messageformat-loader](https://www.npmjs.com/package/messageformat-loader).
+
 ## Installation
 
 ```
-npm install @messageformat/core @messageformat/loader
+npm install --save-dev @messageformat/core @messageformat/loader
+```
+
+Internally, the loader uses [messageformat v3](https://messageformat.github.io/), which has a runtime component.
+If you're intending to publish a library with external dependencies, you should also include it as a dependency:
+
+```
+npm install @messageformat/runtime
 ```
 
 ## Usage

@@ -35,6 +35,8 @@ precedes a curly brace `{}`, or a pound symbol `#` if inside a plural format. A
 literal apostrophe `'` is represented by either a single `'` or a doubled `''`
 apostrophe character.
 
+This package was previously named [messageformat-parser](https://www.npmjs.com/package/messageformat-parser).
+
 [icu messageformat]: https://messageformat.github.io/guide/
 [messageformat]: https://messageformat.github.io/
 [unicode cldr]: http://cldr.unicode.org/index/cldr-spec/plural-rules

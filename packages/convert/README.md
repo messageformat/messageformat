@@ -14,6 +14,8 @@ specifically, it:
 With these conversions, messages stored according to the Rails i18n spec may be
 used together with [messageformat].
 
+This package was previously named [messageformat-convert](https://www.npmjs.com/package/messageformat-convert).
+
 ### Installation
 
 ```sh

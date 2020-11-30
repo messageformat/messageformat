@@ -1,6 +1,6 @@
 # rollup-plugin-messageformat
 
-File import plugin for [Rollup](https://rollupjs.org/) that lets you `import` JSON, YAML & .properties files containing ICU MessageFormat messages, turning them into message functions to use e.g. with [react-message-context](https://www.npmjs.com/package/react-message-context).
+File import plugin for [Rollup](https://rollupjs.org/) that lets you `import` JSON, YAML & .properties files containing ICU MessageFormat messages, turning them into message functions to use e.g. with [@messageformat/react](https://www.npmjs.com/package/@messageformat/react).
 
 ## Installation
 
@@ -8,7 +8,8 @@ File import plugin for [Rollup](https://rollupjs.org/) that lets you `import` JS
 npm install --save-dev rollup-plugin-messageformat
 ```
 
-Internally, the plugin uses [messageformat@3](https://messageformat.github.io/messageformat/v3/), which has a runtime component. If you're intending to publish you bundle for others, you should also include that as a dependency:
+Internally, the plugin uses [messageformat v3](https://messageformat.github.io/), which has a runtime component.
+If you're intending to publish a library with external dependencies, you should also include it as a dependency:
 
 ```
 npm install @messageformat/runtime

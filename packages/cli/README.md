@@ -2,6 +2,8 @@
 
 Parses and compiles the input JSON and [.properties](https://en.wikipedia.org/wiki/.properties) file(s) of MessageFormat strings into an ES module of corresponding hierarchical functions.
 
+This package was previously named [messageformat-cli](https://www.npmjs.com/package/messageformat-cli).
+
 ## Installation
 
 ```

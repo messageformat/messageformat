@@ -5,6 +5,8 @@ Designed in particular for use with [messageformat], but will work with any mess
 Provides the best possible API for a front-end developer, without making the back end any more difficult than it needs to be either.
 Should add at most about 1kB to your compiled & minified bundle size.
 
+This package was previously named [react-message-context](https://www.npmjs.com/package/react-message-context).
+
 [messageformat]: https://messageformat.github.io
 
 ## Installation
@@ -19,21 +21,17 @@ For tools such as Jest that define their own import methods, you may need to add
 
 ## [API Documentation]
 
-- [`<MessageProvider messages [locale] [onError] [pathSep]>`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.messageprovider.md)
-- [`<Message id [locale] [props] [...msgProps]>`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.message.md)
-- [`getMessage(context, id, [locale])`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.getmessage.md)
-- [`getMessageGetter(context, rootId, [{ baseParams, locale }])`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.getmessagegetter.md)
-- [`useLocales()`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.uselocales.md)
-- [`useMessage(id, [params], [locale])`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.usemessage.md)
-- [`useMessageGetter(rootId, [{ baseParams, locale }])`](https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.usemessagegetter.md)
-
-The changelog is [available on GitHub](https://github.com/eemeli/react-message-context/releases).
+- [`<MessageProvider messages [locale] [onError] [pathSep]>`](http://messageformat.github.io/messageformat/api/react.messageprovider/)
+- [`<Message id [locale] [props] [...msgProps]>`](http://messageformat.github.io/messageformat/api/react.message/)
+- [`useLocales()`](http://messageformat.github.io/messageformat/api/react.uselocales/)
+- [`useMessage(id, [params], [locale])`](http://messageformat.github.io/messageformat/api/react.usemessage/)
+- [`useMessageGetter(rootId, [{ baseParams, locale }])`](http://messageformat.github.io/messageformat/api/react.usemessagegetter/)
 
 ## Usage Examples
 
 In addition to the examples included below and in the [API documentation], see the [example] for a simple, but fully functional example of using this library along with [@messageformat/core] and [@messageformat/loader] to handle localized messages, with dynamic loading of non-default locales.
 
-[api documentation]: https://github.com/eemeli/react-message-context/tree/master/docs/react-message-context.md
+[api documentation]: http://messageformat.github.io/messageformat/api/react/
 [example]: https://github.com/messageformat/messageformat/tree/master/packages/react/example
 [@messageformat/core]: https://www.npmjs.com/package/@messageformat/core
 [@messageformat/loader]: https://www.npmjs.com/package/@messageformat/loader

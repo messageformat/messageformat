@@ -9,3 +9,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 * Add @messageformat/react (was react-message-context) ([#292](https://github.com/messageformat/messageformat/issues/292)) ([9089f0a](https://github.com/messageformat/messageformat/commit/9089f0ad52f21f8ab6c356fd4f51bb140dc36855))
+
+
+
+# 0.6.2 and earlier
+
+For earlier changes, see https://github.com/eemeli/react-message-context/releases

@@ -3,70 +3,26 @@
 <h1>messageformat</h1>
 </div>
 
-The experience and subtlety of your program's text can be important. Messageformat is a mechanism for handling both **pluralization** and **gender** in your applications. It can also lead to much better translations, as it's designed to support [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) included in the [Unicode CLDR](http://cldr.unicode.org/).
+The experience and subtlety of your program's text is important.
+The messageformat project provides a complete set of tools for handling all the messages of your application, for both front-end and back-end environments; for both runtime and build-time use.
+It's built around the ICU MessageFormat standard and supports [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) included in the [Unicode CLDR](http://cldr.unicode.org/), but it can be just as useful if you're dealing with only one of them.
 
-The ICU has an [official guide](http://userguide.icu-project.org/formatparse/messages) for the format. Messageformat supports and extends all parts of the [standard](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html), with the exception of the deprecated ChoiceFormat.
+[ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) is a mechanism for handling both **pluralization** and **gender** in your applications.
+This is the core compiler of a [JavaScript project](http://messageformat.github.io/) supports and extends all parts of the official Java/C++ implementation, with the exception of the deprecated ChoiceFormat.
+In addition to compiling messages into JavaScript functions, it also provides tooling for making their use easy during both the build and runtime of your site or application.
 
-There is a good slide-deck on [Plural and Gender in Translated Messages](https://docs.google.com/presentation/d/1ZyN8-0VXmod5hbHveq-M1AeQ61Ga3BmVuahZjbmbBxo/pub?start=false&loop=false&delayms=3000#slide=id.g1bc43a82_2_14) by Markus Scherer and Mark Davis. But, again, remember that many of these problems apply even if you're only outputting english.
+For more details, please see the project's documentation site: http://messageformat.github.io/
 
-## What problems does it solve?
-
-Using messageformat, you can separate your code from your text formatting, while enabling much more humane expressions. In other words, you won't need to see this anymore in your output:
-
-> There are 1 results.<br>
-> There are 2 result(s).<br>
-> Number of results: 3.
-
-On a more fundamental level, messageformat and its associated tools can help you build an effective workflow for UI texts and translations, keeping message sources in human-friendly formats, compiling them into JavaScript during your build phase, and making them easy to use from your application code.
-
-## What does it look like?
-
-With this message:
-
-```js
-const msgSrc = `{GENDER, select,
-  male {He}
-  female {She}
-  other {They}
-} found {RES, plural,
-  =0 {no results}
-  one {1 result}
-  other {# results}
-}.`;
-```
-
-You'll get these results:
-
-```js
-const MessageFormat = require('@messageformat/core');
-const mf = new MessageFormat('en');
-const msg = mf.compile(msgSrc);
-
-msg({ GENDER: 'male', RES: 1 }); // 'He found 1 result.'
-msg({ GENDER: 'female', RES: 1 }); // 'She found 1 result.'
-msg({ GENDER: 'male', RES: 0 }); // 'He found no results.'
-msg({ RES: 2 }); // 'They found 2 results.'
-```
-
-## Getting Started
-
-```
-npm install --save-dev @messageformat/core
-npm install --save @messageformat/runtime
-```
-
-This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages. Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.
-
-[format guide]: https://messageformat.github.io/messageformat/v3/page-guide
-[usage guide]: https://messageformat.github.io/messageformat/v3/page-build
+This package was previously named [messageformat](https://www.npmjs.com/package/messageformat).
 
 ---
 
-[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+Messageformat is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
 
-<a href="https://openjsf.org">
-<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
-</a>
+Copyright [OpenJS Foundation](https://openjsf.org) and messageformat contributors. All rights reserved.
+The [OpenJS Foundation](https://openjsf.org) has registered trademarks and uses trademarks.
+For a list of trademarks of the [OpenJS Foundation](https://openjsf.org), please see our [Trademark Policy](https://trademark-policy.openjsf.org/) and [Trademark List](https://trademark-list.openjsf.org/).
+Trademarks and logos not indicated on the [list of OpenJS Foundation trademarks](https://trademark-list.openjsf.org) are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them.
 
 Browser testing provided by:
 
