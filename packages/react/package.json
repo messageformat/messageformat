@@ -15,7 +15,9 @@
     "messageformat",
     "provider"
   ],
-  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
   "license": "MIT",
   "homepage": "http://messageformat.github.io/messageformat/api/react/",
   "main": "lib/index.js",

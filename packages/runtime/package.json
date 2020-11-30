@@ -8,7 +8,9 @@
     "messageformat",
     "internationalization"
   ],
-  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
   "repository": {

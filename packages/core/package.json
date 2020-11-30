@@ -7,13 +7,12 @@
     "pluralformat",
     "icu",
     "gettext",
-    "choiceformat",
     "selectformat",
     "messageformat",
     "internationalization"
   ],
-  "author": "Alex Sexton <alexsexton@gmail.com>",
   "contributors": [
+    "Alex Sexton <alexsexton@gmail.com>",
     "Eemeli Aro <eemeli@gmail.com>"
   ],
   "license": "MIT",

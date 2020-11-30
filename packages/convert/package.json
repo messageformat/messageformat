@@ -8,7 +8,9 @@
     "rails",
     "i18n"
   ],
-  "author": "Eemeli Aro <eemeli@gmail.com>",
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
