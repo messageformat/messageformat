@@ -23,7 +23,6 @@
     "lib/",
     "messages.js"
   ],
-  "type": "commonjs",
   "main": "./lib/runtime.js",
   "exports": {
     ".": [
