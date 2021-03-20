@@ -9,7 +9,7 @@ plugins:
   - prettier
 extends:
   - 'eslint:recommended'
-  - prettier
+  - plugin:prettier/recommended
 
 rules:
   array-callback-return: error

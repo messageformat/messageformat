@@ -31,7 +31,10 @@ const alpha = (width: number) =>
   width < 4 ? 'short' : width === 4 ? 'long' : 'narrow';
 const numeric = (width: number) => (width % 2 === 0 ? '2-digit' : 'numeric');
 
-function yearOptions(token: DateToken, onError: ErrorHandler) {
+function yearOptions(
+  token: DateToken,
+  onError: ErrorHandler
+): { year: '2-digit' | 'numeric'; calendar?: 'gregory' } {
   switch (token.char) {
     case 'y':
       return { year: numeric(token.width) };
@@ -87,7 +90,9 @@ function weekdayStyle(token: DateToken, onError: ErrorHandler) {
   return alpha(width);
 }
 
-function hourOptions(token: DateToken) {
+function hourOptions(
+  token: DateToken
+): { hour: '2-digit' | 'numeric'; hourCycle?: 'h11' | 'h12' | 'h23' | 'h24' } {
   const hour = numeric(token.width);
   let hourCycle: 'h11' | 'h12' | 'h23' | 'h24' | undefined;
   switch (token.char) {
