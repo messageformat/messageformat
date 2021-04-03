@@ -87,12 +87,16 @@ export default class Compiler {
     };
     this.arguments = [];
     const r = parse(src, parserOptions).map(token => this.token(token, null));
-    let reqArgs = '';
-    if (this.options.requireAllArguments && this.arguments.length > 0) {
+    const hasArgs = this.arguments.length > 0;
+    const res = this.concatenate(r, true);
+
+    if (this.options.requireAllArguments && hasArgs) {
       this.setRuntimeFn('reqArgs');
-      reqArgs = `reqArgs(${JSON.stringify(this.arguments)}, d); `;
+      const reqArgs = JSON.stringify(this.arguments);
+      return `(d) => { reqArgs(${reqArgs}, d); return ${res}; }`;
     }
-    return `function(d) { ${reqArgs}return ${this.concatenate(r, true)}; }`;
+
+    return `(${hasArgs ? 'd' : ''}) => ${res}`;
   }
 
   cases(token: Select, pluralToken: Select | null) {

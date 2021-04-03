@@ -12,7 +12,15 @@ import {
   useMessageGetter
 } from '@messageformat/react';
 
-// actually precompiled with messageformat-cli
+/**
+ * Precompiled with @messageformat/cli
+ *
+ * ```
+ * cd packages/react/src/__fixtures__/
+ * messageformat messages_en.properties -l en > messages_en.js
+ * messageformat messages_fi.properties -l fi > messages_fi.js
+ * ```
+ */
 import en from './__fixtures__/messages_en';
 import fi from './__fixtures__/messages_fi';
 

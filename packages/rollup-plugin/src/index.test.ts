@@ -8,7 +8,7 @@ const jsonSrc = '{"key":{"inner":"value {foo}"}}';
 const code = `
 export default {
   key: {
-    inner: function(d) { return "value " + d.foo; }
+    inner: (d) => "value " + d.foo
   }
 }`;
 
@@ -126,7 +126,7 @@ describe('transform', () => {
         import { number, plural } from '@messageformat/runtime';
         import { fi } from '@messageformat/runtime/lib/cardinals';
         export default {
-          key: function(d) { return "value " + plural(d.foo, 0, fi, { one: "1", other: number("fi", d.foo, 0) }); }
+          key: (d) => "value " + plural(d.foo, 0, fi, { one: "1", other: number("fi", d.foo, 0) })
         }`
     });
   });
