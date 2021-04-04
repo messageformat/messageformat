@@ -156,9 +156,10 @@ describe('compileModule()', function () {
     expect(src).toMatch(/import { lc } from "custom-module"/);
   });
 
-  it('should import custom formatter if defined with module', async () => {
+  it('should import custom formatter if defined with module; id == key', async () => {
     const cf = {
       formatter: (v: unknown) => String(v).toUpperCase(),
+      id: 'up',
       module: 'upmod'
     };
     const mf = new MessageFormat('en', { customFormatters: { up: cf } });
@@ -167,7 +168,7 @@ describe('compileModule()', function () {
     expect(src).toMatch(/import { up } from "upmod"/);
   });
 
-  it('should import custom formatter if defined with module & id', async () => {
+  it('should import custom formatter if defined with module; id != key', async () => {
     const cf = {
       formatter: (v: unknown) => String(v).toUpperCase(),
       id: 'upper',

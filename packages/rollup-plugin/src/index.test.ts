@@ -124,8 +124,8 @@ describe('transform', () => {
     const res = transform(src, 'fi.properties');
     expect(res).toMatchObject({
       code: source`
-        import { number, plural } from '@messageformat/runtime';
-        import { fi } from '@messageformat/runtime/lib/cardinals';
+        import { number, plural } from "@messageformat/runtime";
+        import { fi } from "@messageformat/runtime/lib/cardinals";
         export default {
           key: (d) => "value " + plural(d.foo, 0, fi, { one: "1", other: number("fi", d.foo, 0) })
         }`
