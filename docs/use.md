@@ -39,7 +39,7 @@ For vanilla JS and otherwise, [`@messageformat/runtime/messages`](./api/runtime.
 
 In addition to working with MessageFormat directly, [gettext-to-messageformat](https://www.npmjs.com/package/gettext-to-messageformat) and its accompanying [messageformat-po-loader](https://www.npmjs.com/package/messageformat-po-loader) allow you to work with .po and .mo files, by first converting the gettext sources to ICU MessageFormat.
 
-In a similar vein, [@messageformat/convert](https://www.npmjs.com/package/messageformat-convert) is a configurable tool for converting other message forms to ICU MessageFormat.
+In a similar vein, [@messageformat/convert](https://www.npmjs.com/package/@messageformat/convert) is a configurable tool for converting other message forms to ICU MessageFormat.
 It's used internally by [@messageformat/loader](https://www.npmjs.com/package/@messageformat/loader) and [rollup-plugin-messageformat](https://www.npmjs.com/package/rollup-plugin-messageformat), and with its default settings will convert input matching the Rails i18n spec.
 
 ## Examples

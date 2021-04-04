@@ -1,6 +1,7 @@
 ---
 title: Supporting Multiple Locales
 parent: Usage
+nav_order: 4
 ---
 
 # Supporting Multiple Locales

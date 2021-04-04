@@ -34,7 +34,14 @@ Messageformat provides the tools for both starting a new project, as well as usi
 
 Most messages are simply text, and so in MessageFormat will also appear as just that.
 At the top level, the only special characters are `{}`, which surround variables that are to be replaced, along with case selectors and formatter function calls.
-For instance, the message `This is {foo}` will require the parameter `foo` to be defined when it's being stringified.
+
+To include the value of a variable in a message, surround it with braces:
+
+```
+Hello, {username}!
+```
+
+This will require the parameter `username` to be defined when the message is being formatted.
 
 The greatest benefit of MessageFormat comes from its selector support, both for numerical values
 

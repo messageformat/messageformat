@@ -1,6 +1,7 @@
 ---
 title: Rollup
 parent: Usage
+nav_order: 2
 ---
 
 # Rollup Plugin for MessageFormat
