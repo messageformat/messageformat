@@ -52,7 +52,7 @@ export function getMessage(
  * @param params - Parameters for a function message
  */
 export interface MessageGetterOptions {
-  baseParams?: any;
+  baseParams?: Record<string, unknown>;
   locale?: string | string[];
 }
 
@@ -75,7 +75,10 @@ export function getMessageGetter(
 ) {
   const { pathSep } = context;
   const pathPrefix = getPath(rootId, pathSep);
-  return function message(id?: string | string[], params?: any) {
+  return function message(
+    id?: string | string[],
+    params?: Record<string, unknown>
+  ) {
     const path = pathPrefix.concat(getPath(id, pathSep));
     const msg = getMessage(context, path, locale);
     if (typeof msg !== 'function') return msg;

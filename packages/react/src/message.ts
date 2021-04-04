@@ -9,7 +9,7 @@ export interface MessageProps {
    * In this case, `params` will be ignored and `id` is optional.
    * If some other type of non-empty renderable node, it will be used as a fallback value if the message is not found.
    */
-  children?: any;
+  children?: unknown;
 
   /** The key or key path of the message. */
   id?: string | string[];
@@ -21,18 +21,18 @@ export interface MessageProps {
    * Parameters to pass to function messages as their first and only argument.
    * `params` will override `msgParams`, to allow for data keys such as `key` and `locale`.
    */
-  params?: any;
+  params?: unknown;
 
   /**
    * Parameters to pass to function messages as their first and only argument.
    * Overriden by `params`, to allow for data keys such as `key` and `locale`.
    */
-  [msgParamKey: string]: any;
+  [msgParamKey: string]: unknown;
 }
 
 // Just using { foo, ...bar } adds a polyfill with a boilerplate copyright
 // statement that would add 50% to the minified size of the whole library.
-function rest(props: { [key: string]: any }, exclude: string[]) {
+function rest(props: { [key: string]: unknown }, exclude: string[]) {
   const t: typeof props = {};
   for (const k of Object.keys(props)) if (!exclude.includes(k)) t[k] = props[k];
   return t;

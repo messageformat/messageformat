@@ -18,7 +18,9 @@
  *
  * @public
  */
-export type MessageFunction = (param?: object) => string | any[];
+export type MessageFunction = (
+  param?: Record<string, unknown>
+) => string | unknown[];
 
 /**
  * Hierarchical message object
@@ -288,7 +290,11 @@ export default class Messages {
    * @param props - Optional properties passed to the function
    * @param lc - If empty or undefined, defaults to `this.locale`
    */
-  get(key: string | string[], props?: object, locale?: string) {
+  get(
+    key: string | string[],
+    props?: Record<string, unknown>,
+    locale?: string
+  ) {
     const lc = locale || String(this.locale);
     let msg = _get(this._data[lc], key);
     if (msg) return typeof msg == 'function' ? msg(props) : msg;

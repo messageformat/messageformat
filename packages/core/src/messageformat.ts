@@ -14,7 +14,7 @@ export { PluralFunction };
  *
  * @public
  */
-export type MessageFunction = (param?: object) => string | any[];
+export type MessageFunction = (param?: Record<string, unknown>) => string | unknown[];
 
 /**
  * Options for the MessageFormat constructor
@@ -43,7 +43,7 @@ export interface MessageFormatOptions {
    * for more details.
    */
   customFormatters?: {
-    [key: string]: (value: any, locale: string, arg: string | null) => string;
+    [key: string]: (value: unknown, locale: string, arg: string | null) => string;
   };
 
   /**

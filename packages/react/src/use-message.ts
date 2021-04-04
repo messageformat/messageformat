@@ -49,7 +49,7 @@ import { MessageContext } from './message-context';
  */
 export function useMessage(
   id: string | string[],
-  params?: any,
+  params?: unknown,
   locale?: string | string[]
 ) {
   const context = useContext(MessageContext);
