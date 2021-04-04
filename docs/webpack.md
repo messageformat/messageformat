@@ -1,3 +1,8 @@
+---
+title: Webpack
+parent: Usage
+---
+
 # Webpack Loader for MessageFormat
 
 A loader that parses input JSON, YAML and Java .properties files consisting of messages as objects of JavaScript message functions with a matching structure, all during the build of your application.
@@ -80,11 +85,3 @@ Using a locale identifier as a key within the message file contents will also se
 [@messageformat/convert]: https://www.npmjs.com/package/@messageformat/convert
 [cldr language codes]: http://www.unicode.org/cldr/charts/latest/supplemental/language_territory_information.html
 [mf]: https://messageformat.github.io/messageformat/api/core.messageformat/
-
----
-
-[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
-
-<a href="https://openjsf.org">
-<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
-</a>
