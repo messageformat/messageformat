@@ -55,10 +55,7 @@ export const getTestCases = (MF: typeof MessageFormat) =>
 
     'Custom locales': [
       {
-        // Explicit function name required by IE 11
-        locale: function locale(_: number) {
-          return 'few';
-        },
+        locale: (_: number) => 'few',
         src: 'res: {val, plural, few{wasfew} other{failed}}',
         exp: [
           [{ val: 0 }, 'res: wasfew'],
@@ -70,10 +67,7 @@ export const getTestCases = (MF: typeof MessageFormat) =>
       },
 
       {
-        // Explicit function name required by IE 11
-        locale: function locale(_: number, ord: boolean) {
-          return ord ? 'few' : 'other';
-        },
+        locale: (_: number, ord: boolean) => ord ? 'few' : 'other',
         src: 'res: {val, selectordinal, few{wasfew} other{failed}}',
         exp: [
           [{ val: 0 }, 'res: wasfew'],
