@@ -83,7 +83,7 @@ export default class Compiler {
     const parserOptions = {
       cardinal: plural.cardinals,
       ordinal: plural.ordinals,
-      strict: this.options.strictNumberSign
+      strict: this.options.strict
     };
     this.arguments = [];
     const r = parse(src, parserOptions).map(token => this.token(token, null));
@@ -146,7 +146,7 @@ export default class Compiler {
 
       case 'select':
         fn = 'select';
-        if (pluralToken && this.options.strictNumberSign) pluralToken = null;
+        if (pluralToken && this.options.strict) pluralToken = null;
         args.push(this.cases(token, pluralToken));
         this.setRuntimeFn('select');
         break;
@@ -176,8 +176,7 @@ export default class Compiler {
           default:
             args.push(JSON.stringify(this.plural.locale));
             if (token.param) {
-              if (pluralToken && this.options.strictNumberSign)
-                pluralToken = null;
+              if (pluralToken && this.options.strict) pluralToken = null;
               const s = token.param.map(tok => this.token(tok, pluralToken));
               args.push('(' + (s.join(' + ') || '""') + ').trim()');
               if (token.key === 'number')
@@ -195,7 +194,7 @@ export default class Compiler {
           property('d', pluralToken.arg),
           pluralToken.pluralOffset || 0
         ];
-        if (this.options.strictNumberSign) {
+        if (this.options.strict) {
           fn = 'strictNumber';
           args.push(JSON.stringify(pluralToken.arg));
           this.setRuntimeFn('strictNumber');
@@ -297,7 +296,7 @@ export default class Compiler {
 
     args.push(JSON.stringify(locale));
     if (param && param.length > 0) {
-      if (plural && this.options.strictNumberSign) plural = null;
+      if (plural && this.options.strict) plural = null;
       const s = param.map(tok => this.token(tok, plural));
       args.push('(' + (s.join(' + ') || '""') + ').trim()');
     }
@@ -358,7 +357,7 @@ export default class Compiler {
       return key;
     }
 
-    if (plural && this.options.strictNumberSign) plural = null;
+    if (plural && this.options.strict) plural = null;
     const s = param.map(tok => this.token(tok, plural));
     args.push('(' + (s.join(' + ') || '""') + ').trim()');
     args.push(JSON.stringify(this.options.currency));
