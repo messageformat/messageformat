@@ -67,7 +67,7 @@ export const getTestCases = (MF: typeof MessageFormat) =>
       },
 
       {
-        locale: (_: number, ord: boolean) => ord ? 'few' : 'other',
+        locale: (_: number, ord: boolean) => (ord ? 'few' : 'other'),
         src: 'res: {val, selectordinal, few{wasfew} other{failed}}',
         exp: [
           [{ val: 0 }, 'res: wasfew'],

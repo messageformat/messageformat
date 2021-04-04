@@ -127,9 +127,9 @@ describe('API', () => {
       Intl.ListFormat.supportedLocalesOf(['en', 'fi']).length === 2;
     if (!SUPPORTS_LIST_FORMAT) {
       delete Intl.ListFormat; // https://github.com/wessberg/intl-list-format/issues/1
-      await import('intl-list-format')
-      await import('intl-list-format/locale-data/en'),
-      await import('intl-list-format/locale-data/fi')
+      await import('intl-list-format');
+      await import('intl-list-format/locale-data/en');
+      await import('intl-list-format/locale-data/fi');
     }
   });
 
