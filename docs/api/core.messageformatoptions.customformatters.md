@@ -11,7 +11,7 @@ nav_exclude: true
 
 # MessageFormatOptions.customFormatters property
 
-Map of custom formatting functions to include.
+Map of custom formatting functions to include. See [Custom Formatters](https://messageformat.github.io/messageformat/custom-formatters/) for more details.
 
 <b>Signature:</b>
 

@@ -38,7 +38,9 @@ export interface MessageFormatOptions {
   currency?: string;
 
   /**
-   * Map of custom formatting functions to include.
+   * Map of custom formatting functions to include. See
+   * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
+   * for more details.
    */
   customFormatters?: {
     [key: string]: (value: any, locale: string, arg: string | null) => string;

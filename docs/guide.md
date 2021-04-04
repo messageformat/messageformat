@@ -1,6 +1,7 @@
 ---
 title: Format Guide
 nav_order: 4
+has_children: true
 ---
 
 <!-- prettier-ignore-start -->
@@ -22,7 +23,8 @@ Each of the sample messages is shown first as MessageFormat source, and then wit
 Except where otherwise specified, the `msg` function may be determined as follows:
 
 ```js
-const MessageFormat = require('@messageformat/core');
+import MessageFormat from '@messageformat/core';
+
 const mf = new MessageFormat('en');
 const msg = mf.compile(msgSrc);
 ```
@@ -156,8 +158,9 @@ msg({ ADDS: 3 }); // 'You and 2 others added this.'
 
 MessageFormat includes date, duration, number, and time formatting functions in the style of ICU's [simpleArg syntax].
 They are implemented using the [Intl] object defined by ECMA-402.
+Be aware that even relatively recent versions of browsers may have incomplete or non-standard support for all advanced features used by the date and number formatter skeletons.
 
-**Note**: Even relatively recent versions of browsers may have incomplete or non-standard support for all advanced features used by the date and number formatter skeletons.
+See alse [Custom Formatters](custom-formatters.md) for an extension of the spec provided by this library.
 
 [simplearg syntax]: http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html
 [intl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
@@ -235,36 +238,6 @@ The total is {V, number, ::currency/GBP unit-width-narrow}.
 msg({ V: 5.5 }); // 'The total is £5.50.'
 ```
 
-### Custom Formatters
-
-In MessageFormat source, a formatter function is called with the syntax `{var, name, arg}`, where `var` is a variable, `name` is the formatter name (by default, either `date`, `duration`, `number` or `time`;
-`spellout` and `ordinal` are not supported), and `arg` is an optional string argument.
-
-In JavaScript, a formatter is a function called with three parameters:
-
-- The **`value`** of the variable; this can be of any user-defined type
-- The current **`locale`** code
-- The trimmed **`arg`** string value, or `null` if not set
-
-As formatter functions may be used in a precompiled context, they should not refer to any variables that are not defined by the function parameters or within the function body.
-To add your own formatter, use the `customFormatters` option of the MessageFormat constructor.
-
-```
-This is {VAR, upcase} in {_, locale}.
-```
-
-```js
-const MessageFormat = require('@messageformat/core');
-const customFormatters = {
-  locale: (_, lc) => lc,
-  upcase: v => v.toUpperCase()
-};
-const mf = new MessageFormat('en-GB', { customFormatters });
-const msg = mf.compile(msgSrc);
-
-msg({ VAR: 'big' }); // 'This is BIG in en-GB.'
-```
-
 ## Nesting
 
 All types of messageformat statements may be nested within each other, to unlimited depth:
@@ -300,7 +273,8 @@ msg({ S: 5 }); // '{ 5 is a # }'
 <!-- prettier-ignore-end -->
 
 ```js
-const MessageFormat = require('@messageformat/core');
+import MessageFormat from '@messageformat/core';
+
 const mf = new MessageFormat('en');
 
 const rawSrc = 'Use {var} for variables';

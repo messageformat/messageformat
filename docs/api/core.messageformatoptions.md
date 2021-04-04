@@ -15,17 +15,17 @@ Options for the MessageFormat constructor
 <b>Signature:</b>
 
 ```typescript
-export interface MessageFormatOptions 
+export interface MessageFormatOptions
 ```
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [biDiSupport](./core.messageformatoptions.bidisupport.md) | boolean | Add Unicode control characters to all input parts to preserve the integrity of the output when mixing LTR and RTL text<!-- -->Default: <code>false</code> |
-|  [currency](./core.messageformatoptions.currency.md) | string | The currency to use when formatting <code>{V, number, currency}</code>Default: <code>USD</code> |
-|  [customFormatters](./core.messageformatoptions.customformatters.md) | { \[key: string\]: (value: any, locale: string, arg: string \| null) =&gt; string; } | Map of custom formatting functions to include. |
-|  [requireAllArguments](./core.messageformatoptions.requireallarguments.md) | boolean | Require all message arguments to be set with a defined value<!-- -->Default: <code>false</code> |
-|  [returnType](./core.messageformatoptions.returntype.md) | 'string' \| 'values' | Return type of compiled functions; either a concatenated string or an array (possibly hierarchical) of values<!-- -->Default: <code>'string'</code> |
-|  [strictNumberSign](./core.messageformatoptions.strictnumbersign.md) | boolean | Allow <code>#</code> only directly within a plural or selectordinal case, rather than in any inner select case as well.<!-- -->Default: <code>false</code> |
+|  [biDiSupport?](./core.messageformatoptions.bidisupport.md) | boolean | <i>(Optional)</i> Add Unicode control characters to all input parts to preserve the integrity of the output when mixing LTR and RTL text<!-- -->Default: <code>false</code> |
+|  [currency?](./core.messageformatoptions.currency.md) | string | <i>(Optional)</i> The currency to use when formatting <code>{V, number, currency}</code>Default: <code>USD</code> |
+|  [customFormatters?](./core.messageformatoptions.customformatters.md) | { \[key: string\]: (value: any, locale: string, arg: string \| null) =&gt; string; } | <i>(Optional)</i> Map of custom formatting functions to include. See [Custom Formatters](https://messageformat.github.io/messageformat/custom-formatters/) for more details. |
+|  [requireAllArguments?](./core.messageformatoptions.requireallarguments.md) | boolean | <i>(Optional)</i> Require all message arguments to be set with a defined value<!-- -->Default: <code>false</code> |
+|  [returnType?](./core.messageformatoptions.returntype.md) | 'string' \| 'values' | <i>(Optional)</i> Return type of compiled functions; either a concatenated string or an array (possibly hierarchical) of values<!-- -->Default: <code>'string'</code> |
+|  [strictNumberSign?](./core.messageformatoptions.strictnumbersign.md) | boolean | <i>(Optional)</i> Allow <code>#</code> only directly within a plural or selectordinal case, rather than in any inner select case as well.<!-- -->Default: <code>false</code> |
 
