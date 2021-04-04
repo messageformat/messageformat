@@ -9,7 +9,7 @@ import {
 
 export type TestCase = {
   locale?: string | PluralFunction;
-  options?: object;
+  options?: Record<string, unknown>;
   skip?: string[];
   src: string;
   exp: Array<

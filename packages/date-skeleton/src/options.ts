@@ -190,10 +190,7 @@ export function getDateFormatOptions(
     const opt = compileOptions(token, (msg, isWarning) =>
       onError(new DateFormatError(msg, token, isWarning))
     );
-    if (opt) {
-      const keys = Object.keys(opt) as (keyof Intl.DateTimeFormatOptions)[];
-      for (const key of keys) (options[key] as any) = opt[key];
-    }
+    if (opt) Object.assign(options, opt);
   }
   return options;
 }

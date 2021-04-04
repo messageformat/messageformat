@@ -2,7 +2,9 @@ import { createElement, useContext, useMemo } from 'react';
 import { MessageContext, MessageObject, defaultValue } from './message-context';
 import { MessageError, ErrorCode, errorMessages } from './message-error';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - https://github.com/microsoft/rushstack/issues/1050
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FunctionComponentElement, ProviderProps } from 'react';
 
 /** @public */

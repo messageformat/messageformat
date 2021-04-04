@@ -194,7 +194,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
 }
 
 describe('errors', () => {
-  const cases: { [src: string]: {} } = {
+  const cases: { [src: string]: Record<string, unknown> } = {
     '/': { code: 'BAD_STEM', stem: '' },
     foo: { code: 'BAD_STEM', stem: 'foo' },
     currency: { code: 'MISSING_OPTION', stem: 'currency' },

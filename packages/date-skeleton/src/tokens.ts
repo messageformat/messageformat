@@ -93,7 +93,7 @@ function readQuotedToken(src: string, pos: number): DateToken {
   let width = 2;
   if (str === "'") return { char: "'", str, width };
   while (true) {
-    let next = src[++pos];
+    const next = src[++pos];
     ++width;
     if (next === undefined) {
       const msg = `Unterminated quoted literal in pattern: ${str || src}`;

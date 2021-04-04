@@ -5,7 +5,9 @@ import { parseNumberSkeleton } from './parse-skeleton';
 if (process.version < 'v12') test = test.skip;
 
 const tests: {
-  [testSet: string]: { [src: string]: [number, string, {}[]?] };
+  [testSet: string]: {
+    [src: string]: [number, string, Record<string, string>[]?];
+  };
 } = {
   examples: {
     percent: [42, '42%'],

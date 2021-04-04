@@ -231,6 +231,6 @@ export default class MessageFormat {
       fnArgs.push(fmt);
     }
     const fn = new Function(...nfArgs, fnBody);
-    return fn.apply(null, fnArgs) as MessageFunction;
+    return fn(...fnArgs) as MessageFunction;
   }
 }

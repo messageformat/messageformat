@@ -21,7 +21,7 @@ This monorepo consists of the following packages that make up our JS implementat
 - [rollup-plugin-messageformat](packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
 [all the languages]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
-[Unicode CLDR]: http://cldr.unicode.org/
+[unicode cldr]: http://cldr.unicode.org/
 [icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
 [icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
 

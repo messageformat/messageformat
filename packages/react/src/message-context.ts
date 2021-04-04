@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - https://github.com/microsoft/rushstack/issues/1050
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Context, createContext } from 'react';
 import { ErrorCode } from './message-error';
 

@@ -46,7 +46,7 @@ export class MaskedValueError extends NumberFormatError {
 
 /** @internal */
 export class MissingOptionError extends NumberFormatError {
-  stem: any;
+  stem: string;
   constructor(stem: string) {
     super('MISSING_OPTION', `Required option missing for ${stem}`);
     this.stem = stem;
@@ -64,8 +64,8 @@ export class PatternError extends NumberFormatError {
 
 /** @internal */
 export class TooManyOptionsError extends NumberFormatError {
-  stem: any;
-  options: any;
+  stem: string;
+  options: string[];
   constructor(stem: string, options: string[], maxOpt: number) {
     const maxOptStr = maxOpt > 1 ? `${maxOpt} options` : 'one option';
     super(

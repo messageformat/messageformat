@@ -2,7 +2,7 @@
 
 import { parse, ParseOptions, Select } from './parser.js';
 
-function run(shape: object) {
+function run(shape: Record<string, any>) {
   for (const [src, value] of Object.entries(shape)) {
     const name = src
       .replace(/\n/g, '\\n')
@@ -301,7 +301,7 @@ describe('Plurals', () => {
   });
 
   describe('options.strict', function () {
-    var src = "{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}";
+    const src = "{NUM, plural, one{# {VAR,select,key{# '#' one#}}} two{two}}";
 
     it('should parse # correctly without strict option', function () {
       const select = getPlural(src).cases[0].tokens[2] as Select;

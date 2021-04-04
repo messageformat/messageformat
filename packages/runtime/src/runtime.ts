@@ -5,6 +5,7 @@
 
 /** @private */
 export function _nf(lc: string): Intl.NumberFormat {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return _nf[lc] || (_nf[lc] = new Intl.NumberFormat(lc));
 }
@@ -86,7 +87,7 @@ export function select(value: number, data: { [key: string]: any }) {
  * @param data The data object being checked
  */
 export function reqArgs(keys: string[], data: { [key: string]: any }) {
-  for (var i = 0; i < keys.length; ++i)
+  for (let i = 0; i < keys.length; ++i)
     if (!data || data[keys[i]] === undefined)
       throw new Error(`Message requires argument '${keys[i]}'`);
 }

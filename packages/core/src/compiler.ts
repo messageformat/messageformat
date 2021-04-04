@@ -44,8 +44,7 @@ export interface StringStructure {
 export default class Compiler {
   arguments: string[] = [];
   options: Required<MessageFormatOptions>;
-  // @ts-ignore Always set in compile()
-  plural: PluralObject;
+  declare plural: PluralObject; // Always set in compile()
   runtime: RuntimeMap = {};
 
   constructor(options: Required<MessageFormatOptions>) {
@@ -130,7 +129,7 @@ export default class Compiler {
   }
 
   token(token: Token, pluralToken: Select | null) {
-    if (token.type == 'content') return JSON.stringify(token.value);
+    if (token.type === 'content') return JSON.stringify(token.value);
 
     const { id, lc } = this.plural;
     let args: (number | string)[], fn: string;

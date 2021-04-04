@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 jest.mock('fs', () => require('memfs').fs);
 
 import { source } from 'common-tags';

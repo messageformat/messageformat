@@ -121,18 +121,15 @@ describe('README', () => {
 });
 
 describe('API', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     const SUPPORTS_LIST_FORMAT =
       'ListFormat' in Intl &&
       Intl.ListFormat.supportedLocalesOf(['en', 'fi']).length === 2;
     if (!SUPPORTS_LIST_FORMAT) {
       delete Intl.ListFormat; // https://github.com/wessberg/intl-list-format/issues/1
-      return import('intl-list-format').then(() =>
-        Promise.all([
-          import('intl-list-format/locale-data/en'),
-          import('intl-list-format/locale-data/fi')
-        ])
-      );
+      await import('intl-list-format')
+      await import('intl-list-format/locale-data/en'),
+      await import('intl-list-format/locale-data/fi')
     }
   });
 

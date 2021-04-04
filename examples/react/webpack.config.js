@@ -28,7 +28,5 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new HtmlWebpackPlugin({ minify: false }),
-  ]
+  plugins: [new HtmlWebpackPlugin({ minify: false })]
 };
