@@ -2,10 +2,11 @@
 
 This uses [@messageformat/loader](http://messageformat.github.io/messageformat/webpack/) to compile the `src/messages.yaml` that's imported from JS code.
 
-To build the example, run this command at the root of the repository:
+To build the example, run these commands in this directory:
 
 ```
-npx lerna run build --scope webpack-example
+npm install
+npm run build
 ```
 
 That will produce `dist/bundle.js` under this directory, as a minified message bundle.

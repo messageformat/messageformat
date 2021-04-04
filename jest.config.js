@@ -23,10 +23,7 @@ module.exports = {
     '^@messageformat/runtime/lib/(.*)$': '<rootDir>/packages/runtime/src/$1.ts'
   },
   resolver: 'jest-ts-webcompat-resolver',
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '<rootDir>/packages/react/example/'
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/examples/react/'],
   transform: { '\\.(js|mjs|ts|tsx)$': 'babel-jest' },
   transformIgnorePatterns: [
     '/node_modules/(?!make-plural|messageformat-(date|number)-skeleton)'
