@@ -55,6 +55,7 @@ app:
     Jotain sisältöä tähän
 ```
 
+<!-- prettier-ignore -->
 ```jsx
 // app.js
 import React, { useEffect, useState } from 'react'

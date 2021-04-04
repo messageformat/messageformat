@@ -4,8 +4,10 @@ nav_order: 3
 has_children: true
 ---
 
+<!-- prettier-ignore-start -->
 # Using messageformat
 {: .no_toc }
+<!-- prettier-ignore-end -->
 
 ## Build Tools
 

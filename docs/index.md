@@ -6,8 +6,10 @@ nav_order: 1
 <img class="float-right mb-4 ml-4" width="120" height="120" src="{{ 'logo/messageformat.svg' | relative_url }}">
 {: .my-0 }
 
+<!-- prettier-ignore-start -->
 # messageformat
 {: .mt-2 }
+<!-- prettier-ignore-end -->
 
 The experience and subtlety of your program's text is important.
 The messageformat project provides a complete set of tools for handling all the messages of your application, for both front-end and back-end environments; for both runtime and build-time use.

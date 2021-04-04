@@ -3,6 +3,7 @@ title: Format Guide
 nav_order: 4
 ---
 
+<!-- prettier-ignore-start -->
 # Format Guide
 {: .no_toc }
 
@@ -11,6 +12,7 @@ nav_order: 4
 
 1. TOC
 {:toc}
+<!-- prettier-ignore-end -->
 
 ---
 
@@ -20,9 +22,9 @@ Each of the sample messages is shown first as MessageFormat source, and then wit
 Except where otherwise specified, the `msg` function may be determined as follows:
 
 ```js
-const MessageFormat = require('@messageformat/core')
-const mf = new MessageFormat('en')
-const msg = mf.compile(msgSrc)
+const MessageFormat = require('@messageformat/core');
+const mf = new MessageFormat('en');
+const msg = mf.compile(msgSrc);
 ```
 
 ## String Lookup
@@ -35,7 +37,7 @@ This is a message.
 ```
 
 ```js
-msg() // 'This is a message.'
+msg(); // 'This is a message.'
 ```
 
 ## Variables
@@ -56,7 +58,7 @@ His name is {NAME}.
 ```
 
 ```js
-msg({ NAME: 'Jed' }) // 'His name is Jed.'
+msg({ NAME: 'Jed' }); // 'His name is Jed.'
 ```
 
 ## SelectFormat
@@ -77,9 +79,9 @@ The `other` key is required, and is selected if no other case matches.
 ```
 
 ```js
-msg({ GENDER: 'male' }) // 'He liked this.'
-msg({ GENDER: 'female' }) // 'She liked this.'
-msg({}) // 'They liked this.'
+msg({ GENDER: 'male' }); // 'He liked this.'
+msg({ GENDER: 'female' }); // 'She liked this.'
+msg({}); // 'They liked this.'
 ```
 
 ## PluralFormat
@@ -107,12 +109,14 @@ Within a plural statement, `#` will be replaced by the variable value, formatted
 }
 ```
 
+<!-- prettier-ignore-start -->
 ```js
-msg({ COUNT: 0 }) // 'There are no results.'
-msg({ COUNT: 1 }) // 'There is one result.'
-msg({ COUNT: 100 }) // 'There are 100 results.'
+msg({ COUNT: 0 }); // 'There are no results.'
+msg({ COUNT: 1 }); // 'There is one result.'
+msg({ COUNT: 100 }); // 'There are 100 results.'
 ```
 {: .mb-6 }
+<!-- prettier-ignore-end -->
 
 ```
 You are { POS, selectordinal,
@@ -124,8 +128,8 @@ You are { POS, selectordinal,
 ```
 
 ```js
-msg({ POS: 1 }) // 'You are 1st in the queue.'
-msg({ POS: 33 }) // 'You are 33rd in the queue.'
+msg({ POS: 1 }); // 'You are 1st in the queue.'
+msg({ POS: 33 }); // 'You are 33rd in the queue.'
 ```
 
 ### Plural Offset
@@ -143,9 +147,9 @@ Literal/exact matches are tested before applying the offset.
 ```
 
 ```js
-msg({ ADDS: 1 }) // 'You added this.'
-msg({ ADDS: 2 }) // 'You and one other person added this.'
-msg({ ADDS: 3 }) // 'You and 2 others added this.'
+msg({ ADDS: 1 }); // 'You added this.'
+msg({ ADDS: 2 }); // 'You and one other person added this.'
+msg({ ADDS: 3 }); // 'You and 2 others added this.'
 ```
 
 ## Formatters
@@ -167,8 +171,9 @@ For more precide date and time formatting, use `date` with a `::`-prefixed [Date
 It is now {T, time} on {T, date}
 ```
 
+<!-- prettier-ignore-start -->
 ```js
-msg({ T: Date.now() }) // 'It is now 11:26:35 PM on Mar 30, 2018'
+msg({ T: Date.now() }); // 'It is now 11:26:35 PM on Mar 30, 2018'
 ```
 {: .mb-6 }
 
@@ -177,9 +182,10 @@ msg({ T: Date.now() }) // 'It is now 11:26:35 PM on Mar 30, 2018'
 ```
 
 ```js
-msg({ sys: 'HAL 9000', d0: '12 January 1999' }) // 'HAL 9000 became operational on 1/12/1999'
+msg({ sys: 'HAL 9000', d0: '12 January 1999' }); // 'HAL 9000 became operational on 1/12/1999'
 ```
 {: .mb-6 }
+<!-- prettier-ignore-end -->
 
 Date and time formatting is of course locale-dependent, so using the Finnish `'fi'` locale, we would have:
 
@@ -188,7 +194,7 @@ Nyt on {T, date}, klo {T, time}
 ```
 
 ```js
-msg({ T: Date.now() }) // 'Nyt on 30. maalisk. 2018, klo 23.26.35'
+msg({ T: Date.now() }); // 'Nyt on 30. maalisk. 2018, klo 23.26.35'
 ```
 
 ### duration
@@ -200,8 +206,8 @@ It has been {D, duration}
 ```
 
 ```js
-msg({ D: 123 }) // 'It has been 2:03'
-msg({ D: -151200.42 }) // 'It has been -42:00:00.420'
+msg({ D: 123 }); // 'It has been 2:03'
+msg({ D: -151200.42 }); // 'It has been -42:00:00.420'
 ```
 
 ### number
@@ -214,17 +220,19 @@ Most [NumberFormat patterns](http://unicode.org/reports/tr35/tr35-numbers.html#N
 {N} is almost {N, number, integer}
 ```
 
+<!-- prettier-ignore-start -->
 ```js
-msg({ N: 3.14 }) // '3.14 is almost 3'
+msg({ N: 3.14 }); // '3.14 is almost 3'
 ```
 {: .mb-6 }
+<!-- prettier-ignore-end -->
 
 ```
 The total is {V, number, ::currency/GBP unit-width-narrow}.
 ```
 
 ```js
-msg({ V: 5.5 }) // 'The total is £5.50.'
+msg({ V: 5.5 }); // 'The total is £5.50.'
 ```
 
 ### Custom Formatters
@@ -246,15 +254,15 @@ This is {VAR, upcase} in {_, locale}.
 ```
 
 ```js
-const MessageFormat = require('@messageformat/core')
+const MessageFormat = require('@messageformat/core');
 const customFormatters = {
   locale: (_, lc) => lc,
-  upcase: (v) => v.toUpperCase()
-}
-const mf = new MessageFormat('en-GB', { customFormatters })
-const msg = mf.compile(msgSrc)
+  upcase: v => v.toUpperCase()
+};
+const mf = new MessageFormat('en-GB', { customFormatters });
+const msg = mf.compile(msgSrc);
 
-msg({ VAR: 'big' }) // 'This is BIG in en-GB.'
+msg({ VAR: 'big' }); // 'This is BIG in en-GB.'
 ```
 
 ## Nesting
@@ -284,20 +292,22 @@ The utility function [MessageFormat.escape](api/core.messageformat.escape.md) ma
 '{' {S, plural, other{# is a '#'}} '}'
 ```
 
+<!-- prettier-ignore-start -->
 ```js
-msg({ S: 5 }) // '{ 5 is a # }'
+msg({ S: 5 }); // '{ 5 is a # }'
 ```
 {: .mb-6 }
+<!-- prettier-ignore-end -->
 
 ```js
-const MessageFormat = require('@messageformat/core')
-const mf = new MessageFormat('en')
+const MessageFormat = require('@messageformat/core');
+const mf = new MessageFormat('en');
 
-const rawSrc = 'Use {var} for variables'
-const raw = mf.compile(rawSrc)
-raw() // TypeError: Cannot read property 'var' of undefined
+const rawSrc = 'Use {var} for variables';
+const raw = mf.compile(rawSrc);
+raw(); // TypeError: Cannot read property 'var' of undefined
 
-const msgSrc = MessageFormat.escape(rawSrc)
-const msg = mf.compile(msgSrc)
-msg() // 'Use {var} for variables'
+const msgSrc = MessageFormat.escape(rawSrc);
+const msg = mf.compile(msgSrc);
+msg(); // 'Use {var} for variables'
 ```
