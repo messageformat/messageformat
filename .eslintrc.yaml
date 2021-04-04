@@ -4,12 +4,10 @@ env:
   node: true
 parserOptions:
   ecmaVersion: 2018
-  sourceType: script
-plugins:
-  - prettier
+  sourceType: module
 extends:
-  - 'eslint:recommended'
-  - plugin:prettier/recommended
+  - eslint:recommended
+  - prettier
 
 rules:
   array-callback-return: error
@@ -18,18 +16,26 @@ rules:
   eqeqeq: [error, smart]
   no-constant-condition: [error, checkLoops: false]
   no-implicit-globals: error
-  prettier/prettier: error
+  no-unused-vars: [warn, argsIgnorePattern: '^_']
 
 overrides:
-  - files:
-      - '*.mjs'
-      - examples/*/src/*.js
-      - rollup.config.js
-      - packages/rollup-plugin/src/__fixtures__/*.js
-      - test/browser/src/*.js
-    parserOptions:
-      sourceType: module
   - files:
       - test/browser/tests/*.js
     env:
       mocha: true
+  - files:
+      - '*.{ts,tsx}'
+    parser: '@typescript-eslint/parser'
+    plugins:
+      - '@typescript-eslint'
+    extends:
+      - plugin:@typescript-eslint/recommended
+    rules:
+      '@typescript-eslint/explicit-module-boundary-types': off
+      '@typescript-eslint/no-unused-vars': [warn, argsIgnorePattern: '^_']
+  - files:
+      - '**/*.test.{ts,tsx}'
+      - test/**/*.ts
+    rules:
+      '@typescript-eslint/ban-ts-comment': off
+      '@typescript-eslint/no-explicit-any': off
