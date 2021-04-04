@@ -71,7 +71,7 @@ The core feature that makes ours different from others is that it can do its wor
 By doing this work during the build, supporting more complex features such as [date](api/date-skeleton.md) and [number skeletons](api/number-skeleton.md) does not increase the runtime size or complexity of the messages.
 This also means that we can support a **large variety of source file formats** (including JSON, YAML, Java properties, and gettext .po files) at no additional cost, optionally even converting other formats to MessageFormat before processing them.
 
-For **library developers**, all of the various API levels from [message parsing](api/parser.md) to [React tooling](api/react.md) are separately available, with clear and minimal dependencies.
+For **library developers**, all of the various API levels from [message parsing](api/parser.md) to [React tooling](react.md) are separately available, with clear and minimal dependencies.
 In particular, our parser is already either used by or has inspired the implementations of a number of other message formatting libraries' parsers.
 
 <a class="float-right ml-4 my-1" href="https://openjsf.org">

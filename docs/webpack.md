@@ -1,7 +1,7 @@
 ---
 title: Webpack
 parent: Usage
-nav_order: 3
+nav_order: 4
 ---
 
 # Webpack Loader for MessageFormat

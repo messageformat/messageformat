@@ -24,30 +24,27 @@ Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we fol
 The project currently provides the following npm packages, all hosted under the [messageformat GitHub org](https://github.com/messageformat):
 
 - [@messageformat/core](api/core.md) - The core library that transpiles MessageFormat strings into JavaScript functions
-- [@messageformat/cli] - A command-line client for the library
+- [@messageformat/cli](cli.md) - A command-line client for the library
 - [@messageformat/convert] - Converts other localization formats into MessageFormat
 - [@messageformat/date-skeleton](api/date-skeleton.md) - Tools for working with [ICU DateFormat skeletons]
-- [@messageformat/loader] - Webpack loader for message files
+- [@messageformat/loader](webpack.md) - Webpack loader for message files
 - [@messageformat/number-skeleton](api/number-skeleton.md) - Tools for working with [ICU NumberFormat skeletons]
 - [@messageformat/parser](api/parser.md) - Parses MessageFormat source strings into an AST
-- [@messageformat/react](api/react.md) - React hooks and other bindings for messages
+- [@messageformat/react](react.md) - React hooks and other bindings for messages
 - [@messageformat/runtime](api/runtime.md) - Runtime dependencies of compiled message modules
 - [gettext-to-messageformat] - Converts gettext input files to ICU MessageFormat
 - [messageformat-po-loader] - Webpack loader for messages in gettext files
 - [messageformat-properties-loader] - Webpack loader for messages in Java .properties files
-- [rollup-plugin-messageformat] - Rollup plugin for message files
+- [rollup-plugin-messageformat](rollup.md) - Rollup plugin for message files
 
 Previous versions of the packages under the `@messageformat` npm org were published with names that used `messageformat-` as a prefix.
 
-[@messageformat/cli]: https://www.npmjs.com/package/@messageformat/cli
 [@messageformat/convert]: https://www.npmjs.com/package/@messageformat/convert
-[@messageformat/loader]: https://www.npmjs.com/package/@messageformat/loader
 [gettext-to-messageformat]: https://www.npmjs.com/package/gettext-to-messageformat
 [icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
 [icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
 [messageformat-po-loader]: https://www.npmjs.com/package/messageformat-po-loader
 [messageformat-properties-loader]: https://www.npmjs.com/package/messageformat-properties-loader
-[rollup-plugin-messageformat]: https://www.npmjs.com/package/rollup-plugin-messageformat
 
 ## License
 

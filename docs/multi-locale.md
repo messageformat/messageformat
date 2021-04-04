@@ -1,7 +1,7 @@
 ---
 title: Supporting Multiple Locales
 parent: Usage
-nav_order: 4
+nav_order: 5
 ---
 
 # Supporting Multiple Locales
@@ -9,7 +9,7 @@ nav_order: 4
 Built-in support for multiple languages or locales is inherent to messageformat at all levels.
 For the best results, you may want to separate the messages for each locale to its own file or use the locales' identifiers (such as `'de'` for German) as top-level keys in your message files.
 
-When using either our [Webpack loader](https://www.npmjs.com/package/@messageformat/loader) or [Rollup plugin](https://www.npmjs.com/package/rollup-plugin-messageformat) to import messages into your JavaScript runtime, the locale used within a message file may be determined from its filename or path; if it includes a locale identifier, that is used for the messages.
+When using either our [Webpack loader](webpack.md) or [Rollup plugin](rollup.md) to import messages into your JavaScript runtime, the locale used within a message file may be determined from its filename or path; if it includes a locale identifier, that is used for the messages.
 Examples: `en/foo-messages.yaml`, `component_de.properties`.
 Within a hierarchical message file or bundle, using a locale identifier as a key sets the locale for each message under that key.
 

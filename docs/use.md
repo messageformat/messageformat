@@ -20,19 +20,15 @@ The main benefits of this are:
 3. Ensuring that syntax errors are caught during the build, rather than at runtime.
 4. Not needing to call `new Function` during runtime.
 
-To help achieve this, we provide a [Webpack loader], a [Rollup plugin], and a [command-line tool].
+To help achieve this, we provide a [Webpack loader](webpack.md), a [Rollup plugin](rollup.md), and a [command-line tool](cli.md).
 You may of course also use the [JS API](./api/core.md) of the core package directly.
-
-[webpack loader]: https://www.npmjs.com/package/@messageformat/loader
-[rollup plugin]: https://www.npmjs.com/package/rollup-plugin-messageformat
-[command-line tool]: https://www.npmjs.com/package/@messageformat/cli
 
 ## Runtime Tools
 
 With the build tools your messages are made available in your runtime environment as a JavaScript function, which might be enough in some cases.
 Often, though, you'll want additional tooling to actually use the messages.
 
-For React, [`@messageformat/react`](./api/react.md) provides an efficient front-end for message handling and formatting, mostly based around custom hooks.
+For React, [`@messageformat/react`](react.md) provides an efficient front-end for message handling and formatting, mostly based around custom hooks.
 For vanilla JS and otherwise, [`@messageformat/runtime/messages`](./api/runtime.messages.md) provides a generic storage and accessor class.
 
 ## Conversion Tools
@@ -40,7 +36,7 @@ For vanilla JS and otherwise, [`@messageformat/runtime/messages`](./api/runtime.
 In addition to working with MessageFormat directly, [gettext-to-messageformat](https://www.npmjs.com/package/gettext-to-messageformat) and its accompanying [messageformat-po-loader](https://www.npmjs.com/package/messageformat-po-loader) allow you to work with .po and .mo files, by first converting the gettext sources to ICU MessageFormat.
 
 In a similar vein, [@messageformat/convert](https://www.npmjs.com/package/@messageformat/convert) is a configurable tool for converting other message forms to ICU MessageFormat.
-It's used internally by [@messageformat/loader](https://www.npmjs.com/package/@messageformat/loader) and [rollup-plugin-messageformat](https://www.npmjs.com/package/rollup-plugin-messageformat), and with its default settings will convert input matching the Rails i18n spec.
+It's used internally by [@messageformat/loader](webpack.md) and [rollup-plugin-messageformat](rollup.md), and with its default settings will convert input matching the Rails i18n spec.
 
 ## Examples
 
