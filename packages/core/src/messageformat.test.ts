@@ -144,7 +144,9 @@ const isV2 =
   // @ts-ignore signDisplay introduced in Unified API proposal, i.e. "NumberFormat v2"
   (55).toLocaleString('en-US', { signDisplay: 'always' }) === '+55';
 
-for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
+for (const [title, cases] of Object.entries(
+  getTestCases(MessageFormat.escape)
+)) {
   describe(title, () => {
     for (const { locale, options, src, exp, skip } of cases) {
       let desc: Mocha.SuiteFunction | Mocha.PendingSuiteFunction = describe;
