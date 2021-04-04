@@ -23,7 +23,7 @@ rules:
 overrides:
   - files:
       - '*.mjs'
-      - examples/webpack/src/*.js
+      - examples/*/src/*.js
       - rollup.config.js
       - packages/rollup-plugin/src/__fixtures__/*.js
       - test/browser/src/*.js

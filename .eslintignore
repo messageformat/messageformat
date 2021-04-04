@@ -5,12 +5,12 @@ package-lock.json
 /coverage/
 /docs/
 /examples/cli/*.mjs
+/examples/react/
 /packages/core/lib/*
 /packages/core/messageformat.*
 /packages/date-skeleton/lib/*
 /packages/number-skeleton/lib/*
 /packages/parser/lib/*
-/packages/react/example/*
 /packages/react/lib/*
 /packages/react/src/__fixtures__/*
 /packages/rollup-plugin/lib/*

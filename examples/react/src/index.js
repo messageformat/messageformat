@@ -10,20 +10,23 @@ function Wrapper() {
 
   // Only fetch messages when locale changes
   useEffect(() => {
-    // In production, you may want a more comprehensive check than this
     if (messages[locale]) return;
 
-    // See https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+    /**
+     * For the first load, the page HTML includes a <link rel="preload"> that'll
+     * start the file load before we get to this point for the first time.
+     *
+     * See https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+     */
     import(/* webpackChunkName: "[request]" */ `./messages.${locale}.yaml`)
       .then(module => {
         // Create a new object for the updated state
-        const next = Object.assign({}, messages);
-        next[locale] = module.default;
+        const next = Object.assign({}, messages, { [locale]: module.default });
         setMessages(next);
       })
       .catch(error => {
         console.error(error);
-        if (locale !== 'en') setLocale('en');
+        setLocale('en');
       });
   }, [locale]);
 
