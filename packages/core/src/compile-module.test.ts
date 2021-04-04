@@ -124,7 +124,7 @@ describe('compileModule()', function () {
     const msg = '{foo, plural, one{one} other{other}}';
     const src = compileModule(mf, { msg });
     expect(src).toMatch(
-      /import { en } from '@messageformat\/runtime\/lib\/cardinals'/
+      /import { en } from "@messageformat\/runtime\/lib\/cardinals"/
     );
   });
 
@@ -133,7 +133,7 @@ describe('compileModule()', function () {
     const msg = '{foo, selectordinal, one{one} other{other}}';
     const src = compileModule(mf, { msg });
     expect(src).toMatch(
-      /import { en } from '@messageformat\/runtime\/lib\/plurals'/
+      /import { en } from "@messageformat\/runtime\/lib\/plurals"/
     );
   });
 
@@ -153,6 +153,29 @@ describe('compileModule()', function () {
     const mf = new MessageFormat(lc);
     const msg = '{foo, plural, one{one} other{other}}';
     const src = compileModule(mf, { msg });
-    expect(src).toMatch(/import { lc } from 'custom-module'/);
+    expect(src).toMatch(/import { lc } from "custom-module"/);
+  });
+
+  it('should import custom formatter if defined with module', async () => {
+    const cf = {
+      formatter: (v: unknown) => String(v).toUpperCase(),
+      module: 'upmod'
+    };
+    const mf = new MessageFormat('en', { customFormatters: { up: cf } });
+    const msg = '{foo, up}';
+    const src = compileModule(mf, { msg });
+    expect(src).toMatch(/import { up } from "upmod"/);
+  });
+
+  it('should import custom formatter if defined with module & id', async () => {
+    const cf = {
+      formatter: (v: unknown) => String(v).toUpperCase(),
+      id: 'upper',
+      module: 'upmod'
+    };
+    const mf = new MessageFormat('en', { customFormatters: { up: cf } });
+    const msg = '{foo, up}';
+    const src = compileModule(mf, { msg });
+    expect(src).toMatch(/import { upper as up } from "upmod"/);
   });
 });

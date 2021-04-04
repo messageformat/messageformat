@@ -23,6 +23,7 @@ type RuntimeType = 'formatter' | 'locale' | 'runtime';
 interface RuntimeEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any[]): unknown;
+  id?: string | null;
   module?: string | null;
   toString?: () => string;
   type?: RuntimeType;
@@ -236,36 +237,50 @@ export default class Compiler {
       module = isDefault ? PLURAL_MODULE : getPlural.module || null;
       toString = () => String(getPlural);
     }
-    this.runtime[key] = Object.assign(pf, { module, toString, type: 'locale' });
+    this.runtime[key] = Object.assign(pf, {
+      id: key,
+      module,
+      toString,
+      type: 'locale'
+    });
   }
 
   setRuntimeFn(
     key: 'number' | 'plural' | 'select' | 'strictNumber' | 'reqArgs'
   ) {
     if (this.runtimeIncludes(key, 'runtime')) return;
-    const rf: RuntimeEntry = Runtime[key];
-    this.runtime[key] = Object.assign(rf, {
+    this.runtime[key] = Object.assign(Runtime[key], {
+      id: key,
       module: RUNTIME_MODULE,
       type: 'runtime'
-    });
+    } as const);
   }
 
   setFormatter(key: string) {
     if (this.runtimeIncludes(key, 'formatter')) return;
-    const cf: RuntimeEntry = this.options.customFormatters[key];
-    if (cf) {
-      this.runtime[key] = Object.assign(cf, {
-        module: null,
-        type: 'formatter'
-      });
-    } else if (isFormatterKey(key)) {
-      const df: RuntimeEntry = Formatters[key];
-      this.runtime[key] = Object.assign(df, {
+    if (isFormatterKey(key)) {
+      this.runtime[key] = Object.assign(Formatters[key], {
+        id: key,
         module: FORMATTER_MODULE,
         type: 'formatter'
-      });
+      } as const);
     } else {
-      throw new Error(`Formatting function not found: ${key}`);
+      const cf = this.options.customFormatters[key];
+      if (typeof cf === 'function') {
+        this.runtime[key] = Object.assign(cf, {
+          id: null,
+          module: null,
+          type: 'formatter'
+        } as const);
+      } else if (cf && cf.formatter && cf.module) {
+        this.runtime[key] = Object.assign(cf.formatter, {
+          id: (cf.id && identifier(cf.id)) || key,
+          module: cf.module,
+          type: 'formatter'
+        } as const);
+      } else {
+        throw new Error(`Formatting function not found: ${key}`);
+      }
     }
   }
 
@@ -287,6 +302,7 @@ export default class Compiler {
       if (!this.runtimeIncludes(key, 'formatter')) {
         const fmt: RuntimeEntry = getDateFormatter(locale, argSkeletonText);
         this.runtime[key] = Object.assign(fmt, {
+          id: key,
           module: null,
           toString: () => getDateFormatterSource(locale, argSkeletonText),
           type: 'formatter'
@@ -350,6 +366,7 @@ export default class Compiler {
         const { currency } = this.options;
         const fmt: RuntimeEntry = getNumberFormatter(locale, fmtArg, currency);
         this.runtime[key] = Object.assign(fmt, {
+          id: null,
           module: null,
           toString: () => getNumberFormatterSource(locale, fmtArg, currency),
           type: 'formatter'
