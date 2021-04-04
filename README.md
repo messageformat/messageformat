@@ -5,13 +5,13 @@
 
 The experience and subtlety of your program's text can be important.
 Messageformat is a mechanism for handling both **pluralization** and **gender** in your applications.
-It can also lead to much better translations, as it's designed to support [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) included in the [Unicode CLDR](http://cldr.unicode.org/).
+It can also lead to much better translations, as it's designed to support [all the languages] included in the [Unicode CLDR].
 
 This monorepo consists of the following packages that make up our JS implementation of ICU MessageFormat:
 
-- [@messageformat/core](packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
 - [@messageformat/cli](packages/cli/) - A command-line client for the library
 - [@messageformat/convert](packages/convert/) - Converts other localization formats into MessageFormat
+- [@messageformat/core](packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
 - [@messageformat/date-skeleton](packages/date-skeleton) - Tools for working with [ICU DateFormat skeletons]
 - [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON, YAML, & .properties message files
 - [@messageformat/number-skeleton](packages/number-skeleton) - Tools for working with [ICU NumberFormat skeletons]
@@ -20,18 +20,23 @@ This monorepo consists of the following packages that make up our JS implementat
 - [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
 - [rollup-plugin-messageformat](packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
+[all the languages]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+[Unicode CLDR]: http://cldr.unicode.org/
 [icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
 [icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
 
 ## Getting Started
 
-```
-npm install --save-dev @messageformat/core
-npm install --save @messageformat/runtime
-```
+Depending on your situation, consult one or more of the following guides:
 
-This includes the MessageFormat compiler and a runtime accessor class that provides a slightly nicer API for working with larger numbers of messages.
-Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some options for integrating messageformat to be a part of your workflow around UI texts and translations.
+- [Command-line](http://messageformat.github.io/messageformat/cli/)
+- [Rollup](http://messageformat.github.io/messageformat/rollup/)
+- [Webpack](http://messageformat.github.io/messageformat/webpack/)
+- [React](http://messageformat.github.io/messageformat/react/)
+
+Alternatively, take a look at our [examples](examples/) or dig into the [API documentation](http://messageformat.github.io/messageformat/api/) if you're looking to do something more involved.
+
+Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some further options for integrating messageformat to be a part of your workflow around UI texts and translations.
 
 [format guide]: https://messageformat.github.io/messageformat/guide
 [usage guide]: https://messageformat.github.io/messageformat/use
