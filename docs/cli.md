@@ -1,3 +1,9 @@
+---
+title: Command-line
+parent: Usage
+nav_order: 1
+---
+
 # Command-line MessageFormat Compiler
 
 Parses and compiles JSON, YAML and .properties files of MessageFormat strings into an ES module of corresponding hierarchical functions.
@@ -86,11 +92,3 @@ npm run build:messages
 
 [messageformat-cli]: https://www.npmjs.com/package/messageformat-cli
 [runtime]: https://messageformat.github.io/messageformat/api/runtime/
-
----
-
-[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
-
-<a href="https://openjsf.org">
-<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
-</a>
