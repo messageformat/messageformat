@@ -1,0 +1,7 @@
+{
+  "name": "webpack-example",
+  "private": true,
+  "scripts": {
+    "build": "webpack --mode production"
+  }
+}

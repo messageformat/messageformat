@@ -1,9 +1,8 @@
 .*
 coverage/
+dist/
 node_modules/
 /docs/_site/
 /examples/cli/*.mjs
-/packages/webpack-loader/example/dist/
 /test/browser/*.log
-/test/browser/dist/
 /tmp/

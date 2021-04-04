@@ -11,5 +11,5 @@ function component() {
   return element;
 }
 
-console.log('messages', messages);
+console.log({ messages });
 document.body.appendChild(component());
