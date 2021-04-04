@@ -2,7 +2,7 @@ package-lock.json
 /coverage/
 /docs/*
 !/docs/*.md
-/example/i18n.js
+/examples/cli/*.mjs
 /packages/*/CHANGELOG.md
 /packages/core/lib/
 /packages/core/messageformat.*

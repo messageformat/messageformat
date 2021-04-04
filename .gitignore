@@ -2,7 +2,7 @@
 coverage/
 node_modules/
 /docs/_site/
-/example/messages.*
+/examples/cli/*.mjs
 /packages/webpack-loader/example/dist/
 /test/browser/*.log
 /test/browser/dist/

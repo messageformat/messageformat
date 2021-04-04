@@ -12,9 +12,6 @@
   "scripts": {
     "clean": "git clean -fdxe node_modules",
     "build": "lerna run build",
-    "predocs:example": "messageformat example/ --locale en fr --outfile example/messages.mjs",
-    "docs:example": "webpack example/messages.mjs --output-library messages --mode production -o example/messages.js",
-    "postdocs:example": "prettier --ignore-path '' --write example/messages.js",
     "predocs": "lerna run extract-api --stream",
     "docs": "api-documenter markdown -i tmp/ -o docs/api/",
     "postdocs": "node scripts/set-api-docs-frontmatter docs/api/",

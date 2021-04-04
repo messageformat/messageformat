@@ -4,11 +4,22 @@
   <input type="button" value="en" id="en" />
   <input type="button" value="fr" id="fr" />
 
-  <script src="messages.js"></script>
-  <script>
+  <script type="importmap">
+    {
+      "imports": {
+        "@messageformat/runtime": "../../packages/runtime/esm/runtime.js",
+        "@messageformat/runtime/lib/cardinals": "../../packages/runtime/esm/cardinals.js",
+        "make-plural/cardinals": "../../node_modules/make-plural/cardinals.mjs"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import messages from './bundle.mjs';
+
     function showContents(lc) {
-      var colors = window.messages.default[lc].colors;
-      var plural = window.messages.default[lc].sub.folder.plural;
+      var colors = messages[lc].colors;
+      var plural = messages[lc].sub.folder.plural;
       var el = document.getElementById('content');
       el.innerHTML = '';
       [

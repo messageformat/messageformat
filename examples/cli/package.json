@@ -1,0 +1,8 @@
+{
+  "name": "cli-example",
+  "private": true,
+  "scripts": {
+    "build": "messageformat messages/ --locale=en,fr --outfile messages.mjs",
+    "postbuild": "rollup messages.mjs -p node-resolve -o bundle.mjs"
+  }
+}

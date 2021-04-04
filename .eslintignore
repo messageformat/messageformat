@@ -3,7 +3,7 @@ package.json
 package-lock.json
 /coverage/
 /docs/
-/example/messages.js
+/examples/cli/*.mjs
 /packages/core/lib/*
 /packages/core/messageformat.*
 /packages/date-skeleton/lib/*
