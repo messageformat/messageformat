@@ -1,3 +1,8 @@
+---
+title: React
+parent: Usage
+---
+
 # MessageFormat in React
 
 An efficient React front-end for message formatting libraries.
@@ -118,11 +123,3 @@ export const Example = () => (
 [api documentation]: http://messageformat.github.io/messageformat/api/react/
 [example]: https://github.com/messageformat/messageformat/tree/master/packages/react/example
 [@messageformat/loader]: https://www.npmjs.com/package/@messageformat/loader
-
----
-
-[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
-
-<a href="https://openjsf.org">
-<img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />
-</a>
