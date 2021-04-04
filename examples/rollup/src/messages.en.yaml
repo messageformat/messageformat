@@ -1,0 +1,5 @@
+simple: A simple message.
+var: Message with {X}.
+plural: You have {N, plural, =0{no messages} one{1 message} other{# messages}}.
+select: '{GENDER, select, male{He has} female{She has} other{They have}} sent you a message.'
+ordinal: The {N, selectordinal, one{1st} two{2nd} few{3rd} other{#th}} message.

@@ -1,0 +1,8 @@
+{
+  "name": "rollup-example",
+  "private": true,
+  "scripts": {
+    "build": "rollup -c",
+    "start": "node dist/main"
+  }
+}
