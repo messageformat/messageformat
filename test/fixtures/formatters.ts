@@ -41,7 +41,7 @@ export function dateSkeletonCases(): TestCase[] {
   return Object.entries(cases).map(([fmt, { exp, skip }]) => ({
     src: `{date, date, ::${fmt}}`,
     exp: [[{ date }, exp]],
-    skip: (skip || []).concat(['ie'])
+    skip
   }));
 }
 
@@ -102,7 +102,7 @@ export function numberPatternCases(): TestCase[] {
     '#,#@#': { value: 1234, lc: 'en', exp: '1,200' },
     '#,#50': { value: 1230, lc: 'en', exp: '1,250' },
     '#,##0.65': { value: 1.234, lc: 'en', exp: '1.3' },
-    '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00', skip: ['ie'] },
+    '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00' },
     '¤¤': {
       value: 12,
       lc: 'en',
@@ -110,13 +110,7 @@ export function numberPatternCases(): TestCase[] {
       exp: /^CAD\s12.00$/,
       skip: ['safari'] // Fixed in Safari 13
     },
-    '¤¤¤': {
-      value: 5,
-      lc: 'en',
-      cur: 'CAD',
-      exp: '5.00 Canadian dollars',
-      skip: ['ie']
-    },
+    '¤¤¤': { value: 5, lc: 'en', cur: 'CAD', exp: '5.00 Canadian dollars' },
     '¤¤¤¤¤': { value: 12, lc: 'en', cur: 'CAD', exp: '$12.00', skip: ['v1'] },
     '¤#,##0.00;(¤#,##0.00)': {
       value: -3.27,
@@ -157,7 +151,7 @@ export function numberSkeletonCases(): TestCase[] {
       exp: '42 meters',
       skip: ['v1']
     },
-    'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ie', 'ff'] },
+    'currency/CAD': { value: 42, exp: 'CA$42.00', skip: ['ff'] },
     'currency/CAD unit-width-narrow': {
       value: 42,
       exp: '$42.00',
@@ -171,7 +165,7 @@ export function numberSkeletonCases(): TestCase[] {
       exp: '(CA$42.00)',
       skip: ['v1']
     },
-    'percent .00': { value: 42, exp: '42.00%', skip: ['ie'] }
+    'percent .00': { value: 42, exp: '42.00%' }
   };
   return Object.entries(cases).map(([fmt, { value, exp, skip }]) => ({
     src: `{value, number, :: ${fmt}}`,
