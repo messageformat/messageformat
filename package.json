@@ -73,7 +73,6 @@
     "browserstack-local": "^1.4.8",
     "chai": "^4.2.0",
     "common-tags": "^2.0.0-alpha.1",
-    "core-js": "^3.8.0",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^8.1.0",
     "husky": "^4.3.0",
