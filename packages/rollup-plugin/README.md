@@ -97,7 +97,8 @@ If `locales` has the special value `'*'`, it will match _all_ available locales.
 This may be useful if you want your messages to be completely determined by your data, but may provide surprising results if your input message object includes any 2-3 character keys that are not locale identifiers.
 
 [rollup]: https://rollupjs.org/
-[@messageformat/react]: https://www.npmjs.com/package/@messageformat/react
+[runtime]: https://messageformat.github.io/messageformat/api/runtime/
+[@messageformat/react]: https://messageformat.github.io/messageformat/react/
 [options]: https://messageformat.github.io/messageformat/api/core.messageformatoptions/
 [cldr language codes]: http://www.unicode.org/cldr/charts/latest/supplemental/language_territory_information.html
 
