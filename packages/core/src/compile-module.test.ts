@@ -241,5 +241,28 @@ describe('compileModule()', function () {
       const cf = await getModule(mf, { msg: 'one and one is {one, number}' });
       expect(cf.msg({ one: 1 })).toBe('one and one is 3');
     });
+
+    it('complains if trying to use a reserved word as key', () => {
+      const number = (v: unknown) => Number(v) + 2;
+      const mf = new MessageFormat('en', {
+        customFormatters: { switch: number }
+      });
+      const msg = '{foo, switch}';
+      expect(() => compileModule(mf, { msg })).toThrow(
+        'Reserved word used as formatter identifier: switch'
+      );
+    });
+
+    it('complains if trying to override a plural function', () => {
+      const number = (v: unknown) => Number(v) + 2;
+      const mf = new MessageFormat('en', {
+        customFormatters: { en: number }
+      });
+      const msg1 = '{foo, plural, other{fff}}';
+      const msg2 = '{foo, en}';
+      expect(() => compileModule(mf, { msg1, msg2 })).toThrow(
+        'Cannot override locale runtime function as formatter: en'
+      );
+    });
   });
 });

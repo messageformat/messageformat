@@ -210,10 +210,10 @@ export default class Compiler {
   }
 
   runtimeIncludes(key: string, type: RuntimeType) {
-    const prev = this.runtime[key];
-    if (!prev || prev.type === type) return prev;
     if (identifier(key) !== key)
       throw new SyntaxError(`Reserved word used as ${type} identifier: ${key}`);
+    const prev = this.runtime[key];
+    if (!prev || prev.type === type) return prev;
     throw new TypeError(
       `Cannot override ${prev.type} runtime function as ${type}: ${key}`
     );
