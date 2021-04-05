@@ -5,7 +5,12 @@ import { Context, createContext } from 'react';
 import { ErrorCode } from './message-error';
 
 /** @internal */
-export type MessageValue = string | number | boolean | ((props: any) => any);
+export type MessageValue =
+  | string
+  | number
+  | boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | ((props: any) => unknown);
 
 /** @internal */
 export interface MessageObject {
@@ -19,7 +24,7 @@ export interface MessageContext {
   messages: MessageObject;
 
   /** Always defined in MessageProvider children */
-  onError?: (path: string[], code: ErrorCode) => any;
+  onError?: (path: string[], code: ErrorCode) => unknown;
   pathSep: string | null;
 }
 

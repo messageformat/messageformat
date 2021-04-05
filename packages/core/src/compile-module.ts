@@ -10,12 +10,16 @@ export { MessageFunction, StringStructure };
  *
  * @public
  * @remarks
- * Use with `T` extending the {@link StringStructure} that was used as the module source.
+ * Use with `Shape` extending the {@link StringStructure} that was used as
+ * the module source.
  */
-export type MessageModule<T> = T extends string
-  ? MessageFunction
+export type MessageModule<
+  Shape,
+  ReturnType extends 'string' | 'values' = 'string'
+> = Shape extends string
+  ? MessageFunction<ReturnType>
   : {
-      [P in keyof T]: MessageModule<T[P]>;
+      [P in keyof Shape]: MessageModule<Shape[P], ReturnType>;
     };
 
 function stringifyRuntime(runtime: RuntimeMap) {
@@ -101,7 +105,7 @@ function stringifyObject(obj: string | StringStructure, level = 0): string {
  * @param messages - A hierarchical structure of ICU MessageFormat strings
  */
 export default function compileModule(
-  messageformat: MessageFormat,
+  messageformat: MessageFormat<'string' | 'values'>,
   messages: StringStructure
 ) {
   const { plurals } = messageformat;

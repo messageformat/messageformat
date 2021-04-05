@@ -17,7 +17,7 @@ export type TestCase = {
   >;
 };
 
-export const getTestCases = (MF: typeof MessageFormat) =>
+export const getTestCases = (escape: typeof MessageFormat['escape']) =>
   ({
     'Basic messages': [
       { src: 'This is a string.', exp: [[undefined, 'This is a string.']] },
@@ -91,10 +91,10 @@ export const getTestCases = (MF: typeof MessageFormat) =>
       { src: "I don''t know", exp: [[undefined, "I don't know"]] },
       { src: "'{'", exp: [[undefined, '{']] },
       { src: "'}'", exp: [[undefined, '}']] },
-      { src: MF.escape('{'), exp: [[undefined, '{']] },
-      { src: MF.escape('}'), exp: [[undefined, '}']] },
-      { src: MF.escape('#'), exp: [[undefined, '#']] },
-      { src: MF.escape('#', true), exp: [[undefined, "'#'"]] },
+      { src: escape('{'), exp: [[undefined, '{']] },
+      { src: escape('}'), exp: [[undefined, '}']] },
+      { src: escape('#'), exp: [[undefined, '#']] },
+      { src: escape('#', true), exp: [[undefined, "'#'"]] },
       { src: "'{{{'", exp: [[undefined, '{{{']] },
       { src: "'}}}'", exp: [[undefined, '}}}']] },
       { src: "'{{{'{test}'}}}'", exp: [[{ test: 4 }, '{{{4}}}']] },

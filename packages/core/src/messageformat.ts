@@ -14,14 +14,18 @@ export { PluralFunction };
  *
  * @public
  */
-export type MessageFunction = (param?: object) => string | any[];
+export type MessageFunction<ReturnType extends 'string' | 'values'> = (
+  param?: Record<string, unknown>
+) => ReturnType extends 'string' ? string : unknown[];
 
 /**
  * Options for the MessageFormat constructor
  *
  * @public
  */
-export interface MessageFormatOptions {
+export interface MessageFormatOptions<
+  ReturnType extends 'string' | 'values' = 'string' | 'values'
+> {
   /**
    * Add Unicode control characters to all input parts to preserve the
    * integrity of the output when mixing LTR and RTL text
@@ -43,7 +47,11 @@ export interface MessageFormatOptions {
    * for more details.
    */
   customFormatters?: {
-    [key: string]: (value: any, locale: string, arg: string | null) => string;
+    [key: string]: (
+      value: unknown,
+      locale: string,
+      arg: string | null
+    ) => string;
   };
 
   /**
@@ -54,12 +62,12 @@ export interface MessageFormatOptions {
   requireAllArguments?: boolean;
 
   /**
-   * Return type of compiled functions; either a concatenated string or an
-   * array (possibly hierarchical) of values
+   * Return type of compiled functions; either a concatenated `'string'` or an
+   * array (possibly hierarchical) of `'values'`.
    *
    * Default: `'string'`
    */
-  returnType?: 'string' | 'values';
+  returnType?: ReturnType;
 
   /**
    * Allow `#` only directly within a plural or selectordinal case, rather than
@@ -74,8 +82,9 @@ export interface MessageFormatOptions {
  * Returned by {@link MessageFormat.resolvedOptions}
  * @public
  */
-export interface ResolvedMessageFormatOptions
-  extends Required<MessageFormatOptions> {
+export interface ResolvedMessageFormatOptions<
+  ReturnType extends 'string' | 'values'
+> extends Required<MessageFormatOptions<ReturnType>> {
   /** The default locale */
   locale: string;
   /** All of the supported plurals */
@@ -104,7 +113,9 @@ export interface ResolvedMessageFormatOptions
  * msg({ RES: 2 })                    // 'They found 2 results.'
  * ```
  */
-export default class MessageFormat {
+export default class MessageFormat<
+  ReturnType extends 'string' | 'values' = 'string'
+> {
   /**
    * Used by the constructor when no `locale` argument is given.
    * Default: `'en'`
@@ -137,7 +148,7 @@ export default class MessageFormat {
   }
 
   /** @internal */
-  options: Required<MessageFormatOptions>;
+  options: Required<MessageFormatOptions<ReturnType>>;
 
   /** @internal */
   plurals: PluralObject[] = [];
@@ -163,7 +174,7 @@ export default class MessageFormat {
    */
   constructor(
     locale: string | PluralFunction | Array<string | PluralFunction> | null,
-    options?: MessageFormatOptions
+    options?: MessageFormatOptions<ReturnType>
   ) {
     this.options = Object.assign(
       {
@@ -194,7 +205,7 @@ export default class MessageFormat {
    * Returns a new object with properties reflecting the default locale,
    * plurals, and other options computed during initialization.
    */
-  resolvedOptions(): ResolvedMessageFormatOptions {
+  resolvedOptions(): ResolvedMessageFormatOptions<ReturnType> {
     return {
       ...this.options,
       locale: this.plurals[0].locale,
@@ -231,6 +242,6 @@ export default class MessageFormat {
       fnArgs.push(fmt);
     }
     const fn = new Function(...nfArgs, fnBody);
-    return fn(...fnArgs) as MessageFunction;
+    return fn(...fnArgs) as MessageFunction<ReturnType>;
   }
 }

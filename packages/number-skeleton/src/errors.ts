@@ -36,8 +36,8 @@ export class BadStemError extends NumberFormatError {
 /** @internal */
 export class MaskedValueError extends NumberFormatError {
   type: string;
-  prev: any;
-  constructor(type: string, prev: any) {
+  prev: unknown;
+  constructor(type: string, prev: unknown) {
     super('MASKED_VALUE', `Value for ${type} is set multiple times`);
     this.type = type;
     this.prev = prev;

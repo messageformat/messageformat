@@ -98,7 +98,7 @@ describe('compileModule()', function () {
 
   it('should support custom formatter functions', async function () {
     const mf = new MessageFormat('en', {
-      customFormatters: { uppercase: v => v.toUpperCase() }
+      customFormatters: { uppercase: v => String(v).toUpperCase() }
     });
     const msg = await getModule(mf, {
       0: 'This is {VAR,uppercase}.',

@@ -148,7 +148,9 @@ describe('compile() errors', () => {
   });
 });
 
-for (const [title, cases] of Object.entries(getTestCases(MessageFormat))) {
+for (const [title, cases] of Object.entries(
+  getTestCases(MessageFormat.escape)
+)) {
   describe(title, () => {
     for (const { locale, options, src, exp, skip } of cases) {
       if (skip) {

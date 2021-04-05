@@ -21,7 +21,8 @@ const FORMATTER_MODULE = '@messageformat/runtime/lib/formatters';
 
 type RuntimeType = 'formatter' | 'locale' | 'runtime';
 interface RuntimeEntry {
-  (...args: any): string | void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (...args: any[]): unknown;
   module?: string | null;
   toString?: () => string;
   type?: RuntimeType;

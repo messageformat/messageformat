@@ -58,7 +58,7 @@ export function plural(
   value: number,
   offset: number,
   lcfunc: (value: number, isOrdinal?: boolean) => string,
-  data: { [key: string]: any },
+  data: { [key: string]: unknown },
   isOrdinal?: boolean
 ) {
   if ({}.hasOwnProperty.call(data, value)) return data[value];
@@ -74,7 +74,7 @@ export function plural(
  * @param data The object from which results are looked up
  * @returns The result of the select statement
  */
-export function select(value: number, data: { [key: string]: any }) {
+export function select(value: number, data: { [key: string]: unknown }) {
   return {}.hasOwnProperty.call(data, value) ? data[value] : data.other;
 }
 
@@ -86,7 +86,7 @@ export function select(value: number, data: { [key: string]: any }) {
  * @param keys The required keys
  * @param data The data object being checked
  */
-export function reqArgs(keys: string[], data: { [key: string]: any }) {
+export function reqArgs(keys: string[], data: { [key: string]: unknown }) {
   for (let i = 0; i < keys.length; ++i)
     if (!data || data[keys[i]] === undefined)
       throw new Error(`Message requires argument '${keys[i]}'`);

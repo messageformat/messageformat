@@ -1,4 +1,4 @@
-import { createElement, useContext, useMemo } from 'react';
+import { createElement, ReactNode, useContext, useMemo } from 'react';
 import { MessageContext, MessageObject, defaultValue } from './message-context';
 import { MessageError, ErrorCode, errorMessages } from './message-error';
 
@@ -9,7 +9,7 @@ import { FunctionComponentElement, ProviderProps } from 'react';
 
 /** @public */
 export interface MessageProviderProps {
-  children: any;
+  children: ReactNode;
 
   /**
    * A hierarchical object containing the messages as boolean, number, string or function values.
@@ -18,7 +18,7 @@ export interface MessageProviderProps {
   context?: MessageContext;
 
   /** @deprecated Use onError instead */
-  debug?: 'error' | 'warn' | ((msg: string) => any);
+  debug?: 'error' | 'warn' | ((msg: string) => unknown);
 
   /**
    * A key for the locale of the given messages.
@@ -45,7 +45,7 @@ export interface MessageProviderProps {
    * - `(error) => any`: A custom function that is called with an `Error` object with `code: string` and `path: string[]` fields set.
    *   The return falue is used as the replacement message.
    */
-  onError?: 'error' | 'silent' | 'warn' | ((error: MessageError) => any);
+  onError?: 'error' | 'silent' | 'warn' | ((error: MessageError) => unknown);
 
   /**
    * By default, `.` in a `<Message id>` splits the path into parts, such that e.g. `'a.b'` is equivalent to `['a', 'b']`.
