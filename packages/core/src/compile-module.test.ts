@@ -234,5 +234,12 @@ describe('compileModule()', function () {
         'Expected literal options for upcase formatter'
       );
     });
+
+    it('allows overriding default formatters', async () => {
+      const number = (v: unknown) => Number(v) + 2;
+      const mf = new MessageFormat('en', { customFormatters: { number } });
+      const cf = await getModule(mf, { msg: 'one and one is {one, number}' });
+      expect(cf.msg({ one: 1 })).toBe('one and one is 3');
+    });
   });
 });

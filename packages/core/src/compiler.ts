@@ -167,26 +167,24 @@ export default class Compiler {
         break;
 
       case 'function':
-        switch (token.key) {
-          case 'date':
+        if (!this.options.customFormatters[token.key]) {
+          if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
             break;
-          case 'number':
+          } else if (token.key === 'number') {
             fn = this.setNumberFormatter(token, args, pluralToken);
             break;
-          default:
-            args.push(JSON.stringify(this.plural.locale));
-            if (token.param) {
-              if (pluralToken && this.options.strictNumberSign)
-                pluralToken = null;
-              const arg = this.getFormatterArg(token, pluralToken);
-              if (arg) args.push(arg);
-              if (token.key === 'number')
-                args.push(JSON.stringify(this.options.currency));
-            }
-            fn = token.key;
-            this.setFormatter(fn);
+          }
         }
+
+        args.push(JSON.stringify(this.plural.locale));
+        if (token.param) {
+          if (pluralToken && this.options.strictNumberSign) pluralToken = null;
+          const arg = this.getFormatterArg(token, pluralToken);
+          if (arg) args.push(arg);
+        }
+        fn = token.key;
+        this.setFormatter(fn);
         break;
 
       case 'octothorpe':
@@ -257,9 +255,9 @@ export default class Compiler {
   }
 
   getFormatterArg({ key, param }: FunctionArg, pluralToken: Select | null) {
-    const fmt = isFormatterKey(key)
-      ? Formatters[key]
-      : this.options.customFormatters[key];
+    const fmt =
+      this.options.customFormatters[key] ||
+      (isFormatterKey(key) && Formatters[key]);
     if (!fmt || !param) return null;
     const argShape = ('arg' in fmt && fmt.arg) || 'string';
     if (argShape === 'options') {
@@ -298,15 +296,8 @@ export default class Compiler {
 
   setFormatter(key: string) {
     if (this.runtimeIncludes(key, 'formatter')) return;
-    if (isFormatterKey(key)) {
-      this.runtime[key] = Object.assign(
-        Formatters[key],
-        { type: 'formatter' } as const,
-        { id: key, module: FORMATTER_MODULE }
-      );
-    } else {
-      let cf = this.options.customFormatters[key];
-      if (!cf) throw new Error(`Formatting function not found: ${key}`);
+    let cf = this.options.customFormatters[key];
+    if (cf) {
       if (typeof cf === 'function') cf = { formatter: cf };
       this.runtime[key] = Object.assign(
         cf.formatter,
@@ -315,6 +306,14 @@ export default class Compiler {
           ? { id: identifier(cf.id), module: cf.module }
           : { id: null, module: null }
       );
+    } else if (isFormatterKey(key)) {
+      this.runtime[key] = Object.assign(
+        Formatters[key],
+        { type: 'formatter' } as const,
+        { id: key, module: FORMATTER_MODULE }
+      );
+    } else {
+      throw new Error(`Formatting function not found: ${key}`);
     }
   }
 
