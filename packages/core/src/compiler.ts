@@ -179,8 +179,8 @@ export default class Compiler {
             if (token.param) {
               if (pluralToken && this.options.strictNumberSign)
                 pluralToken = null;
-              const s = token.param.map(tok => this.token(tok, pluralToken));
-              args.push('(' + (s.join(' + ') || '""') + ').trim()');
+              const arg = this.getFormatterArg(token, pluralToken);
+              if (arg) args.push(arg);
               if (token.key === 'number')
                 args.push(JSON.stringify(this.options.currency));
             }
@@ -256,31 +256,65 @@ export default class Compiler {
     } as const);
   }
 
+  getFormatterArg({ key, param }: FunctionArg, pluralToken: Select | null) {
+    const fmt = isFormatterKey(key)
+      ? Formatters[key]
+      : this.options.customFormatters[key];
+    if (!fmt || !param) return null;
+    const argShape = ('arg' in fmt && fmt.arg) || 'string';
+    if (argShape === 'options') {
+      let value = '';
+      for (const tok of param) {
+        if (tok.type === 'content') value += tok.value;
+        else
+          throw new SyntaxError(
+            `Expected literal options for ${key} formatter`
+          );
+      }
+      const options: Record<string, string | number | boolean | null> = {};
+      for (const pair of value.split(',')) {
+        const keyEnd = pair.indexOf(':');
+        if (keyEnd === -1) options[pair.trim()] = null;
+        else {
+          const k = pair.substring(0, keyEnd).trim();
+          const v = pair.substring(keyEnd + 1).trim();
+          if (v === 'true') options[k] = true;
+          else if (v === 'false') options[k] = false;
+          else if (v === 'null') options[k] = null;
+          else {
+            const n = Number(v);
+            options[k] = Number.isFinite(n) ? n : v;
+          }
+        }
+      }
+      return JSON.stringify(options);
+    } else {
+      const parts = param.map(tok => this.token(tok, pluralToken));
+      if (argShape === 'raw') return `[${parts.join(', ')}]`;
+      const s = parts.join(' + ');
+      return s ? `(${s}).trim()` : '""';
+    }
+  }
+
   setFormatter(key: string) {
     if (this.runtimeIncludes(key, 'formatter')) return;
     if (isFormatterKey(key)) {
-      this.runtime[key] = Object.assign(Formatters[key], {
-        id: key,
-        module: FORMATTER_MODULE,
-        type: 'formatter'
-      } as const);
+      this.runtime[key] = Object.assign(
+        Formatters[key],
+        { type: 'formatter' } as const,
+        { id: key, module: FORMATTER_MODULE }
+      );
     } else {
-      const cf = this.options.customFormatters[key];
-      if (typeof cf === 'function') {
-        this.runtime[key] = Object.assign(cf, {
-          id: null,
-          module: null,
-          type: 'formatter'
-        } as const);
-      } else if (cf && cf.formatter && cf.module) {
-        this.runtime[key] = Object.assign(cf.formatter, {
-          id: (cf.id && identifier(cf.id)) || key,
-          module: cf.module,
-          type: 'formatter'
-        } as const);
-      } else {
-        throw new Error(`Formatting function not found: ${key}`);
-      }
+      let cf = this.options.customFormatters[key];
+      if (!cf) throw new Error(`Formatting function not found: ${key}`);
+      if (typeof cf === 'function') cf = { formatter: cf };
+      this.runtime[key] = Object.assign(
+        cf.formatter,
+        { type: 'formatter' } as const,
+        'module' in cf && cf.module && cf.id
+          ? { id: identifier(cf.id), module: cf.module }
+          : { id: null, module: null }
+      );
     }
   }
 

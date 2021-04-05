@@ -55,7 +55,12 @@ export interface MessageFormatOptions<
   customFormatters?: {
     [key: string]:
       | CustomFormatter
-      | { formatter: CustomFormatter; id: string; module: string };
+      | {
+          formatter: CustomFormatter;
+          arg?: 'string' | 'raw' | 'options';
+          id?: string;
+          module?: string;
+        };
   };
 
   /**
