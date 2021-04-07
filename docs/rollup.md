@@ -30,7 +30,7 @@ With this config:
 import messageformat from 'rollup-plugin-messageformat'
 
 export default {
-  entry: 'src/app.js',
+  input: 'src/app.js',
   external: /^@messageformat\/runtime\b/,
   output: { format: 'es' },
   plugins: [messageformat({ locales: ['en', 'fr'] })]
