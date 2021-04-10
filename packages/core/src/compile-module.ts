@@ -23,13 +23,14 @@ export type MessageModule<
     };
 
 function stringifyRuntime(runtime: RuntimeMap) {
-  const imports: { [key: string]: string[] } = {};
-  const vars: { [key: string]: string } = {};
+  const imports: Record<string, string[]> = {};
+  const vars: Record<string, string> = {};
 
   for (const [name, fn] of Object.entries(runtime)) {
     if (fn.module) {
+      const alias = fn.id && fn.id !== name ? `${fn.id} as ${name}` : name;
       const prev = imports[fn.module];
-      imports[fn.module] = prev ? [...prev, name] : [name];
+      imports[fn.module] = prev ? [...prev, alias] : [alias];
     } else {
       vars[name] = String(fn);
     }
@@ -37,7 +38,7 @@ function stringifyRuntime(runtime: RuntimeMap) {
 
   const is = Object.entries(imports).map(
     ([module, names]) =>
-      `import { ${names.sort().join(', ')} } from '${module}';`
+      `import { ${names.sort().join(', ')} } from ${JSON.stringify(module)};`
   );
   const vs = Object.entries(vars).map(([id, value]) =>
     new RegExp(`^function ${id}\\b`).test(value)

@@ -18,6 +18,12 @@ export type MessageFunction<ReturnType extends 'string' | 'values'> = (
   param?: Record<string, unknown>
 ) => ReturnType extends 'string' ? string : unknown[];
 
+export type CustomFormatter = (
+  value: unknown,
+  locale: string,
+  arg: string | null
+) => unknown;
+
 /**
  * Options for the MessageFormat constructor
  *
@@ -47,11 +53,14 @@ export interface MessageFormatOptions<
    * for more details.
    */
   customFormatters?: {
-    [key: string]: (
-      value: unknown,
-      locale: string,
-      arg: string | null
-    ) => string;
+    [key: string]:
+      | CustomFormatter
+      | {
+          formatter: CustomFormatter;
+          arg?: 'string' | 'raw' | 'options';
+          id?: string;
+          module?: string;
+        };
   };
 
   /**

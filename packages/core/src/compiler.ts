@@ -23,6 +23,7 @@ type RuntimeType = 'formatter' | 'locale' | 'runtime';
 interface RuntimeEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any[]): unknown;
+  id?: string | null;
   module?: string | null;
   toString?: () => string;
   type?: RuntimeType;
@@ -166,25 +167,24 @@ export default class Compiler {
         break;
 
       case 'function':
-        switch (token.key) {
-          case 'date':
+        if (!this.options.customFormatters[token.key]) {
+          if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
             break;
-          case 'number':
+          } else if (token.key === 'number') {
             fn = this.setNumberFormatter(token, args, pluralToken);
             break;
-          default:
-            args.push(JSON.stringify(this.plural.locale));
-            if (token.param) {
-              if (pluralToken && this.options.strict) pluralToken = null;
-              const s = token.param.map(tok => this.token(tok, pluralToken));
-              args.push('(' + (s.join(' + ') || '""') + ').trim()');
-              if (token.key === 'number')
-                args.push(JSON.stringify(this.options.currency));
-            }
-            fn = token.key;
-            this.setFormatter(fn);
+          }
         }
+
+        args.push(JSON.stringify(this.plural.locale));
+        if (token.param) {
+          if (pluralToken && this.options.strict) pluralToken = null;
+          const arg = this.getFormatterArg(token, pluralToken);
+          if (arg) args.push(arg);
+        }
+        fn = token.key;
+        this.setFormatter(fn);
         break;
 
       case 'octothorpe':
@@ -210,10 +210,10 @@ export default class Compiler {
   }
 
   runtimeIncludes(key: string, type: RuntimeType) {
-    const prev = this.runtime[key];
-    if (!prev || prev.type === type) return prev;
     if (identifier(key) !== key)
       throw new SyntaxError(`Reserved word used as ${type} identifier: ${key}`);
+    const prev = this.runtime[key];
+    if (!prev || prev.type === type) return prev;
     throw new TypeError(
       `Cannot override ${prev.type} runtime function as ${type}: ${key}`
     );
@@ -235,34 +235,83 @@ export default class Compiler {
       module = isDefault ? PLURAL_MODULE : getPlural.module || null;
       toString = () => String(getPlural);
     }
-    this.runtime[key] = Object.assign(pf, { module, toString, type: 'locale' });
+    this.runtime[key] = Object.assign(pf, {
+      id: key,
+      module,
+      toString,
+      type: 'locale'
+    });
   }
 
   setRuntimeFn(
     key: 'number' | 'plural' | 'select' | 'strictNumber' | 'reqArgs'
   ) {
     if (this.runtimeIncludes(key, 'runtime')) return;
-    const rf: RuntimeEntry = Runtime[key];
-    this.runtime[key] = Object.assign(rf, {
+    this.runtime[key] = Object.assign(Runtime[key], {
+      id: key,
       module: RUNTIME_MODULE,
       type: 'runtime'
-    });
+    } as const);
+  }
+
+  getFormatterArg({ key, param }: FunctionArg, pluralToken: Select | null) {
+    const fmt =
+      this.options.customFormatters[key] ||
+      (isFormatterKey(key) && Formatters[key]);
+    if (!fmt || !param) return null;
+    const argShape = ('arg' in fmt && fmt.arg) || 'string';
+    if (argShape === 'options') {
+      let value = '';
+      for (const tok of param) {
+        if (tok.type === 'content') value += tok.value;
+        else
+          throw new SyntaxError(
+            `Expected literal options for ${key} formatter`
+          );
+      }
+      const options: Record<string, string | number | boolean | null> = {};
+      for (const pair of value.split(',')) {
+        const keyEnd = pair.indexOf(':');
+        if (keyEnd === -1) options[pair.trim()] = null;
+        else {
+          const k = pair.substring(0, keyEnd).trim();
+          const v = pair.substring(keyEnd + 1).trim();
+          if (v === 'true') options[k] = true;
+          else if (v === 'false') options[k] = false;
+          else if (v === 'null') options[k] = null;
+          else {
+            const n = Number(v);
+            options[k] = Number.isFinite(n) ? n : v;
+          }
+        }
+      }
+      return JSON.stringify(options);
+    } else {
+      const parts = param.map(tok => this.token(tok, pluralToken));
+      if (argShape === 'raw') return `[${parts.join(', ')}]`;
+      const s = parts.join(' + ');
+      return s ? `(${s}).trim()` : '""';
+    }
   }
 
   setFormatter(key: string) {
     if (this.runtimeIncludes(key, 'formatter')) return;
-    const cf: RuntimeEntry = this.options.customFormatters[key];
+    let cf = this.options.customFormatters[key];
     if (cf) {
-      this.runtime[key] = Object.assign(cf, {
-        module: null,
-        type: 'formatter'
-      });
+      if (typeof cf === 'function') cf = { formatter: cf };
+      this.runtime[key] = Object.assign(
+        cf.formatter,
+        { type: 'formatter' } as const,
+        'module' in cf && cf.module && cf.id
+          ? { id: identifier(cf.id), module: cf.module }
+          : { id: null, module: null }
+      );
     } else if (isFormatterKey(key)) {
-      const df: RuntimeEntry = Formatters[key];
-      this.runtime[key] = Object.assign(df, {
-        module: FORMATTER_MODULE,
-        type: 'formatter'
-      });
+      this.runtime[key] = Object.assign(
+        Formatters[key],
+        { type: 'formatter' } as const,
+        { id: key, module: FORMATTER_MODULE }
+      );
     } else {
       throw new Error(`Formatting function not found: ${key}`);
     }
@@ -286,6 +335,7 @@ export default class Compiler {
       if (!this.runtimeIncludes(key, 'formatter')) {
         const fmt: RuntimeEntry = getDateFormatter(locale, argSkeletonText);
         this.runtime[key] = Object.assign(fmt, {
+          id: key,
           module: null,
           toString: () => getDateFormatterSource(locale, argSkeletonText),
           type: 'formatter'
@@ -349,6 +399,7 @@ export default class Compiler {
         const { currency } = this.options;
         const fmt: RuntimeEntry = getNumberFormatter(locale, fmtArg, currency);
         this.runtime[key] = Object.assign(fmt, {
+          id: null,
           module: null,
           toString: () => getNumberFormatterSource(locale, fmtArg, currency),
           type: 'formatter'
