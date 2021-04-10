@@ -391,7 +391,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
       }
     ],
 
-    strictNumberSign: [
+    strict: [
       {
         src: '{X, plural, one{#} other{{Y, select, other{#}}}}',
         exp: [
@@ -400,7 +400,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         ]
       },
       {
-        options: { strictNumberSign: false },
+        options: { strict: false },
         src: '{X, plural, one{#} other{{Y, select, other{#}}}}',
         exp: [
           [{ X: 3, Y: 5 }, '3'],
@@ -408,7 +408,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         ]
       },
       {
-        options: { strictNumberSign: true },
+        options: { strict: true },
         src: '{X, plural, one{#} other{{Y, select, other{#}}}}',
         exp: [
           [{ X: 3, Y: 5 }, '#'],
@@ -423,7 +423,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         ]
       },
       {
-        options: { strictNumberSign: false },
+        options: { strict: false },
         src: "{X, plural, one{#} other{{Y, select, other{'#'}}}}",
         exp: [
           [{ X: 3, Y: 5 }, '#'],
@@ -431,7 +431,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         ]
       },
       {
-        options: { strictNumberSign: true },
+        options: { strict: true },
         src: "{X, plural, one{#} other{{Y, select, other{'#'}}}}",
         exp: [
           [{ X: 3, Y: 5 }, "'#'"],
@@ -439,7 +439,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         ]
       },
       {
-        options: { strictNumberSign: true },
+        options: { strict: true },
         src:
           'I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, offset:1 ' +
           '=0{no enemies} =1{one nemesis} one{two enemies} other{one nemesis and # enemies}}}}.',

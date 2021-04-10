@@ -79,12 +79,15 @@ export interface MessageFormatOptions<
   returnType?: ReturnType;
 
   /**
-   * Allow `#` only directly within a plural or selectordinal case, rather than
-   * in any inner select case as well.
+   * Follow the ICU MessageFormat spec more closely, but not allowing custom
+   * formatters and by allowing`#` only directly within a plural or
+   * selectordinal case, rather than in any inner select case as well. See the
+   * {@link http://messageformat.github.io/messageformat/api/parser.parseoptions.strict/ | parser option}
+   * for more details.
    *
    * Default: `false`
    */
-  strictNumberSign?: boolean;
+  strict?: boolean;
 }
 
 /**
@@ -192,7 +195,7 @@ export default class MessageFormat<
         customFormatters: {},
         requireAllArguments: false,
         returnType: 'string',
-        strictNumberSign: false
+        strict: (options && (options as any).strictNumberSign) || false
       },
       options
     );
