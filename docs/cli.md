@@ -52,7 +52,7 @@ Command-line options override configuration files.
 With `messages/strings.json`, compile it into an ES module using the default English locale:
 
 ```
-npx messageformat messages/strings.json --outfile=messages/en.js
+npx @messageformat/cli messages/strings.json --outfile=messages/en.js
 ```
 
 ---
@@ -60,7 +60,7 @@ npx messageformat messages/strings.json --outfile=messages/en.js
 With `messages/en.json` and `messages/fr.json`, combine both into an ES module, with the default export's top-level keys `en` and `fr` containing functions that each use the correct language's pluralization rules:
 
 ```
-npx messageformat messages/ --locale=en,fr --outfile=messages.js
+npx @messageformat/cli messages/ --locale=en,fr --outfile=messages.js
 ```
 
 Note: The `locale` option could be left out here if is known that the data does not include any 2-3 letter keys matching other locales.
