@@ -46,6 +46,7 @@ export interface MessageData {
  * // build.js
  * import { writeFileSync } from 'fs';
  * import MessageFormat from '@messageformat/core';
+ * import compileModule from '@messageformat/core/compile-module'
  *
  * const mf = new MessageFormat(['en', 'fi']);
  * const msgSet = {
@@ -61,7 +62,7 @@ export interface MessageData {
  *     e: 'Minä puhun vain suomea.'
  *   }
  * };
- * writeFileSync('messages.js', String(mf.compile(msgSet)));
+ * writeFileSync('messages.js', compileModule(mf, msgSet));
  * ```
  *
  * ```js
