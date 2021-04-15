@@ -48,7 +48,7 @@ const msgSet = {
     e: 'Minä puhun vain suomea.'
   }
 };
-writeFileSync('messages.js', String(mf.compile(JSON.stringify(msgSet))));
+writeFileSync('messages.js', String(mf.compile(msgSet)));
 
 ```
 
