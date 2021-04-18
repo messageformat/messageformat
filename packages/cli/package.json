@@ -30,7 +30,6 @@
     "node": ">=6.0"
   },
   "dependencies": {
-    "common-tags": "^2.0.0-alpha.1",
     "dot-properties": "^1.0.1",
     "glob": "^7.1.6",
     "uv": "^1.3.1",

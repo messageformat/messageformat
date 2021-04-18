@@ -1,4 +1,3 @@
-const { oneLine } = require('common-tags');
 const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
@@ -25,19 +24,14 @@ module.exports = function getOptions() {
       /* ignore errors */
     }
   }
-  const usage = [
-    '$0 [input, ...] [options]',
-    oneLine`
-      Parses input JSON, YAML, and .properties files of MessageFormat strings
-      into an ES module of corresponding hierarchical functions. Input
-      directories are recursively scanned for all files matching the supported
-      extensions.
-    `,
-    oneLine`
-      Configuration may also be set under the package.json "messageformat" key or
-      messageformat.rc.{js,json,yaml}.
-    `
-  ].join('\n\n');
+  const usage = `$0 [input, ...] [options]
+
+Parses input JSON, YAML, and .properties files of MessageFormat strings into
+an ES module of corresponding hierarchical functions. Input directories are
+recursively scanned for all files matching the supported extensions.
+
+Configuration may also be set under the package.json "messageformat" key or
+messageformat.rc.{js,json,yaml}.`;
 
   return yargs
     .scriptName('messageformat')
@@ -61,19 +55,10 @@ module.exports = function getOptions() {
       locale: {
         alias: 'l',
         array: true,
-        desc: oneLine`
-          The locale(s) to include; if multiple, selected by matching message key.
-          If not set, path keys matching any locale code will set the active
-          locale, starting with a default 'en' locale.
-        `
+        desc: `The locale(s) to include; if multiple, selected by matching message key. If not set, path keys matching any locale code will set the active locale, starting with a default 'en' locale.`
       },
       options: {
-        desc: oneLine`
-          Options to pass to the MessageFormat constructor via its second argument.
-          Use dot-notation to set values, e.g. --options.currency=EUR. For custom
-          formatters, string values will be require()'d based on the current
-          working directory.
-        `
+        desc: `Options to pass to the MessageFormat constructor via its second argument. Use dot-notation to set values, e.g. --options.currency=EUR. For custom formatters, string values will be require()'d based on the current working directory.`
       },
       outfile: {
         alias: 'o',
