@@ -443,13 +443,13 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         src: '{X, selectordinal, one{#} other{{Y, time, short}}}',
         exp: [
           [{ X: 1, Y: 5 }, '1'],
-          [{ X: 3, Y: 5 }, '2:00 AM']
+          [{ X: 3, Y: 5 }, /^1?\d:00 [AP]M$/]
         ]
       },
       {
         options: { strict: true },
         src: '{X, selectordinal, one{#} other{{Y, date, short}}}',
-        exp: [[{ X: 3, Y: 5 }, '1/1/1970']]
+        exp: [[{ X: 3, Y: 5 }, /^(12\/31\/1969|1\/1\/1970)$/]]
       },
       {
         options: { strict: true },
