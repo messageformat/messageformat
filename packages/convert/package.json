@@ -22,6 +22,6 @@
     "node": ">=6.0"
   },
   "dependencies": {
-    "make-plural": "^6.0.1"
+    "make-plural": "^6.2.2"
   }
 }
