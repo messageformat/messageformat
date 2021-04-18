@@ -26,36 +26,26 @@
   "type": "commonjs",
   "main": "./lib/runtime.js",
   "exports": {
-    ".": [
-      {
-        "import": "./esm/runtime.js"
-      },
-      "./lib/runtime.js"
-    ],
-    "./lib/cardinals": [
-      {
-        "import": "./esm/cardinals.js"
-      },
-      "./lib/cardinals.js"
-    ],
-    "./lib/formatters": [
-      {
-        "import": "./esm/formatters.js"
-      },
-      "./lib/formatters.js"
-    ],
-    "./lib/plurals": [
-      {
-        "import": "./esm/plurals.js"
-      },
-      "./lib/plurals.js"
-    ],
-    "./messages": [
-      {
-        "import": "./esm/messages.js"
-      },
-      "./messages.js"
-    ]
+    ".": {
+      "import": "./esm/runtime.js",
+      "default": "./lib/runtime.js"
+    },
+    "./lib/cardinals": {
+      "import": "./esm/cardinals.js",
+      "default": "./lib/cardinals.js"
+    },
+    "./lib/formatters": {
+      "import": "./esm/formatters.js",
+      "default": "./lib/formatters.js"
+    },
+    "./lib/plurals": {
+      "import": "./esm/plurals.js",
+      "default": "./lib/plurals.js"
+    },
+    "./messages": {
+      "import": "./esm/messages.js",
+      "default": "./messages.js"
+    }
   },
   "browser": {
     "./lib/runtime.js": "./esm/runtime.js",
