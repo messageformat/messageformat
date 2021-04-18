@@ -195,6 +195,7 @@ export default class MessageFormat<
         customFormatters: {},
         requireAllArguments: false,
         returnType: 'string',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         strict: (options && (options as any).strictNumberSign) || false
       },
       options

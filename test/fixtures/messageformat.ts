@@ -440,6 +440,19 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
       },
       {
         options: { strict: true },
+        src: '{X, selectordinal, one{#} other{{Y, time, short}}}',
+        exp: [
+          [{ X: 1, Y: 5 }, '1'],
+          [{ X: 3, Y: 5 }, '2:00 AM']
+        ]
+      },
+      {
+        options: { strict: true },
+        src: '{X, selectordinal, one{#} other{{Y, date, short}}}',
+        exp: [[{ X: 3, Y: 5 }, '1/1/1970']]
+      },
+      {
+        options: { strict: true },
         src:
           'I have {FRIENDS, plural, one{one friend} other{# friends but {ENEMIES, plural, offset:1 ' +
           '=0{no enemies} =1{one nemesis} one{two enemies} other{one nemesis and # enemies}}}}.',
@@ -485,7 +498,12 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
     'Duration formatter': [
       {
         src: 'It has been {D, duration}',
-        exp: [[{ D: 123 }, 'It has been 2:03']]
+        exp: [
+          [{ D: 12 }, 'It has been 0:12'],
+          [{ D: 123 }, 'It has been 2:03'],
+          [{ D: '123' }, 'It has been 2:03'],
+          [{ D: Infinity }, 'It has been Infinity']
+        ]
       },
       {
         src: 'Countdown: {D, duration}',
@@ -494,6 +512,10 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
     ],
 
     'Number formatter': [
+      {
+        src: '{N} is {N, number}',
+        exp: [[{ N: 123456 }, '123456 is 123,456']]
+      },
       {
         src: '{N} is almost {N, number, integer}',
         exp: [[{ N: 3.14 }, '3.14 is almost 3']]
@@ -516,6 +538,10 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         options: { currency: 'EUR' },
         src: 'The total is {V, number, currency:GBP}.',
         exp: [[{ V: 5.5 }, 'The total is £5.50.']]
+      },
+      {
+        src: '{N} is almost {N, number, {type}}',
+        exp: [[{ N: 3.14, type: 'integer' }, '3.14 is almost 3']]
       }
     ],
 

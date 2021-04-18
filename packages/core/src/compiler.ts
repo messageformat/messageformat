@@ -188,6 +188,7 @@ export default class Compiler {
         break;
 
       case 'octothorpe':
+        /* istanbul ignore if: never happens */
         if (!pluralToken) return '"#"';
         args = [
           JSON.stringify(this.plural.locale),
@@ -205,6 +206,7 @@ export default class Compiler {
         break;
     }
 
+    /* istanbul ignore if: never happens */
     if (!fn) throw new Error('Parser error for token ' + JSON.stringify(token));
     return `${fn}(${args.join(', ')})`;
   }
@@ -227,6 +229,7 @@ export default class Compiler {
       if (prev) return;
       pf = (n: string | number) => getCardinal(n);
       module = CARDINAL_MODULE;
+      /* istanbul ignore next: never actually called */
       toString = () => String(getCardinal);
     } else {
       // overwrite a previous cardinal-only locale function
@@ -258,6 +261,7 @@ export default class Compiler {
     const fmt =
       this.options.customFormatters[key] ||
       (isFormatterKey(key) && Formatters[key]);
+    /* istanbul ignore if: never happens */
     if (!fmt || !param) return null;
     const argShape = ('arg' in fmt && fmt.arg) || 'string';
     if (argShape === 'options') {
@@ -361,7 +365,7 @@ export default class Compiler {
   ) {
     const { locale } = this.plural;
 
-    if (!param) {
+    if (!param || param.length === 0) {
       // {var, number} can use runtime number(lc, var, offset)
       args.unshift(JSON.stringify(locale));
       args.push('0');
@@ -395,6 +399,7 @@ export default class Compiler {
       }
 
       const key = identifier(`number_${locale}_${fmtArg}`, true);
+      /* istanbul ignore else */
       if (!this.runtimeIncludes(key, 'formatter')) {
         const { currency } = this.options;
         const fmt: RuntimeEntry = getNumberFormatter(locale, fmtArg, currency);
@@ -408,6 +413,7 @@ export default class Compiler {
       return key;
     }
 
+    /* istanbul ignore next: never happens */
     if (plural && this.options.strict) plural = null;
     const s = param.map(tok => this.token(tok, plural));
     args.push('(' + (s.join(' + ') || '""') + ').trim()');

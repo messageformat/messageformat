@@ -11,9 +11,14 @@ describe('static MessageFormat', () => {
     expect(MessageFormat.supportedLocalesOf).toBeInstanceOf(Function);
   });
 
-  test('should have a working supportedLocalesOf() function', () => {
+  test('supportedLocalesOf(string[])', () => {
     const lc = MessageFormat.supportedLocalesOf(['fi', 'xx', 'en-CA']);
     expect(lc).toMatchObject(['fi', 'en-CA']);
+  });
+
+  test('supportedLocalesOf(string)', () => {
+    const lc = MessageFormat.supportedLocalesOf('fi');
+    expect(lc).toMatchObject(['fi']);
   });
 });
 
@@ -53,6 +58,16 @@ describe('new MessageFormat()', () => {
     expect(opt.locale).toBe('en');
   });
 
+  test('should special-case Portuguese', () => {
+    const mf = new MessageFormat('pt-PT');
+    const opt = mf.resolvedOptions();
+    expect(opt.locale).toBe('pt-PT');
+  });
+
+  test('should fail on invalid locales', () => {
+    expect(() => new MessageFormat('x')).toThrow('Invalid language tag: x');
+  });
+
   test('should default to `en` when no locale is passed into the constructor', () => {
     const mf = new MessageFormat('lawlz');
     const opt = mf.resolvedOptions();
@@ -90,6 +105,12 @@ describe('compile() errors', () => {
   test('Missing other in plural', () => {
     const mf = new MessageFormat('en');
     const src = '{X, plural, one{a}}';
+    expect(() => mf.compile(src)).toThrow(/No 'other' form found/);
+  });
+
+  test('Missing other in selectordinal', () => {
+    const mf = new MessageFormat('en');
+    const src = '{X, selectordinal, one{a}}';
     expect(() => mf.compile(src)).toThrow(/No 'other' form found/);
   });
 

@@ -138,6 +138,60 @@ describe('compileModule()', function () {
     });
   });
 
+  describe('message selectors', () => {
+    it('select', async () => {
+      const mf = new MessageFormat('en');
+      const msg = await getModule(mf, {
+        0: '{x, select, one{one} other{other}}'
+      });
+      expect(msg[0]({ x: 'one' })).toBe('one');
+      expect(msg[0]({ x: 1 })).toBe('other');
+      expect(msg[0]({ x: 2 })).toBe('other');
+    });
+
+    it('plural', async () => {
+      const mf = new MessageFormat('en');
+      const msg = await getModule(mf, {
+        0: '{x, plural, one{one} other{other}}'
+      });
+      expect(msg[0]({ x: 1 })).toBe('one');
+      expect(msg[0]({ x: 2 })).toBe('other');
+    });
+
+    it('selectordinal', async () => {
+      const mf = new MessageFormat('en');
+      const msg = await getModule(mf, {
+        0: '{x, selectordinal, one{one} two{two} other{other}}'
+      });
+      expect(msg[0]({ x: 1 })).toBe('one');
+      expect(msg[0]({ x: 2 })).toBe('two');
+      expect(msg[0]({ x: 3 })).toBe('other');
+    });
+  });
+
+  describe('spec formatters', () => {
+    it('number', async () => {
+      const mf = new MessageFormat('en');
+      const msg = await getModule(mf, {
+        0: 'This is {VAR, number, integer}.',
+        1: 'Other {VAR, number, {type}}.'
+      });
+      expect(msg[0]({ VAR: 3.14 })).toBe('This is 3.');
+      expect(msg[1]({ VAR: 3.14, type: 'integer' })).toBe('Other 3.');
+    });
+
+    it('date', async () => {
+      const mf = new MessageFormat('en');
+      const msg = await getModule(mf, {
+        0: 'Today is {T, date}',
+        1: 'The year is {T, date, ::y}'
+      });
+      const T = new Date(2016, 1, 21);
+      expect(msg[0]({ T })).toBe('Today is Feb 21, 2016');
+      expect(msg[1]({ T })).toBe('The year is 2016');
+    });
+  });
+
   describe('custom formatters', () => {
     it('basic support', async function () {
       const mf = new MessageFormat('en', {
@@ -198,6 +252,16 @@ describe('compileModule()', function () {
       );
     });
 
+    it('handles empty string arg', () => {
+      const upcase = {
+        formatter: (v: unknown) => String(v).toUpperCase()
+      };
+      const mf = new MessageFormat('en', { customFormatters: { upcase } });
+      const msg = '{foo, upcase,}';
+      const src = compileModule(mf, { msg });
+      expect(src).toMatch(/upcase\([^)]+, ""\)/);
+    });
+
     it('arg: "raw"', () => {
       const upcase = {
         formatter: (v: unknown) => String(v).toUpperCase(),
@@ -216,10 +280,10 @@ describe('compileModule()', function () {
       } as const;
       const mf = new MessageFormat('en', { customFormatters: { upcase } });
       const msg =
-        '{foo, upcase, num: 1, foo:foo,foo:bar, true:true, false:  false,\tnull\n:\n\nnull }';
+        '{foo, upcase, num: 1, foo:foo,foo:bar, true:true, false:  false,\tnull\n:\n\nnull,x }';
       const src = compileModule(mf, { msg });
       expect(src).toMatch(
-        /upcase\([^)]+, {"num":1,"foo":"bar","true":true,"false":false,"null":null}\)/
+        /upcase\([^)]+, {"num":1,"foo":"bar","true":true,"false":false,"null":null,"x":null}\)/
       );
     });
 
