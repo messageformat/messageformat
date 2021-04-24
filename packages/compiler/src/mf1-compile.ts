@@ -1,7 +1,7 @@
 import { parse, ParseOptions } from '@messageformat/parser';
 import * as PluralCategories from 'make-plural/pluralCategories';
 import type { MessageGroup, Resource } from 'messageformat';
-import { astToMessage } from './ast-to-message';
+import { astToMessage } from './mf1-ast-to-message';
 
 const isPluralId = (id: string): id is keyof typeof PluralCategories =>
   id in PluralCategories;
@@ -29,7 +29,7 @@ export interface StringStructure {
   [key: string]: StringStructure | string;
 }
 
-export function compileMessageGroup(
+function compileMessageGroup(
   src: StringStructure,
   options: ParseOptions
 ) {
@@ -43,7 +43,7 @@ export function compileMessageGroup(
   return { entries };
 }
 
-export function compileResource(
+export function compileMF1(
   src: StringStructure,
   { id, locale, strict }: { id: string; locale: string; strict?: boolean }
 ): Resource {

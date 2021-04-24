@@ -21,8 +21,7 @@
     "url": "https://github.com/messageformat/messageformat.git",
     "directory": "packages/compiler"
   },
-  "main": "lib/compile.js",
-  "browser": "./lib/compile.js",
+  "main": "lib/index.js",
   "files": [
     "lib/"
   ],
