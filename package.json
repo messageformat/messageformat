@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@messageformat/cli": "file:packages/cli",
+    "@messageformat/compiler": "file:packages/compiler",
     "@messageformat/convert": "file:packages/convert",
     "@messageformat/core": "file:packages/core",
     "@messageformat/date-skeleton": "file:packages/date-skeleton",
@@ -46,6 +47,7 @@
     "@messageformat/parser": "file:packages/parser",
     "@messageformat/react": "file:packages/react",
     "@messageformat/runtime": "file:packages/runtime",
+    "messageformat": "file:packages/messageformat",
     "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {

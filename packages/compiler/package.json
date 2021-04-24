@@ -1,0 +1,37 @@
+{
+  "name": "@messageformat/compiler",
+  "version": "0.1.0",
+  "description": "Compile MessageFormat 1 sources into MessageFormat 2 resources",
+  "keywords": [
+    "i18n",
+    "pluralformat",
+    "icu",
+    "gettext",
+    "selectformat",
+    "messageformat",
+    "internationalization"
+  ],
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "http://messageformat.github.io/messageformat/api/compiler/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/compiler"
+  },
+  "main": "lib/compile.js",
+  "browser": "./lib/compile.js",
+  "files": [
+    "lib/"
+  ],
+  "dependencies": {
+    "@messageformat/parser": "file:../parser",
+    "make-plural": "^6.2.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "extract-api": "api-extractor run --local --verbose"
+  }
+}

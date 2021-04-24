@@ -11,7 +11,7 @@ extends:
 
 rules:
   array-callback-return: error
-  camelcase: error
+  camelcase: off
   consistent-return: error
   eqeqeq: [error, smart]
   no-constant-condition: [error, checkLoops: false]
