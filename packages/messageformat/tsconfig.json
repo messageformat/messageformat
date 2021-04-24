@@ -3,7 +3,8 @@
   "compilerOptions": {
     "declaration": true,
     "module": "CommonJS",
-    "outDir": "lib"
+    "outDir": "lib",
+    "strict": true
   },
   "include": ["src/*"]
 }

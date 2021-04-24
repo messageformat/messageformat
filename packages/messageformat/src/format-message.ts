@@ -111,7 +111,7 @@ function resolveSelect<R, S>(
     if (
       key.every((k, i) => {
         const r = res[i];
-        return r === k || (Array.isArray(r) && r.includes(k));
+        return k === 'other' || k === r || (Array.isArray(r) && r.includes(k));
       })
     )
       return value;

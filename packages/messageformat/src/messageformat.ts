@@ -4,12 +4,11 @@ import {
   MessageGroup,
   Resource,
   Runtime,
-  RuntimeFunction,
   Scope
 } from './data-model';
 import { createContext } from './format-context';
 import { formatToParts, formatToString } from './format-message';
-import { number, plural } from './runtime';
+import { runtime as defaultRuntime } from './runtime';
 
 function getEntry(res: Resource, path: string[]) {
   let msg: MessageGroup | Message = res;
@@ -23,8 +22,9 @@ function getEntry(res: Resource, path: string[]) {
 /**
  * Create a new message formatter.
  *
- * If `runtime` is unset, a default minimal set is used, consisting
- * of `plural` for selection and `number` as a formatter function.
+ * If `runtime` is unset, a default set is used, consisting of `plural` for
+ * selection and the MF1 formatters `date`, `duration`, `number`, and `time`,
+ * but without date or number skeleton support.
  */
 export class MessageFormat<R = string> {
   locales: string[];
@@ -38,10 +38,7 @@ export class MessageFormat<R = string> {
   ) {
     this.locales = Array.isArray(locales) ? locales : [locales];
     this.resources = resources;
-    this.runtime = runtime || {
-      select: { plural },
-      format: { number: (number as unknown) as RuntimeFunction<R> }
-    };
+    this.runtime = runtime || ((defaultRuntime as unknown) as Runtime<R>);
   }
 
   addResources(...resources: Resource[]) {

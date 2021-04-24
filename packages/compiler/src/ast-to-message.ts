@@ -49,7 +49,11 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
   return args;
 }
 
-function tokenToPart(token: AST.Token, pluralArg: string | null): Part {
+function tokenToPart(
+  token: AST.Token,
+  pluralArg: string | null,
+  pluralOffset: number | null
+): Part {
   switch (token.type) {
     case 'content':
       return token.value;
@@ -70,10 +74,16 @@ function tokenToPart(token: AST.Token, pluralArg: string | null): Part {
       }
       return fnRef;
     }
-    case 'octothorpe':
-      return pluralArg
-        ? { func: 'number', args: [{ var_path: [pluralArg] }] }
-        : '#';
+    case 'octothorpe': {
+      if (!pluralArg) return '#';
+      const fnRef: FunctionReference = {
+        func: 'number',
+        args: [{ var_path: [pluralArg] }]
+      };
+      if (pluralOffset) fnRef.options = { pluralOffset };
+      return fnRef;
+    }
+    /* istanbul ignore next - never happens */
     default:
       throw new Error(`Unsupported token type: ${token.type}`);
   }
@@ -114,12 +124,17 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
 export function astToMessage(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0)
-    return { value: ast.map(token => tokenToPart(token, null)) };
+    return { value: ast.map(token => tokenToPart(token, null, null)) };
 
   // First determine the keys for all cases, with empty values
   let keys: (string | number)[][] = [];
   for (let i = 0; i < args.length; ++i) {
     const kk = Array.from(new Set(args[i].keys));
+    const io = kk.indexOf('other');
+    if (io !== kk.length - 1) {
+      if (io !== -1) kk.splice(io, 1);
+      kk.push('other');
+    }
     if (i === 0) keys = kk.map(key => [key]);
     else
       for (let i = keys.length - 1; i >= 0; --i)
@@ -136,19 +151,21 @@ export function astToMessage(ast: AST.Token[]): Message {
   function addParts(
     tokens: readonly AST.Token[],
     pluralArg: string | null,
+    pluralOffset: number | null,
     filter: readonly { idx: number; value: string | number }[]
   ) {
     for (const token of tokens) {
       if (isAstSelect(token)) {
         const isPlural = token.type !== 'select';
         const pa = isPlural ? token.arg : pluralArg;
+        const po = isPlural ? token.pluralOffset || null : pluralOffset;
         const idx = args.findIndex(equalSelectArgs(token));
         for (const c of token.cases) {
           const value = isPlural ? asPluralKey(c.key) : c.key;
-          addParts(c.tokens, pa, [...filter, { idx, value }]);
+          addParts(c.tokens, pa, po, [...filter, { idx, value }]);
         }
       } else {
-        const part = tokenToPart(token, pluralArg);
+        const part = tokenToPart(token, pluralArg, pluralOffset);
         for (const c of cases)
           if (filter.every(({ idx, value }) => c.key[idx] === value)) {
             const end = c.value.length - 1;
@@ -159,7 +176,7 @@ export function astToMessage(ast: AST.Token[]): Message {
       }
     }
   }
-  addParts(ast, null, []);
+  addParts(ast, null, null, []);
 
   return { value: { select: args.map(argToPart), cases } };
 }
