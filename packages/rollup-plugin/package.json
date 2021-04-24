@@ -29,7 +29,7 @@
   ],
   "type": "commonjs",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
