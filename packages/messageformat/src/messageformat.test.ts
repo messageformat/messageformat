@@ -1,4 +1,4 @@
-import { compileResource } from '@messageformat/compiler';
+import { compileMF1 } from '@messageformat/compiler';
 import { MessageFormat } from 'messageformat';
 
 export type TestCase = {
@@ -375,7 +375,7 @@ for (const [title, cases] of Object.entries(testCases)) {
 
           test(strParam.join(', '), () => {
             const mf = new MessageFormat(locale);
-            const ast = compileResource({ msg: src }, { id: 'res', locale });
+            const ast = compileMF1({ msg: src }, { id: 'res', locale });
             mf.addResources(ast);
             const msg = mf.format(
               'res',
