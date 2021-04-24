@@ -28,10 +28,11 @@
   ],
   "dependencies": {
     "@messageformat/parser": "file:../parser",
-    "make-plural": "^6.2.1"
+    "make-plural": "^6.2.1",
+    "messageformat": "file:../messageformat"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "extract-api": "api-extractor run --local --verbose"
   }
 }

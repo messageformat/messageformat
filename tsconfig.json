@@ -1,13 +1,18 @@
 {
+  "extends": "./config/tsconfig.base.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "target": "ES2017"
-  },
-  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
+    "baseUrl": ".",
+    "paths": {
+      "@messageformat/compiler": ["packages/compiler/src/compile"],
+      "@messageformat/core": ["packages/core/src/messageformat"],
+      "@messageformat/core/compile-module": ["packages/core/src/compile-module"],
+      "@messageformat/date-skeleton": ["packages/date-skeleton/src/index"],
+      "@messageformat/number-skeleton": ["packages/number-skeleton/src/index"],
+      "@messageformat/parser": ["packages/parser/src/parser"],
+      "@messageformat/react": ["packages/react/src/index"],
+      "@messageformat/runtime": ["packages/runtime/src/runtime"],
+      "@messageformat/runtime/lib/*": ["packages/runtime/src/*"],
+      "messageformat": ["packages/messageformat/src/index.ts"]
+    }
+  }
 }

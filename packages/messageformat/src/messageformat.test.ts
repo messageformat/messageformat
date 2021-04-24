@@ -6,7 +6,7 @@ export type TestCase = {
   options?: Record<string, boolean | string>;
   src: string;
   exp: [
-    Record<string, string | number | Date> | (string | number)[],
+    Record<string, string | number | Date> | (string | number)[] | undefined,
     string | RegExp
   ][];
 };

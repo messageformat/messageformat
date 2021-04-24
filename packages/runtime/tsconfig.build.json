@@ -1,8 +1,8 @@
 {
   "extends": "../../config/tsconfig.base.json",
   "compilerOptions": {
-    "removeComments": true
+    "target": "ES5"
   },
-  "include": ["src/*"],
+  "include": ["src/**/*"],
   "exclude": ["**/*.test.ts"]
 }

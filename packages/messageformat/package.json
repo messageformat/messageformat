@@ -30,7 +30,7 @@
     "make-plural": "^6.2.1"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "extract-api": "api-extractor run --local --verbose"
   }
 }
