@@ -4,7 +4,7 @@ import {
   numberFmt,
   time as timeFmt
 } from '@messageformat/runtime/lib/formatters';
-import { FunctionOptions, Runtime } from './data-model';
+import { FunctionOptions, Runtime } from '../data-model';
 
 export const runtime: Runtime<string> = {
   select: { plural },

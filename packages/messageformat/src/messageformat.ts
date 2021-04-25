@@ -8,7 +8,7 @@ import {
 } from './data-model';
 import { createContext } from './format-context';
 import { formatToParts, formatToString } from './format-message';
-import { runtime as defaultRuntime } from './runtime';
+import { runtime as defaultRuntime } from './runtime/default';
 
 function getEntry(res: Resource, path: string[]) {
   let msg: MessageGroup | Message = res;
@@ -22,9 +22,9 @@ function getEntry(res: Resource, path: string[]) {
 /**
  * Create a new message formatter.
  *
- * If `runtime` is unset, a default set is used, consisting of `plural` for
- * selection and the MF1 formatters `date`, `duration`, `number`, and `time`,
- * but without date or number skeleton support.
+ * If `runtime` is unset, a default minimal set is used, consisting of `plural`
+ * for selection and `datetime` & `number` formatters based on the `Intl`
+ * equivalents.
  */
 export class MessageFormat<R = string> {
   locales: string[];

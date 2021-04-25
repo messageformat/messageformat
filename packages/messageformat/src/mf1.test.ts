@@ -1,5 +1,5 @@
 import { compileMF1 } from '@messageformat/compiler';
-import { MessageFormat } from 'messageformat';
+import { MessageFormat, mf1Runtime } from 'messageformat';
 
 export type TestCase = {
   locale?: string;
@@ -374,7 +374,7 @@ for (const [title, cases] of Object.entries(testCases)) {
           else strParam.push(String(param));
 
           test(strParam.join(', '), () => {
-            const mf = new MessageFormat(locale);
+            const mf = new MessageFormat(locale, mf1Runtime);
             const ast = compileMF1({ msg: src }, { id: 'res', locale });
             mf.addResources(ast);
             const msg = mf.format(
