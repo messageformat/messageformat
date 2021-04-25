@@ -3,7 +3,7 @@ import type {
   FunctionReference,
   Message,
   Part,
-  Select,
+  SelectCase,
   VariableReference
 } from 'messageformat';
 
@@ -130,17 +130,17 @@ export function astToMessage(ast: AST.Token[]): Message {
   let keys: (string | number)[][] = [];
   for (let i = 0; i < args.length; ++i) {
     const kk = Array.from(new Set(args[i].keys));
-    const io = kk.indexOf('other');
-    if (io !== kk.length - 1) {
-      if (io !== -1) kk.splice(io, 1);
-      kk.push('other');
-    }
+    kk.sort((a, b) => {
+      if (typeof a === 'number' || b === 'other') return -1;
+      if (typeof b === 'number' || a === 'other') return 1;
+      return 0;
+    });
     if (i === 0) keys = kk.map(key => [key]);
     else
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: Select['cases'] = keys.map(key => ({ key, value: [] }));
+  const cases: SelectCase[] = keys.map(key => ({ key, value: [] }));
 
   /**
    * This reads `args` and modifies `cases`
@@ -178,5 +178,6 @@ export function astToMessage(ast: AST.Token[]): Message {
   }
   addParts(ast, null, null, []);
 
-  return { value: { select: args.map(argToPart), cases } };
+  const select = args.map(arg => ({ value: argToPart(arg) }));
+  return { value: { select, cases } };
 }

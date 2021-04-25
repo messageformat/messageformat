@@ -32,7 +32,7 @@ export function validate(resources: Resource[], runtime: Runtime) {
       if ('entries' in msg) handleMsgGroup(msg);
       else if (Array.isArray(msg.value)) handleMsgParts(msg.value);
       else {
-        handleMsgParts(msg.value.select, true);
+        handleMsgParts(msg.value.select.map(sel => sel.value), true);
         for (const { value } of msg.value.cases) handleMsgParts(value);
       }
     }

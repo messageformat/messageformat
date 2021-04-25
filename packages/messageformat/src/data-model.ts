@@ -60,10 +60,19 @@ export const isPattern = (value: Message['value']): value is Pattern =>
  *
  * It is likely that in nearly all cases the source of the placeholder's value
  * will be a variable in the local scope.
+ *
+ * If a selection argument does not define an explicit `default` value for
+ * itself, the string `'other'` is used.
  */
 export interface Select {
-  select: Part[];
-  cases: Array<{ key: Literal[]; value: Pattern; meta?: Meta }>;
+  select: { value: Part; default?: Literal }[];
+  cases: SelectCase[];
+}
+
+export interface SelectCase {
+  key: Literal[];
+  value: Pattern;
+  meta?: Meta;
 }
 
 export const isSelect = (value: Message['value']): value is Select =>

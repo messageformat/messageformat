@@ -101,17 +101,22 @@ function resolveSelect<R, S>(
   ctx: Context<R, S>,
   { select, cases }: Select
 ): Pattern {
-  const res = select.map(part => {
-    const v = isFunctionReference(part)
-      ? resolveSelectFunction(ctx, part)
-      : resolveAsValue(ctx, part);
-    return isLiteral(v) || Array.isArray(v) ? v : String(v);
+  const res = select.map(s => {
+    const v = isFunctionReference(s.value)
+      ? resolveSelectFunction(ctx, s.value)
+      : resolveAsValue(ctx, s.value);
+    const value = isLiteral(v) || Array.isArray(v) ? v : String(v);
+    return { value, default: s.default || 'other' };
   });
   for (const { key, value } of cases) {
     if (
       key.every((k, i) => {
         const r = res[i];
-        return k === 'other' || k === r || (Array.isArray(r) && r.includes(k));
+        return (
+          k === r.default ||
+          k === r.value ||
+          (Array.isArray(r.value) && r.value.includes(k))
+        );
       })
     )
       return value;
