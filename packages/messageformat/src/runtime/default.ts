@@ -10,12 +10,16 @@ export function datetime(
   options: FunctionOptions,
   arg: unknown
 ) {
-  const dtf = new Intl.DateTimeFormat(locales, options);
   const d =
     typeof arg === 'number' || arg instanceof Date
       ? arg
       : new Date(String(arg));
-  return dtf.format(d);
+  try {
+    const dtf = new Intl.DateTimeFormat(locales, options);
+    return dtf.format(d);
+  } catch (_) {
+    return String(d);
+  }
 }
 
 export function number(
@@ -23,16 +27,24 @@ export function number(
   options: FunctionOptions,
   arg: unknown
 ) {
-  const nf = new Intl.NumberFormat(locales, options);
-  return nf.format(Number(arg));
+  try {
+    const nf = new Intl.NumberFormat(locales, options);
+    return nf.format(Number(arg));
+  } catch (_) {
+    return String(arg);
+  }
 }
 
 export function plural(
   locales: string[],
   options: FunctionOptions,
   arg: unknown
-): (number | Intl.LDMLPluralRule)[] {
+) {
   const n = Number(arg);
-  const pr = new Intl.PluralRules(locales, options);
-  return [n, pr.select(n)];
+  try {
+    const pr = new Intl.PluralRules(locales, options);
+    return [n, pr.select(n)];
+  } catch (_) {
+    return n;
+  }
 }

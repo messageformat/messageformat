@@ -50,13 +50,17 @@ export function plural(
   locales: string[],
   options: FunctionOptions,
   arg: unknown
-): (number | Intl.LDMLPluralRule)[] {
+) {
   const n = Number(arg);
-  if (!Number.isFinite(n)) return [];
+  if (!Number.isFinite(n)) return n;
   const offset = Number(options && options.pluralOffset);
-  const pr = new Intl.PluralRules(locales, options);
-  const cat = pr.select(Number.isFinite(offset) ? n - offset : n);
-  return [n, cat];
+  try {
+    const pr = new Intl.PluralRules(locales, options);
+    const cat = pr.select(Number.isFinite(offset) ? n - offset : n);
+    return [n, cat];
+  } catch (_) {
+    return n;
+  }
 }
 
 export function time(

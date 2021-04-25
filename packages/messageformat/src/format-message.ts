@@ -18,7 +18,7 @@ import { Context, extendContext } from './format-context';
 
 export type FormattedPart<T = unknown> =
   | { type: 'literal'; value: Literal }
-  | { type: 'dynamic'; value: T | undefined }
+  | { type: 'dynamic'; value: T | string | undefined }
   | { type: 'message'; value: FormattedPart<T>[] };
 
 export function formatToString<R, S>(ctx: Context<R, S>, { value }: Message) {
@@ -62,7 +62,7 @@ function resolveAsValue<R, S>(
   if (isFunctionReference(part)) return resolveFormatFunction(ctx, part);
   if (isMessageReference(part)) {
     const { msg, msgCtx } = resolveMessage(ctx, part);
-    return msg ? formatToString(msgCtx, msg) : '';
+    return msg ? formatToString(msgCtx, msg) : `{${part.msg_path.join('.')}}`;
   }
   /* istanbul ignore next - never happens */
   return undefined;
@@ -72,9 +72,13 @@ function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: FunctionReference
 ) {
+  const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
   const fn = ctx.runtime.format[func];
-  if (typeof fn !== 'function') return undefined;
-  return fn(ctx.locales, options, ...args.map(arg => resolveAsValue(ctx, arg)));
+  try {
+    return fn(ctx.locales, options, ...fnArgs);
+  } catch (_) {
+    return `{${func}(${fnArgs.join(',')})}`;
+  }
 }
 
 function resolveMessage<R, S>(
@@ -128,20 +132,24 @@ function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: FunctionReference
 ) {
+  const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
   const fn = ctx.runtime.select[func];
-  if (typeof fn !== 'function') return undefined;
-  return fn(ctx.locales, options, ...args.map(arg => resolveAsValue(ctx, arg)));
+  try {
+    return fn(ctx.locales, options, ...fnArgs);
+  } catch (_) {
+    return isLiteral(fnArgs[0]) ? fnArgs[0] : String(fnArgs[0]);
+  }
 }
 
 function resolveVariable<R, S>(
   ctx: Context<R, S>,
   ref: VariableReference
-): S | undefined {
+): S | string | undefined {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let val: any = ctx.scope;
   for (const key of ref.var_path.map(part => resolveAsValue(ctx, part))) {
-    if (!val || typeof val !== 'object') return undefined;
+    if (!val || typeof val !== 'object') return `{$${ref.var_path.join('.')}}`;
     val = val[key as string];
   }
-  return val;
+  return val === undefined ? `{$${ref.var_path.join('.')}}` : val;
 }
