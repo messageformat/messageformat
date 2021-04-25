@@ -109,8 +109,9 @@ export function astToMessage(ast: Fluent.Pattern): Message {
     const kk = Array.from(new Set(arg.keys));
     const def = arg.default;
     kk.sort((a, b) => {
+      if (a === def) return 1
       if (typeof a === 'number' || b === def) return -1;
-      if (typeof b === 'number' || a === def) return 1;
+      if (typeof b === 'number') return 1;
       return 0;
     });
     if (i === 0) keys = kk.map(key => [key]);
@@ -150,9 +151,11 @@ export function astToMessage(ast: Fluent.Pattern): Message {
   }
   addParts(ast, []);
 
-  const select = args.map(arg => ({
-    value: expressionToPart(arg.selector),
-    default: arg.default
-  }));
+  const select = args.map(arg => {
+    const value = expressionToPart(arg.selector);
+    if (typeof value === 'object' && 'func' in value && value.func === 'NUMBER')
+      value.func = 'plural';
+    return { value, default: arg.default };
+  });
   return { value: { select, cases } };
 }

@@ -109,7 +109,12 @@ function resolveSelect<R, S>(
     const v = isFunctionReference(s.value)
       ? resolveSelectFunction(ctx, s.value)
       : resolveAsValue(ctx, s.value);
-    const value = isLiteral(v) || Array.isArray(v) ? v : String(v);
+    let value: Literal | Literal[];
+    if (typeof v === 'number') {
+      const { plural } = ctx.runtime.select;
+      value =
+        typeof plural === 'function' ? plural(ctx.locales, undefined, v) : v;
+    } else value = typeof v === 'string' || Array.isArray(v) ? v : String(v);
     return { value, default: s.default || 'other' };
   });
   for (const { key, value } of cases) {
