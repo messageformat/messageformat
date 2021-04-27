@@ -265,6 +265,7 @@ export interface Group<
      * value defined by the authority. The prefix `xlf` is reserved.
      */
     type?: string;
+    'mf:select'?: string;
     'slr:sizeInfo'?: string | number;
     'slr:sizeInfoRef'?: string;
     'slr:sizeRestriction'?: string | number;
@@ -282,6 +283,7 @@ export interface Group<
     | Metadata
     | SizeLengthData
     | Validation
+    | MessagePart
     | GroupOther
     | Notes
     | Group<GroupOther, UnitOther>
@@ -359,6 +361,7 @@ export interface Unit<UnitOther extends Element | never = never>
     | ResourceData
     | SizeLengthData
     | Validation
+    | MessagePart
     | UnitOther
     | Notes
     | OriginalData
@@ -507,7 +510,7 @@ export interface CharCode extends Element {
     /** The value of a Unicode code point that is invalid in XML */
     hex: string;
   };
-  elements: never;
+  elements?: never;
 }
 
 export interface CodeAttributes {
@@ -613,7 +616,7 @@ export interface Placeholder extends Element {
      */
     subFlows?: string;
   };
-  elements: never;
+  elements?: never;
 }
 
 export interface CodeSpan extends Element {
@@ -742,7 +745,7 @@ export interface CodeSpanStart extends Element {
     'slr:sizeRestriction'?: string | number;
     'slr:storageRestriction'?: string | number;
   };
-  elements: never;
+  elements?: never;
 }
 
 export interface CodeSpanEnd extends Element {
@@ -796,7 +799,7 @@ export interface CodeSpanEnd extends Element {
      */
     subFlows?: string;
   };
-  elements: never;
+  elements?: never;
 }
 
 export interface AnnotationAttributes {
@@ -858,7 +861,7 @@ export interface Annotation extends Element {
 export interface AnnotationStart extends Element {
   name: 'sm';
   attributes: AnnotationAttributes;
-  elements: never;
+  elements?: never;
 }
 
 export interface AnnotationEnd extends Element {
@@ -867,7 +870,7 @@ export interface AnnotationEnd extends Element {
     /** The id value of the corresponding `<sm>` element */
     startRef: string;
   };
-  elements: never;
+  elements?: never;
 }
 
 /**
@@ -1056,7 +1059,7 @@ export interface ResourceItemRef extends Element {
     id?: string;
     [key: string]: string | number | undefined;
   };
-  elements: never;
+  elements?: never;
 }
 
 export interface ResourceItem extends Element {
@@ -1077,7 +1080,7 @@ export interface ResourceSource extends Element {
     'xml:lang'?: string;
     [key: string]: string | number | undefined;
   };
-  elements: never | Element[];
+  elements?: Element[];
 }
 
 export interface ResourceTarget extends Element {
@@ -1087,7 +1090,7 @@ export interface ResourceTarget extends Element {
     'xml:lang'?: string;
     [key: string]: string | number | undefined;
   };
-  elements: never | Element[];
+  elements?: Element[];
 }
 
 export interface ResourceReference extends Element {
@@ -1097,7 +1100,7 @@ export interface ResourceReference extends Element {
     'xml:lang'?: string;
     [key: string]: string | number | undefined;
   };
-  elements: never;
+  elements?: never;
 }
 
 /**
@@ -1119,7 +1122,7 @@ export interface SizeLengthNormalization extends Element {
     general?: Normalization;
     storage?: Normalization;
   };
-  elements: never;
+  elements?: never;
 }
 
 export interface SizeLengthData extends Element {
@@ -1154,5 +1157,100 @@ export interface ValidationRule extends Element {
     disabled?: YesNo;
     [key: string]: string | number | undefined;
   };
-  elements: never;
+  elements?: never;
+}
+
+/**
+ * MessageFormat Module
+ */
+
+export type MessagePart =
+  | MessageLiteral
+  | MessageFunction
+  | MessageReference
+  | MessageVariable;
+
+export interface MessageLiteral extends Element {
+  name: 'mf:literal';
+  attributes?: {
+    id?: string;
+    default?: string | number;
+
+    /**
+     * Directionality of content: `ltr` (Left-To-Right), `rtl` (Right-To-Left),
+     * or `auto` (determined heuristically, based on the first strong
+     * directional character in scope).
+     *
+     * Default: `auto`
+     */
+    dir?: Direction;
+
+    /**
+     * How white spaces (ASCII spaces, tabs and line-breaks) are to be treated.
+     *
+     * Default: `preserve`
+     */
+    'xml:space'?: XmlSpace;
+  };
+  elements: [Text];
+}
+
+export interface MessageFunction extends Element {
+  name: 'mf:function';
+  attributes: {
+    id?: string;
+    name: string;
+    default?: string | number;
+  };
+  elements: (MessageOption | MessagePart)[];
+}
+
+export interface MessageOption extends Element {
+  name: 'mf:option';
+  attributes: {
+    name: string;
+    values?: string;
+
+    /**
+     * Directionality of content: `ltr` (Left-To-Right), `rtl` (Right-To-Left),
+     * or `auto` (determined heuristically, based on the first strong
+     * directional character in scope).
+     *
+     * Default: `auto`
+     */
+    dir?: Direction;
+
+    /**
+     * How white spaces (ASCII spaces, tabs and line-breaks) are to be treated.
+     *
+     * Default: `preserve`
+     */
+    'xml:space'?: XmlSpace;
+  };
+  elements: [Text];
+}
+
+export interface MessageReference extends Element {
+  name: 'mf:message';
+  attributes?: {
+    id?: string;
+    default?: string | number;
+    resourceId?: string;
+  };
+  elements: (MessageScope | MessagePart)[];
+}
+
+export interface MessageScope extends Element {
+  name: 'mf:scope';
+  attributes: {
+    name: string;
+    values?: string;
+  };
+  elements: MessagePart[];
+}
+
+export interface MessageVariable extends Element {
+  name: 'mf:variable';
+  attributes?: { id?: string; default?: string | number };
+  elements: MessagePart[];
 }

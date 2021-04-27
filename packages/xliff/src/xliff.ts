@@ -21,7 +21,6 @@ export function parse(src: string, options?: ParseOptions) {
 
 export function stringify(xliff: Xliff | XliffDoc, options?: StringifyOptions) {
   const doc = xliff.name === 'xliff' ? { elements: [xliff] } : xliff;
-  // TODO Add <cp> escapes
   const opt = Object.assign({ spaces: 2 }, options, { compact: false });
   return js2xml(doc, opt);
 }
