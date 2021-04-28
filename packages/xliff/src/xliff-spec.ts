@@ -283,7 +283,7 @@ export interface Group<
     | Metadata
     | SizeLengthData
     | Validation
-    | MessagePart
+    | MessageFormat
     | GroupOther
     | Notes
     | Group<GroupOther, UnitOther>
@@ -361,7 +361,7 @@ export interface Unit<UnitOther extends Element | never = never>
     | ResourceData
     | SizeLengthData
     | Validation
-    | MessagePart
+    | MessageFormat
     | UnitOther
     | Notes
     | OriginalData
@@ -1169,6 +1169,11 @@ export type MessagePart =
   | MessageFunction
   | MessageReference
   | MessageVariable;
+
+export interface MessageFormat extends Element {
+  name: 'mf:messageformat';
+  elements: MessagePart[];
+}
 
 export interface MessageLiteral extends Element {
   name: 'mf:literal';

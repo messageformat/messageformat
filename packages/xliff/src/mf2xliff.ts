@@ -14,7 +14,7 @@ let _id = 0;
 const nextId = () => `m${++_id}`;
 
 export function mf2xliff(mf: MF.MessageFormat | MF.Resource): X.Xliff {
-  _id = 0
+  _id = 0;
   let srcLang: string;
   let elements: X.File[];
   if (mf instanceof MessageFormat) {
@@ -47,8 +47,8 @@ const handleResource = (res: MF.Resource): X.File => ({
   )
 });
 
-const msgAttributes = (key: string[]) => ({
-  id: `g:${key.join('.').replace(/ +/g, '_')}`,
+const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({
+  id: `${pre}:${key.join('.').replace(/ +/g, '_')}`,
   name: key[key.length - 1]
 });
 
@@ -70,7 +70,7 @@ function handleEntry(
   return {
     type: 'element',
     name: 'group',
-    attributes: msgAttributes(key),
+    attributes: msgAttributes('g', key),
     elements: Object.entries(msg.entries).map(([k, msg]) =>
       handleEntry([...key, k], msg)
     )
@@ -79,7 +79,7 @@ function handleEntry(
 
 function handleSelect(key: string[], sel: MF.Select): X.Group {
   const selSrc: string[] = [];
-  const elements: (X.MessagePart | X.Unit)[] = sel.select.map(p => {
+  const parts: X.MessagePart[] = sel.select.map(p => {
     const id = nextId();
     selSrc.push(id);
     const part = handlePart(id, p.value);
@@ -88,13 +88,16 @@ function handleSelect(key: string[], sel: MF.Select): X.Group {
     return part;
   });
 
+  const elements: (X.MessageFormat | X.Unit)[] = [
+    { type: 'element', name: 'mf:messageformat', elements: parts }
+  ];
   for (const c of sel.cases)
     elements.push(handlePattern([...key, c.key.join(' ')], c.value));
 
   return {
     type: 'element',
     name: 'group',
-    attributes: Object.assign(msgAttributes(key), {
+    attributes: Object.assign(msgAttributes('g', key), {
       'mf:select': selSrc.join(' ')
     }),
     elements
@@ -102,21 +105,33 @@ function handleSelect(key: string[], sel: MF.Select): X.Group {
 }
 
 function handlePattern(key: string[], pattern: MF.Part[]): X.Unit {
-  const elements: (X.MessagePart | X.Segment)[] = [];
+  const parts: X.MessagePart[] = [];
   const source: X.Source = { type: 'element', name: 'source', elements: [] };
   for (const p of pattern) {
     if (isLiteral(p)) source.elements.push(asText(p));
     else {
       const id = nextId();
       const part = handlePart(id, p);
-      elements.push(part);
+      parts.push(part);
       const attributes = { id: id.substring(1), 'mf:ref': id };
       source.elements.push({ type: 'element', name: 'ph', attributes });
     }
   }
-  const attributes = msgAttributes(key);
-  elements.push({ type: 'element', name: 'segment', elements: [source] });
-  return { type: 'element', name: 'unit', attributes, elements };
+  const elements: (X.MessageFormat | X.Segment)[] = [
+    { type: 'element', name: 'segment', elements: [source] }
+  ];
+  if (parts.length > 0)
+    elements.unshift({
+      type: 'element',
+      name: 'mf:messageformat',
+      elements: parts
+    });
+  return {
+    type: 'element',
+    name: 'unit',
+    attributes: msgAttributes('u', key),
+    elements
+  };
 }
 
 function handlePart(id: string | null, part: MF.Part | boolean): X.MessagePart {
