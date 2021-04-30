@@ -13,7 +13,7 @@ export function compileFluent(
       const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
       if (msg.value) entries[id] = astToMessage(msg.value);
       for (const attr of msg.attributes)
-        entries[`${id}.${attr.id.name}`] = astToMessage( attr.value);
+        entries[`${id}.${attr.id.name}`] = astToMessage(attr.value);
     }
   }
   return { id, locale, entries };

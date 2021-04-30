@@ -29,10 +29,7 @@ export interface StringStructure {
   [key: string]: StringStructure | string;
 }
 
-function compileMessageGroup(
-  src: StringStructure,
-  options: ParseOptions
-) {
+function compileMessageGroup(src: StringStructure, options: ParseOptions) {
   const entries: MessageGroup['entries'] = {};
   for (const [key, value] of Object.entries(src)) {
     entries[key] =

@@ -109,7 +109,7 @@ export function astToMessage(ast: Fluent.Pattern): Message {
     const kk = Array.from(new Set(arg.keys));
     const def = arg.default;
     kk.sort((a, b) => {
-      if (a === def) return 1
+      if (a === def) return 1;
       if (typeof a === 'number' || b === def) return -1;
       if (typeof b === 'number') return 1;
       return 0;
