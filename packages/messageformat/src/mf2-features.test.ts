@@ -327,3 +327,44 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     );
   });
 });
+
+const maybe = process.version > 'v12' ? test : test.skip;
+maybe('List formatter (unicode-org/message-format-wg#36)', () => {
+  function LIST(
+    locales: string[],
+    options: FunctionOptions,
+    ...args: (string | string[])[]
+  ) {
+    let list: string[] = [];
+    for (const arg of args) list = list.concat(arg);
+    // @ts-ignore
+    const lf = new Intl.ListFormat(locales, options);
+    return lf.format(list);
+  }
+  const runtime: Runtime = {
+    select: fluentRuntime.select,
+    format: Object.assign({ LIST }, fluentRuntime.format)
+  };
+
+  const src = source`
+      plain = { LIST($list) }
+      and = { LIST($list, style: "short", type: "conjunction") }
+      or = { LIST($list, style: "long", type: "disjunction") }
+      or-other = { LIST($list, "another vehicle", type: "disjunction") }
+    `;
+  const res = compileFluent(src, { id: 'res', locale: 'en' });
+  const mf = new MessageFormat('en', runtime, res);
+  const list = ['Motorcycle', 'Bus', 'Car'];
+
+  const plainMsg = mf.format('res', ['plain'], { list });
+  expect(plainMsg).toBe('Motorcycle, Bus, and Car');
+
+  const andMsg = mf.format('res', ['and'], { list });
+  expect(andMsg).toBe('Motorcycle, Bus, & Car');
+
+  const orMsg = mf.format('res', ['or'], { list });
+  expect(orMsg).toBe('Motorcycle, Bus, or Car');
+
+  const otherMsg = mf.format('res', ['or-other'], { list });
+  expect(otherMsg).toBe('Motorcycle, Bus, Car, or another vehicle');
+});
