@@ -65,8 +65,13 @@ export const isPattern = (value: Message['value']): value is Pattern =>
  * itself, the string `'other'` is used.
  */
 export interface Select {
-  select: { value: Part; default?: Literal }[];
+  select: Selector[];
   cases: SelectCase[];
+}
+
+export interface Selector {
+  value: Part;
+  default?: Literal;
 }
 
 export interface SelectCase {
@@ -139,9 +144,7 @@ export interface FunctionReference {
   meta?: Meta;
 }
 
-export type FunctionOptions =
-  | Record<string, string | number | boolean>
-  | undefined;
+export type FunctionOptions = Record<string, string | number | boolean>;
 
 export const isFunctionReference = (part: any): part is FunctionReference =>
   !!part &&
@@ -163,9 +166,14 @@ export const isFunctionReference = (part: any): part is FunctionReference =>
 export interface MessageReference {
   res_id?: string;
   msg_path: Path;
-  scope?: Record<string, Part | boolean | (string | number | boolean)[]>;
+  scope?: MessageScope;
   meta?: Meta;
 }
+
+export type MessageScope = Record<
+  string,
+  Part | boolean | (string | number | boolean)[]
+>;
 
 export const isMessageReference = (part: any): part is MessageReference =>
   !!part && typeof part === 'object' && Array.isArray(part.msg_path);

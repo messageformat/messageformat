@@ -14,14 +14,14 @@ export const runtime: Runtime<string> = {
 const asLiteral = (x: unknown) =>
   typeof x === 'number' || typeof x === 'string' ? x : String(x);
 
-const getParam = (options: FunctionOptions) =>
+const getParam = (options: FunctionOptions | undefined) =>
   (options && String(options.param).trim()) || undefined;
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
 export function date(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   return dateFmt(asLiteral(arg), locales, getParam(options) as DateTimeSize);
@@ -29,7 +29,7 @@ export function date(
 
 export function duration(
   _locales: string[],
-  _options: FunctionOptions,
+  _options: FunctionOptions | undefined,
   arg: unknown
 ) {
   return durationFmt(asLiteral(arg));
@@ -37,7 +37,7 @@ export function duration(
 
 export function number(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   let n = Number(arg);
@@ -48,7 +48,7 @@ export function number(
 
 export function plural(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   const n = Number(arg);
@@ -65,7 +65,7 @@ export function plural(
 
 export function time(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   return timeFmt(asLiteral(arg), locales, getParam(options) as DateTimeSize);

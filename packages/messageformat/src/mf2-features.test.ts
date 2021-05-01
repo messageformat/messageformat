@@ -82,7 +82,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   }
   function formatRange(
     _locales: string[],
-    _options: FunctionOptions,
+    _options: FunctionOptions | undefined,
     start: number | { start: number; end: number },
     end?: number
   ) {
@@ -91,7 +91,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   }
   function pluralRange(
     locales: string[],
-    options: FunctionOptions,
+    options: FunctionOptions | undefined,
     start: number | { start: number; end: number },
     end?: number
   ) {

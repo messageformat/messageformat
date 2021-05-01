@@ -7,7 +7,7 @@ export const runtime: Runtime<string> = {
 
 export function datetime(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   const d =
@@ -24,7 +24,7 @@ export function datetime(
 
 export function number(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   try {
@@ -37,7 +37,7 @@ export function number(
 
 export function plural(
   locales: string[],
-  options: FunctionOptions,
+  options: FunctionOptions | undefined,
   arg: unknown
 ) {
   const n = Number(arg);
