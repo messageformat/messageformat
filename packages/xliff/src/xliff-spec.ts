@@ -413,13 +413,13 @@ export interface Segment extends Element {
      */
     subState?: string;
   };
-  elements: (Source | Target)[];
+  elements: [Source] | [Source, Target];
 }
 
 export interface Ignorable extends Element {
   name: 'ignorable';
   attributes?: { id?: string };
-  elements: (Source | Target)[];
+  elements: [Source] | [Source, Target];
 }
 
 export interface OriginalData extends Element {
@@ -615,6 +615,8 @@ export interface Placeholder extends Element {
      * elements that contain the sub-flows for this code.
      */
     subFlows?: string;
+
+    'mf:ref'?: string;
   };
   elements?: never;
 }
@@ -689,6 +691,8 @@ export interface CodeSpan extends Element {
      * elements that contain the sub-flows for the start marker of this code.
      */
     subFlowsStart?: string;
+
+    'mf:ref'?: string;
     'slr:sizeRestriction'?: string | number;
     'slr:storageRestriction'?: string | number;
   };
@@ -742,6 +746,8 @@ export interface CodeSpanStart extends Element {
      * elements that contain the sub-flows for this code.
      */
     subFlows?: string;
+
+    'mf:ref'?: string;
     'slr:sizeRestriction'?: string | number;
     'slr:storageRestriction'?: string | number;
   };
@@ -1197,7 +1203,7 @@ export interface MessageLiteral extends Element {
      */
     'xml:space'?: XmlSpace;
   };
-  elements: [Text];
+  elements: (Text | CharCode)[];
 }
 
 export interface MessageFunction extends Element {
@@ -1232,7 +1238,7 @@ export interface MessageOption extends Element {
      */
     'xml:space'?: XmlSpace;
   };
-  elements: [Text];
+  elements: (Text | CharCode)[];
 }
 
 export interface MessageReference extends Element {
