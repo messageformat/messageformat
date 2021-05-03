@@ -328,43 +328,103 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
   });
 });
 
-const maybe = process.version > 'v12' ? test : test.skip;
-maybe('List formatter (unicode-org/message-format-wg#36)', () => {
-  function LIST(
-    locales: string[],
-    options: FunctionOptions,
-    ...args: (string | string[])[]
-  ) {
-    let list: string[] = [];
-    for (const arg of args) list = list.concat(arg);
-    // @ts-ignore
-    const lf = new Intl.ListFormat(locales, options);
-    return lf.format(list);
-  }
-  const runtime: Runtime = {
-    select: fluentRuntime.select,
-    format: Object.assign({ LIST }, fluentRuntime.format)
-  };
+const maybe = process.version > 'v14' ? describe : describe.skip;
+maybe('List formatting', () => {
+  test('Intl.ListFormat, combine/flatten inputs (unicode-org/message-format-wg#36)', () => {
+    function LIST(
+      locales: string[],
+      options: FunctionOptions | undefined,
+      ...args: (string | string[])[]
+    ) {
+      let list: string[] = [];
+      for (const arg of args) list = list.concat(arg);
+      // @ts-ignore
+      const lf = new Intl.ListFormat(locales, options);
+      return lf.format(list);
+    }
+    const runtime: Runtime = {
+      select: fluentRuntime.select,
+      format: Object.assign({ LIST }, fluentRuntime.format)
+    };
 
-  const src = source`
+    const src = source`
       plain = { LIST($list) }
       and = { LIST($list, style: "short", type: "conjunction") }
       or = { LIST($list, style: "long", type: "disjunction") }
       or-other = { LIST($list, "another vehicle", type: "disjunction") }
     `;
-  const res = compileFluent(src, { id: 'res', locale: 'en' });
-  const mf = new MessageFormat('en', runtime, res);
-  const list = ['Motorcycle', 'Bus', 'Car'];
+    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const mf = new MessageFormat('en', runtime, res);
+    const list = ['Motorcycle', 'Bus', 'Car'];
 
-  const plainMsg = mf.format('res', ['plain'], { list });
-  expect(plainMsg).toBe('Motorcycle, Bus, and Car');
+    const plainMsg = mf.format('res', ['plain'], { list });
+    expect(plainMsg).toBe('Motorcycle, Bus, and Car');
 
-  const andMsg = mf.format('res', ['and'], { list });
-  expect(andMsg).toBe('Motorcycle, Bus, & Car');
+    const andMsg = mf.format('res', ['and'], { list });
+    expect(andMsg).toBe('Motorcycle, Bus, & Car');
 
-  const orMsg = mf.format('res', ['or'], { list });
-  expect(orMsg).toBe('Motorcycle, Bus, or Car');
+    const orMsg = mf.format('res', ['or'], { list });
+    expect(orMsg).toBe('Motorcycle, Bus, or Car');
 
-  const otherMsg = mf.format('res', ['or-other'], { list });
-  expect(otherMsg).toBe('Motorcycle, Bus, Car, or another vehicle');
+    const otherMsg = mf.format('res', ['or-other'], { list });
+    expect(otherMsg).toBe('Motorcycle, Bus, Car, or another vehicle');
+  });
+
+  test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
+    const runtime: Runtime = {
+      select: fluentRuntime.select,
+      format: Object.assign({ dative, LIST }, fluentRuntime.format)
+    };
+
+    function dative(locales: string[], _options: unknown, arg: string) {
+      if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
+      const data: Record<string, string> = {
+        Maria: 'Mariei',
+        Ileana: 'Ilenei',
+        Petre: 'lui Petre'
+      };
+      return data[arg] || arg;
+    }
+
+    function LIST(
+      locales: string[],
+      options: FunctionOptions | undefined,
+      ...args: (string | string[])[]
+    ) {
+      let list: string[] = [];
+      for (const arg of args) list = list.concat(arg);
+      if (typeof options?.each === 'string') {
+        const fn = runtime.format[options.each];
+        if (typeof fn !== 'function')
+          throw new Error(`list each function not found: ${options.each}`);
+        list = list.map(li => fn(locales, undefined, li));
+      }
+      // @ts-ignore
+      const lf = new Intl.ListFormat(locales, options);
+      return lf.format(list);
+    }
+
+    const src = source`
+      msg = { $count ->
+         [one] I-am dat cadouri { LIST($list, each: "dative") }.
+        *[other] Le-am dat cadouri { LIST($list, each: "dative") }.
+      }
+    `;
+    const res = compileFluent(src, { id: 'res', locale: 'ro' });
+    const mf = new MessageFormat('ro', runtime, res);
+
+    const list1 = ['Petre'];
+    const msg1 = mf.format('res', ['msg'], {
+      count: list1.length,
+      list: list1
+    });
+    expect(msg1).toBe('I-am dat cadouri lui Petre.');
+
+    const list3 = ['Maria', 'Ileana', 'Petre'];
+    const msg3 = mf.format('res', ['msg'], {
+      count: list3.length,
+      list: list3
+    });
+    expect(msg3).toBe('Le-am dat cadouri Mariei, Ilenei și lui Petre.');
+  });
 });
