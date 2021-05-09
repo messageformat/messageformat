@@ -72,6 +72,8 @@ function expressionToPart(exp: Fluent.Expression): Part {
         scope[name.name] = value.parse().value;
       return { msg_path: [id], scope };
     }
+
+    /* istanbul ignore next - never happens */
     case 'Placeable':
       return expressionToPart(exp.expression);
 
@@ -89,18 +91,27 @@ function asFluentSelect(
 ): Fluent.SelectExpression | null {
   if (el.type === 'TextElement') return null;
   switch (el.expression.type) {
-    case 'Placeable':
-      return asFluentSelect(el.expression);
     case 'SelectExpression':
       return el.expression;
+
+    /* istanbul ignore next - never happens */
+    case 'Placeable':
+      return asFluentSelect(el.expression);
+
     default:
       return null;
   }
 }
 
-export function astToMessage(ast: Fluent.Pattern): Message {
+export function astToMessage(
+  ast: Fluent.Pattern,
+  comment: Fluent.Comment | null
+): Message {
   const args = findSelectArgs(ast);
-  if (args.length === 0) return { value: ast.elements.map(elementToPart) };
+  if (args.length === 0) {
+    const value = ast.elements.map(elementToPart);
+    return comment ? { value, meta: { comment: comment.content } } : { value };
+  }
 
   // First determine the keys for all cases, with empty values
   let keys: (string | number)[][] = [];
@@ -157,5 +168,6 @@ export function astToMessage(ast: Fluent.Pattern): Message {
       value.func = 'plural';
     return { value, default: arg.default };
   });
-  return { value: { select, cases } };
+  const value = { select, cases };
+  return comment ? { value, meta: { comment: comment.content } } : { value };
 }
