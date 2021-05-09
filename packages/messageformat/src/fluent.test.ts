@@ -24,7 +24,7 @@
 import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
-import { fluentRuntime, MessageFormat } from 'messageformat';
+import { fluentRuntime, MessageFormat, Resource } from 'messageformat';
 
 type TestCase = {
   locale?: string;
@@ -289,3 +289,133 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     }
   });
 }
+
+describe('formatToParts', () => {
+  describe('parts', () => {
+    const src = source`
+      foo = Foo { $num }
+      bar = { foo }
+      sel = {$selector ->
+          [a] A
+         *[b] B
+      }
+    `;
+
+    let mf: MessageFormat;
+    beforeAll(() => {
+      const res = compileFluent(src, { id: 'res', locale: 'en' });
+      mf = new MessageFormat('en', fluentRuntime, res);
+    });
+
+    test('defined formatted variable', () => {
+      const foo = mf.formatToParts('res', ['foo'], { num: 42 });
+      expect(foo).toEqual([
+        { type: 'literal', value: 'Foo ' },
+        { type: 'dynamic', value: 42 }
+      ]);
+    });
+
+    test('undefined formatted variable', () => {
+      const foo = mf.formatToParts('res', ['foo']);
+      expect(foo).toEqual([
+        { type: 'literal', value: 'Foo ' },
+        { type: 'dynamic', value: '{$num}' }
+      ]);
+    });
+
+    test('message reference', () => {
+      const bar = mf.formatToParts('res', ['bar'], { num: 42 });
+      expect(bar).toEqual([
+        {
+          type: 'message',
+          value: [
+            { type: 'literal', value: 'Foo ' },
+            { type: 'dynamic', value: 42 }
+          ]
+        }
+      ]);
+    });
+
+    test('defined selector', () => {
+      const sel = mf.formatToParts('res', ['sel'], { selector: 'a' });
+      expect(sel).toEqual([{ type: 'literal', value: 'A' }]);
+    });
+
+    test('undefined selector', () => {
+      const sel = mf.formatToParts('res', ['sel']);
+      expect(sel).toEqual([{ type: 'literal', value: 'B' }]);
+    });
+  });
+
+  describe('comments', () => {
+    const src = source`
+      ### Resource comment
+
+      ## Group 1
+
+      # First message
+      foo = Foo { $num }
+      bar = Bar
+
+      ## Group 2
+
+      # Discarded
+
+      # Other message
+      qux = Qux
+
+      ### Other resource comment
+    `;
+
+    let res: Resource;
+    let mf: MessageFormat;
+    beforeAll(() => {
+      res = compileFluent(src, { id: 'res', locale: 'en' });
+      mf = new MessageFormat('en', fluentRuntime, res);
+    });
+
+    test('Resource comments', () => {
+      expect(res).toMatchObject({
+        id: 'res',
+        locale: 'en',
+        meta: { comment: 'Resource comment\n\nOther resource comment' }
+      });
+    });
+
+    test('foo', () => {
+      const foo = mf.formatToParts('res', ['foo'], { num: 42 });
+      expect(foo).toEqual([
+        {
+          type: 'message',
+          value: [
+            { type: 'literal', value: 'Foo ' },
+            { type: 'dynamic', value: 42 }
+          ],
+          meta: { comment: 'First message', group: 'Group 1' }
+        }
+      ]);
+    });
+
+    test('bar', () => {
+      const bar = mf.formatToParts('res', ['bar']);
+      expect(bar).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'Bar' }],
+          meta: { group: 'Group 1' }
+        }
+      ]);
+    });
+
+    test('qux', () => {
+      const qux = mf.formatToParts('res', ['qux']);
+      expect(qux).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'Qux' }],
+          meta: { comment: 'Other message', group: 'Group 2' }
+        }
+      ]);
+    });
+  });
+});

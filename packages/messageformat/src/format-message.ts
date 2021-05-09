@@ -9,6 +9,7 @@ import {
   Literal,
   Message,
   MessageReference,
+  Meta,
   Part,
   Pattern,
   Select,
@@ -16,10 +17,25 @@ import {
 } from './data-model';
 import { Context, extendContext } from './format-context';
 
+export interface FormattedLiteral {
+  type: 'literal';
+  value: Literal;
+}
+export interface FormattedDynamic<T> {
+  type: 'dynamic';
+  value: T | string | undefined;
+  meta?: FormattedMeta;
+}
+export interface FormattedMessage<T> {
+  type: 'message';
+  value: FormattedPart<T>[];
+  meta?: FormattedMeta;
+}
+export type FormattedMeta = Record<string, boolean | number | string | null>;
 export type FormattedPart<T = unknown> =
-  | { type: 'literal'; value: Literal }
-  | { type: 'dynamic'; value: T | string | undefined }
-  | { type: 'message'; value: FormattedPart<T>[] };
+  | FormattedLiteral
+  | FormattedDynamic<T>
+  | FormattedMessage<T>;
 
 export function formatToString<R, S>(ctx: Context<R, S>, { value }: Message) {
   const pattern = isSelect(value) ? resolveSelect(ctx, value) : value;
@@ -28,11 +44,14 @@ export function formatToString<R, S>(ctx: Context<R, S>, { value }: Message) {
   return res;
 }
 
-export function formatToParts<R, S>(ctx: Context<R, S>, { value }: Message) {
+export function formatToParts<R, S>(
+  ctx: Context<R, S>,
+  { meta, value }: Message
+): FormattedPart<R | S>[] {
   const pattern = isSelect(value) ? resolveSelect(ctx, value) : value;
   const res: FormattedPart<R | S>[] = [];
-  for (const part of pattern) res.push(resolveAsPart<R, S>(ctx, part));
-  return res;
+  for (const part of pattern) res.push(resolveAsPart(ctx, part));
+  return meta ? [addMeta({ type: 'message', value: res }, meta)] : res;
 }
 
 function resolveAsPart<R, S>(
@@ -40,14 +59,19 @@ function resolveAsPart<R, S>(
   part: Part
 ): FormattedPart<R | S> {
   if (isLiteral(part)) return { type: 'literal', value: part };
-  if (isVariableReference(part))
-    return { type: 'dynamic', value: resolveVariable<R, S>(ctx, part) };
-  if (isFunctionReference(part))
-    return { type: 'dynamic', value: resolveFormatFunction<R, S>(ctx, part) };
+  if (isVariableReference(part)) {
+    const value = resolveVariable(ctx, part);
+    return addMeta({ type: 'dynamic', value }, part.meta);
+  }
+  if (isFunctionReference(part)) {
+    const value = resolveFormatFunction(ctx, part);
+    return addMeta({ type: 'dynamic', value }, part.meta);
+  }
   if (isMessageReference(part)) {
-    const { msg, msgCtx } = resolveMessage<R, S>(ctx, part);
-    const value = msg ? formatToParts<R, S>(msgCtx, msg) : [];
-    return { type: 'message', value };
+    const { msg, msgCtx } = resolveMessage(ctx, part);
+    if (!msg) return { type: 'message', value: [] };
+    const value = formatToParts(msgCtx, msg);
+    return addMeta({ type: 'message', value }, msg.meta);
   }
   /* istanbul ignore next - never happens */
   throw new Error(`Unsupported part: ${part}`);
@@ -66,6 +90,37 @@ function resolveAsValue<R, S>(
   }
   /* istanbul ignore next - never happens */
   return undefined;
+}
+
+function addMeta<T>(
+  fp: FormattedDynamic<T>,
+  meta: Meta | undefined
+): FormattedDynamic<T>;
+function addMeta<T>(
+  fp: FormattedMessage<T>,
+  meta: Meta | undefined
+): FormattedMessage<T>;
+function addMeta<T>(
+  fp: FormattedDynamic<T> | FormattedMessage<T>,
+  meta: Meta | undefined
+) {
+  if (meta) {
+    const fm: FormattedMeta = {};
+    for (const [key, value] of Object.entries(meta)) {
+      switch (typeof value) {
+        case 'boolean':
+        case 'number':
+        case 'string':
+          fm[key] = value;
+          break;
+        case 'object':
+          if (value === null) fm[key] = null;
+      }
+    }
+    if (fp.meta) Object.assign(fp.meta, fm);
+    else fp.meta = fm;
+  }
+  return fp;
 }
 
 function resolveFormatFunction<R, S>(
