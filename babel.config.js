@@ -17,6 +17,7 @@ module.exports = {
     {
       test: /\.ts$/,
       plugins: [
+        'babel-plugin-const-enum',
         ['@babel/plugin-transform-typescript', { allowDeclareFields: true }],
         '@babel/plugin-proposal-class-properties'
       ]

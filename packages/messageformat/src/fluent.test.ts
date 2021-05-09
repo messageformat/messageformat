@@ -418,4 +418,100 @@ describe('formatToParts', () => {
       ]);
     });
   });
+
+  describe('Detect select cases', () => {
+    const src = source`
+      case = {$case ->
+         [allative] ALL
+         [genitive] GEN
+        *[nominative] NOM
+      }
+      gender = {$gender ->
+         [feminine] F
+         [masculine] M
+        *[neuter] N
+      }
+      plural = {$num ->
+         [0] Zero
+        *[other] Other
+      }
+    `;
+
+    let mf: MessageFormat;
+    beforeAll(() => {
+      const res = compileFluent(src, { id: 'res', locale: 'en' });
+      mf = new MessageFormat('en', fluentRuntime, res);
+    });
+
+    test('case with match', () => {
+      const parts = mf.formatToParts('res', ['case'], { case: 'genitive' });
+      expect(parts).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'GEN' }],
+          meta: { case: 'genitive' }
+        }
+      ]);
+    });
+
+    test('case with fallback', () => {
+      const parts = mf.formatToParts('res', ['case'], { case: 'oblique' });
+      expect(parts).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'NOM' }],
+          meta: { case: 'oblique', caseFallback: 'nominative' }
+        }
+      ]);
+    });
+
+    test('gender with match', () => {
+      const parts = mf.formatToParts('res', ['gender'], { gender: 'feminine' });
+      expect(parts).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'F' }],
+          meta: { gender: 'feminine' }
+        }
+      ]);
+    });
+
+    test('gender with fallback', () => {
+      const parts = mf.formatToParts('res', ['gender']);
+      expect(parts).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'N' }],
+          meta: { gender: '{$gender}', genderFallback: 'neuter' }
+        }
+      ]);
+    });
+
+    test('plural with match', () => {
+      const parts = mf.formatToParts('res', ['plural'], { num: 2 });
+      expect(parts).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'Other' }],
+          meta: { plural: 'other' }
+        }
+      ]);
+    });
+
+    test('plural with fallback', () => {
+      const parts = mf.formatToParts('res', ['plural'], { num: 1 });
+      expect(parts).toEqual([
+        {
+          type: 'message',
+          value: [{ type: 'literal', value: 'Other' }],
+          meta: { plural: 'one', pluralFallback: 'other' }
+        }
+      ]);
+    });
+
+    test('plural with non-plural input', () => {
+      const parts = mf.formatToParts('res', ['plural'], { num: 'NaN' });
+      expect(parts).toEqual([{ type: 'literal', value: 'Other' }]);
+    });
+  });
 });

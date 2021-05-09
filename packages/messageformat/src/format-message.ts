@@ -15,6 +15,7 @@ import {
   Select,
   VariableReference
 } from './data-model';
+import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
 
 export interface FormattedLiteral {
@@ -48,10 +49,17 @@ export function formatToParts<R, S>(
   ctx: Context<R, S>,
   { meta, value }: Message
 ): FormattedPart<R | S>[] {
-  const pattern = isSelect(value) ? resolveSelect(ctx, value) : value;
+  let fsm: FormattedSelectMeta | null = null;
+  const pattern = isSelect(value)
+    ? resolveSelect(ctx, value, _fsm => (fsm = _fsm))
+    : value;
   const res: FormattedPart<R | S>[] = [];
   for (const part of pattern) res.push(resolveAsPart(ctx, part));
-  return meta ? [addMeta({ type: 'message', value: res }, meta)] : res;
+  if (meta || fsm) {
+    const fm = addMeta({ type: 'message', value: res }, meta);
+    if (fsm) fm.meta = Object.assign(fsm, fm.meta);
+    return [fm];
+  } else return res;
 }
 
 function resolveAsPart<R, S>(
@@ -156,11 +164,17 @@ function resolveMessage<R, S>(
   return { msg, msgCtx: ctx };
 }
 
+export type ResolvedSelector = {
+  value: Literal | Literal[];
+  default: Literal;
+};
+
 function resolveSelect<R, S>(
   ctx: Context<R, S>,
-  { select, cases }: Select
+  select: Select,
+  onMeta?: (meta: FormattedSelectMeta) => void
 ): Pattern {
-  const res = select.map(s => {
+  const res: ResolvedSelector[] = select.select.map(s => {
     const v = isFunctionReference(s.value)
       ? resolveSelectFunction(ctx, s.value)
       : resolveAsValue(ctx, s.value);
@@ -172,7 +186,8 @@ function resolveSelect<R, S>(
     } else value = typeof v === 'string' || Array.isArray(v) ? v : String(v);
     return { value, default: s.default || 'other' };
   });
-  for (const { key, value } of cases) {
+
+  for (const { key, value } of select.cases) {
     if (
       key.every((k, i) => {
         const r = res[i];
@@ -182,8 +197,13 @@ function resolveSelect<R, S>(
           (Array.isArray(r.value) && r.value.includes(k))
         );
       })
-    )
+    ) {
+      if (onMeta) {
+        const meta = getFormattedSelectMeta(select, res, key);
+        if (meta) onMeta(meta);
+      }
       return value;
+    }
   }
   return [];
 }
