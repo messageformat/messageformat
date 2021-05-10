@@ -53,10 +53,10 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   };
   const mf = new MessageFormat('fi', null, res);
 
-  const msg = mf.format('res', ['settings'], { 'browser-id': 'firefox' });
+  const msg = mf.format('settings', { 'browser-id': 'firefox' });
   expect(msg).toBe('Firefoxin asetukset');
 
-  const parts = mf.formatToParts('res', ['settings'], {
+  const parts = mf.formatToParts('settings', {
     'browser-id': 'firefox'
   });
   expect(parts).toMatchObject([
@@ -136,10 +136,10 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     };
     const mf = new MessageFormat('nl', runtime, res);
 
-    const msg1 = mf.format('res', ['msg'], { range: { start: 0, end: 1 } });
+    const msg1 = mf.format('msg', { range: { start: 0, end: 1 } });
     expect(msg1).toBe('0 - 1 dag');
 
-    const msg2 = mf.format('res', ['msg'], { range: { start: 1, end: 2 } });
+    const msg2 = mf.format('msg', { range: { start: 1, end: 2 } });
     expect(msg2).toBe('1 - 2 dagen');
   });
 
@@ -186,10 +186,10 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     };
     const mf = new MessageFormat('nl', runtime, res);
 
-    const msg1 = mf.format('res', ['msg'], { start: 0, end: 1 });
+    const msg1 = mf.format('msg', { start: 0, end: 1 });
     expect(msg1).toBe('0 - 1 dag');
 
-    const msg2 = mf.format('res', ['msg'], { start: 1, end: 2 });
+    const msg2 = mf.format('msg', { start: 1, end: 2 });
     expect(msg2).toBe('1 - 2 dagen');
   });
 });
@@ -212,7 +212,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
     const mf = new MessageFormat('en', null, res);
 
-    const none = mf.format('res', ['msg'], {
+    const none = mf.format('msg', {
       poolCount: 0,
       restaurantCount: 0,
       beachCount: 0,
@@ -222,7 +222,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       'This all-inclusive resort includes no pools, no restaurants, no beaches and no golf courses.'
     );
 
-    const one = mf.format('res', ['msg'], {
+    const one = mf.format('msg', {
       poolCount: 1,
       restaurantCount: 1,
       beachCount: 1,
@@ -232,7 +232,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       'This all-inclusive resort includes 1 pool, 1 restaurant, 1 beach and 1 golf course.'
     );
 
-    const two = mf.format('res', ['msg'], {
+    const two = mf.format('msg', {
       poolCount: 2,
       restaurantCount: 2,
       beachCount: 2,
@@ -260,7 +260,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
     const mf = new MessageFormat('en', null, res);
 
-    const one = mf.format('res', ['msg'], {
+    const one = mf.format('msg', {
       N: 1,
       LIVE: String(undefined),
       TAG: 'foo',
@@ -270,7 +270,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     });
     expect(one.replace(/\s+/g, ' ').trim()).toBe('Listing one foo item');
 
-    const two = mf.format('res', ['msg'], {
+    const two = mf.format('msg', {
       N: 2,
       LIVE: true,
       TAG: 'foo',
@@ -302,11 +302,11 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', fluentRuntime, res);
 
-    const msg: any = mf.getEntry('res', ['activity-needed-calculation-plural']);
+    const msg: any = mf.getEntry('res', 'activity-needed-calculation-plural');
     expect(msg.value.select).toHaveLength(4);
     expect(msg.value.cases).toHaveLength(16);
 
-    const one = mf.format('res', ['activity-needed-calculation-plural'], {
+    const one = mf.format('activity-needed-calculation-plural', {
       totalHours: 1,
       periodMonths: 1,
       people: 1,
@@ -316,7 +316,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       '1 hour is achievable in just over 1 month if 1 person record 1 clip a day.'
     );
 
-    const two = mf.format('res', ['activity-needed-calculation-plural'], {
+    const two = mf.format('activity-needed-calculation-plural', {
       totalHours: 2,
       periodMonths: 2,
       people: 2,
@@ -357,16 +357,16 @@ maybe('List formatting', () => {
     const mf = new MessageFormat('en', runtime, res);
     const list = ['Motorcycle', 'Bus', 'Car'];
 
-    const plainMsg = mf.format('res', ['plain'], { list });
+    const plainMsg = mf.format('plain', { list });
     expect(plainMsg).toBe('Motorcycle, Bus, and Car');
 
-    const andMsg = mf.format('res', ['and'], { list });
+    const andMsg = mf.format('and', { list });
     expect(andMsg).toBe('Motorcycle, Bus, & Car');
 
-    const orMsg = mf.format('res', ['or'], { list });
+    const orMsg = mf.format('or', { list });
     expect(orMsg).toBe('Motorcycle, Bus, or Car');
 
-    const otherMsg = mf.format('res', ['or-other'], { list });
+    const otherMsg = mf.format('or-other', { list });
     expect(otherMsg).toBe('Motorcycle, Bus, Car, or another vehicle');
   });
 
@@ -414,14 +414,14 @@ maybe('List formatting', () => {
     const mf = new MessageFormat('ro', runtime, res);
 
     const list1 = ['Petre'];
-    const msg1 = mf.format('res', ['msg'], {
+    const msg1 = mf.format('msg', {
       count: list1.length,
       list: list1
     });
     expect(msg1).toBe('I-am dat cadouri lui Petre.');
 
     const list3 = ['Maria', 'Ileana', 'Petre'];
-    const msg3 = mf.format('res', ['msg'], {
+    const msg3 = mf.format('msg', {
       count: list3.length,
       list: list3
     });

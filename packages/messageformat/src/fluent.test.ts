@@ -282,7 +282,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       }
 
       test(name, () => {
-        const res = mf.format('res', [msg], scope);
+        const res = mf.format(msg, scope);
         if (exp instanceof RegExp) expect(res).toMatch(exp);
         else expect(res).toBe(exp);
       });
@@ -383,7 +383,7 @@ describe('formatToParts', () => {
     });
 
     test('foo', () => {
-      const foo = mf.formatToParts('res', ['foo'], { num: 42 });
+      const foo = mf.formatToParts('res', 'foo', { num: 42 });
       expect(foo).toEqual([
         {
           type: 'message',
@@ -397,7 +397,7 @@ describe('formatToParts', () => {
     });
 
     test('bar', () => {
-      const bar = mf.formatToParts('res', ['bar']);
+      const bar = mf.formatToParts('res', 'bar');
       expect(bar).toEqual([
         {
           type: 'message',
@@ -408,7 +408,7 @@ describe('formatToParts', () => {
     });
 
     test('qux', () => {
-      const qux = mf.formatToParts('res', ['qux']);
+      const qux = mf.formatToParts('res', 'qux');
       expect(qux).toEqual([
         {
           type: 'message',
@@ -444,7 +444,7 @@ describe('formatToParts', () => {
     });
 
     test('case with match', () => {
-      const parts = mf.formatToParts('res', ['case'], { case: 'genitive' });
+      const parts = mf.formatToParts('case', { case: 'genitive' });
       expect(parts).toEqual([
         {
           type: 'message',
@@ -455,7 +455,7 @@ describe('formatToParts', () => {
     });
 
     test('case with fallback', () => {
-      const parts = mf.formatToParts('res', ['case'], { case: 'oblique' });
+      const parts = mf.formatToParts('case', { case: 'oblique' });
       expect(parts).toEqual([
         {
           type: 'message',
@@ -466,7 +466,7 @@ describe('formatToParts', () => {
     });
 
     test('gender with match', () => {
-      const parts = mf.formatToParts('res', ['gender'], { gender: 'feminine' });
+      const parts = mf.formatToParts('gender', { gender: 'feminine' });
       expect(parts).toEqual([
         {
           type: 'message',
@@ -477,7 +477,7 @@ describe('formatToParts', () => {
     });
 
     test('gender with fallback', () => {
-      const parts = mf.formatToParts('res', ['gender']);
+      const parts = mf.formatToParts('gender');
       expect(parts).toEqual([
         {
           type: 'message',
@@ -488,7 +488,7 @@ describe('formatToParts', () => {
     });
 
     test('plural with match', () => {
-      const parts = mf.formatToParts('res', ['plural'], { num: 2 });
+      const parts = mf.formatToParts('plural', { num: 2 });
       expect(parts).toEqual([
         {
           type: 'message',
@@ -499,7 +499,7 @@ describe('formatToParts', () => {
     });
 
     test('plural with fallback', () => {
-      const parts = mf.formatToParts('res', ['plural'], { num: 1 });
+      const parts = mf.formatToParts('plural', { num: 1 });
       expect(parts).toEqual([
         {
           type: 'message',
@@ -510,7 +510,7 @@ describe('formatToParts', () => {
     });
 
     test('plural with non-plural input', () => {
-      const parts = mf.formatToParts('res', ['plural'], { num: 'NaN' });
+      const parts = mf.formatToParts('plural', { num: 'NaN' });
       expect(parts).toEqual([{ type: 'literal', value: 'Other' }]);
     });
   });
