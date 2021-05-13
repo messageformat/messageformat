@@ -9,30 +9,37 @@ on:
 jobs:
   active:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with: { node-version: 14.x }
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm test
-      - run: npm run lint
-      - run: npx prettier --check .
+      - run: npm run build
 
   maintenance:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v1
+        with: { node-version: 12.x }
       - run: npm install -g full-icu
       - run: echo "NODE_ICU_DATA=`node-full-icu-path 2>/dev/null`" >> $GITHUB_ENV
       - run: npm ci
       - run: npm test
       # https://github.com/actions/runner/issues/795
       - run: echo "NODE_ICU_DATA=" >> $GITHUB_ENV
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with: { node-version: 16.x }
+      - run: npm ci
+      - run: npm run lint
+      - run: npx prettier --check .

@@ -36,7 +36,7 @@ export function dateSkeletonCases(): TestCase[] {
     GrMMMdd: { exp: 'Jan 02, 2006 AD' },
     GMMd: { exp: '01/2 AD' },
     hamszzzz: { exp: /^3:0?4:0?5 PM [A-Z]/ },
-    Mk: { exp: '1, 15', skip: ['node10'] }
+    Mk: { exp: '1, 15' }
   };
   return Object.entries(cases).map(([fmt, { exp, skip }]) => ({
     src: `{date, date, ::${fmt}}`,
@@ -59,38 +59,38 @@ export function numberPatternCases(): TestCase[] {
       value: 1234.567,
       lc: 'fr',
       exp: /^1\s234,57$/,
-      skip: ['node10', 'node12']
+      skip: ['node12']
     },
     '#,##0.###': {
       value: 1234.567,
       lc: 'fr',
       exp: /^1\s234,567$/,
-      skip: ['node10', 'node12']
+      skip: ['node12']
     },
     '###0.#####': {
       value: 1234.567,
       lc: 'fr',
       exp: '1234,567',
-      skip: ['node10', 'node12']
+      skip: ['node12']
     },
     '###0.0000#': {
       value: 1234.567,
       lc: 'fr',
       exp: '1234,5670',
-      skip: ['node10', 'node12']
+      skip: ['node12']
     },
     '00000.0000': {
       value: 1234.567,
       lc: 'fr',
       exp: '01234,5670',
-      skip: ['node10', 'node12']
+      skip: ['node12']
     },
     '#,##0.00 ¤': {
       value: 1234.567,
       lc: 'fr',
       cur: 'EUR',
       exp: /^1\s234,57\s€$/,
-      skip: ['node10', 'node12']
+      skip: ['node12']
     },
     "'#'#": { value: 123, lc: 'en', exp: '#123' },
     //"# o''clock": { value: 12, lc: 'en', exp: "12 o'clock" },
