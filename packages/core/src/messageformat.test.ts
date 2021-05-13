@@ -159,7 +159,6 @@ describe('compile() errors', () => {
   });
 });
 
-const isNode10 = process.version.startsWith('v10');
 const isNode12 = process.version.startsWith('v12');
 const isV2 =
   // @ts-ignore signDisplay introduced in Unified API proposal, i.e. "NumberFormat v2"
@@ -172,7 +171,6 @@ for (const [title, cases] of Object.entries(
     for (const { locale, options, src, exp, skip } of cases) {
       let desc: Mocha.SuiteFunction | Mocha.PendingSuiteFunction = describe;
       if (skip) {
-        if (isNode10 && skip.includes('node10')) desc = describe.skip;
         if (isNode12 && skip.includes('node12')) desc = describe.skip;
         if (!isV2 && skip.includes('v1')) desc = describe.skip;
       }
