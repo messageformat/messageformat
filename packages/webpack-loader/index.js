@@ -22,8 +22,13 @@ function localeFromResourcePath(resourcePath, locales) {
 }
 
 module.exports = function loadMessages(content) {
-  let { convert, encoding, locale, propKeyPath = true, ...mfOpt } =
-    loaderUtils.getOptions(this) || {};
+  let {
+    convert,
+    encoding,
+    locale,
+    propKeyPath = true,
+    ...mfOpt
+  } = loaderUtils.getOptions(this) || {};
 
   if (!encoding || encoding === 'auto')
     encoding = uv(content) ? 'utf8' : 'latin1';

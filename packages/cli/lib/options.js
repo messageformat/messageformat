@@ -63,8 +63,7 @@ messageformat.rc.{js,json,yaml}.`;
       outfile: {
         alias: 'o',
         default: '-',
-        desc:
-          'Write output to the specified file. If undefined or "-", prints to stdout.',
+        desc: 'Write output to the specified file. If undefined or "-", prints to stdout.',
         string: true
       },
       simplify: {

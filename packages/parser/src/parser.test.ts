@@ -53,13 +53,14 @@ describe('Plain strings', () => {
       "This is a single quote: '": "This is a single quote: '"
     },
 
-    'should allow you to use extension keywords for plural formats everywhere except where they go': {
-      'select select, ': 'select select, ',
-      'select offset, offset:1 ': 'select offset, offset:1 ',
-      'one other, =1 ': 'one other, =1 ',
-      'one {select} ': ['one ', { type: 'argument', arg: 'select' }, ' '],
-      'one {plural} ': ['one ', { type: 'argument', arg: 'plural' }, ' ']
-    },
+    'should allow you to use extension keywords for plural formats everywhere except where they go':
+      {
+        'select select, ': 'select select, ',
+        'select offset, offset:1 ': 'select offset, offset:1 ',
+        'one other, =1 ': 'one other, =1 ',
+        'one {select} ': ['one ', { type: 'argument', arg: 'select' }, ' '],
+        'one {plural} ': ['one ', { type: 'argument', arg: 'plural' }, ' ']
+      },
 
     'should correctly handle apostrophes': {
       // This mirrors the default DOUBLE_OPTIONAL behavior of ICU.
@@ -137,8 +138,10 @@ describe('Select', () => {
     run({
       '{VAR,select,key{a}other{b}}': exp,
       '{    VAR   ,    select   ,    key      {a}   other    {b}    }': exp,
-      '{ \n   VAR  \n , \n   select  \n\n , \n \n  key \n    \n {a}  \n other \n   {b} \n  \n }': exp,
-      '{ \t  VAR  \n , \n\t\r  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }': exp
+      '{ \n   VAR  \n , \n   select  \n\n , \n \n  key \n    \n {a}  \n other \n   {b} \n  \n }':
+        exp,
+      '{ \t  VAR  \n , \n\t\r  select  \n\t , \t \n  key \n    \t {a}  \n other \t   {b} \t  \t }':
+        exp
     });
   });
 
