@@ -34,7 +34,7 @@
     "glob": "^7.1.6",
     "uv": "^1.3.1",
     "yaml": "^1.10.2",
-    "yargs": "^16.2.0"
+    "yargs": "^17.0.1"
   },
   "peerDependencies": {
     "@messageformat/core": "^3.0.0-beta.0"
