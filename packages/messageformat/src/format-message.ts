@@ -41,7 +41,11 @@ export type FormattedPart<T = unknown> =
 export function formatToString<R, S>(ctx: Context<R, S>, { value }: Message) {
   const pattern = isSelect(value) ? resolveSelect(ctx, value) : value;
   let res = '';
-  for (const part of pattern) res += resolveAsValue(ctx, part) ?? '';
+  for (const part of pattern) {
+    const value = resolveAsValue(ctx, part) ?? '';
+    res +=
+      typeof value === 'number' ? value.toLocaleString(ctx.locales) : value;
+  }
   return res;
 }
 

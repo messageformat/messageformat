@@ -324,7 +324,7 @@ export const testCases: Record<string, TestCase[]> = {
   'Number formatter': [
     {
       src: '{N} is {N, number}',
-      exp: [[{ N: 123456 }, '123456 is 123,456']]
+      exp: [[{ N: 123456 }, '123,456 is 123,456']]
     },
     {
       src: '{N} is almost {N, number, integer}',
