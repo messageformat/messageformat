@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/convert@1.0.0-beta.1...@messageformat/convert@1.0.0) (2021-05-13)
+
+**Note:** Version bump only for package @messageformat/convert
+
+
+
+
+
 # 1.0.0-beta.1 (2020-11-29)
 
 

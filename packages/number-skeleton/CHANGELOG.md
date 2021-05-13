@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.0.0-beta.1...@messageformat/number-skeleton@1.0.0) (2021-05-13)
+
+
+### Bug Fixes
+
+* Tighten up TS types, getting rid of almost all `any` ([21de670](https://github.com/messageformat/messageformat/commit/21de670019d5467f804560565319bf37abfbac0a))
+
+
+
+
+
 # 1.0.0-beta.1 (2020-11-29)
 
 

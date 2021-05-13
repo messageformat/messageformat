@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/cli",
-  "version": "3.0.0-beta.2",
+  "version": "3.0.0",
   "description": "MessageFormat CLI",
   "keywords": [
     "i18n",
