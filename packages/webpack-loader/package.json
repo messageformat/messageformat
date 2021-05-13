@@ -34,6 +34,6 @@
     "yaml": "^1.10.2"
   },
   "peerDependencies": {
-    "@messageformat/core": "^3.0.0-beta.0"
+    "@messageformat/core": "^3.0.0"
   }
 }

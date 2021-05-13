@@ -37,6 +37,6 @@
     "yargs": "^17.0.1"
   },
   "peerDependencies": {
-    "@messageformat/core": "^3.0.0-beta.0"
+    "@messageformat/core": "^3.0.0"
   }
 }
