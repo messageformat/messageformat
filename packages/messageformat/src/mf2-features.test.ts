@@ -4,11 +4,13 @@ import { compileFluent, compileMF1 } from '@messageformat/compiler';
 
 import {
   fluentRuntime,
+  FormattedPart,
   FunctionOptions,
   MessageFormat,
   Resource,
   Runtime
 } from './index';
+import { FormattedDynamic, FormattedLiteral } from './format-message';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource = {
@@ -426,5 +428,97 @@ maybe('List formatting', () => {
       list: list3
     });
     expect(msg3).toBe('Le-am dat cadouri Mariei, Ilenei și lui Petre.');
+  });
+});
+
+describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
+  function flatWordyParts(parts: FormattedPart[]) {
+    let res: (FormattedLiteral | FormattedDynamic<unknown>)[] = [];
+    for (const part of parts) {
+      if (part.type === 'message') res = res.concat(flatWordyParts(part.value));
+      else if (/\w/.test(String(part.value))) res.push(part);
+    }
+    return res;
+  }
+
+  function hackyFixArticles(locales: string[], parts: FormattedPart[]) {
+    if (locales[0] !== 'en') throw new Error('Only English supported');
+    const articly = /(^|\s)(a|an|A|An)(\W*$)/;
+    const vowely = /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;
+    const flat = flatWordyParts(parts);
+    for (let i = 0; i < flat.length - 1; ++i) {
+      let fixed = false;
+      const part = flat[i];
+      const v0 = String(part.value);
+      const v1 = v0.replace(articly, (src, pre, article, post) => {
+        const isAn = article === 'an' || article === 'An';
+        const reqAn = vowely.test(String(flat[i + 1].value));
+        if (isAn === reqAn) return src;
+
+        fixed = true;
+        const isCap = article[0] === 'A';
+        const fixedArticle = reqAn ? (isCap ? 'An' : 'an') : isCap ? 'A' : 'a';
+        return pre + fixedArticle + post;
+      });
+      if (fixed) part.value = v1;
+    }
+  }
+
+  const src = source`
+    foo = A { $foo } and an { $other }
+    bar = The { $foo } and lotsa { $other }
+    baz = { $foo } foo and a
+    qux = { baz } ... { $other }
+  `;
+  const res = compileFluent(src, { id: 'res', locale: 'en' });
+  const mf = new MessageFormat('en', fluentRuntime, res);
+
+  test('Match, no change', () => {
+    const parts = mf.formatToParts('foo', { foo: 'foo', other: 'other' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'literal', value: 'A ' },
+      { type: 'dynamic', value: 'foo' },
+      { type: 'literal', value: ' and an ' },
+      { type: 'dynamic', value: 'other' }
+    ]);
+  });
+
+  test('Match, changed', () => {
+    const parts = mf.formatToParts('foo', { foo: 'other', other: 'foo' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'literal', value: 'An ' },
+      { type: 'dynamic', value: 'other' },
+      { type: 'literal', value: ' and a ' },
+      { type: 'dynamic', value: 'foo' }
+    ]);
+  });
+
+  test('No match, no change', () => {
+    const parts = mf.formatToParts('bar', { foo: 'foo', other: 'other' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'literal', value: 'The ' },
+      { type: 'dynamic', value: 'foo' },
+      { type: 'literal', value: ' and lotsa ' },
+      { type: 'dynamic', value: 'other' }
+    ]);
+  });
+
+  test('Articles across messages & variables', () => {
+    const parts = mf.formatToParts('qux', { foo: 'An', other: 'other' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      {
+        type: 'message',
+        value: [
+          { type: 'dynamic', value: 'A' },
+          { type: 'literal', value: ' foo and an' }
+        ]
+      },
+      { type: 'literal', value: ' ... ' },
+      { type: 'dynamic', value: 'other' }
+    ]);
   });
 });
