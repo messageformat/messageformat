@@ -7,6 +7,7 @@ test('source only', () => {
   const src = source`
     msg = Message
     var = Foo { $num }
+    ref = This is the { msg }
     select = {$selector ->
         [a] A
        *[b] B
@@ -34,9 +35,21 @@ test('source only', () => {
             </source>
           </segment>
         </unit>
-        <group id="g:select" name="select" mf:select="m2">
+        <unit id="u:ref" name="ref">
           <mf:messageformat>
-            <mf:variable default="b" id="m2">
+            <mf:message id="m2">
+              <mf:literal>msg</mf:literal>
+            </mf:message>
+          </mf:messageformat>
+          <segment>
+            <source>This is the·
+              <ph id="2" mf:ref="m2"/>
+            </source>
+          </segment>
+        </unit>
+        <group id="g:select" name="select" mf:select="m3">
+          <mf:messageformat>
+            <mf:variable default="b" id="m3">
               <mf:literal>selector</mf:literal>
             </mf:variable>
           </mf:messageformat>
