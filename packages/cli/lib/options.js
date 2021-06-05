@@ -83,13 +83,11 @@ messageformat.rc.{js,json,yaml}.`;
         return ext.map(x => x.trim().replace(/^([^.]*\.)?/, '.'));
       },
       locale(locales) {
-        const ls = locales.reduce(
-          (locales, lc) => locales.concat(lc.split(/[ ,]+/)),
-          []
-        );
+        if (!locales) return '*';
+        const ls = locales.reduce((ls, lc) => ls.concat(lc.split(/[ ,]+/)), []);
         return ls.length > 0 ? ls : '*';
       },
-      options(opt) {
+      options(opt = {}) {
         if (opt.customFormatters) {
           const cf = opt.customFormatters;
           if (typeof cf === 'string') {
