@@ -20,7 +20,7 @@ This monorepo consists of the following packages that make up our JS implementat
 - [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
 - [rollup-plugin-messageformat](packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
-[all the languages]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+[all the languages]: https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [unicode cldr]: http://cldr.unicode.org/
 [icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
 [icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
@@ -29,12 +29,12 @@ This monorepo consists of the following packages that make up our JS implementat
 
 Depending on your situation, consult one or more of the following guides:
 
-- [Command-line](http://messageformat.github.io/messageformat/cli/)
-- [Rollup](http://messageformat.github.io/messageformat/rollup/)
-- [Webpack](http://messageformat.github.io/messageformat/webpack/)
-- [React](http://messageformat.github.io/messageformat/react/)
+- [Command-line](https://messageformat.github.io/messageformat/cli/)
+- [Rollup](https://messageformat.github.io/messageformat/rollup/)
+- [Webpack](https://messageformat.github.io/messageformat/webpack/)
+- [React](https://messageformat.github.io/messageformat/react/)
 
-Alternatively, take a look at our [examples](examples/) or dig into the [API documentation](http://messageformat.github.io/messageformat/api/) if you're looking to do something more involved.
+Alternatively, take a look at our [examples](examples/) or dig into the [API documentation](https://messageformat.github.io/messageformat/api/) if you're looking to do something more involved.
 
 Our [Format Guide] will help with the ICU MessageFormat Syntax, and the [Usage Guide] provides some further options for integrating messageformat to be a part of your workflow around UI texts and translations.
 
