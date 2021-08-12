@@ -91,11 +91,7 @@ export const isSelect = (value: Message['value']): value is Select =>
  * Each of the types that may be used as a Value must be (and are) immediately
  * distinguishable from each other.
  */
-export type Part =
-  | Literal
-  | VariableReference
-  | FunctionReference
-  | MessageReference;
+export type Part = Literal | Variable | FunctionReference | MessageReference;
 
 /**
  * An immediately defined value.
@@ -116,12 +112,12 @@ export const isLiteral = (part: unknown): part is Literal =>
  * object value, so e.g. `['user', 'name']` would require something like
  * `{ name: 'Kat' }` as the value of the `'user'` scope variable.
  */
-export interface VariableReference {
+export interface Variable {
   var_path: Path;
   meta?: Meta;
 }
 
-export const isVariableReference = (part: any): part is VariableReference =>
+export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && Array.isArray(part.var_path);
 
 /**
@@ -180,10 +176,8 @@ export const isMessageReference = (part: any): part is MessageReference =>
 
 export const isReference = (
   part: unknown
-): part is FunctionReference | MessageReference | VariableReference =>
-  isVariableReference(part) ||
-  isFunctionReference(part) ||
-  isMessageReference(part);
+): part is FunctionReference | MessageReference | Variable =>
+  isVariable(part) || isFunctionReference(part) || isMessageReference(part);
 
 /**
  * Variables and messages may each be located within their surrounding
@@ -216,8 +210,7 @@ export type RuntimeFunction<R> = (
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
- * Used by the VariableReference resolver, and may be extended in a
- * MessageReference.
+ * Used by the Variable resolver, and may be extended in a MessageReference.
  */
 export interface Scope<S = unknown> {
   [key: string]: S;

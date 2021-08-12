@@ -5,7 +5,7 @@ import {
   isMessage,
   isMessageReference,
   isSelect,
-  isVariableReference,
+  isVariable,
   MessageFormat
 } from 'messageformat';
 import type * as MF from 'messageformat';
@@ -281,7 +281,7 @@ function resolvePart(
     };
   }
 
-  if (isVariableReference(part)) {
+  if (isVariable(part)) {
     const elements = part.var_path.map(p => resolvePart(null, p));
     return { type: 'element', name: 'mf:variable', attributes, elements };
   }

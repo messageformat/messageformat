@@ -5,7 +5,7 @@ import {
   isMessageReference,
   isReference,
   isSelect,
-  isVariableReference,
+  isVariable,
   Literal,
   Message,
   MessageReference,
@@ -13,7 +13,7 @@ import {
   Part,
   Pattern,
   Select,
-  VariableReference
+  Variable
 } from './data-model';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
@@ -71,7 +71,7 @@ function resolveAsPart<R, S>(
   part: Part
 ): FormattedPart<R | S> {
   if (isLiteral(part)) return { type: 'literal', value: part };
-  if (isVariableReference(part)) {
+  if (isVariable(part)) {
     const value = resolveVariable(ctx, part);
     return addMeta({ type: 'dynamic', value }, part.meta);
   }
@@ -94,7 +94,7 @@ function resolveAsValue<R, S>(
   part: Part
 ): Literal | R | S | undefined {
   if (isLiteral(part)) return part;
-  if (isVariableReference(part)) return resolveVariable(ctx, part);
+  if (isVariable(part)) return resolveVariable(ctx, part);
   if (isFunctionReference(part)) return resolveFormatFunction(ctx, part);
   if (isMessageReference(part)) {
     const { msg, msgCtx } = resolveMessage(ctx, part);
@@ -227,13 +227,13 @@ function resolveSelectFunction<R, S>(
 
 function resolveVariable<R, S>(
   ctx: Context<R, S>,
-  ref: VariableReference
+  { var_path }: Variable
 ): S | string | undefined {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let val: any = ctx.scope;
-  for (const key of ref.var_path.map(part => resolveAsValue(ctx, part))) {
-    if (!val || typeof val !== 'object') return `{$${ref.var_path.join('.')}}`;
+  for (const key of var_path.map(part => resolveAsValue(ctx, part))) {
+    if (!val || typeof val !== 'object') return `{$${var_path.join('.')}}`;
     val = val[key as string];
   }
-  return val === undefined ? `{$${ref.var_path.join('.')}}` : val;
+  return val === undefined ? `{$${var_path.join('.')}}` : val;
 }

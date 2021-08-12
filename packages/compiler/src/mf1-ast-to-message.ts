@@ -4,7 +4,7 @@ import type {
   Message,
   Part,
   SelectCase,
-  VariableReference
+  Variable
 } from 'messageformat';
 
 const isAstSelect = (token: AST.Token): token is AST.Select =>
@@ -90,9 +90,9 @@ function tokenToPart(
 }
 
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
-  const varRef: VariableReference = { var_path: [arg] };
-  if (type === 'select') return varRef;
-  const fnRef: FunctionReference = { func: 'plural', args: [varRef] };
+  const argVar: Variable = { var_path: [arg] };
+  if (type === 'select') return argVar;
+  const fnRef: FunctionReference = { func: 'plural', args: [argVar] };
   if (type === 'selectordinal') {
     fnRef.options = pluralOffset
       ? { pluralOffset, type: 'ordinal' }
