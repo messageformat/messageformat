@@ -1,6 +1,6 @@
 import {
   isFunction,
-  isMessageReference,
+  isTerm,
   MessageGroup,
   Part,
   Resource,
@@ -18,7 +18,7 @@ export function validate(resources: Resource[], runtime: Runtime) {
           throw new ReferenceError(`Runtime function not available: ${func}`);
         handleMsgParts(args);
         // TODO: Once runtime arg requirements are defined, test against them
-      } else if (isMessageReference(part)) {
+      } else if (isTerm(part)) {
         const { msg_path, res_id } = part;
         if (res_id && resources.every(res => res.id !== res_id))
           throw new ReferenceError(`Resource not available: ${res_id}`);

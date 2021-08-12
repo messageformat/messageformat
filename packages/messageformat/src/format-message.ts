@@ -2,17 +2,17 @@ import {
   Function,
   isFunction,
   isLiteral,
-  isMessageReference,
   isReference,
   isSelect,
+  isTerm,
   isVariable,
   Literal,
   Message,
-  MessageReference,
   Meta,
   Part,
   Pattern,
   Select,
+  Term,
   Variable
 } from './data-model';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
@@ -79,7 +79,7 @@ function resolveAsPart<R, S>(
     const value = resolveFormatFunction(ctx, part);
     return addMeta({ type: 'dynamic', value }, part.meta);
   }
-  if (isMessageReference(part)) {
+  if (isTerm(part)) {
     const { msg, msgCtx } = resolveMessage(ctx, part);
     if (!msg) return { type: 'message', value: [] };
     const value = formatToParts(msgCtx, msg);
@@ -96,7 +96,7 @@ function resolveAsValue<R, S>(
   if (isLiteral(part)) return part;
   if (isVariable(part)) return resolveVariable(ctx, part);
   if (isFunction(part)) return resolveFormatFunction(ctx, part);
-  if (isMessageReference(part)) {
+  if (isTerm(part)) {
     const { msg, msgCtx } = resolveMessage(ctx, part);
     return msg ? formatToString(msgCtx, msg) : `{${part.msg_path.join('.')}}`;
   }
@@ -150,7 +150,7 @@ function resolveFormatFunction<R, S>(
 
 function resolveMessage<R, S>(
   ctx: Context<R, S>,
-  { msg_path, res_id, scope }: MessageReference
+  { msg_path, res_id, scope }: Term
 ): { msg: Message | null; msgCtx: Context<R, S> } {
   const strPath = msg_path.map(part => String(resolveAsValue(ctx, part)));
   const msg = ctx.getMessage(res_id, strPath);
@@ -158,7 +158,7 @@ function resolveMessage<R, S>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let msgScope: any = undefined;
     if (scope) {
-      // Let's not check typings of MessageReference scope overrides
+      // Let's not check typings of Term scope overrides
       msgScope = Object.assign({}, ctx.scope);
       for (const [key, value] of Object.entries(scope))
         msgScope[key] = isReference(value) ? resolveAsValue(ctx, value) : value;

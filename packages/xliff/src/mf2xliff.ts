@@ -3,8 +3,8 @@ import {
   isFunction,
   isLiteral,
   isMessage,
-  isMessageReference,
   isSelect,
+  isTerm,
   isVariable,
   MessageFormat
 } from 'messageformat';
@@ -305,7 +305,7 @@ function resolvePart(
     };
   }
 
-  if (isMessageReference(part)) {
+  if (isTerm(part)) {
     const elements: (X.MessageScope | X.MessagePart)[] = [];
     if (part.scope)
       for (const [name, value] of Object.entries(part.scope))

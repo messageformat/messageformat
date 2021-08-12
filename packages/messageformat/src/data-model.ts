@@ -91,7 +91,7 @@ export const isSelect = (value: Message['value']): value is Select =>
  * Each of the types that may be used as a Value must be (and are) immediately
  * distinguishable from each other.
  */
-export type Part = Literal | Variable | Function | MessageReference;
+export type Part = Literal | Variable | Function | Term;
 
 /**
  * An immediately defined value.
@@ -148,7 +148,7 @@ export const isFunction = (part: any): part is Function =>
   Array.isArray(part.args);
 
 /**
- * A MessageReference is a pointer to a Message or a Select.
+ * A Term is a pointer to a Message or a Select.
  *
  * If `res_id` is undefined, the message is sought in the current Resource.
  * If it is set, it identifies the resource for the sought message. It is
@@ -158,7 +158,7 @@ export const isFunction = (part: any): part is Function =>
  *
  * `scope` overrides values in the current scope when resolving the message.
  */
-export interface MessageReference {
+export interface Term {
   res_id?: string;
   msg_path: Path;
   scope?: MessageScope;
@@ -170,13 +170,13 @@ export type MessageScope = Record<
   Part | boolean | (string | number | boolean)[]
 >;
 
-export const isMessageReference = (part: any): part is MessageReference =>
+export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && Array.isArray(part.msg_path);
 
 export const isReference = (
   part: unknown
-): part is Function | MessageReference | Variable =>
-  isVariable(part) || isFunction(part) || isMessageReference(part);
+): part is Function | Term | Variable =>
+  isVariable(part) || isFunction(part) || isTerm(part);
 
 /**
  * Variables and messages may each be located within their surrounding
@@ -209,7 +209,7 @@ export type RuntimeFunction<R> = (
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
- * Used by the Variable resolver, and may be extended in a MessageReference.
+ * Used by the Variable resolver, and may be extended in a Term.
  */
 export interface Scope<S = unknown> {
   [key: string]: S;

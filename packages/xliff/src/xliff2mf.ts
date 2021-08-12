@@ -267,17 +267,17 @@ function resolvePart(part: X.MessagePart): MF.Part {
     }
 
     case 'mf:message': {
-      const mr: MF.MessageReference = { msg_path: [] };
+      const mt: MF.Term = { msg_path: [] };
       const scope: MF.MessageScope = {};
       let hasScope = false;
       for (const el of part.elements) {
         if (el.name === 'mf:scope') {
           scope[el.attributes.name] = resolveScopeOverride(el);
           hasScope = true;
-        } else mr.msg_path.push(resolvePart(el));
+        } else mt.msg_path.push(resolvePart(el));
       }
-      if (hasScope) mr.scope = scope;
-      return mr;
+      if (hasScope) mt.scope = scope;
+      return mt;
     }
 
     case 'mf:variable':
