@@ -1,6 +1,6 @@
 import deepEqual from 'fast-deep-equal';
 import {
-  isFunctionReference,
+  isFunction,
   isLiteral,
   isMessage,
   isMessageReference,
@@ -286,7 +286,7 @@ function resolvePart(
     return { type: 'element', name: 'mf:variable', attributes, elements };
   }
 
-  if (isFunctionReference(part)) {
+  if (isFunction(part)) {
     const elements: (X.MessageOption | X.MessagePart)[] = [];
     if (part.options)
       for (const [name, value] of Object.entries(part.options))

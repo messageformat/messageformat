@@ -1,6 +1,6 @@
 import {
-  FunctionReference,
-  isFunctionReference,
+  Function,
+  isFunction,
   isLiteral,
   isMessageReference,
   isReference,
@@ -75,7 +75,7 @@ function resolveAsPart<R, S>(
     const value = resolveVariable(ctx, part);
     return addMeta({ type: 'dynamic', value }, part.meta);
   }
-  if (isFunctionReference(part)) {
+  if (isFunction(part)) {
     const value = resolveFormatFunction(ctx, part);
     return addMeta({ type: 'dynamic', value }, part.meta);
   }
@@ -95,7 +95,7 @@ function resolveAsValue<R, S>(
 ): Literal | R | S | undefined {
   if (isLiteral(part)) return part;
   if (isVariable(part)) return resolveVariable(ctx, part);
-  if (isFunctionReference(part)) return resolveFormatFunction(ctx, part);
+  if (isFunction(part)) return resolveFormatFunction(ctx, part);
   if (isMessageReference(part)) {
     const { msg, msgCtx } = resolveMessage(ctx, part);
     return msg ? formatToString(msgCtx, msg) : `{${part.msg_path.join('.')}}`;
@@ -137,7 +137,7 @@ function addMeta<T>(
 
 function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
-  { args, func, options }: FunctionReference
+  { args, func, options }: Function
 ) {
   const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
   const fn = ctx.runtime.format[func];
@@ -179,7 +179,7 @@ function resolveSelect<R, S>(
   onMeta?: (meta: FormattedSelectMeta) => void
 ): Pattern {
   const res: ResolvedSelector[] = select.select.map(s => {
-    const v = isFunctionReference(s.value)
+    const v = isFunction(s.value)
       ? resolveSelectFunction(ctx, s.value)
       : resolveAsValue(ctx, s.value);
     let value: Literal | Literal[];
@@ -214,7 +214,7 @@ function resolveSelect<R, S>(
 
 function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
-  { args, func, options }: FunctionReference
+  { args, func, options }: Function
 ) {
   const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
   const fn = ctx.runtime.select[func];

@@ -91,14 +91,13 @@ export const isSelect = (value: Message['value']): value is Select =>
  * Each of the types that may be used as a Value must be (and are) immediately
  * distinguishable from each other.
  */
-export type Part = Literal | Variable | FunctionReference | MessageReference;
+export type Part = Literal | Variable | Function | MessageReference;
 
 /**
  * An immediately defined value.
  *
  * A numerical value probably only makes sense when used e.g. as a fixed
- * argument of a FunctionReference, but its use is not technically prohibited
- * elsewhere.
+ * argument of a Function, but its use is not technically prohibited elsewhere.
  */
 export type Literal = string | number;
 
@@ -121,7 +120,7 @@ export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && Array.isArray(part.var_path);
 
 /**
- * To resolve a FunctionReference, an externally defined function is called.
+ * To resolve a Function, an externally defined function is called.
  *
  * The `func` identifies a function that takes in the arguments `args`, the
  * current locale, as well as any `options`, and returns some corresponding
@@ -131,9 +130,9 @@ export const isVariable = (part: any): part is Variable =>
  *
  * It is intentional that the `options` do not allow for reference values to
  * be used, as that would add significant requirements to the runtime
- * resolution of a FunctionReference.
+ * resolution of a Function.
  */
-export interface FunctionReference {
+export interface Function {
   func: string;
   args: Part[];
   options?: FunctionOptions;
@@ -142,7 +141,7 @@ export interface FunctionReference {
 
 export type FunctionOptions = Record<string, string | number | boolean>;
 
-export const isFunctionReference = (part: any): part is FunctionReference =>
+export const isFunction = (part: any): part is Function =>
   !!part &&
   typeof part === 'object' &&
   typeof part.func === 'string' &&
@@ -176,8 +175,8 @@ export const isMessageReference = (part: any): part is MessageReference =>
 
 export const isReference = (
   part: unknown
-): part is FunctionReference | MessageReference | Variable =>
-  isVariable(part) || isFunctionReference(part) || isMessageReference(part);
+): part is Function | MessageReference | Variable =>
+  isVariable(part) || isFunction(part) || isMessageReference(part);
 
 /**
  * Variables and messages may each be located within their surrounding

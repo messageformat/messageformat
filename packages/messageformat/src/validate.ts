@@ -1,5 +1,5 @@
 import {
-  isFunctionReference,
+  isFunction,
   isMessageReference,
   MessageGroup,
   Part,
@@ -10,7 +10,7 @@ import {
 export function validate(resources: Resource[], runtime: Runtime) {
   function handleMsgParts(parts: Part[], inSelect?: boolean) {
     for (const part of parts) {
-      if (isFunctionReference(part)) {
+      if (isFunction(part)) {
         const { args, func } = part;
         const realm = inSelect ? runtime.select : runtime.format;
         const fn = realm[func];

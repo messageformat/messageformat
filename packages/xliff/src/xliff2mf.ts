@@ -1,7 +1,7 @@
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 
-import { isFunctionReference, isLiteral } from 'messageformat';
+import { isFunction, isLiteral } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -205,7 +205,7 @@ function resolveInlineElement(
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
           const part = resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-          if (!isFunctionReference(part))
+          if (!isFunction(part))
             throw new Error(`<pc mf:ref> is only valid for function values`);
           const arg = resolveContents(ie.elements, mf);
           if (arg.length > 1)
@@ -250,7 +250,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
       return resolveText(part.elements);
 
     case 'mf:function': {
-      const fr: MF.FunctionReference = {
+      const fn: MF.Function = {
         func: part.attributes.name,
         args: []
       };
@@ -260,10 +260,10 @@ function resolvePart(part: X.MessagePart): MF.Part {
         if (el.name === 'mf:option') {
           options[el.attributes.name] = maybeNumber(resolveText(el.elements));
           hasOptions = true;
-        } else fr.args.push(resolvePart(el));
+        } else fn.args.push(resolvePart(el));
       }
-      if (hasOptions) fr.options = options;
-      return fr;
+      if (hasOptions) fn.options = options;
+      return fn;
     }
 
     case 'mf:message': {

@@ -1,6 +1,6 @@
 import type * as AST from '@messageformat/parser';
 import type {
-  FunctionReference,
+  Function,
   Message,
   Part,
   SelectCase,
@@ -60,7 +60,7 @@ function tokenToPart(
     case 'argument':
       return { var_path: [token.arg] };
     case 'function': {
-      const fnRef: FunctionReference = {
+      const fn: Function = {
         func: token.key,
         args: [{ var_path: [token.arg] }]
       };
@@ -70,18 +70,18 @@ function tokenToPart(
           if (pt.type === 'content') param += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        fnRef.options = { param };
+        fn.options = { param };
       }
-      return fnRef;
+      return fn;
     }
     case 'octothorpe': {
       if (!pluralArg) return '#';
-      const fnRef: FunctionReference = {
+      const fn: Function = {
         func: 'number',
         args: [{ var_path: [pluralArg] }]
       };
-      if (pluralOffset) fnRef.options = { pluralOffset };
-      return fnRef;
+      if (pluralOffset) fn.options = { pluralOffset };
+      return fn;
     }
     /* istanbul ignore next - never happens */
     default:
@@ -92,13 +92,13 @@ function tokenToPart(
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
   const argVar: Variable = { var_path: [arg] };
   if (type === 'select') return argVar;
-  const fnRef: FunctionReference = { func: 'plural', args: [argVar] };
+  const fn: Function = { func: 'plural', args: [argVar] };
   if (type === 'selectordinal') {
-    fnRef.options = pluralOffset
+    fn.options = pluralOffset
       ? { pluralOffset, type: 'ordinal' }
       : { type: 'ordinal' };
-  } else if (pluralOffset) fnRef.options = { pluralOffset };
-  return fnRef;
+  } else if (pluralOffset) fn.options = { pluralOffset };
+  return fn;
 }
 
 /**
