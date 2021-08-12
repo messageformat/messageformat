@@ -45,32 +45,32 @@ function expressionToPart(exp: Fluent.Expression): Part {
     case 'StringLiteral':
       return exp.parse().value;
     case 'VariableReference':
-      return { var_path: [exp.id.name] };
+      return { type: 'variable', var_path: [exp.id.name] };
     case 'FunctionReference': {
       const func = exp.id.name;
       const { positional, named } = exp.arguments;
       const args = positional.map(expressionToPart);
-      if (named.length === 0) return { func, args };
+      if (named.length === 0) return { type: 'function', func, args };
       const options: Record<string, string | number> = {};
       for (const { name, value } of named)
         options[name.name] = value.parse().value;
-      return { func, args, options };
+      return { type: 'function', func, args, options };
     }
     case 'MessageReference': {
       const id = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
-      return { msg_path: [id] };
+      return { type: 'term', msg_path: [id] };
     }
     case 'TermReference': {
       const id = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      if (!exp.arguments) return { msg_path: [id] };
+      if (!exp.arguments) return { type: 'term', msg_path: [id] };
       const scope: Record<string, string | number> = {};
       for (const { name, value } of exp.arguments.named)
         scope[name.name] = value.parse().value;
-      return { msg_path: [id], scope };
+      return { type: 'term', msg_path: [id], scope };
     }
 
     /* istanbul ignore next - never happens */
@@ -110,7 +110,9 @@ export function astToMessage(
   const args = findSelectArgs(ast);
   if (args.length === 0) {
     const value = ast.elements.map(elementToPart);
-    return comment ? { value, meta: { comment: comment.content } } : { value };
+    return comment
+      ? { type: 'message', value, meta: { comment: comment.content } }
+      : { type: 'message', value };
   }
 
   // First determine the keys for all cases, with empty values
@@ -169,5 +171,7 @@ export function astToMessage(
     return { value, default: arg.default };
   });
   const value = { select, cases };
-  return comment ? { value, meta: { comment: comment.content } } : { value };
+  return comment
+    ? { type: 'select', value, meta: { comment: comment.content } }
+    : { type: 'select', value };
 }

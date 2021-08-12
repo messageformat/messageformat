@@ -21,33 +21,41 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
         entries: {
           chrome: {
             entries: {
-              nominative: { value: ['Chrome'] },
-              genitive: { value: ['Chromen'] }
+              nominative: { type: 'message', value: ['Chrome'] },
+              genitive: { type: 'message', value: ['Chromen'] }
             }
           },
           edge: {
             entries: {
-              nominative: { value: ['Edge'] },
-              genitive: { value: ['Edgen'] }
+              nominative: { type: 'message', value: ['Edge'] },
+              genitive: { type: 'message', value: ['Edgen'] }
             }
           },
           firefox: {
             entries: {
-              nominative: { value: ['Firefox'] },
-              genitive: { value: ['Firefoxin'] }
+              nominative: { type: 'message', value: ['Firefox'] },
+              genitive: { type: 'message', value: ['Firefoxin'] }
             }
           },
           safari: {
             entries: {
-              nominative: { value: ['Safari'] },
-              genitive: { value: ['Safarin'] }
+              nominative: { type: 'message', value: ['Safari'] },
+              genitive: { type: 'message', value: ['Safarin'] }
             }
           }
         }
       },
       settings: {
+        type: 'message',
         value: [
-          { msg_path: ['browser', { var_path: ['browser-id'] }, 'genitive'] },
+          {
+            type: 'term',
+            msg_path: [
+              'browser',
+              { type: 'variable', var_path: ['browser-id'] },
+              'genitive'
+            ]
+          },
           ' asetukset'
         ]
       }
@@ -110,24 +118,37 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       locale: 'nl',
       entries: {
         msg: {
+          type: 'select',
           value: {
             select: [
               {
-                value: { func: 'pluralRange', args: [{ var_path: ['range'] }] }
+                value: {
+                  type: 'function',
+                  func: 'pluralRange',
+                  args: [{ type: 'variable', var_path: ['range'] }]
+                }
               }
             ],
             cases: [
               {
                 key: ['one'],
                 value: [
-                  { func: 'formatRange', args: [{ var_path: ['range'] }] },
+                  {
+                    type: 'function',
+                    func: 'formatRange',
+                    args: [{ type: 'variable', var_path: ['range'] }]
+                  },
                   ' dag'
                 ]
               },
               {
                 key: ['other'],
                 value: [
-                  { func: 'formatRange', args: [{ var_path: ['range'] }] },
+                  {
+                    type: 'function',
+                    func: 'formatRange',
+                    args: [{ type: 'variable', var_path: ['range'] }]
+                  },
                   ' dagen'
                 ]
               }
@@ -151,12 +172,17 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       locale: 'nl',
       entries: {
         msg: {
+          type: 'select',
           value: {
             select: [
               {
                 value: {
+                  type: 'function',
                   func: 'pluralRange',
-                  args: [{ var_path: ['start'] }, { var_path: ['end'] }]
+                  args: [
+                    { type: 'variable', var_path: ['start'] },
+                    { type: 'variable', var_path: ['end'] }
+                  ]
                 }
               }
             ],
@@ -165,8 +191,12 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                 key: ['one'],
                 value: [
                   {
+                    type: 'function',
                     func: 'formatRange',
-                    args: [{ var_path: ['start'] }, { var_path: ['end'] }]
+                    args: [
+                      { type: 'variable', var_path: ['start'] },
+                      { type: 'variable', var_path: ['end'] }
+                    ]
                   },
                   ' dag'
                 ]
@@ -175,8 +205,12 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                 key: ['other'],
                 value: [
                   {
+                    type: 'function',
                     func: 'formatRange',
-                    args: [{ var_path: ['start'] }, { var_path: ['end'] }]
+                    args: [
+                      { type: 'variable', var_path: ['start'] },
+                      { type: 'variable', var_path: ['end'] }
+                    ]
                   },
                   ' dagen'
                 ]

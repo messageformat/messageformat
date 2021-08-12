@@ -74,8 +74,14 @@ function resolveEntry(
     case 'unit': {
       checkResegment(entry);
       const key = entry.attributes.name || entry.attributes.id;
-      source.entries[key] = { value: resolveUnit(entry, 'source') };
-      target.entries[key] = { value: resolveUnit(entry, 'target') };
+      source.entries[key] = {
+        type: 'message',
+        value: resolveUnit(entry, 'source')
+      };
+      target.entries[key] = {
+        type: 'message',
+        value: resolveUnit(entry, 'target')
+      };
       return;
     }
 
@@ -140,7 +146,7 @@ function resolveSelect(
     const value = resolvePart(part);
     return def ? { value, default: def } : { value };
   });
-  return { value: { select, cases } };
+  return { type: 'select', value: { select, cases } };
 }
 
 function resolveUnit(
@@ -251,6 +257,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
 
     case 'mf:function': {
       const fn: MF.Function = {
+        type: 'function',
         func: part.attributes.name,
         args: []
       };
@@ -267,7 +274,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
     }
 
     case 'mf:message': {
-      const mt: MF.Term = { msg_path: [] };
+      const mt: MF.Term = { type: 'term', msg_path: [] };
       const scope: MF.MessageScope = {};
       let hasScope = false;
       for (const el of part.elements) {
@@ -281,7 +288,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
     }
 
     case 'mf:variable':
-      return { var_path: part.elements.map(resolvePart) };
+      return { type: 'variable', var_path: part.elements.map(resolvePart) };
   }
 
   /* istnabul ignore next - never happens */

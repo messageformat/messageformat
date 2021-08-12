@@ -32,10 +32,9 @@ export interface Meta {
  * The shape of the value is an implementation detail, and may vary for the
  * same message in different languages.
  */
-export interface Message {
-  value: Pattern | Select;
-  meta?: Meta;
-}
+export type Message =
+  | { type: 'message'; value: Pattern; meta?: Meta }
+  | { type: 'select'; value: Select; meta?: Meta };
 
 export const isMessage = (
   msg: Message | MessageGroup | undefined
@@ -112,12 +111,13 @@ export const isLiteral = (part: unknown): part is Literal =>
  * `{ name: 'Kat' }` as the value of the `'user'` scope variable.
  */
 export interface Variable {
+  type: 'variable';
   var_path: Path;
   meta?: Meta;
 }
 
 export const isVariable = (part: any): part is Variable =>
-  !!part && typeof part === 'object' && Array.isArray(part.var_path);
+  !!part && typeof part === 'object' && part.type === 'variable';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -133,6 +133,7 @@ export const isVariable = (part: any): part is Variable =>
  * resolution of a Function.
  */
 export interface Function {
+  type: 'function';
   func: string;
   args: Part[];
   options?: FunctionOptions;
@@ -142,10 +143,7 @@ export interface Function {
 export type FunctionOptions = Record<string, string | number | boolean>;
 
 export const isFunction = (part: any): part is Function =>
-  !!part &&
-  typeof part === 'object' &&
-  typeof part.func === 'string' &&
-  Array.isArray(part.args);
+  !!part && typeof part === 'object' && part.type === 'function';
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -159,6 +157,7 @@ export const isFunction = (part: any): part is Function =>
  * `scope` overrides values in the current scope when resolving the message.
  */
 export interface Term {
+  type: 'term';
   res_id?: string;
   msg_path: Path;
   scope?: MessageScope;
@@ -171,7 +170,7 @@ export type MessageScope = Record<
 >;
 
 export const isTerm = (part: any): part is Term =>
-  !!part && typeof part === 'object' && Array.isArray(part.msg_path);
+  !!part && typeof part === 'object' && part.type === 'term';
 
 export const isReference = (
   part: unknown

@@ -58,11 +58,12 @@ function tokenToPart(
     case 'content':
       return token.value;
     case 'argument':
-      return { var_path: [token.arg] };
+      return { type: 'variable', var_path: [token.arg] };
     case 'function': {
       const fn: Function = {
+        type: 'function',
         func: token.key,
-        args: [{ var_path: [token.arg] }]
+        args: [{ type: 'variable', var_path: [token.arg] }]
       };
       if (token.param && token.param.length > 0) {
         let param = '';
@@ -77,8 +78,9 @@ function tokenToPart(
     case 'octothorpe': {
       if (!pluralArg) return '#';
       const fn: Function = {
+        type: 'function',
         func: 'number',
-        args: [{ var_path: [pluralArg] }]
+        args: [{ type: 'variable', var_path: [pluralArg] }]
       };
       if (pluralOffset) fn.options = { pluralOffset };
       return fn;
@@ -90,9 +92,9 @@ function tokenToPart(
 }
 
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
-  const argVar: Variable = { var_path: [arg] };
+  const argVar: Variable = { type: 'variable', var_path: [arg] };
   if (type === 'select') return argVar;
-  const fn: Function = { func: 'plural', args: [argVar] };
+  const fn: Function = { type: 'function', func: 'plural', args: [argVar] };
   if (type === 'selectordinal') {
     fn.options = pluralOffset
       ? { pluralOffset, type: 'ordinal' }
@@ -124,7 +126,10 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
 export function astToMessage(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0)
-    return { value: ast.map(token => tokenToPart(token, null, null)) };
+    return {
+      type: 'message',
+      value: ast.map(token => tokenToPart(token, null, null))
+    };
 
   // First determine the keys for all cases, with empty values
   let keys: (string | number)[][] = [];
@@ -179,5 +184,5 @@ export function astToMessage(ast: AST.Token[]): Message {
   addParts(ast, null, null, []);
 
   const select = args.map(arg => ({ value: argToPart(arg) }));
-  return { value: { select, cases } };
+  return { type: 'select', value: { select, cases } };
 }
