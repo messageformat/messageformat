@@ -319,7 +319,7 @@ describe('formatToParts', () => {
       const foo = mf.formatToParts('res', ['foo']);
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { type: 'dynamic', value: '{$num}' }
+        { type: 'fallback', value: '$num' }
       ]);
     });
 

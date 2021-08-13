@@ -1,9 +1,10 @@
 export * from './data-model';
 export type {
+  Formatted,
   FormattedDynamic,
+  FormattedFallback,
   FormattedLiteral,
   FormattedMessage,
-  FormattedMeta,
   FormattedPart
 } from './format-message';
 export { MessageFormat } from './messageformat';

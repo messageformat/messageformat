@@ -17,6 +17,7 @@ rules:
   no-constant-condition: [error, checkLoops: false]
   no-implicit-globals: error
   no-unused-vars: [warn, argsIgnorePattern: '^_']
+  prefer-const: [error, destructuring: all]
 
 overrides:
   - files:

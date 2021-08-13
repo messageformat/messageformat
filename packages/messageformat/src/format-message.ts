@@ -2,7 +2,7 @@ import {
   Function,
   isFunction,
   isLiteral,
-  isReference,
+  isPart,
   isSelect,
   isTerm,
   isVariable,
@@ -18,35 +18,88 @@ import {
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
 
-export interface FormattedLiteral {
-  type: 'literal';
-  value: LiteralValue;
-  meta?: FormattedMeta;
-}
-export interface FormattedDynamic<T> {
-  type: 'dynamic';
-  value: T | string | undefined;
-  meta?: FormattedMeta;
-}
-export interface FormattedMessage<T> {
-  type: 'message';
-  value: FormattedPart<T>[];
-  meta?: FormattedMeta;
-}
-export type FormattedMeta = Record<string, boolean | number | string | null>;
-export type FormattedPart<T = unknown> =
-  | FormattedLiteral
-  | FormattedDynamic<T>
-  | FormattedMessage<T>;
+export abstract class Formatted<T> {
+  abstract type: 'dynamic' | 'fallback' | 'literal' | 'message';
+  value: T;
+  declare meta?: Record<string, boolean | number | string | null>;
 
-export function formatToString<R, S>(ctx: Context<R, S>, { value }: Message) {
-  const pattern = isSelect(value) ? resolveSelect(ctx, value) : value;
-  let res = '';
-  for (const part of pattern) {
-    const value = resolveAsValue(ctx, part) ?? '';
-    res +=
-      typeof value === 'number' ? value.toLocaleString(ctx.locales) : value;
+  constructor(value: T, meta?: Meta) {
+    this.value = value;
+    if (meta) addMeta(this, meta);
   }
+
+  toString(locales?: string[]) {
+    return typeof this.value === 'number' &&
+      Array.isArray(locales) &&
+      locales.length > 0
+      ? this.value.toLocaleString(locales)
+      : String(this.value);
+  }
+
+  valueOf(): T | string {
+    return this.value;
+  }
+}
+
+export class FormattedDynamic<T = string> extends Formatted<T> {
+  type = 'dynamic' as const;
+}
+export class FormattedFallback extends Formatted<string> {
+  type = 'fallback' as const;
+  toString() {
+    return `{${this.value}}`;
+  }
+  valueOf() {
+    return this.toString();
+  }
+}
+export class FormattedLiteral extends Formatted<LiteralValue> {
+  type = 'literal' as const;
+}
+export class FormattedMessage<T = unknown> extends Formatted<
+  Array<FormattedPart<T>>
+> {
+  type = 'message' as const;
+  toString(locales?: string[]) {
+    let res = '';
+    for (const fp of this.value) res += fp.toString(locales);
+    return res;
+  }
+  valueOf() {
+    return this.toString();
+  }
+}
+
+export type FormattedPart<T = unknown> =
+  | FormattedDynamic<T>
+  | FormattedFallback
+  | FormattedLiteral
+  | FormattedMessage<T | LiteralValue>;
+
+function addMeta(fmt: Formatted<unknown>, meta: Meta) {
+  if (!fmt.meta) fmt.meta = {};
+  for (let [key, value] of Object.entries(meta)) {
+    if (typeof value === 'object') {
+      if (!value) {
+        fmt.meta[key] = null;
+        continue;
+      } else if (typeof value.valueOf === 'function') {
+        // handle instances of Boolean, Number & String
+        value = value.valueOf();
+      }
+    }
+    switch (typeof value) {
+      case 'boolean':
+      case 'number':
+      case 'string':
+        fmt.meta[key] = value;
+    }
+  }
+}
+
+export function formatToString<R, S>(ctx: Context<R, S>, msg: Message) {
+  let res = '';
+  for (const fp of formatToParts(ctx, msg)) res += fp.toString(ctx.locales);
   return res;
 }
 
@@ -58,108 +111,59 @@ export function formatToParts<R, S>(
   const pattern = isSelect(value)
     ? resolveSelect(ctx, value, _fsm => (fsm = _fsm))
     : value;
-  const res: FormattedPart<R | S>[] = [];
-  for (const part of pattern) res.push(resolveAsPart(ctx, part));
+  const res = pattern.map(part => resolvePart(ctx, part));
   if (meta || fsm) {
-    const fm = addMeta({ type: 'message', value: res }, meta);
-    if (fsm) fm.meta = Object.assign(fsm, fm.meta);
+    const fm = new FormattedMessage<R | S | LiteralValue>(res, meta);
+    if (fsm) addMeta(fm, fsm);
     return [fm];
   } else return res;
 }
 
-function resolveAsPart<R, S>(
+function resolvePart<R, S>(
   ctx: Context<R, S>,
   part: Part
-): FormattedPart<R | S> {
-  if (isLiteral(part))
-    return addMeta({ type: 'literal', value: part.value }, part.meta);
-  if (isVariable(part)) {
-    const value = resolveVariable(ctx, part);
-    return addMeta({ type: 'dynamic', value }, part.meta);
-  }
-  if (isFunction(part)) {
-    const value = resolveFormatFunction(ctx, part);
-    return addMeta({ type: 'dynamic', value }, part.meta);
-  }
-  if (isTerm(part)) {
-    const { msg, msgCtx } = resolveMessage(ctx, part);
-    if (!msg) return { type: 'message', value: [] };
-    const value = formatToParts(msgCtx, msg);
-    return addMeta({ type: 'message', value }, msg.meta);
-  }
+):
+  | FormattedDynamic<R | S>
+  | FormattedFallback
+  | FormattedLiteral
+  | FormattedMessage<R | S | LiteralValue> {
+  if (isLiteral(part)) return new FormattedLiteral(part.value, part.meta);
+  if (isVariable(part)) return resolveVariable(ctx, part);
+  if (isFunction(part)) return resolveFormatFunction(ctx, part);
+  if (isTerm(part)) return resolveMessage(ctx, part);
   /* istanbul ignore next - never happens */
   throw new Error(`Unsupported part: ${part}`);
 }
 
-function resolveAsValue<R, S>(
+function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
-  part: Part
-): LiteralValue | R | S | undefined {
-  if (isLiteral(part)) return part.value;
-  if (isVariable(part)) return resolveVariable(ctx, part);
-  if (isFunction(part)) return resolveFormatFunction(ctx, part);
-  if (isTerm(part)) {
-    const { msg, msgCtx } = resolveMessage(ctx, part);
-    return msg
-      ? formatToString(msgCtx, msg)
-      : `{${resolveFallback(ctx, part)}}`;
-  }
-  /* istanbul ignore next - never happens */
-  return undefined;
-}
-
-function addMeta(
-  fp: FormattedLiteral,
-  meta: Meta | undefined
-): FormattedLiteral;
-function addMeta<T>(
-  fp: FormattedDynamic<T>,
-  meta: Meta | undefined
-): FormattedDynamic<T>;
-function addMeta<T>(
-  fp: FormattedMessage<T>,
-  meta: Meta | undefined
-): FormattedMessage<T>;
-function addMeta<T>(
-  fp: FormattedLiteral | FormattedDynamic<T> | FormattedMessage<T>,
-  meta: Meta | undefined
-) {
-  if (meta) {
-    const fm: FormattedMeta = {};
-    for (const [key, value] of Object.entries(meta)) {
-      switch (typeof value) {
-        case 'boolean':
-        case 'number':
-        case 'string':
-          fm[key] = value;
-          break;
-        case 'object':
-          if (value === null) fm[key] = null;
-      }
-    }
-    if (fp.meta) Object.assign(fp.meta, fm);
-    else fp.meta = fm;
-  }
-  return fp;
-}
-
-function resolveFormatFunction<R, S>(ctx: Context<R, S>, fn: Function) {
+  fn: Function
+): FormattedDynamic<R> | FormattedFallback {
   const { args, func, options } = fn;
-  const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
+  const fnArgs = args.map(arg => resolvePart(ctx, arg).valueOf());
   const rf = ctx.runtime.format[func];
   try {
-    return rf(ctx.locales, options, ...fnArgs);
-  } catch (_) {
-    return `{${resolveFallback(ctx, fn)}}`;
+    const value = rf(ctx.locales, options, ...fnArgs);
+    return new FormattedDynamic<R>(value, fn.meta);
+  } catch (error) {
+    const fb = resolveFallback(ctx, fn);
+    addMeta(fb, {
+      error_name: error.name,
+      error_message: error.message,
+      error_stack: error.stack
+    });
+    return fb;
   }
 }
 
 function resolveMessage<R, S>(
   ctx: Context<R, S>,
-  { msg_path, res_id, scope }: Term
-): { msg: Message | null; msgCtx: Context<R, S> } {
-  const strPath = msg_path.map(part => String(resolveAsValue(ctx, part)));
+  term: Term
+): FormattedMessage<R | S | LiteralValue> | FormattedFallback {
+  const { msg_path, res_id, scope } = term;
+  const strPath = msg_path.map(part => String(resolvePart(ctx, part)));
   const msg = ctx.getMessage(res_id, strPath);
+  if (!msg) return resolveFallback(ctx, term);
   if (res_id || scope) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let msgScope: any = undefined;
@@ -167,11 +171,13 @@ function resolveMessage<R, S>(
       // Let's not check typings of Term scope overrides
       msgScope = Object.assign({}, ctx.scope);
       for (const [key, value] of Object.entries(scope))
-        msgScope[key] = isReference(value) ? resolveAsValue(ctx, value) : value;
+        msgScope[key] = isPart(value)
+          ? resolvePart(ctx, value).valueOf()
+          : value;
     }
-    return { msg, msgCtx: extendContext(ctx, res_id, msgScope) };
+    ctx = extendContext(ctx, res_id, msgScope);
   }
-  return { msg, msgCtx: ctx };
+  return new FormattedMessage(formatToParts(ctx, msg), term.meta);
 }
 
 export type ResolvedSelector = {
@@ -187,7 +193,7 @@ function resolveSelect<R, S>(
   const res: ResolvedSelector[] = select.select.map(s => {
     const v = isFunction(s.value)
       ? resolveSelectFunction(ctx, s.value)
-      : resolveAsValue(ctx, s.value);
+      : resolvePart(ctx, s.value).valueOf();
     let value: LiteralValue | LiteralValue[];
     if (typeof v === 'number') {
       const { plural } = ctx.runtime.select;
@@ -222,7 +228,7 @@ function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: Function
 ) {
-  const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
+  const fnArgs = args.map(arg => resolvePart(ctx, arg).valueOf());
   const fn = ctx.runtime.select[func];
   try {
     return fn(ctx.locales, options, ...fnArgs);
@@ -234,22 +240,28 @@ function resolveSelectFunction<R, S>(
 function resolveVariable<R, S>(
   ctx: Context<R, S>,
   part: Variable
-): S | string | undefined {
+): FormattedDynamic<S> | FormattedFallback {
   const { var_path } = part;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let val: any = ctx.scope;
-  for (const key of var_path.map(part => resolveAsValue(ctx, part))) {
+  let val: any = var_path.length > 0 ? ctx.scope : undefined;
+  for (const p of var_path) {
     if (!val || typeof val !== 'object') {
       val = undefined;
       break;
     }
-    val = val[key as string];
+    val = val[resolvePart(ctx, p).toString()];
   }
-  return val === undefined ? `{${resolveFallback(ctx, part)}}` : val;
+  return val === undefined
+    ? resolveFallback(ctx, part)
+    : new FormattedDynamic(val, part.meta);
 }
 
-function resolveFallback<R, S>(ctx: Context<R, S>, part: Part): string {
-  const resolve = resolveAsValue.bind(null, ctx);
+function resolveFallback(ctx: Context<unknown, unknown>, part: Part) {
+  return new FormattedFallback(fallbackValue(ctx, part), part.meta);
+}
+
+function fallbackValue(ctx: Context<unknown, unknown>, part: Part): string {
+  const resolve = (p: Part) => resolvePart(ctx, p).valueOf();
   if (isLiteral(part)) return String(part.value);
   if (isVariable(part)) {
     const path = part.var_path.map(resolve);

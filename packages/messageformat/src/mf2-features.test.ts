@@ -10,7 +10,11 @@ import {
   Resource,
   Runtime
 } from './index';
-import { FormattedDynamic, FormattedLiteral } from './format-message';
+import {
+  FormattedDynamic,
+  FormattedFallback,
+  FormattedLiteral
+} from './format-message';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource = {
@@ -527,7 +531,11 @@ maybe('List formatting', () => {
 
 describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
   function flatWordyParts(parts: FormattedPart[]) {
-    let res: (FormattedLiteral | FormattedDynamic<unknown>)[] = [];
+    let res: (
+      | FormattedDynamic<unknown>
+      | FormattedFallback
+      | FormattedLiteral
+    )[] = [];
     for (const part of parts) {
       if (part.type === 'message') res = res.concat(flatWordyParts(part.value));
       else if (/\w/.test(String(part.value))) res.push(part);

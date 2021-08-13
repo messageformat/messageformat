@@ -185,17 +185,17 @@ export type MessageScope = Record<
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export const isReference = (
-  part: unknown
-): part is Function | Term | Variable =>
-  isVariable(part) || isFunction(part) || isTerm(part);
-
 /**
  * Variables and messages may each be located within their surrounding
  * structures, and require a path to address them. Note that Path allows for
  * its parts to be defined by placeholders as well as literals.
  */
 export type Path = Part[];
+
+export const isPart = (
+  part: unknown
+): part is Literal | Function | Term | Variable =>
+  isLiteral(part) || isVariable(part) || isFunction(part) || isTerm(part);
 
 /**
  * The runtime function registry available for function references.
