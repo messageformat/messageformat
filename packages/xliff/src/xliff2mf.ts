@@ -1,7 +1,7 @@
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 
-import { isFunction, isLiteral } from 'messageformat';
+import { isFunction, isLiteral, isPlainStringLiteral } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -184,9 +184,10 @@ function resolveContents(
 ): MF.Part[] {
   const res: MF.Part[] = [];
   for (const ie of contents) {
+    const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
-    if (typeof part === 'string' && typeof res[res.length - 1] === 'string')
-      res[res.length - 1] += part;
+    if (isPlainStringLiteral(last) && isPlainStringLiteral(part))
+      last.value += part;
     else res.push(part);
   }
   return res;
@@ -202,11 +203,11 @@ function resolveInlineElement(
   switch (ie.type) {
     case 'text':
     case 'cdata':
-      return ie.text;
+      return { type: 'literal', value: ie.text };
     case 'element':
       switch (ie.name) {
         case 'cp':
-          return resolveCharCode(ie);
+          return { type: 'literal', value: resolveCharCode(ie) };
         case 'ph':
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
@@ -253,7 +254,7 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 function resolvePart(part: X.MessagePart): MF.Part {
   switch (part.name) {
     case 'mf:literal':
-      return resolveText(part.elements);
+      return { type: 'literal', value: resolveText(part.elements) };
 
     case 'mf:function': {
       const fn: MF.Function = {
@@ -291,7 +292,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
       return { type: 'variable', var_path: part.elements.map(resolvePart) };
   }
 
-  /* istnabul ignore next - never happens */
+  /* istanbul ignore next - never happens */
   throw new Error(
     `Unsupported part ${(part as X.MessagePart).type} <${
       (part as X.MessagePart).name
@@ -302,7 +303,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
 function resolveScopeOverride(el: X.MessageScope) {
   const sv = el.elements.map(resolvePart);
   if (sv.length < 2) return sv[0] || '';
-  else if (sv.every(isLiteral)) return sv;
+  else if (sv.every(isLiteral)) return sv.map(part => part.value);
   throw new Error(
     'Only literal parts are allowed in array values of scope overrides'
   );

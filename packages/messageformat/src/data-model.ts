@@ -70,11 +70,11 @@ export interface Select {
 
 export interface Selector {
   value: Part;
-  default?: Literal;
+  default?: LiteralValue;
 }
 
 export interface SelectCase {
-  key: Literal[];
+  key: LiteralValue[];
   value: Pattern;
   meta?: Meta;
 }
@@ -92,16 +92,29 @@ export const isSelect = (value: Message['value']): value is Select =>
  */
 export type Part = Literal | Variable | Function | Term;
 
+export type LiteralValue = string | number;
+
 /**
  * An immediately defined value.
  *
  * A numerical value probably only makes sense when used e.g. as a fixed
  * argument of a Function, but its use is not technically prohibited elsewhere.
  */
-export type Literal = string | number;
+export interface Literal {
+  type: 'literal';
+  value: LiteralValue;
+  meta?: Meta;
+}
 
-export const isLiteral = (part: unknown): part is Literal =>
-  typeof part === 'string' || typeof part === 'number';
+export const isLiteral = (part: any): part is Literal =>
+  !!part && typeof part === 'object' && part.type === 'literal';
+
+export const isPlainStringLiteral = (
+  part: any
+): part is Literal & { value: string; meta?: never } =>
+  isLiteral(part) &&
+  typeof part.value === 'string' &&
+  (!part.meta || Object.keys(part.meta).length === 0);
 
 /**
  * Variables are defined by the current Scope.
@@ -140,7 +153,7 @@ export interface Function {
   meta?: Meta;
 }
 
-export type FunctionOptions = Record<string, string | number | boolean>;
+export type FunctionOptions = Record<string, LiteralValue | boolean>;
 
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
@@ -166,7 +179,7 @@ export interface Term {
 
 export type MessageScope = Record<
   string,
-  Part | boolean | (string | number | boolean)[]
+  Part | LiteralValue | boolean | (LiteralValue | boolean)[]
 >;
 
 export const isTerm = (part: any): part is Term =>
@@ -196,7 +209,7 @@ export type Path = Part[];
  * functions.
  */
 export interface Runtime<R = string> {
-  select: { [key: string]: RuntimeFunction<Literal | Literal[]> };
+  select: { [key: string]: RuntimeFunction<LiteralValue | LiteralValue[]> };
   format: { [key: string]: RuntimeFunction<R> };
 }
 

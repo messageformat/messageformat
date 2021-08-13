@@ -1,6 +1,7 @@
 import type * as AST from '@messageformat/parser';
-import type {
+import {
   Function,
+  isPlainStringLiteral,
   Message,
   Part,
   SelectCase,
@@ -56,14 +57,22 @@ function tokenToPart(
 ): Part {
   switch (token.type) {
     case 'content':
-      return token.value;
+      return { type: 'literal', value: token.value };
     case 'argument':
-      return { type: 'variable', var_path: [token.arg] };
+      return {
+        type: 'variable',
+        var_path: [{ type: 'literal', value: token.arg }]
+      };
     case 'function': {
       const fn: Function = {
         type: 'function',
         func: token.key,
-        args: [{ type: 'variable', var_path: [token.arg] }]
+        args: [
+          {
+            type: 'variable',
+            var_path: [{ type: 'literal', value: token.arg }]
+          }
+        ]
       };
       if (token.param && token.param.length > 0) {
         let param = '';
@@ -76,11 +85,16 @@ function tokenToPart(
       return fn;
     }
     case 'octothorpe': {
-      if (!pluralArg) return '#';
+      if (!pluralArg) return { type: 'literal', value: '#' };
       const fn: Function = {
         type: 'function',
         func: 'number',
-        args: [{ type: 'variable', var_path: [pluralArg] }]
+        args: [
+          {
+            type: 'variable',
+            var_path: [{ type: 'literal', value: pluralArg }]
+          }
+        ]
       };
       if (pluralOffset) fn.options = { pluralOffset };
       return fn;
@@ -92,7 +106,10 @@ function tokenToPart(
 }
 
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
-  const argVar: Variable = { type: 'variable', var_path: [arg] };
+  const argVar: Variable = {
+    type: 'variable',
+    var_path: [{ type: 'literal', value: arg }]
+  };
   if (type === 'select') return argVar;
   const fn: Function = { type: 'function', func: 'plural', args: [argVar] };
   if (type === 'selectordinal') {
@@ -170,13 +187,13 @@ export function astToMessage(ast: AST.Token[]): Message {
           addParts(c.tokens, pa, po, [...filter, { idx, value }]);
         }
       } else {
-        const part = tokenToPart(token, pluralArg, pluralOffset);
         for (const c of cases)
           if (filter.every(({ idx, value }) => c.key[idx] === value)) {
-            const end = c.value.length - 1;
-            if (typeof c.value[end] === 'string' && typeof part === 'string')
-              c.value[end] += part;
-            else c.value.push(part);
+            const last = c.value[c.value.length - 1];
+            const part = tokenToPart(token, pluralArg, pluralOffset);
+            if (isPlainStringLiteral(last) && isPlainStringLiteral(part)) {
+              last.value += part.value;
+            } else c.value.push(part);
           }
       }
     }

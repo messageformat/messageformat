@@ -6,7 +6,7 @@ import {
   isSelect,
   isTerm,
   isVariable,
-  Literal,
+  LiteralValue,
   Message,
   Meta,
   Part,
@@ -20,7 +20,8 @@ import { Context, extendContext } from './format-context';
 
 export interface FormattedLiteral {
   type: 'literal';
-  value: Literal;
+  value: LiteralValue;
+  meta?: FormattedMeta;
 }
 export interface FormattedDynamic<T> {
   type: 'dynamic';
@@ -70,7 +71,8 @@ function resolveAsPart<R, S>(
   ctx: Context<R, S>,
   part: Part
 ): FormattedPart<R | S> {
-  if (isLiteral(part)) return { type: 'literal', value: part };
+  if (isLiteral(part))
+    return addMeta({ type: 'literal', value: part.value }, part.meta);
   if (isVariable(part)) {
     const value = resolveVariable(ctx, part);
     return addMeta({ type: 'dynamic', value }, part.meta);
@@ -92,18 +94,24 @@ function resolveAsPart<R, S>(
 function resolveAsValue<R, S>(
   ctx: Context<R, S>,
   part: Part
-): Literal | R | S | undefined {
-  if (isLiteral(part)) return part;
+): LiteralValue | R | S | undefined {
+  if (isLiteral(part)) return part.value;
   if (isVariable(part)) return resolveVariable(ctx, part);
   if (isFunction(part)) return resolveFormatFunction(ctx, part);
   if (isTerm(part)) {
     const { msg, msgCtx } = resolveMessage(ctx, part);
-    return msg ? formatToString(msgCtx, msg) : `{${part.msg_path.join('.')}}`;
+    return msg
+      ? formatToString(msgCtx, msg)
+      : `{${resolveFallback(ctx, part)}}`;
   }
   /* istanbul ignore next - never happens */
   return undefined;
 }
 
+function addMeta(
+  fp: FormattedLiteral,
+  meta: Meta | undefined
+): FormattedLiteral;
 function addMeta<T>(
   fp: FormattedDynamic<T>,
   meta: Meta | undefined
@@ -113,7 +121,7 @@ function addMeta<T>(
   meta: Meta | undefined
 ): FormattedMessage<T>;
 function addMeta<T>(
-  fp: FormattedDynamic<T> | FormattedMessage<T>,
+  fp: FormattedLiteral | FormattedDynamic<T> | FormattedMessage<T>,
   meta: Meta | undefined
 ) {
   if (meta) {
@@ -135,16 +143,14 @@ function addMeta<T>(
   return fp;
 }
 
-function resolveFormatFunction<R, S>(
-  ctx: Context<R, S>,
-  { args, func, options }: Function
-) {
+function resolveFormatFunction<R, S>(ctx: Context<R, S>, fn: Function) {
+  const { args, func, options } = fn;
   const fnArgs = args.map(arg => resolveAsValue(ctx, arg));
-  const fn = ctx.runtime.format[func];
+  const rf = ctx.runtime.format[func];
   try {
-    return fn(ctx.locales, options, ...fnArgs);
+    return rf(ctx.locales, options, ...fnArgs);
   } catch (_) {
-    return `{${func}(${fnArgs.join(',')})}`;
+    return `{${resolveFallback(ctx, fn)}}`;
   }
 }
 
@@ -169,8 +175,8 @@ function resolveMessage<R, S>(
 }
 
 export type ResolvedSelector = {
-  value: Literal | Literal[];
-  default: Literal;
+  value: LiteralValue | LiteralValue[];
+  default: LiteralValue;
 };
 
 function resolveSelect<R, S>(
@@ -182,7 +188,7 @@ function resolveSelect<R, S>(
     const v = isFunction(s.value)
       ? resolveSelectFunction(ctx, s.value)
       : resolveAsValue(ctx, s.value);
-    let value: Literal | Literal[];
+    let value: LiteralValue | LiteralValue[];
     if (typeof v === 'number') {
       const { plural } = ctx.runtime.select;
       value =
@@ -227,13 +233,48 @@ function resolveSelectFunction<R, S>(
 
 function resolveVariable<R, S>(
   ctx: Context<R, S>,
-  { var_path }: Variable
+  part: Variable
 ): S | string | undefined {
+  const { var_path } = part;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let val: any = ctx.scope;
   for (const key of var_path.map(part => resolveAsValue(ctx, part))) {
-    if (!val || typeof val !== 'object') return `{$${var_path.join('.')}}`;
+    if (!val || typeof val !== 'object') {
+      val = undefined;
+      break;
+    }
     val = val[key as string];
   }
-  return val === undefined ? `{$${var_path.join('.')}}` : val;
+  return val === undefined ? `{${resolveFallback(ctx, part)}}` : val;
+}
+
+function resolveFallback<R, S>(ctx: Context<R, S>, part: Part): string {
+  const resolve = resolveAsValue.bind(null, ctx);
+  if (isLiteral(part)) return String(part.value);
+  if (isVariable(part)) {
+    const path = part.var_path.map(resolve);
+    return '$' + path.join('.');
+  }
+  if (isFunction(part)) {
+    const args = part.args.map(resolve);
+    if (part.options)
+      for (const [key, value] of Object.entries(part.options))
+        args.push(`${key}: ${value}`);
+    return `${part.func}(${args.join(', ')})`;
+  }
+  if (isTerm(part)) {
+    let name = part.msg_path.map(resolve).join('.');
+    if (part.res_id) name = part.res_id + '::' + name;
+    if (!part.scope) return '-' + name;
+    const scope = Object.entries(part.scope).map(([key, value]) => {
+      const vs = Array.isArray(value)
+        ? `[${value.join(', ')}]`
+        : typeof value === 'object'
+        ? resolve(value)
+        : String(value);
+      return `${key}: ${vs}`;
+    });
+    return `-${name}(${scope.join(', ')})`;
+  }
+  return String(part);
 }

@@ -1,6 +1,6 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
-import { Message, Part, SelectCase } from 'messageformat';
+import { isPlainStringLiteral, Message, Part, SelectCase } from 'messageformat';
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -41,11 +41,14 @@ function expressionToPart(exp: Fluent.Expression): Part {
   switch (exp.type) {
     case 'NumberLiteral':
       // TODO: Account for precision?
-      return exp.parse().value;
+      return { type: 'literal', value: exp.parse().value };
     case 'StringLiteral':
-      return exp.parse().value;
+      return { type: 'literal', value: exp.parse().value };
     case 'VariableReference':
-      return { type: 'variable', var_path: [exp.id.name] };
+      return {
+        type: 'variable',
+        var_path: [{ type: 'literal', value: exp.id.name }]
+      };
     case 'FunctionReference': {
       const func = exp.id.name;
       const { positional, named } = exp.arguments;
@@ -60,17 +63,22 @@ function expressionToPart(exp: Fluent.Expression): Part {
       const id = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
-      return { type: 'term', msg_path: [id] };
+      return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
     }
     case 'TermReference': {
       const id = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      if (!exp.arguments) return { type: 'term', msg_path: [id] };
+      if (!exp.arguments)
+        return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
       const scope: Record<string, string | number> = {};
       for (const { name, value } of exp.arguments.named)
         scope[name.name] = value.parse().value;
-      return { type: 'term', msg_path: [id], scope };
+      return {
+        type: 'term',
+        msg_path: [{ type: 'literal', value: id }],
+        scope
+      };
     }
 
     /* istanbul ignore next - never happens */
@@ -84,7 +92,9 @@ function expressionToPart(exp: Fluent.Expression): Part {
 }
 
 const elementToPart = (el: Fluent.PatternElement): Part =>
-  el.type === 'TextElement' ? el.value : expressionToPart(el.expression);
+  el.type === 'TextElement'
+    ? { type: 'literal', value: el.value }
+    : expressionToPart(el.expression);
 
 function asFluentSelect(
   el: Fluent.PatternElement
@@ -151,12 +161,12 @@ export function astToMessage(
         for (const v of sel.variants)
           addParts(v.value, [...filter, { idx, value: variantKey(v) }]);
       } else {
-        const part = elementToPart(el);
         for (const c of cases)
           if (filter.every(({ idx, value }) => c.key[idx] === value)) {
-            const end = c.value.length - 1;
-            if (typeof c.value[end] === 'string' && typeof part === 'string')
-              c.value[end] += part;
+            const last = c.value[c.value.length - 1];
+            const part = elementToPart(el);
+            if (isPlainStringLiteral(last) && isPlainStringLiteral(part))
+              last.value += part.value;
             else c.value.push(part);
           }
       }

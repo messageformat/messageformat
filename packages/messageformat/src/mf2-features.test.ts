@@ -21,26 +21,50 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
         entries: {
           chrome: {
             entries: {
-              nominative: { type: 'message', value: ['Chrome'] },
-              genitive: { type: 'message', value: ['Chromen'] }
+              nominative: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Chrome' }]
+              },
+              genitive: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Chromen' }]
+              }
             }
           },
           edge: {
             entries: {
-              nominative: { type: 'message', value: ['Edge'] },
-              genitive: { type: 'message', value: ['Edgen'] }
+              nominative: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Edge' }]
+              },
+              genitive: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Edgen' }]
+              }
             }
           },
           firefox: {
             entries: {
-              nominative: { type: 'message', value: ['Firefox'] },
-              genitive: { type: 'message', value: ['Firefoxin'] }
+              nominative: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Firefox' }]
+              },
+              genitive: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Firefoxin' }]
+              }
             }
           },
           safari: {
             entries: {
-              nominative: { type: 'message', value: ['Safari'] },
-              genitive: { type: 'message', value: ['Safarin'] }
+              nominative: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Safari' }]
+              },
+              genitive: {
+                type: 'message',
+                value: [{ type: 'literal', value: 'Safarin' }]
+              }
             }
           }
         }
@@ -51,12 +75,15 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
           {
             type: 'term',
             msg_path: [
-              'browser',
-              { type: 'variable', var_path: ['browser-id'] },
-              'genitive'
+              { type: 'literal', value: 'browser' },
+              {
+                type: 'variable',
+                var_path: [{ type: 'literal', value: 'browser-id' }]
+              },
+              { type: 'literal', value: 'genitive' }
             ]
           },
-          ' asetukset'
+          { type: 'literal', value: ' asetukset' }
         ]
       }
     }
@@ -125,7 +152,12 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                 value: {
                   type: 'function',
                   func: 'pluralRange',
-                  args: [{ type: 'variable', var_path: ['range'] }]
+                  args: [
+                    {
+                      type: 'variable',
+                      var_path: [{ type: 'literal', value: 'range' }]
+                    }
+                  ]
                 }
               }
             ],
@@ -136,9 +168,14 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   {
                     type: 'function',
                     func: 'formatRange',
-                    args: [{ type: 'variable', var_path: ['range'] }]
+                    args: [
+                      {
+                        type: 'variable',
+                        var_path: [{ type: 'literal', value: 'range' }]
+                      }
+                    ]
                   },
-                  ' dag'
+                  { type: 'literal', value: ' dag' }
                 ]
               },
               {
@@ -147,9 +184,14 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   {
                     type: 'function',
                     func: 'formatRange',
-                    args: [{ type: 'variable', var_path: ['range'] }]
+                    args: [
+                      {
+                        type: 'variable',
+                        var_path: [{ type: 'literal', value: 'range' }]
+                      }
+                    ]
                   },
-                  ' dagen'
+                  { type: 'literal', value: ' dagen' }
                 ]
               }
             ]
@@ -180,8 +222,14 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   type: 'function',
                   func: 'pluralRange',
                   args: [
-                    { type: 'variable', var_path: ['start'] },
-                    { type: 'variable', var_path: ['end'] }
+                    {
+                      type: 'variable',
+                      var_path: [{ type: 'literal', value: 'start' }]
+                    },
+                    {
+                      type: 'variable',
+                      var_path: [{ type: 'literal', value: 'end' }]
+                    }
                   ]
                 }
               }
@@ -194,11 +242,17 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                     type: 'function',
                     func: 'formatRange',
                     args: [
-                      { type: 'variable', var_path: ['start'] },
-                      { type: 'variable', var_path: ['end'] }
+                      {
+                        type: 'variable',
+                        var_path: [{ type: 'literal', value: 'start' }]
+                      },
+                      {
+                        type: 'variable',
+                        var_path: [{ type: 'literal', value: 'end' }]
+                      }
                     ]
                   },
-                  ' dag'
+                  { type: 'literal', value: ' dag' }
                 ]
               },
               {
@@ -208,11 +262,17 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                     type: 'function',
                     func: 'formatRange',
                     args: [
-                      { type: 'variable', var_path: ['start'] },
-                      { type: 'variable', var_path: ['end'] }
+                      {
+                        type: 'variable',
+                        var_path: [{ type: 'literal', value: 'start' }]
+                      },
+                      {
+                        type: 'variable',
+                        var_path: [{ type: 'literal', value: 'end' }]
+                      }
                     ]
                   },
-                  ' dagen'
+                  { type: 'literal', value: ' dagen' }
                 ]
               }
             ]

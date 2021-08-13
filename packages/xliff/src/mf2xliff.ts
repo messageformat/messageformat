@@ -67,7 +67,7 @@ const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({
 // TODO Add <cp> escapes
 const asText = (value: unknown): X.Text => ({
   type: 'text',
-  text: String(value)
+  text: String(isLiteral(value) ? value.value : value)
 });
 
 const mismatch = (key: string[]) =>
@@ -206,15 +206,17 @@ function resolveSelect(
 
 function resolveSelector(id: string, sel: MF.Selector) {
   const part = resolvePart(id, sel.value);
-  if (isLiteral(sel.default))
+  if (typeof sel.default === 'string' || typeof sel.default === 'number')
     part.attributes = Object.assign({ default: sel.default }, part.attributes);
   return part;
 }
 
-function everyKey(select: { keys: MF.Literal[] }[]): Iterable<MF.Literal[]> {
+function everyKey(
+  select: { keys: MF.LiteralValue[] }[]
+): Iterable<MF.LiteralValue[]> {
   let ptr: number[] | null = null;
   const max = select.map(s => s.keys.length - 1);
-  function next(): IteratorResult<MF.Literal[]> {
+  function next(): IteratorResult<MF.LiteralValue[]> {
     if (!ptr) ptr = new Array<number>(select.length).fill(0);
     else {
       for (let i = ptr.length - 1; i >= 0; --i) {
@@ -268,11 +270,11 @@ function resolvePattern(
 
 function resolvePart(
   id: string | null,
-  part: MF.Part | boolean
+  part: MF.Part | string | number | boolean
 ): X.MessagePart {
   const attributes = id ? { id } : undefined;
 
-  if (isLiteral(part) || typeof part === 'boolean') {
+  if (isLiteral(part) || typeof part !== 'object') {
     return {
       type: 'element',
       name: 'mf:literal',

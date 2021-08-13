@@ -1,4 +1,4 @@
-import { Literal, Select } from './data-model';
+import { LiteralValue, Select } from './data-model';
 import type { ResolvedSelector } from './format-message';
 
 const cases = [
@@ -54,18 +54,18 @@ const genders = ['common', 'feminine', 'masculine', 'neuter'];
 const plurals = ['zero', 'one', 'two', 'few', 'many'];
 
 export interface FormattedSelectMeta {
-  case?: Literal;
-  caseFallback?: Literal;
-  gender?: Literal;
-  genderFallback?: Literal;
-  plural?: Literal;
-  pluralFallback?: Literal;
+  case?: LiteralValue;
+  caseFallback?: LiteralValue;
+  gender?: LiteralValue;
+  genderFallback?: LiteralValue;
+  plural?: LiteralValue;
+  pluralFallback?: LiteralValue;
 }
 
 export function getFormattedSelectMeta(
   select: Select,
   res: ResolvedSelector[],
-  key: Literal[]
+  key: LiteralValue[]
 ) {
   const meta: FormattedSelectMeta = {};
   const { gcase, gender, plural } = detectGrammarSelectors(select);
@@ -141,9 +141,9 @@ export function detectGrammarSelectors(select: Select) {
 
 function selectorMeta(
   res: ResolvedSelector[],
-  key: Literal[],
+  key: LiteralValue[],
   idx: number
-): { orig: Literal; fallback: Literal | null } | null {
+): { orig: LiteralValue; fallback: LiteralValue | null } | null {
   if (idx === -1) return null;
   const { value, default: def } = res[idx];
   const k = key[idx];
