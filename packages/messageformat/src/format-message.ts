@@ -18,17 +18,22 @@ import {
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
 
+export type FormattedMeta = Record<string, string | number | boolean | null>;
+
 export abstract class Formatted<T> {
   abstract type: 'dynamic' | 'fallback' | 'literal' | 'message';
   abstract valueOf(): T | string;
 
+  #locales: string[];
   value: T;
-  declare meta?: Record<string, boolean | number | string | null>;
+  declare meta?: FormattedMeta;
 
   constructor(
+    locales: string[],
     value: T | Formatted<T> | FormattedMessage<unknown>,
     meta?: Meta
   ) {
+    this.#locales = locales;
     if (value instanceof Formatted) {
       this.value = value.valueOf() as T; // T is always string for FormattedMessage value
       if (value.meta) addMeta(this, value.meta);
@@ -36,12 +41,13 @@ export abstract class Formatted<T> {
     if (meta) addMeta(this, meta);
   }
 
-  toString(locales?: string[]) {
-    return typeof this.value === 'number' &&
-      Array.isArray(locales) &&
-      locales.length > 0
-      ? this.value.toLocaleString(locales)
-      : String(this.value);
+  toString() {
+    // TS doesn't believe toLocaleString is defined for ~everything
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const v: any = this.value;
+    return v != null && typeof v.toLocaleString === 'function'
+      ? v.toLocaleString(this.#locales)
+      : String(v);
   }
 }
 
@@ -69,12 +75,12 @@ export class FormattedLiteral<
   }
 }
 export class FormattedMessage<T = unknown> extends Formatted<
-  Array<FormattedPart<T>>
+  FormattedPart<T>[]
 > {
   type = 'message' as const;
-  toString(locales?: string[]) {
+  toString() {
     let res = '';
-    for (const fp of this.value) res += fp.toString(locales);
+    for (const fp of this.value) res += fp.toString();
     return res;
   }
   valueOf() {
@@ -98,7 +104,7 @@ function addMeta(fmt: Formatted<unknown>, meta: Meta) {
         fmt.meta[key] = null;
         continue;
       } else if (typeof value.valueOf === 'function') {
-        // handle instances of Boolean, Number & String
+        // handle e.g. instances of Boolean, Number & String
         value = value.valueOf();
       }
     }
@@ -113,7 +119,7 @@ function addMeta(fmt: Formatted<unknown>, meta: Meta) {
 
 export function formatToString<R, S>(ctx: Context<R, S>, msg: Message) {
   let res = '';
-  for (const fp of formatToParts(ctx, msg)) res += fp.toString(ctx.locales);
+  for (const fp of formatToParts(ctx, msg)) res += fp.toString();
   return res;
 }
 
@@ -127,7 +133,11 @@ export function formatToParts<R, S>(
     : value;
   const res = pattern.map(part => resolvePart(ctx, part));
   if (meta || fsm) {
-    const fm = new FormattedMessage<R | S | LiteralValue>(res, meta);
+    const fm = new FormattedMessage<R | S | LiteralValue>(
+      ctx.locales,
+      res,
+      meta
+    );
     if (fsm) addMeta(fm, fsm);
     return [fm];
   } else return res;
@@ -141,7 +151,8 @@ function resolvePart<R, S>(
   | FormattedFallback
   | FormattedLiteral
   | FormattedMessage<R | S | LiteralValue> {
-  if (isLiteral(part)) return new FormattedLiteral(part.value, part.meta);
+  if (isLiteral(part))
+    return new FormattedLiteral(ctx.locales, part.value, part.meta);
   if (isVariable(part)) return resolveVariable(ctx, part);
   if (isFunction(part)) return resolveFormatFunction(ctx, part);
   if (isTerm(part)) return resolveMessage(ctx, part);
@@ -168,7 +179,7 @@ function resolveFormatFunction<R, S>(
         | FormattedFallback
         | FormattedMessage<R | S | LiteralValue>;
     }
-    return new FormattedDynamic(value as R, fn.meta);
+    return new FormattedDynamic(ctx.locales, value as R, fn.meta);
   } catch (error) {
     const fb = resolveFallback(ctx, fn);
     addMeta(fb, {
@@ -201,7 +212,7 @@ function resolveMessage<R, S>(
     }
     ctx = extendContext(ctx, res_id, msgScope);
   }
-  return new FormattedMessage(formatToParts(ctx, msg), term.meta);
+  return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
 }
 
 export type ResolvedSelector = {
@@ -284,11 +295,15 @@ function resolveVariable<R, S>(
   }
   return val === undefined
     ? resolveFallback(ctx, part)
-    : new FormattedDynamic(val, part.meta);
+    : new FormattedDynamic(ctx.locales, val, part.meta);
 }
 
 function resolveFallback(ctx: Context<unknown, unknown>, part: Part) {
-  return new FormattedFallback(fallbackValue(ctx, part), part.meta);
+  return new FormattedFallback(
+    ctx.locales,
+    fallbackValue(ctx, part),
+    part.meta
+  );
 }
 
 function fallbackValue(ctx: Context<unknown, unknown>, part: Part): string {
