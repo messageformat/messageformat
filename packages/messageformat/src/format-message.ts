@@ -140,7 +140,7 @@ function resolveFormatFunction<R, S>(
   fn: Function
 ): FormattedDynamic<R> | FormattedFallback {
   const { args, func, options } = fn;
-  const fnArgs = args.map(arg => resolvePart(ctx, arg).valueOf());
+  const fnArgs = args.map(arg => resolvePart(ctx, arg));
   const rf = ctx.runtime.format[func];
   try {
     const value = rf(ctx.locales, options, ...fnArgs);
@@ -228,7 +228,7 @@ function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: Function
 ) {
-  const fnArgs = args.map(arg => resolvePart(ctx, arg).valueOf());
+  const fnArgs = args.map(arg => resolvePart(ctx, arg));
   const fn = ctx.runtime.select[func];
   try {
     return fn(ctx.locales, options, ...fnArgs);

@@ -108,24 +108,27 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function parseRangeArgs(
-    start: number | { start: number; end: number },
-    end: number | undefined
+    start: FormattedPart<number | { start: number; end: number }>,
+    end: FormattedPart<number> | undefined
   ) {
-    if (typeof end === 'number') {
-      if (typeof start !== 'number')
-        throw new Error(`Invalid arguments (${start}, ${end})`);
-      return { start, end };
+    if (end) {
+      const r0 = start.valueOf();
+      const r1 = end.valueOf();
+      if (typeof r0 !== 'number' && typeof r0 !== 'string')
+        throw new Error(`Invalid arguments (${r0}, ${r1})`);
+      return { start: Number(r0), end: Number(r1) };
     } else {
-      if (!start || typeof start !== 'object')
-        throw new Error(`Invalid arguments (${start}, ${end})`);
-      return { start: start.start, end: start.end };
+      const range = start.valueOf();
+      if (!range || typeof range !== 'object')
+        throw new Error(`Invalid arguments (${range}, ${end})`);
+      return { start: range.start, end: range.end };
     }
   }
   function formatRange(
     _locales: string[],
     _options: FunctionOptions | undefined,
-    start: number | { start: number; end: number },
-    end?: number
+    start: FormattedPart<number | { start: number; end: number }>,
+    end?: FormattedPart<number>
   ) {
     const range = parseRangeArgs(start, end);
     return `${range.start} - ${range.end}`;
@@ -133,8 +136,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   function pluralRange(
     locales: string[],
     options: FunctionOptions | undefined,
-    start: number | { start: number; end: number },
-    end?: number
+    start: FormattedPart<number | { start: number; end: number }>,
+    end?: FormattedPart<number>
   ) {
     if (locales[0] !== 'nl') throw new Error('Only Dutch supported');
     const range = parseRangeArgs(start, end);
@@ -434,10 +437,13 @@ maybe('List formatting', () => {
     function LIST(
       locales: string[],
       options: FunctionOptions | undefined,
-      ...args: (string | string[])[]
+      ...args: FormattedPart<string | string[]>[]
     ) {
       let list: string[] = [];
-      for (const arg of args) list = list.concat(arg);
+      for (const arg of args) {
+        const value = arg.valueOf();
+        list = list.concat(Array.isArray(value) ? value : String(value));
+      }
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
@@ -476,23 +482,31 @@ maybe('List formatting', () => {
       format: Object.assign({ dative, LIST }, fluentRuntime.format)
     };
 
-    function dative(locales: string[], _options: unknown, arg: string) {
+    function dative(
+      locales: string[],
+      _options: unknown,
+      arg: FormattedPart<string>
+    ) {
       if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
       const data: Record<string, string> = {
         Maria: 'Mariei',
         Ileana: 'Ilenei',
         Petre: 'lui Petre'
       };
-      return data[arg] || arg;
+      const value = arg.valueOf();
+      return data[value] || value;
     }
 
     function LIST(
       locales: string[],
       options: FunctionOptions | undefined,
-      ...args: (string | string[])[]
+      ...args: FormattedPart<string | string[]>[]
     ) {
       let list: string[] = [];
-      for (const arg of args) list = list.concat(arg);
+      for (const arg of args) {
+        const value = arg.valueOf();
+        list = list.concat(Array.isArray(value) ? value : String(value));
+      }
       if (typeof options?.each === 'string') {
         const fn = runtime.format[options.each];
         if (typeof fn !== 'function')

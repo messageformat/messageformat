@@ -1,4 +1,5 @@
 import type { FunctionOptions, Runtime } from '../data-model';
+import type { FormattedPart } from '../format-message';
 
 export const runtime: Runtime<string> = {
   select: { plural },
@@ -8,43 +9,32 @@ export const runtime: Runtime<string> = {
 export function datetime(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: unknown
+  arg: FormattedPart
 ) {
+  const value = arg.valueOf();
   const d =
-    typeof arg === 'number' || arg instanceof Date
-      ? arg
-      : new Date(String(arg));
-  try {
-    const dtf = new Intl.DateTimeFormat(locales, options);
-    return dtf.format(d);
-  } catch (_) {
-    return String(d);
-  }
+    typeof value === 'number' || value instanceof Date
+      ? value
+      : new Date(String(value));
+  const dtf = new Intl.DateTimeFormat(locales, options);
+  return dtf.format(d);
 }
 
 export function number(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: unknown
+  arg: FormattedPart
 ) {
-  try {
-    const nf = new Intl.NumberFormat(locales, options);
-    return nf.format(Number(arg));
-  } catch (_) {
-    return String(arg);
-  }
+  const nf = new Intl.NumberFormat(locales, options);
+  return nf.format(Number(arg.valueOf()));
 }
 
 export function plural(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: unknown
+  arg: FormattedPart
 ) {
-  const n = Number(arg);
-  try {
-    const pr = new Intl.PluralRules(locales, options);
-    return [n, pr.select(n)];
-  } catch (_) {
-    return n;
-  }
+  const n = Number(arg.valueOf());
+  const pr = new Intl.PluralRules(locales, options);
+  return [n, pr.select(n)];
 }
