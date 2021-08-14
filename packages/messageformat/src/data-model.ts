@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import type { FormattedPart } from './format-message';
+
 /**
  * The root of a message structure is a Resource. It is somewhat (but not
  * necessarily entirely) analogous to a single file in a file system.
@@ -217,7 +219,7 @@ export type RuntimeFunction<R> = (
   locales: string[],
   options: FunctionOptions | undefined,
   ...args: any[]
-) => R;
+) => R | FormattedPart<R>;
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.

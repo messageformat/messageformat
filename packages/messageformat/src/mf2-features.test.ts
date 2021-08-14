@@ -511,7 +511,7 @@ maybe('List formatting', () => {
         const fn = runtime.format[options.each];
         if (typeof fn !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
-        list = list.map(li => fn(locales, undefined, li));
+        list = list.map(li => String(fn(locales, undefined, li).valueOf()));
       }
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);
@@ -544,7 +544,7 @@ maybe('List formatting', () => {
 });
 
 describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
-  function flatWordyParts(parts: FormattedPart[]) {
+  function flatWordyParts(parts: FormattedPart<string>[]) {
     let res: (
       | FormattedDynamic<unknown>
       | FormattedFallback
@@ -557,7 +557,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     return res;
   }
 
-  function hackyFixArticles(locales: string[], parts: FormattedPart[]) {
+  function hackyFixArticles(locales: string[], parts: FormattedPart<string>[]) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
     const articly = /(^|\s)(a|an|A|An)(\W*$)/;
     const vowely = /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;

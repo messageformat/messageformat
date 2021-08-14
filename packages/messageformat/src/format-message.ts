@@ -20,11 +20,19 @@ import { Context, extendContext } from './format-context';
 
 export abstract class Formatted<T> {
   abstract type: 'dynamic' | 'fallback' | 'literal' | 'message';
+  abstract valueOf(): T | string;
+
   value: T;
   declare meta?: Record<string, boolean | number | string | null>;
 
-  constructor(value: T, meta?: Meta) {
-    this.value = value;
+  constructor(
+    value: T | Formatted<T> | FormattedMessage<unknown>,
+    meta?: Meta
+  ) {
+    if (value instanceof Formatted) {
+      this.value = value.valueOf() as T; // T is always string for FormattedMessage value
+      if (value.meta) addMeta(this, value.meta);
+    } else this.value = value;
     if (meta) addMeta(this, meta);
   }
 
@@ -35,14 +43,13 @@ export abstract class Formatted<T> {
       ? this.value.toLocaleString(locales)
       : String(this.value);
   }
-
-  valueOf(): T | string {
-    return this.value;
-  }
 }
 
 export class FormattedDynamic<T = string> extends Formatted<T> {
   type = 'dynamic' as const;
+  valueOf() {
+    return this.value;
+  }
 }
 export class FormattedFallback extends Formatted<string> {
   type = 'fallback' as const;
@@ -53,8 +60,13 @@ export class FormattedFallback extends Formatted<string> {
     return this.toString();
   }
 }
-export class FormattedLiteral extends Formatted<LiteralValue> {
+export class FormattedLiteral<
+  T extends LiteralValue = LiteralValue
+> extends Formatted<T> {
   type = 'literal' as const;
+  valueOf() {
+    return this.value;
+  }
 }
 export class FormattedMessage<T = unknown> extends Formatted<
   Array<FormattedPart<T>>
@@ -73,12 +85,14 @@ export class FormattedMessage<T = unknown> extends Formatted<
 export type FormattedPart<T = unknown> =
   | FormattedDynamic<T>
   | FormattedFallback
-  | FormattedLiteral
-  | FormattedMessage<T | LiteralValue>;
+  | FormattedMessage<T>
+  // should be FormattedLiteral<T>, but TS can't cope with it
+  | (T extends LiteralValue ? FormattedLiteral : never);
 
 function addMeta(fmt: Formatted<unknown>, meta: Meta) {
   if (!fmt.meta) fmt.meta = {};
   for (let [key, value] of Object.entries(meta)) {
+    if (key in fmt.meta) continue;
     if (typeof value === 'object') {
       if (!value) {
         fmt.meta[key] = null;
@@ -106,7 +120,7 @@ export function formatToString<R, S>(ctx: Context<R, S>, msg: Message) {
 export function formatToParts<R, S>(
   ctx: Context<R, S>,
   { meta, value }: Message
-): FormattedPart<R | S>[] {
+): FormattedPart<R | S | LiteralValue>[] {
   let fsm: FormattedSelectMeta | null = null;
   const pattern = isSelect(value)
     ? resolveSelect(ctx, value, _fsm => (fsm = _fsm))
@@ -138,13 +152,23 @@ function resolvePart<R, S>(
 function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
   fn: Function
-): FormattedDynamic<R> | FormattedFallback {
+):
+  | FormattedDynamic<R>
+  | FormattedFallback
+  | FormattedMessage<R | S | LiteralValue> {
   const { args, func, options } = fn;
   const fnArgs = args.map(arg => resolvePart(ctx, arg));
   const rf = ctx.runtime.format[func];
   try {
     const value = rf(ctx.locales, options, ...fnArgs);
-    return new FormattedDynamic<R>(value, fn.meta);
+    if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
+      if (fn.meta) addMeta(value, fn.meta);
+      return value as
+        | FormattedDynamic<R>
+        | FormattedFallback
+        | FormattedMessage<R | S | LiteralValue>;
+    }
+    return new FormattedDynamic(value as R, fn.meta);
   } catch (error) {
     const fb = resolveFallback(ctx, fn);
     addMeta(fb, {
@@ -191,14 +215,21 @@ function resolveSelect<R, S>(
   onMeta?: (meta: FormattedSelectMeta) => void
 ): Pattern {
   const res: ResolvedSelector[] = select.select.map(s => {
-    const v = isFunction(s.value)
+    const r = isFunction(s.value)
       ? resolveSelectFunction(ctx, s.value)
-      : resolvePart(ctx, s.value).valueOf();
+      : resolvePart(ctx, s.value);
+    const v = r instanceof Formatted ? r.valueOf() : r;
     let value: LiteralValue | LiteralValue[];
     if (typeof v === 'number') {
       const { plural } = ctx.runtime.select;
-      value =
-        typeof plural === 'function' ? plural(ctx.locales, undefined, v) : v;
+      if (typeof plural === 'function') {
+        try {
+          const r = plural(ctx.locales, undefined, v);
+          value = r instanceof Formatted ? r.valueOf() : r;
+        } catch (_) {
+          value = v;
+        }
+      } else value = v;
     } else value = typeof v === 'string' || Array.isArray(v) ? v : String(v);
     return { value, default: s.default || 'other' };
   });
