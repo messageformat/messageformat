@@ -192,7 +192,7 @@ export const isTerm = (part: any): part is Term =>
  * structures, and require a path to address them. Note that Path allows for
  * its parts to be defined by placeholders as well as literals.
  */
-export type Path = Part[];
+export type Path = (Literal | Variable)[];
 
 export const isPart = (
   part: unknown

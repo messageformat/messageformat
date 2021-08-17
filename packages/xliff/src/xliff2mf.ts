@@ -290,7 +290,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
         if (el.name === 'mf:scope') {
           scope[el.attributes.name] = resolveScopeOverride(el);
           hasScope = true;
-        } else mt.msg_path.push(resolvePart(el));
+        } else mt.msg_path.push(resolveArgument(el));
       }
       if (hasScope) mt.scope = scope;
       return mt;
@@ -311,7 +311,7 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
       return { type: 'literal', value: resolveText(part.elements) };
 
     case 'mf:variable':
-      return { type: 'variable', var_path: part.elements.map(resolvePart) };
+      return { type: 'variable', var_path: part.elements.map(resolveArgument) };
   }
 
   /* istanbul ignore next - never happens */
@@ -323,7 +323,7 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
 }
 
 function resolveScopeOverride(el: X.MessageScope) {
-  const sv = el.elements.map(resolvePart);
+  const sv = el.elements.map(resolveArgument);
   if (sv.length < 2) return sv[0] || '';
   else if (sv.every(isLiteral)) return sv.map(part => part.value);
   throw new Error(

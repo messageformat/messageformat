@@ -160,14 +160,10 @@ function resolvePart<R, S>(
   throw new Error(`Unsupported part: ${part}`);
 }
 
-function resolveFunctionArgument<R, S>(
+function resolveArgument<R, S>(
   ctx: Context<R, S>,
   part: Part
-):
-  | FormattedDynamic<R | S>
-  | FormattedFallback
-  | FormattedLiteral
-  | FormattedMessage<R | S | LiteralValue> {
+): FormattedDynamic<S> | FormattedFallback | FormattedLiteral {
   if (isLiteral(part))
     return new FormattedLiteral(ctx.locales, part.value, part.meta);
   if (isVariable(part)) return resolveVariable(ctx, part);
@@ -182,7 +178,7 @@ function resolveFormatFunction<R, S>(
   | FormattedFallback
   | FormattedMessage<R | S | LiteralValue> {
   const { args, func, options } = fn;
-  const fnArgs = args.map(arg => resolveFunctionArgument(ctx, arg));
+  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
   const rf = ctx.runtime.format[func];
   try {
     const value = rf(ctx.locales, options, ...fnArgs);
@@ -221,7 +217,7 @@ function resolveMessage<R, S>(
       msgScope = Object.assign({}, ctx.scope);
       for (const [key, value] of Object.entries(scope))
         msgScope[key] = isPart(value)
-          ? resolvePart(ctx, value).valueOf()
+          ? resolveArgument(ctx, value).valueOf()
           : value;
     }
     ctx = extendContext(ctx, res_id, msgScope);
@@ -284,7 +280,7 @@ function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: Function
 ) {
-  const fnArgs = args.map(arg => resolveFunctionArgument(ctx, arg));
+  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
   const fn = ctx.runtime.select[func];
   try {
     return fn(ctx.locales, options, ...fnArgs);
@@ -305,7 +301,7 @@ function resolveVariable<R, S>(
       val = undefined;
       break;
     }
-    val = val[resolvePart(ctx, p).toString()];
+    val = val[resolveArgument(ctx, p).toString()];
   }
   return val === undefined
     ? resolveFallback(ctx, part)
