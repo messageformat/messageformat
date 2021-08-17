@@ -76,21 +76,4 @@ describe('Function returns Formatted value', () => {
       { type: 'dynamic', value: '42', meta: { foo: 'FOO' } }
     ]);
   });
-
-  test('with function composition', () => {
-    const src = `msg = { OUT(IN($var)) }\n`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
-    const runtime: Runtime = {
-      format: {
-        IN: (_lc, _opt, arg) => Object.assign(arg, { meta: { foo: 'FOO' } }),
-        OUT: (_lc, _opt, arg) =>
-          Object.assign(arg, { meta: Object.assign({ bar: 'BAR' }, arg.meta) })
-      },
-      select: {}
-    };
-    const mf = new MessageFormat('en', runtime, res);
-    expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
-      { type: 'dynamic', value: 42, meta: { foo: 'FOO', bar: 'BAR' } }
-    ]);
-  });
 });

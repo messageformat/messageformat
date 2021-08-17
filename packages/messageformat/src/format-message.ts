@@ -160,6 +160,20 @@ function resolvePart<R, S>(
   throw new Error(`Unsupported part: ${part}`);
 }
 
+function resolveFunctionArgument<R, S>(
+  ctx: Context<R, S>,
+  part: Part
+):
+  | FormattedDynamic<R | S>
+  | FormattedFallback
+  | FormattedLiteral
+  | FormattedMessage<R | S | LiteralValue> {
+  if (isLiteral(part))
+    return new FormattedLiteral(ctx.locales, part.value, part.meta);
+  if (isVariable(part)) return resolveVariable(ctx, part);
+  throw new Error(`Unsupported function argument: ${part}`);
+}
+
 function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
   fn: Function
@@ -168,7 +182,7 @@ function resolveFormatFunction<R, S>(
   | FormattedFallback
   | FormattedMessage<R | S | LiteralValue> {
   const { args, func, options } = fn;
-  const fnArgs = args.map(arg => resolvePart(ctx, arg));
+  const fnArgs = args.map(arg => resolveFunctionArgument(ctx, arg));
   const rf = ctx.runtime.format[func];
   try {
     const value = rf(ctx.locales, options, ...fnArgs);
@@ -270,7 +284,7 @@ function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: Function
 ) {
-  const fnArgs = args.map(arg => resolvePart(ctx, arg));
+  const fnArgs = args.map(arg => resolveFunctionArgument(ctx, arg));
   const fn = ctx.runtime.select[func];
   try {
     return fn(ctx.locales, options, ...fnArgs);

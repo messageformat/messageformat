@@ -1,7 +1,12 @@
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 
-import { isFunction, isLiteral, isPlainStringLiteral } from 'messageformat';
+import {
+  isFunction,
+  isLiteral,
+  isPlainStringLiteral,
+  isTerm
+} from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -219,6 +224,8 @@ function resolveInlineElement(
             throw new Error(
               'Forming function arguments by concatenation is not supported'
             );
+          if (isFunction(arg[0]) || isTerm(arg[0]))
+            throw new Error(`A ${arg[0].type} is not supported here`);
           part.args.unshift(arg[0] ?? '');
           return part;
         }
@@ -254,7 +261,8 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 function resolvePart(part: X.MessagePart): MF.Part {
   switch (part.name) {
     case 'mf:literal':
-      return { type: 'literal', value: resolveText(part.elements) };
+    case 'mf:variable':
+      return resolveArgument(part);
 
     case 'mf:function': {
       const fn: MF.Function = {
@@ -268,7 +276,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
         if (el.name === 'mf:option') {
           options[el.attributes.name] = maybeNumber(resolveText(el.elements));
           hasOptions = true;
-        } else fn.args.push(resolvePart(el));
+        } else fn.args.push(resolveArgument(el));
       }
       if (hasOptions) fn.options = options;
       return fn;
@@ -287,6 +295,20 @@ function resolvePart(part: X.MessagePart): MF.Part {
       if (hasScope) mt.scope = scope;
       return mt;
     }
+  }
+
+  /* istanbul ignore next - never happens */
+  throw new Error(
+    `Unsupported part ${(part as X.MessagePart).type} <${
+      (part as X.MessagePart).name
+    }>`
+  );
+}
+
+function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
+  switch (part.name) {
+    case 'mf:literal':
+      return { type: 'literal', value: resolveText(part.elements) };
 
     case 'mf:variable':
       return { type: 'variable', var_path: part.elements.map(resolvePart) };
@@ -294,7 +316,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
 
   /* istanbul ignore next - never happens */
   throw new Error(
-    `Unsupported part ${(part as X.MessagePart).type} <${
+    `Unsupported argument ${(part as X.MessagePart).type} <${
       (part as X.MessagePart).name
     }>`
   );

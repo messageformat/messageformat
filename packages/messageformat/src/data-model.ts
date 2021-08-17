@@ -150,7 +150,7 @@ export const isVariable = (part: any): part is Variable =>
 export interface Function {
   type: 'function';
   func: string;
-  args: Part[];
+  args: (Literal | Variable)[];
   options?: FunctionOptions;
   meta?: Meta;
 }

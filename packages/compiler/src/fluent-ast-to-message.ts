@@ -1,6 +1,13 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
-import { isPlainStringLiteral, Message, Part, SelectCase } from 'messageformat';
+import {
+  isFunction,
+  isPlainStringLiteral,
+  isTerm,
+  Message,
+  Part,
+  SelectCase
+} from 'messageformat';
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -52,7 +59,12 @@ function expressionToPart(exp: Fluent.Expression): Part {
     case 'FunctionReference': {
       const func = exp.id.name;
       const { positional, named } = exp.arguments;
-      const args = positional.map(expressionToPart);
+      const args = positional.map(exp => {
+        const part = expressionToPart(exp);
+        if (isFunction(part) || isTerm(part))
+          throw new Error(`A Fluent ${exp.type} is not supported here.`);
+        return part;
+      });
       if (named.length === 0) return { type: 'function', func, args };
       const options: Record<string, string | number> = {};
       for (const { name, value } of named)
