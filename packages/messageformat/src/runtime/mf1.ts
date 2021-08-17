@@ -5,17 +5,14 @@ import {
   time as timeFmt
 } from '@messageformat/runtime/lib/formatters';
 import type { FunctionOptions, Runtime } from '../data-model';
-import type { FormattedPart } from '../format-message';
 
 export const runtime: Runtime<string> = {
   select: { plural },
   format: { date, duration, number, time }
 };
 
-function asLiteral(fmt: FormattedPart) {
-  const x = fmt.valueOf();
-  return typeof x === 'number' || typeof x === 'string' ? x : String(x);
-}
+const asLiteral = (arg: unknown) =>
+  typeof arg === 'number' || typeof arg === 'string' ? arg : String(arg);
 
 const getParam = (options: FunctionOptions | undefined) =>
   (options && String(options.param).trim()) || undefined;
@@ -25,7 +22,7 @@ type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 export function date(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: FormattedPart
+  arg: unknown
 ) {
   return dateFmt(asLiteral(arg), locales, getParam(options) as DateTimeSize);
 }
@@ -33,7 +30,7 @@ export function date(
 export function duration(
   _locales: string[],
   _options: FunctionOptions | undefined,
-  arg: FormattedPart
+  arg: unknown
 ) {
   return durationFmt(asLiteral(arg));
 }
@@ -41,9 +38,9 @@ export function duration(
 export function number(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: FormattedPart
+  arg: unknown
 ) {
-  let n = Number(arg.valueOf());
+  let n = Number(arg);
   const offset = Number(options && options.pluralOffset);
   if (Number.isFinite(offset)) n -= offset;
   return numberFmt(n, locales, getParam(options) || '', 'USD');
@@ -52,9 +49,9 @@ export function number(
 export function plural(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: FormattedPart
+  arg: unknown
 ) {
-  const n = Number(arg.valueOf());
+  const n = Number(arg);
   if (!Number.isFinite(n)) return n;
   const offset = Number(options && options.pluralOffset);
   const pr = new Intl.PluralRules(locales, options);
@@ -65,7 +62,7 @@ export function plural(
 export function time(
   locales: string[],
   options: FunctionOptions | undefined,
-  arg: FormattedPart
+  arg: unknown
 ) {
   return timeFmt(asLiteral(arg), locales, getParam(options) as DateTimeSize);
 }

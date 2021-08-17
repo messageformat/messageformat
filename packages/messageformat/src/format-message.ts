@@ -163,10 +163,9 @@ function resolvePart<R, S>(
 function resolveArgument<R, S>(
   ctx: Context<R, S>,
   part: Part
-): FormattedDynamic<S> | FormattedFallback | FormattedLiteral {
-  if (isLiteral(part))
-    return new FormattedLiteral(ctx.locales, part.value, part.meta);
-  if (isVariable(part)) return resolveVariable(ctx, part);
+): S | string | number {
+  if (isLiteral(part)) return part.value;
+  if (isVariable(part)) return resolveVariable(ctx, part).valueOf();
   throw new Error(`Unsupported function argument: ${part}`);
 }
 
@@ -216,9 +215,7 @@ function resolveMessage<R, S>(
       // Let's not check typings of Term scope overrides
       msgScope = Object.assign({}, ctx.scope);
       for (const [key, value] of Object.entries(scope))
-        msgScope[key] = isPart(value)
-          ? resolveArgument(ctx, value).valueOf()
-          : value;
+        msgScope[key] = isPart(value) ? resolveArgument(ctx, value) : value;
     }
     ctx = extendContext(ctx, res_id, msgScope);
   }
@@ -301,7 +298,7 @@ function resolveVariable<R, S>(
       val = undefined;
       break;
     }
-    val = val[resolveArgument(ctx, p).toString()];
+    val = val[resolveArgument(ctx, p)];
   }
   return val === undefined
     ? resolveFallback(ctx, part)

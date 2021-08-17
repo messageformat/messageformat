@@ -181,7 +181,7 @@ export interface Term {
 
 export type MessageScope = Record<
   string,
-  Part | LiteralValue | boolean | (LiteralValue | boolean)[]
+  Literal | Variable | LiteralValue | boolean | (LiteralValue | boolean)[]
 >;
 
 export const isTerm = (part: any): part is Term =>

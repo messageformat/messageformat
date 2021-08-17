@@ -3,6 +3,7 @@ import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
 
 import { MessageFormat, Runtime } from './index';
+import { FormattedDynamic } from './format-message';
 
 describe('Function returns primitive value', () => {
   test('string', () => {
@@ -11,7 +12,7 @@ describe('Function returns primitive value', () => {
     `;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
-      format: { STRINGIFY: (_lc, _opt, arg) => String(arg.valueOf()) },
+      format: { STRINGIFY: (_lc, _opt, arg) => String(arg) },
       select: {}
     };
     const mf = new MessageFormat('en', runtime, res);
@@ -25,7 +26,7 @@ describe('Function returns primitive value', () => {
     const src = `msg = { NUMERIC($var) }\n`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime<number> = {
-      format: { NUMERIC: (_lc, _opt, arg) => Number(arg.valueOf()) },
+      format: { NUMERIC: (_lc, _opt, arg) => Number(arg) },
       select: {}
     };
     const mf = new MessageFormat('en', runtime, res);
@@ -42,37 +43,13 @@ describe('Function returns Formatted value', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
       format: {
-        STRINGIFY: (_lc, _opt, arg) =>
-          Object.assign(arg, {
-            value: String(arg.valueOf()),
-            meta: { foo: 'FOO' }
-          })
+        STRINGIFY: (_lc, _opt, arg: string) =>
+          new FormattedDynamic(['en'], String(arg), { foo: 'FOO' })
       },
       select: {}
     };
     const mf = new MessageFormat('en', runtime, res);
     expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
-      { type: 'dynamic', value: '42', meta: { foo: 'FOO' } }
-    ]);
-  });
-
-  test('literal is made dynamic', () => {
-    const src = `msg = { STRINGIFY(42) }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
-    const runtime: Runtime = {
-      format: {
-        STRINGIFY(_lc, _opt, arg) {
-          expect(arg.type).toBe('literal');
-          return Object.assign(arg, {
-            value: String(arg.valueOf()),
-            meta: { foo: 'FOO' }
-          });
-        }
-      },
-      select: {}
-    };
-    const mf = new MessageFormat('en', runtime, res);
-    expect(mf.formatToParts('msg')).toMatchObject([
       { type: 'dynamic', value: '42', meta: { foo: 'FOO' } }
     ]);
   });
