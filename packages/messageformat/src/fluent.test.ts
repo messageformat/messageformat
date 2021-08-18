@@ -34,6 +34,7 @@ type TestCase = {
     msg: string;
     scope?: Record<string, string | number>;
     exp: string | RegExp;
+    only?: boolean;
   }[];
 };
 
@@ -276,7 +277,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       mf = new MessageFormat(locale, fluentRuntime, res);
     });
 
-    for (const { msg, scope, exp } of tests) {
+    for (const { msg, scope, exp, only } of tests) {
       let name = msg;
       if (scope) {
         const opt = Object.entries(scope).map(
@@ -285,7 +286,8 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
         name = `[${opt.join(', ')}] ${msg}`;
       }
 
-      test(name, () => {
+      const _test = only ? test.only : test;
+      _test(name, () => {
         const res = mf.format(msg, scope);
         if (exp instanceof RegExp) expect(res).toMatch(exp);
         else expect(res).toBe(exp);
