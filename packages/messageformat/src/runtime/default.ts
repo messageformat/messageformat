@@ -1,4 +1,4 @@
-import type { Runtime, RuntimeFunction, RuntimeOptions } from '../data-model';
+import { Runtime, RuntimeFunction, RuntimeOptions } from './index';
 
 export const datetime: RuntimeFunction<string> = {
   call: function datetime(

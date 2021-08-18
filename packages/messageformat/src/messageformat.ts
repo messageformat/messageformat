@@ -1,14 +1,7 @@
-import {
-  isMessage,
-  Message,
-  MessageGroup,
-  Resource,
-  Runtime,
-  Scope
-} from './data-model';
+import { isMessage, Message, MessageGroup, Resource } from './data-model';
 import { createContext } from './format-context';
 import { FormattedPart, formatToParts, formatToString } from './format-message';
-import { runtime as defaultRuntime } from './runtime/default';
+import { defaultRuntime, Runtime, Scope } from './runtime';
 
 function getEntry(res: Resource, path: string[]) {
   let msg: MessageGroup | Message = res;

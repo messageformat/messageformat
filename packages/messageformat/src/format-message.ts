@@ -11,13 +11,13 @@ import {
   Options,
   Part,
   Pattern,
-  RuntimeType,
   Select,
   Term,
   Variable
 } from './data-model';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
+import type { RuntimeType } from './runtime';
 
 export type FormattedMeta = Record<string, string | number | boolean | null>;
 

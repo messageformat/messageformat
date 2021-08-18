@@ -1,11 +1,5 @@
-import {
-  isFunction,
-  isTerm,
-  MessageGroup,
-  Part,
-  Resource,
-  Runtime
-} from './data-model';
+import { isFunction, isTerm, MessageGroup, Part, Resource } from './data-model';
+import type { Runtime } from './runtime';
 
 export function validate(resources: Resource[], runtime: Runtime) {
   function handleMsgParts(parts: Part[], inSelect?: boolean) {

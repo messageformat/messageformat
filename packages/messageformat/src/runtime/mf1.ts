@@ -4,8 +4,8 @@ import {
   numberFmt,
   time as timeFmt
 } from '@messageformat/runtime/lib/formatters';
-import type { Runtime, RuntimeFunction, RuntimeOptions } from '../data-model';
 import { runtime as MF2 } from './default';
+import type { Runtime, RuntimeFunction, RuntimeOptions } from './index';
 
 const asLiteral = (arg: unknown) =>
   typeof arg === 'number' || typeof arg === 'string' ? arg : String(arg);
