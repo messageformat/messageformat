@@ -2,7 +2,6 @@ import {
   Function,
   isFunction,
   isLiteral,
-  isPart,
   isSelect,
   isTerm,
   isVariable,
@@ -12,6 +11,7 @@ import {
   Options,
   Part,
   Pattern,
+  RuntimeType,
   Select,
   Term,
   Variable
@@ -172,20 +172,37 @@ function resolveArgument<R, S>(
 
 function resolveOptions<R, S>(
   ctx: Context<R, S>,
-  options: Options | undefined
+  options: Options | undefined,
+  expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
   const opt: Record<string, string | number | boolean | S> = {};
-  if (options)
+  const getExpected =
+    !expected || typeof expected === 'string' || Array.isArray(expected)
+      ? () => expected
+      : (key: string) => expected[key];
+  if (options && expected)
     for (const [key, value] of Object.entries(options)) {
-      switch (typeof value) {
-        case 'string':
-        case 'number':
-        case 'boolean':
-          opt[key] = value;
-          break;
-        case 'object':
-          if (isPart(value)) opt[key] = resolveArgument(ctx, value);
-      }
+      const exp = getExpected(key);
+      if (!exp) continue; // TODO: report error
+      const res = isVariable(value)
+        ? resolveArgument(ctx, value)
+        : exp === 'boolean'
+        ? value === 'true'
+          ? true
+          : value === 'false'
+          ? false
+          : value
+        : exp === 'number'
+        ? Number(value)
+        : value;
+
+      if (
+        exp === 'any' ||
+        exp === typeof res ||
+        (Array.isArray(exp) && typeof res === 'string' && exp.includes(res))
+      )
+        opt[key] = res;
+      // TODO: else report error
     }
   return opt;
 }
@@ -198,9 +215,9 @@ function resolveFormatFunction<R, S>(
   | FormattedFallback
   | FormattedMessage<R | S | LiteralValue> {
   const { args, func, options } = fn;
-  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
-  const fnOpt = resolveOptions(ctx, options);
   const rf = ctx.runtime.format[func];
+  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnOpt = resolveOptions(ctx, options, rf?.options);
   try {
     const value = rf.call(ctx.locales, fnOpt, ...fnArgs);
     if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
@@ -231,7 +248,8 @@ function resolveTerm<R, S>(
   const msg = ctx.getMessage(res_id, strPath);
   if (!msg) return resolveFallback(ctx, term);
   if (res_id || scope) {
-    const msgScope = Object.assign({}, ctx.scope, resolveOptions(ctx, scope));
+    const opt = scope ? resolveOptions(ctx, scope, 'any') : null;
+    const msgScope = Object.assign({}, ctx.scope, opt);
     // Let's not check typings of Term scope overrides
     ctx = extendContext(ctx, res_id, msgScope) as Context<R, S>;
   }
@@ -293,9 +311,9 @@ function resolveSelectFunction<R, S>(
   ctx: Context<R, S>,
   { args, func, options }: Function
 ) {
-  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
-  const fnOpt = resolveOptions(ctx, options);
   const fn = ctx.runtime.select[func];
+  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnOpt = resolveOptions(ctx, options, fn?.options);
   try {
     return fn.call(ctx.locales, fnOpt, ...fnArgs);
   } catch (_) {
