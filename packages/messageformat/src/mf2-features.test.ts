@@ -5,10 +5,10 @@ import { compileFluent, compileMF1 } from '@messageformat/compiler';
 import {
   fluentRuntime,
   FormattedPart,
-  FunctionOptions,
   MessageFormat,
   Resource,
-  Runtime
+  Runtime,
+  RuntimeOptions
 } from './index';
 import {
   FormattedDynamic,
@@ -123,7 +123,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   }
   function formatRange(
     _locales: string[],
-    _options: FunctionOptions | undefined,
+    _options: RuntimeOptions | undefined,
     start: number | { start: number; end: number },
     end?: number
   ) {
@@ -132,7 +132,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   }
   function pluralRange(
     locales: string[],
-    options: FunctionOptions | undefined,
+    options: RuntimeOptions | undefined,
     start: number | { start: number; end: number },
     end?: number
   ) {
@@ -433,7 +433,7 @@ maybe('List formatting', () => {
   test('Intl.ListFormat, combine/flatten inputs (unicode-org/message-format-wg#36)', () => {
     function LIST(
       locales: string[],
-      options: FunctionOptions | undefined,
+      options: RuntimeOptions | undefined,
       ...args: (string | string[])[]
     ) {
       let list: string[] = [];
@@ -488,7 +488,7 @@ maybe('List formatting', () => {
 
     function LIST(
       locales: string[],
-      options: FunctionOptions | undefined,
+      options: RuntimeOptions | undefined,
       ...args: (string | string[])[]
     ) {
       let list: string[] = [];

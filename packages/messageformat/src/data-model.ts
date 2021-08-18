@@ -151,11 +151,11 @@ export interface Function {
   type: 'function';
   func: string;
   args: (Literal | Variable)[];
-  options?: FunctionOptions;
+  options?: Options;
   meta?: Meta;
 }
 
-export type FunctionOptions = Record<string, LiteralValue | boolean>;
+export type Options = Record<string, string | number | boolean | Variable>;
 
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
@@ -175,14 +175,9 @@ export interface Term {
   type: 'term';
   res_id?: string;
   msg_path: Path;
-  scope?: MessageScope;
+  scope?: Options;
   meta?: Meta;
 }
-
-export type MessageScope = Record<
-  string,
-  Literal | Variable | LiteralValue | boolean | (LiteralValue | boolean)[]
->;
 
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
@@ -217,9 +212,11 @@ export interface Runtime<R = string> {
 
 export type RuntimeFunction<R> = (
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   ...args: any[]
 ) => R | FormattedPart<R>;
+
+export type RuntimeOptions = Record<string, unknown>;
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.

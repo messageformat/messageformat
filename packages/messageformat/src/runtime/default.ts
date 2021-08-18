@@ -1,4 +1,4 @@
-import type { FunctionOptions, Runtime } from '../data-model';
+import type { Runtime, RuntimeOptions } from '../data-model';
 
 export const runtime: Runtime<string> = {
   select: { plural },
@@ -7,7 +7,7 @@ export const runtime: Runtime<string> = {
 
 export function datetime(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   const d =
@@ -20,7 +20,7 @@ export function datetime(
 
 export function number(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   const nf = new Intl.NumberFormat(locales, options);
@@ -29,7 +29,7 @@ export function number(
 
 export function plural(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   const n = Number(arg);

@@ -4,7 +4,7 @@ import {
   numberFmt,
   time as timeFmt
 } from '@messageformat/runtime/lib/formatters';
-import type { FunctionOptions, Runtime } from '../data-model';
+import type { Runtime, RuntimeOptions } from '../data-model';
 
 export const runtime: Runtime<string> = {
   select: { plural },
@@ -14,14 +14,14 @@ export const runtime: Runtime<string> = {
 const asLiteral = (arg: unknown) =>
   typeof arg === 'number' || typeof arg === 'string' ? arg : String(arg);
 
-const getParam = (options: FunctionOptions | undefined) =>
+const getParam = (options: RuntimeOptions | undefined) =>
   (options && String(options.param).trim()) || undefined;
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
 export function date(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   return dateFmt(asLiteral(arg), locales, getParam(options) as DateTimeSize);
@@ -29,7 +29,7 @@ export function date(
 
 export function duration(
   _locales: string[],
-  _options: FunctionOptions | undefined,
+  _options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   return durationFmt(asLiteral(arg));
@@ -37,7 +37,7 @@ export function duration(
 
 export function number(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   let n = Number(arg);
@@ -48,7 +48,7 @@ export function number(
 
 export function plural(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   const n = Number(arg);
@@ -61,7 +61,7 @@ export function plural(
 
 export function time(
   locales: string[],
-  options: FunctionOptions | undefined,
+  options: RuntimeOptions | undefined,
   arg: unknown
 ) {
   return timeFmt(asLiteral(arg), locales, getParam(options) as DateTimeSize);

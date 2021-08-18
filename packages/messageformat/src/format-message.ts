@@ -9,6 +9,7 @@ import {
   LiteralValue,
   Message,
   Meta,
+  Options,
   Part,
   Pattern,
   Select,
@@ -155,7 +156,7 @@ function resolvePart<R, S>(
     return new FormattedLiteral(ctx.locales, part.value, part.meta);
   if (isVariable(part)) return resolveVariable(ctx, part);
   if (isFunction(part)) return resolveFormatFunction(ctx, part);
-  if (isTerm(part)) return resolveMessage(ctx, part);
+  if (isTerm(part)) return resolveTerm(ctx, part);
   /* istanbul ignore next - never happens */
   throw new Error(`Unsupported part: ${part}`);
 }
@@ -169,6 +170,26 @@ function resolveArgument<R, S>(
   throw new Error(`Unsupported function argument: ${part}`);
 }
 
+function resolveOptions<R, S>(
+  ctx: Context<R, S>,
+  options: Options | undefined
+) {
+  const opt: Record<string, string | number | boolean | S> = {};
+  if (options)
+    for (const [key, value] of Object.entries(options)) {
+      switch (typeof value) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+          opt[key] = value;
+          break;
+        case 'object':
+          if (isPart(value)) opt[key] = resolveArgument(ctx, value);
+      }
+    }
+  return opt;
+}
+
 function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
   fn: Function
@@ -178,9 +199,10 @@ function resolveFormatFunction<R, S>(
   | FormattedMessage<R | S | LiteralValue> {
   const { args, func, options } = fn;
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnOpt = resolveOptions(ctx, options);
   const rf = ctx.runtime.format[func];
   try {
-    const value = rf(ctx.locales, options, ...fnArgs);
+    const value = rf(ctx.locales, fnOpt, ...fnArgs);
     if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
       if (fn.meta) addMeta(value, fn.meta);
       return value as
@@ -200,7 +222,7 @@ function resolveFormatFunction<R, S>(
   }
 }
 
-function resolveMessage<R, S>(
+function resolveTerm<R, S>(
   ctx: Context<R, S>,
   term: Term
 ): FormattedMessage<R | S | LiteralValue> | FormattedFallback {
@@ -209,15 +231,9 @@ function resolveMessage<R, S>(
   const msg = ctx.getMessage(res_id, strPath);
   if (!msg) return resolveFallback(ctx, term);
   if (res_id || scope) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let msgScope: any = undefined;
-    if (scope) {
-      // Let's not check typings of Term scope overrides
-      msgScope = Object.assign({}, ctx.scope);
-      for (const [key, value] of Object.entries(scope))
-        msgScope[key] = isPart(value) ? resolveArgument(ctx, value) : value;
-    }
-    ctx = extendContext(ctx, res_id, msgScope);
+    const msgScope = Object.assign({}, ctx.scope, resolveOptions(ctx, scope));
+    // Let's not check typings of Term scope overrides
+    ctx = extendContext(ctx, res_id, msgScope) as Context<R, S>;
   }
   return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
 }
@@ -278,9 +294,10 @@ function resolveSelectFunction<R, S>(
   { args, func, options }: Function
 ) {
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnOpt = resolveOptions(ctx, options);
   const fn = ctx.runtime.select[func];
   try {
-    return fn(ctx.locales, options, ...fnArgs);
+    return fn(ctx.locales, fnOpt, ...fnArgs);
   } catch (_) {
     return isLiteral(fnArgs[0]) ? fnArgs[0] : String(fnArgs[0]);
   }

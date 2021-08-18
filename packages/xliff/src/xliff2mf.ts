@@ -3,9 +3,9 @@ import type * as X from './xliff-spec';
 
 import {
   isFunction,
-  isLiteral,
   isPlainStringLiteral,
-  isTerm
+  isTerm,
+  isVariable
 } from 'messageformat';
 import { parse } from './xliff';
 
@@ -270,7 +270,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
         func: part.attributes.name,
         args: []
       };
-      const options: MF.FunctionOptions = {};
+      const options: MF.Options = {};
       let hasOptions = false;
       for (const el of part.elements) {
         if (el.name === 'mf:option') {
@@ -284,7 +284,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
 
     case 'mf:message': {
       const mt: MF.Term = { type: 'term', msg_path: [] };
-      const scope: MF.MessageScope = {};
+      const scope: MF.Options = {};
       let hasScope = false;
       for (const el of part.elements) {
         if (el.name === 'mf:scope') {
@@ -324,9 +324,12 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
 
 function resolveScopeOverride(el: X.MessageScope) {
   const sv = el.elements.map(resolveArgument);
-  if (sv.length < 2) return sv[0] || '';
-  else if (sv.every(isLiteral)) return sv.map(part => part.value);
-  throw new Error(
-    'Only literal parts are allowed in array values of scope overrides'
-  );
+  switch (sv.length) {
+    case 0:
+      return '';
+    case 1:
+      return isVariable(sv[0]) ? sv[0] : sv[0].value;
+    default:
+      throw new Error('Term scope overrides may only have one value');
+  }
 }
