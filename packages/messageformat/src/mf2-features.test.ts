@@ -141,7 +141,10 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     const pr = new Intl.PluralRules(locales, options);
     return pr.select(range.end);
   }
-  const runtime: Runtime = { select: { pluralRange }, format: { formatRange } };
+  const runtime: Runtime = {
+    select: { pluralRange: { call: pluralRange, options: 'any' } },
+    format: { formatRange: { call: formatRange, options: 'any' } }
+  };
 
   test('input as { start, end } object', () => {
     const res: Resource = {
@@ -444,7 +447,10 @@ maybe('List formatting', () => {
     }
     const runtime: Runtime = {
       select: fluentRuntime.select,
-      format: Object.assign({ LIST }, fluentRuntime.format)
+      format: Object.assign(
+        { LIST: { call: LIST, options: 'any' } },
+        fluentRuntime.format
+      )
     };
 
     const src = source`
@@ -473,7 +479,10 @@ maybe('List formatting', () => {
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
     const runtime: Runtime = {
       select: fluentRuntime.select,
-      format: Object.assign({ dative, LIST }, fluentRuntime.format)
+      format: Object.assign(
+        { dative: { call: dative }, LIST: { call: LIST, options: 'any' } },
+        fluentRuntime.format
+      )
     };
 
     function dative(locales: string[], _options: unknown, arg: string) {
@@ -495,9 +504,11 @@ maybe('List formatting', () => {
       for (const arg of args) list = list.concat(arg);
       if (typeof options?.each === 'string') {
         const fn = runtime.format[options.each];
-        if (typeof fn !== 'function')
+        if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
-        list = list.map(li => String(fn(locales, undefined, li).valueOf()));
+        list = list.map(li =>
+          String(fn.call(locales, undefined, li).valueOf())
+        );
       }
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);

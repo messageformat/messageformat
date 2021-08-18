@@ -210,11 +210,23 @@ export interface Runtime<R = string> {
   format: { [key: string]: RuntimeFunction<R> };
 }
 
-export type RuntimeFunction<R> = (
-  locales: string[],
-  options: RuntimeOptions | undefined,
-  ...args: any[]
-) => R | FormattedPart<R>;
+export interface RuntimeFunction<R> {
+  call(
+    locales: string[],
+    options: RuntimeOptions | undefined,
+    ...args: any[]
+  ): R | FormattedPart<R>;
+  options: RuntimeType | Record<string, RuntimeType>;
+}
+
+export type RuntimeType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'object'
+  | 'any'
+  | null
+  | string[];
 
 export type RuntimeOptions = Record<string, unknown>;
 

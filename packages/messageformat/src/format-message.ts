@@ -202,7 +202,7 @@ function resolveFormatFunction<R, S>(
   const fnOpt = resolveOptions(ctx, options);
   const rf = ctx.runtime.format[func];
   try {
-    const value = rf(ctx.locales, fnOpt, ...fnArgs);
+    const value = rf.call(ctx.locales, fnOpt, ...fnArgs);
     if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
       if (fn.meta) addMeta(value, fn.meta);
       return value as
@@ -256,9 +256,9 @@ function resolveSelect<R, S>(
     let value: LiteralValue | LiteralValue[];
     if (typeof v === 'number') {
       const { plural } = ctx.runtime.select;
-      if (typeof plural === 'function') {
+      if (typeof plural === 'object' && typeof plural.call === 'function') {
         try {
-          const r = plural(ctx.locales, undefined, v);
+          const r = plural.call(ctx.locales, undefined, v);
           value = r instanceof Formatted ? r.valueOf() : r;
         } catch (_) {
           value = v;
@@ -297,7 +297,7 @@ function resolveSelectFunction<R, S>(
   const fnOpt = resolveOptions(ctx, options);
   const fn = ctx.runtime.select[func];
   try {
-    return fn(ctx.locales, fnOpt, ...fnArgs);
+    return fn.call(ctx.locales, fnOpt, ...fnArgs);
   } catch (_) {
     return isLiteral(fnArgs[0]) ? fnArgs[0] : String(fnArgs[0]);
   }

@@ -12,7 +12,9 @@ describe('Function returns primitive value', () => {
     `;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
-      format: { STRINGIFY: (_lc, _opt, arg) => String(arg) },
+      format: {
+        STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: null }
+      },
       select: {}
     };
     const mf = new MessageFormat('en', runtime, res);
@@ -26,7 +28,9 @@ describe('Function returns primitive value', () => {
     const src = `msg = { NUMERIC($var) }\n`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime<number> = {
-      format: { NUMERIC: (_lc, _opt, arg) => Number(arg) },
+      format: {
+        NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: null }
+      },
       select: {}
     };
     const mf = new MessageFormat('en', runtime, res);
@@ -43,8 +47,11 @@ describe('Function returns Formatted value', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
       format: {
-        STRINGIFY: (_lc, _opt, arg: string) =>
-          new FormattedDynamic(['en'], String(arg), { foo: 'FOO' })
+        STRINGIFY: {
+          call: (_lc, _opt, arg: string) =>
+            new FormattedDynamic(['en'], String(arg), { foo: 'FOO' }),
+          options: null
+        }
       },
       select: {}
     };
