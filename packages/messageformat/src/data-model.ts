@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+//// RESOURCES ////
+
 /**
  * The root of a message structure is a Resource. It is somewhat (but not
  * necessarily entirely) analogous to a single file in a file system.
@@ -26,6 +28,8 @@ export interface Meta {
   comment?: string;
   [key: string]: unknown;
 }
+
+//// MESSAGES ////
 
 /**
  * The core of the spec, the representation of a single message.
@@ -82,12 +86,15 @@ export interface SelectCase {
 export const isSelect = (value: Message['value']): value is Select =>
   !!value && typeof value === 'object' && 'select' in value;
 
+
+//// MESSAGE PARTS ////
+
 /**
- * A Value is either a literal, immediately defined value, or a reference to a
+ * A Part is either a literal, immediately defined value, or a reference to a
  * value that depends on another message, the value of some runtime variable,
  * or some function defined elsewhere.
  *
- * Each of the types that may be used as a Value must be (and are) immediately
+ * Each of the types that may be used as a Part must be (and are) immediately
  * distinguishable from each other.
  */
 export type Part = Literal | Variable | Function | Term;
@@ -95,8 +102,9 @@ export type Part = Literal | Variable | Function | Term;
 /**
  * An immediately defined value.
  *
- * A numerical value probably only makes sense when used e.g. as a fixed
- * argument of a Function, but its use is not technically prohibited elsewhere.
+ * Always contains a string value. In Function arguments and options as well as
+ * Term scopes, the expeted type of the value may result in the value being
+ * further parsed as a boolean or a number.
  */
 export interface Literal {
   type: 'literal';
@@ -110,9 +118,7 @@ export const isLiteral = (part: any): part is Literal =>
 export const isPlainStringLiteral = (
   part: any
 ): part is Literal & { value: string; meta?: never } =>
-  isLiteral(part) &&
-  typeof part.value === 'string' &&
-  (!part.meta || Object.keys(part.meta).length === 0);
+  isLiteral(part) && (!part.meta || Object.keys(part.meta).length === 0);
 
 /**
  * Variables are defined by the current Scope.
@@ -138,10 +144,6 @@ export const isVariable = (part: any): part is Variable =>
  * output. Likely functions available by default would include `'plural'` for
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
- *
- * It is intentional that the `options` do not allow for reference values to
- * be used, as that would add significant requirements to the runtime
- * resolution of a Function.
  */
 export interface Function {
   type: 'function';
@@ -150,8 +152,6 @@ export interface Function {
   options?: Options;
   meta?: Meta;
 }
-
-export type Options = Record<string, Literal | Variable>;
 
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
@@ -163,7 +163,7 @@ export const isFunction = (part: any): part is Function =>
  * If it is set, it identifies the resource for the sought message. It is
  * entirely intentional that this value may not be defined at runtime.
  * `msg_path` is used to locate the Message within the Resource, and it may
- * include placeholder values.
+ * include Variable values.
  *
  * `scope` overrides values in the current scope when resolving the message.
  */
@@ -180,12 +180,13 @@ export const isTerm = (part: any): part is Term =>
 
 /**
  * Variables and messages may each be located within their surrounding
- * structures, and require a path to address them. Note that Path allows for
- * its parts to be defined by placeholders as well as literals.
+ * structures, and require a path to address them.
  */
 export type Path = (Literal | Variable)[];
 
-export const isPart = (
-  part: unknown
-): part is Literal | Function | Term | Variable =>
-  isLiteral(part) || isVariable(part) || isFunction(part) || isTerm(part);
+/**
+ * The Function options and Term scope may be defined directly with Literal
+ * values, or use Variables. For Literals, the function's signature determines
+ * how the string value is parsed.
+ */
+export type Options = Record<string, Literal | Variable>;
