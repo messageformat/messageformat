@@ -72,15 +72,17 @@ export const number: RuntimeFunction<string> = {
   }
 };
 
-export const plural: RuntimeFunction<[number, Intl.LDMLPluralRule]> = {
+export const plural: RuntimeFunction<string[]> = {
   call: function plural(
     locales: string[],
     options: RuntimeOptions | undefined,
     arg: unknown
   ) {
     const n = Number(arg);
+    if (!Number.isFinite(n)) return ['other'];
     const pr = new Intl.PluralRules(locales, options);
-    return [n, pr.select(n)];
+    const cat = pr.select(n);
+    return Number.isInteger(n) ? [String(n), cat] : [cat];
   },
 
   options: {

@@ -139,7 +139,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     if (locales[0] !== 'nl') throw new Error('Only Dutch supported');
     const range = parseRangeArgs(start, end);
     const pr = new Intl.PluralRules(locales, options);
-    return pr.select(range.end);
+    return [pr.select(range.end)];
   }
   const runtime: Runtime = {
     select: {

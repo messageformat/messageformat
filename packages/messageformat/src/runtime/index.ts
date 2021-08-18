@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { SelectKey } from '../data-model';
 import { FormattedPart } from '../format-message';
 
 export { runtime as defaultRuntime } from './default';
@@ -20,16 +19,16 @@ export { runtime as mf1Runtime } from './mf1';
  */
 
 export interface Runtime<R = string> {
-  select: { [key: string]: RuntimeFunction<SelectKey | SelectKey[]> };
-  format: { [key: string]: RuntimeFunction<R> };
+  select: { [key: string]: RuntimeFunction<string[]> };
+  format: { [key: string]: RuntimeFunction<R | FormattedPart<R>> };
 }
 
-export interface RuntimeFunction<R> {
+export interface RuntimeFunction<T> {
   call(
     locales: string[],
     options: RuntimeOptions | undefined,
     ...args: any[]
-  ): R | FormattedPart<R>;
+  ): T;
   options: RuntimeType | Record<string, RuntimeType>;
 }
 

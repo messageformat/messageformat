@@ -172,7 +172,10 @@ export function astToMessage(ast: AST.Token[]): Message {
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: SelectCase[] = keys.map(key => ({ key, value: [] }));
+  const cases: SelectCase[] = keys.map(key => ({
+    key: key.map(k => String(k)),
+    value: []
+  }));
 
   /**
    * This reads `args` and modifies `cases`
@@ -198,7 +201,7 @@ export function astToMessage(ast: AST.Token[]): Message {
         }
       } else {
         for (const c of cases)
-          if (filter.every(({ idx, value }) => c.key[idx] === value)) {
+          if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
             const last = c.value[c.value.length - 1];
             const part = tokenToPart(token, pluralArg, pluralOffset);
             if (isPlainStringLiteral(last) && isPlainStringLiteral(part)) {

@@ -95,11 +95,6 @@ function resolveEntry(
 const idList = (src: string | undefined) =>
   src ? src.trim().split(/\s+/) : [];
 
-function maybeNumber(str: string) {
-  const n = Number(str);
-  return Number.isFinite(n) ? n : str;
-}
-
 function resolveSelect(
   { attributes, elements }: X.Group,
   st: 'source' | 'target'
@@ -121,8 +116,7 @@ function resolveSelect(
           const pu = prettyElement('unit', id);
           throw new Error(`The name attribute is required for ${pu}`);
         }
-        const key = idList(name).map(maybeNumber);
-        cases.push({ key, value: resolveUnit(el, st) });
+        cases.push({ key: idList(name), value: resolveUnit(el, st) });
         break;
       }
       case 'group': {
@@ -144,7 +138,7 @@ function resolveSelect(
     }
     const def = part.attributes?.default;
     const value = resolvePart(part);
-    return def ? { value, default: def } : { value };
+    return def ? { value, default: String(def) } : { value };
   });
   return { type: 'select', value: { select, cases } };
 }

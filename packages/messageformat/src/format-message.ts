@@ -11,7 +11,7 @@ import {
   Part,
   Pattern,
   Select,
-  SelectKey,
+  Selector,
   Term,
   Variable
 } from './data-model';
@@ -248,45 +248,21 @@ function resolveTerm<R, S>(
   return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
 }
 
-export type ResolvedSelector = {
-  value: SelectKey | SelectKey[];
-  default: SelectKey;
-};
-
 function resolveSelect<R, S>(
   ctx: Context<R, S>,
   select: Select,
   onMeta?: (meta: FormattedSelectMeta) => void
 ): Pattern {
-  const res: ResolvedSelector[] = select.select.map(s => {
-    const r = isFunction(s.value)
-      ? resolveSelectFunction(ctx, s.value)
-      : resolvePart(ctx, s.value);
-    const v = r instanceof Formatted ? r.valueOf() : r;
-    let value: SelectKey | SelectKey[];
-    if (typeof v === 'number') {
-      const { plural } = ctx.runtime.select;
-      if (typeof plural === 'object' && typeof plural.call === 'function') {
-        try {
-          const r = plural.call(ctx.locales, undefined, v);
-          value = r instanceof Formatted ? r.valueOf() : r;
-        } catch (_) {
-          value = v;
-        }
-      } else value = v;
-    } else value = typeof v === 'string' || Array.isArray(v) ? v : String(v);
-    return { value, default: s.default || 'other' };
-  });
+  const res = select.select.map(s => ({
+    value: resolveSelectorValue(ctx, s),
+    default: s.default || 'other'
+  }));
 
   for (const { key, value } of select.cases) {
     if (
       key.every((k, i) => {
         const r = res[i];
-        return (
-          k === r.default ||
-          k === r.value ||
-          (Array.isArray(r.value) && r.value.includes(k))
-        );
+        return k === r.default || r.value.includes(k);
       })
     ) {
       if (onMeta) {
@@ -299,18 +275,39 @@ function resolveSelect<R, S>(
   return [];
 }
 
-function resolveSelectFunction<R, S>(
+function resolveSelectorValue<R, S>(
   ctx: Context<R, S>,
-  { args, func, options }: Function
-) {
-  const fn = ctx.runtime.select[func];
-  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
-  const fnOpt = resolveOptions(ctx, options, fn?.options);
-  try {
-    return fn.call(ctx.locales, fnOpt, ...fnArgs);
-  } catch (_) {
-    return isLiteral(fnArgs[0]) ? fnArgs[0] : String(fnArgs[0]);
+  { value }: Selector
+): string[] {
+  if (isFunction(value)) {
+    const { args, func, options } = value;
+    const fn = ctx.runtime.select[func];
+    const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+    const fnOpt = resolveOptions(ctx, options, fn?.options);
+    try {
+      return fn.call(ctx.locales, fnOpt, ...fnArgs);
+    } catch (_) {
+      return [String(fnArgs[0])];
+    }
   }
+
+  const res = resolvePart(ctx, value).valueOf();
+
+  if (typeof res === 'number') {
+    const { plural } = ctx.runtime.select;
+    if (typeof plural === 'object' && typeof plural.call === 'function') {
+      try {
+        return plural.call(ctx.locales, undefined, res);
+      } catch (_) {
+        // TODO: report error
+        return ['other'];
+      }
+    }
+  }
+
+  return Array.isArray(res) && res.every(r => typeof r === 'string')
+    ? res
+    : [String(res)];
 }
 
 function resolveVariable<R, S>(

@@ -117,11 +117,7 @@ function resolveSelect(
   } else if (Array.isArray(trgSel))
     trgSel = { select: srcSel.select, cases: [{ key: [], value: trgSel }] };
 
-  const select: {
-    id: string;
-    default: string | number;
-    keys: (string | number)[];
-  }[] = [];
+  const select: { id: string; default: string; keys: string[] }[] = [];
   const parts: X.MessagePart[] = srcSel.select.map(sel => {
     const id = nextId();
     select.push({ id, default: sel.default ?? 'other', keys: [] });
@@ -155,13 +151,14 @@ function resolveSelect(
     }
 
     // Collect all of the key values for each case, in the right order
-    const addSorted = (i: number, key: string | number) => {
+    const addSorted = (i: number, key: string) => {
       const { default: def, keys } = select[i];
       if (keys.includes(key)) return;
       if (key === def) keys.push(key);
-      else if (typeof key === 'number') {
+      else if (Number.isFinite(Number(key))) {
         let pos = 0;
-        while (keys[pos] !== def && typeof keys[pos] === 'number') pos += 1;
+        while (keys[pos] !== def && Number.isFinite(Number(keys[pos])))
+          pos += 1;
         keys.splice(pos, 0, key);
       } else {
         let pos = keys.length;
@@ -206,17 +203,15 @@ function resolveSelect(
 
 function resolveSelector(id: string, sel: MF.Selector) {
   const part = resolvePart(id, sel.value);
-  if (typeof sel.default === 'string' || typeof sel.default === 'number')
+  if (typeof sel.default === 'string')
     part.attributes = Object.assign({ default: sel.default }, part.attributes);
   return part;
 }
 
-function everyKey(
-  select: { keys: MF.SelectKey[] }[]
-): Iterable<MF.SelectKey[]> {
+function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
   let ptr: number[] | null = null;
   const max = select.map(s => s.keys.length - 1);
-  function next(): IteratorResult<MF.SelectKey[]> {
+  function next(): IteratorResult<string[]> {
     if (!ptr) ptr = new Array<number>(select.length).fill(0);
     else {
       for (let i = ptr.length - 1; i >= 0; --i) {

@@ -52,18 +52,18 @@ export const number: RuntimeFunction<string> = {
   }
 };
 
-export const plural: RuntimeFunction<number | [number, Intl.LDMLPluralRule]> = {
+export const plural: RuntimeFunction<string[]> = {
   call: function plural(
     locales: string[],
     options: RuntimeOptions | undefined,
     arg: unknown
   ) {
     const n = Number(arg);
-    if (!Number.isFinite(n)) return n;
+    if (!Number.isFinite(n)) return ['other'];
     const offset = Number(options && options.pluralOffset);
     const pr = new Intl.PluralRules(locales, options);
     const cat = pr.select(Number.isFinite(offset) ? n - offset : n);
-    return [n, cat];
+    return Number.isInteger(n) ? [String(n), cat] : [cat];
   },
 
   options: Object.assign({ pluralOffset: 'number' }, MF2.select.plural.options)

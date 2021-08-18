@@ -70,16 +70,14 @@ export interface Select {
 
 export interface Selector {
   value: Part;
-  default?: SelectKey;
+  default?: string;
 }
 
 export interface SelectCase {
-  key: SelectKey[];
+  key: string[];
   value: Pattern;
   meta?: Meta;
 }
-
-export type SelectKey = string | number;
 
 export const isSelect = (value: Message['value']): value is Select =>
   !!value && typeof value === 'object' && 'select' in value;

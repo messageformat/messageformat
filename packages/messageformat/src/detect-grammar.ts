@@ -1,5 +1,4 @@
-import type { Select, SelectKey } from './data-model';
-import type { ResolvedSelector } from './format-message';
+import type { Select } from './data-model';
 
 const cases = [
   'ablative',
@@ -53,19 +52,26 @@ const genders = ['common', 'feminine', 'masculine', 'neuter'];
 
 const plurals = ['zero', 'one', 'two', 'few', 'many'];
 
+const isNumeric = (str: string) => Number.isFinite(Number(str));
+
+type ResolvedSelector = {
+  value: string[];
+  default: string;
+};
+
 export interface FormattedSelectMeta {
-  case?: SelectKey;
-  caseFallback?: SelectKey;
-  gender?: SelectKey;
-  genderFallback?: SelectKey;
-  plural?: SelectKey;
-  pluralFallback?: SelectKey;
+  case?: string;
+  caseFallback?: string;
+  gender?: string;
+  genderFallback?: string;
+  plural?: string;
+  pluralFallback?: string;
 }
 
 export function getFormattedSelectMeta(
   select: Select,
   res: ResolvedSelector[],
-  key: SelectKey[]
+  key: string[]
 ) {
   const meta: FormattedSelectMeta = {};
   const { gcase, gender, plural } = detectGrammarSelectors(select);
@@ -82,8 +88,9 @@ export function getFormattedSelectMeta(
     if (gm.fallback !== null) meta.genderFallback = gm.fallback;
   }
 
+  const k0 = res[plural]?.value[0];
   const pm =
-    typeof res[plural]?.value !== 'string'
+    isNumeric(k0) || plurals.includes(k0)
       ? selectorMeta(res, key, plural)
       : null;
   if (pm) {
@@ -120,7 +127,7 @@ export function detectGrammarSelectors(select: Select) {
       const k = key[i];
       if (k === defaults[i]) continue;
 
-      if (typeof k === 'number' || plurals.includes(k)) {
+      if (isNumeric(k) || plurals.includes(k)) {
         if (c !== GC.Plural) gc[i] = c ? GC.Other : GC.Plural;
       } else if (cases.includes(k)) {
         if (c !== GC.Case) gc[i] = c ? GC.Other : GC.Case;
@@ -141,18 +148,16 @@ export function detectGrammarSelectors(select: Select) {
 
 function selectorMeta(
   res: ResolvedSelector[],
-  key: SelectKey[],
+  key: string[],
   idx: number
-): { orig: SelectKey; fallback: SelectKey | null } | null {
+): { orig: string; fallback: string | null } | null {
   if (idx === -1) return null;
   const { value, default: def } = res[idx];
   const k = key[idx];
-  if (k === value || (Array.isArray(value) && value.includes(k))) {
+  if (value.includes(k)) {
     return { orig: k, fallback: null };
   } else {
-    const orig = Array.isArray(value)
-      ? value.find(v => typeof v === 'string') ?? value[0]
-      : value;
+    const orig = value.find(v => !isNumeric(v)) ?? value[0];
     return { orig, fallback: k ?? def };
   }
 }
