@@ -75,12 +75,12 @@ function tokenToPart(
         ]
       };
       if (token.param && token.param.length > 0) {
-        let param = '';
+        let value = '';
         for (const pt of token.param) {
-          if (pt.type === 'content') param += pt.value;
+          if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        fn.options = { param };
+        fn.options = { param: { type: 'literal', value } };
       }
       return fn;
     }
@@ -96,7 +96,8 @@ function tokenToPart(
           }
         ]
       };
-      if (pluralOffset) fn.options = { pluralOffset };
+      if (pluralOffset)
+        fn.options = { pluralOffset: { type: 'literal', value: pluralOffset } };
       return fn;
     }
     /* istanbul ignore next - never happens */
@@ -112,11 +113,18 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
   };
   if (type === 'select') return argVar;
   const fn: Function = { type: 'function', func: 'plural', args: [argVar] };
-  if (type === 'selectordinal') {
-    fn.options = pluralOffset
-      ? { pluralOffset, type: 'ordinal' }
-      : { type: 'ordinal' };
-  } else if (pluralOffset) fn.options = { pluralOffset };
+
+  const po = pluralOffset
+    ? { type: 'literal' as const, value: pluralOffset }
+    : null;
+  const oo =
+    type === 'selectordinal'
+      ? { type: 'literal' as const, value: 'ordinal' }
+      : null;
+  if (po && oo) fn.options = { pluralOffset: po, type: oo };
+  else if (po) fn.options = { pluralOffset: po };
+  else if (oo) fn.options = { type: oo };
+
   return fn;
 }
 

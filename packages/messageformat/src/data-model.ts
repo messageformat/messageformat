@@ -153,7 +153,7 @@ export interface Function {
   meta?: Meta;
 }
 
-export type Options = Record<string, string | number | boolean | Variable>;
+export type Options = Record<string, Literal | Variable>;
 
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';

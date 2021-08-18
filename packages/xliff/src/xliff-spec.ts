@@ -1213,7 +1213,7 @@ export interface MessageFunction extends Element {
     name: string;
     default?: string | number;
   };
-  elements: (MessageOption | MessagePart)[];
+  elements: (MessageOption | MessageLiteral | MessageVariable)[];
 }
 
 export interface MessageOption extends Element {
@@ -1221,24 +1221,8 @@ export interface MessageOption extends Element {
   attributes: {
     name: string;
     values?: string;
-
-    /**
-     * Directionality of content: `ltr` (Left-To-Right), `rtl` (Right-To-Left),
-     * or `auto` (determined heuristically, based on the first strong
-     * directional character in scope).
-     *
-     * Default: `auto`
-     */
-    dir?: Direction;
-
-    /**
-     * How white spaces (ASCII spaces, tabs and line-breaks) are to be treated.
-     *
-     * Default: `preserve`
-     */
-    'xml:space'?: XmlSpace;
   };
-  elements: (Text | CharCode)[];
+  elements: (MessageLiteral | MessageVariable)[];
 }
 
 export interface MessageReference extends Element {
@@ -1248,7 +1232,7 @@ export interface MessageReference extends Element {
     default?: string | number;
     resourceId?: string;
   };
-  elements: (MessageScope | MessagePart)[];
+  elements: (MessageScope | MessageLiteral | MessageVariable)[];
 }
 
 export interface MessageScope extends Element {
@@ -1257,11 +1241,11 @@ export interface MessageScope extends Element {
     name: string;
     values?: string;
   };
-  elements: MessagePart[];
+  elements: (MessageLiteral | MessageVariable)[];
 }
 
 export interface MessageVariable extends Element {
   name: 'mf:variable';
   attributes?: { id?: string; default?: string | number };
-  elements: MessagePart[];
+  elements: (MessageLiteral | MessageVariable)[];
 }

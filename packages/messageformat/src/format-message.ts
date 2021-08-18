@@ -163,9 +163,20 @@ function resolvePart<R, S>(
 
 function resolveArgument<R, S>(
   ctx: Context<R, S>,
-  part: Part
-): S | string | number {
-  if (isLiteral(part)) return part.value;
+  part: Part,
+  expected?: RuntimeType
+): string | number | boolean | S {
+  if (isLiteral(part)) {
+    const { value } = part;
+    switch (expected) {
+      case 'boolean':
+        return value === 'true' ? true : value === 'false' ? false : value;
+      case 'number':
+        return Number(value);
+      default:
+        return value;
+    }
+  }
   if (isVariable(part)) return resolveVariable(ctx, part).valueOf();
   throw new Error(`Unsupported function argument: ${part}`);
 }
@@ -184,17 +195,7 @@ function resolveOptions<R, S>(
     for (const [key, value] of Object.entries(options)) {
       const exp = getExpected(key);
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = isVariable(value)
-        ? resolveArgument(ctx, value)
-        : exp === 'boolean'
-        ? value === 'true'
-          ? true
-          : value === 'false'
-          ? false
-          : value
-        : exp === 'number'
-        ? Number(value)
-        : value;
+      const res = resolveArgument(ctx, value, exp);
 
       if (
         exp === 'any' ||
@@ -359,21 +360,16 @@ function fallbackValue(ctx: Context<unknown, unknown>, part: Part): string {
     const args = part.args.map(resolve);
     if (part.options)
       for (const [key, value] of Object.entries(part.options))
-        args.push(`${key}: ${value}`);
+        args.push(`${key}: ${resolve(value)}`);
     return `${part.func}(${args.join(', ')})`;
   }
   if (isTerm(part)) {
     let name = part.msg_path.map(resolve).join('.');
     if (part.res_id) name = part.res_id + '::' + name;
     if (!part.scope) return '-' + name;
-    const scope = Object.entries(part.scope).map(([key, value]) => {
-      const vs = Array.isArray(value)
-        ? `[${value.join(', ')}]`
-        : typeof value === 'object'
-        ? resolve(value)
-        : String(value);
-      return `${key}: ${vs}`;
-    });
+    const scope = Object.entries(part.scope).map(
+      ([key, value]) => `${key}: ${resolve(value)}`
+    );
     return `-${name}(${scope.join(', ')})`;
   }
   return String(part);

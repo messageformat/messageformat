@@ -1,12 +1,7 @@
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 
-import {
-  isFunction,
-  isPlainStringLiteral,
-  isTerm,
-  isVariable
-} from 'messageformat';
+import { isFunction, isPlainStringLiteral, isTerm } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -274,7 +269,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
       let hasOptions = false;
       for (const el of part.elements) {
         if (el.name === 'mf:option') {
-          options[el.attributes.name] = maybeNumber(resolveText(el.elements));
+          options[el.attributes.name] = resolveOption(el);
           hasOptions = true;
         } else fn.args.push(resolveArgument(el));
       }
@@ -288,7 +283,7 @@ function resolvePart(part: X.MessagePart): MF.Part {
       let hasScope = false;
       for (const el of part.elements) {
         if (el.name === 'mf:scope') {
-          scope[el.attributes.name] = resolveScopeOverride(el);
+          scope[el.attributes.name] = resolveOption(el);
           hasScope = true;
         } else mt.msg_path.push(resolveArgument(el));
       }
@@ -322,14 +317,16 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
   );
 }
 
-function resolveScopeOverride(el: X.MessageScope) {
+function resolveOption(
+  el: X.MessageOption | X.MessageScope
+): MF.Literal | MF.Variable {
   const sv = el.elements.map(resolveArgument);
   switch (sv.length) {
     case 0:
-      return '';
+      return { type: 'literal', value: '' };
     case 1:
-      return isVariable(sv[0]) ? sv[0] : sv[0].value;
+      return sv[0];
     default:
-      throw new Error('Term scope overrides may only have one value');
+      throw new Error('Options may only have one value');
   }
 }

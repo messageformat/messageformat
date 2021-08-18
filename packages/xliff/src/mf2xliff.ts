@@ -268,37 +268,22 @@ function resolvePattern(
   return { type: 'element', name: 'unit', attributes, elements };
 }
 
-function resolvePart(
-  id: string | null,
-  part: MF.Part | string | number | boolean
-): X.MessagePart {
+function resolvePart(id: string | null, part: MF.Part): X.MessagePart {
   const attributes = id ? { id } : undefined;
 
-  if (isLiteral(part) || typeof part !== 'object') {
-    return {
-      type: 'element',
-      name: 'mf:literal',
-      attributes,
-      elements: [asText(part)]
-    };
-  }
-
-  if (isVariable(part)) {
-    const elements = part.var_path.map(p => resolvePart(null, p));
-    return { type: 'element', name: 'mf:variable', attributes, elements };
-  }
+  if (isLiteral(part) || isVariable(part)) return resolveArgument(id, part);
 
   if (isFunction(part)) {
-    const elements: (X.MessageOption | X.MessagePart)[] = [];
+    const elements: X.MessageFunction['elements'] = [];
     if (part.options)
       for (const [name, value] of Object.entries(part.options))
         elements.push({
           type: 'element',
           name: 'mf:option',
           attributes: { name },
-          elements: [asText(value)]
+          elements: [resolveArgument(null, value)]
         });
-    for (const p of part.args) elements.push(resolvePart(null, p));
+    for (const p of part.args) elements.push(resolveArgument(null, p));
     return {
       type: 'element',
       name: 'mf:function',
@@ -308,18 +293,16 @@ function resolvePart(
   }
 
   if (isTerm(part)) {
-    const elements: (X.MessageScope | X.MessagePart)[] = [];
+    const elements: X.MessageReference['elements'] = [];
     if (part.scope)
       for (const [name, value] of Object.entries(part.scope))
         elements.push({
           type: 'element',
           name: 'mf:scope',
           attributes: { name },
-          elements: Array.isArray(value)
-            ? value.map(v => resolvePart(null, v))
-            : [resolvePart(null, value)]
+          elements: [resolveArgument(null, value)]
         });
-    for (const p of part.msg_path) elements.push(resolvePart(null, p));
+    for (const p of part.msg_path) elements.push(resolveArgument(null, p));
     return {
       type: 'element',
       name: 'mf:message',
@@ -332,5 +315,28 @@ function resolvePart(
   }
 
   /* istanbul ignore next - never happens */
+  throw new Error(`Unsupported part: ${JSON.stringify(part)}`);
+}
+
+function resolveArgument(
+  id: string | null,
+  part: MF.Literal | MF.Variable | string | number | boolean
+): X.MessageLiteral | X.MessageVariable {
+  const attributes = id ? { id } : undefined;
+
+  if (isLiteral(part) || typeof part !== 'object') {
+    return {
+      type: 'element',
+      name: 'mf:literal',
+      attributes,
+      elements: [asText(part)]
+    };
+  }
+
+  if (isVariable(part)) {
+    const elements = part.var_path.map(p => resolveArgument(null, p));
+    return { type: 'element', name: 'mf:variable', attributes, elements };
+  }
+
   throw new Error(`Unsupported part: ${JSON.stringify(part)}`);
 }

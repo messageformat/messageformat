@@ -5,6 +5,7 @@ import {
   isPlainStringLiteral,
   isTerm,
   Message,
+  Options,
   Part,
   SelectCase
 } from 'messageformat';
@@ -66,9 +67,9 @@ function expressionToPart(exp: Fluent.Expression): Part {
         return part;
       });
       if (named.length === 0) return { type: 'function', func, args };
-      const options: Record<string, string | number> = {};
+      const options: Options = {};
       for (const { name, value } of named)
-        options[name.name] = value.parse().value;
+        options[name.name] = { type: 'literal', value: value.parse().value };
       return { type: 'function', func, args, options };
     }
     case 'MessageReference': {
@@ -83,9 +84,9 @@ function expressionToPart(exp: Fluent.Expression): Part {
         : `-${exp.id.name}`;
       if (!exp.arguments)
         return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
-      const scope: Record<string, string | number> = {};
+      const scope: Options = {};
       for (const { name, value } of exp.arguments.named)
-        scope[name.name] = value.parse().value;
+        scope[name.name] = { type: 'literal', value: value.parse().value };
       return {
         type: 'term',
         msg_path: [{ type: 'literal', value: id }],
