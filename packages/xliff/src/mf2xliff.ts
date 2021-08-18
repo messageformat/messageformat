@@ -212,11 +212,11 @@ function resolveSelector(id: string, sel: MF.Selector) {
 }
 
 function everyKey(
-  select: { keys: MF.LiteralValue[] }[]
-): Iterable<MF.LiteralValue[]> {
+  select: { keys: MF.SelectKey[] }[]
+): Iterable<MF.SelectKey[]> {
   let ptr: number[] | null = null;
   const max = select.map(s => s.keys.length - 1);
-  function next(): IteratorResult<MF.LiteralValue[]> {
+  function next(): IteratorResult<MF.SelectKey[]> {
     if (!ptr) ptr = new Array<number>(select.length).fill(0);
     else {
       for (let i = ptr.length - 1; i >= 0; --i) {

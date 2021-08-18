@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { LiteralValue } from '../data-model';
+import { SelectKey } from '../data-model';
 import { FormattedPart } from '../format-message';
 
 export { runtime as defaultRuntime } from './default';
@@ -20,7 +20,7 @@ export { runtime as mf1Runtime } from './mf1';
  */
 
 export interface Runtime<R = string> {
-  select: { [key: string]: RuntimeFunction<LiteralValue | LiteralValue[]> };
+  select: { [key: string]: RuntimeFunction<SelectKey | SelectKey[]> };
   format: { [key: string]: RuntimeFunction<R> };
 }
 

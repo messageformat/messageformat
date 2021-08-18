@@ -70,14 +70,16 @@ export interface Select {
 
 export interface Selector {
   value: Part;
-  default?: LiteralValue;
+  default?: SelectKey;
 }
 
 export interface SelectCase {
-  key: LiteralValue[];
+  key: SelectKey[];
   value: Pattern;
   meta?: Meta;
 }
+
+export type SelectKey = string | number;
 
 export const isSelect = (value: Message['value']): value is Select =>
   !!value && typeof value === 'object' && 'select' in value;
@@ -92,8 +94,6 @@ export const isSelect = (value: Message['value']): value is Select =>
  */
 export type Part = Literal | Variable | Function | Term;
 
-export type LiteralValue = string | number;
-
 /**
  * An immediately defined value.
  *
@@ -102,7 +102,7 @@ export type LiteralValue = string | number;
  */
 export interface Literal {
   type: 'literal';
-  value: LiteralValue;
+  value: string;
   meta?: Meta;
 }
 

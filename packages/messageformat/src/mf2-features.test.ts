@@ -142,8 +142,18 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     return pr.select(range.end);
   }
   const runtime: Runtime = {
-    select: { pluralRange: { call: pluralRange, options: 'any' } },
-    format: { formatRange: { call: formatRange, options: 'any' } }
+    select: {
+      pluralRange: {
+        call: pluralRange,
+        options: { start: 'any', end: 'number' }
+      }
+    },
+    format: {
+      formatRange: {
+        call: formatRange,
+        options: { start: 'any', end: 'number' }
+      }
+    }
   };
 
   test('input as { start, end } object', () => {

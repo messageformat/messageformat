@@ -5,13 +5,13 @@ import {
   isSelect,
   isTerm,
   isVariable,
-  LiteralValue,
   Message,
   Meta,
   Options,
   Part,
   Pattern,
   Select,
+  SelectKey,
   Term,
   Variable
 } from './data-model';
@@ -67,9 +67,7 @@ export class FormattedFallback extends Formatted<string> {
     return this.toString();
   }
 }
-export class FormattedLiteral<
-  T extends LiteralValue = LiteralValue
-> extends Formatted<T> {
+export class FormattedLiteral extends Formatted<string> {
   type = 'literal' as const;
   valueOf() {
     return this.value;
@@ -94,7 +92,7 @@ export type FormattedPart<T = unknown> =
   | FormattedFallback
   | FormattedMessage<T>
   // should be FormattedLiteral<T>, but TS can't cope with it
-  | (T extends LiteralValue ? FormattedLiteral : never);
+  | (T extends string ? FormattedLiteral : never);
 
 function addMeta(fmt: Formatted<unknown>, meta: Meta) {
   if (!fmt.meta) fmt.meta = {};
@@ -127,18 +125,14 @@ export function formatToString<R, S>(ctx: Context<R, S>, msg: Message) {
 export function formatToParts<R, S>(
   ctx: Context<R, S>,
   { meta, value }: Message
-): FormattedPart<R | S | LiteralValue>[] {
+): FormattedPart<R | S | string>[] {
   let fsm: FormattedSelectMeta | null = null;
   const pattern = isSelect(value)
     ? resolveSelect(ctx, value, _fsm => (fsm = _fsm))
     : value;
   const res = pattern.map(part => resolvePart(ctx, part));
   if (meta || fsm) {
-    const fm = new FormattedMessage<R | S | LiteralValue>(
-      ctx.locales,
-      res,
-      meta
-    );
+    const fm = new FormattedMessage<R | S | string>(ctx.locales, res, meta);
     if (fsm) addMeta(fm, fsm);
     return [fm];
   } else return res;
@@ -151,7 +145,7 @@ function resolvePart<R, S>(
   | FormattedDynamic<R | S>
   | FormattedFallback
   | FormattedLiteral
-  | FormattedMessage<R | S | LiteralValue> {
+  | FormattedMessage<R | S | string> {
   if (isLiteral(part))
     return new FormattedLiteral(ctx.locales, part.value, part.meta);
   if (isVariable(part)) return resolveVariable(ctx, part);
@@ -211,10 +205,7 @@ function resolveOptions<R, S>(
 function resolveFormatFunction<R, S>(
   ctx: Context<R, S>,
   fn: Function
-):
-  | FormattedDynamic<R>
-  | FormattedFallback
-  | FormattedMessage<R | S | LiteralValue> {
+): FormattedDynamic<R> | FormattedFallback | FormattedMessage<R | S | string> {
   const { args, func, options } = fn;
   const rf = ctx.runtime.format[func];
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
@@ -226,7 +217,7 @@ function resolveFormatFunction<R, S>(
       return value as
         | FormattedDynamic<R>
         | FormattedFallback
-        | FormattedMessage<R | S | LiteralValue>;
+        | FormattedMessage<R | S | string>;
     }
     return new FormattedDynamic(ctx.locales, value as R, fn.meta);
   } catch (error) {
@@ -243,7 +234,7 @@ function resolveFormatFunction<R, S>(
 function resolveTerm<R, S>(
   ctx: Context<R, S>,
   term: Term
-): FormattedMessage<R | S | LiteralValue> | FormattedFallback {
+): FormattedMessage<R | S | string> | FormattedFallback {
   const { msg_path, res_id, scope } = term;
   const strPath = msg_path.map(part => String(resolvePart(ctx, part)));
   const msg = ctx.getMessage(res_id, strPath);
@@ -258,8 +249,8 @@ function resolveTerm<R, S>(
 }
 
 export type ResolvedSelector = {
-  value: LiteralValue | LiteralValue[];
-  default: LiteralValue;
+  value: SelectKey | SelectKey[];
+  default: SelectKey;
 };
 
 function resolveSelect<R, S>(
@@ -272,7 +263,7 @@ function resolveSelect<R, S>(
       ? resolveSelectFunction(ctx, s.value)
       : resolvePart(ctx, s.value);
     const v = r instanceof Formatted ? r.valueOf() : r;
-    let value: LiteralValue | LiteralValue[];
+    let value: SelectKey | SelectKey[];
     if (typeof v === 'number') {
       const { plural } = ctx.runtime.select;
       if (typeof plural === 'object' && typeof plural.call === 'function') {

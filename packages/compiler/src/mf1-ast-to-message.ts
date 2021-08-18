@@ -97,7 +97,9 @@ function tokenToPart(
         ]
       };
       if (pluralOffset)
-        fn.options = { pluralOffset: { type: 'literal', value: pluralOffset } };
+        fn.options = {
+          pluralOffset: { type: 'literal', value: String(pluralOffset) }
+        };
       return fn;
     }
     /* istanbul ignore next - never happens */
@@ -115,7 +117,7 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
   const fn: Function = { type: 'function', func: 'plural', args: [argVar] };
 
   const po = pluralOffset
-    ? { type: 'literal' as const, value: pluralOffset }
+    ? { type: 'literal' as const, value: String(pluralOffset) }
     : null;
   const oo =
     type === 'selectordinal'

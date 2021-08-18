@@ -48,8 +48,11 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
 function expressionToPart(exp: Fluent.Expression): Part {
   switch (exp.type) {
     case 'NumberLiteral':
-      // TODO: Account for precision?
-      return { type: 'literal', value: exp.parse().value };
+      return {
+        type: 'function',
+        func: 'NUMBER',
+        args: [{ type: 'literal', value: exp.value }]
+      };
     case 'StringLiteral':
       return { type: 'literal', value: exp.parse().value };
     case 'VariableReference':
@@ -69,7 +72,11 @@ function expressionToPart(exp: Fluent.Expression): Part {
       if (named.length === 0) return { type: 'function', func, args };
       const options: Options = {};
       for (const { name, value } of named)
-        options[name.name] = { type: 'literal', value: value.parse().value };
+        options[name.name] = {
+          type: 'literal',
+          value:
+            value.type === 'NumberLiteral' ? value.value : value.parse().value
+        };
       return { type: 'function', func, args, options };
     }
     case 'MessageReference': {
@@ -86,7 +93,10 @@ function expressionToPart(exp: Fluent.Expression): Part {
         return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
       const scope: Options = {};
       for (const { name, value } of exp.arguments.named)
-        scope[name.name] = { type: 'literal', value: value.parse().value };
+        scope[name.name] = {
+          type: 'literal',
+          value: value.type === 'NumberLiteral' ? value.value : value.parse().value
+        };
       return {
         type: 'term',
         msg_path: [{ type: 'literal', value: id }],
