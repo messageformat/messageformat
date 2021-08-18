@@ -183,7 +183,7 @@ function resolveOptions<R, S>(
   if (options && expected)
     for (const [key, value] of Object.entries(options)) {
       const exp = getExpected(key);
-      if (!exp) continue; // TODO: report error
+      if (!exp || exp === 'never') continue; // TODO: report error
       const res = isVariable(value)
         ? resolveArgument(ctx, value)
         : exp === 'boolean'

@@ -225,7 +225,7 @@ export type RuntimeType =
   | 'boolean'
   | 'object'
   | 'any'
-  | null
+  | 'never'
   | string[];
 
 export type RuntimeOptions = Record<string, unknown>;

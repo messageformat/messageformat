@@ -28,14 +28,10 @@ export const date: RuntimeFunction<string> = {
 };
 
 export const duration: RuntimeFunction<string> = {
-  call: function duration(
-    _locales: string[],
-    _options: RuntimeOptions | undefined,
-    arg: unknown
-  ) {
+  call: function duration(_locales: string[], _options: unknown, arg: unknown) {
     return durationFmt(asLiteral(arg));
   },
-  options: null
+  options: 'never'
 };
 
 export const number: RuntimeFunction<string> = {

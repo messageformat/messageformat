@@ -13,7 +13,7 @@ describe('Function returns primitive value', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
       format: {
-        STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: null }
+        STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
       },
       select: {}
     };
@@ -29,7 +29,7 @@ describe('Function returns primitive value', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime<number> = {
       format: {
-        NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: null }
+        NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
       },
       select: {}
     };
@@ -50,7 +50,7 @@ describe('Function returns Formatted value', () => {
         STRINGIFY: {
           call: (_lc, _opt, arg: string) =>
             new FormattedDynamic(['en'], String(arg), { foo: 'FOO' }),
-          options: null
+          options: 'never'
         }
       },
       select: {}
