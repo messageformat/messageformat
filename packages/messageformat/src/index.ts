@@ -10,5 +10,6 @@ export type {
 export { MessageFormat } from './messageformat';
 export { isFunction, Function } from './pattern/function';
 export { isTerm, Term } from './pattern/term';
+export { isVariable, Variable } from './pattern/variable';
 export * from './runtime';
 export { validate } from './validate';

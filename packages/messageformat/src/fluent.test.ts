@@ -25,9 +25,10 @@ import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
 import { fluentRuntime, MessageFormat, Resource } from 'messageformat';
-import { Literal, Variable } from './data-model';
+import { Literal } from './data-model';
 import { Function } from './pattern/function';
 import { Term } from './pattern/term';
+import { Variable } from './pattern/variable';
 
 type TestCase = {
   locale?: string;

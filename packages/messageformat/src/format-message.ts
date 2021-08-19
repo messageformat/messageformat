@@ -1,17 +1,16 @@
 import {
   isLiteral,
   isSelectMessage,
-  isVariable,
   Literal,
   Message,
   Meta,
   PatternElement,
   SelectMessage,
-  Selector,
-  Variable
+  Selector
 } from './data-model';
 import { isFunction, resolveFormatFunction } from './pattern/function';
 import { isTerm, resolveTerm } from './pattern/term';
+import { isVariable, resolveVariable, Variable } from './pattern/variable';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context } from './format-context';
 import type { RuntimeType } from './runtime';
@@ -243,47 +242,4 @@ function resolveSelectorValue<R, S>(
   return Array.isArray(res) && res.every(r => typeof r === 'string')
     ? res
     : [String(res)];
-}
-
-function resolveVariable<R, S>(
-  ctx: Context<R, S>,
-  part: Variable
-): FormattedDynamic<S> | FormattedFallback {
-  const { var_path } = part;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let val: any = var_path.length > 0 ? ctx.scope : undefined;
-  for (const p of var_path) {
-    if (!val || typeof val !== 'object') {
-      val = undefined;
-      break;
-    }
-    val = val[resolveArgument(ctx, p)];
-  }
-  return val === undefined
-    ? resolveFallback(ctx, part)
-    : new FormattedDynamic(ctx.locales, val, part.meta);
-}
-
-export function resolveFallback(
-  ctx: Context<unknown, unknown>,
-  part: PatternElement
-) {
-  return new FormattedFallback(
-    ctx.locales,
-    fallbackValue(ctx, part),
-    part.meta
-  );
-}
-
-function fallbackValue(
-  ctx: Context<unknown, unknown>,
-  part: PatternElement
-): string {
-  const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
-  if (isLiteral(part)) return String(part.value);
-  if (isVariable(part)) {
-    const path = part.var_path.map(resolve);
-    return '$' + path.join('.');
-  }
-  return String(part);
 }

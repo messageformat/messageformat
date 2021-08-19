@@ -1,4 +1,4 @@
-import { Literal, PatternElement, Variable } from '../data-model';
+import { Literal, PatternElement } from '../data-model';
 import { Context } from '../format-context';
 import {
   addMeta,
@@ -11,6 +11,7 @@ import {
   resolveOptions,
   resolvePart
 } from '../format-message';
+import { Variable } from './variable';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -21,7 +22,6 @@ import {
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
  */
-
 export interface Function extends PatternElement {
   type: 'function';
   func: string;

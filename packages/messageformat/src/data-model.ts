@@ -123,20 +123,5 @@ export interface Literal extends PatternElement {
   value: string;
 }
 
-/**
- * Variables are defined by the current Scope.
- *
- * Using an array with more than one value refers to an inner property of an
- * object value, so e.g. `['user', 'name']` would require something like
- * `{ name: 'Kat' }` as the value of the `'user'` scope variable.
- */
-export interface Variable extends PatternElement {
-  type: 'variable';
-  var_path: (Literal | Variable)[];
-}
-
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
-
-export const isVariable = (part: any): part is Variable =>
-  !!part && typeof part === 'object' && part.type === 'variable';
