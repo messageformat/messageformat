@@ -1,4 +1,4 @@
-import { Options, PatternElement, Value } from '../data-model';
+import { Literal, PatternElement, Variable } from '../data-model';
 import { Context } from '../format-context';
 import {
   addMeta,
@@ -25,8 +25,8 @@ import {
 export interface Function extends PatternElement {
   type: 'function';
   func: string;
-  args: Value[];
-  options?: Options;
+  args: (Literal | Variable)[];
+  options?: Record<string, Literal | Variable>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,7 +67,7 @@ export function resolveFormatFunction<R, S>(
 }
 
 function fallbackValue(ctx: Context<unknown, unknown>, fn: Function) {
-  const resolve = (v: Value) => resolvePart(ctx, v).valueOf();
+  const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))

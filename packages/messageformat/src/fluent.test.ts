@@ -25,7 +25,7 @@ import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
 import { fluentRuntime, MessageFormat, Resource } from 'messageformat';
-import { Value } from './data-model';
+import { Literal, Variable } from './data-model';
 import { Function } from './pattern/function';
 import { Term } from './pattern/term';
 
@@ -274,7 +274,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
   describe(title, () => {
-    let mf: MessageFormat<string, Value | Function | Term>;
+    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale });
       mf = new MessageFormat(locale, fluentRuntime, res);
@@ -311,7 +311,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    let mf: MessageFormat<string, Value | Function | Term>;
+    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', fluentRuntime, res);
@@ -377,8 +377,8 @@ describe('formatToParts', () => {
       ### Other resource comment
     `;
 
-    let res: Resource<Value | Function | Term>;
-    let mf: MessageFormat<string, Value | Function | Term>;
+    let res: Resource<Literal | Variable | Function | Term>;
+    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', fluentRuntime, res);
@@ -447,7 +447,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    let mf: MessageFormat<string, Value | Function | Term>;
+    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', fluentRuntime, res);

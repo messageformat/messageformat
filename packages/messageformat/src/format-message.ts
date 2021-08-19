@@ -2,14 +2,13 @@ import {
   isLiteral,
   isSelectMessage,
   isVariable,
+  Literal,
   Message,
   Meta,
-  Options,
-  Value,
+  PatternElement,
   SelectMessage,
   Selector,
-  Variable,
-  PatternElement
+  Variable
 } from './data-model';
 import { isFunction, resolveFormatFunction } from './pattern/function';
 import { isTerm, resolveTerm } from './pattern/term';
@@ -159,7 +158,7 @@ export function resolveArgument<R, S>(
 
 export function resolveOptions<R, S>(
   ctx: Context<R, S>,
-  options: Options | undefined,
+  options: Record<string, Literal | Variable> | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
   const opt: Record<string, string | number | boolean | S> = {};
@@ -280,7 +279,7 @@ function fallbackValue(
   ctx: Context<unknown, unknown>,
   part: PatternElement
 ): string {
-  const resolve = (v: Value) => resolvePart(ctx, v).valueOf();
+  const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
   if (isLiteral(part)) return String(part.value);
   if (isVariable(part)) {
     const path = part.var_path.map(resolve);

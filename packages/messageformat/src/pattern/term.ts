@@ -1,4 +1,4 @@
-import { Options, PatternElement, Value } from '../data-model';
+import { Literal, PatternElement, Variable } from '../data-model';
 import { Context, extendContext } from '../format-context';
 import {
   FormattedFallback,
@@ -23,8 +23,8 @@ import {
 export interface Term extends PatternElement {
   type: 'term';
   res_id?: string;
-  msg_path: Value[];
-  scope?: Options;
+  msg_path: (Literal | Variable)[];
+  scope?: Record<string, Literal | Variable>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,7 +52,7 @@ export function resolveTerm<R, S>(
 }
 
 function fallbackValue(ctx: Context<unknown, unknown>, term: Term): string {
-  const resolve = (v: Value) => resolvePart(ctx, v).valueOf();
+  const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;

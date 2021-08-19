@@ -271,7 +271,7 @@ function resolvePart(
         func: part.attributes.name,
         args: []
       };
-      const options: MF.Options = {};
+      const options: Record<string, MF.Literal | MF.Variable> = {};
       let hasOptions = false;
       for (const el of part.elements) {
         if (el.name === 'mf:option') {
@@ -285,7 +285,7 @@ function resolvePart(
 
     case 'mf:message': {
       const mt: MF.Term = { type: 'term', msg_path: [] };
-      const scope: MF.Options = {};
+      const scope: Record<string, MF.Literal | MF.Variable> = {};
       let hasScope = false;
       for (const el of part.elements) {
         if (el.name === 'mf:scope') {

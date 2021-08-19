@@ -132,17 +132,8 @@ export interface Literal extends PatternElement {
  */
 export interface Variable extends PatternElement {
   type: 'variable';
-  var_path: Value[];
+  var_path: (Literal | Variable)[];
 }
-
-export type Value = Literal | Variable;
-
-/**
- * The Function options and Term scope may be defined directly with Literal
- * values, or use Variables. For Literals, the function's signature determines
- * how the string value is parsed.
- */
-export type Options = Record<string, Value>;
 
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';

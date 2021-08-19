@@ -1,21 +1,21 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
+  Function,
   hasMeta,
   isFunction,
   isLiteral,
   isTerm,
+  Literal,
   Message,
-  Options,
-  Value,
   PatternMessage,
   SelectCase,
   SelectMessage,
-  Function,
-  Term
+  Term,
+  Variable
 } from 'messageformat';
 
-export type Part = Value | Function | Term;
+export type Part = Literal | Variable | Function | Term;
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -77,7 +77,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
         return part;
       });
       if (named.length === 0) return { type: 'function', func, args };
-      const options: Options = {};
+      const options: Record<string, Literal | Variable> = {};
       for (const { name, value } of named)
         options[name.name] = {
           type: 'literal',
@@ -98,7 +98,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
         : `-${exp.id.name}`;
       if (!exp.arguments)
         return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
-      const scope: Options = {};
+      const scope: Record<string, Literal | Variable> = {};
       for (const { name, value } of exp.arguments.named)
         scope[name.name] = {
           type: 'literal',
