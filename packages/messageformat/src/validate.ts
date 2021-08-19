@@ -1,10 +1,10 @@
 import {
-  isFunction,
   isSelectMessage,
   MessageGroup,
   Resource,
   PatternElement
 } from './data-model';
+import { isFunction } from './pattern/function';
 import { isTerm } from './pattern/term';
 import type { Runtime } from './runtime';
 

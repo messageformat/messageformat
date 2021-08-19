@@ -8,6 +8,7 @@ export type {
   FormattedPart
 } from './format-message';
 export { MessageFormat } from './messageformat';
+export { isFunction, Function } from './pattern/function';
 export { isTerm, Term } from './pattern/term';
 export * from './runtime';
 export { validate } from './validate';

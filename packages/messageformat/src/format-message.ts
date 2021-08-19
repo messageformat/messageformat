@@ -1,6 +1,4 @@
 import {
-  Function,
-  isFunction,
   isLiteral,
   isSelectMessage,
   isVariable,
@@ -13,6 +11,7 @@ import {
   Variable,
   PatternElement
 } from './data-model';
+import { isFunction, resolveFormatFunction } from './pattern/function';
 import { isTerm, resolveTerm } from './pattern/term';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context } from './format-context';
@@ -91,7 +90,7 @@ export type FormattedPart<T = unknown> =
   // should be FormattedLiteral<T>, but TS can't cope with it
   | (T extends string ? FormattedLiteral : never);
 
-function addMeta(fmt: Formatted<unknown>, meta: Meta) {
+export function addMeta(fmt: Formatted<unknown>, meta: Meta) {
   if (!fmt.meta) fmt.meta = {};
   for (const [key, value] of Object.entries(meta)) {
     if (key in fmt.meta) continue;
@@ -138,7 +137,7 @@ export function resolvePart<R, S>(
   throw new Error(`Unsupported part: ${part}`);
 }
 
-function resolveArgument<R, S>(
+export function resolveArgument<R, S>(
   ctx: Context<R, S>,
   part: PatternElement,
   expected?: RuntimeType
@@ -183,35 +182,6 @@ export function resolveOptions<R, S>(
       // TODO: else report error
     }
   return opt;
-}
-
-function resolveFormatFunction<R, S>(
-  ctx: Context<R, S>,
-  fn: Function
-): FormattedDynamic<R> | FormattedFallback | FormattedMessage<R | S | string> {
-  const { args, func, options } = fn;
-  const rf = ctx.runtime.format[func];
-  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
-  const fnOpt = resolveOptions(ctx, options, rf?.options);
-  try {
-    const value = rf.call(ctx.locales, fnOpt, ...fnArgs);
-    if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
-      if (fn.meta) addMeta(value, fn.meta);
-      return value as
-        | FormattedDynamic<R>
-        | FormattedFallback
-        | FormattedMessage<R | S | string>;
-    }
-    return new FormattedDynamic(ctx.locales, value as R, fn.meta);
-  } catch (error) {
-    const fb = resolveFallback(ctx, fn);
-    addMeta(fb, {
-      error_name: error.name,
-      error_message: error.message,
-      error_stack: error.stack
-    });
-    return fb;
-  }
 }
 
 function resolveSelect<R, S>(
@@ -315,13 +285,6 @@ function fallbackValue(
   if (isVariable(part)) {
     const path = part.var_path.map(resolve);
     return '$' + path.join('.');
-  }
-  if (isFunction(part)) {
-    const args = part.args.map(resolve);
-    if (part.options)
-      for (const [key, value] of Object.entries(part.options))
-        args.push(`${key}: ${resolve(value)}`);
-    return `${part.func}(${args.join(', ')})`;
   }
   return String(part);
 }

@@ -135,22 +135,6 @@ export interface Variable extends PatternElement {
   var_path: Value[];
 }
 
-/**
- * To resolve a Function, an externally defined function is called.
- *
- * The `func` identifies a function that takes in the arguments `args`, the
- * current locale, as well as any `options`, and returns some corresponding
- * output. Likely functions available by default would include `'plural'` for
- * determining the plural category of a numeric value, as well as `'number'`
- * and `'date'` for formatting values.
- */
-export interface Function extends PatternElement {
-  type: 'function';
-  func: string;
-  args: Value[];
-  options?: Options;
-}
-
 export type Value = Literal | Variable;
 
 /**
@@ -165,6 +149,3 @@ export const isLiteral = (part: any): part is Literal =>
 
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
-
-export const isFunction = (part: any): part is Function =>
-  !!part && typeof part === 'object' && part.type === 'function';

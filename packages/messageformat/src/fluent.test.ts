@@ -25,7 +25,8 @@ import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
 import { fluentRuntime, MessageFormat, Resource } from 'messageformat';
-import { Function, Value } from './data-model';
+import { Value } from './data-model';
+import { Function } from './pattern/function';
 import { Term } from './pattern/term';
 
 type TestCase = {

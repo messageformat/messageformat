@@ -1,0 +1,76 @@
+import { Options, PatternElement, Value } from '../data-model';
+import { Context } from '../format-context';
+import {
+  addMeta,
+  Formatted,
+  FormattedDynamic,
+  FormattedFallback,
+  FormattedLiteral,
+  FormattedMessage,
+  resolveArgument,
+  resolveOptions,
+  resolvePart
+} from '../format-message';
+
+/**
+ * To resolve a Function, an externally defined function is called.
+ *
+ * The `func` identifies a function that takes in the arguments `args`, the
+ * current locale, as well as any `options`, and returns some corresponding
+ * output. Likely functions available by default would include `'plural'` for
+ * determining the plural category of a numeric value, as well as `'number'`
+ * and `'date'` for formatting values.
+ */
+
+export interface Function extends PatternElement {
+  type: 'function';
+  func: string;
+  args: Value[];
+  options?: Options;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isFunction = (part: any): part is Function =>
+  !!part && typeof part === 'object' && part.type === 'function';
+
+export function resolveFormatFunction<R, S>(
+  ctx: Context<R, S>,
+  fn: Function
+): FormattedDynamic<R> | FormattedFallback | FormattedMessage<R | S | string> {
+  const { args, func, options } = fn;
+  const rf = ctx.runtime.format[func];
+  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnOpt = resolveOptions(ctx, options, rf?.options);
+  try {
+    const value = rf.call(ctx.locales, fnOpt, ...fnArgs);
+    if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
+      if (fn.meta) addMeta(value, fn.meta);
+      return value as
+        | FormattedDynamic<R>
+        | FormattedFallback
+        | FormattedMessage<R | S | string>;
+    }
+    return new FormattedDynamic(ctx.locales, value as R, fn.meta);
+  } catch (error) {
+    const fb = new FormattedFallback(
+      ctx.locales,
+      fallbackValue(ctx, fn),
+      fn.meta
+    );
+    addMeta(fb, {
+      error_name: error.name,
+      error_message: error.message,
+      error_stack: error.stack
+    });
+    return fb;
+  }
+}
+
+function fallbackValue(ctx: Context<unknown, unknown>, fn: Function) {
+  const resolve = (v: Value) => resolvePart(ctx, v).valueOf();
+  const args = fn.args.map(resolve);
+  if (fn.options)
+    for (const [key, value] of Object.entries(fn.options))
+      args.push(`${key}: ${resolve(value)}`);
+  return `${fn.func}(${args.join(', ')})`;
+}
