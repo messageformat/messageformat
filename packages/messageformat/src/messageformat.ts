@@ -4,9 +4,10 @@ import { FormattedPart, formatToParts, formatToString } from './format-message';
 import { defaultRuntime, Runtime, Scope } from './runtime';
 
 function getEntry(res: Resource, path: string[]) {
-  let msg: MessageGroup | Message = res;
+  let msg: Resource | MessageGroup | Message = res;
   for (const part of path) {
-    if (!msg || 'type' in msg) return undefined;
+    if (!msg || msg.type === 'message' || msg.type === 'select')
+      return undefined;
     msg = msg.entries[part];
   }
   return msg;

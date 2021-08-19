@@ -28,7 +28,7 @@ export function validate(resources: Resource[], runtime: Runtime) {
     }
   }
 
-  function handleMsgGroup({ entries }: MessageGroup) {
+  function handleMsgGroup({ entries }: Resource | MessageGroup) {
     for (const msg of Object.values(entries)) {
       if ('entries' in msg) handleMsgGroup(msg);
       else if (isSelectMessage(msg)) {

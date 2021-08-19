@@ -9,6 +9,7 @@
  * The `[id, locale]` tuple should probably be unique for each resource.
  */
 export interface Resource {
+  type: 'resource';
   id: string;
   locale: string;
   entries: Record<string, Message | MessageGroup>;
@@ -16,6 +17,7 @@ export interface Resource {
 }
 
 export interface MessageGroup {
+  type: 'group';
   entries: Record<string, Message | MessageGroup>;
   meta?: Meta;
 }
@@ -85,7 +87,7 @@ export interface SelectCase {
 export type Pattern = Part[];
 
 export const isMessage = (
-  msg: Message | MessageGroup | undefined
+  msg: Resource | MessageGroup | Message | undefined
 ): msg is Message =>
   !!msg &&
   typeof msg === 'object' &&

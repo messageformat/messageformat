@@ -29,7 +29,10 @@ export interface StringStructure {
   [key: string]: StringStructure | string;
 }
 
-function compileMessageGroup(src: StringStructure, options: ParseOptions) {
+function compileMessageGroup(
+  src: StringStructure,
+  options: ParseOptions
+): MessageGroup {
   const entries: MessageGroup['entries'] = {};
   for (const [key, value] of Object.entries(src)) {
     entries[key] =
@@ -37,7 +40,7 @@ function compileMessageGroup(src: StringStructure, options: ParseOptions) {
         ? astToMessage(parse(value, options))
         : compileMessageGroup(value, options);
   }
-  return { entries };
+  return { type: 'group', entries };
 }
 
 export function compileMF1(
@@ -48,5 +51,5 @@ export function compileMF1(
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];
   const { entries } = compileMessageGroup(src, { cardinal, ordinal, strict });
-  return { id, locale, entries };
+  return { type: 'resource', id, locale, entries };
 }

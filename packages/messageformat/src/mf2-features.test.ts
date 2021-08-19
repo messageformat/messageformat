@@ -18,12 +18,15 @@ import {
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource = {
+    type: 'resource',
     id: 'res',
     locale: 'fi',
     entries: {
       browser: {
+        type: 'group',
         entries: {
           chrome: {
+            type: 'group',
             entries: {
               nominative: {
                 type: 'message',
@@ -36,6 +39,7 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
             }
           },
           edge: {
+            type: 'group',
             entries: {
               nominative: {
                 type: 'message',
@@ -48,6 +52,7 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
             }
           },
           firefox: {
+            type: 'group',
             entries: {
               nominative: {
                 type: 'message',
@@ -60,6 +65,7 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
             }
           },
           safari: {
+            type: 'group',
             entries: {
               nominative: {
                 type: 'message',
@@ -158,6 +164,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
 
   test('input as { start, end } object', () => {
     const res: Resource = {
+      type: 'resource',
       id: 'res',
       locale: 'nl',
       entries: {
@@ -225,6 +232,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
 
   test('input as separate start, end falues', () => {
     const res: Resource = {
+      type: 'resource',
       id: 'res',
       locale: 'nl',
       entries: {

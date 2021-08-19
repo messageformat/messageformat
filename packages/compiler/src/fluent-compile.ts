@@ -35,7 +35,7 @@ export function compileFluent(
         break;
     }
   }
-  const res: Resource = { id, locale, entries };
+  const res: Resource = { type: 'resource', id, locale, entries };
   if (resourceComments.length > 0)
     res.meta = { comment: resourceComments.join('\n\n') };
   return res;

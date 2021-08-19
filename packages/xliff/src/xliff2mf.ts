@@ -22,8 +22,18 @@ function resolveFile(
 ) {
   checkResegment(file);
   const { id } = file.attributes;
-  const source: MF.Resource = { id, locale: srcLang, entries: {} };
-  const target: MF.Resource = { id, locale: trgLang || '', entries: {} };
+  const source: MF.Resource = {
+    type: 'resource',
+    id,
+    locale: srcLang,
+    entries: {}
+  };
+  const target: MF.Resource = {
+    type: 'resource',
+    id,
+    locale: trgLang || '',
+    entries: {}
+  };
   for (const el of file.elements) {
     resolveEntry(el, source, target);
   }
@@ -49,8 +59,8 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 function resolveEntry(
   entry: ArrayElement<X.File['elements'] | X.Group['elements']>,
-  source: MF.MessageGroup,
-  target: MF.MessageGroup
+  source: MF.Resource | MF.MessageGroup,
+  target: MF.Resource | MF.MessageGroup
 ) {
   switch (entry.name) {
     case 'group': {
@@ -61,8 +71,8 @@ function resolveEntry(
           source.entries[key] = resolveSelect(entry, 'source');
           target.entries[key] = resolveSelect(entry, 'target');
         } else {
-          const sg: MF.MessageGroup = { entries: {} };
-          const tg: MF.MessageGroup = { entries: {} };
+          const sg: MF.MessageGroup = { type: 'group', entries: {} };
+          const tg: MF.MessageGroup = { type: 'group', entries: {} };
           source.entries[key] = sg;
           target.entries[key] = tg;
           for (const el of entry.elements) resolveEntry(el, sg, tg);
