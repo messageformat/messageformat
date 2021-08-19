@@ -1,7 +1,8 @@
 import type * as AST from '@messageformat/parser';
 import {
   Function,
-  isPlainStringLiteral,
+  hasMeta,
+  isLiteral,
   Message,
   Part,
   SelectCase,
@@ -204,7 +205,12 @@ export function astToMessage(ast: AST.Token[]): Message {
           if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
             const last = c.value[c.value.length - 1];
             const part = tokenToPart(token, pluralArg, pluralOffset);
-            if (isPlainStringLiteral(last) && isPlainStringLiteral(part)) {
+            if (
+              isLiteral(last) &&
+              isLiteral(part) &&
+              !hasMeta(last) &&
+              !hasMeta(part)
+            ) {
               last.value += part.value;
             } else c.value.push(part);
           }

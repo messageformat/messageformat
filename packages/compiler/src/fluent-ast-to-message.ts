@@ -1,8 +1,9 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
+  hasMeta,
   isFunction,
-  isPlainStringLiteral,
+  isLiteral,
   isTerm,
   Message,
   Options,
@@ -95,7 +96,8 @@ function expressionToPart(exp: Fluent.Expression): Part {
       for (const { name, value } of exp.arguments.named)
         scope[name.name] = {
           type: 'literal',
-          value: value.type === 'NumberLiteral' ? value.value : value.parse().value
+          value:
+            value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
       return {
         type: 'term',
@@ -191,7 +193,12 @@ export function astToMessage(
           if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
             const last = c.value[c.value.length - 1];
             const part = elementToPart(el);
-            if (isPlainStringLiteral(last) && isPlainStringLiteral(part))
+            if (
+              isLiteral(last) &&
+              isLiteral(part) &&
+              !hasMeta(last) &&
+              !hasMeta(part)
+            )
               last.value += part.value;
             else c.value.push(part);
           }

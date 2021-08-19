@@ -1,7 +1,7 @@
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 
-import { isFunction, isPlainStringLiteral, isTerm } from 'messageformat';
+import { hasMeta, isFunction, isLiteral, isTerm } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -180,7 +180,7 @@ function resolveContents(
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
-    if (isPlainStringLiteral(last) && isPlainStringLiteral(part))
+    if (isLiteral(last) && isLiteral(part) && !hasMeta(last) && !hasMeta(part))
       last.value += part;
     else res.push(part);
   }

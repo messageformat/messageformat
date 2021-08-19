@@ -29,6 +29,11 @@ export interface Meta {
   [key: string]: unknown;
 }
 
+export const hasMeta = (part: Record<string, any>): part is { meta: Meta } =>
+  !!part.meta &&
+  typeof part.meta === 'object' &&
+  Object.keys(part.meta).length > 0;
+
 //// MESSAGES ////
 
 /**
@@ -39,20 +44,6 @@ export interface Meta {
 export type Message =
   | { type: 'message'; value: Pattern; meta?: Meta }
   | { type: 'select'; value: Select; meta?: Meta };
-
-export const isMessage = (
-  msg: Message | MessageGroup | undefined
-): msg is Message => !!msg && typeof msg === 'object' && 'value' in msg;
-
-/**
- * The body of each message is composed of a sequence of parts, some of them
- * fixed (Literal), others placeholders for values depending on additional
- * data.
- */
-export type Pattern = Part[];
-
-export const isPattern = (value: Message['value']): value is Pattern =>
-  Array.isArray(value);
 
 /**
  * Select generalises the plural, selectordinal and select argument types of
@@ -83,9 +74,23 @@ export interface SelectCase {
   meta?: Meta;
 }
 
+/**
+ * The body of each message is composed of a sequence of parts, some of them
+ * fixed (Literal), others placeholders for values depending on additional
+ * data.
+ */
+export type Pattern = Part[];
+
+export const isMessage = (
+  msg: Message | MessageGroup | undefined
+): msg is Message =>
+  !!msg &&
+  typeof msg === 'object' &&
+  'type' in msg &&
+  (msg.type === 'message' || msg.type === 'select');
+
 export const isSelect = (value: Message['value']): value is Select =>
   !!value && typeof value === 'object' && 'select' in value;
-
 
 //// MESSAGE PARTS ////
 
@@ -112,14 +117,6 @@ export interface Literal {
   meta?: Meta;
 }
 
-export const isLiteral = (part: any): part is Literal =>
-  !!part && typeof part === 'object' && part.type === 'literal';
-
-export const isPlainStringLiteral = (
-  part: any
-): part is Literal & { value: string; meta?: never } =>
-  isLiteral(part) && (!part.meta || Object.keys(part.meta).length === 0);
-
 /**
  * Variables are defined by the current Scope.
  *
@@ -129,12 +126,9 @@ export const isPlainStringLiteral = (
  */
 export interface Variable {
   type: 'variable';
-  var_path: Path;
+  var_path: Value[];
   meta?: Meta;
 }
-
-export const isVariable = (part: any): part is Variable =>
-  !!part && typeof part === 'object' && part.type === 'variable';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -148,13 +142,10 @@ export const isVariable = (part: any): part is Variable =>
 export interface Function {
   type: 'function';
   func: string;
-  args: (Literal | Variable)[];
+  args: Value[];
   options?: Options;
   meta?: Meta;
 }
-
-export const isFunction = (part: any): part is Function =>
-  !!part && typeof part === 'object' && part.type === 'function';
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -170,23 +161,31 @@ export const isFunction = (part: any): part is Function =>
 export interface Term {
   type: 'term';
   res_id?: string;
-  msg_path: Path;
+  msg_path: Value[];
   scope?: Options;
   meta?: Meta;
 }
 
-export const isTerm = (part: any): part is Term =>
-  !!part && typeof part === 'object' && part.type === 'term';
-
 /**
- * Variables and messages may each be located within their surrounding
- * structures, and require a path to address them.
+ * Values may be used as Function and Term arguments and options.
  */
-export type Path = (Literal | Variable)[];
+export type Value = Literal | Variable;
 
 /**
  * The Function options and Term scope may be defined directly with Literal
  * values, or use Variables. For Literals, the function's signature determines
  * how the string value is parsed.
  */
-export type Options = Record<string, Literal | Variable>;
+export type Options = Record<string, Value>;
+
+export const isLiteral = (part: any): part is Literal =>
+  !!part && typeof part === 'object' && part.type === 'literal';
+
+export const isVariable = (part: any): part is Variable =>
+  !!part && typeof part === 'object' && part.type === 'variable';
+
+export const isFunction = (part: any): part is Function =>
+  !!part && typeof part === 'object' && part.type === 'function';
+
+export const isTerm = (part: any): part is Term =>
+  !!part && typeof part === 'object' && part.type === 'term';
