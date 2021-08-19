@@ -24,10 +24,7 @@ export interface MessageGroup {
  * Additional meta information amy be attached to most nodes. In common use,
  * this information is not required when formatting a message.
  */
-export interface Meta {
-  comment?: string;
-  [key: string]: unknown;
-}
+export type Meta = Record<string, string>;
 
 export const hasMeta = (part: Record<string, any>): part is { meta: Meta } =>
   !!part.meta &&

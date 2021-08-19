@@ -19,15 +19,13 @@ import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
 import type { RuntimeType } from './runtime';
 
-export type FormattedMeta = Record<string, string | number | boolean | null>;
-
 export abstract class Formatted<T> {
   abstract type: 'dynamic' | 'fallback' | 'literal' | 'message';
   abstract valueOf(): T | string;
 
   #locales: string[];
   value: T;
-  declare meta?: FormattedMeta;
+  declare meta?: Meta;
 
   constructor(
     locales: string[],
@@ -96,23 +94,9 @@ export type FormattedPart<T = unknown> =
 
 function addMeta(fmt: Formatted<unknown>, meta: Meta) {
   if (!fmt.meta) fmt.meta = {};
-  for (let [key, value] of Object.entries(meta)) {
+  for (const [key, value] of Object.entries(meta)) {
     if (key in fmt.meta) continue;
-    if (typeof value === 'object') {
-      if (!value) {
-        fmt.meta[key] = null;
-        continue;
-      } else if (typeof value.valueOf === 'function') {
-        // handle e.g. instances of Boolean, Number & String
-        value = value.valueOf();
-      }
-    }
-    switch (typeof value) {
-      case 'boolean':
-      case 'number':
-      case 'string':
-        fmt.meta[key] = value;
-    }
+    fmt.meta[key] = value;
   }
 }
 
