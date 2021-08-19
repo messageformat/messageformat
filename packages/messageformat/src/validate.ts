@@ -1,4 +1,11 @@
-import { isFunction, isTerm, MessageGroup, Part, Resource } from './data-model';
+import {
+  isFunction,
+  isSelectMessage,
+  isTerm,
+  MessageGroup,
+  Part,
+  Resource
+} from './data-model';
 import type { Runtime } from './runtime';
 
 export function validate(resources: Resource[], runtime: Runtime) {
@@ -24,14 +31,13 @@ export function validate(resources: Resource[], runtime: Runtime) {
   function handleMsgGroup({ entries }: MessageGroup) {
     for (const msg of Object.values(entries)) {
       if ('entries' in msg) handleMsgGroup(msg);
-      else if (Array.isArray(msg.value)) handleMsgParts(msg.value);
-      else {
+      else if (isSelectMessage(msg)) {
         handleMsgParts(
-          msg.value.select.map(sel => sel.value),
+          msg.select.map(sel => sel.value),
           true
         );
-        for (const { value } of msg.value.cases) handleMsgParts(value);
-      }
+        for (const { value } of msg.cases) handleMsgParts(value);
+      } else handleMsgParts(msg.value);
     }
   }
 

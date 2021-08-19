@@ -163,56 +163,54 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       entries: {
         msg: {
           type: 'select',
-          value: {
-            select: [
-              {
-                value: {
+          select: [
+            {
+              value: {
+                type: 'function',
+                func: 'pluralRange',
+                args: [
+                  {
+                    type: 'variable',
+                    var_path: [{ type: 'literal', value: 'range' }]
+                  }
+                ]
+              }
+            }
+          ],
+          cases: [
+            {
+              key: ['one'],
+              value: [
+                {
                   type: 'function',
-                  func: 'pluralRange',
+                  func: 'formatRange',
                   args: [
                     {
                       type: 'variable',
                       var_path: [{ type: 'literal', value: 'range' }]
                     }
                   ]
-                }
-              }
-            ],
-            cases: [
-              {
-                key: ['one'],
-                value: [
-                  {
-                    type: 'function',
-                    func: 'formatRange',
-                    args: [
-                      {
-                        type: 'variable',
-                        var_path: [{ type: 'literal', value: 'range' }]
-                      }
-                    ]
-                  },
-                  { type: 'literal', value: ' dag' }
-                ]
-              },
-              {
-                key: ['other'],
-                value: [
-                  {
-                    type: 'function',
-                    func: 'formatRange',
-                    args: [
-                      {
-                        type: 'variable',
-                        var_path: [{ type: 'literal', value: 'range' }]
-                      }
-                    ]
-                  },
-                  { type: 'literal', value: ' dagen' }
-                ]
-              }
-            ]
-          }
+                },
+                { type: 'literal', value: ' dag' }
+              ]
+            },
+            {
+              key: ['other'],
+              value: [
+                {
+                  type: 'function',
+                  func: 'formatRange',
+                  args: [
+                    {
+                      type: 'variable',
+                      var_path: [{ type: 'literal', value: 'range' }]
+                    }
+                  ]
+                },
+                { type: 'literal', value: ' dagen' }
+              ]
+            }
+          ]
         }
       }
     };
@@ -232,12 +230,31 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       entries: {
         msg: {
           type: 'select',
-          value: {
-            select: [
-              {
-                value: {
+          select: [
+            {
+              value: {
+                type: 'function',
+                func: 'pluralRange',
+                args: [
+                  {
+                    type: 'variable',
+                    var_path: [{ type: 'literal', value: 'start' }]
+                  },
+                  {
+                    type: 'variable',
+                    var_path: [{ type: 'literal', value: 'end' }]
+                  }
+                ]
+              }
+            }
+          ],
+          cases: [
+            {
+              key: ['one'],
+              value: [
+                {
                   type: 'function',
-                  func: 'pluralRange',
+                  func: 'formatRange',
                   args: [
                     {
                       type: 'variable',
@@ -248,52 +265,31 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                       var_path: [{ type: 'literal', value: 'end' }]
                     }
                   ]
-                }
-              }
-            ],
-            cases: [
-              {
-                key: ['one'],
-                value: [
-                  {
-                    type: 'function',
-                    func: 'formatRange',
-                    args: [
-                      {
-                        type: 'variable',
-                        var_path: [{ type: 'literal', value: 'start' }]
-                      },
-                      {
-                        type: 'variable',
-                        var_path: [{ type: 'literal', value: 'end' }]
-                      }
-                    ]
-                  },
-                  { type: 'literal', value: ' dag' }
-                ]
-              },
-              {
-                key: ['other'],
-                value: [
-                  {
-                    type: 'function',
-                    func: 'formatRange',
-                    args: [
-                      {
-                        type: 'variable',
-                        var_path: [{ type: 'literal', value: 'start' }]
-                      },
-                      {
-                        type: 'variable',
-                        var_path: [{ type: 'literal', value: 'end' }]
-                      }
-                    ]
-                  },
-                  { type: 'literal', value: ' dagen' }
-                ]
-              }
-            ]
-          }
+                },
+                { type: 'literal', value: ' dag' }
+              ]
+            },
+            {
+              key: ['other'],
+              value: [
+                {
+                  type: 'function',
+                  func: 'formatRange',
+                  args: [
+                    {
+                      type: 'variable',
+                      var_path: [{ type: 'literal', value: 'start' }]
+                    },
+                    {
+                      type: 'variable',
+                      var_path: [{ type: 'literal', value: 'end' }]
+                    }
+                  ]
+                },
+                { type: 'literal', value: ' dagen' }
+              ]
+            }
+          ]
         }
       }
     };
@@ -320,8 +316,8 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
     const res = compileMF1({ msg: src }, { id: 'res', locale: 'en' });
-    expect((res.entries.msg as any).value.select).toHaveLength(4);
-    expect((res.entries.msg as any).value.cases).toHaveLength(81);
+    expect((res.entries.msg as any).select).toHaveLength(4);
+    expect((res.entries.msg as any).cases).toHaveLength(81);
 
     const mf = new MessageFormat('en', null, res);
 
@@ -368,8 +364,8 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
     const res = compileMF1({ msg: src }, { id: 'res', locale: 'en' });
-    expect((res.entries.msg as any).value.select).toHaveLength(6);
-    expect((res.entries.msg as any).value.cases).toHaveLength(64);
+    expect((res.entries.msg as any).select).toHaveLength(6);
+    expect((res.entries.msg as any).cases).toHaveLength(64);
 
     const mf = new MessageFormat('en', null, res);
 
@@ -416,8 +412,8 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     const mf = new MessageFormat('en', fluentRuntime, res);
 
     const msg: any = mf.getEntry('res', 'activity-needed-calculation-plural');
-    expect(msg.value.select).toHaveLength(4);
-    expect(msg.value.cases).toHaveLength(16);
+    expect(msg.select).toHaveLength(4);
+    expect(msg.cases).toHaveLength(16);
 
     const one = mf.format('activity-needed-calculation-plural', {
       totalHours: 1,

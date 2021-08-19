@@ -220,5 +220,5 @@ export function astToMessage(ast: AST.Token[]): Message {
   addParts(ast, null, null, []);
 
   const select = args.map(arg => ({ value: argToPart(arg) }));
-  return { type: 'select', value: { select, cases } };
+  return { type: 'select', select, cases };
 }

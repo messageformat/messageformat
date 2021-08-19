@@ -8,7 +8,9 @@ import {
   Message,
   Options,
   Part,
-  SelectCase
+  PatternMessage,
+  SelectCase,
+  SelectMessage
 } from 'messageformat';
 
 interface SelectArg {
@@ -144,10 +146,12 @@ export function astToMessage(
 ): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
-    const value = ast.elements.map(elementToPart);
-    return comment
-      ? { type: 'message', value, meta: { comment: comment.content } }
-      : { type: 'message', value };
+    const msg: PatternMessage = {
+      type: 'message',
+      value: ast.elements.map(elementToPart)
+    };
+    if (comment) msg.meta = { comment: comment.content };
+    return msg;
   }
 
   // First determine the keys for all cases, with empty values
@@ -213,8 +217,7 @@ export function astToMessage(
       value.func = 'plural';
     return { value, default: String(arg.default) };
   });
-  const value = { select, cases };
-  return comment
-    ? { type: 'select', value, meta: { comment: comment.content } }
-    : { type: 'select', value };
+  const msg: SelectMessage = { type: 'select', select, cases };
+  if (comment) msg.meta = { comment: comment.content };
+  return msg;
 }

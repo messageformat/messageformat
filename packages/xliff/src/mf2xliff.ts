@@ -3,7 +3,7 @@ import {
   isFunction,
   isLiteral,
   isMessage,
-  isSelect,
+  isSelectMessage,
   isTerm,
   isVariable,
   MessageFormat
@@ -81,12 +81,12 @@ function resolveEntry(
   if (isMessage(srcMsg)) {
     if (trgMsg) {
       if (!isMessage(trgMsg)) throw new Error(mismatch(key));
-      if (isSelect(srcMsg.value) || isSelect(trgMsg.value))
-        return resolveSelect(key, srcMsg.value, trgMsg.value);
+      if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg))
+        return resolveSelect(key, srcMsg, trgMsg);
       else return resolvePattern(key, srcMsg.value, trgMsg.value);
     } else {
-      return isSelect(srcMsg.value)
-        ? resolveSelect(key, srcMsg.value, undefined)
+      return isSelectMessage(srcMsg)
+        ? resolveSelect(key, srcMsg, undefined)
         : resolvePattern(key, srcMsg.value, undefined);
     }
   }
@@ -104,18 +104,28 @@ function resolveEntry(
 
 function resolveSelect(
   key: string[],
-  srcSel: MF.Part[] | MF.Select,
-  trgSel: MF.Part[] | MF.Select | undefined
+  srcSel: MF.Message,
+  trgSel: MF.Message | undefined
 ): X.Group {
   // We might be combining a Pattern and a Select, so let's normalise
-  if (Array.isArray(srcSel)) {
-    if (!trgSel || Array.isArray(trgSel))
+  if (isSelectMessage(srcSel)) {
+    if (trgSel && !isSelectMessage(trgSel))
+      trgSel = {
+        type: 'select',
+        select: srcSel.select,
+        cases: [{ key: [], value: trgSel.value }]
+      };
+  } else {
+    if (!trgSel || !isSelectMessage(trgSel))
       throw new Error(
         `At least one of source & target at ${key.join('.')} must be a select`
       );
-    srcSel = { select: trgSel.select, cases: [{ key: [], value: srcSel }] };
-  } else if (Array.isArray(trgSel))
-    trgSel = { select: srcSel.select, cases: [{ key: [], value: trgSel }] };
+    srcSel = {
+      type: 'select',
+      select: trgSel.select,
+      cases: [{ key: [], value: srcSel.value }]
+    };
+  }
 
   const select: { id: string; default: string; keys: string[] }[] = [];
   const parts: X.MessagePart[] = srcSel.select.map(sel => {

@@ -38,9 +38,13 @@ export const hasMeta = (part: Record<string, any>): part is { meta: Meta } =>
  * The shape of the value is an implementation detail, and may vary for the
  * same message in different languages.
  */
-export type Message =
-  | { type: 'message'; value: Pattern; meta?: Meta }
-  | { type: 'select'; value: Select; meta?: Meta };
+export type Message = PatternMessage | SelectMessage;
+
+export interface PatternMessage {
+  type: 'message';
+  value: Pattern;
+  meta?: Meta;
+}
 
 /**
  * Select generalises the plural, selectordinal and select argument types of
@@ -55,9 +59,11 @@ export type Message =
  * If a selection argument does not define an explicit `default` value for
  * itself, the string `'other'` is used.
  */
-export interface Select {
+export interface SelectMessage {
+  type: 'select';
   select: Selector[];
   cases: SelectCase[];
+  meta?: Meta;
 }
 
 export interface Selector {
@@ -86,8 +92,8 @@ export const isMessage = (
   'type' in msg &&
   (msg.type === 'message' || msg.type === 'select');
 
-export const isSelect = (value: Message['value']): value is Select =>
-  !!value && typeof value === 'object' && 'select' in value;
+export const isSelectMessage = (msg: Message): msg is SelectMessage =>
+  msg.type === 'select';
 
 //// MESSAGE PARTS ////
 

@@ -140,7 +140,7 @@ function resolveSelect(
     const value = resolvePart(part);
     return def ? { value, default: String(def) } : { value };
   });
-  return { type: 'select', value: { select, cases } };
+  return { type: 'select', select, cases };
 }
 
 function resolveUnit(

@@ -6,7 +6,7 @@ import { defaultRuntime, Runtime, Scope } from './runtime';
 function getEntry(res: Resource, path: string[]) {
   let msg: MessageGroup | Message = res;
   for (const part of path) {
-    if (!msg || 'value' in msg) return undefined;
+    if (!msg || 'type' in msg) return undefined;
     msg = msg.entries[part];
   }
   return msg;

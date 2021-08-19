@@ -2,7 +2,7 @@ import {
   Function,
   isFunction,
   isLiteral,
-  isSelect,
+  isSelectMessage,
   isTerm,
   isVariable,
   Message,
@@ -10,7 +10,7 @@ import {
   Options,
   Part,
   Pattern,
-  Select,
+  SelectMessage,
   Selector,
   Term,
   Variable
@@ -108,15 +108,15 @@ export function formatToString<R, S>(ctx: Context<R, S>, msg: Message) {
 
 export function formatToParts<R, S>(
   ctx: Context<R, S>,
-  { meta, value }: Message
+  msg: Message
 ): FormattedPart<R | S | string>[] {
   let fsm: FormattedSelectMeta | null = null;
-  const pattern = isSelect(value)
-    ? resolveSelect(ctx, value, _fsm => (fsm = _fsm))
-    : value;
+  const pattern = isSelectMessage(msg)
+    ? resolveSelect(ctx, msg, _fsm => (fsm = _fsm))
+    : msg.value;
   const res = pattern.map(part => resolvePart(ctx, part));
-  if (meta || fsm) {
-    const fm = new FormattedMessage<R | S | string>(ctx.locales, res, meta);
+  if (msg.meta || fsm) {
+    const fm = new FormattedMessage<R | S | string>(ctx.locales, res, msg.meta);
     if (fsm) addMeta(fm, fsm);
     return [fm];
   } else return res;
@@ -234,7 +234,7 @@ function resolveTerm<R, S>(
 
 function resolveSelect<R, S>(
   ctx: Context<R, S>,
-  select: Select,
+  select: SelectMessage,
   onMeta?: (meta: FormattedSelectMeta) => void
 ): Pattern {
   const res = select.select.map(s => ({

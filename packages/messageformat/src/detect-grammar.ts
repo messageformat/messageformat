@@ -1,6 +1,6 @@
-import type { Select } from './data-model';
+import type { SelectMessage } from './data-model';
 
-const cases = [
+const grammarCases = [
   'ablative',
   'absolutive',
   'accusative',
@@ -69,7 +69,7 @@ export interface FormattedSelectMeta {
 }
 
 export function getFormattedSelectMeta(
-  select: Select,
+  select: SelectMessage,
   res: ResolvedSelector[],
   key: string[]
 ) {
@@ -115,11 +115,11 @@ const enum GC {
  *
  * @returns Indices of first matching selectors, or -1 for no match.
  */
-export function detectGrammarSelectors(select: Select) {
-  const defaults = select.select.map(s => s.default || 'other');
+export function detectGrammarSelectors({ cases, select }: SelectMessage) {
+  const defaults = select.map(s => s.default || 'other');
 
-  const gc: (GC | null)[] = new Array(select.select.length).fill(null);
-  for (const { key } of select.cases) {
+  const gc: (GC | null)[] = new Array(select.length).fill(null);
+  for (const { key } of cases) {
     for (let i = 0; i < gc.length; ++i) {
       const c = gc[i];
       if (c === GC.Other) continue;
@@ -129,7 +129,7 @@ export function detectGrammarSelectors(select: Select) {
 
       if (isNumeric(k) || plurals.includes(k)) {
         if (c !== GC.Plural) gc[i] = c ? GC.Other : GC.Plural;
-      } else if (cases.includes(k)) {
+      } else if (grammarCases.includes(k)) {
         if (c !== GC.Case) gc[i] = c ? GC.Other : GC.Case;
       } else if (genders.includes(k)) {
         if (c !== GC.Gender) gc[i] = c ? GC.Other : GC.Gender;
