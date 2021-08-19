@@ -42,11 +42,3 @@ export type RuntimeType =
   | string[];
 
 export type RuntimeOptions = Record<string, unknown>;
-/**
- * A representation of the parameters/arguments passed to a message formatter.
- * Used by the Variable resolver, and may be extended in a Term.
- */
-
-export interface Scope<S = unknown> {
-  [key: string]: S;
-}

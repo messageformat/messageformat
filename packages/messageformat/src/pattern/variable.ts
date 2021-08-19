@@ -9,6 +9,14 @@ import {
 import type { Literal } from './literal';
 
 /**
+ * A representation of the parameters/arguments passed to a message formatter.
+ * Used by the Variable resolver, and may be extended in a Term.
+ */
+export interface Scope<S = unknown> {
+  [key: string]: S;
+}
+
+/**
  * Variables are defined by the current Scope.
  *
  * Using an array with more than one value refers to an inner property of an

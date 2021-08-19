@@ -1,6 +1,7 @@
 import { isMessage, Message, PatternElement } from './data-model';
 import type { MessageFormat } from './messageformat';
-import type { Runtime, Scope } from './runtime';
+import type { Scope } from './pattern/variable';
+import type { Runtime } from './runtime';
 
 export interface Context<R, S> {
   getMessage(

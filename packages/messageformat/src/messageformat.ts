@@ -7,7 +7,8 @@ import {
 } from './data-model';
 import { createContext } from './format-context';
 import { FormattedPart, formatToParts, formatToString } from './format-message';
-import { defaultRuntime, Runtime, Scope } from './runtime';
+import type { Scope } from './pattern/variable';
+import { defaultRuntime, Runtime } from './runtime';
 
 function getEntry<P extends PatternElement>(res: Resource<P>, path: string[]) {
   let msg: Resource<P> | MessageGroup<P> | Message<P> = res;
