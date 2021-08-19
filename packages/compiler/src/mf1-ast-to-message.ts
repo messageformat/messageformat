@@ -4,9 +4,9 @@ import {
   hasMeta,
   isLiteral,
   Message,
-  Part,
   SelectCase,
-  Variable
+  Variable,
+  Literal
 } from 'messageformat';
 
 const isAstSelect = (token: AST.Token): token is AST.Select =>
@@ -55,7 +55,7 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Part {
+): Literal | Variable | Function {
   switch (token.type) {
     case 'content':
       return { type: 'literal', value: token.value };
@@ -151,7 +151,7 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
  * Only literal values are supported in formatter parameters. Any
  * such value will be passed in as an option `{ param: string }`.
  */
-export function astToMessage(ast: AST.Token[]): Message {
+export function astToMessage(ast: AST.Token[]): Message<Literal | Variable | Function> {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {
@@ -173,7 +173,7 @@ export function astToMessage(ast: AST.Token[]): Message {
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: SelectCase[] = keys.map(key => ({
+  const cases: SelectCase<Literal | Variable | Function>[] = keys.map(key => ({
     key: key.map(k => String(k)),
     value: []
   }));

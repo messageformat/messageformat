@@ -156,10 +156,10 @@ function resolveSelect(
 function resolveUnit(
   { attributes, elements }: X.Unit,
   st: 'source' | 'target'
-): MF.Pattern {
+): MF.PatternElement[] {
   if (!elements) return [];
   let mf: X.MessageFormat | null = null;
-  let pattern: MF.Pattern = [];
+  let pattern: MF.PatternElement[] = [];
   for (const el of elements) {
     switch (el.name) {
       case 'mf:messageformat':
@@ -185,8 +185,8 @@ function resolveUnit(
 function resolveContents(
   contents: (X.Text | X.InlineElement)[],
   mf: X.MessageFormat | null
-): MF.Part[] {
-  const res: MF.Part[] = [];
+) {
+  const res: (MF.Literal | MF.Variable | MF.Function | MF.Term)[] = [];
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
@@ -203,7 +203,7 @@ const resolveCharCode = (cc: X.CharCode) =>
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Part {
+): MF.Literal | MF.Variable | MF.Function | MF.Term {
   switch (ie.type) {
     case 'text':
     case 'cdata':
@@ -240,7 +240,7 @@ function resolveRef(
   name: string,
   ref: string | undefined,
   mf: X.MessageFormat | null
-): MF.Part {
+): MF.Literal | MF.Variable | MF.Function | MF.Term {
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
@@ -257,7 +257,9 @@ function resolveRef(
 const resolveText = (text: (X.Text | X.CharCode)[]) =>
   text.map(t => (t.type === 'element' ? resolveCharCode(t) : t.text)).join('');
 
-function resolvePart(part: X.MessagePart): MF.Part {
+function resolvePart(
+  part: X.MessagePart
+): MF.Literal | MF.Variable | MF.Function | MF.Term {
   switch (part.name) {
     case 'mf:literal':
     case 'mf:variable':

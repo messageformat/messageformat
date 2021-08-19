@@ -8,17 +8,17 @@
  *
  * The `[id, locale]` tuple should probably be unique for each resource.
  */
-export interface Resource {
+export interface Resource<P extends PatternElement = PatternElement> {
   type: 'resource';
   id: string;
   locale: string;
-  entries: Record<string, Message | MessageGroup>;
+  entries: Record<string, Message<P> | MessageGroup<P>>;
   meta?: Meta;
 }
 
-export interface MessageGroup {
+export interface MessageGroup<P extends PatternElement = PatternElement> {
   type: 'group';
-  entries: Record<string, Message | MessageGroup>;
+  entries: Record<string, Message<P> | MessageGroup<P>>;
   meta?: Meta;
 }
 
@@ -40,11 +40,18 @@ export const hasMeta = (part: Record<string, any>): part is { meta: Meta } =>
  * The shape of the value is an implementation detail, and may vary for the
  * same message in different languages.
  */
-export type Message = PatternMessage | SelectMessage;
+export type Message<P extends PatternElement = PatternElement> =
+  | PatternMessage<P>
+  | SelectMessage<P>;
 
-export interface PatternMessage {
+/**
+ * The body of each message is composed of a sequence of parts, some of them
+ * fixed (Literal), others placeholders for values depending on additional
+ * data.
+ */
+export interface PatternMessage<P extends PatternElement = PatternElement> {
   type: 'message';
-  value: Pattern;
+  value: P[];
   meta?: Meta;
 }
 
@@ -61,53 +68,48 @@ export interface PatternMessage {
  * If a selection argument does not define an explicit `default` value for
  * itself, the string `'other'` is used.
  */
-export interface SelectMessage {
+export interface SelectMessage<P extends PatternElement = PatternElement> {
   type: 'select';
-  select: Selector[];
-  cases: SelectCase[];
+  select: Selector<P>[];
+  cases: SelectCase<P>[];
   meta?: Meta;
 }
 
-export interface Selector {
-  value: Part;
+export interface Selector<P extends PatternElement = PatternElement> {
+  value: P;
   default?: string;
 }
 
-export interface SelectCase {
+export interface SelectCase<P extends PatternElement = PatternElement> {
   key: string[];
-  value: Pattern;
+  value: P[];
   meta?: Meta;
 }
 
-/**
- * The body of each message is composed of a sequence of parts, some of them
- * fixed (Literal), others placeholders for values depending on additional
- * data.
- */
-export type Pattern = Part[];
-
-export const isMessage = (
-  msg: Resource | MessageGroup | Message | undefined
-): msg is Message =>
+export const isMessage = <P extends PatternElement = PatternElement>(
+  msg: Resource<P> | MessageGroup<P> | Message<P> | undefined
+): msg is Message<P> =>
   !!msg &&
   typeof msg === 'object' &&
   'type' in msg &&
   (msg.type === 'message' || msg.type === 'select');
 
-export const isSelectMessage = (msg: Message): msg is SelectMessage =>
-  msg.type === 'select';
+export const isSelectMessage = <P extends PatternElement = PatternElement>(
+  msg: Message<P>
+): msg is SelectMessage<P> => msg.type === 'select';
 
 //// MESSAGE PARTS ////
 
 /**
- * A Part is either a literal, immediately defined value, or a reference to a
- * value that depends on another message, the value of some runtime variable,
- * or some function defined elsewhere.
- *
- * Each of the types that may be used as a Part must be (and are) immediately
- * distinguishable from each other.
+ * The contents of a message are a sequence of pattern elements, which may be
+ * immediately defined literal values, a reference to a value that depends on
+ * another message, the value of some runtime variable, or some function
+ * defined elsewhere.
  */
-export type Part = Literal | Variable | Function | Term;
+export interface PatternElement {
+  type: string;
+  meta?: Meta;
+}
 
 /**
  * An immediately defined value.
@@ -116,10 +118,9 @@ export type Part = Literal | Variable | Function | Term;
  * Term scopes, the expeted type of the value may result in the value being
  * further parsed as a boolean or a number.
  */
-export interface Literal {
+export interface Literal extends PatternElement {
   type: 'literal';
   value: string;
-  meta?: Meta;
 }
 
 /**
@@ -129,10 +130,9 @@ export interface Literal {
  * object value, so e.g. `['user', 'name']` would require something like
  * `{ name: 'Kat' }` as the value of the `'user'` scope variable.
  */
-export interface Variable {
+export interface Variable extends PatternElement {
   type: 'variable';
   var_path: Value[];
-  meta?: Meta;
 }
 
 /**
@@ -144,12 +144,11 @@ export interface Variable {
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
  */
-export interface Function {
+export interface Function extends PatternElement {
   type: 'function';
   func: string;
   args: Value[];
   options?: Options;
-  meta?: Meta;
 }
 
 /**
@@ -163,17 +162,13 @@ export interface Function {
  *
  * `scope` overrides values in the current scope when resolving the message.
  */
-export interface Term {
+export interface Term extends PatternElement {
   type: 'term';
   res_id?: string;
   msg_path: Value[];
   scope?: Options;
-  meta?: Meta;
 }
 
-/**
- * Values may be used as Function and Term arguments and options.
- */
 export type Value = Literal | Variable;
 
 /**

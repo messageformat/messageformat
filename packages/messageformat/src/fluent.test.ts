@@ -25,6 +25,7 @@ import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
 import { fluentRuntime, MessageFormat, Resource } from 'messageformat';
+import { Function, Term, Value } from './data-model';
 
 type TestCase = {
   locale?: string;
@@ -271,7 +272,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
   describe(title, () => {
-    let mf: MessageFormat;
+    let mf: MessageFormat<string, Value | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale });
       mf = new MessageFormat(locale, fluentRuntime, res);
@@ -308,7 +309,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    let mf: MessageFormat;
+    let mf: MessageFormat<string, Value | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', fluentRuntime, res);
@@ -374,8 +375,8 @@ describe('formatToParts', () => {
       ### Other resource comment
     `;
 
-    let res: Resource;
-    let mf: MessageFormat;
+    let res: Resource<Value | Function | Term>;
+    let mf: MessageFormat<string, Value | Function | Term>;
     beforeAll(() => {
       res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', fluentRuntime, res);
@@ -444,7 +445,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    let mf: MessageFormat;
+    let mf: MessageFormat<string, Value | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', fluentRuntime, res);

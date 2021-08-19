@@ -240,11 +240,11 @@ function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
 
 function resolvePattern(
   key: string[],
-  srcPattern: MF.Part[],
-  trgPattern: MF.Part[] | undefined
+  srcPattern: MF.PatternElement[],
+  trgPattern: MF.PatternElement[] | undefined
 ): X.Unit {
   const parts: X.MessagePart[] = [];
-  const handlePart = (p: MF.Part): X.Text | X.InlineElement => {
+  const handlePart = (p: MF.PatternElement): X.Text | X.InlineElement => {
     if (isLiteral(p)) return asText(p);
     const id = nextId();
     const part = resolvePart(id, p);
@@ -273,7 +273,10 @@ function resolvePattern(
   return { type: 'element', name: 'unit', attributes, elements };
 }
 
-function resolvePart(id: string | null, part: MF.Part): X.MessagePart {
+function resolvePart(
+  id: string | null,
+  part: MF.PatternElement
+): X.MessagePart {
   const attributes = id ? { id } : undefined;
 
   if (isLiteral(part) || isVariable(part)) return resolveArgument(id, part);

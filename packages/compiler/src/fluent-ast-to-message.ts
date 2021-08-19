@@ -7,11 +7,15 @@ import {
   isTerm,
   Message,
   Options,
-  Part,
+  Value,
   PatternMessage,
   SelectCase,
-  SelectMessage
+  SelectMessage,
+  Function,
+  Term
 } from 'messageformat';
+
+export type Part = Value | Function | Term;
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -143,10 +147,10 @@ function asFluentSelect(
 export function astToMessage(
   ast: Fluent.Pattern,
   comment: Fluent.Comment | null
-): Message {
+): Message<Part> {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
-    const msg: PatternMessage = {
+    const msg: PatternMessage<Part> = {
       type: 'message',
       value: ast.elements.map(elementToPart)
     };
@@ -171,7 +175,7 @@ export function astToMessage(
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: SelectCase[] = keys.map(key => ({
+  const cases: SelectCase<Part>[] = keys.map(key => ({
     key: key.map(k => String(k)),
     value: []
   }));
@@ -217,7 +221,7 @@ export function astToMessage(
       value.func = 'plural';
     return { value, default: String(arg.default) };
   });
-  const msg: SelectMessage = { type: 'select', select, cases };
+  const msg: SelectMessage<Part> = { type: 'select', select, cases };
   if (comment) msg.meta = { comment: comment.content };
   return msg;
 }

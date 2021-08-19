@@ -1,10 +1,16 @@
-import { isMessage, Message, MessageGroup, Resource } from './data-model';
+import {
+  isMessage,
+  Message,
+  MessageGroup,
+  PatternElement,
+  Resource
+} from './data-model';
 import { createContext } from './format-context';
 import { FormattedPart, formatToParts, formatToString } from './format-message';
 import { defaultRuntime, Runtime, Scope } from './runtime';
 
-function getEntry(res: Resource, path: string[]) {
-  let msg: Resource | MessageGroup | Message = res;
+function getEntry<P extends PatternElement>(res: Resource<P>, path: string[]) {
+  let msg: Resource<P> | MessageGroup<P> | Message<P> = res;
   for (const part of path) {
     if (!msg || msg.type === 'message' || msg.type === 'select')
       return undefined;
@@ -30,22 +36,25 @@ export type FormatterToParts<T = string> = (
  * for selection and `datetime` & `number` formatters based on the `Intl`
  * equivalents.
  */
-export class MessageFormat<R = string> {
+export class MessageFormat<
+  R = string,
+  P extends PatternElement = PatternElement
+> {
   locales: string[];
-  resources: Resource[];
+  resources: Resource<P>[];
   runtime: Runtime<R>;
 
   constructor(
     locales: string | string[],
     runtime?: Runtime<R> | null,
-    ...resources: Resource[]
+    ...resources: Resource<P>[]
   ) {
     this.locales = Array.isArray(locales) ? locales : [locales];
     this.resources = resources;
     this.runtime = runtime || ((defaultRuntime as unknown) as Runtime<R>);
   }
 
-  addResources(...resources: Resource[]) {
+  addResources(...resources: Resource<P>[]) {
     this.resources.splice(0, 0, ...resources);
   }
 

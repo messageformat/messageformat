@@ -1,9 +1,12 @@
-import { isMessage, Message } from './data-model';
+import { isMessage, Message, PatternElement } from './data-model';
 import type { MessageFormat } from './messageformat';
 import type { Runtime, Scope } from './runtime';
 
 export interface Context<R, S> {
-  getMessage(resId: string | undefined, msgPath: string[]): Message | null;
+  getMessage(
+    resId: string | undefined,
+    msgPath: string[]
+  ): Message<PatternElement> | null;
   locales: string[];
   runtime: Runtime<R>;
   scope: Scope<S>;

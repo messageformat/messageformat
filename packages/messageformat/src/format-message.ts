@@ -8,12 +8,12 @@ import {
   Message,
   Meta,
   Options,
-  Part,
-  Pattern,
+  Value,
   SelectMessage,
   Selector,
   Term,
-  Variable
+  Variable,
+  PatternElement
 } from './data-model';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 import { Context, extendContext } from './format-context';
@@ -124,7 +124,7 @@ export function formatToParts<R, S>(
 
 function resolvePart<R, S>(
   ctx: Context<R, S>,
-  part: Part
+  part: PatternElement
 ):
   | FormattedDynamic<R | S>
   | FormattedFallback
@@ -141,7 +141,7 @@ function resolvePart<R, S>(
 
 function resolveArgument<R, S>(
   ctx: Context<R, S>,
-  part: Part,
+  part: PatternElement,
   expected?: RuntimeType
 ): string | number | boolean | S {
   if (isLiteral(part)) {
@@ -236,7 +236,7 @@ function resolveSelect<R, S>(
   ctx: Context<R, S>,
   select: SelectMessage,
   onMeta?: (meta: FormattedSelectMeta) => void
-): Pattern {
+): PatternElement[] {
   const res = select.select.map(s => ({
     value: resolveSelectorValue(ctx, s),
     default: s.default || 'other'
@@ -313,7 +313,7 @@ function resolveVariable<R, S>(
     : new FormattedDynamic(ctx.locales, val, part.meta);
 }
 
-function resolveFallback(ctx: Context<unknown, unknown>, part: Part) {
+function resolveFallback(ctx: Context<unknown, unknown>, part: PatternElement) {
   return new FormattedFallback(
     ctx.locales,
     fallbackValue(ctx, part),
@@ -321,8 +321,11 @@ function resolveFallback(ctx: Context<unknown, unknown>, part: Part) {
   );
 }
 
-function fallbackValue(ctx: Context<unknown, unknown>, part: Part): string {
-  const resolve = (p: Part) => resolvePart(ctx, p).valueOf();
+function fallbackValue(
+  ctx: Context<unknown, unknown>,
+  part: PatternElement
+): string {
+  const resolve = (v: Value) => resolvePart(ctx, v).valueOf();
   if (isLiteral(part)) return String(part.value);
   if (isVariable(part)) {
     const path = part.var_path.map(resolve);

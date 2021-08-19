@@ -3,13 +3,13 @@ import {
   isSelectMessage,
   isTerm,
   MessageGroup,
-  Part,
-  Resource
+  Resource,
+  PatternElement
 } from './data-model';
 import type { Runtime } from './runtime';
 
 export function validate(resources: Resource[], runtime: Runtime) {
-  function handleMsgParts(parts: Part[], inSelect?: boolean) {
+  function handleMsgParts(parts: PatternElement[], inSelect?: boolean) {
     for (const part of parts) {
       if (isFunction(part)) {
         const { args, func } = part;

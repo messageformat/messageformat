@@ -15,9 +15,10 @@ import {
   FormattedFallback,
   FormattedLiteral
 } from './format-message';
+import { Function, Literal, Term } from './data-model';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
-  const res: Resource = {
+  const res: Resource<Literal | Term> = {
     type: 'resource',
     id: 'res',
     locale: 'fi',
@@ -163,7 +164,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const res: Resource = {
+    const res: Resource<Literal | Function> = {
       type: 'resource',
       id: 'res',
       locale: 'nl',
@@ -231,7 +232,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   });
 
   test('input as separate start, end falues', () => {
-    const res: Resource = {
+    const res: Resource<Literal | Function> = {
       type: 'resource',
       id: 'res',
       locale: 'nl',
