@@ -1,11 +1,11 @@
 import {
   isFunction,
   isSelectMessage,
-  isTerm,
   MessageGroup,
   Resource,
   PatternElement
 } from './data-model';
+import { isTerm } from './pattern/term';
 import type { Runtime } from './runtime';
 
 export function validate(resources: Resource[], runtime: Runtime) {

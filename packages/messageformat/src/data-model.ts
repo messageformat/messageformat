@@ -151,24 +151,6 @@ export interface Function extends PatternElement {
   options?: Options;
 }
 
-/**
- * A Term is a pointer to a Message or a Select.
- *
- * If `res_id` is undefined, the message is sought in the current Resource.
- * If it is set, it identifies the resource for the sought message. It is
- * entirely intentional that this value may not be defined at runtime.
- * `msg_path` is used to locate the Message within the Resource, and it may
- * include Variable values.
- *
- * `scope` overrides values in the current scope when resolving the message.
- */
-export interface Term extends PatternElement {
-  type: 'term';
-  res_id?: string;
-  msg_path: Value[];
-  scope?: Options;
-}
-
 export type Value = Literal | Variable;
 
 /**
@@ -186,6 +168,3 @@ export const isVariable = (part: any): part is Variable =>
 
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
-
-export const isTerm = (part: any): part is Term =>
-  !!part && typeof part === 'object' && part.type === 'term';

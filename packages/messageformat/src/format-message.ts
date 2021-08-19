@@ -3,7 +3,6 @@ import {
   isFunction,
   isLiteral,
   isSelectMessage,
-  isTerm,
   isVariable,
   Message,
   Meta,
@@ -11,12 +10,12 @@ import {
   Value,
   SelectMessage,
   Selector,
-  Term,
   Variable,
   PatternElement
 } from './data-model';
+import { isTerm, resolveTerm } from './pattern/term';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
-import { Context, extendContext } from './format-context';
+import { Context } from './format-context';
 import type { RuntimeType } from './runtime';
 
 export abstract class Formatted<T> {
@@ -122,7 +121,7 @@ export function formatToParts<R, S>(
   } else return res;
 }
 
-function resolvePart<R, S>(
+export function resolvePart<R, S>(
   ctx: Context<R, S>,
   part: PatternElement
 ):
@@ -159,7 +158,7 @@ function resolveArgument<R, S>(
   throw new Error(`Unsupported function argument: ${part}`);
 }
 
-function resolveOptions<R, S>(
+export function resolveOptions<R, S>(
   ctx: Context<R, S>,
   options: Options | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
@@ -213,23 +212,6 @@ function resolveFormatFunction<R, S>(
     });
     return fb;
   }
-}
-
-function resolveTerm<R, S>(
-  ctx: Context<R, S>,
-  term: Term
-): FormattedMessage<R | S | string> | FormattedFallback {
-  const { msg_path, res_id, scope } = term;
-  const strPath = msg_path.map(part => String(resolvePart(ctx, part)));
-  const msg = ctx.getMessage(res_id, strPath);
-  if (!msg) return resolveFallback(ctx, term);
-  if (res_id || scope) {
-    const opt = scope ? resolveOptions(ctx, scope, 'any') : null;
-    const msgScope = Object.assign({}, ctx.scope, opt);
-    // Let's not check typings of Term scope overrides
-    ctx = extendContext(ctx, res_id, msgScope) as Context<R, S>;
-  }
-  return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
 }
 
 function resolveSelect<R, S>(
@@ -313,7 +295,10 @@ function resolveVariable<R, S>(
     : new FormattedDynamic(ctx.locales, val, part.meta);
 }
 
-function resolveFallback(ctx: Context<unknown, unknown>, part: PatternElement) {
+export function resolveFallback(
+  ctx: Context<unknown, unknown>,
+  part: PatternElement
+) {
   return new FormattedFallback(
     ctx.locales,
     fallbackValue(ctx, part),
@@ -337,15 +322,6 @@ function fallbackValue(
       for (const [key, value] of Object.entries(part.options))
         args.push(`${key}: ${resolve(value)}`);
     return `${part.func}(${args.join(', ')})`;
-  }
-  if (isTerm(part)) {
-    let name = part.msg_path.map(resolve).join('.');
-    if (part.res_id) name = part.res_id + '::' + name;
-    if (!part.scope) return '-' + name;
-    const scope = Object.entries(part.scope).map(
-      ([key, value]) => `${key}: ${resolve(value)}`
-    );
-    return `-${name}(${scope.join(', ')})`;
   }
   return String(part);
 }
