@@ -15,9 +15,9 @@ import {
   FormattedFallback,
   FormattedLiteral
 } from './format-message';
-import { Literal } from './data-model';
-import { Function } from './pattern/function';
-import { Term } from './pattern/term';
+import type { Function } from './pattern/function';
+import type { Literal } from './pattern/literal';
+import type { Term } from './pattern/term';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource<Literal | Term> = {

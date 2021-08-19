@@ -1,4 +1,4 @@
-import { Literal, PatternElement } from '../data-model';
+import { PatternElement } from '../data-model';
 import { Context } from '../format-context';
 import {
   FormattedDynamic,
@@ -6,6 +6,7 @@ import {
   resolveArgument,
   resolvePart
 } from '../format-message';
+import type { Literal } from './literal';
 
 /**
  * Variables are defined by the current Scope.

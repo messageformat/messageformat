@@ -9,6 +9,7 @@ export type {
 } from './format-message';
 export { MessageFormat } from './messageformat';
 export { isFunction, Function } from './pattern/function';
+export { isLiteral, Literal } from './pattern/literal';
 export { isTerm, Term } from './pattern/term';
 export { isVariable, Variable } from './pattern/variable';
 export * from './runtime';

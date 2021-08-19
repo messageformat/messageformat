@@ -1,7 +1,5 @@
 import {
-  isLiteral,
   isSelectMessage,
-  Literal,
   Message,
   Meta,
   PatternElement,
@@ -9,6 +7,7 @@ import {
   Selector
 } from './data-model';
 import { isFunction, resolveFormatFunction } from './pattern/function';
+import { isLiteral, Literal } from './pattern/literal';
 import { isTerm, resolveTerm } from './pattern/term';
 import { isVariable, resolveVariable, Variable } from './pattern/variable';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';

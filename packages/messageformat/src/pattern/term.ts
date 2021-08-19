@@ -1,4 +1,4 @@
-import { Literal, PatternElement } from '../data-model';
+import { PatternElement } from '../data-model';
 import { Context, extendContext } from '../format-context';
 import {
   FormattedFallback,
@@ -7,7 +7,8 @@ import {
   resolveOptions,
   resolvePart
 } from '../format-message';
-import { Variable } from './variable';
+import type { Literal } from './literal';
+import type { Variable } from './variable';
 
 /**
  * A Term is a pointer to a Message or a Select.

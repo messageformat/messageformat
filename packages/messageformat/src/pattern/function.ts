@@ -1,4 +1,4 @@
-import { Literal, PatternElement } from '../data-model';
+import { PatternElement } from '../data-model';
 import { Context } from '../format-context';
 import {
   addMeta,
@@ -11,7 +11,8 @@ import {
   resolveOptions,
   resolvePart
 } from '../format-message';
-import { Variable } from './variable';
+import type { Literal } from './literal';
+import type { Variable } from './variable';
 
 /**
  * To resolve a Function, an externally defined function is called.
