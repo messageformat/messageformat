@@ -6,13 +6,12 @@ import {
   SelectMessage,
   Selector
 } from './data-model';
-import { isFunction, resolveFunction } from './pattern/function';
-import { isLiteral, Literal } from './pattern/literal';
-import { isTerm, resolveTerm } from './pattern/term';
-import { isVariable, resolveVariable, Variable } from './pattern/variable';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
-import { Context } from './format-context';
-import type { RuntimeType } from './runtime';
+import type { Context } from './format-context';
+import { isFunction, resolveFunction } from './pattern/function';
+import { isLiteral, resolveLiteral } from './pattern/literal';
+import { isTerm, resolveTerm } from './pattern/term';
+import { isVariable, resolveVariable } from './pattern/variable';
 
 export abstract class Formatted<T> {
   abstract type: 'dynamic' | 'fallback' | 'literal' | 'message';
@@ -125,60 +124,12 @@ export function resolvePart<R, S>(
   | FormattedFallback
   | FormattedLiteral
   | FormattedMessage<R | S | string> {
-  if (isLiteral(part))
-    return new FormattedLiteral(ctx.locales, part.value, part.meta);
+  if (isLiteral(part)) return resolveLiteral(ctx, part);
   if (isVariable(part)) return resolveVariable(ctx, part);
   if (isFunction(part)) return resolveFunction(ctx, part);
   if (isTerm(part)) return resolveTerm(ctx, part);
   /* istanbul ignore next - never happens */
   throw new Error(`Unsupported part: ${part}`);
-}
-
-export function resolveArgument<S>(
-  ctx: Context,
-  part: PatternElement,
-  expected?: RuntimeType
-): string | number | boolean | S {
-  if (isLiteral(part)) {
-    const { value } = part;
-    switch (expected) {
-      case 'boolean':
-        return value === 'true' ? true : value === 'false' ? false : value;
-      case 'number':
-        return Number(value);
-      default:
-        return value;
-    }
-  }
-  if (isVariable(part)) return resolveVariable<S>(ctx, part).valueOf();
-  throw new Error(`Unsupported function argument: ${part}`);
-}
-
-export function resolveOptions<S>(
-  ctx: Context,
-  options: Record<string, Literal | Variable> | undefined,
-  expected: RuntimeType | Record<string, RuntimeType> | undefined
-) {
-  const opt: Record<string, string | number | boolean | S> = {};
-  const getExpected =
-    !expected || typeof expected === 'string' || Array.isArray(expected)
-      ? () => expected
-      : (key: string) => expected[key];
-  if (options && expected)
-    for (const [key, value] of Object.entries(options)) {
-      const exp = getExpected(key);
-      if (!exp || exp === 'never') continue; // TODO: report error
-      const res = resolveArgument<S>(ctx, value, exp);
-
-      if (
-        exp === 'any' ||
-        exp === typeof res ||
-        (Array.isArray(exp) && typeof res === 'string' && exp.includes(res))
-      )
-        opt[key] = res;
-      // TODO: else report error
-    }
-  return opt;
 }
 
 function resolveSelect(

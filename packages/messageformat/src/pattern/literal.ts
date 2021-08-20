@@ -1,4 +1,6 @@
-import { PatternElement } from '../data-model';
+import type { PatternElement } from '../data-model';
+import type { Context } from '../format-context';
+import { FormattedLiteral } from '../format-message';
 
 /**
  * An immediately defined value.
@@ -15,3 +17,7 @@ export interface Literal extends PatternElement {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
+
+export function resolveLiteral(ctx: Context, part: Literal): FormattedLiteral {
+  return new FormattedLiteral(ctx.locales, part.value, part.meta);
+}

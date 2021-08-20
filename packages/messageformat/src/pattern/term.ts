@@ -1,12 +1,12 @@
-import { PatternElement } from '../data-model';
+import type { PatternElement } from '../data-model';
 import { Context, extendContext } from '../format-context';
 import {
   FormattedFallback,
   FormattedMessage,
   formatToParts,
-  resolveOptions,
   resolvePart
 } from '../format-message';
+import { resolveOptions } from './function';
 import type { Literal } from './literal';
 import type { Variable } from './variable';
 

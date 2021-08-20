@@ -1,5 +1,5 @@
-import { PatternElement } from '../data-model';
-import { Context } from '../format-context';
+import type { PatternElement } from '../data-model';
+import type { Context } from '../format-context';
 import {
   addMeta,
   Formatted,
@@ -7,12 +7,11 @@ import {
   FormattedFallback,
   FormattedLiteral,
   FormattedMessage,
-  resolveArgument,
-  resolveOptions,
   resolvePart
 } from '../format-message';
+import type { RuntimeType } from '../runtime';
 import type { Literal } from './literal';
-import type { Variable } from './variable';
+import { resolveArgument, Variable } from './variable';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -74,4 +73,31 @@ function fallbackValue(ctx: Context, fn: Function) {
     for (const [key, value] of Object.entries(fn.options))
       args.push(`${key}: ${resolve(value)}`);
   return `${fn.func}(${args.join(', ')})`;
+}
+
+export function resolveOptions<S>(
+  ctx: Context,
+  options: Record<string, Literal | Variable> | undefined,
+  expected: RuntimeType | Record<string, RuntimeType> | undefined
+) {
+  const opt: Record<string, string | number | boolean | S> = {};
+  const getExpected =
+    !expected || typeof expected === 'string' || Array.isArray(expected)
+      ? () => expected
+      : (key: string) => expected[key];
+  if (options && expected)
+    for (const [key, value] of Object.entries(options)) {
+      const exp = getExpected(key);
+      if (!exp || exp === 'never') continue; // TODO: report error
+      const res = resolveArgument<S>(ctx, value, exp);
+
+      if (
+        exp === 'any' ||
+        exp === typeof res ||
+        (Array.isArray(exp) && typeof res === 'string' && exp.includes(res))
+      )
+        opt[key] = res;
+      // TODO: else report error
+    }
+  return opt;
 }

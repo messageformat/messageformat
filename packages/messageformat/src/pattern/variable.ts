@@ -1,12 +1,12 @@
-import { PatternElement } from '../data-model';
-import { Context } from '../format-context';
+import type { PatternElement } from '../data-model';
+import type { Context } from '../format-context';
 import {
   FormattedDynamic,
   FormattedFallback,
-  resolveArgument,
   resolvePart
 } from '../format-message';
-import type { Literal } from './literal';
+import type { RuntimeType } from '../runtime';
+import { isLiteral, Literal } from './literal';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -54,4 +54,24 @@ export function resolveVariable<S>(
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
   const path = var_path.map(v => resolvePart(ctx, v).valueOf());
   return '$' + path.join('.');
+}
+
+export function resolveArgument<S>(
+  ctx: Context,
+  part: PatternElement,
+  expected?: RuntimeType
+): string | number | boolean | S {
+  if (isLiteral(part)) {
+    const { value } = part;
+    switch (expected) {
+      case 'boolean':
+        return value === 'true' ? true : value === 'false' ? false : value;
+      case 'number':
+        return Number(value);
+      default:
+        return value;
+    }
+  }
+  if (isVariable(part)) return resolveVariable<S>(ctx, part).valueOf();
+  throw new Error(`Unsupported function argument: ${part}`);
 }
