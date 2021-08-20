@@ -6,7 +6,7 @@ import {
   Resource
 } from './data-model';
 import { createContext } from './format-context';
-import { formatToParts } from './format-message';
+import { formatToParts } from './format-to-parts';
 import { FormattedPart } from './formatted-part';
 import { patternHandlers } from './pattern';
 import type { Scope } from './pattern/variable';

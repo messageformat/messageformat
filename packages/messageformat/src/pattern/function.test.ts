@@ -2,8 +2,8 @@
 import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
 
-import { fluentRuntime, MessageFormat, Runtime } from './index';
-import { FormattedDynamic } from './formatted-part';
+import { fluentRuntime, MessageFormat, Runtime } from '../index';
+import { FormattedDynamic } from '../formatted-part';
 
 describe('Function returns primitive value', () => {
   test('string', () => {

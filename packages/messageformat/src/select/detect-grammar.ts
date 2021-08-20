@@ -1,4 +1,4 @@
-import type { SelectMessage } from './data-model';
+import type { SelectMessage } from '../data-model';
 
 const grammarCases = [
   'ablative',
@@ -115,7 +115,7 @@ const enum GC {
  *
  * @returns Indices of first matching selectors, or -1 for no match.
  */
-export function detectGrammarSelectors({ cases, select }: SelectMessage) {
+function detectGrammarSelectors({ cases, select }: SelectMessage) {
   const defaults = select.map(s => s.default || 'other');
 
   const gc: (GC | null)[] = new Array(select.length).fill(null);

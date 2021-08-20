@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { formatToParts } from '../format-message';
+import { formatToParts } from '../format-to-parts';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import { resolveOptions } from './function';
 import type { Literal } from './literal';
