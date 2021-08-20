@@ -33,6 +33,13 @@ export type FormatterToParts<T = string> = (
 ) => FormattedPart<T>[];
 
 export interface MessageFormatOptions {
+  formatters?: (
+    | 'function'
+    | 'literal'
+    | 'term'
+    | 'variable'
+    | PatternFormatter
+  )[];
   localeMatcher?: 'best fit' | 'lookup';
   runtime?: Runtime;
 }
@@ -48,6 +55,7 @@ export class MessageFormat<
   R = string,
   P extends PatternElement = PatternElement
 > {
+  #formatters: PatternFormatter[];
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
   resources: Resource<P>[];
@@ -58,6 +66,14 @@ export class MessageFormat<
     options?: MessageFormatOptions | null,
     ...resources: Resource<P>[]
   ) {
+    this.#formatters =
+      options?.formatters?.map(fmtOpt => {
+        if (typeof fmtOpt === 'string') {
+          const fmt = patternFormatters.find(fmt => fmt.type === fmtOpt);
+          if (!fmt) throw new RangeError(`Unsupported pattern type: ${fmtOpt}`);
+          return fmt;
+        } else return fmtOpt;
+      }) ?? patternFormatters;
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales : [locales];
     this.resources = resources;
@@ -130,7 +146,7 @@ export class MessageFormat<
     const msg = this.getEntry(resId, msgPath);
     let res = '';
     if (isMessage(msg)) {
-      const ctx = this.createContext(patternFormatters, resId, scope);
+      const ctx = this.createContext(resId, scope);
       for (const fp of formatToParts(ctx, msg)) res += fp.toString();
     }
     return res;
@@ -153,7 +169,7 @@ export class MessageFormat<
     const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
     const msg = this.getEntry(resId, msgPath);
     return isMessage(msg)
-      ? formatToParts(this.createContext(patternFormatters, resId, scope), msg)
+      ? formatToParts(this.createContext(resId, scope), msg)
       : [];
   }
 
@@ -176,13 +192,9 @@ export class MessageFormat<
     };
   }
 
-  private createContext(
-    formatters: PatternFormatter[],
-    resId: string,
-    scope: Scope
-  ): Context {
+  private createContext(resId: string, scope: Scope): Context {
     const getFormatter = ({ type }: PatternElement) => {
-      const fmt = formatters.find(fmt => fmt.type === type);
+      const fmt = this.#formatters.find(fmt => fmt.type === type);
       if (fmt) return fmt;
       throw new Error(`Unsupported pattern element: ${type}`);
     };
@@ -202,7 +214,7 @@ export class MessageFormat<
       scope: scope
     };
 
-    for (const fmt of formatters) {
+    for (const fmt of this.#formatters) {
       if (typeof fmt.initContext === 'function')
         ctx[fmt.type] = fmt.initContext(this, resId);
     }
