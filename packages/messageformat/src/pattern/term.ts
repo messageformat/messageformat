@@ -100,6 +100,7 @@ function fallbackValue(ctx: Context, term: Term): string {
 }
 
 export const formatter: PatternFormatter = {
+  type: 'term',
   formatAsPart: formatTermAsPart,
   formatAsString: formatTermAsString,
   formatAsValue: formatTermAsValue,

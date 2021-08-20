@@ -121,6 +121,7 @@ export function resolveOptions(
 }
 
 export const formatter: PatternFormatter = {
+  type: 'function',
   formatAsPart: formatFunctionAsPart,
   formatAsString: formatFunctionAsString,
   formatAsValue: formatFunctionAsValue,

@@ -59,6 +59,7 @@ export function formatLiteralAsValue(
 }
 
 export const formatter: PatternFormatter = {
+  type: 'literal',
   formatAsPart: formatLiteralAsPart,
   formatAsString: formatLiteralAsValue,
   formatAsValue: formatLiteralAsValue

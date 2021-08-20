@@ -15,15 +15,16 @@ export interface Context {
 
 export function createContext<R>(
   mf: MessageFormat<R>,
-  formatters: Record<string, PatternFormatter>,
+  formatters: PatternFormatter[],
   resId: string,
   scope: Scope
 ): Context {
   const getFormatter = ({ type }: PatternElement) => {
-    const fmt = formatters[type];
+    const fmt = formatters.find(fmt => fmt.type === type);
     if (fmt) return fmt;
     throw new Error(`Unsupported pattern element: ${type}`);
   };
+
   const ctx: Context = {
     formatAsPart(part) {
       return getFormatter(part).formatAsPart(this, part);
@@ -38,9 +39,9 @@ export function createContext<R>(
     scope: scope
   };
 
-  for (const [key, fmt] of Object.entries(formatters)) {
+  for (const fmt of formatters) {
     if (typeof fmt.initContext === 'function')
-      ctx[key] = fmt.initContext(mf, resId);
+      ctx[fmt.type] = fmt.initContext(mf, resId);
   }
 
   return ctx;

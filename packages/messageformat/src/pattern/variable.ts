@@ -77,6 +77,7 @@ export function resolveArgument(
 }
 
 export const formatter: PatternFormatter = {
+  type: 'variable',
   formatAsPart: formatVariableAsPart,
   formatAsString: formatVariableAsString,
   formatAsValue: formatVariableAsValue

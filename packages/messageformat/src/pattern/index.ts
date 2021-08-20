@@ -9,15 +9,11 @@ import { formatter as term } from './term';
 import { formatter as variable } from './variable';
 
 export interface PatternFormatter {
+  type: string;
   formatAsPart(ctx: Context, part: PatternElement): FormattedPart;
   formatAsString(ctx: Context, part: PatternElement): string;
   formatAsValue(ctx: Context, part: PatternElement): unknown;
   initContext?: (mf: Readonly<MessageFormat>, resId: string) => unknown;
 }
 
-export const patternFormatters: Record<string, PatternFormatter> = {
-  function: functionFormatter,
-  literal,
-  term,
-  variable
-};
+export const patternFormatters = [literal, variable, functionFormatter, term];
