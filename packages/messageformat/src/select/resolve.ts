@@ -1,18 +1,25 @@
-import type { PatternElement, SelectMessage, Selector } from '../data-model';
+import {
+  isSelectMessage,
+  Message,
+  PatternElement,
+  Selector
+} from '../data-model';
 import type { Context } from '../format-context';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 
-export function resolveSelect(
+export function resolvePattern(
   ctx: Context,
-  select: SelectMessage,
+  msg: Message,
   onMeta?: (meta: FormattedSelectMeta) => void
 ): PatternElement[] {
-  const res = select.select.map(s => ({
+  if (!isSelectMessage(msg)) return msg.value;
+
+  const res = msg.select.map(s => ({
     value: resolveSelectorValue(ctx, s),
     default: s.default || 'other'
   }));
 
-  for (const { key, value } of select.cases) {
+  for (const { key, value } of msg.cases) {
     if (
       key.every((k, i) => {
         const r = res[i];
@@ -20,17 +27,20 @@ export function resolveSelect(
       })
     ) {
       if (onMeta) {
-        const meta = getFormattedSelectMeta(select, res, key);
+        const meta = getFormattedSelectMeta(msg, res, key);
         if (meta) onMeta(meta);
       }
       return value;
     }
   }
+
   return [];
 }
 
 function resolveSelectorValue(ctx: Context, { value }: Selector): string[] {
-  let res = ctx.formatPart(value).valueOf();
+  let res = ctx.formatAsValue(value);
+  if (res === undefined) return [ctx.formatAsString(value)];
+
   if (typeof res === 'number') {
     try {
       res = ctx.runtime.plural.call(ctx.locales, undefined, res);

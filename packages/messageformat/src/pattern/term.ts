@@ -1,8 +1,9 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { formatToParts } from '../format-to-parts';
+import { formatToParts, formatToString } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import { resolveOptions } from './function';
+import type { PatternFormatter } from './index';
 import type { Literal } from './literal';
 import { resolveArgument, Variable } from './variable';
 
@@ -28,7 +29,7 @@ export interface Term extends PatternElement {
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export function resolveTermPart(
+export function formatTermAsPart(
   ctx: Context,
   term: Term
 ): FormattedMessage | FormattedFallback {
@@ -43,11 +44,18 @@ export function resolveTermPart(
   }
 }
 
-export function resolveTermValue(ctx: Context, term: Term): string | undefined {
+export const formatTermAsString = (ctx: Context, term: Term): string =>
+  formatTermAsValue(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}';
+
+export function formatTermAsValue(
+  ctx: Context,
+  term: Term
+): string | undefined {
   const msg = getMessage(ctx, term);
-  if (!msg) return undefined;
-  const msgCtx = extendContext(ctx, term);
-  return formatToParts(msgCtx, msg).map(String).join('');
+  if (msg) {
+    const msgCtx = extendContext(ctx, term);
+    return formatToString(msgCtx, msg);
+  } else return undefined;
 }
 
 function getMessage(ctx: Context, { msg_path, res_id }: Term) {
@@ -67,7 +75,7 @@ function extendContext(prev: Context, { res_id, scope }: Term): Context {
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) => ctx.formatPart(v).valueOf();
+  const resolve = (v: Literal | Variable) => ctx.formatAsPart(v).valueOf();
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;
@@ -76,3 +84,9 @@ function fallbackValue(ctx: Context, term: Term): string {
   );
   return `-${name}(${scope.join(', ')})`;
 }
+
+export const formatter: PatternFormatter = {
+  formatAsPart: formatTermAsPart,
+  formatAsString: formatTermAsString,
+  formatAsValue: formatTermAsValue
+};

@@ -2,18 +2,20 @@ import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import type { FormattedPart } from '../formatted-part';
 
-import { resolveFunctionPart } from './function';
-import { resolveLiteralPart } from './literal';
-import { resolveTermPart } from './term';
-import { resolveVariablePart } from './variable';
+import { formatter as functionFormatter } from './function';
+import { formatter as literal } from './literal';
+import { formatter as term } from './term';
+import { formatter as variable } from './variable';
 
-export interface PatternHandler {
-  resolve(ctx: Context, part: PatternElement): FormattedPart;
+export interface PatternFormatter {
+  formatAsPart(ctx: Context, part: PatternElement): FormattedPart;
+  formatAsString(ctx: Context, part: PatternElement): string;
+  formatAsValue(ctx: Context, part: PatternElement): unknown;
 }
 
-export const patternHandlers: Record<string, PatternHandler> = {
-  function: { resolve: resolveFunctionPart },
-  literal: { resolve: resolveLiteralPart },
-  term: { resolve: resolveTermPart },
-  variable: { resolve: resolveVariablePart }
+export const patternFormatters: Record<string, PatternFormatter> = {
+  function: functionFormatter,
+  literal,
+  term,
+  variable
 };

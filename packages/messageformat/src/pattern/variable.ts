@@ -2,7 +2,8 @@ import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattedDynamic, FormattedFallback } from '../formatted-part';
 import type { RuntimeType } from '../runtime';
-import { isLiteral, Literal, resolveLiteralValue } from './literal';
+import type { PatternFormatter } from './index';
+import { isLiteral, Literal, formatLiteralAsValue } from './literal';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -28,32 +29,40 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function resolveVariablePart(
+export function formatVariableAsPart(
   ctx: Context,
   part: Variable
 ): FormattedDynamic | FormattedFallback {
-  const val = resolveVariableValue(ctx, part);
-  return val === undefined
-    ? new FormattedFallback(ctx.locales, fallbackValue(ctx, part), part.meta)
-    : new FormattedDynamic(ctx.locales, val, part.meta);
+  const val = formatVariableAsValue(ctx, part);
+  return val !== undefined
+    ? new FormattedDynamic(ctx.locales, val, part.meta)
+    : new FormattedFallback(ctx.locales, fallbackValue(ctx, part), part.meta);
+}
+
+export function formatVariableAsString(ctx: Context, part: Variable): string {
+  const val = formatVariableAsValue(ctx, part);
+  return val !== undefined ? String(val) : '{' + fallbackValue(ctx, part) + '}';
 }
 
 /** @returns `undefined` if value not found */
-export function resolveVariableValue(ctx: Context, part: Variable): unknown {
+export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
   const { var_path } = part;
   if (var_path.length === 0) return undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let val: unknown = ctx.scope;
   for (const p of var_path) {
-    if (!val || typeof val !== 'object') return undefined;
-    const arg = resolveArgument(ctx, p);
-    val = (val as Scope)[String(arg)];
+    try {
+      const arg = resolveArgument(ctx, p);
+      val = (val as Scope)[String(arg)];
+    } catch (_) {
+      // TODO: report error
+      return undefined;
+    }
   }
   return val;
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => ctx.formatPart(v).valueOf());
+  const path = var_path.map(v => ctx.formatAsPart(v).valueOf());
   return '$' + path.join('.');
 }
 
@@ -62,7 +71,13 @@ export function resolveArgument(
   part: PatternElement,
   expected?: RuntimeType
 ): unknown {
-  if (isLiteral(part)) return resolveLiteralValue(ctx, part, expected);
-  if (isVariable(part)) return resolveVariableValue(ctx, part);
+  if (isLiteral(part)) return formatLiteralAsValue(ctx, part, expected);
+  if (isVariable(part)) return formatVariableAsValue(ctx, part);
   throw new Error(`Unsupported argument: ${part}`);
 }
+
+export const formatter: PatternFormatter = {
+  formatAsPart: formatVariableAsPart,
+  formatAsString: formatVariableAsString,
+  formatAsValue: formatVariableAsValue
+};

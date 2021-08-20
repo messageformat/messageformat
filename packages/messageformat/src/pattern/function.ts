@@ -9,6 +9,7 @@ import {
   FormattedMessage
 } from '../formatted-part';
 import type { RuntimeType } from '../runtime';
+import type { PatternFormatter } from './index';
 import type { Literal } from './literal';
 import { resolveArgument, Variable } from './variable';
 
@@ -32,12 +33,12 @@ export interface Function extends PatternElement {
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function resolveFunctionPart(
+export function formatFunctionAsPart(
   ctx: Context,
   fn: Function
 ): FormattedDynamic | FormattedFallback | FormattedMessage {
   try {
-    const value = resolveFunctionValue(ctx, fn);
+    const value = callRuntimeFunction(ctx, fn);
     if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
       if (fn.meta) addMeta(value, fn.meta);
       return value as FormattedDynamic | FormattedFallback | FormattedMessage;
@@ -58,10 +59,25 @@ export function resolveFunctionPart(
   }
 }
 
-export function resolveFunctionValue(
-  ctx: Context,
-  { args, func, options }: Function
-): unknown {
+export function formatFunctionAsString(ctx: Context, fn: Function): string {
+  try {
+    return String(callRuntimeFunction(ctx, fn));
+  } catch (_) {
+    // TODO: report error
+    return '{' + fallbackValue(ctx, fn) + '}';
+  }
+}
+
+export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
+  try {
+    return callRuntimeFunction(ctx, fn);
+  } catch (_) {
+    // TODO: report error
+    return undefined;
+  }
+}
+
+function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
   const rf = ctx.runtime[func];
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
@@ -69,7 +85,7 @@ export function resolveFunctionValue(
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) => ctx.formatPart(v).valueOf();
+  const resolve = (v: Literal | Variable) => ctx.formatAsPart(v).valueOf();
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))
@@ -103,3 +119,9 @@ export function resolveOptions(
     }
   return opt;
 }
+
+export const formatter: PatternFormatter = {
+  formatAsPart: formatFunctionAsPart,
+  formatAsString: formatFunctionAsString,
+  formatAsValue: formatFunctionAsValue
+};
