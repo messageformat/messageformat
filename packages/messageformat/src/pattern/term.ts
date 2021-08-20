@@ -4,20 +4,7 @@ import { formatToParts } from '../format-to-parts';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import { resolveOptions } from './function';
 import type { Literal } from './literal';
-import type { Scope, Variable } from './variable';
-
-function extendContext(
-  prev: Context,
-  resId: string | undefined,
-  scope: Scope | undefined
-): Context {
-  const ctx = Object.assign({}, prev);
-  if (resId)
-    ctx.getMessage = (msgResId, msgPath) =>
-      prev.getMessage(msgResId || resId, msgPath);
-  if (scope) ctx.scope = scope;
-  return ctx;
-}
+import { resolveArgument, Variable } from './variable';
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -41,23 +28,42 @@ export interface Term extends PatternElement {
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export function resolveTerm(
+export function resolveTermPart(
   ctx: Context,
   term: Term
 ): FormattedMessage | FormattedFallback {
-  const { msg_path, res_id, scope } = term;
-  const strPath = msg_path.map(part => String(ctx.formatPart(part)));
-  const msg = ctx.getMessage(res_id, strPath);
-  if (!msg) {
+  const msg = getMessage(ctx, term);
+  if (msg) {
+    const msgCtx = extendContext(ctx, term);
+    const fmt = formatToParts(msgCtx, msg);
+    return new FormattedMessage(ctx.locales, fmt, term.meta);
+  } else {
     const fb = fallbackValue(ctx, term);
     return new FormattedFallback(ctx.locales, fb, term.meta);
   }
-  if (res_id || scope) {
-    const opt = scope ? resolveOptions(ctx, scope, 'any') : null;
-    const msgScope = Object.assign({}, ctx.scope, opt);
-    ctx = extendContext(ctx, res_id, msgScope);
-  }
-  return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
+}
+
+export function resolveTermValue(ctx: Context, term: Term): string | undefined {
+  const msg = getMessage(ctx, term);
+  if (!msg) return undefined;
+  const msgCtx = extendContext(ctx, term);
+  return formatToParts(msgCtx, msg).map(String).join('');
+}
+
+function getMessage(ctx: Context, { msg_path, res_id }: Term) {
+  const strPath = msg_path.map(part => String(resolveArgument(ctx, part)));
+  return ctx.getMessage(res_id, strPath);
+}
+
+function extendContext(prev: Context, { res_id, scope }: Term): Context {
+  if (!res_id && !scope) return prev;
+  const ctx = Object.assign({}, prev);
+  if (res_id)
+    ctx.getMessage = (msgResId, msgPath) =>
+      prev.getMessage(msgResId || res_id, msgPath);
+  if (scope)
+    ctx.scope = Object.assign({}, ctx.scope, resolveOptions(ctx, scope, 'any'));
+  return ctx;
 }
 
 function fallbackValue(ctx: Context, term: Term): string {

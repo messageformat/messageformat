@@ -2,7 +2,7 @@ import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattedDynamic, FormattedFallback } from '../formatted-part';
 import type { RuntimeType } from '../runtime';
-import { isLiteral, Literal } from './literal';
+import { isLiteral, Literal, resolveLiteralValue } from './literal';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -28,23 +28,28 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function resolveVariable(
+export function resolveVariablePart(
   ctx: Context,
   part: Variable
 ): FormattedDynamic | FormattedFallback {
-  const { var_path } = part;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let val: any = var_path.length > 0 ? ctx.scope : undefined;
-  for (const p of var_path) {
-    if (!val || typeof val !== 'object') {
-      val = undefined;
-      break;
-    }
-    val = val[String(resolveArgument(ctx, p))];
-  }
+  const val = resolveVariableValue(ctx, part);
   return val === undefined
     ? new FormattedFallback(ctx.locales, fallbackValue(ctx, part), part.meta)
     : new FormattedDynamic(ctx.locales, val, part.meta);
+}
+
+/** @returns `undefined` if value not found */
+export function resolveVariableValue(ctx: Context, part: Variable): unknown {
+  const { var_path } = part;
+  if (var_path.length === 0) return undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let val: unknown = ctx.scope;
+  for (const p of var_path) {
+    if (!val || typeof val !== 'object') return undefined;
+    const arg = resolveArgument(ctx, p);
+    val = (val as Scope)[String(arg)];
+  }
+  return val;
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
@@ -57,17 +62,7 @@ export function resolveArgument(
   part: PatternElement,
   expected?: RuntimeType
 ): unknown {
-  if (isLiteral(part)) {
-    const { value } = part;
-    switch (expected) {
-      case 'boolean':
-        return value === 'true' ? true : value === 'false' ? false : value;
-      case 'number':
-        return Number(value);
-      default:
-        return value;
-    }
-  }
-  if (isVariable(part)) return resolveVariable(ctx, part).valueOf();
-  throw new Error(`Unsupported function argument: ${part}`);
+  if (isLiteral(part)) return resolveLiteralValue(ctx, part, expected);
+  if (isVariable(part)) return resolveVariableValue(ctx, part);
+  throw new Error(`Unsupported argument: ${part}`);
 }

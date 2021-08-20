@@ -32,16 +32,12 @@ export interface Function extends PatternElement {
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function resolveFunction(
+export function resolveFunctionPart(
   ctx: Context,
   fn: Function
 ): FormattedDynamic | FormattedFallback | FormattedMessage {
-  const { args, func, options } = fn;
-  const rf = ctx.runtime[func];
-  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
-  const fnOpt = resolveOptions(ctx, options, rf?.options);
   try {
-    const value = rf.call(ctx.locales, fnOpt, ...fnArgs);
+    const value = resolveFunctionValue(ctx, fn);
     if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
       if (fn.meta) addMeta(value, fn.meta);
       return value as FormattedDynamic | FormattedFallback | FormattedMessage;
@@ -60,6 +56,16 @@ export function resolveFunction(
     });
     return fb;
   }
+}
+
+export function resolveFunctionValue(
+  ctx: Context,
+  { args, func, options }: Function
+): unknown {
+  const rf = ctx.runtime[func];
+  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnOpt = resolveOptions(ctx, options, rf?.options);
+  return rf.call(ctx.locales, fnOpt, ...fnArgs);
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
