@@ -32,6 +32,11 @@ export type FormatterToParts<T = string> = (
   msgScope?: Partial<Scope> | undefined
 ) => FormattedPart<T>[];
 
+
+export interface MessageFormatOptions {
+  runtime?: Runtime;
+}
+
 /**
  * Create a new message formatter.
  *
@@ -49,12 +54,12 @@ export class MessageFormat<
 
   constructor(
     locales: string | string[],
-    runtime?: Runtime | null,
+    options?: MessageFormatOptions | null,
     ...resources: Resource<P>[]
   ) {
     this.locales = Array.isArray(locales) ? locales : [locales];
     this.resources = resources;
-    this.runtime = runtime || defaultRuntime;
+    this.runtime = options?.runtime ?? defaultRuntime;
   }
 
   addResources(...resources: Resource<P>[]) {

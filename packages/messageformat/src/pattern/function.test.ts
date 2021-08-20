@@ -14,7 +14,7 @@ describe('Function returns primitive value', () => {
     const runtime: Runtime = {
       STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
     };
-    const mf = new MessageFormat('en', runtime, res);
+    const mf = new MessageFormat('en', { runtime }, res);
     expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
       { type: 'dynamic', value: '42' }
     ]);
@@ -27,7 +27,7 @@ describe('Function returns primitive value', () => {
     const runtime: Runtime = {
       NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
     };
-    const mf = new MessageFormat('en', runtime, res);
+    const mf = new MessageFormat('en', { runtime }, res);
     expect(mf.formatToParts('msg', { var: '42' })).toMatchObject([
       { type: 'dynamic', value: 42 }
     ]);
@@ -46,7 +46,7 @@ describe('Function returns Formatted value', () => {
         options: 'never'
       }
     };
-    const mf = new MessageFormat('en', runtime, res);
+    const mf = new MessageFormat('en', { runtime }, res);
     expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
       { type: 'dynamic', value: '42', meta: { foo: 'FOO' } }
     ]);
@@ -69,7 +69,7 @@ describe('Type casts based on runtime', () => {
       useGrouping: { type: 'literal', value: 'false' }
     };
 
-    const mf = new MessageFormat('en', fluentRuntime, res);
+    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     expect(mf.format('true', { var: 1234 })).toBe('1,234');
     expect(mf.format('false', { var: 1234 })).toBe('1234');
   });
@@ -86,7 +86,7 @@ describe('Type casts based on runtime', () => {
       }
     };
 
-    const mf = new MessageFormat('en', fluentRuntime, res);
+    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     expect(mf.format('msg', { var: 1234, useGrouping: 'false' })).toBe('1,234');
     expect(mf.format('msg', { var: 1234, useGrouping: false })).toBe('1234');
   });

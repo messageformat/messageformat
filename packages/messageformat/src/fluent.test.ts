@@ -278,7 +278,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale });
-      mf = new MessageFormat(locale, fluentRuntime, res);
+      mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
     });
 
     for (const { msg, scope, exp, only } of tests) {
@@ -315,7 +315,7 @@ describe('formatToParts', () => {
     let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
-      mf = new MessageFormat('en', fluentRuntime, res);
+      mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 
     test('defined formatted variable', () => {
@@ -382,7 +382,7 @@ describe('formatToParts', () => {
     let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       res = compileFluent(src, { id: 'res', locale: 'en' });
-      mf = new MessageFormat('en', fluentRuntime, res);
+      mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 
     test('Resource comments', () => {
@@ -451,7 +451,7 @@ describe('formatToParts', () => {
     let mf: MessageFormat<string, Literal | Variable | Function | Term>;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
-      mf = new MessageFormat('en', fluentRuntime, res);
+      mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 
     test('case with match', () => {

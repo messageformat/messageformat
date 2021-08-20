@@ -220,7 +220,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
         }
       }
     };
-    const mf = new MessageFormat('nl', runtime, res);
+    const mf = new MessageFormat('nl', { runtime }, res);
 
     const msg1 = mf.format('msg', { range: { start: 0, end: 1 } });
     expect(msg1).toBe('0 - 1 dag');
@@ -300,7 +300,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
         }
       }
     };
-    const mf = new MessageFormat('nl', runtime, res);
+    const mf = new MessageFormat('nl', { runtime }, res);
 
     const msg1 = mf.format('msg', { start: 0, end: 1 });
     expect(msg1).toBe('0 - 1 dag');
@@ -416,7 +416,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       } a day.
     `;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
-    const mf = new MessageFormat('en', fluentRuntime, res);
+    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
     const msg: any = mf.getEntry('res', 'activity-needed-calculation-plural');
     expect(msg.select).toHaveLength(4);
@@ -470,7 +470,7 @@ maybe('List formatting', () => {
       or-other = { LIST($list, "another vehicle", type: "disjunction") }
     `;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
-    const mf = new MessageFormat('en', runtime, res);
+    const mf = new MessageFormat('en', { runtime }, res);
     const list = ['Motorcycle', 'Bus', 'Car'];
 
     const plainMsg = mf.format('plain', { list });
@@ -530,7 +530,7 @@ maybe('List formatting', () => {
       }
     `;
     const res = compileFluent(src, { id: 'res', locale: 'ro' });
-    const mf = new MessageFormat('ro', runtime, res);
+    const mf = new MessageFormat('ro', { runtime }, res);
 
     const list1 = ['Petre'];
     const msg1 = mf.format('msg', {
@@ -592,7 +592,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     qux = { baz } ... { $other }
   `;
   const res = compileFluent(src, { id: 'res', locale: 'en' });
-  const mf = new MessageFormat('en', fluentRuntime, res);
+  const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
   test('Match, no change', () => {
     const parts = mf.formatToParts('foo', { foo: 'foo', other: 'other' });
