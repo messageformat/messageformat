@@ -33,7 +33,7 @@ export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
 export function resolveTerm<R, S>(
-  ctx: Context<R, S>,
+  ctx: Context,
   term: Term
 ): FormattedMessage<R | S | string> | FormattedFallback {
   const { msg_path, res_id, scope } = term;
@@ -47,12 +47,12 @@ export function resolveTerm<R, S>(
     const opt = scope ? resolveOptions(ctx, scope, 'any') : null;
     const msgScope = Object.assign({}, ctx.scope, opt);
     // Let's not check typings of Term scope overrides
-    ctx = extendContext(ctx, res_id, msgScope) as Context<R, S>;
+    ctx = extendContext(ctx, res_id, msgScope) as Context;
   }
   return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
 }
 
-function fallbackValue(ctx: Context<unknown, unknown>, term: Term): string {
+function fallbackValue(ctx: Context, term: Term): string {
   const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;

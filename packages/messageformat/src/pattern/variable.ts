@@ -12,8 +12,8 @@ import type { Literal } from './literal';
  * A representation of the parameters/arguments passed to a message formatter.
  * Used by the Variable resolver, and may be extended in a Term.
  */
-export interface Scope<S = unknown> {
-  [key: string]: S;
+export interface Scope {
+  [key: string]: unknown;
 }
 
 /**
@@ -32,8 +32,8 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function resolveVariable<R, S>(
-  ctx: Context<R, S>,
+export function resolveVariable<S>(
+  ctx: Context,
   part: Variable
 ): FormattedDynamic<S> | FormattedFallback {
   const { var_path } = part;
@@ -44,17 +44,14 @@ export function resolveVariable<R, S>(
       val = undefined;
       break;
     }
-    val = val[resolveArgument(ctx, p)];
+    val = val[String(resolveArgument(ctx, p))];
   }
   return val === undefined
     ? new FormattedFallback(ctx.locales, fallbackValue(ctx, part), part.meta)
     : new FormattedDynamic(ctx.locales, val, part.meta);
 }
 
-function fallbackValue(
-  ctx: Context<unknown, unknown>,
-  { var_path }: Variable
-): string {
+function fallbackValue(ctx: Context, { var_path }: Variable): string {
   const path = var_path.map(v => resolvePart(ctx, v).valueOf());
   return '$' + path.join('.');
 }

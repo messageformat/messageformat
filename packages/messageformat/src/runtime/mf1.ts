@@ -5,7 +5,7 @@ import {
   time as timeFmt
 } from '@messageformat/runtime/lib/formatters';
 import { runtime as MF2 } from './default';
-import type { Runtime, RuntimeFunction, RuntimeOptions } from './index';
+import type { RuntimeFunction, RuntimeOptions } from './index';
 
 const asLiteral = (arg: unknown) =>
   typeof arg === 'number' || typeof arg === 'string' ? arg : String(arg);
@@ -81,7 +81,7 @@ export const time: RuntimeFunction<string> = {
   options: { param: ['short', 'default', 'long', 'full'] }
 };
 
-export const runtime: Runtime<string> = {
+export const runtime = {
   select: { plural },
   format: { date, duration, number, time }
 };

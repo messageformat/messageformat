@@ -95,21 +95,21 @@ export function addMeta(fmt: Formatted<unknown>, meta: Meta) {
   }
 }
 
-export function formatToString<R, S>(ctx: Context<R, S>, msg: Message) {
+export function formatToString(ctx: Context, msg: Message) {
   let res = '';
   for (const fp of formatToParts(ctx, msg)) res += fp.toString();
   return res;
 }
 
 export function formatToParts<R, S>(
-  ctx: Context<R, S>,
+  ctx: Context,
   msg: Message
 ): FormattedPart<R | S | string>[] {
   let fsm: FormattedSelectMeta | null = null;
   const pattern = isSelectMessage(msg)
     ? resolveSelect(ctx, msg, _fsm => (fsm = _fsm))
     : msg.value;
-  const res = pattern.map(part => resolvePart(ctx, part));
+  const res = pattern.map(part => resolvePart<R, S>(ctx, part));
   if (msg.meta || fsm) {
     const fm = new FormattedMessage<R | S | string>(ctx.locales, res, msg.meta);
     if (fsm) addMeta(fm, fsm);
@@ -118,7 +118,7 @@ export function formatToParts<R, S>(
 }
 
 export function resolvePart<R, S>(
-  ctx: Context<R, S>,
+  ctx: Context,
   part: PatternElement
 ):
   | FormattedDynamic<R | S>
@@ -134,8 +134,8 @@ export function resolvePart<R, S>(
   throw new Error(`Unsupported part: ${part}`);
 }
 
-export function resolveArgument<R, S>(
-  ctx: Context<R, S>,
+export function resolveArgument<S>(
+  ctx: Context,
   part: PatternElement,
   expected?: RuntimeType
 ): string | number | boolean | S {
@@ -150,12 +150,12 @@ export function resolveArgument<R, S>(
         return value;
     }
   }
-  if (isVariable(part)) return resolveVariable(ctx, part).valueOf();
+  if (isVariable(part)) return resolveVariable<S>(ctx, part).valueOf();
   throw new Error(`Unsupported function argument: ${part}`);
 }
 
-export function resolveOptions<R, S>(
-  ctx: Context<R, S>,
+export function resolveOptions<S>(
+  ctx: Context,
   options: Record<string, Literal | Variable> | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
@@ -168,7 +168,7 @@ export function resolveOptions<R, S>(
     for (const [key, value] of Object.entries(options)) {
       const exp = getExpected(key);
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = resolveArgument(ctx, value, exp);
+      const res = resolveArgument<S>(ctx, value, exp);
 
       if (
         exp === 'any' ||
@@ -181,8 +181,8 @@ export function resolveOptions<R, S>(
   return opt;
 }
 
-function resolveSelect<R, S>(
-  ctx: Context<R, S>,
+function resolveSelect(
+  ctx: Context,
   select: SelectMessage,
   onMeta?: (meta: FormattedSelectMeta) => void
 ): PatternElement[] {
@@ -208,10 +208,7 @@ function resolveSelect<R, S>(
   return [];
 }
 
-function resolveSelectorValue<R, S>(
-  ctx: Context<R, S>,
-  { value }: Selector
-): string[] {
+function resolveSelectorValue(ctx: Context, { value }: Selector): string[] {
   if (isFunction(value)) {
     const { args, func, options } = value;
     const fn = ctx.runtime.select[func];

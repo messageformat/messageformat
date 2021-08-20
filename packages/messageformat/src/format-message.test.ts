@@ -27,7 +27,7 @@ describe('Function returns primitive value', () => {
   test('number', () => {
     const src = `msg = { NUMERIC($var) }\n`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
-    const runtime: Runtime<number> = {
+    const runtime: Runtime = {
       format: {
         NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
       },

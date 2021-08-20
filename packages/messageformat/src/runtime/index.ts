@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { FormattedPart } from '../format-message';
-
 export { runtime as defaultRuntime } from './default';
 export { runtime as fluentRuntime } from './fluent';
 export { runtime as mf1Runtime } from './mf1';
@@ -18,9 +16,9 @@ export { runtime as mf1Runtime } from './mf1';
  * functions.
  */
 
-export interface Runtime<R = string> {
+export interface Runtime {
   select: { [key: string]: RuntimeFunction<string[]> };
-  format: { [key: string]: RuntimeFunction<R | FormattedPart<R>> };
+  format: { [key: string]: RuntimeFunction<unknown> };
 }
 
 export interface RuntimeFunction<T> {

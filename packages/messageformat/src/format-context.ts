@@ -1,26 +1,22 @@
-import { isMessage, Message, PatternElement } from './data-model';
+import { isMessage, Message } from './data-model';
 import type { MessageFormat } from './messageformat';
 import type { Scope } from './pattern/variable';
 import type { Runtime } from './runtime';
 
-export interface Context<R, S> {
-  getMessage(
-    resId: string | undefined,
-    msgPath: string[]
-  ): Message<PatternElement> | null;
+export interface Context {
+  getMessage(resId: string | undefined, msgPath: string[]): Message | null;
   locales: string[];
-  runtime: Runtime<R>;
-  scope: Scope<S>;
-  select?: boolean;
+  runtime: Runtime;
+  scope: Scope;
 }
 
-export function createContext<R, S>(
+export function createContext<R>(
   mf: MessageFormat<R>,
   resId: string,
-  scope: Scope<S>
-): Context<R, S> {
+  scope: Scope
+): Context {
   return {
-    getMessage: (msgResId, msgPath) => {
+    getMessage(msgResId, msgPath) {
       const msg = mf.getEntry(msgResId || resId, msgPath);
       return isMessage(msg) ? msg : null;
     },
@@ -30,13 +26,12 @@ export function createContext<R, S>(
   };
 }
 
-export function extendContext<R, S>(
-  prev: Context<R, S>,
+export function extendContext(
+  prev: Context,
   resId: string | undefined,
-  scope: Scope<S> | undefined
-): Context<R, S> {
+  scope: Scope | undefined
+): Context {
   const ctx = Object.assign({}, prev);
-  delete ctx.select;
   if (resId)
     ctx.getMessage = (msgResId, msgPath) =>
       prev.getMessage(msgResId || resId, msgPath);

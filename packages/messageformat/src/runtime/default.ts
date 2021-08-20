@@ -1,4 +1,4 @@
-import { Runtime, RuntimeFunction, RuntimeOptions } from './index';
+import type { RuntimeFunction, RuntimeOptions } from './index';
 
 export const datetime: RuntimeFunction<string> = {
   call: function datetime(
@@ -96,7 +96,7 @@ export const plural: RuntimeFunction<string[]> = {
   }
 };
 
-export const runtime: Runtime<string> = {
+export const runtime = {
   select: { plural },
   format: { datetime, number }
 };

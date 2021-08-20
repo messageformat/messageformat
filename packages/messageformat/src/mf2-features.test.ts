@@ -462,10 +462,10 @@ maybe('List formatting', () => {
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
     }
-    const runtime: Runtime = {
+    const runtime = {
       select: fluentRuntime.select,
       format: Object.assign(
-        { LIST: { call: LIST, options: 'any' } },
+        { LIST: { call: LIST, options: 'any' as const } },
         fluentRuntime.format
       )
     };
@@ -497,7 +497,10 @@ maybe('List formatting', () => {
     const runtime: Runtime = {
       select: fluentRuntime.select,
       format: Object.assign(
-        { dative: { call: dative }, LIST: { call: LIST, options: 'any' } },
+        {
+          dative: { call: dative, options: 'never' as const },
+          LIST: { call: LIST, options: 'any' as const }
+        },
         fluentRuntime.format
       )
     };
@@ -523,9 +526,7 @@ maybe('List formatting', () => {
         const fn = runtime.format[options.each];
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
-        list = list.map(li =>
-          String(fn.call(locales, undefined, li).valueOf())
-        );
+        list = list.map(li => String(fn.call(locales, undefined, li)));
       }
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);

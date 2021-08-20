@@ -35,7 +35,7 @@ export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
 export function resolveFormatFunction<R, S>(
-  ctx: Context<R, S>,
+  ctx: Context,
   fn: Function
 ): FormattedDynamic<R> | FormattedFallback | FormattedMessage<R | S | string> {
   const { args, func, options } = fn;
@@ -67,7 +67,7 @@ export function resolveFormatFunction<R, S>(
   }
 }
 
-function fallbackValue(ctx: Context<unknown, unknown>, fn: Function) {
+function fallbackValue(ctx: Context, fn: Function) {
   const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
   const args = fn.args.map(resolve);
   if (fn.options)
