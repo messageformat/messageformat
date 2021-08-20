@@ -8,7 +8,7 @@ import {
   FormattedLiteral,
   FormattedMessage
 } from '../formatted-part';
-import type { RuntimeType } from '../runtime';
+import type { Runtime, RuntimeType } from '../runtime';
 import type { PatternFormatter } from './index';
 import type { Literal } from './literal';
 import { resolveArgument, Variable } from './variable';
@@ -78,7 +78,7 @@ export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
 }
 
 function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
-  const rf = ctx.runtime[func];
+  const rf = (ctx.function as Runtime)[func];
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   return rf.call(ctx.locales, fnOpt, ...fnArgs);
@@ -123,5 +123,6 @@ export function resolveOptions(
 export const formatter: PatternFormatter = {
   formatAsPart: formatFunctionAsPart,
   formatAsString: formatFunctionAsString,
-  formatAsValue: formatFunctionAsValue
+  formatAsValue: formatFunctionAsValue,
+  initContext: mf => mf.runtime
 };

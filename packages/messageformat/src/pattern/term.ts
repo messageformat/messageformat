@@ -1,4 +1,4 @@
-import type { PatternElement } from '../data-model';
+import { isMessage, Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
@@ -24,6 +24,15 @@ export interface Term extends PatternElement {
   msg_path: (Literal | Variable)[];
   scope?: Record<string, Literal | Variable>;
 }
+
+interface TermContext extends Context {
+  term: {
+    get(resId: string | undefined, msgPath: string[]): Message | null;
+  };
+}
+
+const isTermContext = (ctx: Context): ctx is TermContext =>
+  typeof ctx.term === 'object' && !!ctx.term;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isTerm = (part: any): part is Term =>
@@ -60,18 +69,23 @@ export function formatTermAsValue(
 
 function getMessage(ctx: Context, { msg_path, res_id }: Term) {
   const strPath = msg_path.map(part => String(resolveArgument(ctx, part)));
-  return ctx.getMessage(res_id, strPath);
+  return isTermContext(ctx) ? ctx.term.get(res_id, strPath) : null;
 }
 
 function extendContext(prev: Context, { res_id, scope }: Term): Context {
-  if (!res_id && !scope) return prev;
-  const ctx = Object.assign({}, prev);
-  if (res_id)
-    ctx.getMessage = (msgResId, msgPath) =>
-      prev.getMessage(msgResId || res_id, msgPath);
-  if (scope)
-    ctx.scope = Object.assign({}, ctx.scope, resolveOptions(ctx, scope, 'any'));
-  return ctx;
+  if (isTermContext(prev) && (res_id || scope)) {
+    const ctx = Object.assign({}, prev);
+    if (res_id)
+      ctx.term.get = (msgResId, msgPath) =>
+        prev.term.get(msgResId || res_id, msgPath);
+    if (scope)
+      ctx.scope = Object.assign(
+        {},
+        ctx.scope,
+        resolveOptions(ctx, scope, 'any')
+      );
+    return ctx;
+  } else return prev;
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
@@ -88,5 +102,12 @@ function fallbackValue(ctx: Context, term: Term): string {
 export const formatter: PatternFormatter = {
   formatAsPart: formatTermAsPart,
   formatAsString: formatTermAsString,
-  formatAsValue: formatTermAsValue
+  formatAsValue: formatTermAsValue,
+  initContext: (mf, resId) =>
+    <TermContext['term']>{
+      get(msgResId, msgPath) {
+        const msg = mf.getEntry(msgResId || resId, msgPath);
+        return isMessage(msg) ? msg : null;
+      }
+    }
 };

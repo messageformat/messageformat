@@ -5,6 +5,7 @@ import {
   Selector
 } from '../data-model';
 import type { Context } from '../format-context';
+import { plural } from '../runtime/default';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 
 export function resolvePattern(
@@ -43,7 +44,7 @@ function resolveSelectorValue(ctx: Context, { value }: Selector): string[] {
 
   if (typeof res === 'number') {
     try {
-      res = ctx.runtime.plural.call(ctx.locales, undefined, res);
+      res = plural.call(ctx.locales, undefined, res);
     } catch (_) {
       // TODO: report error
     }
