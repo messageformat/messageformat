@@ -29,6 +29,7 @@ import type { Function } from './pattern/function';
 import type { Literal } from './pattern/literal';
 import type { Term } from './pattern/term';
 import type { Variable } from './pattern/variable';
+import { validate } from './validate';
 
 type TestCase = {
   locale?: string;
@@ -292,7 +293,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const _test = only ? test.only : test;
       _test(name, () => {
-        //console.log(mf.formatToParts(msg, scope));
+        validate(mf.resources, fluentRuntime);
         const res = mf.format(msg, scope);
         if (exp instanceof RegExp) expect(res).toMatch(exp);
         else expect(res).toBe(exp);

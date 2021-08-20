@@ -1,5 +1,6 @@
 import { compileMF1 } from '@messageformat/compiler';
 import { MessageFormat, mf1Runtime } from 'messageformat';
+import { validate } from './validate';
 
 export type TestCase = {
   locale?: string;
@@ -379,6 +380,7 @@ for (const [title, cases] of Object.entries(testCases)) {
             const mf = new MessageFormat(locale, { runtime: mf1Runtime });
             const ast = compileMF1({ msg: src }, { id: 'res', locale });
             mf.addResources(ast);
+            validate([ast], mf1Runtime);
             const msg = mf.format(
               'res',
               ['msg'],
