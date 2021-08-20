@@ -9,5 +9,7 @@ export interface Context {
   localeMatcher: 'best fit' | 'lookup';
   locales: string[];
   scope: Scope;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  stringify(value: any): string;
   [key: string]: unknown;
 }

@@ -60,7 +60,7 @@ export function formatFunctionAsPart(
 
 export function formatFunctionAsString(ctx: Context, fn: Function): string {
   try {
-    return String(callRuntimeFunction(ctx, fn));
+    return ctx.stringify(callRuntimeFunction(ctx, fn));
   } catch (_) {
     // TODO: report error
     return '{' + fallbackValue(ctx, fn) + '}';
@@ -84,7 +84,7 @@ function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) => ctx.formatAsString(v);
+  const resolve = (v: Literal | Variable) => ctx.formatAsValue(v);
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))

@@ -6,7 +6,7 @@ import {
   Resource
 } from './data-model';
 import type { Context } from './format-context';
-import { formatToParts } from './format-message';
+import { formatToParts, formatToString } from './format-message';
 import { FormattedPart } from './formatted-part';
 import { PatternFormatter, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
@@ -147,7 +147,7 @@ export class MessageFormat<
     let res = '';
     if (isMessage(msg)) {
       const ctx = this.createContext(resId, scope);
-      for (const fp of formatToParts(ctx, msg)) res += fp.toString();
+      for (const fs of formatToString(ctx, msg)) res += fs;
     }
     return res;
   }
@@ -211,7 +211,13 @@ export class MessageFormat<
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
-      scope: scope
+      scope: scope,
+      stringify: value =>
+        value && typeof value.toLocaleString === 'function'
+          ? value.toLocaleString(this.#locales, {
+              localeMatcher: this.#localeMatcher
+            })
+          : String(value)
     };
 
     for (const fmt of this.#formatters) {

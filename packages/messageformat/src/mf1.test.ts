@@ -9,6 +9,7 @@ export type TestCase = {
     Record<string, string | number | Date> | (string | number)[] | undefined,
     string | RegExp
   ][];
+  only?: boolean;
 };
 
 export const testCases: Record<string, TestCase[]> = {
@@ -356,7 +357,7 @@ export const testCases: Record<string, TestCase[]> = {
 
 for (const [title, cases] of Object.entries(testCases)) {
   describe(title, () => {
-    for (const { locale = 'en', options, src, exp } of cases) {
+    for (const { locale = 'en', options, src, exp, only } of cases) {
       let name = src;
       if (locale || options) {
         const opt = [locale];
@@ -365,7 +366,8 @@ for (const [title, cases] of Object.entries(testCases)) {
         name = `[${opt.join(', ')}] ${src}`;
       }
 
-      describe(name, () => {
+      const _describe = only ? describe.only : describe;
+      _describe(name, () => {
         for (const [param, res] of exp) {
           const strParam = [];
           if (param && typeof param === 'object')

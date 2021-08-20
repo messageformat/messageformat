@@ -39,7 +39,9 @@ export function formatVariableAsPart(
 
 export function formatVariableAsString(ctx: Context, part: Variable): string {
   const val = formatVariableAsValue(ctx, part);
-  return val !== undefined ? String(val) : '{' + fallbackValue(ctx, part) + '}';
+  return val !== undefined
+    ? ctx.stringify(val)
+    : '{' + fallbackValue(ctx, part) + '}';
 }
 
 /** @returns `undefined` if value not found */
@@ -60,7 +62,7 @@ export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => ctx.formatAsString(v));
+  const path = var_path.map(v => ctx.formatAsValue(v));
   return '$' + path.join('.');
 }
 
