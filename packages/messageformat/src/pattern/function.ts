@@ -8,7 +8,7 @@ import {
   FormattedLiteral,
   FormattedMessage
 } from '../formatted-part';
-import type { Runtime, RuntimeType } from '../runtime';
+import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { PatternFormatter } from './index';
 import type { Literal } from './literal';
 import { resolveArgument, Variable } from './variable';
@@ -93,12 +93,12 @@ function fallbackValue(ctx: Context, fn: Function) {
   return `${fn.func}(${args.join(', ')})`;
 }
 
-export function resolveOptions(
+function resolveOptions(
   ctx: Context,
   options: Record<string, Literal | Variable> | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
-  const opt: Record<string, unknown> = {};
+  const opt: RuntimeOptions = { localeMatcher: ctx.localeMatcher };
   const getExpected =
     !expected || typeof expected === 'string' || Array.isArray(expected)
       ? () => expected

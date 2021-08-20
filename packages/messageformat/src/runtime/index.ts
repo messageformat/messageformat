@@ -32,4 +32,7 @@ export type RuntimeType =
   | 'never'
   | string[];
 
-export type RuntimeOptions = Record<string, unknown>;
+export interface RuntimeOptions {
+  localeMatcher: 'best fit' | 'lookup';
+  [key: string]: unknown;
+}

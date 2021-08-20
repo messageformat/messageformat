@@ -2,7 +2,6 @@ import { isMessage, Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
-import { resolveOptions } from './function';
 import type { PatternFormatter } from './index';
 import type { Literal } from './literal';
 import { resolveArgument, Variable } from './variable';
@@ -78,12 +77,11 @@ function extendContext(prev: Context, { res_id, scope }: Term): Context {
     if (res_id)
       ctx.term.get = (msgResId, msgPath) =>
         prev.term.get(msgResId || res_id, msgPath);
-    if (scope)
-      ctx.scope = Object.assign(
-        {},
-        ctx.scope,
-        resolveOptions(ctx, scope, 'any')
-      );
+    if (scope) {
+      ctx.scope = Object.assign({}, ctx.scope);
+      for (const [key, value] of Object.entries(scope))
+        ctx.scope[key] = resolveArgument(ctx, value);
+    }
     return ctx;
   } else return prev;
 }

@@ -5,10 +5,10 @@ import {
   PatternElement,
   Resource
 } from './data-model';
-import { createContext } from './format-context';
+import type { Context } from './format-context';
 import { formatToParts } from './format-message';
 import { FormattedPart } from './formatted-part';
-import { patternFormatters } from './pattern';
+import { PatternFormatter, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
 import { defaultRuntime, Runtime } from './runtime';
 
@@ -32,8 +32,8 @@ export type FormatterToParts<T = string> = (
   msgScope?: Partial<Scope> | undefined
 ) => FormattedPart<T>[];
 
-
 export interface MessageFormatOptions {
+  localeMatcher?: 'best fit' | 'lookup';
   runtime?: Runtime;
 }
 
@@ -48,7 +48,8 @@ export class MessageFormat<
   R = string,
   P extends PatternElement = PatternElement
 > {
-  locales: string[];
+  #localeMatcher: 'best fit' | 'lookup';
+  #locales: string[];
   resources: Resource<P>[];
   runtime: Runtime;
 
@@ -57,7 +58,8 @@ export class MessageFormat<
     options?: MessageFormatOptions | null,
     ...resources: Resource<P>[]
   ) {
-    this.locales = Array.isArray(locales) ? locales : [locales];
+    this.#localeMatcher = options?.localeMatcher ?? 'best fit';
+    this.#locales = Array.isArray(locales) ? locales : [locales];
     this.resources = resources;
     this.runtime = options?.runtime ?? defaultRuntime;
   }
@@ -128,7 +130,7 @@ export class MessageFormat<
     const msg = this.getEntry(resId, msgPath);
     let res = '';
     if (isMessage(msg)) {
-      const ctx = createContext<R>(this, patternFormatters, resId, scope);
+      const ctx = this.createContext(patternFormatters, resId, scope);
       for (const fp of formatToParts(ctx, msg)) res += fp.toString();
     }
     return res;
@@ -151,10 +153,7 @@ export class MessageFormat<
     const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
     const msg = this.getEntry(resId, msgPath);
     return isMessage(msg)
-      ? formatToParts(
-          createContext<R>(this, patternFormatters, resId, scope),
-          msg
-        )
+      ? formatToParts(this.createContext(patternFormatters, resId, scope), msg)
       : [];
   }
 
@@ -167,6 +166,48 @@ export class MessageFormat<
       }
     }
     return undefined;
+  }
+
+  resolvedOptions() {
+    return {
+      localeMatcher: this.#localeMatcher,
+      locales: this.#locales.slice(),
+      runtime: Object.freeze(this.runtime)
+    };
+  }
+
+  private createContext(
+    formatters: PatternFormatter[],
+    resId: string,
+    scope: Scope
+  ): Context {
+    const getFormatter = ({ type }: PatternElement) => {
+      const fmt = formatters.find(fmt => fmt.type === type);
+      if (fmt) return fmt;
+      throw new Error(`Unsupported pattern element: ${type}`);
+    };
+
+    const ctx: Context = {
+      formatAsPart(part) {
+        return getFormatter(part).formatAsPart(this, part);
+      },
+      formatAsString(part) {
+        return getFormatter(part).formatAsString(this, part);
+      },
+      formatAsValue(part) {
+        return getFormatter(part).formatAsValue(this, part);
+      },
+      localeMatcher: this.#localeMatcher,
+      locales: this.#locales,
+      scope: scope
+    };
+
+    for (const fmt of formatters) {
+      if (typeof fmt.initContext === 'function')
+        ctx[fmt.type] = fmt.initContext(this, resId);
+    }
+
+    return ctx;
   }
 
   private parseArgs(

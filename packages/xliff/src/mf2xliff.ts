@@ -27,8 +27,9 @@ export function mf2xliff(
   };
   const elements: X.File[] = [];
   if (source instanceof MessageFormat) {
-    attributes.srcLang = source.locales[0];
-    if (target instanceof MessageFormat) attributes.trgLang = target.locales[0];
+    attributes.srcLang = source.resolvedOptions().locales[0];
+    if (target instanceof MessageFormat)
+      attributes.trgLang = target.resolvedOptions().locales[0];
     else if (target)
       throw new Error('source and target must be of the same type');
     for (const sr of source.resources) {
