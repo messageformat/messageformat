@@ -1,10 +1,7 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import {
-  FormattedDynamic,
-  FormattedFallback,
-  resolvePart
-} from '../format-message';
+import { resolvePart } from '../format-message';
+import { FormattedDynamic, FormattedFallback } from '../formatted-part';
 import type { RuntimeType } from '../runtime';
 import { isLiteral, Literal } from './literal';
 

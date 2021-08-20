@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { FormattedLiteral } from '../format-message';
+import { FormattedLiteral } from '../formatted-part';
 
 /**
  * An immediately defined value.

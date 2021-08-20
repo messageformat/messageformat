@@ -3,7 +3,7 @@ import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
 
 import { fluentRuntime, MessageFormat, Runtime } from './index';
-import { FormattedDynamic } from './format-message';
+import { FormattedDynamic } from './formatted-part';
 
 describe('Function returns primitive value', () => {
   test('string', () => {

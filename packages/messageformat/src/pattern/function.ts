@@ -1,14 +1,14 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
+import { resolvePart } from '../format-message';
 import {
   addMeta,
   Formatted,
   FormattedDynamic,
   FormattedFallback,
   FormattedLiteral,
-  FormattedMessage,
-  resolvePart
-} from '../format-message';
+  FormattedMessage
+} from '../formatted-part';
 import type { RuntimeType } from '../runtime';
 import type { Literal } from './literal';
 import { resolveArgument, Variable } from './variable';

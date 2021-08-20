@@ -6,7 +6,7 @@ export type {
   FormattedLiteral,
   FormattedMessage,
   FormattedPart
-} from './format-message';
+} from './formatted-part';
 export { MessageFormat } from './messageformat';
 export { isFunction, Function } from './pattern/function';
 export { isLiteral, Literal } from './pattern/literal';

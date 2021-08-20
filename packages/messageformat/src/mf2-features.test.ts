@@ -14,7 +14,7 @@ import {
   FormattedDynamic,
   FormattedFallback,
   FormattedLiteral
-} from './format-message';
+} from './formatted-part';
 import type { Function } from './pattern/function';
 import type { Literal } from './pattern/literal';
 import type { Term } from './pattern/term';

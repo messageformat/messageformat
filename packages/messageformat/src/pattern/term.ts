@@ -1,11 +1,7 @@
 import type { PatternElement } from '../data-model';
 import { Context, extendContext } from '../format-context';
-import {
-  FormattedFallback,
-  FormattedMessage,
-  formatToParts,
-  resolvePart
-} from '../format-message';
+import { formatToParts, resolvePart } from '../format-message';
+import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import { resolveOptions } from './function';
 import type { Literal } from './literal';
 import type { Variable } from './variable';
