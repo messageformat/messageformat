@@ -12,10 +12,7 @@ describe('Function returns primitive value', () => {
     `;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
-      format: {
-        STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
-      },
-      select: {}
+      STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
     };
     const mf = new MessageFormat('en', runtime, res);
     expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
@@ -28,10 +25,7 @@ describe('Function returns primitive value', () => {
     const src = `msg = { NUMERIC($var) }\n`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
-      format: {
-        NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
-      },
-      select: {}
+      NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
     };
     const mf = new MessageFormat('en', runtime, res);
     expect(mf.formatToParts('msg', { var: '42' })).toMatchObject([
@@ -46,14 +40,11 @@ describe('Function returns Formatted value', () => {
     const src = `msg = { STRINGIFY($var) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
-      format: {
-        STRINGIFY: {
-          call: (_lc, _opt, arg: string) =>
-            new FormattedDynamic(['en'], String(arg), { foo: 'FOO' }),
-          options: 'never'
-        }
-      },
-      select: {}
+      STRINGIFY: {
+        call: (_lc, _opt, arg: string) =>
+          new FormattedDynamic(['en'], String(arg), { foo: 'FOO' }),
+        options: 'never'
+      }
     };
     const mf = new MessageFormat('en', runtime, res);
     expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([

@@ -6,7 +6,7 @@ import {
   SelectMessage,
   Selector
 } from './data-model';
-import { isFunction, resolveFormatFunction } from './pattern/function';
+import { isFunction, resolveFunction } from './pattern/function';
 import { isLiteral, Literal } from './pattern/literal';
 import { isTerm, resolveTerm } from './pattern/term';
 import { isVariable, resolveVariable, Variable } from './pattern/variable';
@@ -128,7 +128,7 @@ export function resolvePart<R, S>(
   if (isLiteral(part))
     return new FormattedLiteral(ctx.locales, part.value, part.meta);
   if (isVariable(part)) return resolveVariable(ctx, part);
-  if (isFunction(part)) return resolveFormatFunction(ctx, part);
+  if (isFunction(part)) return resolveFunction(ctx, part);
   if (isTerm(part)) return resolveTerm(ctx, part);
   /* istanbul ignore next - never happens */
   throw new Error(`Unsupported part: ${part}`);
@@ -209,29 +209,12 @@ function resolveSelect(
 }
 
 function resolveSelectorValue(ctx: Context, { value }: Selector): string[] {
-  if (isFunction(value)) {
-    const { args, func, options } = value;
-    const fn = ctx.runtime.select[func];
-    const fnArgs = args.map(arg => resolveArgument(ctx, arg));
-    const fnOpt = resolveOptions(ctx, options, fn?.options);
-    try {
-      return fn.call(ctx.locales, fnOpt, ...fnArgs);
-    } catch (_) {
-      return [String(fnArgs[0])];
-    }
-  }
-
-  const res = resolvePart(ctx, value).valueOf();
-
+  let res = resolvePart(ctx, value).valueOf();
   if (typeof res === 'number') {
-    const { plural } = ctx.runtime.select;
-    if (typeof plural === 'object' && typeof plural.call === 'function') {
-      try {
-        return plural.call(ctx.locales, undefined, res);
-      } catch (_) {
-        // TODO: report error
-        return ['other'];
-      }
+    try {
+      res = ctx.runtime.plural.call(ctx.locales, undefined, res);
+    } catch (_) {
+      // TODO: report error
     }
   }
 

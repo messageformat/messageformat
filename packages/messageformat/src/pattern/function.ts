@@ -34,12 +34,12 @@ export interface Function extends PatternElement {
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function resolveFormatFunction<R, S>(
+export function resolveFunction<R, S>(
   ctx: Context,
   fn: Function
 ): FormattedDynamic<R> | FormattedFallback | FormattedMessage<R | S | string> {
   const { args, func, options } = fn;
-  const rf = ctx.runtime.format[func];
+  const rf = ctx.runtime[func];
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   try {

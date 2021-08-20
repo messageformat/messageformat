@@ -151,17 +151,13 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     return [pr.select(range.end)];
   }
   const runtime: Runtime = {
-    select: {
-      pluralRange: {
-        call: pluralRange,
-        options: { start: 'any', end: 'number' }
-      }
+    formatRange: {
+      call: formatRange,
+      options: { start: 'any', end: 'number' }
     },
-    format: {
-      formatRange: {
-        call: formatRange,
-        options: { start: 'any', end: 'number' }
-      }
+    pluralRange: {
+      call: pluralRange,
+      options: { start: 'any', end: 'number' }
     }
   };
 
@@ -462,13 +458,10 @@ maybe('List formatting', () => {
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
     }
-    const runtime = {
-      select: fluentRuntime.select,
-      format: Object.assign(
-        { LIST: { call: LIST, options: 'any' as const } },
-        fluentRuntime.format
-      )
-    };
+    const runtime = Object.assign(
+      { LIST: { call: LIST, options: 'any' as const } },
+      fluentRuntime
+    );
 
     const src = source`
       plain = { LIST($list) }
@@ -494,16 +487,13 @@ maybe('List formatting', () => {
   });
 
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
-    const runtime: Runtime = {
-      select: fluentRuntime.select,
-      format: Object.assign(
-        {
-          dative: { call: dative, options: 'never' as const },
-          LIST: { call: LIST, options: 'any' as const }
-        },
-        fluentRuntime.format
-      )
-    };
+    const runtime: Runtime = Object.assign(
+      {
+        dative: { call: dative, options: 'never' as const },
+        LIST: { call: LIST, options: 'any' as const }
+      },
+      fluentRuntime
+    );
 
     function dative(locales: string[], _options: unknown, arg: string) {
       if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
@@ -523,7 +513,7 @@ maybe('List formatting', () => {
       let list: string[] = [];
       for (const arg of args) list = list.concat(arg);
       if (typeof options?.each === 'string') {
-        const fn = runtime.format[options.each];
+        const fn = runtime[options.each];
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
         list = list.map(li => String(fn.call(locales, undefined, li)));

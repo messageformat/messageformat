@@ -7,18 +7,11 @@ export { runtime as mf1Runtime } from './mf1';
 /**
  * The runtime function registry available for function references.
  *
- * Functions in `select` are available for case selection, while functions in
- * `format` are available for formatting. Keys do not need to be unique across
- * both realms, and the same function may be available in both.
- *
- * Note that `select` functions are only used for functions immediately within
- * `Select['select']`; for example their arguments are resolved using `format`
- * functions.
+ * Functions used for case selection are expected to return a `string[]`.
  */
 
 export interface Runtime {
-  select: { [key: string]: RuntimeFunction<string[]> };
-  format: { [key: string]: RuntimeFunction<unknown> };
+  [key: string]: RuntimeFunction<unknown>;
 }
 
 export interface RuntimeFunction<T> {

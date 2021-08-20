@@ -66,7 +66,7 @@ export const plural: RuntimeFunction<string[]> = {
     return Number.isInteger(n) ? [String(n), cat] : [cat];
   },
 
-  options: Object.assign({ pluralOffset: 'number' }, MF2.select.plural.options)
+  options: Object.assign({ pluralOffset: 'number' }, MF2.plural.options)
 };
 
 export const time: RuntimeFunction<string> = {
@@ -82,6 +82,9 @@ export const time: RuntimeFunction<string> = {
 };
 
 export const runtime = {
-  select: { plural },
-  format: { date, duration, number, time }
+  date,
+  duration,
+  number,
+  plural,
+  time
 };

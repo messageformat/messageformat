@@ -97,6 +97,7 @@ export const plural: RuntimeFunction<string[]> = {
 };
 
 export const runtime = {
-  select: { plural },
-  format: { datetime, number }
+  datetime,
+  number,
+  plural
 };
