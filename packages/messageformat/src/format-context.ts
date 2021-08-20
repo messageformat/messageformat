@@ -25,16 +25,3 @@ export function createContext<R>(
     scope
   };
 }
-
-export function extendContext(
-  prev: Context,
-  resId: string | undefined,
-  scope: Scope | undefined
-): Context {
-  const ctx = Object.assign({}, prev);
-  if (resId)
-    ctx.getMessage = (msgResId, msgPath) =>
-      prev.getMessage(msgResId || resId, msgPath);
-  if (scope) ctx.scope = scope;
-  return ctx;
-}

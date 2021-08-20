@@ -31,7 +31,7 @@ export abstract class Formatted<T> {
   }
 }
 
-export class FormattedDynamic<T = string> extends Formatted<T> {
+export class FormattedDynamic<T = unknown> extends Formatted<T> {
   type = 'dynamic' as const;
   valueOf() {
     return this.value;
@@ -73,8 +73,7 @@ export type FormattedPart<T = unknown> =
   | FormattedDynamic<T>
   | FormattedFallback
   | FormattedMessage<T>
-  // should be FormattedLiteral<T>, but TS can't cope with it
-  | (T extends string ? FormattedLiteral : never);
+  | FormattedLiteral;
 
 export function addMeta(fmt: Formatted<unknown>, meta: Meta) {
   if (!fmt.meta) fmt.meta = {};

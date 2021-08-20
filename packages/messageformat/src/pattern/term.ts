@@ -1,10 +1,23 @@
 import type { PatternElement } from '../data-model';
-import { Context, extendContext } from '../format-context';
+import { Context } from '../format-context';
 import { formatToParts, resolvePart } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import { resolveOptions } from './function';
 import type { Literal } from './literal';
-import type { Variable } from './variable';
+import type { Scope, Variable } from './variable';
+
+function extendContext(
+  prev: Context,
+  resId: string | undefined,
+  scope: Scope | undefined
+): Context {
+  const ctx = Object.assign({}, prev);
+  if (resId)
+    ctx.getMessage = (msgResId, msgPath) =>
+      prev.getMessage(msgResId || resId, msgPath);
+  if (scope) ctx.scope = scope;
+  return ctx;
+}
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -28,10 +41,10 @@ export interface Term extends PatternElement {
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export function resolveTerm<R, S>(
+export function resolveTerm(
   ctx: Context,
   term: Term
-): FormattedMessage<R | S | string> | FormattedFallback {
+): FormattedMessage | FormattedFallback {
   const { msg_path, res_id, scope } = term;
   const strPath = msg_path.map(part => String(resolvePart(ctx, part)));
   const msg = ctx.getMessage(res_id, strPath);
@@ -42,8 +55,7 @@ export function resolveTerm<R, S>(
   if (res_id || scope) {
     const opt = scope ? resolveOptions(ctx, scope, 'any') : null;
     const msgScope = Object.assign({}, ctx.scope, opt);
-    // Let's not check typings of Term scope overrides
-    ctx = extendContext(ctx, res_id, msgScope) as Context;
+    ctx = extendContext(ctx, res_id, msgScope);
   }
   return new FormattedMessage(ctx.locales, formatToParts(ctx, msg), term.meta);
 }

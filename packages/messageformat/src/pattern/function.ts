@@ -33,10 +33,10 @@ export interface Function extends PatternElement {
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function resolveFunction<R, S>(
+export function resolveFunction(
   ctx: Context,
   fn: Function
-): FormattedDynamic<R> | FormattedFallback | FormattedMessage<R | S | string> {
+): FormattedDynamic | FormattedFallback | FormattedMessage {
   const { args, func, options } = fn;
   const rf = ctx.runtime[func];
   const fnArgs = args.map(arg => resolveArgument(ctx, arg));
@@ -45,12 +45,9 @@ export function resolveFunction<R, S>(
     const value = rf.call(ctx.locales, fnOpt, ...fnArgs);
     if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
       if (fn.meta) addMeta(value, fn.meta);
-      return value as
-        | FormattedDynamic<R>
-        | FormattedFallback
-        | FormattedMessage<R | S | string>;
+      return value as FormattedDynamic | FormattedFallback | FormattedMessage;
     }
-    return new FormattedDynamic(ctx.locales, value as R, fn.meta);
+    return new FormattedDynamic(ctx.locales, value, fn.meta);
   } catch (error) {
     const fb = new FormattedFallback(
       ctx.locales,
@@ -75,12 +72,12 @@ function fallbackValue(ctx: Context, fn: Function) {
   return `${fn.func}(${args.join(', ')})`;
 }
 
-export function resolveOptions<S>(
+export function resolveOptions(
   ctx: Context,
   options: Record<string, Literal | Variable> | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
-  const opt: Record<string, string | number | boolean | S> = {};
+  const opt: Record<string, unknown> = {};
   const getExpected =
     !expected || typeof expected === 'string' || Array.isArray(expected)
       ? () => expected
@@ -89,7 +86,7 @@ export function resolveOptions<S>(
     for (const [key, value] of Object.entries(options)) {
       const exp = getExpected(key);
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = resolveArgument<S>(ctx, value, exp);
+      const res = resolveArgument(ctx, value, exp);
 
       if (
         exp === 'any' ||

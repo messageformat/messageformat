@@ -29,10 +29,10 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function resolveVariable<S>(
+export function resolveVariable(
   ctx: Context,
   part: Variable
-): FormattedDynamic<S> | FormattedFallback {
+): FormattedDynamic | FormattedFallback {
   const { var_path } = part;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let val: any = var_path.length > 0 ? ctx.scope : undefined;
@@ -53,11 +53,11 @@ function fallbackValue(ctx: Context, { var_path }: Variable): string {
   return '$' + path.join('.');
 }
 
-export function resolveArgument<S>(
+export function resolveArgument(
   ctx: Context,
   part: PatternElement,
   expected?: RuntimeType
-): string | number | boolean | S {
+): unknown {
   if (isLiteral(part)) {
     const { value } = part;
     switch (expected) {
@@ -69,6 +69,6 @@ export function resolveArgument<S>(
         return value;
     }
   }
-  if (isVariable(part)) return resolveVariable<S>(ctx, part).valueOf();
+  if (isVariable(part)) return resolveVariable(ctx, part).valueOf();
   throw new Error(`Unsupported function argument: ${part}`);
 }
