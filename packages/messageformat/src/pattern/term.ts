@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
-import { Context } from '../format-context';
-import { formatToParts, resolvePart } from '../format-message';
+import type { Context } from '../format-context';
+import { formatToParts } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import { resolveOptions } from './function';
 import type { Literal } from './literal';
@@ -46,7 +46,7 @@ export function resolveTerm(
   term: Term
 ): FormattedMessage | FormattedFallback {
   const { msg_path, res_id, scope } = term;
-  const strPath = msg_path.map(part => String(resolvePart(ctx, part)));
+  const strPath = msg_path.map(part => String(ctx.formatPart(part)));
   const msg = ctx.getMessage(res_id, strPath);
   if (!msg) {
     const fb = fallbackValue(ctx, term);
@@ -61,7 +61,7 @@ export function resolveTerm(
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
+  const resolve = (v: Literal | Variable) => ctx.formatPart(v).valueOf();
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;

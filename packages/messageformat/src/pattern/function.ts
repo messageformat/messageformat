@@ -1,6 +1,5 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { resolvePart } from '../format-message';
 import {
   addMeta,
   Formatted,
@@ -64,7 +63,7 @@ export function resolveFunction(
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) => resolvePart(ctx, v).valueOf();
+  const resolve = (v: Literal | Variable) => ctx.formatPart(v).valueOf();
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))

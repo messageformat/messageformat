@@ -8,6 +8,7 @@ import {
 import { createContext } from './format-context';
 import { formatToParts } from './format-message';
 import { FormattedPart } from './formatted-part';
+import { patternHandlers } from './pattern';
 import type { Scope } from './pattern/variable';
 import { defaultRuntime, Runtime } from './runtime';
 
@@ -122,7 +123,7 @@ export class MessageFormat<
     const msg = this.getEntry(resId, msgPath);
     let res = '';
     if (isMessage(msg)) {
-      const ctx = createContext<R>(this, resId, scope);
+      const ctx = createContext<R>(this, patternHandlers, resId, scope);
       for (const fp of formatToParts(ctx, msg)) res += fp.toString();
     }
     return res;
@@ -145,7 +146,10 @@ export class MessageFormat<
     const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
     const msg = this.getEntry(resId, msgPath);
     return isMessage(msg)
-      ? formatToParts(createContext<R>(this, resId, scope), msg)
+      ? formatToParts(
+          createContext<R>(this, patternHandlers, resId, scope),
+          msg
+        )
       : [];
   }
 

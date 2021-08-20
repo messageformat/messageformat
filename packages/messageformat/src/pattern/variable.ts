@@ -1,6 +1,5 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { resolvePart } from '../format-message';
 import { FormattedDynamic, FormattedFallback } from '../formatted-part';
 import type { RuntimeType } from '../runtime';
 import { isLiteral, Literal } from './literal';
@@ -49,7 +48,7 @@ export function resolveVariable(
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => resolvePart(ctx, v).valueOf());
+  const path = var_path.map(v => ctx.formatPart(v).valueOf());
   return '$' + path.join('.');
 }
 
