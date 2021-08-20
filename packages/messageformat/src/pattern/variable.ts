@@ -1,9 +1,8 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattedDynamic, FormattedFallback } from '../formatted-part';
-import type { RuntimeType } from '../runtime';
 import type { PatternFormatter } from './index';
-import { isLiteral, Literal, formatLiteralAsValue } from './literal';
+import type { Literal } from './literal';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -51,7 +50,7 @@ export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
   let val: unknown = ctx.scope;
   for (const p of var_path) {
     try {
-      const arg = resolveArgument(ctx, p);
+      const arg = ctx.formatAsValue(p);
       val = (val as Scope)[String(arg)];
     } catch (_) {
       // TODO: report error
@@ -62,18 +61,8 @@ export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => ctx.formatAsPart(v).valueOf());
+  const path = var_path.map(v => ctx.formatAsString(v));
   return '$' + path.join('.');
-}
-
-export function resolveArgument(
-  ctx: Context,
-  part: PatternElement,
-  expected?: RuntimeType
-): unknown {
-  if (isLiteral(part)) return formatLiteralAsValue(ctx, part, expected);
-  if (isVariable(part)) return formatVariableAsValue(ctx, part);
-  throw new Error(`Unsupported argument: ${part}`);
 }
 
 export const formatter: PatternFormatter = {

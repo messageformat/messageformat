@@ -10,8 +10,8 @@ import {
 } from '../formatted-part';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { PatternFormatter } from './index';
-import type { Literal } from './literal';
-import { resolveArgument, Variable } from './variable';
+import { isLiteral, Literal } from './literal';
+import type { Variable } from './variable';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -79,13 +79,13 @@ export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
 
 function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
   const rf = (ctx.function as Runtime)[func];
-  const fnArgs = args.map(arg => resolveArgument(ctx, arg));
+  const fnArgs = args.map(arg => ctx.formatAsValue(arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   return rf.call(ctx.locales, fnOpt, ...fnArgs);
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) => ctx.formatAsPart(v).valueOf();
+  const resolve = (v: Literal | Variable) => ctx.formatAsString(v);
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))
@@ -99,24 +99,33 @@ function resolveOptions(
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
   const opt: RuntimeOptions = { localeMatcher: ctx.localeMatcher };
-  const getExpected =
-    !expected || typeof expected === 'string' || Array.isArray(expected)
-      ? () => expected
-      : (key: string) => expected[key];
-  if (options && expected)
+  if (options && expected) {
     for (const [key, value] of Object.entries(options)) {
-      const exp = getExpected(key);
+      const exp =
+        typeof expected === 'string' || Array.isArray(expected)
+          ? expected
+          : expected[key];
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = resolveArgument(ctx, value, exp);
-
+      const res = ctx.formatAsValue(value);
       if (
         exp === 'any' ||
         exp === typeof res ||
         (Array.isArray(exp) && typeof res === 'string' && exp.includes(res))
-      )
+      ) {
         opt[key] = res;
+      } else if (isLiteral(value)) {
+        switch (exp) {
+          case 'boolean':
+            if (res === 'true') opt[key] = true;
+            else if (res === 'false') opt[key] = false;
+            break;
+          case 'number':
+            opt[key] = Number(res);
+        }
+      }
       // TODO: else report error
     }
+  }
   return opt;
 }
 

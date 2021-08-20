@@ -4,7 +4,7 @@ import { formatToParts, formatToString } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import type { PatternFormatter } from './index';
 import type { Literal } from './literal';
-import { resolveArgument, Variable } from './variable';
+import type { Variable } from './variable';
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -67,7 +67,7 @@ export function formatTermAsValue(
 }
 
 function getMessage(ctx: Context, { msg_path, res_id }: Term) {
-  const strPath = msg_path.map(part => String(resolveArgument(ctx, part)));
+  const strPath = msg_path.map(part => ctx.formatAsString(part));
   return isTermContext(ctx) ? ctx.term.get(res_id, strPath) : null;
 }
 
@@ -80,14 +80,14 @@ function extendContext(prev: Context, { res_id, scope }: Term): Context {
     if (scope) {
       ctx.scope = Object.assign({}, ctx.scope);
       for (const [key, value] of Object.entries(scope))
-        ctx.scope[key] = resolveArgument(ctx, value);
+        ctx.scope[key] = ctx.formatAsValue(value);
     }
     return ctx;
   } else return prev;
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) => ctx.formatAsPart(v).valueOf();
+  const resolve = (v: Literal | Variable) => ctx.formatAsString(v);
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;
