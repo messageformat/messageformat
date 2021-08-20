@@ -8,6 +8,11 @@ import { formatter as literal } from './literal';
 import { formatter as term } from './term';
 import { formatter as variable } from './variable';
 
+export { isFunction, Function } from './function';
+export { isLiteral, Literal } from './literal';
+export { isTerm, Term } from './term';
+export { isVariable, Variable } from './variable';
+
 export interface PatternFormatter {
   type: string;
   formatAsPart(ctx: Context, part: PatternElement): FormattedPart;

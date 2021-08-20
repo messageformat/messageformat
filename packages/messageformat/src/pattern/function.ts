@@ -9,9 +9,8 @@ import {
   FormattedMessage
 } from '../formatted-part';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
-import type { PatternFormatter } from './index';
-import { isLiteral, Literal } from './literal';
-import type { Variable } from './variable';
+import type { Literal, PatternFormatter, Variable } from './index';
+import { isLiteral } from './literal';
 
 /**
  * To resolve a Function, an externally defined function is called.

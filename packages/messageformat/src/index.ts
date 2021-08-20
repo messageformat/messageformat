@@ -8,9 +8,6 @@ export type {
   FormattedPart
 } from './formatted-part';
 export { MessageFormat } from './messageformat';
-export { isFunction, Function } from './pattern/function';
-export { isLiteral, Literal } from './pattern/literal';
-export { isTerm, Term } from './pattern/term';
-export { isVariable, Variable } from './pattern/variable';
+export * from './pattern';
 export * from './runtime';
 export { validate } from './validate';

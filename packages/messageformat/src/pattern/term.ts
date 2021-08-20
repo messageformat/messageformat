@@ -2,9 +2,7 @@ import { isMessage, Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
-import type { PatternFormatter } from './index';
-import type { Literal } from './literal';
-import type { Variable } from './variable';
+import type { Literal, PatternFormatter, Variable } from './index';
 
 /**
  * A Term is a pointer to a Message or a Select.

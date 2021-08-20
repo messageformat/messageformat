@@ -1,8 +1,7 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattedDynamic, FormattedFallback } from '../formatted-part';
-import type { PatternFormatter } from './index';
-import type { Literal } from './literal';
+import type { Literal, PatternFormatter } from './index';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
