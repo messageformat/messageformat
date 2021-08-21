@@ -7,7 +7,7 @@ import {
 } from './data-model';
 import type { Context } from './format-context';
 import { formatToParts, formatToString } from './format-message';
-import { FormattedPart } from './formatted-part';
+import { MessageFormatPart } from './formatted-part';
 import { PatternFormatter, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
 import { defaultRuntime, Runtime } from './runtime';
@@ -41,20 +41,17 @@ export interface MessageFormatOptions {
  * for selection and `datetime` & `number` formatters based on the `Intl`
  * equivalents.
  */
-export class MessageFormat<
-  R = string,
-  P extends PatternElement = PatternElement
-> {
+export class MessageFormat {
   #formatters: PatternFormatter[];
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
-  #resources: Resource<P>[];
+  #resources: Resource[];
   #runtime: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
     options?: MessageFormatOptions | null,
-    ...resources: Resource<P>[]
+    ...resources: Resource[]
   ) {
     this.#formatters =
       options?.formatters?.map(fmtOpt => {
@@ -70,7 +67,7 @@ export class MessageFormat<
     this.#runtime = options?.runtime ?? defaultRuntime;
   }
 
-  addResources(...resources: Resource<P>[]) {
+  addResources(...resources: Resource[]) {
     this.#resources.splice(0, 0, ...resources);
   }
 
@@ -91,15 +88,12 @@ export class MessageFormat<
     return res;
   }
 
-  formatToParts<S = string>(
-    msgPath: string | string[],
-    scope?: Scope
-  ): FormattedPart<R | S>[];
-  formatToParts<S = string>(
+  formatToParts(msgPath: string | string[], scope?: Scope): MessageFormatPart[];
+  formatToParts(
     resId: string,
     msgPath: string | string[],
     scope?: Scope
-  ): FormattedPart<R | S>[];
+  ): MessageFormatPart[];
   formatToParts(
     arg0: string | string[],
     arg1?: string | string[] | Scope,
@@ -143,8 +137,8 @@ export class MessageFormat<
     };
 
     const ctx: Context = {
-      formatAsPart(part) {
-        return getFormatter(part).formatAsPart(this, part);
+      formatAsParts(part) {
+        return getFormatter(part).formatAsParts(this, part);
       },
       formatAsString(part) {
         return getFormatter(part).formatAsString(this, part);

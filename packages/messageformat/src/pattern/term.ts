@@ -1,9 +1,9 @@
 import { isMessage, Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
-import { FormattedFallback, FormattedMessage } from '../formatted-part';
+import { argumentSource, MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter, Variable } from './index';
-import { Scope } from './variable';
+import type { Scope } from './variable';
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -37,19 +37,30 @@ const isTermContext = (ctx: Context): ctx is TermContext =>
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export function formatTermAsPart(
+export function formatTermAsParts(
   ctx: Context,
   term: Term
-): FormattedMessage | FormattedFallback {
+): MessageFormatPart[] {
   const msg = getMessage(ctx, term);
+  const source = getSource(term);
+  let res: MessageFormatPart[];
   if (msg) {
     const msgCtx = extendContext(ctx, term);
-    const fmt = formatToParts(msgCtx, msg);
-    return new FormattedMessage(ctx.locales, fmt, term.meta);
+    res = formatToParts(msgCtx, msg);
+    for (const fmt of res) {
+      fmt.source = fmt.source ? source + '/' + fmt.source : source;
+      if (term.meta) fmt.meta = { ...term.meta, ...fmt.meta };
+    }
   } else {
-    const fb = fallbackValue(ctx, term);
-    return new FormattedFallback(ctx.locales, fb, term.meta);
+    res = [{ type: 'fallback', value: fallbackValue(ctx, term), source }];
+    if (term.meta) res[0].meta = { ...term.meta };
   }
+  return res;
+}
+
+function getSource({ msg_path, res_id }: Term) {
+  const name = msg_path.map(argumentSource).join('.');
+  return res_id ? `-${res_id}::${name}` : `-${name}`;
 }
 
 export const formatTermAsString = (ctx: Context, term: Term): string =>
@@ -100,7 +111,7 @@ function fallbackValue(ctx: Context, term: Term): string {
 
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
-  formatAsPart: formatTermAsPart,
+  formatAsParts: formatTermAsParts,
   formatAsString: formatTermAsString,
   formatAsValue: formatTermAsValue,
   initContext: (mf, resId) => (msgResId, msgPath) => {

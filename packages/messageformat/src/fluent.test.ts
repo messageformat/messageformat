@@ -276,7 +276,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
   describe(title, () => {
-    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
+    let mf: MessageFormat;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale });
       mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
@@ -313,7 +313,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
+    let mf: MessageFormat;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
@@ -323,7 +323,7 @@ describe('formatToParts', () => {
       const foo = mf.formatToParts('res', ['foo'], { num: 42 });
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { type: 'dynamic', value: 42 }
+        { type: 'integer', value: '42', source: '$num' }
       ]);
     });
 
@@ -331,20 +331,15 @@ describe('formatToParts', () => {
       const foo = mf.formatToParts('res', ['foo']);
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { type: 'fallback', value: '$num' }
+        { type: 'fallback', value: '$num', source: '$num' }
       ]);
     });
 
     test('message reference', () => {
       const bar = mf.formatToParts('res', ['bar'], { num: 42 });
       expect(bar).toEqual([
-        {
-          type: 'message',
-          value: [
-            { type: 'literal', value: 'Foo ' },
-            { type: 'dynamic', value: 42 }
-          ]
-        }
+        { type: 'literal', value: 'Foo ', source: '-foo' },
+        { type: 'integer', value: '42', source: '-foo/$num' }
       ]);
     });
 
@@ -380,7 +375,7 @@ describe('formatToParts', () => {
     `;
 
     let res: Resource<Literal | Variable | Function | Term>;
-    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
+    let mf: MessageFormat;
     beforeAll(() => {
       res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
@@ -399,23 +394,19 @@ describe('formatToParts', () => {
       expect(foo).toEqual([
         {
           type: 'message',
-          value: [
-            { type: 'literal', value: 'Foo ' },
-            { type: 'dynamic', value: 42 }
-          ],
+          value: '',
           meta: { comment: 'First message', group: 'Group 1' }
-        }
+        },
+        { type: 'literal', value: 'Foo ' },
+        { type: 'integer', value: '42', source: '$num' }
       ]);
     });
 
     test('bar', () => {
       const bar = mf.formatToParts('res', 'bar');
       expect(bar).toEqual([
-        {
-          type: 'message',
-          value: [{ type: 'literal', value: 'Bar' }],
-          meta: { group: 'Group 1' }
-        }
+        { type: 'message', value: '', meta: { group: 'Group 1' } },
+        { type: 'literal', value: 'Bar' }
       ]);
     });
 
@@ -424,9 +415,10 @@ describe('formatToParts', () => {
       expect(qux).toEqual([
         {
           type: 'message',
-          value: [{ type: 'literal', value: 'Qux' }],
+          value: '',
           meta: { comment: 'Other message', group: 'Group 2' }
-        }
+        },
+        { type: 'literal', value: 'Qux' }
       ]);
     });
   });
@@ -449,7 +441,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    let mf: MessageFormat<string, Literal | Variable | Function | Term>;
+    let mf: MessageFormat;
     beforeAll(() => {
       const res = compileFluent(src, { id: 'res', locale: 'en' });
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
@@ -458,11 +450,8 @@ describe('formatToParts', () => {
     test('case with match', () => {
       const parts = mf.formatToParts('case', { case: 'genitive' });
       expect(parts).toEqual([
-        {
-          type: 'message',
-          value: [{ type: 'literal', value: 'GEN' }],
-          meta: { case: 'genitive' }
-        }
+        { type: 'message', value: '', meta: { case: 'genitive' } },
+        { type: 'literal', value: 'GEN' }
       ]);
     });
 
@@ -471,20 +460,18 @@ describe('formatToParts', () => {
       expect(parts).toEqual([
         {
           type: 'message',
-          value: [{ type: 'literal', value: 'NOM' }],
+          value: '',
           meta: { case: 'oblique', caseFallback: 'nominative' }
-        }
+        },
+        { type: 'literal', value: 'NOM' }
       ]);
     });
 
     test('gender with match', () => {
       const parts = mf.formatToParts('gender', { gender: 'feminine' });
       expect(parts).toEqual([
-        {
-          type: 'message',
-          value: [{ type: 'literal', value: 'F' }],
-          meta: { gender: 'feminine' }
-        }
+        { type: 'message', value: '', meta: { gender: 'feminine' } },
+        { type: 'literal', value: 'F' }
       ]);
     });
 
@@ -493,20 +480,18 @@ describe('formatToParts', () => {
       expect(parts).toEqual([
         {
           type: 'message',
-          value: [{ type: 'literal', value: 'N' }],
+          value: '',
           meta: { gender: '{$gender}', genderFallback: 'neuter' }
-        }
+        },
+        { type: 'literal', value: 'N' }
       ]);
     });
 
     test('plural with match', () => {
       const parts = mf.formatToParts('plural', { num: 2 });
       expect(parts).toEqual([
-        {
-          type: 'message',
-          value: [{ type: 'literal', value: 'Other' }],
-          meta: { plural: 'other' }
-        }
+        { type: 'message', value: '', meta: { plural: 'other' } },
+        { type: 'literal', value: 'Other' }
       ]);
     });
 
@@ -515,9 +500,10 @@ describe('formatToParts', () => {
       expect(parts).toEqual([
         {
           type: 'message',
-          value: [{ type: 'literal', value: 'Other' }],
+          value: '',
           meta: { plural: 'one', pluralFallback: 'other' }
-        }
+        },
+        { type: 'literal', value: 'Other' }
       ]);
     });
 

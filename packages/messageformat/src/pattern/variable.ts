@@ -1,6 +1,10 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { FormattedDynamic, FormattedFallback } from '../formatted-part';
+import {
+  argumentSource,
+  formatValueAsParts,
+  MessageFormatPart
+} from '../formatted-part';
 import type { Literal, PatternFormatter } from './index';
 
 /**
@@ -27,14 +31,18 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function formatVariableAsPart(
+export function formatVariableAsParts(
   ctx: Context,
   part: Variable
-): FormattedDynamic | FormattedFallback {
-  const val = formatVariableAsValue(ctx, part);
-  return val !== undefined
-    ? new FormattedDynamic(ctx.locales, val, part.meta)
-    : new FormattedFallback(ctx.locales, fallbackValue(ctx, part), part.meta);
+): MessageFormatPart[] {
+  const value = formatVariableAsValue(ctx, part);
+  const source = argumentSource(part);
+  const res: MessageFormatPart[] =
+    value === undefined
+      ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
+      : formatValueAsParts(ctx, value, source);
+  if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
+  return res;
 }
 
 export function formatVariableAsString(ctx: Context, part: Variable): string {
@@ -68,7 +76,7 @@ function fallbackValue(ctx: Context, { var_path }: Variable): string {
 
 export const formatter: PatternFormatter<Scope> = {
   type: 'variable',
-  formatAsPart: formatVariableAsPart,
+  formatAsParts: formatVariableAsParts,
   formatAsString: formatVariableAsString,
   formatAsValue: formatVariableAsValue,
   initContext: (_mf, _resId, scope) => scope

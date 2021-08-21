@@ -2,10 +2,9 @@
 import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
 
-import { fluentRuntime, MessageFormat, Runtime } from '../index';
-import { FormattedDynamic } from '../formatted-part';
+import { fluentRuntime, Formattable, MessageFormat, Runtime } from '../index';
 
-describe('Function returns primitive value', () => {
+describe('Function returns generic value', () => {
   test('string', () => {
     const src = source`
       msg = { STRINGIFY($var) }
@@ -28,27 +27,52 @@ describe('Function returns primitive value', () => {
       NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
     };
     const mf = new MessageFormat('en', { runtime }, res);
-    expect(mf.formatToParts('msg', { var: '42' })).toMatchObject([
-      { type: 'dynamic', value: 42 }
+    expect(mf.formatToParts('msg', { var: '42' })).toEqual([
+      { type: 'integer', value: '42', source: 'NUMERIC($var)' }
     ]);
     expect(mf.format('msg', { var: '42' })).toBe('42');
   });
+
+  test('Date', () => {
+    const src = `msg = { NOW() }\n`;
+    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const date = new Date();
+    const runtime: Runtime = {
+      NOW: { call: () => date, options: 'never' }
+    };
+    const mf = new MessageFormat('en', { runtime }, res);
+    const dtf = new Intl.DateTimeFormat('en');
+    expect(mf.formatToParts('msg')).toEqual(
+      dtf.formatToParts(date).map(part => ({ ...part, source: 'NOW()' }))
+    );
+    expect(mf.format('msg')).toBe(date.toLocaleString('en'));
+  });
 });
 
-describe('Function returns Formatted value', () => {
+describe('Function returns Formattable', () => {
   test('with meta value', () => {
     const src = `msg = { STRINGIFY($var) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
       STRINGIFY: {
         call: (_lc, _opt, arg: string) =>
-          new FormattedDynamic(['en'], String(arg), { foo: 'FOO' }),
+          new Formattable({
+            toParts: () => [
+              {
+                type: 'dynamic',
+                value: String(arg),
+                source: 'SOURCE',
+                meta: { foo: 'FOO' }
+              }
+            ],
+            toValue: () => String(arg)
+          }),
         options: 'never'
       }
     };
     const mf = new MessageFormat('en', { runtime }, res);
-    expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
-      { type: 'dynamic', value: '42', meta: { foo: 'FOO' } }
+    expect(mf.formatToParts('msg', { var: 42 })).toEqual([
+      { type: 'dynamic', value: '42', source: 'SOURCE', meta: { foo: 'FOO' } }
     ]);
   });
 });

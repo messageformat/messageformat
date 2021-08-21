@@ -1,8 +1,8 @@
 import { PatternElement } from './data-model';
-import type { FormattedPart } from './formatted-part';
+import type { MessageFormatPart } from './formatted-part';
 
 export interface Context {
-  formatAsPart(part: PatternElement): FormattedPart;
+  formatAsParts(part: PatternElement): MessageFormatPart[];
   formatAsString(part: PatternElement): string;
   formatAsValue(part: PatternElement): unknown;
   localeMatcher: 'best fit' | 'lookup';

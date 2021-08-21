@@ -1,12 +1,9 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import {
-  addMeta,
-  Formatted,
-  FormattedDynamic,
-  FormattedFallback,
-  FormattedLiteral,
-  FormattedMessage
+  argumentSource,
+  formatValueAsParts,
+  MessageFormatPart
 } from '../formatted-part';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
@@ -28,39 +25,67 @@ export interface Function extends PatternElement {
   options?: Record<string, Literal | Variable>;
 }
 
+export class Formattable<T = unknown> {
+  toParts: () => MessageFormatPart[];
+  toString: () => string;
+  toValue: () => T;
+
+  constructor({
+    toParts,
+    toString,
+    toValue
+  }: {
+    toParts?: () => MessageFormatPart[];
+    toString?: () => string;
+    toValue: () => T;
+  }) {
+    this.toParts =
+      toParts ||
+      (() => [{ type: 'dynamic', value: toValue(), source: 'Formattable' }]);
+    this.toString = toString || (() => String(toValue()));
+    this.toValue = toValue;
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function formatFunctionAsPart(
+export function formatFunctionAsParts(
   ctx: Context,
   fn: Function
-): FormattedDynamic | FormattedFallback | FormattedMessage {
+): MessageFormatPart[] {
+  const srcArgs = fn.args.map(argumentSource);
+  const source = fn.func + '(' + srcArgs.join(', ') + ')';
+  let res: MessageFormatPart[];
   try {
     const value = callRuntimeFunction(ctx, fn);
-    if (value instanceof Formatted && !(value instanceof FormattedLiteral)) {
-      if (fn.meta) addMeta(value, fn.meta);
-      return value as FormattedDynamic | FormattedFallback | FormattedMessage;
-    }
-    return new FormattedDynamic(ctx.locales, value, fn.meta);
+    res =
+      value instanceof Formattable
+        ? value.toParts()
+        : formatValueAsParts(ctx, value, source);
   } catch (error) {
-    const fb = new FormattedFallback(
-      ctx.locales,
-      fallbackValue(ctx, fn),
-      fn.meta
-    );
-    addMeta(fb, {
-      error_name: error.name,
-      error_message: error.message,
-      error_stack: error.stack
-    });
-    return fb;
+    res = [
+      {
+        type: 'fallback',
+        value: fallbackValue(ctx, fn),
+        source,
+        meta: {
+          error_name: error.name,
+          error_message: error.message,
+          error_stack: error.stack
+        }
+      }
+    ];
   }
+  if (fn.meta) for (const fmt of res) fmt.meta = { ...fn.meta, ...fmt.meta };
+  return res;
 }
 
 export function formatFunctionAsString(ctx: Context, fn: Function): string {
   try {
-    return ctx.stringify(callRuntimeFunction(ctx, fn));
+    const res = callRuntimeFunction(ctx, fn);
+    return res instanceof Formattable ? res.toString() : ctx.stringify(res);
   } catch (_) {
     // TODO: report error
     return '{' + fallbackValue(ctx, fn) + '}';
@@ -69,7 +94,8 @@ export function formatFunctionAsString(ctx: Context, fn: Function): string {
 
 export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
   try {
-    return callRuntimeFunction(ctx, fn);
+    const res = callRuntimeFunction(ctx, fn);
+    return res instanceof Formattable ? res.toValue() : res;
   } catch (_) {
     // TODO: report error
     return undefined;
@@ -130,7 +156,7 @@ function resolveOptions(
 
 export const formatter: PatternFormatter<Runtime> = {
   type: 'function',
-  formatAsPart: formatFunctionAsPart,
+  formatAsParts: formatFunctionAsParts,
   formatAsString: formatFunctionAsString,
   formatAsValue: formatFunctionAsValue,
   initContext: mf => mf.resolvedOptions().runtime

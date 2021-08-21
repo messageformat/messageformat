@@ -4,20 +4,15 @@ import { compileFluent, compileMF1 } from '@messageformat/compiler';
 
 import {
   fluentRuntime,
-  FormattedPart,
   MessageFormat,
   Resource,
   Runtime,
   RuntimeOptions
 } from './index';
-import {
-  FormattedDynamic,
-  FormattedFallback,
-  FormattedLiteral
-} from './formatted-part';
 import type { Function } from './pattern/function';
 import type { Literal } from './pattern/literal';
 import type { Term } from './pattern/term';
+import { MessageFormatPart } from './formatted-part';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource<Literal | Term> = {
@@ -110,7 +105,7 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
     'browser-id': 'firefox'
   });
   expect(parts).toMatchObject([
-    { type: 'message', value: [{ type: 'literal', value: 'Firefoxin' }] },
+    { type: 'literal', value: 'Firefoxin' },
     { type: 'literal', value: ' asetukset' }
   ]);
 });
@@ -549,31 +544,18 @@ maybe('List formatting', () => {
 });
 
 describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
-  function flatWordyParts(parts: FormattedPart<string>[]) {
-    let res: (
-      | FormattedDynamic<unknown>
-      | FormattedFallback
-      | FormattedLiteral
-    )[] = [];
-    for (const part of parts) {
-      if (part.type === 'message') res = res.concat(flatWordyParts(part.value));
-      else if (/\w/.test(String(part.value))) res.push(part);
-    }
-    return res;
-  }
-
-  function hackyFixArticles(locales: string[], parts: FormattedPart<string>[]) {
+  function hackyFixArticles(locales: string[], parts: MessageFormatPart[]) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
     const articly = /(^|\s)(a|an|A|An)(\W*$)/;
     const vowely = /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;
-    const flat = flatWordyParts(parts);
-    for (let i = 0; i < flat.length - 1; ++i) {
+    const wordy = parts.filter(part => /\w/.test(String(part.value)));
+    for (let i = 0; i < wordy.length - 1; ++i) {
       let fixed = false;
-      const part = flat[i];
+      const part = wordy[i];
       const v0 = String(part.value);
       const v1 = v0.replace(articly, (src, pre, article, post) => {
         const isAn = article === 'an' || article === 'An';
-        const reqAn = vowely.test(String(flat[i + 1].value));
+        const reqAn = vowely.test(String(wordy[i + 1].value));
         if (isAn === reqAn) return src;
 
         fixed = true;
@@ -599,9 +581,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'A ' },
-      { type: 'dynamic', value: 'foo' },
+      { type: 'dynamic', value: 'foo', source: '$foo' },
       { type: 'literal', value: ' and an ' },
-      { type: 'dynamic', value: 'other' }
+      { type: 'dynamic', value: 'other', source: '$other' }
     ]);
   });
 
@@ -610,9 +592,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'An ' },
-      { type: 'dynamic', value: 'other' },
+      { type: 'dynamic', value: 'other', source: '$foo' },
       { type: 'literal', value: ' and a ' },
-      { type: 'dynamic', value: 'foo' }
+      { type: 'dynamic', value: 'foo', source: '$other' }
     ]);
   });
 
@@ -621,9 +603,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'The ' },
-      { type: 'dynamic', value: 'foo' },
+      { type: 'dynamic', value: 'foo', source: '$foo' },
       { type: 'literal', value: ' and lotsa ' },
-      { type: 'dynamic', value: 'other' }
+      { type: 'dynamic', value: 'other', source: '$other' }
     ]);
   });
 
@@ -631,15 +613,10 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     const parts = mf.formatToParts('qux', { foo: 'An', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
-      {
-        type: 'message',
-        value: [
-          { type: 'dynamic', value: 'A' },
-          { type: 'literal', value: ' foo and an' }
-        ]
-      },
+      { type: 'dynamic', value: 'A', source: '-baz/$foo' },
+      { type: 'literal', value: ' foo and an', source: '-baz' },
       { type: 'literal', value: ' ... ' },
-      { type: 'dynamic', value: 'other' }
+      { type: 'dynamic', value: 'other', source: '$other' }
     ]);
   });
 });

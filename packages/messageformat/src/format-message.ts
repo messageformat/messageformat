@@ -1,18 +1,20 @@
-import { Message } from './data-model';
+import type { Message, Meta } from './data-model';
 import type { Context } from './format-context';
-import { addMeta, FormattedMessage, FormattedPart } from './formatted-part';
+import type { MessageFormatPart } from './formatted-part';
 import type { FormattedSelectMeta } from './select/detect-grammar';
 import { resolvePattern } from './select/resolve';
 
-export function formatToParts(ctx: Context, msg: Message): FormattedPart[] {
+export function formatToParts(ctx: Context, msg: Message): MessageFormatPart[] {
   let fsm: FormattedSelectMeta | null = null;
   const pattern = resolvePattern(ctx, msg, _fsm => (fsm = _fsm));
-  const res = pattern.map(part => ctx.formatAsPart(part));
+  const res: MessageFormatPart[] = [];
   if (msg.meta || fsm) {
-    const fm = new FormattedMessage(ctx.locales, res, msg.meta);
-    if (fsm) addMeta(fm, fsm);
-    return [fm];
-  } else return res;
+    const meta: Meta = Object.assign({}, msg.meta, fsm);
+    res.push({ type: 'message', value: '', meta });
+  }
+  for (const part of pattern)
+    Array.prototype.push.apply(res, ctx.formatAsParts(part));
+  return res;
 }
 
 export function formatToString(ctx: Context, msg: Message): string {
