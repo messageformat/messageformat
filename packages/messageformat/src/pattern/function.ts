@@ -77,7 +77,7 @@ export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
 }
 
 function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
-  const rf = (ctx.function as Runtime)[func];
+  const rf = (ctx.types.function as Runtime)[func];
   const fnArgs = args.map(arg => ctx.formatAsValue(arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   return rf.call(ctx.locales, fnOpt, ...fnArgs);
@@ -128,7 +128,7 @@ function resolveOptions(
   return opt;
 }
 
-export const formatter: PatternFormatter = {
+export const formatter: PatternFormatter<Runtime> = {
   type: 'function',
   formatAsPart: formatFunctionAsPart,
   formatAsString: formatFunctionAsString,

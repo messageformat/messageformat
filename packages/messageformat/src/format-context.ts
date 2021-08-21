@@ -9,5 +9,5 @@ export interface Context {
   locales: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stringify(value: any): string;
-  [key: string]: unknown;
+  types: Record<string, unknown>;
 }

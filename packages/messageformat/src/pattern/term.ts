@@ -24,13 +24,14 @@ export interface Term extends PatternElement {
 }
 
 interface TermContext extends Context {
-  term: {
-    get(resId: string | undefined, msgPath: string[]): Message | null;
+  types: {
+    term(resId: string | undefined, msgPath: string[]): Message | null;
+    variable: Scope;
   };
 }
 
 const isTermContext = (ctx: Context): ctx is TermContext =>
-  typeof ctx.term === 'object' && !!ctx.term;
+  typeof ctx.types.term === 'function';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isTerm = (part: any): part is Term =>
@@ -67,23 +68,23 @@ export function formatTermAsValue(
 
 function getMessage(ctx: Context, { msg_path, res_id }: Term) {
   const strPath = msg_path.map(part => ctx.formatAsString(part));
-  return isTermContext(ctx) ? ctx.term.get(res_id, strPath) : null;
+  return isTermContext(ctx) ? ctx.types.term(res_id, strPath) : null;
 }
 
-function extendContext(prev: Context, { res_id, scope }: Term): Context {
-  if (isTermContext(prev) && (res_id || scope)) {
-    const ctx = Object.assign({}, prev);
+function extendContext(ctx: Context, { res_id, scope }: Term): Context {
+  if (isTermContext(ctx) && (res_id || scope)) {
+    const types: TermContext['types'] = { ...ctx.types };
     if (res_id)
-      ctx.term.get = (msgResId, msgPath) =>
-        prev.term.get(msgResId || res_id, msgPath);
+      types.term = (msgResId, msgPath) =>
+        ctx.types.term(msgResId || res_id, msgPath);
     if (scope) {
-      const msgScope: Scope = Object.assign({}, ctx.variable);
+      // If the variable type isn't actually available, this has no effect
+      types.variable = { ...ctx.types.variable };
       for (const [key, value] of Object.entries(scope))
-        msgScope[key] = ctx.formatAsValue(value);
-      ctx.variable = msgScope;
+        types.variable[key] = ctx.formatAsValue(value);
     }
-    return ctx;
-  } else return prev;
+    return { ...ctx, types };
+  } else return ctx;
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
@@ -97,16 +98,13 @@ function fallbackValue(ctx: Context, term: Term): string {
   return `-${name}(${scope.join(', ')})`;
 }
 
-export const formatter: PatternFormatter = {
+export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
   formatAsPart: formatTermAsPart,
   formatAsString: formatTermAsString,
   formatAsValue: formatTermAsValue,
-  initContext: (mf, resId) =>
-    <TermContext['term']>{
-      get(msgResId, msgPath) {
-        const msg = mf.getEntry(msgResId || resId, msgPath);
-        return isMessage(msg) ? msg : null;
-      }
-    }
+  initContext: (mf, resId) => (msgResId, msgPath) => {
+    const msg = mf.getEntry(msgResId || resId, msgPath);
+    return isMessage(msg) ? msg : null;
+  }
 };

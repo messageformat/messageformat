@@ -13,16 +13,12 @@ export { isLiteral, Literal } from './literal';
 export { isTerm, Term } from './term';
 export { isVariable, Variable } from './variable';
 
-export interface PatternFormatter {
+export interface PatternFormatter<T = unknown> {
   type: string;
   formatAsPart(ctx: Context, part: PatternElement): FormattedPart;
   formatAsString(ctx: Context, part: PatternElement): string;
   formatAsValue(ctx: Context, part: PatternElement): unknown;
-  initContext?: (
-    mf: Readonly<MessageFormat>,
-    resId: string,
-    scope: Scope
-  ) => unknown;
+  initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 
 export const patternFormatters = [literal, variable, functionFormatter, term];

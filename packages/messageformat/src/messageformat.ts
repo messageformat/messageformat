@@ -216,12 +216,13 @@ export class MessageFormat<
           ? value.toLocaleString(this.#locales, {
               localeMatcher: this.#localeMatcher
             })
-          : String(value)
+          : String(value),
+      types: {}
     };
 
     for (const fmt of this.#formatters) {
       if (typeof fmt.initContext === 'function')
-        ctx[fmt.type] = fmt.initContext(this, resId, scope);
+        ctx.types[fmt.type] = fmt.initContext(this, resId, scope);
     }
 
     return ctx;
