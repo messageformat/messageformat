@@ -2,7 +2,7 @@ import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import {
   argumentSource,
-  formatValueAsParts,
+  formatValueToParts,
   MessageFormatPart
 } from '../formatted-part';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
@@ -51,7 +51,7 @@ export class Formattable<T = unknown> {
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function formatFunctionAsParts(
+export function formatFunctionToParts(
   ctx: Context,
   fn: Function
 ): MessageFormatPart[] {
@@ -63,7 +63,7 @@ export function formatFunctionAsParts(
     res =
       value instanceof Formattable
         ? value.toParts()
-        : formatValueAsParts(ctx, value, source);
+        : formatValueToParts(ctx, value, source);
   } catch (error) {
     res = [
       {
@@ -82,7 +82,7 @@ export function formatFunctionAsParts(
   return res;
 }
 
-export function formatFunctionAsString(ctx: Context, fn: Function): string {
+export function formatFunctionToString(ctx: Context, fn: Function): string {
   try {
     const res = callRuntimeFunction(ctx, fn);
     return res instanceof Formattable ? res.toString() : ctx.stringify(res);
@@ -92,7 +92,7 @@ export function formatFunctionAsString(ctx: Context, fn: Function): string {
   }
 }
 
-export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
+export function formatFunctionToValue(ctx: Context, fn: Function): unknown {
   try {
     const res = callRuntimeFunction(ctx, fn);
     return res instanceof Formattable ? res.toValue() : res;
@@ -104,13 +104,13 @@ export function formatFunctionAsValue(ctx: Context, fn: Function): unknown {
 
 function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
   const rf = (ctx.types.function as Runtime)[func];
-  const fnArgs = args.map(arg => ctx.formatAsValue(arg));
+  const fnArgs = args.map(arg => ctx.formatToValue(arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   return rf.call(ctx.locales, fnOpt, ...fnArgs);
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) => ctx.formatAsValue(v);
+  const resolve = (v: Literal | Variable) => ctx.formatToValue(v);
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))
@@ -131,7 +131,7 @@ function resolveOptions(
           ? expected
           : expected[key];
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = ctx.formatAsValue(value);
+      const res = ctx.formatToValue(value);
       if (
         exp === 'any' ||
         exp === typeof res ||
@@ -156,8 +156,8 @@ function resolveOptions(
 
 export const formatter: PatternFormatter<Runtime> = {
   type: 'function',
-  formatAsParts: formatFunctionAsParts,
-  formatAsString: formatFunctionAsString,
-  formatAsValue: formatFunctionAsValue,
+  formatToParts: formatFunctionToParts,
+  formatToString: formatFunctionToString,
+  formatToValue: formatFunctionToValue,
   initContext: mf => mf.resolvedOptions().runtime
 };

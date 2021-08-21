@@ -2,7 +2,7 @@ import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import {
   argumentSource,
-  formatValueAsParts,
+  formatValueToParts,
   MessageFormatPart
 } from '../formatted-part';
 import type { Literal, PatternFormatter } from './index';
@@ -31,35 +31,35 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function formatVariableAsParts(
+export function formatVariableToParts(
   ctx: Context,
   part: Variable
 ): MessageFormatPart[] {
-  const value = formatVariableAsValue(ctx, part);
+  const value = formatVariableToValue(ctx, part);
   const source = argumentSource(part);
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : formatValueAsParts(ctx, value, source);
+      : formatValueToParts(ctx, value, source);
   if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
   return res;
 }
 
-export function formatVariableAsString(ctx: Context, part: Variable): string {
-  const val = formatVariableAsValue(ctx, part);
+export function formatVariableToString(ctx: Context, part: Variable): string {
+  const val = formatVariableToValue(ctx, part);
   return val !== undefined
     ? ctx.stringify(val)
     : '{' + fallbackValue(ctx, part) + '}';
 }
 
 /** @returns `undefined` if value not found */
-export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
+export function formatVariableToValue(ctx: Context, part: Variable): unknown {
   const { var_path } = part;
   if (var_path.length === 0) return undefined;
   let val: unknown = ctx.types.variable;
   for (const p of var_path) {
     try {
-      const arg = ctx.formatAsValue(p);
+      const arg = ctx.formatToValue(p);
       val = (val as Scope)[String(arg)];
     } catch (_) {
       // TODO: report error
@@ -70,14 +70,14 @@ export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => ctx.formatAsValue(v));
+  const path = var_path.map(v => ctx.formatToValue(v));
   return '$' + path.join('.');
 }
 
 export const formatter: PatternFormatter<Scope> = {
   type: 'variable',
-  formatAsParts: formatVariableAsParts,
-  formatAsString: formatVariableAsString,
-  formatAsValue: formatVariableAsValue,
+  formatToParts: formatVariableToParts,
+  formatToString: formatVariableToString,
+  formatToValue: formatVariableToValue,
   initContext: (_mf, _resId, scope) => scope
 };

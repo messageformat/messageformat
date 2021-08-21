@@ -11,7 +11,7 @@ export type MessageFormatPart = { meta?: Meta; source?: string } & (
   | { type: 'message'; value: ''; meta: Meta }
 );
 
-export function formatValueAsParts(
+export function formatValueToParts(
   { localeMatcher, locales }: Context,
   value: unknown,
   source: string

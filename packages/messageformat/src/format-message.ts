@@ -13,12 +13,12 @@ export function formatToParts(ctx: Context, msg: Message): MessageFormatPart[] {
     res.push({ type: 'message', value: '', meta });
   }
   for (const part of pattern)
-    Array.prototype.push.apply(res, ctx.formatAsParts(part));
+    Array.prototype.push.apply(res, ctx.formatToParts(part));
   return res;
 }
 
 export function formatToString(ctx: Context, msg: Message): string {
   let res = '';
-  for (const part of resolvePattern(ctx, msg)) res += ctx.formatAsString(part);
+  for (const part of resolvePattern(ctx, msg)) res += ctx.formatToString(part);
   return res;
 }

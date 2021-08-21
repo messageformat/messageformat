@@ -19,18 +19,18 @@ export interface Literal extends PatternElement {
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
 
-export function formatLiteralAsParts(_ctx: Context, part: Literal) {
+export function formatLiteralToParts(_ctx: Context, part: Literal) {
   const fmt: MessageFormatPart = { type: 'literal', value: part.value };
   if (part.meta) fmt.meta = { ...part.meta };
   return [fmt];
 }
 
-export const formatLiteralAsValue = (_ctx: unknown, { value }: Literal) =>
+export const formatLiteralToValue = (_ctx: unknown, { value }: Literal) =>
   value;
 
 export const formatter: PatternFormatter = {
   type: 'literal',
-  formatAsParts: formatLiteralAsParts,
-  formatAsString: formatLiteralAsValue,
-  formatAsValue: formatLiteralAsValue
+  formatToParts: formatLiteralToParts,
+  formatToString: formatLiteralToValue,
+  formatToValue: formatLiteralToValue
 };

@@ -15,9 +15,9 @@ export { isVariable, Variable } from './variable';
 
 export interface PatternFormatter<T = unknown> {
   type: string;
-  formatAsParts(ctx: Context, part: PatternElement): MessageFormatPart[];
-  formatAsString(ctx: Context, part: PatternElement): string;
-  formatAsValue(ctx: Context, part: PatternElement): unknown;
+  formatToParts(ctx: Context, part: PatternElement): MessageFormatPart[];
+  formatToString(ctx: Context, part: PatternElement): string;
+  formatToValue(ctx: Context, part: PatternElement): unknown;
   initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 

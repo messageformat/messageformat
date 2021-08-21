@@ -37,7 +37,7 @@ const isTermContext = (ctx: Context): ctx is TermContext =>
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export function formatTermAsParts(
+export function formatTermToParts(
   ctx: Context,
   term: Term
 ): MessageFormatPart[] {
@@ -63,10 +63,10 @@ function getSource({ msg_path, res_id }: Term) {
   return res_id ? `-${res_id}::${name}` : `-${name}`;
 }
 
-export const formatTermAsString = (ctx: Context, term: Term): string =>
-  formatTermAsValue(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}';
+export const formatTermToString = (ctx: Context, term: Term): string =>
+  formatTermToValue(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}';
 
-export function formatTermAsValue(
+export function formatTermToValue(
   ctx: Context,
   term: Term
 ): string | undefined {
@@ -78,7 +78,7 @@ export function formatTermAsValue(
 }
 
 function getMessage(ctx: Context, { msg_path, res_id }: Term) {
-  const strPath = msg_path.map(part => ctx.formatAsString(part));
+  const strPath = msg_path.map(part => ctx.formatToString(part));
   return isTermContext(ctx) ? ctx.types.term(res_id, strPath) : null;
 }
 
@@ -92,14 +92,14 @@ function extendContext(ctx: Context, { res_id, scope }: Term): Context {
       // If the variable type isn't actually available, this has no effect
       types.variable = { ...ctx.types.variable };
       for (const [key, value] of Object.entries(scope))
-        types.variable[key] = ctx.formatAsValue(value);
+        types.variable[key] = ctx.formatToValue(value);
     }
     return { ...ctx, types };
   } else return ctx;
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) => ctx.formatAsString(v);
+  const resolve = (v: Literal | Variable) => ctx.formatToString(v);
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;
@@ -111,9 +111,9 @@ function fallbackValue(ctx: Context, term: Term): string {
 
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
-  formatAsParts: formatTermAsParts,
-  formatAsString: formatTermAsString,
-  formatAsValue: formatTermAsValue,
+  formatToParts: formatTermToParts,
+  formatToString: formatTermToString,
+  formatToValue: formatTermToValue,
   initContext: (mf, resId) => (msgResId, msgPath) => {
     const msg = mf.getEntry(msgResId || resId, msgPath);
     return isMessage(msg) ? msg : null;

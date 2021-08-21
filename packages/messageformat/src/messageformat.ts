@@ -137,14 +137,14 @@ export class MessageFormat {
     };
 
     const ctx: Context = {
-      formatAsParts(part) {
-        return getFormatter(part).formatAsParts(this, part);
+      formatToParts(part) {
+        return getFormatter(part).formatToParts(this, part);
       },
-      formatAsString(part) {
-        return getFormatter(part).formatAsString(this, part);
+      formatToString(part) {
+        return getFormatter(part).formatToString(this, part);
       },
-      formatAsValue(part) {
-        return getFormatter(part).formatAsValue(this, part);
+      formatToValue(part) {
+        return getFormatter(part).formatToValue(this, part);
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,

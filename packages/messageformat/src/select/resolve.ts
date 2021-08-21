@@ -39,8 +39,8 @@ export function resolvePattern(
 }
 
 function resolveSelectorValue(ctx: Context, { value }: Selector): string[] {
-  let res = ctx.formatAsValue(value);
-  if (res === undefined) return [ctx.formatAsString(value)];
+  let res = ctx.formatToValue(value);
+  if (res === undefined) return [ctx.formatToString(value)];
 
   if (typeof res === 'number') {
     try {
