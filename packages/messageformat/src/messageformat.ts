@@ -22,16 +22,6 @@ function getEntry<P extends PatternElement>(res: Resource<P>, path: string[]) {
   return msg;
 }
 
-export type Formatter = (
-  msgPath: string | string[],
-  msgScope?: Partial<Scope> | undefined
-) => string;
-
-export type FormatterToParts<T = string> = (
-  msgPath: string | string[],
-  msgScope?: Partial<Scope> | undefined
-) => FormattedPart<T>[];
-
 export interface MessageFormatOptions {
   formatters?: (
     | 'function'
@@ -82,57 +72,6 @@ export class MessageFormat<
 
   addResources(...resources: Resource<P>[]) {
     this.resources.splice(0, 0, ...resources);
-  }
-
-  createFormatter(basePath: string | string[], baseScope?: Scope): Formatter;
-  createFormatter(
-    resId: string,
-    basePath: string | string[],
-    baseScope?: Scope
-  ): Formatter;
-  createFormatter(
-    arg0: string | string[],
-    arg1?: string | string[] | Scope,
-    arg2?: Scope
-  ) {
-    const { resId, msgPath: basePath, scope } = this.parseArgs(
-      arg0,
-      arg1,
-      arg2
-    );
-    return (msgPath: string | string[], msgScope?: Partial<Scope>) =>
-      this.format(
-        resId,
-        basePath.concat(msgPath),
-        msgScope ? Object.assign({}, scope, msgScope) : scope
-      );
-  }
-
-  createFormatterToParts<S = string>(
-    basePath: string | string[],
-    baseScope?: Scope
-  ): FormatterToParts<R | S>;
-  createFormatterToParts<S = string>(
-    resId: string,
-    basePath: string | string[],
-    baseScope?: Scope
-  ): FormatterToParts<R | S>;
-  createFormatterToParts(
-    arg0: string | string[],
-    arg1?: string | string[] | Scope,
-    arg2?: Scope
-  ) {
-    const { resId, msgPath: basePath, scope } = this.parseArgs(
-      arg0,
-      arg1,
-      arg2
-    );
-    return (msgPath: string | string[], msgScope?: Partial<Scope>) =>
-      this.formatToParts(
-        resId,
-        basePath.concat(msgPath),
-        msgScope ? Object.assign({}, scope, msgScope) : scope
-      );
   }
 
   format(msgPath: string | string[], scope?: Scope): string;
