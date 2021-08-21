@@ -48,7 +48,7 @@ export function formatVariableAsString(ctx: Context, part: Variable): string {
 export function formatVariableAsValue(ctx: Context, part: Variable): unknown {
   const { var_path } = part;
   if (var_path.length === 0) return undefined;
-  let val: unknown = ctx.scope;
+  let val: unknown = ctx.variable;
   for (const p of var_path) {
     try {
       const arg = ctx.formatAsValue(p);
@@ -70,5 +70,6 @@ export const formatter: PatternFormatter = {
   type: 'variable',
   formatAsPart: formatVariableAsPart,
   formatAsString: formatVariableAsString,
-  formatAsValue: formatVariableAsValue
+  formatAsValue: formatVariableAsValue,
+  initContext: (_mf, _resId, scope) => scope
 };

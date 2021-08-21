@@ -3,6 +3,7 @@ import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
 import { FormattedFallback, FormattedMessage } from '../formatted-part';
 import type { Literal, PatternFormatter, Variable } from './index';
+import { Scope } from './variable';
 
 /**
  * A Term is a pointer to a Message or a Select.
@@ -76,9 +77,10 @@ function extendContext(prev: Context, { res_id, scope }: Term): Context {
       ctx.term.get = (msgResId, msgPath) =>
         prev.term.get(msgResId || res_id, msgPath);
     if (scope) {
-      ctx.scope = Object.assign({}, ctx.scope);
+      const msgScope: Scope = Object.assign({}, ctx.variable);
       for (const [key, value] of Object.entries(scope))
-        ctx.scope[key] = ctx.formatAsValue(value);
+        msgScope[key] = ctx.formatAsValue(value);
+      ctx.variable = msgScope;
     }
     return ctx;
   } else return prev;

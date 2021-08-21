@@ -211,7 +211,6 @@ export class MessageFormat<
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
-      scope: scope,
       stringify: value =>
         value && typeof value.toLocaleString === 'function'
           ? value.toLocaleString(this.#locales, {
@@ -222,7 +221,7 @@ export class MessageFormat<
 
     for (const fmt of this.#formatters) {
       if (typeof fmt.initContext === 'function')
-        ctx[fmt.type] = fmt.initContext(this, resId);
+        ctx[fmt.type] = fmt.initContext(this, resId, scope);
     }
 
     return ctx;

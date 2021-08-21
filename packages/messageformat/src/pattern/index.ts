@@ -6,7 +6,7 @@ import type { MessageFormat } from '../messageformat';
 import { formatter as functionFormatter } from './function';
 import { formatter as literal } from './literal';
 import { formatter as term } from './term';
-import { formatter as variable } from './variable';
+import { formatter as variable, Scope } from './variable';
 
 export { isFunction, Function } from './function';
 export { isLiteral, Literal } from './literal';
@@ -18,7 +18,11 @@ export interface PatternFormatter {
   formatAsPart(ctx: Context, part: PatternElement): FormattedPart;
   formatAsString(ctx: Context, part: PatternElement): string;
   formatAsValue(ctx: Context, part: PatternElement): unknown;
-  initContext?: (mf: Readonly<MessageFormat>, resId: string) => unknown;
+  initContext?: (
+    mf: Readonly<MessageFormat>,
+    resId: string,
+    scope: Scope
+  ) => unknown;
 }
 
 export const patternFormatters = [literal, variable, functionFormatter, term];
