@@ -32,9 +32,16 @@ export function mf2xliff(
       attributes.trgLang = target.resolvedOptions().locales[0];
     else if (target)
       throw new Error('source and target must be of the same type');
-    for (const sr of source.resources) {
-      const tr = target?.resources.find(res => res.id === sr.id);
-      elements.push(resolveResource(sr, tr));
+    for (const sr of source.getResources()) {
+      let found = false;
+      if (target)
+        for (const tr of target.getResources())
+          if (tr.id === sr.id) {
+            elements.push(resolveResource(sr, tr));
+            found = true;
+            break;
+          }
+      if (!found) elements.push(resolveResource(sr, undefined));
     }
   } else {
     attributes.srcLang = source.locale;

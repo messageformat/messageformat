@@ -151,7 +151,9 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
  * Only literal values are supported in formatter parameters. Any
  * such value will be passed in as an option `{ param: string }`.
  */
-export function astToMessage(ast: AST.Token[]): Message<Literal | Variable | Function> {
+export function astToMessage(
+  ast: AST.Token[]
+): Message<Literal | Variable | Function> {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {

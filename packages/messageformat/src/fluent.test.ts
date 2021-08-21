@@ -293,7 +293,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const _test = only ? test.only : test;
       _test(name, () => {
-        validate(mf.resources, fluentRuntime);
+        validate(mf.getResources(), fluentRuntime);
         const res = mf.format(msg, scope);
         if (exp instanceof RegExp) expect(res).toMatch(exp);
         else expect(res).toBe(exp);

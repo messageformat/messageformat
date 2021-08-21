@@ -48,8 +48,8 @@ export class MessageFormat<
   #formatters: PatternFormatter[];
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
-  resources: Resource<P>[];
-  runtime: Runtime;
+  #resources: Resource<P>[];
+  #runtime: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
@@ -66,12 +66,12 @@ export class MessageFormat<
       }) ?? patternFormatters;
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales : [locales];
-    this.resources = resources;
-    this.runtime = options?.runtime ?? defaultRuntime;
+    this.#resources = resources;
+    this.#runtime = options?.runtime ?? defaultRuntime;
   }
 
   addResources(...resources: Resource<P>[]) {
-    this.resources.splice(0, 0, ...resources);
+    this.#resources.splice(0, 0, ...resources);
   }
 
   format(msgPath: string | string[], scope?: Scope): string;
@@ -114,7 +114,7 @@ export class MessageFormat<
 
   getEntry(resId: string, path: string | string[]) {
     const p = Array.isArray(path) ? path : [path];
-    for (const res of this.resources) {
+    for (const res of this.#resources) {
       if (res.id === resId) {
         const msg = getEntry(res, p);
         if (msg !== undefined) return msg;
@@ -123,11 +123,15 @@ export class MessageFormat<
     return undefined;
   }
 
+  getResources(): Iterable<Readonly<Resource>> {
+    return this.#resources;
+  }
+
   resolvedOptions() {
     return {
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
-      runtime: Object.freeze(this.runtime)
+      runtime: this.#runtime
     };
   }
 
@@ -181,10 +185,10 @@ export class MessageFormat<
         scope: arg2 || {}
       };
     } else {
-      const r0 = this.resources[0];
+      const r0 = this.#resources[0];
       if (!r0) throw new Error('No resources available');
       const resId = r0.id;
-      for (const res of this.resources)
+      for (const res of this.#resources)
         if (res.id !== resId)
           throw new Error(
             'Explicit resource id required to differentiate resources'

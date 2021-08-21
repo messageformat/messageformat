@@ -133,5 +133,5 @@ export const formatter: PatternFormatter<Runtime> = {
   formatAsPart: formatFunctionAsPart,
   formatAsString: formatFunctionAsString,
   formatAsValue: formatFunctionAsValue,
-  initContext: mf => mf.runtime
+  initContext: mf => mf.resolvedOptions().runtime
 };

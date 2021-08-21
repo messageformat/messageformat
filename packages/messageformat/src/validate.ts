@@ -8,7 +8,10 @@ import { isFunction } from './pattern/function';
 import { isTerm } from './pattern/term';
 import type { Runtime } from './runtime';
 
-export function validate(resources: Resource[], runtime: Runtime) {
+export function validate(
+  resources: Iterable<Readonly<Resource>>,
+  runtime: Runtime
+) {
   function handleMsgParts(parts: PatternElement[]) {
     for (const part of parts) {
       if (isFunction(part)) {
@@ -20,8 +23,17 @@ export function validate(resources: Resource[], runtime: Runtime) {
         // TODO: Once runtime arg requirements are defined, test against them
       } else if (isTerm(part)) {
         const { msg_path, res_id } = part;
-        if (res_id && resources.every(res => res.id !== res_id))
-          throw new ReferenceError(`Resource not available: ${res_id}`);
+        if (res_id) {
+          let found = false;
+          for (const res of resources) {
+            if (res.id === res_id) {
+              found = true;
+              break;
+            }
+          }
+          if (!found)
+            throw new ReferenceError(`Resource not available: ${res_id}`);
+        }
         handleMsgParts(msg_path);
       }
     }
