@@ -1,5 +1,6 @@
 import type { Meta } from './data-model';
 import { Context } from './format-context';
+import { Formattable } from './formattable';
 import { isLiteral, isVariable, Literal, Variable } from './pattern';
 
 export type MessageFormatPart = { meta?: Meta; source?: string } & (
@@ -16,30 +17,8 @@ export function formatValueToParts(
   value: unknown,
   source: string
 ): MessageFormatPart[] {
-  let res: MessageFormatPart[];
-  if (
-    typeof value === 'number' ||
-    value instanceof Number ||
-    value instanceof BigInt
-  ) {
-    const nf = new Intl.NumberFormat(locales, { localeMatcher });
-    res = nf.formatToParts(value as number); // work around incorrect TS signature
-  } else if (value instanceof Date) {
-    const dtf = new Intl.DateTimeFormat(locales, { localeMatcher });
-    res = dtf.formatToParts(value);
-  } else if (
-    value == null ||
-    typeof value === 'boolean' ||
-    value instanceof Boolean ||
-    value instanceof String
-  ) {
-    return [{ type: 'dynamic', value: String(value), source }];
-  } else {
-    // At this point, value is symbol | function | object
-    return [{ type: 'dynamic', value, source }];
-  }
-  for (const fmt of res) fmt.source = source;
-  return res;
+  const fmt = Formattable.from(value);
+  return fmt.toParts(locales, { localeMatcher }, source);
 }
 
 export function argumentSource(arg: Literal | Variable): string {

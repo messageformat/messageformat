@@ -39,10 +39,7 @@ export function formatFunctionToParts(
   let res: MessageFormatPart[];
   try {
     const value = callRuntimeFunction(ctx, fn);
-    res =
-      value instanceof Formattable
-        ? value.toParts(source)
-        : formatValueToParts(ctx, value, source);
+    res = formatValueToParts(ctx, value, source);
   } catch (error) {
     res = [
       {

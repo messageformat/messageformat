@@ -41,8 +41,6 @@ export function formatVariableToParts(
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : value instanceof Formattable
-      ? value.toParts(source)
       : formatValueToParts(ctx, value, source);
   if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
   return res;
