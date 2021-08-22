@@ -1,47 +1,90 @@
 import { MessageFormatPart } from './formatted-part';
 
 export class Formattable<T = unknown> {
-  toParts: (source: string) => MessageFormatPart[];
-  toString: () => string;
-  toValue: () => T;
+  valueOf: () => T;
 
-  constructor({
-    toParts,
-    toString,
-    toValue
-  }: {
-    toParts?: (source: string) => MessageFormatPart[];
-    toString?: () => string;
-    toValue: () => T;
-  }) {
-    this.toParts =
-      toParts || (source => [{ type: 'dynamic', value: toValue(), source }]);
-    this.toString = toString || (() => String(toValue()));
-    this.toValue = toValue;
+  constructor(
+    value: T,
+    format?: {
+      toParts?: (source: string) => MessageFormatPart[];
+      toString?: () => string;
+    }
+  ) {
+    this.valueOf = () => value;
+    if (format) {
+      if (format.toParts) this.toParts = format.toParts;
+      if (format.toString) this.toString = format.toString;
+    }
+  }
+
+  toParts(source: string): MessageFormatPart[] {
+    return [{ type: 'dynamic', value: this.valueOf(), source }];
+  }
+
+  toString(): string {
+    return String(this.valueOf());
   }
 }
 
 export class FormattableNumber extends Formattable<number | BigInt> {
+  locales: string[] | undefined;
+  options: Intl.NumberFormatOptions | undefined;
+
   constructor(
-    number: number | BigInt,
-    locales?: string | string[],
+    number: number | BigInt | FormattableNumber,
+    options?: Intl.NumberFormatOptions | undefined
+  );
+  constructor(
+    number: number | BigInt | FormattableNumber,
+    locales: string | string[] | null,
+    options?: Intl.NumberFormatOptions | undefined
+  );
+  constructor(
+    number: number | BigInt | FormattableNumber,
+    arg?: string | string[] | Intl.NumberFormatOptions | null,
     options?: Intl.NumberFormatOptions
   ) {
-    let nf: Intl.NumberFormat | null = null;
-    const getNF = () => {
-      if (!nf) nf = new Intl.NumberFormat(locales, options);
-      return nf;
-    };
-    super({
-      toParts(source) {
-        const parts: MessageFormatPart[] = getNF().formatToParts(
-          number as number
-        );
-        for (const part of parts) part.source = source;
-        return parts;
-      },
-      toString: () => getNF().format(number as number),
-      toValue: () => number
-    });
+    let lc: string[] | undefined;
+    if (typeof arg === 'string') lc = [arg];
+    else if (Array.isArray(arg)) lc = arg.slice();
+    else {
+      lc = undefined;
+      options = arg ?? undefined;
+    }
+
+    if (number instanceof FormattableNumber) {
+      super(number.valueOf());
+      this.locales = number.locales || lc;
+      this.options = number.options
+        ? { ...number.options, ...options }
+        : options;
+    } else {
+      super(number);
+      this.locales = lc;
+      this.options = options;
+    }
+  }
+
+  getNumberFormatter(
+    locales?: string | string[] | undefined,
+    options?: Intl.NumberFormatOptions | undefined
+  ): Intl.NumberFormat {
+    if (this.options)
+      options = options ? { ...this.options, ...options } : this.options;
+    return new Intl.NumberFormat(this.locales || locales, options);
+  }
+
+  toParts(source: string) {
+    const nf = this.getNumberFormatter();
+    const number = this.valueOf() as number;
+    const parts: MessageFormatPart[] = nf.formatToParts(number);
+    for (const part of parts) part.source = source;
+    return parts;
+  }
+
+  toString() {
+    const nf = this.getNumberFormatter();
+    const number = this.valueOf() as number;
+    return nf.format(number);
   }
 }

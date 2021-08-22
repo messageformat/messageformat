@@ -1,3 +1,4 @@
+import { FormattableNumber } from '../formattable';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
 export const datetime: RuntimeFunction<string> = {
@@ -40,15 +41,22 @@ export const datetime: RuntimeFunction<string> = {
   }
 };
 
-export const number: RuntimeFunction<string> = {
+export const number: RuntimeFunction<FormattableNumber> = {
   call: function number(
     locales: string[],
     options: RuntimeOptions | undefined,
     arg: unknown
   ) {
-    const nf = new Intl.NumberFormat(locales, options);
-    return nf.format(Number(arg));
+    const num =
+      typeof arg === 'number' ||
+      arg instanceof BigInt ||
+      arg instanceof FormattableNumber
+        ? arg
+        : Number(arg);
+    return new FormattableNumber(num, locales, options);
   },
+
+  formattable: FormattableNumber,
 
   options: {
     localeMatcher: ['best fit', 'lookup'],

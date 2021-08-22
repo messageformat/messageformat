@@ -16,16 +16,15 @@ describe('Formattable variables', () => {
     ]);
   });
 
-  test('Formattable({ toValue })', () => {
-    const val = new Formattable({ toValue: () => 42 });
+  test('Formattable(number)', () => {
+    const val = new Formattable(42);
     expect(mf.formatToParts('msg', { val })).toMatchObject([
       { type: 'dynamic', value: 42, source: '$val' }
     ]);
   });
 
-  test('Formattable({ toValue, toParts })', () => {
-    const val = new Formattable({
-      toValue: () => 42,
+  test('Formattable(number, { toParts })', () => {
+    const val = new Formattable(42, {
       toParts: source => {
         const nf = new Intl.NumberFormat('en', {
           minimumFractionDigits: 1

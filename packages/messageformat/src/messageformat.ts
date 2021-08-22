@@ -143,8 +143,8 @@ export class MessageFormat {
       formatToString(part) {
         return getFormatter(part).formatToString(this, part);
       },
-      formatToValue(part) {
-        return getFormatter(part).formatToValue(this, part);
+      formatToValue(part, formattable) {
+        return getFormatter(part).formatToValue(this, part, formattable);
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,

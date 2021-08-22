@@ -3,6 +3,7 @@ import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
 
 import { fluentRuntime, Formattable, MessageFormat, Runtime } from '../index';
+import { FormattableNumber } from '../formattable';
 
 describe('Function returns generic value', () => {
   test('string', () => {
@@ -56,7 +57,7 @@ describe('Function returns Formattable', () => {
     const runtime: Runtime = {
       STRINGIFY: {
         call: (_lc, _opt, arg: string) =>
-          new Formattable({
+          new Formattable(String(arg), {
             toParts: source => [
               {
                 type: 'dynamic',
@@ -64,8 +65,7 @@ describe('Function returns Formattable', () => {
                 source,
                 meta: { foo: 'FOO' }
               }
-            ],
-            toValue: () => String(arg)
+            ]
           }),
         options: 'never'
       }
@@ -79,6 +79,47 @@ describe('Function returns Formattable', () => {
         meta: { foo: 'FOO' }
       }
     ]);
+  });
+});
+
+describe('Function uses Formattable argument', () => {
+  test('Options are merged', () => {
+    const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
+    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const val = new FormattableNumber(BigInt(12345678), { useGrouping: false });
+    const parts = mf.formatToParts('msg', { val });
+
+    const nf = new Intl.NumberFormat('en', {
+      minimumFractionDigits: 2,
+      useGrouping: false
+    });
+    expect(parts).toMatchObject(nf.formatToParts(12345678));
+    expect(parts[0].source).toBe('NUMBER($val)');
+  });
+
+  test('Function options take precedence', () => {
+    const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
+    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const val = new FormattableNumber(42, { minimumFractionDigits: 4 });
+    const parts = mf.formatToParts('msg', { val });
+
+    const nf = new Intl.NumberFormat('en', { minimumFractionDigits: 2 });
+    expect(parts).toMatchObject(nf.formatToParts(42));
+    expect(parts[0].source).toBe('NUMBER($val)');
+  });
+
+  test('Formattable locales take precedence', () => {
+    const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
+    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const val = new FormattableNumber(12345, 'fi');
+    const parts = mf.formatToParts('msg', { val });
+
+    const nf = new Intl.NumberFormat('fi', { minimumFractionDigits: 2 });
+    expect(parts).toMatchObject(nf.formatToParts(12345));
+    expect(parts[0].source).toBe('NUMBER($val)');
   });
 });
 

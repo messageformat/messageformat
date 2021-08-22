@@ -71,10 +71,17 @@ export function formatFunctionToString(ctx: Context, fn: Function): string {
   }
 }
 
-export function formatFunctionToValue(ctx: Context, fn: Function): unknown {
+export function formatFunctionToValue(
+  ctx: Context,
+  fn: Function,
+  formattable?: globalThis.Function
+): unknown {
   try {
     const res = callRuntimeFunction(ctx, fn);
-    return res instanceof Formattable ? res.toValue() : res;
+    return res instanceof Formattable &&
+      !(formattable && res instanceof formattable)
+      ? res.valueOf()
+      : res;
   } catch (_) {
     // TODO: report error
     return undefined;
@@ -83,7 +90,7 @@ export function formatFunctionToValue(ctx: Context, fn: Function): unknown {
 
 function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
   const rf = (ctx.types.function as Runtime)[func];
-  const fnArgs = args.map(arg => ctx.formatToValue(arg));
+  const fnArgs = args.map(arg => ctx.formatToValue(arg, rf.formattable));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   return rf.call(ctx.locales, fnOpt, ...fnArgs);
 }

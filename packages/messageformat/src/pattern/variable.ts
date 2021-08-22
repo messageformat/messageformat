@@ -58,9 +58,16 @@ export function formatVariableToString(ctx: Context, part: Variable): string {
 }
 
 /** @returns `undefined` if value not found */
-export function formatVariableToValue(ctx: Context, part: Variable): unknown {
+export function formatVariableToValue(
+  ctx: Context,
+  part: Variable,
+  formattable?: globalThis.Function
+): unknown {
   const value = getValue(ctx, part);
-  return value instanceof Formattable ? value.toValue() : value;
+  return value instanceof Formattable &&
+    !(formattable && value instanceof formattable)
+    ? value.valueOf()
+    : value;
 }
 
 /** @returns `undefined` if value not found */

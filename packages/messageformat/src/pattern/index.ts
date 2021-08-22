@@ -17,7 +17,11 @@ export interface PatternFormatter<T = unknown> {
   type: string;
   formatToParts(ctx: Context, part: PatternElement): MessageFormatPart[];
   formatToString(ctx: Context, part: PatternElement): string;
-  formatToValue(ctx: Context, part: PatternElement): unknown;
+  formatToValue(
+    ctx: Context,
+    part: PatternElement,
+    formattable?: Function
+  ): unknown;
   initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 
