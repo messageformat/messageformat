@@ -3,7 +3,7 @@ import { MessageFormatPart } from './formatted-part';
 export class Formattable<T = unknown, O = Record<string, unknown>> {
   static from(value: unknown): Formattable {
     if (value instanceof Formattable) return value;
-    if (typeof value === 'number' || value instanceof BigInt)
+    if (typeof value === 'number' || typeof value === 'bigint')
       return new FormattableNumber(value);
     if (value instanceof Date) return new FormattableDateTime(value);
     return new Formattable(value);
@@ -65,23 +65,23 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
 }
 
 export class FormattableNumber extends Formattable<
-  number | BigInt,
+  number | bigint,
   Intl.NumberFormatOptions
 > {
   locales: string[] | undefined;
   options: Intl.NumberFormatOptions | undefined;
 
   constructor(
-    number: number | BigInt | FormattableNumber,
+    number: number | bigint | FormattableNumber,
     options?: Intl.NumberFormatOptions | undefined
   );
   constructor(
-    number: number | BigInt | FormattableNumber,
+    number: number | bigint | FormattableNumber,
     locales: string | string[] | null,
     options?: Intl.NumberFormatOptions | undefined
   );
   constructor(
-    number: number | BigInt | FormattableNumber,
+    number: number | bigint | FormattableNumber,
     arg?: string | string[] | Intl.NumberFormatOptions | null,
     options?: Intl.NumberFormatOptions
   ) {

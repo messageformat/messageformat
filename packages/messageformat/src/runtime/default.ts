@@ -50,7 +50,7 @@ export const number: RuntimeFunction<FormattableNumber> = {
   ) {
     const num =
       typeof arg === 'number' ||
-      arg instanceof BigInt ||
+      typeof arg === 'bigint' ||
       arg instanceof FormattableNumber
         ? arg
         : Number(arg);
