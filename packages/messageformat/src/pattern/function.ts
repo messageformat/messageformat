@@ -75,7 +75,7 @@ export function formatFunctionToValue(
     const res = callRuntimeFunction(ctx, fn);
     return res instanceof Formattable &&
       !(formattable && res instanceof formattable)
-      ? res.valueOf()
+      ? res.value
       : res;
   } catch (_) {
     // TODO: report error

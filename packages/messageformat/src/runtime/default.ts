@@ -1,19 +1,20 @@
-import { FormattableNumber } from '../formattable';
+import { FormattableDateTime, FormattableNumber } from '../formattable';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
-export const datetime: RuntimeFunction<string> = {
+export const datetime: RuntimeFunction<FormattableDateTime> = {
   call: function datetime(
     locales: string[],
     options: RuntimeOptions | undefined,
     arg: unknown
   ) {
-    const d =
-      typeof arg === 'number' || arg instanceof Date
+    const date =
+      arg instanceof Date || arg instanceof FormattableDateTime
         ? arg
-        : new Date(String(arg));
-    const dtf = new Intl.DateTimeFormat(locales, options);
-    return dtf.format(d);
+        : new Date(typeof arg === 'number' ? arg : String(arg));
+    return new FormattableDateTime(date, locales, options);
   },
+
+  formattable: FormattableDateTime,
 
   options: {
     localeMatcher: ['best fit', 'lookup'],

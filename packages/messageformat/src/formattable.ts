@@ -1,14 +1,15 @@
 import { MessageFormatPart } from './formatted-part';
 
 export class Formattable<T = unknown, O = Record<string, unknown>> {
-  static from(value: unknown): Formattable | FormattableNumber {
+  static from(value: unknown): Formattable {
     if (value instanceof Formattable) return value;
-    else if (typeof value === 'number' || value instanceof BigInt)
+    if (typeof value === 'number' || value instanceof BigInt)
       return new FormattableNumber(value);
-    else return new Formattable(value);
+    if (value instanceof Date) return new FormattableDateTime(value);
+    return new Formattable(value);
   }
 
-  valueOf: () => T;
+  readonly value: T;
 
   constructor(
     value: T,
@@ -17,7 +18,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
       toString?: Formattable<T, O>['toString'];
     }
   ) {
-    this.valueOf = () => value;
+    this.value = value;
     if (format) {
       if (format.toParts) this.toParts = format.toParts;
       if (format.toString) this.toString = format.toString;
@@ -29,7 +30,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     options: O | undefined,
     source: string
   ): MessageFormatPart[] {
-    const value = this.valueOf();
+    const value = this.value;
     let res: MessageFormatPart[];
     if (value instanceof Date) {
       const dtf = new Intl.DateTimeFormat(locales, options);
@@ -52,7 +53,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
   toString(locales?: string[], options?: O | undefined): string {
     const value: {
       toLocaleString: (...args: unknown[]) => string;
-    } = this.valueOf();
+    } = this.value;
     if (locales && value && typeof value.toLocaleString === 'function')
       try {
         return value.toLocaleString(locales, options);
@@ -93,7 +94,7 @@ export class FormattableNumber extends Formattable<
     }
 
     if (number instanceof FormattableNumber) {
-      super(number.valueOf());
+      super(number.value);
       this.locales = number.locales || lc;
       this.options = number.options
         ? { ...number.options, ...options }
@@ -105,7 +106,7 @@ export class FormattableNumber extends Formattable<
     }
   }
 
-  getNumberFormatter(
+  private getNumberFormatter(
     locales?: string | string[] | undefined,
     options?: Intl.NumberFormatOptions | undefined
   ): Intl.NumberFormat {
@@ -120,7 +121,7 @@ export class FormattableNumber extends Formattable<
     source: string
   ) {
     const nf = this.getNumberFormatter(locales, options);
-    const number = this.valueOf() as number;
+    const number = this.value as number;
     const parts: MessageFormatPart[] = nf.formatToParts(number);
     for (const part of parts) part.source = source;
     return parts;
@@ -128,7 +129,82 @@ export class FormattableNumber extends Formattable<
 
   toString(locales?: string[], options?: Intl.NumberFormatOptions | undefined) {
     const nf = this.getNumberFormatter(locales, options);
-    const number = this.valueOf() as number;
+    const number = this.value as number;
     return nf.format(number);
+  }
+}
+
+export class FormattableDateTime extends Formattable<
+  Date,
+  Intl.DateTimeFormatOptions
+> {
+  locales: string[] | undefined;
+  options: Intl.DateTimeFormatOptions | undefined;
+
+  constructor(
+    date: Date | FormattableDateTime,
+    options?: Intl.DateTimeFormatOptions | undefined
+  );
+  constructor(
+    date: Date | FormattableDateTime,
+    locales: string | string[] | null,
+    options?: Intl.DateTimeFormatOptions | undefined
+  );
+  constructor(
+    date: Date | FormattableDateTime,
+    arg?: string | string[] | Intl.DateTimeFormatOptions | null,
+    options?: Intl.DateTimeFormatOptions
+  ) {
+    let lc: string[] | undefined;
+    if (typeof arg === 'string') lc = [arg];
+    else if (Array.isArray(arg)) lc = arg.slice();
+    else {
+      lc = undefined;
+      options = arg ?? undefined;
+    }
+
+    if (date instanceof FormattableDateTime) {
+      super(date.value);
+      this.locales = date.locales || lc;
+      this.options = date.options ? { ...date.options, ...options } : options;
+    } else {
+      super(date);
+      this.locales = lc;
+      this.options = options;
+    }
+  }
+
+  private getDateTimeFormatter(
+    locales?: string | string[] | undefined,
+    options?: Intl.DateTimeFormatOptions | undefined
+  ): Intl.DateTimeFormat {
+    if (this.options)
+      options = options ? { ...this.options, ...options } : this.options;
+    return new Intl.DateTimeFormat(this.locales || locales, options);
+  }
+
+  toParts(
+    locales: string[],
+    options: Intl.DateTimeFormatOptions | undefined,
+    source: string
+  ) {
+    const dtf = this.getDateTimeFormatter(locales, options);
+    const parts: MessageFormatPart[] = dtf.formatToParts(this.value);
+    for (const part of parts) part.source = source;
+    return parts;
+  }
+
+  toString(
+    locales?: string[],
+    options?: Intl.DateTimeFormatOptions | undefined
+  ) {
+    const hasOpt =
+      (options && Object.keys(options).some(key => key !== 'localeMatcher')) ||
+      (this.options &&
+        Object.keys(this.options).some(key => key !== 'localeMatcher'));
+    if (hasOpt) {
+      const dtf = this.getDateTimeFormatter(locales, options);
+      return dtf.format(this.value);
+    } else return this.value.toLocaleString(this.locales || locales);
   }
 }

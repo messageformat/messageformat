@@ -57,11 +57,11 @@ export function formatVariableToValue(
   part: Variable,
   formattable?: globalThis.Function
 ): unknown {
-  const value = getValue(ctx, part);
-  return value instanceof Formattable &&
-    !(formattable && value instanceof formattable)
-    ? value.valueOf()
-    : value;
+  const res = getValue(ctx, part);
+  return res instanceof Formattable &&
+    !(formattable && res instanceof formattable)
+    ? res.value
+    : res;
 }
 
 /** @returns `undefined` if value not found */
