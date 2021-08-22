@@ -1,6 +1,6 @@
 import { compileFluent } from '@messageformat/compiler';
 
-import { Formattable, MessageFormat } from '../index';
+import { Formattable, FormattableNumber, MessageFormat } from '../index';
 
 describe('Formattable variables', () => {
   let mf: MessageFormat;
@@ -37,6 +37,17 @@ describe('Formattable variables', () => {
       { type: 'integer', value: '42', source: '$val' },
       { type: 'decimal', value: '.', source: '$val' },
       { type: 'fraction', value: '0', source: '$val' }
+    ]);
+  });
+
+  test('FormattableNumber(BigInt)', () => {
+    const val = new FormattableNumber(BigInt(42), 'en', {
+      minimumFractionDigits: 2
+    });
+    expect(mf.formatToParts('msg', { val })).toMatchObject([
+      { type: 'integer', value: '42', source: '$val' },
+      { type: 'decimal', value: '.', source: '$val' },
+      { type: 'fraction', value: '00', source: '$val' }
     ]);
   });
 });
