@@ -50,13 +50,12 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
   }
 
   toString(locales?: string[], options?: O | undefined): string {
-    const value = this.valueOf();
-    if (locales)
+    const value: {
+      toLocaleString: (...args: unknown[]) => string;
+    } = this.valueOf();
+    if (locales && value && typeof value.toLocaleString === 'function')
       try {
-        if (value instanceof Date) {
-          const dtf = new Intl.DateTimeFormat(locales, options);
-          return dtf.format(value);
-        }
+        return value.toLocaleString(locales, options);
       } catch (_) {
         // TODO: Report error?
       }

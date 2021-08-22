@@ -1,10 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import {
-  argumentSource,
-  formatValueToParts,
-  MessageFormatPart
-} from '../formatted-part';
+import { argumentSource, MessageFormatPart } from '../formatted-part';
 import { Formattable } from '../formattable';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
@@ -39,7 +35,8 @@ export function formatFunctionToParts(
   let res: MessageFormatPart[];
   try {
     const value = callRuntimeFunction(ctx, fn);
-    res = formatValueToParts(ctx, value, source);
+    const opt = { localeMatcher: ctx.localeMatcher };
+    res = Formattable.from(value).toParts(ctx.locales, opt, source);
   } catch (error) {
     res = [
       {
@@ -61,7 +58,8 @@ export function formatFunctionToParts(
 export function formatFunctionToString(ctx: Context, fn: Function): string {
   try {
     const res = callRuntimeFunction(ctx, fn);
-    return res instanceof Formattable ? res.toString() : ctx.stringify(res);
+    const opt = { localeMatcher: ctx.localeMatcher };
+    return Formattable.from(res).toString(ctx.locales, opt);
   } catch (_) {
     // TODO: report error
     return '{' + fallbackValue(ctx, fn) + '}';

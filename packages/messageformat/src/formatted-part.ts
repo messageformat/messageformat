@@ -1,6 +1,4 @@
 import type { Meta } from './data-model';
-import { Context } from './format-context';
-import { Formattable } from './formattable';
 import { isLiteral, isVariable, Literal, Variable } from './pattern';
 
 export type MessageFormatPart = { meta?: Meta; source?: string } & (
@@ -11,15 +9,6 @@ export type MessageFormatPart = { meta?: Meta; source?: string } & (
   | { type: 'fallback'; value: string; source: string }
   | { type: 'message'; value: ''; meta: Meta }
 );
-
-export function formatValueToParts(
-  { localeMatcher, locales }: Context,
-  value: unknown,
-  source: string
-): MessageFormatPart[] {
-  const fmt = Formattable.from(value);
-  return fmt.toParts(locales, { localeMatcher }, source);
-}
 
 export function argumentSource(arg: Literal | Variable): string {
   if (isVariable(arg)) {

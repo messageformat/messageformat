@@ -148,12 +148,6 @@ export class MessageFormat {
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
-      stringify: value =>
-        value && typeof value.toLocaleString === 'function'
-          ? value.toLocaleString(this.#locales, {
-              localeMatcher: this.#localeMatcher
-            })
-          : String(value),
       types: {}
     };
 

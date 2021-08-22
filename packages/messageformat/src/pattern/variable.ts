@@ -1,11 +1,7 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { Formattable } from '../formattable';
-import {
-  argumentSource,
-  formatValueToParts,
-  MessageFormatPart
-} from '../formatted-part';
+import { argumentSource, MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter } from './index';
 
 /**
@@ -38,21 +34,21 @@ export function formatVariableToParts(
 ): MessageFormatPart[] {
   const value = getValue(ctx, part);
   const source = argumentSource(part);
+  const opt = { localeMatcher: ctx.localeMatcher };
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : formatValueToParts(ctx, value, source);
+      : Formattable.from(value).toParts(ctx.locales, opt, source);
   if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
   return res;
 }
 
 export function formatVariableToString(ctx: Context, part: Variable): string {
   const value = getValue(ctx, part);
+  const opt = { localeMatcher: ctx.localeMatcher };
   return value === undefined
     ? '{' + fallbackValue(ctx, part) + '}'
-    : value instanceof Formattable
-    ? value.toString()
-    : ctx.stringify(value);
+    : Formattable.from(value).toString(ctx.locales, opt);
 }
 
 /** @returns `undefined` if value not found */
