@@ -17,13 +17,25 @@ export function formatValueToParts(
   source: string
 ): MessageFormatPart[] {
   let res: MessageFormatPart[];
-  if (typeof value === 'number' || value instanceof Number) {
+  if (
+    typeof value === 'number' ||
+    value instanceof Number ||
+    value instanceof BigInt
+  ) {
     const nf = new Intl.NumberFormat(locales, { localeMatcher });
-    res = nf.formatToParts(Number(value));
+    res = nf.formatToParts(value as number); // work around incorrect TS signature
   } else if (value instanceof Date) {
     const dtf = new Intl.DateTimeFormat(locales, { localeMatcher });
     res = dtf.formatToParts(value);
+  } else if (
+    value == null ||
+    typeof value === 'boolean' ||
+    value instanceof Boolean ||
+    value instanceof String
+  ) {
+    return [{ type: 'dynamic', value: String(value), source }];
   } else {
+    // At this point, value is symbol | function | object
     return [{ type: 'dynamic', value, source }];
   }
   for (const fmt of res) fmt.source = source;
