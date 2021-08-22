@@ -57,11 +57,11 @@ describe('Function returns Formattable', () => {
       STRINGIFY: {
         call: (_lc, _opt, arg: string) =>
           new Formattable({
-            toParts: () => [
+            toParts: source => [
               {
                 type: 'dynamic',
                 value: String(arg),
-                source: 'SOURCE',
+                source,
                 meta: { foo: 'FOO' }
               }
             ],
@@ -72,7 +72,12 @@ describe('Function returns Formattable', () => {
     };
     const mf = new MessageFormat('en', { runtime }, res);
     expect(mf.formatToParts('msg', { var: 42 })).toEqual([
-      { type: 'dynamic', value: '42', source: 'SOURCE', meta: { foo: 'FOO' } }
+      {
+        type: 'dynamic',
+        value: '42',
+        source: 'STRINGIFY($var)',
+        meta: { foo: 'FOO' }
+      }
     ]);
   });
 });

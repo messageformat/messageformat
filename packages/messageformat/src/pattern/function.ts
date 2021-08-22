@@ -5,6 +5,7 @@ import {
   formatValueToParts,
   MessageFormatPart
 } from '../formatted-part';
+import { Formattable } from '../formattable';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
 import { isLiteral } from './literal';
@@ -25,28 +26,6 @@ export interface Function extends PatternElement {
   options?: Record<string, Literal | Variable>;
 }
 
-export class Formattable<T = unknown> {
-  toParts: () => MessageFormatPart[];
-  toString: () => string;
-  toValue: () => T;
-
-  constructor({
-    toParts,
-    toString,
-    toValue
-  }: {
-    toParts?: () => MessageFormatPart[];
-    toString?: () => string;
-    toValue: () => T;
-  }) {
-    this.toParts =
-      toParts ||
-      (() => [{ type: 'dynamic', value: toValue(), source: 'Formattable' }]);
-    this.toString = toString || (() => String(toValue()));
-    this.toValue = toValue;
-  }
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
@@ -62,7 +41,7 @@ export function formatFunctionToParts(
     const value = callRuntimeFunction(ctx, fn);
     res =
       value instanceof Formattable
-        ? value.toParts()
+        ? value.toParts(source)
         : formatValueToParts(ctx, value, source);
   } catch (error) {
     res = [

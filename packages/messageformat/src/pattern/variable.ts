@@ -1,5 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
+import { Formattable } from '../formattable';
 import {
   argumentSource,
   formatValueToParts,
@@ -35,31 +36,41 @@ export function formatVariableToParts(
   ctx: Context,
   part: Variable
 ): MessageFormatPart[] {
-  const value = formatVariableToValue(ctx, part);
+  const value = getValue(ctx, part);
   const source = argumentSource(part);
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
+      : value instanceof Formattable
+      ? value.toParts(source)
       : formatValueToParts(ctx, value, source);
   if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
   return res;
 }
 
 export function formatVariableToString(ctx: Context, part: Variable): string {
-  const val = formatVariableToValue(ctx, part);
-  return val !== undefined
-    ? ctx.stringify(val)
-    : '{' + fallbackValue(ctx, part) + '}';
+  const value = getValue(ctx, part);
+  return value === undefined
+    ? '{' + fallbackValue(ctx, part) + '}'
+    : value instanceof Formattable
+    ? value.toString()
+    : ctx.stringify(value);
 }
 
 /** @returns `undefined` if value not found */
 export function formatVariableToValue(ctx: Context, part: Variable): unknown {
-  const { var_path } = part;
+  const value = getValue(ctx, part);
+  return value instanceof Formattable ? value.toValue() : value;
+}
+
+/** @returns `undefined` if value not found */
+function getValue(ctx: Context, { var_path }: Variable): unknown {
   if (var_path.length === 0) return undefined;
   let val: unknown = ctx.types.variable;
   for (const p of var_path) {
     try {
       const arg = ctx.formatToValue(p);
+      if (arg === undefined) return undefined;
       val = (val as Scope)[String(arg)];
     } catch (_) {
       // TODO: report error

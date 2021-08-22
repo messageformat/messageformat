@@ -1,4 +1,5 @@
 export * from './data-model';
+export { Formattable } from './formattable';
 export type { MessageFormatPart } from './formatted-part';
 export { MessageFormat } from './messageformat';
 export * from './pattern';
