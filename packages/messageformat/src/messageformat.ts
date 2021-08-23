@@ -12,14 +12,14 @@ import { PatternFormatter, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
 import { defaultRuntime, Runtime } from './runtime';
 
-function getEntry<P extends PatternElement>(res: Resource<P>, path: string[]) {
-  let msg: Resource<P> | MessageGroup<P> | Message<P> = res;
+function getMessage(res: Resource, path: string[]) {
+  let msg: Resource | MessageGroup | Message = res;
   for (const part of path) {
     if (!msg || msg.type === 'message' || msg.type === 'select')
       return undefined;
     msg = msg.entries[part];
   }
-  return msg;
+  return isMessage(msg) ? msg : undefined;
 }
 
 export interface MessageFormatOptions {
@@ -79,9 +79,9 @@ export class MessageFormat {
     arg2?: Scope
   ) {
     const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
-    const msg = this.getEntry(resId, msgPath);
+    const msg = this.getMessage(resId, msgPath);
     let res = '';
-    if (isMessage(msg)) {
+    if (msg) {
       const ctx = this.createContext(resId, scope);
       for (const fs of formatToString(ctx, msg)) res += fs;
     }
@@ -100,18 +100,16 @@ export class MessageFormat {
     arg2?: Scope
   ) {
     const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
-    const msg = this.getEntry(resId, msgPath);
-    return isMessage(msg)
-      ? formatToParts(this.createContext(resId, scope), msg)
-      : [];
+    const msg = this.getMessage(resId, msgPath);
+    return msg ? formatToParts(this.createContext(resId, scope), msg) : [];
   }
 
-  getEntry(resId: string, path: string | string[]) {
+  getMessage(resId: string, path: string | string[]) {
     const p = Array.isArray(path) ? path : [path];
     for (const res of this.#resources) {
       if (res.id === resId) {
-        const msg = getEntry(res, p);
-        if (msg !== undefined) return msg;
+        const msg = getMessage(res, p);
+        if (msg) return msg;
       }
     }
     return undefined;

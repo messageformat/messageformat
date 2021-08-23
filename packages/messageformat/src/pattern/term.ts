@@ -1,4 +1,4 @@
-import { isMessage, Message, PatternElement } from '../data-model';
+import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
 import { argumentSource, MessageFormatPart } from '../formatted-part';
@@ -25,7 +25,7 @@ export interface Term extends PatternElement {
 
 interface TermContext extends Context {
   types: {
-    term(resId: string | undefined, msgPath: string[]): Message | null;
+    term(resId: string | undefined, msgPath: string[]): Message | undefined;
     variable: Scope;
   };
 }
@@ -114,8 +114,6 @@ export const formatter: PatternFormatter<TermContext['types']['term']> = {
   formatToParts: formatTermToParts,
   formatToString: formatTermToString,
   formatToValue: formatTermToValue,
-  initContext: (mf, resId) => (msgResId, msgPath) => {
-    const msg = mf.getEntry(msgResId || resId, msgPath);
-    return isMessage(msg) ? msg : null;
-  }
+  initContext: (mf, resId) => (msgResId, msgPath) =>
+    mf.getMessage(msgResId || resId, msgPath)
 };
