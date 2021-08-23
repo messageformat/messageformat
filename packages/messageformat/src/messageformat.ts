@@ -1,26 +1,11 @@
-import {
-  isMessage,
-  Message,
-  MessageGroup,
-  PatternElement,
-  Resource
-} from './data-model';
+import { PatternElement, Resource } from './data-model';
 import type { Context } from './format-context';
 import { formatToParts, formatToString } from './format-message';
 import { MessageFormatPart } from './formatted-part';
 import { PatternFormatter, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
+import { ResourceReader } from './resource-reader';
 import { defaultRuntime, Runtime } from './runtime';
-
-function getMessage(res: Resource, path: string[]) {
-  let msg: Resource | MessageGroup | Message = res;
-  for (const part of path) {
-    if (!msg || msg.type === 'message' || msg.type === 'select')
-      return undefined;
-    msg = msg.entries[part];
-  }
-  return isMessage(msg) ? msg : undefined;
-}
 
 export interface MessageFormatOptions {
   formatters?: (
@@ -45,13 +30,13 @@ export class MessageFormat {
   #formatters: PatternFormatter[];
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
-  #resources: Resource[];
+  #resources: ResourceReader[];
   #runtime: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
     options?: MessageFormatOptions | null,
-    ...resources: Resource[]
+    ...resources: (Resource | ResourceReader)[]
   ) {
     this.#formatters =
       options?.formatters?.map(fmtOpt => {
@@ -63,12 +48,12 @@ export class MessageFormat {
       }) ?? patternFormatters;
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales : [locales];
-    this.#resources = resources;
+    this.#resources = resources.map(ResourceReader.from);
     this.#runtime = options?.runtime ?? defaultRuntime;
   }
 
-  addResources(...resources: Resource[]) {
-    this.#resources.splice(0, 0, ...resources);
+  addResources(...resources: (Resource | ResourceReader)[]) {
+    this.#resources.splice(0, 0, ...resources.map(ResourceReader.from));
   }
 
   format(msgPath: string | string[], scope?: Scope): string;
@@ -107,8 +92,8 @@ export class MessageFormat {
   getMessage(resId: string, path: string | string[]) {
     const p = Array.isArray(path) ? path : [path];
     for (const res of this.#resources) {
-      if (res.id === resId) {
-        const msg = getMessage(res, p);
+      if (res.getId() === resId) {
+        const msg = res.getMessage(p);
         if (msg) return msg;
       }
     }
@@ -169,9 +154,9 @@ export class MessageFormat {
     } else {
       const r0 = this.#resources[0];
       if (!r0) throw new Error('No resources available');
-      const resId = r0.id;
+      const resId = r0.getId();
       for (const res of this.#resources)
-        if (res.id !== resId)
+        if (res.getId() !== resId)
           throw new Error(
             'Explicit resource id required to differentiate resources'
           );
