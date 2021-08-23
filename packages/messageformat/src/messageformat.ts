@@ -117,10 +117,6 @@ export class MessageFormat {
     return undefined;
   }
 
-  getResources(): Iterable<Readonly<Resource>> {
-    return this.#resources;
-  }
-
   resolvedOptions() {
     return {
       localeMatcher: this.#localeMatcher,

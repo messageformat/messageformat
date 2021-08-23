@@ -15,8 +15,8 @@ let _id = 0;
 const nextId = () => `m${++_id}`;
 
 export function mf2xliff(
-  source: MF.MessageFormat | MF.Resource,
-  target?: MF.MessageFormat | MF.Resource
+  source: MF.Resource,
+  target?: MF.Resource | undefined
 ): X.Xliff {
   _id = 0;
   const attributes: X.Xliff['attributes'] = {
@@ -25,46 +25,25 @@ export function mf2xliff(
     xmlns: 'urn:oasis:names:tc:xliff:document:2.0',
     'xmlns:mf': 'http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet' // FIXME
   };
-  const elements: X.File[] = [];
-  if (source instanceof MessageFormat) {
-    attributes.srcLang = source.resolvedOptions().locales[0];
-    if (target instanceof MessageFormat)
-      attributes.trgLang = target.resolvedOptions().locales[0];
-    else if (target)
-      throw new Error('source and target must be of the same type');
-    for (const sr of source.getResources()) {
-      let found = false;
-      if (target)
-        for (const tr of target.getResources())
-          if (tr.id === sr.id) {
-            elements.push(resolveResource(sr, tr));
-            found = true;
-            break;
-          }
-      if (!found) elements.push(resolveResource(sr, undefined));
-    }
-  } else {
-    attributes.srcLang = source.locale;
-    if (target instanceof MessageFormat)
-      throw new Error('source and target must be of the same type');
-    else if (target) attributes.trgLang = target.locale;
-    elements.push(resolveResource(source, target));
-  }
-  return { type: 'element', name: 'xliff', attributes, elements };
-}
+  attributes.srcLang = source.locale;
+  if (target instanceof MessageFormat)
+    throw new Error('source and target must be of the same type');
+  else if (target) attributes.trgLang = target.locale;
 
-function resolveResource(
-  source: MF.Resource,
-  target: MF.Resource | undefined
-): X.File {
-  return {
+  const elements: (X.Unit | X.Group)[] = [];
+  for (const [key, srcMsg] of Object.entries(source.entries)) {
+    const trgMsg = target?.entries[key];
+    const entry = resolveEntry([key], srcMsg, trgMsg);
+    elements.push(entry);
+  }
+  const file: X.File = {
     type: 'element',
     name: 'file',
     attributes: { id: `f:${source.id}`, 'mf:resourceId': source.id },
-    elements: Object.entries(source.entries).map(([key, srcMsg]) =>
-      resolveEntry([key], srcMsg, target?.entries[key])
-    )
+    elements
   };
+
+  return { type: 'element', name: 'xliff', attributes, elements: [file] };
 }
 
 const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({

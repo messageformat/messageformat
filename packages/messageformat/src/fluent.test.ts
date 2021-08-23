@@ -277,9 +277,14 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 )) {
   describe(title, () => {
     let mf: MessageFormat;
+    let res: Resource;
     beforeAll(() => {
-      const res = compileFluent(src, { id: 'res', locale });
+      res = compileFluent(src, { id: 'res', locale });
       mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
+    });
+
+    test('validate', () => {
+      validate([res], fluentRuntime);
     });
 
     for (const { msg, scope, exp, only } of tests) {
@@ -293,10 +298,9 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const _test = only ? test.only : test;
       _test(name, () => {
-        validate(mf.getResources(), fluentRuntime);
-        const res = mf.format(msg, scope);
-        if (exp instanceof RegExp) expect(res).toMatch(exp);
-        else expect(res).toBe(exp);
+        const str = mf.format(msg, scope);
+        if (exp instanceof RegExp) expect(str).toMatch(exp);
+        else expect(str).toBe(exp);
       });
     }
   });
