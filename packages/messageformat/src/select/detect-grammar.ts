@@ -1,4 +1,5 @@
 import type { SelectMessage } from '../data-model';
+import { Formattable, FormattableNumber } from '../formattable';
 
 const grammarCases = [
   'ablative',
@@ -55,8 +56,8 @@ const plurals = ['zero', 'one', 'two', 'few', 'many'];
 const isNumeric = (str: string) => Number.isFinite(Number(str));
 
 type ResolvedSelector = {
-  value: string[];
-  default: string;
+  fmt: Formattable;
+  def: string;
 };
 
 export interface FormattedSelectMeta {
@@ -69,36 +70,52 @@ export interface FormattedSelectMeta {
 }
 
 export function getFormattedSelectMeta(
-  select: SelectMessage,
-  res: ResolvedSelector[],
-  key: string[]
+  locales: string[],
+  selectMsg: SelectMessage,
+  key: string[],
+  sel: ResolvedSelector[],
+  fallback: boolean[]
 ) {
+  let hasMeta = false;
   const meta: FormattedSelectMeta = {};
-  const { gcase, gender, plural } = detectGrammarSelectors(select);
+  const { gcase, gender, plural } = detectGrammarSelectors(selectMsg);
 
-  const cm = selectorMeta(res, key, gcase);
-  if (cm) {
-    meta.case = cm.orig;
-    if (cm.fallback !== null) meta.caseFallback = cm.fallback;
+  if (gcase !== -1) {
+    hasMeta = true;
+    if (fallback[gcase]) {
+      const { fmt, def } = sel[gcase];
+      meta.case = String(fmt.value);
+      meta.caseFallback = def;
+    } else {
+      meta.case = key[gcase];
+    }
   }
 
-  const gm = selectorMeta(res, key, gender);
-  if (gm) {
-    meta.gender = gm.orig;
-    if (gm.fallback !== null) meta.genderFallback = gm.fallback;
+  if (gender !== -1) {
+    hasMeta = true;
+    if (fallback[gender]) {
+      const { fmt, def } = sel[gender];
+      meta.gender = String(fmt.value);
+      meta.genderFallback = def;
+    } else {
+      meta.gender = key[gender];
+    }
   }
 
-  const k0 = res[plural]?.value[0];
-  const pm =
-    isNumeric(k0) || plurals.includes(k0)
-      ? selectorMeta(res, key, plural)
-      : null;
-  if (pm) {
-    meta.plural = pm.orig;
-    if (pm.fallback !== null) meta.pluralFallback = pm.fallback;
+  if (plural !== -1) {
+    const { fmt, def } = sel[plural];
+    if (fmt instanceof FormattableNumber) {
+      hasMeta = true;
+      if (fallback[plural]) {
+        meta.plural = fmt.getPluralCategory(locales);
+        meta.pluralFallback = def;
+      } else {
+        meta.plural = key[plural];
+      }
+    }
   }
 
-  return cm || gm || pm ? meta : null;
+  return hasMeta ? meta : null;
 }
 
 const enum GC {
@@ -144,20 +161,4 @@ function detectGrammarSelectors({ cases, select }: SelectMessage) {
     gender: gc.indexOf(GC.Gender),
     plural: gc.indexOf(GC.Plural)
   };
-}
-
-function selectorMeta(
-  res: ResolvedSelector[],
-  key: string[],
-  idx: number
-): { orig: string; fallback: string | null } | null {
-  if (idx === -1) return null;
-  const { value, default: def } = res[idx];
-  const k = key[idx];
-  if (value.includes(k)) {
-    return { orig: k, fallback: null };
-  } else {
-    const orig = value.find(v => !isNumeric(v)) ?? value[0];
-    return { orig, fallback: k ?? def };
-  }
 }

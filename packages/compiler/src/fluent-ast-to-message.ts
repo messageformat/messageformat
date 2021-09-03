@@ -215,12 +215,10 @@ export function astToMessage(
   }
   addParts(ast, []);
 
-  const select = args.map(arg => {
-    const value = expressionToPart(arg.selector);
-    if (typeof value === 'object' && 'func' in value && value.func === 'NUMBER')
-      value.func = 'plural';
-    return { value, default: String(arg.default) };
-  });
+  const select = args.map(arg => ({
+    value: expressionToPart(arg.selector),
+    default: String(arg.default)
+  }));
   const msg: SelectMessage<Part> = { type: 'select', select, cases };
   if (comment) msg.meta = { comment: comment.content };
   return msg;

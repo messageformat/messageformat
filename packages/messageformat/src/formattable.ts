@@ -25,12 +25,20 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     }
   }
 
+  getValue() {
+    return this.value;
+  }
+
+  match(_locales: string[], key: string) {
+    return String(this.value) === key;
+  }
+
   toParts(
     locales: string[],
     options: O | undefined,
     source: string
   ): MessageFormatPart[] {
-    const value = this.value;
+    const value = this.getValue();
     let res: MessageFormatPart[];
     if (value instanceof Date) {
       const dtf = new Intl.DateTimeFormat(locales, options);
@@ -53,7 +61,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
   toString(locales?: string[], options?: O | undefined): string {
     const value: {
       toLocaleString: (...args: unknown[]) => string;
-    } = this.value;
+    } = this.getValue();
     if (locales && value && typeof value.toLocaleString === 'function')
       try {
         return value.toLocaleString(locales, options);
@@ -66,24 +74,28 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
 
 export class FormattableNumber extends Formattable<
   number | bigint,
-  Intl.NumberFormatOptions
+  Intl.NumberFormatOptions & Intl.PluralRulesOptions
 > {
   locales: string[] | undefined;
-  options: Intl.NumberFormatOptions | undefined;
+  options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
 
   constructor(
     number: number | bigint | FormattableNumber,
-    options?: Intl.NumberFormatOptions | undefined
+    options?: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined
   );
   constructor(
     number: number | bigint | FormattableNumber,
     locales: string | string[] | null,
-    options?: Intl.NumberFormatOptions | undefined
+    options?: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined
   );
   constructor(
     number: number | bigint | FormattableNumber,
-    arg?: string | string[] | Intl.NumberFormatOptions | null,
-    options?: Intl.NumberFormatOptions
+    arg?:
+      | string
+      | string[]
+      | (Intl.NumberFormatOptions & Intl.PluralRulesOptions)
+      | null,
+    options?: Intl.NumberFormatOptions & Intl.PluralRulesOptions
   ) {
     let lc: string[] | undefined;
     if (typeof arg === 'string') lc = [arg];
@@ -115,13 +127,31 @@ export class FormattableNumber extends Formattable<
     return new Intl.NumberFormat(this.locales || locales, options);
   }
 
+  getPluralCategory(locales: string[]) {
+    const pr = new Intl.PluralRules(
+      this.locales || locales,
+      this.options as Intl.PluralRulesOptions | undefined
+    );
+    // Intl.PluralRules really does need a number
+    const num = Number(this.getValue());
+    return pr.select(num);
+  }
+
+  /** Uses value directly due to plural offset weirdness */
+  match(locales: string[], key: string) {
+    return (
+      (/^[0-9]+$/.test(key) && key === String(this.value)) ||
+      key === this.getPluralCategory(locales)
+    );
+  }
+
   toParts(
     locales: string[],
     options: Intl.NumberFormatOptions | undefined,
     source: string
   ) {
     const nf = this.getNumberFormatter(locales, options);
-    const number = this.value as number;
+    const number = this.getValue() as number; // FIXME: TS should know that bigint is fine here
     const parts: MessageFormatPart[] = nf.formatToParts(number);
     for (const part of parts) part.source = source;
     return parts;
@@ -129,8 +159,7 @@ export class FormattableNumber extends Formattable<
 
   toString(locales?: string[], options?: Intl.NumberFormatOptions | undefined) {
     const nf = this.getNumberFormatter(locales, options);
-    const number = this.value as number;
-    return nf.format(number);
+    return nf.format(this.getValue());
   }
 }
 
@@ -189,7 +218,7 @@ export class FormattableDateTime extends Formattable<
     source: string
   ) {
     const dtf = this.getDateTimeFormatter(locales, options);
-    const parts: MessageFormatPart[] = dtf.formatToParts(this.value);
+    const parts: MessageFormatPart[] = dtf.formatToParts(this.getValue());
     for (const part of parts) part.source = source;
     return parts;
   }
@@ -202,9 +231,10 @@ export class FormattableDateTime extends Formattable<
       (options && Object.keys(options).some(key => key !== 'localeMatcher')) ||
       (this.options &&
         Object.keys(this.options).some(key => key !== 'localeMatcher'));
+    const date = this.getValue();
     if (hasOpt) {
       const dtf = this.getDateTimeFormatter(locales, options);
-      return dtf.format(this.value);
-    } else return this.value.toLocaleString(this.locales || locales);
+      return dtf.format(date);
+    } else return date.toLocaleString(this.locales || locales);
   }
 }

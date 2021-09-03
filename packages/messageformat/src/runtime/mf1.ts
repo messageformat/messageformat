@@ -1,5 +1,4 @@
 import { FormattableDateTime, FormattableNumber } from '../formattable';
-import { runtime as MF2 } from './default';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
 const getParam = (options: RuntimeOptions | undefined) =>
@@ -84,57 +83,54 @@ export const number: RuntimeFunction<FormattableNumber> = {
     options: RuntimeOptions | undefined,
     arg: unknown
   ) {
-    let num =
+    const num =
       typeof arg === 'number' ||
       typeof arg === 'bigint' ||
       arg instanceof FormattableNumber
         ? arg
         : Number(arg);
-    const offset = Number(options?.pluralOffset);
-    if (Number.isFinite(offset)) {
-      if (num instanceof FormattableNumber) num = num.value; // FIXME
-      if (typeof num === 'bigint') num -= BigInt(offset);
-      else num -= offset;
-    }
-    const param = getParam(options);
-    let opt: Intl.NumberFormatOptions | undefined = undefined;
-    switch (param) {
-      case 'integer':
-        opt = { maximumFractionDigits: 0 };
-        break;
-      case 'percent':
-        opt = { style: 'percent' };
-        break;
-      case 'currency': {
-        opt = { style: 'currency', currency: 'USD' };
-        break;
+
+    const opt: Intl.NumberFormatOptions &
+      Intl.PluralRulesOptions & { pluralOffset?: number } = {};
+    if (options) {
+      switch (String(options.param).trim()) {
+        case 'integer':
+          opt.maximumFractionDigits = 0;
+          break;
+        case 'percent':
+          opt.style = 'percent';
+          break;
+        case 'currency': {
+          opt.style = 'currency';
+          opt.currency = 'USD';
+          break;
+        }
       }
+      const offset = Number(options.pluralOffset);
+      if (Number.isFinite(offset)) opt.pluralOffset = offset;
+      if (options.type === 'ordinal') opt.type = 'ordinal';
     }
-    return new FormattableNumber(num, locales, opt);
+
+    const fmt = new FormattableNumber(
+      num,
+      locales,
+      Object.keys(opt).length > 0 ? opt : undefined
+    );
+    fmt.getValue = () => {
+      const num = fmt.value;
+      const opt = (fmt.options || {}) as { pluralOffset?: number };
+      const offset = Number(opt.pluralOffset || 0);
+      return typeof num === 'bigint' ? num - BigInt(offset) : num - offset;
+    };
+    return fmt;
   },
 
   formattable: FormattableNumber,
   options: {
     param: 'string',
-    pluralOffset: 'number'
+    pluralOffset: 'number',
+    type: ['cardinal', 'ordinal']
   }
-};
-
-export const plural: RuntimeFunction<string[]> = {
-  call: function plural(
-    locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: unknown
-  ) {
-    const n = Number(arg);
-    if (!Number.isFinite(n)) return ['other'];
-    const offset = Number(options && options.pluralOffset);
-    const pr = new Intl.PluralRules(locales, options);
-    const cat = pr.select(Number.isFinite(offset) ? n - offset : n);
-    return Number.isInteger(n) ? [String(n), cat] : [cat];
-  },
-
-  options: Object.assign({ pluralOffset: 'number' }, MF2.plural.options)
 };
 
 export const time: RuntimeFunction<FormattableDateTime> = {
@@ -166,6 +162,5 @@ export const runtime = {
   date,
   duration,
   number,
-  plural,
   time
 };

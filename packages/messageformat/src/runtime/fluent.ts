@@ -1,7 +1,6 @@
-import { datetime, number, plural } from './default';
+import { datetime, number } from './default';
 
 export const runtime = {
   DATETIME: datetime,
-  NUMBER: number,
-  plural
+  NUMBER: number
 };

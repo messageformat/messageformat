@@ -115,7 +115,7 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
     var_path: [{ type: 'literal', value: arg }]
   };
   if (type === 'select') return argVar;
-  const fn: Function = { type: 'function', func: 'plural', args: [argVar] };
+  const fn: Function = { type: 'function', func: 'number', args: [argVar] };
 
   const po = pluralOffset
     ? { type: 'literal' as const, value: String(pluralOffset) }

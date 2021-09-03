@@ -77,36 +77,14 @@ export const number: RuntimeFunction<FormattableNumber> = {
     notation: 'string',
     signDisplay: 'string',
     unit: 'string',
-    unitDisplay: 'string'
-  }
-};
+    unitDisplay: 'string',
 
-export const plural: RuntimeFunction<string[]> = {
-  call: function plural(
-    locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: unknown
-  ) {
-    const n = Number(arg);
-    if (!Number.isFinite(n)) return ['other'];
-    const pr = new Intl.PluralRules(locales, options);
-    const cat = pr.select(n);
-    return Number.isInteger(n) ? [String(n), cat] : [cat];
-  },
-
-  options: {
-    localeMatcher: ['lookup', 'best fit'],
-    type: ['cardinal', 'ordinal'],
-    minimumIntegerDigits: 'number',
-    minimumFractionDigits: 'number',
-    maximumFractionDigits: 'number',
-    minimumSignificantDigits: 'number',
-    maximumSignificantDigits: 'number'
+    // Intl.PluralRules
+    type: ['cardinal', 'ordinal']
   }
 };
 
 export const runtime = {
   datetime,
-  number,
-  plural
+  number
 };

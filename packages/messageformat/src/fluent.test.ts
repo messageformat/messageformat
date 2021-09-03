@@ -485,7 +485,7 @@ describe('formatToParts', () => {
         {
           type: 'message',
           value: '',
-          meta: { gender: '{$gender}', genderFallback: 'neuter' }
+          meta: { gender: 'undefined', genderFallback: 'neuter' }
         },
         { type: 'literal', value: 'N' }
       ]);
