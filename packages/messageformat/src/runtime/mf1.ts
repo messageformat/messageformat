@@ -1,4 +1,8 @@
-import { FormattableDateTime, FormattableNumber } from '../formattable';
+import {
+  Formattable,
+  FormattableDateTime,
+  FormattableNumber
+} from '../formattable';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
 const getParam = (options: RuntimeOptions | undefined) =>
@@ -10,12 +14,14 @@ export const date: RuntimeFunction<FormattableDateTime> = {
   call: function date(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: unknown
+    arg: Formattable
   ) {
-    const date =
-      arg instanceof Date || arg instanceof FormattableDateTime
-        ? arg
-        : new Date(typeof arg === 'number' ? arg : String(arg));
+    let date: Date | FormattableDateTime;
+    if (arg instanceof FormattableDateTime) date = arg;
+    else {
+      const value = arg.getValue();
+      date = new Date(typeof value === 'number' ? value : String(value));
+    }
     const size = getParam(options) as DateTimeSize;
     const opt: Intl.DateTimeFormatOptions = {
       localeMatcher: options?.localeMatcher,
@@ -32,7 +38,6 @@ export const date: RuntimeFunction<FormattableDateTime> = {
     return new FormattableDateTime(date, locales, opt);
   },
 
-  formattable: FormattableDateTime,
   options: { param: 'string' }
 };
 
@@ -44,8 +49,12 @@ export const date: RuntimeFunction<FormattableDateTime> = {
  *   trailing `.sss` part for non-integer input
  */
 export const duration: RuntimeFunction<string> = {
-  call: function duration(_locales: string[], _options: unknown, arg: unknown) {
-    let value = typeof arg === 'number' ? arg : Number(arg);
+  call: function duration(
+    _locales: string[],
+    _options: unknown,
+    arg: Formattable
+  ) {
+    let value = Number(arg.getValue());
     if (!isFinite(value)) return String(value);
     let sign = '';
     if (value < 0) {
@@ -81,15 +90,9 @@ export const number: RuntimeFunction<FormattableNumber> = {
   call: function number(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: unknown
+    arg: Formattable
   ) {
-    const num =
-      typeof arg === 'number' ||
-      typeof arg === 'bigint' ||
-      arg instanceof FormattableNumber
-        ? arg
-        : Number(arg);
-
+    const num = arg instanceof FormattableNumber ? arg : Number(arg.getValue());
     const opt: Intl.NumberFormatOptions &
       Intl.PluralRulesOptions & { pluralOffset?: number } = {};
     if (options) {
@@ -125,7 +128,6 @@ export const number: RuntimeFunction<FormattableNumber> = {
     return fmt;
   },
 
-  formattable: FormattableNumber,
   options: {
     param: 'string',
     pluralOffset: 'number',
@@ -137,12 +139,14 @@ export const time: RuntimeFunction<FormattableDateTime> = {
   call: function time(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: unknown
+    arg: Formattable
   ) {
-    const time =
-      arg instanceof Date || arg instanceof FormattableDateTime
-        ? arg
-        : new Date(typeof arg === 'number' ? arg : String(arg));
+    let time: Date | FormattableDateTime;
+    if (arg instanceof FormattableDateTime) time = arg;
+    else {
+      const value = arg.getValue();
+      time = new Date(typeof value === 'number' ? value : String(value));
+    }
     const size = getParam(options) as DateTimeSize;
     const opt: Intl.DateTimeFormatOptions = {
       localeMatcher: options?.localeMatcher,
@@ -154,7 +158,6 @@ export const time: RuntimeFunction<FormattableDateTime> = {
     return new FormattableDateTime(time, locales, opt);
   },
 
-  formattable: FormattableDateTime,
   options: { param: ['short', 'default', 'long', 'full'] }
 };
 

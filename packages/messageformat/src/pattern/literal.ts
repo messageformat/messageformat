@@ -1,5 +1,5 @@
 import type { PatternElement } from '../data-model';
-import type { Context } from '../format-context';
+import { Formattable } from '../formattable';
 import type { MessageFormatPart } from '../formatted-part';
 import type { PatternFormatter } from './index';
 
@@ -19,18 +19,13 @@ export interface Literal extends PatternElement {
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
 
-export function formatLiteralToParts(_ctx: Context, part: Literal) {
-  const fmt: MessageFormatPart = { type: 'literal', value: part.value };
-  if (part.meta) fmt.meta = { ...part.meta };
-  return [fmt];
-}
-
-export const formatLiteralToValue = (_ctx: unknown, { value }: Literal) =>
-  value;
-
 export const formatter: PatternFormatter = {
   type: 'literal',
-  formatToParts: formatLiteralToParts,
-  formatToString: formatLiteralToValue,
-  formatToValue: formatLiteralToValue
+  asFormattable: (_ctx, lit: Literal) => Formattable.from(lit.value),
+  formatToParts(_ctx, lit: Literal) {
+    const fmt: MessageFormatPart = { type: 'literal', value: lit.value };
+    if (lit.meta) fmt.meta = { ...lit.meta };
+    return [fmt];
+  },
+  formatToString: (_ctx, lit: Literal) => lit.value
 };

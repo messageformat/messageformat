@@ -1,20 +1,24 @@
-import { FormattableDateTime, FormattableNumber } from '../formattable';
+import {
+  Formattable,
+  FormattableDateTime,
+  FormattableNumber
+} from '../formattable';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
 export const datetime: RuntimeFunction<FormattableDateTime> = {
   call: function datetime(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: unknown
+    arg: Formattable
   ) {
-    const date =
-      arg instanceof Date || arg instanceof FormattableDateTime
-        ? arg
-        : new Date(typeof arg === 'number' ? arg : String(arg));
+    let date: Date | FormattableDateTime;
+    if (arg instanceof FormattableDateTime) date = arg;
+    else {
+      const value = arg.getValue();
+      date = new Date(typeof value === 'number' ? value : String(value));
+    }
     return new FormattableDateTime(date, locales, options);
   },
-
-  formattable: FormattableDateTime,
 
   options: {
     localeMatcher: ['best fit', 'lookup'],
@@ -46,18 +50,11 @@ export const number: RuntimeFunction<FormattableNumber> = {
   call: function number(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: unknown
+    arg: Formattable
   ) {
-    const num =
-      typeof arg === 'number' ||
-      typeof arg === 'bigint' ||
-      arg instanceof FormattableNumber
-        ? arg
-        : Number(arg);
+    const num = arg instanceof FormattableNumber ? arg : Number(arg.getValue());
     return new FormattableNumber(num, locales, options);
   },
-
-  formattable: FormattableNumber,
 
   options: {
     localeMatcher: ['best fit', 'lookup'],

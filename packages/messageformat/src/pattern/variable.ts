@@ -28,7 +28,7 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-export function formatVariableToParts(
+function formatVariableToParts(
   ctx: Context,
   part: Variable
 ): MessageFormatPart[] {
@@ -43,7 +43,7 @@ export function formatVariableToParts(
   return res;
 }
 
-export function formatVariableToString(ctx: Context, part: Variable): string {
+function formatVariableToString(ctx: Context, part: Variable): string {
   const value = getValue(ctx, part);
   const opt = { localeMatcher: ctx.localeMatcher };
   return value === undefined
@@ -52,25 +52,13 @@ export function formatVariableToString(ctx: Context, part: Variable): string {
 }
 
 /** @returns `undefined` if value not found */
-export function formatVariableToValue(
-  ctx: Context,
-  part: Variable,
-  formattable?: globalThis.Function
-): unknown {
-  const res = getValue(ctx, part);
-  return res instanceof Formattable &&
-    !(formattable && res instanceof formattable)
-    ? res.value
-    : res;
-}
-
-/** @returns `undefined` if value not found */
 function getValue(ctx: Context, { var_path }: Variable): unknown {
   if (var_path.length === 0) return undefined;
   let val: unknown = ctx.types.variable;
   for (const p of var_path) {
+    if (!val || val instanceof Formattable) return undefined;
     try {
-      const arg = ctx.formatToValue(p);
+      const arg = ctx.asFormattable(p).getValue();
       if (arg === undefined) return undefined;
       val = (val as Scope)[String(arg)];
     } catch (_) {
@@ -82,14 +70,14 @@ function getValue(ctx: Context, { var_path }: Variable): unknown {
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => ctx.formatToValue(v));
+  const path = var_path.map(v => ctx.asFormattable(v).getValue());
   return '$' + path.join('.');
 }
 
 export const formatter: PatternFormatter<Scope> = {
   type: 'variable',
+  asFormattable: (ctx, part: Variable) => Formattable.from(getValue(ctx, part)),
   formatToParts: formatVariableToParts,
   formatToString: formatVariableToString,
-  formatToValue: formatVariableToValue,
   initContext: (_mf, _resId, scope) => scope
 };

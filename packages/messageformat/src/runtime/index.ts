@@ -20,7 +20,6 @@ export interface RuntimeFunction<T> {
     options: RuntimeOptions | undefined,
     ...args: any[]
   ): T;
-  formattable?: Function;
   options: RuntimeType | Record<string, RuntimeType>;
 }
 

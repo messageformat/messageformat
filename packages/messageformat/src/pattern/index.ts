@@ -1,5 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
+import type { Formattable } from '../formattable';
 import type { MessageFormatPart } from '../formatted-part';
 import type { MessageFormat } from '../messageformat';
 
@@ -15,13 +16,9 @@ export { isVariable, Variable } from './variable';
 
 export interface PatternFormatter<T = unknown> {
   type: string;
+  asFormattable(ctx: Context, part: PatternElement): Formattable;
   formatToParts(ctx: Context, part: PatternElement): MessageFormatPart[];
   formatToString(ctx: Context, part: PatternElement): string;
-  formatToValue(
-    ctx: Context,
-    part: PatternElement,
-    formattable?: Function
-  ): unknown;
   initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 

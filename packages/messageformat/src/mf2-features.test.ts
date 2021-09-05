@@ -13,6 +13,7 @@ import type { Function } from './pattern/function';
 import type { Literal } from './pattern/literal';
 import type { Term } from './pattern/term';
 import { MessageFormatPart } from './formatted-part';
+import { Formattable, FormattableNumber } from './formattable';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource<Literal | Term> = {
@@ -112,9 +113,11 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function parseRangeArgs(
-    start: number | { start: number; end: number },
-    end: number | undefined
+    start_: FormattableNumber | Formattable<{ start: number; end: number }>,
+    end_: FormattableNumber | undefined
   ) {
+    const start = start_.getValue();
+    const end = end_?.getValue();
     if (typeof end === 'number') {
       if (typeof start !== 'number' && typeof start !== 'string')
         throw new Error(`Invalid arguments (${start}, ${end})`);
@@ -128,8 +131,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   function formatRange(
     _locales: string[],
     _options: RuntimeOptions | undefined,
-    start: number | { start: number; end: number },
-    end?: number
+    start: FormattableNumber | Formattable<{ start: number; end: number }>,
+    end?: FormattableNumber
   ) {
     const range = parseRangeArgs(start, end);
     return `${range.start} - ${range.end}`;
@@ -137,8 +140,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   function pluralRange(
     locales: string[],
     options: RuntimeOptions | undefined,
-    start: number | { start: number; end: number },
-    end?: number
+    start: FormattableNumber | Formattable<{ start: number; end: number }>,
+    end?: FormattableNumber
   ) {
     if (locales[0] !== 'nl') throw new Error('Only Dutch supported');
     const range = parseRangeArgs(start, end);
@@ -445,10 +448,10 @@ maybe('List formatting', () => {
     function LIST(
       locales: string[],
       options: RuntimeOptions | undefined,
-      ...args: (string | string[])[]
+      ...args: Formattable<string | string[]>[]
     ) {
       let list: string[] = [];
-      for (const arg of args) list = list.concat(arg);
+      for (const arg of args) list = list.concat(arg.getValue());
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
@@ -490,28 +493,35 @@ maybe('List formatting', () => {
       fluentRuntime
     );
 
-    function dative(locales: string[], _options: unknown, arg: string) {
+    function dative(
+      locales: string[],
+      _options: unknown,
+      arg: Formattable<string>
+    ) {
       if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
       const data: Record<string, string> = {
         Maria: 'Mariei',
         Ileana: 'Ilenei',
         Petre: 'lui Petre'
       };
-      return data[arg] || arg;
+      const value = arg.getValue();
+      return data[value] || value;
     }
 
     function LIST(
       locales: string[],
       options: RuntimeOptions | undefined,
-      ...args: (string | string[])[]
+      ...args: Formattable<string | string[]>[]
     ) {
       let list: string[] = [];
-      for (const arg of args) list = list.concat(arg);
+      for (const arg of args) list = list.concat(arg.getValue());
       if (typeof options?.each === 'string') {
         const fn = runtime[options.each];
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
-        list = list.map(li => String(fn.call(locales, undefined, li)));
+        list = list.map(li =>
+          String(fn.call(locales, undefined, Formattable.from(li)))
+        );
       }
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);

@@ -1,6 +1,5 @@
 import { isSelectMessage, Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { Formattable } from '../formattable';
 import { FormattedSelectMeta, getFormattedSelectMeta } from './detect-grammar';
 
 export function resolvePattern(
@@ -10,13 +9,10 @@ export function resolvePattern(
 ): PatternElement[] {
   if (!isSelectMessage(msg)) return msg.value;
 
-  const sel = msg.select.map(s => {
-    const value = ctx.formatToValue(s.value, Formattable);
-    return {
-      fmt: Formattable.from(value),
-      def: s.default || 'other'
-    };
-  });
+  const sel = msg.select.map(s => ({
+    fmt: ctx.asFormattable(s.value),
+    def: s.default || 'other'
+  }));
 
   cases: for (const { key, value } of msg.cases) {
     const fallback = new Array<boolean>(key.length);

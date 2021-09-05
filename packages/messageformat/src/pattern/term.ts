@@ -1,6 +1,7 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
+import { Formattable } from '../formattable';
 import { argumentSource, MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter, Variable } from './index';
 import type { Scope } from './variable';
@@ -37,10 +38,7 @@ const isTermContext = (ctx: Context): ctx is TermContext =>
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-export function formatTermToParts(
-  ctx: Context,
-  term: Term
-): MessageFormatPart[] {
+function formatTermToParts(ctx: Context, term: Term): MessageFormatPart[] {
   const msg = getMessage(ctx, term);
   const source = getSource(term);
   let res: MessageFormatPart[];
@@ -63,13 +61,7 @@ function getSource({ msg_path, res_id }: Term) {
   return res_id ? `-${res_id}::${name}` : `-${name}`;
 }
 
-export const formatTermToString = (ctx: Context, term: Term): string =>
-  formatTermToValue(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}';
-
-export function formatTermToValue(
-  ctx: Context,
-  term: Term
-): string | undefined {
+function formatTermToString(ctx: Context, term: Term): string | undefined {
   const msg = getMessage(ctx, term);
   if (msg) {
     const msgCtx = extendContext(ctx, term);
@@ -92,14 +84,14 @@ function extendContext(ctx: Context, { res_id, scope }: Term): Context {
       // If the variable type isn't actually available, this has no effect
       types.variable = { ...ctx.types.variable };
       for (const [key, value] of Object.entries(scope))
-        types.variable[key] = ctx.formatToValue(value);
+        types.variable[key] = ctx.asFormattable(value);
     }
     return { ...ctx, types };
   } else return ctx;
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) => ctx.formatToString(v);
+  const resolve = (v: Literal | Variable) => ctx.asFormattable(v).getValue();
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;
@@ -111,9 +103,11 @@ function fallbackValue(ctx: Context, term: Term): string {
 
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
+  asFormattable: (ctx, term: Term) =>
+    Formattable.from(formatTermToString(ctx, term)),
   formatToParts: formatTermToParts,
-  formatToString: formatTermToString,
-  formatToValue: formatTermToValue,
+  formatToString: (ctx, term: Term) =>
+    formatTermToString(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}',
   initContext: (mf, resId) => (msgResId, msgPath) =>
     mf.getMessage(msgResId || resId, msgPath)
 };
