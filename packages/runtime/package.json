@@ -21,7 +21,7 @@
   "files": [
     "esm/",
     "lib/",
-    "messages.js"
+    "messages.*"
   ],
   "type": "commonjs",
   "main": "./lib/runtime.js",
