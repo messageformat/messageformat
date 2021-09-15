@@ -67,7 +67,7 @@ export class FormattableNumber extends Formattable<
   }
 
   /** Uses value directly due to plural offset weirdness */
-  match(locales: string[], key: string) {
+  matchSelectKey(locales: string[], key: string) {
     return (
       (/^[0-9]+$/.test(key) && key === String(this.value)) ||
       key === this.getPluralCategory(locales)

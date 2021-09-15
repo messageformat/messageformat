@@ -21,7 +21,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     return this.value;
   }
 
-  match(_locales: string[], key: string) {
+  matchSelectKey(_locales: string[], key: string) {
     return String(this.value) === key;
   }
 

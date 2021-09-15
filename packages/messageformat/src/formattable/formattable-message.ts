@@ -27,7 +27,7 @@ export class FormattableMessage extends Formattable<Message, Context> {
     return this.#pattern;
   }
 
-  match(_locales: unknown, key: string) {
+  matchSelectKey(_locales: unknown, key: string) {
     return this.toString() === key;
   }
 
@@ -72,7 +72,7 @@ function resolvePattern(
       const k = key[i];
       const s = sel[i];
       if (typeof k !== 'string' || !s) continue cases;
-      if (s.fmt.match(ctx.locales, k)) fallback[i] = false;
+      if (s.fmt.matchSelectKey(ctx.locales, k)) fallback[i] = false;
       else if (s.def === k) fallback[i] = true;
       else continue cases;
     }
