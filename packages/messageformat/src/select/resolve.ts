@@ -11,7 +11,7 @@ export function resolvePattern(
 
   const sel = msg.select.map(s => ({
     fmt: ctx.asFormattable(s.value),
-    def: s.default || 'other'
+    def: s.fallback || 'other'
   }));
 
   cases: for (const { key, value } of msg.cases) {

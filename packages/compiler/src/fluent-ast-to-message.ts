@@ -19,7 +19,7 @@ export type Part = Literal | Variable | Function | Term;
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
-  default: string | number;
+  fallback: string | number;
   keys: (string | number)[];
 }
 
@@ -27,13 +27,13 @@ const variantKey = ({ key }: Fluent.Variant) =>
   key.type === 'Identifier' ? key.name : key.parse().value;
 
 function asSelectArg(sel: Fluent.SelectExpression): SelectArg {
-  let def: string | number = '';
+  let fallback: string | number = '';
   const keys = sel.variants.map(v => {
     const id = variantKey(v);
-    if (v.default) def = id;
+    if (v.default) fallback = id;
     return id;
   });
-  return { selector: sel.selector, default: def, keys };
+  return { selector: sel.selector, fallback, keys };
 }
 
 function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
@@ -163,10 +163,9 @@ export function astToMessage(
   for (let i = 0; i < args.length; ++i) {
     const arg = args[i];
     const kk = Array.from(new Set(arg.keys));
-    const def = arg.default;
     kk.sort((a, b) => {
-      if (a === def) return 1;
-      if (typeof a === 'number' || b === def) return -1;
+      if (a === arg.fallback) return 1;
+      if (typeof a === 'number' || b === arg.fallback) return -1;
       if (typeof b === 'number') return 1;
       return 0;
     });
@@ -217,7 +216,7 @@ export function astToMessage(
 
   const select = args.map(arg => ({
     value: expressionToPart(arg.selector),
-    default: String(arg.default)
+    fallback: String(arg.fallback)
   }));
   const msg: SelectMessage<Part> = { type: 'select', select, cases };
   if (comment) msg.meta = { comment: comment.content };

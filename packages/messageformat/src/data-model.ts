@@ -77,7 +77,7 @@ export interface SelectMessage<P extends PatternElement = PatternElement> {
 
 export interface Selector<P extends PatternElement = PatternElement> {
   value: P;
-  default?: string;
+  fallback?: string;
 }
 
 export interface SelectCase<P extends PatternElement = PatternElement> {

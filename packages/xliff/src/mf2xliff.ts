@@ -117,7 +117,7 @@ function resolveSelect(
   const select: { id: string; default: string; keys: string[] }[] = [];
   const parts: X.MessagePart[] = srcSel.select.map(sel => {
     const id = nextId();
-    select.push({ id, default: sel.default ?? 'other', keys: [] });
+    select.push({ id, default: sel.fallback ?? 'other', keys: [] });
     return resolveSelector(id, sel);
   });
 
@@ -141,7 +141,7 @@ function resolveSelect(
       if (prevIdx !== -1) trgSelMap.push(prevIdx);
       else {
         const id = nextId();
-        select.push({ id, default: sel.default ?? 'other', keys: [] });
+        select.push({ id, default: sel.fallback ?? 'other', keys: [] });
         trgSelMap.push(select.length - 1);
         parts.push(resolveSelector(id, sel));
       }
@@ -200,8 +200,8 @@ function resolveSelect(
 
 function resolveSelector(id: string, sel: MF.Selector) {
   const part = resolvePart(id, sel.value);
-  if (typeof sel.default === 'string')
-    part.attributes = Object.assign({ default: sel.default }, part.attributes);
+  if (typeof sel.fallback === 'string')
+    part.attributes = Object.assign({ default: sel.fallback }, part.attributes);
   return part;
 }
 
