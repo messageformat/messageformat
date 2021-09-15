@@ -1,8 +1,9 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { asFormattable, FormattableMessage } from '../formattable';
-import { argumentSource, MessageFormatPart } from '../formatted-part';
+import { MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter, Variable } from './index';
+import { getArgSource } from './util-arg-source';
 import type { Scope } from './variable';
 
 /**
@@ -49,7 +50,7 @@ function formatTermToParts(ctx: Context, term: Term): MessageFormatPart[] {
 }
 
 function getSource({ msg_path, res_id }: Term) {
-  const name = msg_path.map(argumentSource).join('.');
+  const name = msg_path.map(getArgSource).join('.');
   return res_id ? `-${res_id}::${name}` : `-${name}`;
 }
 

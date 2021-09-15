@@ -1,8 +1,9 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { asFormattable, Formattable } from '../formattable';
-import { argumentSource, MessageFormatPart } from '../formatted-part';
+import { MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter } from './index';
+import { getArgSource } from './util-arg-source';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -33,7 +34,7 @@ function formatVariableToParts(
   part: Variable
 ): MessageFormatPart[] {
   const value = getValue(ctx, part);
-  const source = argumentSource(part);
+  const source = getArgSource(part);
   const opt = { localeMatcher: ctx.localeMatcher };
   const res: MessageFormatPart[] =
     value === undefined

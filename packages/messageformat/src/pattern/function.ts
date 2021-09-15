@@ -1,10 +1,11 @@
 import type { Meta, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { asFormattable } from '../formattable';
-import { argumentSource, MessageFormatPart } from '../formatted-part';
+import { MessageFormatPart } from '../formatted-part';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
 import { isLiteral } from './literal';
+import { getArgSource } from './util-arg-source';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -30,7 +31,7 @@ function formatFunctionToParts(
   ctx: Context,
   fn: Function
 ): MessageFormatPart[] {
-  const srcArgs = fn.args.map(argumentSource);
+  const srcArgs = fn.args.map(getArgSource);
   const source = fn.func + '(' + srcArgs.join(', ') + ')';
   let res: MessageFormatPart[];
   try {
