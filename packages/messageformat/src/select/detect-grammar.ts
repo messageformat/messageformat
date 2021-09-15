@@ -1,4 +1,4 @@
-import type { SelectMessage } from '../data-model';
+import type { Meta, SelectMessage } from '../data-model';
 import { Formattable, FormattableNumber } from '../formattable';
 
 const grammarCases = [
@@ -60,15 +60,6 @@ type ResolvedSelector = {
   def: string;
 };
 
-export interface FormattedSelectMeta {
-  case?: string;
-  caseFallback?: string;
-  gender?: string;
-  genderFallback?: string;
-  plural?: string;
-  pluralFallback?: string;
-}
-
 export function getFormattedSelectMeta(
   locales: string[],
   selectMsg: SelectMessage,
@@ -77,7 +68,7 @@ export function getFormattedSelectMeta(
   fallback: boolean[]
 ) {
   let hasMeta = false;
-  const meta: FormattedSelectMeta = {};
+  const meta: Meta = {};
   const { gcase, gender, plural } = detectGrammarSelectors(selectMsg);
 
   if (gcase !== -1) {

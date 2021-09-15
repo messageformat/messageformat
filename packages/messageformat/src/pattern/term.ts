@@ -1,7 +1,6 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { formatToParts, formatToString } from '../format-message';
-import { asFormattable } from '../formattable';
+import { asFormattable, FormattableMessage } from '../formattable';
 import { argumentSource, MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter, Variable } from './index';
 import type { Scope } from './variable';
@@ -39,20 +38,13 @@ export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
 function formatTermToParts(ctx: Context, term: Term): MessageFormatPart[] {
-  const msg = getMessage(ctx, term);
+  const fmtMsg = getFormattableMessage(ctx, term);
   const source = getSource(term);
-  let res: MessageFormatPart[];
-  if (msg) {
-    const msgCtx = extendContext(ctx, term);
-    res = formatToParts(msgCtx, msg);
-    for (const fmt of res) {
-      fmt.source = fmt.source ? source + '/' + fmt.source : source;
-      if (term.meta) fmt.meta = { ...term.meta, ...fmt.meta };
-    }
-  } else {
-    res = [{ type: 'fallback', value: fallbackValue(ctx, term), source }];
-    if (term.meta) res[0].meta = { ...term.meta };
-  }
+  const res: MessageFormatPart[] = fmtMsg
+    ? fmtMsg.toParts(null, null, source)
+    : [{ type: 'fallback', value: fallbackValue(ctx, term), source }];
+  if (term.meta)
+    for (const fmt of res) fmt.meta = { ...term.meta, ...fmt.meta };
   return res;
 }
 
@@ -61,21 +53,17 @@ function getSource({ msg_path, res_id }: Term) {
   return res_id ? `-${res_id}::${name}` : `-${name}`;
 }
 
-function formatTermToString(ctx: Context, term: Term): string | undefined {
-  const msg = getMessage(ctx, term);
-  if (msg) {
-    const msgCtx = extendContext(ctx, term);
-    return formatToString(msgCtx, msg);
-  } else return undefined;
-}
-
-function getMessage(ctx: Context, { msg_path, res_id }: Term) {
+function getFormattableMessage(
+  ctx: Context,
+  { msg_path, res_id, scope }: Term
+) {
+  if (!isTermContext(ctx)) return null;
   const strPath = msg_path.map(part => ctx.formatToString(part));
-  return isTermContext(ctx) ? ctx.types.term(res_id, strPath) : null;
-}
+  const msg = ctx.types.term(res_id, strPath);
+  if (!msg) return null;
 
-function extendContext(ctx: Context, { res_id, scope }: Term): Context {
-  if (isTermContext(ctx) && (res_id || scope)) {
+  let msgCtx = ctx;
+  if (res_id || scope) {
     const types: TermContext['types'] = { ...ctx.types };
     if (res_id)
       types.term = (msgResId, msgPath) =>
@@ -86,8 +74,10 @@ function extendContext(ctx: Context, { res_id, scope }: Term): Context {
       for (const [key, value] of Object.entries(scope))
         types.variable[key] = ctx.asFormattable(value);
     }
-    return { ...ctx, types };
-  } else return ctx;
+    msgCtx = { ...ctx, types };
+  }
+
+  return new FormattableMessage(msgCtx, msg);
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
@@ -104,10 +94,11 @@ function fallbackValue(ctx: Context, term: Term): string {
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
   asFormattable: (ctx, term: Term) =>
-    asFormattable(formatTermToString(ctx, term)),
+    getFormattableMessage(ctx, term) ?? asFormattable(undefined),
   formatToParts: formatTermToParts,
   formatToString: (ctx, term: Term) =>
-    formatTermToString(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}',
+    getFormattableMessage(ctx, term)?.toString() ??
+    '{' + fallbackValue(ctx, term) + '}',
   initContext: (mf, resId) => (msgResId, msgPath) =>
     mf.getMessage(msgResId || resId, msgPath)
 };

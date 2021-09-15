@@ -1,6 +1,6 @@
 import { PatternElement, Resource } from './data-model';
 import type { Context } from './format-context';
-import { formatToParts, formatToString } from './format-message';
+import { FormattableMessage } from './formattable';
 import { MessageFormatPart } from './formatted-part';
 import { PatternFormatter, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
@@ -63,14 +63,10 @@ export class MessageFormat {
     arg1?: string | string[] | Scope,
     arg2?: Scope
   ) {
-    const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
-    const msg = this.getMessage(resId, msgPath);
-    let res = '';
-    if (msg) {
-      const ctx = this.createContext(resId, scope);
-      for (const fs of formatToString(ctx, msg)) res += fs;
-    }
-    return res;
+    const fmtMsg = this.getFormattableMessage(
+      ...this.parseArgs(arg0, arg1, arg2)
+    );
+    return fmtMsg ? fmtMsg.toString() : '';
   }
 
   formatToParts(msgPath: string | string[], scope?: Scope): MessageFormatPart[];
@@ -84,9 +80,10 @@ export class MessageFormat {
     arg1?: string | string[] | Scope,
     arg2?: Scope
   ) {
-    const { resId, msgPath, scope } = this.parseArgs(arg0, arg1, arg2);
-    const msg = this.getMessage(resId, msgPath);
-    return msg ? formatToParts(this.createContext(resId, scope), msg) : [];
+    const fmtMsg = this.getFormattableMessage(
+      ...this.parseArgs(arg0, arg1, arg2)
+    );
+    return fmtMsg ? fmtMsg.toParts() : [];
   }
 
   getMessage(resId: string, path: string | string[]) {
@@ -106,6 +103,17 @@ export class MessageFormat {
       locales: this.#locales.slice(),
       runtime: this.#runtime
     };
+  }
+
+  private getFormattableMessage(
+    resId: string,
+    msgPath: string | string[],
+    scope: Scope
+  ) {
+    const msg = this.getMessage(resId, msgPath);
+    if (!msg) return null;
+    const ctx = this.createContext(resId, scope);
+    return new FormattableMessage(ctx, msg);
   }
 
   private createContext(resId: string, scope: Scope): Context {
@@ -139,32 +147,35 @@ export class MessageFormat {
   }
 
   private parseArgs(
-    arg0: string | string[],
-    arg1?: string | string[] | Scope,
-    arg2?: Scope
-  ) {
-    if (typeof arg1 === 'string' || Array.isArray(arg1)) {
-      if (typeof arg0 !== 'string')
-        throw new Error(`Invalid resId argument: ${arg0}`);
-      return {
-        resId: arg0,
-        msgPath: Array.isArray(arg1) ? arg1 : [arg1],
-        scope: arg2 || {}
-      };
+    ...args: [
+      string | string[],
+      string | string[] | Scope | undefined,
+      Scope | undefined
+    ]
+  ): [string, string | string[], Scope] {
+    let resId: string;
+    let msgPath: string | string[];
+    let scope: Scope | undefined;
+
+    if (typeof args[1] === 'string' || Array.isArray(args[1])) {
+      // (resId: string, msgPath: string | string[], scope?: Scope)
+      if (typeof args[0] !== 'string')
+        throw new Error(`Invalid resId argument: ${args[0]}`);
+      [resId, msgPath, scope] = args;
     } else {
+      // (msgPath: string | string[], scope?: Scope)
       const r0 = this.#resources[0];
       if (!r0) throw new Error('No resources available');
-      const resId = r0.getId();
+      const id0 = r0.getId();
       for (const res of this.#resources)
-        if (res.getId() !== resId)
+        if (res.getId() !== id0)
           throw new Error(
             'Explicit resource id required to differentiate resources'
           );
-      return {
-        resId,
-        msgPath: Array.isArray(arg0) ? arg0 : [arg0],
-        scope: arg1 || {}
-      };
+      resId = id0;
+      [msgPath, scope] = args;
     }
+
+    return [resId, msgPath, scope || {}];
   }
 }
