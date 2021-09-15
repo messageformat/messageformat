@@ -24,12 +24,11 @@
 import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
-import { fluentRuntime, MessageFormat, Resource } from 'messageformat';
+import { fluentRuntime, MessageFormat, Resource, validate } from './index';
 import type { Function } from './pattern/function';
 import type { Literal } from './pattern/literal';
 import type { Term } from './pattern/term';
 import type { Variable } from './pattern/variable';
-import { validate } from './validate';
 
 type TestCase = {
   locale?: string;

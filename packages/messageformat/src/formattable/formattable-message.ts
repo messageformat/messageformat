@@ -1,7 +1,7 @@
 import { isSelectMessage, Message, Meta, PatternElement } from '../data-model';
+import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
 import type { MessageFormatPart } from '../formatted-part';
-import { getFormattedSelectMeta } from '../select/detect-grammar';
 import { Formattable } from './formattable';
 
 export class FormattableMessage extends Formattable<Message, Context> {

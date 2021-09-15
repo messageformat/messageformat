@@ -1,6 +1,5 @@
 import { compileMF1 } from '@messageformat/compiler';
-import { MessageFormat, mf1Runtime } from 'messageformat';
-import { validate } from './validate';
+import { MessageFormat, mf1Runtime, validate } from './index';
 
 export type TestCase = {
   locale?: string;
