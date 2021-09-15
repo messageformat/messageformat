@@ -2,8 +2,13 @@
 import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
 
-import { fluentRuntime, Formattable, MessageFormat, Runtime } from '../index';
-import { FormattableNumber } from '../formattable';
+import {
+  fluentRuntime,
+  Formattable,
+  FormattableNumber,
+  MessageFormat,
+  Runtime
+} from '../index';
 
 describe('Function returns generic value', () => {
   test('string', () => {

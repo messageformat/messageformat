@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { Formattable } from '../formattable';
+import { asFormattable, Formattable } from '../formattable';
 import { argumentSource, MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter } from './index';
 
@@ -38,7 +38,7 @@ function formatVariableToParts(
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : Formattable.from(value).toParts(ctx.locales, opt, source);
+      : asFormattable(value).toParts(ctx.locales, opt, source);
   if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
   return res;
 }
@@ -48,7 +48,7 @@ function formatVariableToString(ctx: Context, part: Variable): string {
   const opt = { localeMatcher: ctx.localeMatcher };
   return value === undefined
     ? '{' + fallbackValue(ctx, part) + '}'
-    : Formattable.from(value).toString(ctx.locales, opt);
+    : asFormattable(value).toString(ctx.locales, opt);
 }
 
 /** @returns `undefined` if value not found */
@@ -76,7 +76,7 @@ function fallbackValue(ctx: Context, { var_path }: Variable): string {
 
 export const formatter: PatternFormatter<Scope> = {
   type: 'variable',
-  asFormattable: (ctx, part: Variable) => Formattable.from(getValue(ctx, part)),
+  asFormattable: (ctx, part: Variable) => asFormattable(getValue(ctx, part)),
   formatToParts: formatVariableToParts,
   formatToString: formatVariableToString,
   initContext: (_mf, _resId, scope) => scope

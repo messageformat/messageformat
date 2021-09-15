@@ -1,7 +1,7 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { formatToParts, formatToString } from '../format-message';
-import { Formattable } from '../formattable';
+import { asFormattable } from '../formattable';
 import { argumentSource, MessageFormatPart } from '../formatted-part';
 import type { Literal, PatternFormatter, Variable } from './index';
 import type { Scope } from './variable';
@@ -104,7 +104,7 @@ function fallbackValue(ctx: Context, term: Term): string {
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
   asFormattable: (ctx, term: Term) =>
-    Formattable.from(formatTermToString(ctx, term)),
+    asFormattable(formatTermToString(ctx, term)),
   formatToParts: formatTermToParts,
   formatToString: (ctx, term: Term) =>
     formatTermToString(ctx, term) ?? '{' + fallbackValue(ctx, term) + '}',

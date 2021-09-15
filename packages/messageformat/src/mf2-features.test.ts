@@ -3,7 +3,10 @@ import { source } from 'common-tags';
 import { compileFluent, compileMF1 } from '@messageformat/compiler';
 
 import {
+  asFormattable,
   fluentRuntime,
+  Formattable,
+  FormattableNumber,
   MessageFormat,
   Resource,
   Runtime,
@@ -13,7 +16,6 @@ import type { Function } from './pattern/function';
 import type { Literal } from './pattern/literal';
 import type { Term } from './pattern/term';
 import { MessageFormatPart } from './formatted-part';
-import { Formattable, FormattableNumber } from './formattable';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource<Literal | Term> = {
@@ -520,7 +522,7 @@ maybe('List formatting', () => {
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
         list = list.map(li =>
-          String(fn.call(locales, undefined, Formattable.from(li)))
+          String(fn.call(locales, undefined, asFormattable(li)))
         );
       }
       // @ts-ignore
@@ -557,7 +559,8 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   function hackyFixArticles(locales: string[], parts: MessageFormatPart[]) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
     const articly = /(^|\s)(a|an|A|An)(\W*$)/;
-    const vowely = /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;
+    const vowely =
+      /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;
     const wordy = parts.filter(part => /\w/.test(String(part.value)));
     for (let i = 0; i < wordy.length - 1; ++i) {
       let fixed = false;

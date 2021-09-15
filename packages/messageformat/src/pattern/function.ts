@@ -1,7 +1,7 @@
-import type { PatternElement } from '../data-model';
+import type { Meta, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
+import { asFormattable } from '../formattable';
 import { argumentSource, MessageFormatPart } from '../formatted-part';
-import { Formattable } from '../formattable';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
 import { isLiteral } from './literal';
@@ -38,18 +38,15 @@ function formatFunctionToParts(
     const opt = { localeMatcher: ctx.localeMatcher };
     res = fmt.toParts(ctx.locales, opt, source);
   } catch (error) {
-    res = [
-      {
-        type: 'fallback',
-        value: fallbackValue(ctx, fn),
-        source,
-        meta: {
-          error_name: error.name,
-          error_message: error.message,
-          error_stack: error.stack
-        }
-      }
-    ];
+    let meta: Meta;
+    if (error instanceof Error) {
+      meta = {
+        error_name: error.name,
+        error_message: error.message
+      };
+      if (error.stack) meta.error_stack = error.stack;
+    } else meta = { error_message: String(error) };
+    res = [{ type: 'fallback', value: fallbackValue(ctx, fn), source, meta }];
   }
   if (fn.meta) for (const fmt of res) fmt.meta = { ...fn.meta, ...fmt.meta };
   return res;
@@ -71,7 +68,7 @@ function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
   const fnArgs = args.map(arg => ctx.asFormattable(arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
-  return Formattable.from(res);
+  return asFormattable(res);
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
@@ -126,7 +123,7 @@ export const formatter: PatternFormatter<Runtime> = {
       return callRuntimeFunction(ctx, fn);
     } catch (_) {
       // TODO: report error
-      return Formattable.from(undefined);
+      return asFormattable(undefined);
     }
   },
   formatToParts: formatFunctionToParts,
