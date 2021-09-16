@@ -6,5 +6,5 @@ export type MessageFormatPart = { meta?: Meta; source?: string } & (
   | { type: 'literal'; value: string }
   | { type: 'dynamic'; value: unknown; source: string }
   | { type: 'fallback'; value: string; source: string }
-  | { type: 'message'; value: ''; meta: Meta }
+  | { type: 'meta'; value: ''; meta: Meta }
 );

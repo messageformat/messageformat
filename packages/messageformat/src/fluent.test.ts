@@ -396,7 +396,7 @@ describe('formatToParts', () => {
       const foo = mf.formatToParts('res', 'foo', { num: 42 });
       expect(foo).toEqual([
         {
-          type: 'message',
+          type: 'meta',
           value: '',
           meta: { comment: 'First message', group: 'Group 1' }
         },
@@ -408,7 +408,7 @@ describe('formatToParts', () => {
     test('bar', () => {
       const bar = mf.formatToParts('res', 'bar');
       expect(bar).toEqual([
-        { type: 'message', value: '', meta: { group: 'Group 1' } },
+        { type: 'meta', value: '', meta: { group: 'Group 1' } },
         { type: 'literal', value: 'Bar' }
       ]);
     });
@@ -417,7 +417,7 @@ describe('formatToParts', () => {
       const qux = mf.formatToParts('res', 'qux');
       expect(qux).toEqual([
         {
-          type: 'message',
+          type: 'meta',
           value: '',
           meta: { comment: 'Other message', group: 'Group 2' }
         },
@@ -451,29 +451,50 @@ describe('formatToParts', () => {
     });
 
     test('case with match', () => {
-      const parts = mf.formatToParts('case', { case: 'genitive' });
+      const parts = mf.formatToParts('case', {
+        case: 'genitive',
+        selectResult: 'success'
+      });
       expect(parts).toEqual([
-        { type: 'message', value: '', meta: { case: 'genitive' } },
+        {
+          type: 'meta',
+          value: '',
+          meta: { case: 'genitive', selectResult: 'success' }
+        },
         { type: 'literal', value: 'GEN' }
       ]);
     });
 
     test('case with fallback', () => {
-      const parts = mf.formatToParts('case', { case: 'oblique' });
+      const parts = mf.formatToParts('case', {
+        case: 'oblique',
+        selectResult: 'success'
+      });
       expect(parts).toEqual([
         {
-          type: 'message',
+          type: 'meta',
           value: '',
-          meta: { case: 'oblique', caseFallback: 'nominative' }
+          meta: {
+            case: 'oblique',
+            caseFallback: 'nominative',
+            selectResult: 'success'
+          }
         },
         { type: 'literal', value: 'NOM' }
       ]);
     });
 
     test('gender with match', () => {
-      const parts = mf.formatToParts('gender', { gender: 'feminine' });
+      const parts = mf.formatToParts('gender', {
+        gender: 'feminine',
+        selectResult: 'success'
+      });
       expect(parts).toEqual([
-        { type: 'message', value: '', meta: { gender: 'feminine' } },
+        {
+          type: 'meta',
+          value: '',
+          meta: { gender: 'feminine', selectResult: 'success' }
+        },
         { type: 'literal', value: 'F' }
       ]);
     });
@@ -482,9 +503,13 @@ describe('formatToParts', () => {
       const parts = mf.formatToParts('gender');
       expect(parts).toEqual([
         {
-          type: 'message',
+          type: 'meta',
           value: '',
-          meta: { gender: 'undefined', genderFallback: 'neuter' }
+          meta: {
+            gender: 'undefined',
+            genderFallback: 'neuter',
+            selectResult: 'success'
+          }
         },
         { type: 'literal', value: 'N' }
       ]);
@@ -493,7 +518,11 @@ describe('formatToParts', () => {
     test('plural with match', () => {
       const parts = mf.formatToParts('plural', { num: 2 });
       expect(parts).toEqual([
-        { type: 'message', value: '', meta: { plural: 'other' } },
+        {
+          type: 'meta',
+          value: '',
+          meta: { plural: 'other', selectResult: 'success' }
+        },
         { type: 'literal', value: 'Other' }
       ]);
     });
@@ -502,9 +531,13 @@ describe('formatToParts', () => {
       const parts = mf.formatToParts('plural', { num: 1 });
       expect(parts).toEqual([
         {
-          type: 'message',
+          type: 'meta',
           value: '',
-          meta: { plural: 'one', pluralFallback: 'other' }
+          meta: {
+            plural: 'one',
+            pluralFallback: 'other',
+            selectResult: 'success'
+          }
         },
         { type: 'literal', value: 'Other' }
       ]);
