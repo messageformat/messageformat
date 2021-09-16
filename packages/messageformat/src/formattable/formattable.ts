@@ -21,19 +21,23 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     return this.value;
   }
 
-  matchSelectKey(_locales: string[], key: string) {
+  matchSelectKey(
+    _locales: string[],
+    _localeMatcher: 'best fit' | 'lookup',
+    key: string
+  ) {
     return String(this.value) === key;
   }
 
   toParts(
     locales: string[],
-    options: O | undefined,
+    localeMatcher: 'best fit' | 'lookup',
     source: string
   ): MessageFormatPart[] {
     const value = this.getValue();
     let res: MessageFormatPart[];
     if (value instanceof Date) {
-      const dtf = new Intl.DateTimeFormat(locales, options);
+      const dtf = new Intl.DateTimeFormat(locales, { localeMatcher });
       res = dtf.formatToParts(value);
     } else if (
       value == null ||
@@ -50,13 +54,15 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     return res;
   }
 
-  toString(locales?: string[], options?: O | undefined): string {
+  toString(): string;
+  toString(locales: string[], localeMatcher: 'best fit' | 'lookup'): string;
+  toString(locales?: string[], localeMatcher?: 'best fit' | 'lookup'): string {
     const value: {
       toLocaleString: (...args: unknown[]) => string;
     } = this.getValue();
     if (locales && value && typeof value.toLocaleString === 'function')
       try {
-        return value.toLocaleString(locales, options);
+        return value.toLocaleString(locales, { localeMatcher });
       } catch (_) {
         // TODO: Report error?
       }

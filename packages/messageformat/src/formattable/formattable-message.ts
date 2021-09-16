@@ -33,7 +33,8 @@ export class FormattableMessage extends Formattable<Message, Context> {
         const k = key[i];
         const s = sel[i];
         if (typeof k !== 'string' || !s) continue cases;
-        if (s.fmt.matchSelectKey(ctx.locales, k)) fallback[i] = false;
+        if (s.fmt.matchSelectKey(ctx.locales, ctx.localeMatcher, k))
+          fallback[i] = false;
         else if (s.def === k) fallback[i] = true;
         else continue cases;
       }
@@ -52,11 +53,11 @@ export class FormattableMessage extends Formattable<Message, Context> {
     return (this.#pattern = []);
   }
 
-  matchSelectKey(_locales: unknown, key: string) {
+  matchSelectKey(_locales: unknown, _localeMatcher: unknown, key: string) {
     return this.toString() === key;
   }
 
-  toParts(_locales?: unknown, _options?: unknown, source?: string) {
+  toParts(_locales?: unknown, _localeMatcher?: unknown, source?: string) {
     const pattern = this.getPattern();
     const res: MessageFormatPart[] = [];
     if (this.#meta)

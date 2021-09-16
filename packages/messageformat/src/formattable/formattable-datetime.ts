@@ -43,36 +43,35 @@ export class FormattableDateTime extends Formattable<
 
   private getDateTimeFormatter(
     locales?: string | string[] | undefined,
-    options?: Intl.DateTimeFormatOptions | undefined
+    localeMatcher?: 'best fit' | 'lookup'
   ): Intl.DateTimeFormat {
-    if (this.options)
-      options = options ? { ...this.options, ...options } : this.options;
+    const options = { localeMatcher, ...this.options };
     return new Intl.DateTimeFormat(this.locales || locales, options);
   }
 
   toParts(
     locales: string[],
-    options: Intl.DateTimeFormatOptions | undefined,
+    localeMatcher: 'best fit' | 'lookup',
     source: string
   ) {
-    const dtf = this.getDateTimeFormatter(locales, options);
+    const dtf = this.getDateTimeFormatter(locales, localeMatcher);
     const parts: MessageFormatPart[] = dtf.formatToParts(this.getValue());
     for (const part of parts) part.source = source;
     return parts;
   }
 
-  toString(
-    locales?: string[],
-    options?: Intl.DateTimeFormatOptions | undefined
-  ) {
+  toString(locales?: string[], localeMatcher?: 'best fit' | 'lookup') {
     const hasOpt =
-      (options && Object.keys(options).some(key => key !== 'localeMatcher')) ||
-      (this.options &&
-        Object.keys(this.options).some(key => key !== 'localeMatcher'));
+      this.options &&
+      Object.keys(this.options).some(key => key !== 'localeMatcher');
     const date = this.getValue();
     if (hasOpt) {
-      const dtf = this.getDateTimeFormatter(locales, options);
+      const dtf = this.getDateTimeFormatter(locales, localeMatcher);
       return dtf.format(date);
-    } else return date.toLocaleString(this.locales || locales);
+    } else {
+      const lm = this.options?.localeMatcher || localeMatcher;
+      const options = lm ? { localeMatcher: lm } : undefined;
+      return date.toLocaleString(this.locales || locales, options);
+    }
   }
 }

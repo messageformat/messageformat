@@ -36,8 +36,7 @@ function formatFunctionToParts(
   let res: MessageFormatPart[];
   try {
     const fmt = callRuntimeFunction(ctx, fn);
-    const opt = { localeMatcher: ctx.localeMatcher };
-    res = fmt.toParts(ctx.locales, opt, source);
+    res = fmt.toParts(ctx.locales, ctx.localeMatcher, source);
   } catch (error) {
     let meta: Meta;
     if (error instanceof Error) {
@@ -56,8 +55,7 @@ function formatFunctionToParts(
 function formatFunctionToString(ctx: Context, fn: Function): string {
   try {
     const fmt = callRuntimeFunction(ctx, fn);
-    const opt = { localeMatcher: ctx.localeMatcher };
-    return fmt.toString(ctx.locales, opt);
+    return fmt.toString(ctx.locales, ctx.localeMatcher);
   } catch (_) {
     // TODO: report error
     return '{' + fallbackValue(ctx, fn) + '}';

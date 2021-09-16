@@ -42,7 +42,7 @@ function formatTermToParts(ctx: Context, term: Term): MessageFormatPart[] {
   const fmtMsg = getFormattableMessage(ctx, term);
   const source = getSource(term);
   const res: MessageFormatPart[] = fmtMsg
-    ? fmtMsg.toParts(null, null, source)
+    ? fmtMsg.toParts(ctx.locales, ctx.localeMatcher, source)
     : [{ type: 'fallback', value: fallbackValue(ctx, term), source }];
   if (term.meta)
     for (const fmt of res) fmt.meta = { ...term.meta, ...fmt.meta };

@@ -49,45 +49,46 @@ export class FormattableNumber extends Formattable<
 
   private getNumberFormatter(
     locales?: string | string[] | undefined,
-    options?: Intl.NumberFormatOptions | undefined
+    localeMatcher?: 'best fit' | 'lookup'
   ): Intl.NumberFormat {
-    if (this.options)
-      options = options ? { ...this.options, ...options } : this.options;
+    const options = { localeMatcher, ...this.options };
     return new Intl.NumberFormat(this.locales || locales, options);
   }
 
-  getPluralCategory(locales: string[]) {
-    const pr = new Intl.PluralRules(
-      this.locales || locales,
-      this.options as Intl.PluralRulesOptions | undefined
-    );
+  getPluralCategory(locales: string[], localeMatcher: 'best fit' | 'lookup') {
+    const options = { localeMatcher, ...this.options };
+    const pr = new Intl.PluralRules(this.locales || locales, options);
     // Intl.PluralRules really does need a number
     const num = Number(this.getValue());
     return pr.select(num);
   }
 
   /** Uses value directly due to plural offset weirdness */
-  matchSelectKey(locales: string[], key: string) {
+  matchSelectKey(
+    locales: string[],
+    localeMatcher: 'best fit' | 'lookup',
+    key: string
+  ) {
     return (
       (/^[0-9]+$/.test(key) && key === String(this.value)) ||
-      key === this.getPluralCategory(locales)
+      key === this.getPluralCategory(locales, localeMatcher)
     );
   }
 
   toParts(
     locales: string[],
-    options: Intl.NumberFormatOptions | undefined,
+    localeMatcher: 'best fit' | 'lookup',
     source: string
   ) {
-    const nf = this.getNumberFormatter(locales, options);
+    const nf = this.getNumberFormatter(locales, localeMatcher);
     const number = this.getValue() as number; // FIXME: TS should know that bigint is fine here
     const parts: MessageFormatPart[] = nf.formatToParts(number);
     for (const part of parts) part.source = source;
     return parts;
   }
 
-  toString(locales?: string[], options?: Intl.NumberFormatOptions | undefined) {
-    const nf = this.getNumberFormatter(locales, options);
+  toString(locales?: string[], localeMatcher?: 'best fit' | 'lookup') {
+    const nf = this.getNumberFormatter(locales, localeMatcher);
     return nf.format(this.getValue());
   }
 }

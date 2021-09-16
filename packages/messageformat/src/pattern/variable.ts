@@ -35,21 +35,19 @@ function formatVariableToParts(
 ): MessageFormatPart[] {
   const value = getValue(ctx, part);
   const source = getArgSource(part);
-  const opt = { localeMatcher: ctx.localeMatcher };
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : asFormattable(value).toParts(ctx.locales, opt, source);
+      : asFormattable(value).toParts(ctx.locales, ctx.localeMatcher, source);
   if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
   return res;
 }
 
 function formatVariableToString(ctx: Context, part: Variable): string {
   const value = getValue(ctx, part);
-  const opt = { localeMatcher: ctx.localeMatcher };
   return value === undefined
     ? '{' + fallbackValue(ctx, part) + '}'
-    : asFormattable(value).toString(ctx.locales, opt);
+    : asFormattable(value).toString(ctx.locales, ctx.localeMatcher);
 }
 
 /** @returns `undefined` if value not found */
