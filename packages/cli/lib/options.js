@@ -41,7 +41,7 @@ messageformat.rc.{js,json,yaml}.`;
       delimiters: {
         alias: 'd',
         array: true,
-        default: ['._' + path.sep]
+        default: ['._/\\']
       },
       'eslint-disable': {
         boolean: true,
@@ -73,10 +73,7 @@ messageformat.rc.{js,json,yaml}.`;
     })
     .coerce({
       delimiters(delim) {
-        const str = delim
-          .join('')
-          .replace(/[/\\]+/g, '\\' + path.sep)
-          .replace(/[-\]]/g, '\\$&');
+        const str = delim.join('').replace(/[-\]\\]/g, '\\$&');
         return new RegExp(`[${str}]`);
       },
       extensions(ext) {
