@@ -22,9 +22,9 @@ export class FormattableMessage extends Formattable<Message, Context> {
     if (msg.type === 'message') return (this.#pattern = msg.value);
 
     const ctx = this.#context;
-    const sel = msg.select.map(s => ({
-      fmt: ctx.asFormattable(s.value),
-      def: s.fallback || 'other'
+    const sel = msg.select.map(({ value, fallback }) => ({
+      fmt: ctx.getFormatter(value).asFormattable(ctx, value),
+      def: fallback || 'other'
     }));
 
     cases: for (const { key, value } of msg.cases) {
@@ -62,8 +62,11 @@ export class FormattableMessage extends Formattable<Message, Context> {
     const res: MessageFormatPart[] = [];
     if (this.#meta)
       res.push({ type: 'meta', value: '', meta: { ...this.#meta } });
-    for (const part of pattern)
-      Array.prototype.push.apply(res, this.#context.formatToParts(part));
+    const ctx = this.#context;
+    for (const elem of pattern) {
+      const parts = ctx.getFormatter(elem).formatToParts(ctx, elem);
+      Array.prototype.push.apply(res, parts);
+    }
     if (source)
       for (const part of res)
         part.source = part.source ? source + '/' + part.source : source;
@@ -73,8 +76,9 @@ export class FormattableMessage extends Formattable<Message, Context> {
   toString() {
     if (typeof this.#string !== 'string') {
       this.#string = '';
-      for (const part of this.getPattern())
-        this.#string += this.#context.formatToString(part);
+      const ctx = this.#context;
+      for (const elem of this.getPattern())
+        this.#string += ctx.getFormatter(elem).formatToString(ctx, elem);
     }
     return this.#string;
   }

@@ -59,7 +59,9 @@ function getFormattableMessage(
   { msg_path, res_id, scope }: Term
 ) {
   if (!isTermContext(ctx)) return null;
-  const strPath = msg_path.map(part => ctx.formatToString(part));
+  const strPath = msg_path.map(elem =>
+    ctx.getFormatter(elem).formatToString(ctx, elem)
+  );
   const msg = ctx.types.term(res_id, strPath);
   if (!msg) return null;
 
@@ -73,7 +75,7 @@ function getFormattableMessage(
       // If the variable type isn't actually available, this has no effect
       types.variable = { ...ctx.types.variable };
       for (const [key, value] of Object.entries(scope))
-        types.variable[key] = ctx.asFormattable(value);
+        types.variable[key] = ctx.getFormatter(value).asFormattable(ctx, value);
     }
     msgCtx = { ...ctx, types };
   }
@@ -82,7 +84,8 @@ function getFormattableMessage(
 }
 
 function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) => ctx.asFormattable(v).getValue();
+  const resolve = (v: Literal | Variable) =>
+    ctx.getFormatter(v).asFormattable(ctx, v).getValue();
   let name = term.msg_path.map(resolve).join('.');
   if (term.res_id) name = term.res_id + '::' + name;
   if (!term.scope) return '-' + name;

@@ -64,14 +64,15 @@ function formatFunctionToString(ctx: Context, fn: Function): string {
 
 function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
   const rf = (ctx.types.function as Runtime)[func];
-  const fnArgs = args.map(arg => ctx.asFormattable(arg));
+  const fnArgs = args.map(arg => ctx.getFormatter(arg).asFormattable(ctx, arg));
   const fnOpt = resolveOptions(ctx, options, rf?.options);
   const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
   return asFormattable(res);
 }
 
 function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) => ctx.asFormattable(v).getValue();
+  const resolve = (v: Literal | Variable) =>
+    ctx.getFormatter(v).asFormattable(ctx, v).getValue();
   const args = fn.args.map(resolve);
   if (fn.options)
     for (const [key, value] of Object.entries(fn.options))
@@ -92,7 +93,7 @@ function resolveOptions(
           ? expected
           : expected[key];
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = ctx.asFormattable(value).getValue();
+      const res = ctx.getFormatter(value).asFormattable(ctx, value).getValue();
       if (
         exp === 'any' ||
         exp === typeof res ||

@@ -57,7 +57,7 @@ function getValue(ctx: Context, { var_path }: Variable): unknown {
   for (const p of var_path) {
     if (!val || val instanceof Formattable) return undefined;
     try {
-      const arg = ctx.asFormattable(p).getValue();
+      const arg = ctx.getFormatter(p).asFormattable(ctx, p).getValue();
       if (arg === undefined) return undefined;
       val = (val as Scope)[String(arg)];
     } catch (_) {
@@ -69,7 +69,9 @@ function getValue(ctx: Context, { var_path }: Variable): unknown {
 }
 
 function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v => ctx.asFormattable(v).getValue());
+  const path = var_path.map(v =>
+    ctx.getFormatter(v).asFormattable(ctx, v).getValue()
+  );
   return '$' + path.join('.');
 }
 

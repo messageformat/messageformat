@@ -1,11 +1,8 @@
 import type { PatternElement } from './data-model';
-import type { Formattable } from './formattable';
-import type { MessageFormatPart } from './formatted-part';
+import type { PatternFormatter } from './pattern';
 
 export interface Context {
-  asFormattable(part: PatternElement): Formattable;
-  formatToParts(part: PatternElement): MessageFormatPart[];
-  formatToString(part: PatternElement): string;
+  getFormatter(part: PatternElement): PatternFormatter;
   localeMatcher: 'best fit' | 'lookup';
   locales: string[];
   types: Record<string, unknown>;
