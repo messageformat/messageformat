@@ -1,7 +1,7 @@
 import type { MessageFormatPart } from '../formatted-part';
 
 export class Formattable<T = unknown, O = Record<string, unknown>> {
-  readonly value: T;
+  protected readonly value: T;
 
   constructor(
     value: T,

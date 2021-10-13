@@ -86,6 +86,15 @@ export const duration: RuntimeFunction<string> = {
   options: 'never'
 };
 
+class FormattableMF1Number extends FormattableNumber {
+  getValue() {
+    const num = this.value;
+    const opt = (this.options || {}) as { pluralOffset?: number };
+    const offset = Number(opt.pluralOffset || 0);
+    return typeof num === 'bigint' ? num - BigInt(offset) : num - offset;
+  }
+}
+
 export const number: RuntimeFunction<FormattableNumber> = {
   call: function number(
     locales: string[],
@@ -114,18 +123,7 @@ export const number: RuntimeFunction<FormattableNumber> = {
       if (options.type === 'ordinal') opt.type = 'ordinal';
     }
 
-    const fmt = new FormattableNumber(
-      num,
-      locales,
-      Object.keys(opt).length > 0 ? opt : undefined
-    );
-    fmt.getValue = () => {
-      const num = fmt.value;
-      const opt = (fmt.options || {}) as { pluralOffset?: number };
-      const offset = Number(opt.pluralOffset || 0);
-      return typeof num === 'bigint' ? num - BigInt(offset) : num - offset;
-    };
-    return fmt;
+    return new FormattableMF1Number(num, locales, opt);
   },
 
   options: {

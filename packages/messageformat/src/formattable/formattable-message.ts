@@ -39,7 +39,7 @@ export class FormattableMessage extends Formattable<Message, Context> {
         else continue cases;
       }
 
-      const meta = getFormattedSelectMeta(ctx.locales, msg, key, sel, fallback);
+      const meta = getFormattedSelectMeta(ctx, msg, key, sel, fallback);
       if (meta) {
         if (this.#meta) Object.assign(this.#meta, meta);
         else this.#meta = meta;

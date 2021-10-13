@@ -1,4 +1,5 @@
 import type { Meta, SelectMessage } from '../data-model';
+import type { Context } from '../format-context';
 import { Formattable, FormattableNumber } from '../formattable';
 
 const grammarCases = [
@@ -61,7 +62,7 @@ type ResolvedSelector = {
 };
 
 export function getFormattedSelectMeta(
-  locales: string[],
+  ctx: Context,
   selectMsg: SelectMessage,
   key: string[],
   sel: ResolvedSelector[],
@@ -75,7 +76,7 @@ export function getFormattedSelectMeta(
     hasMeta = true;
     if (fallback[gcase]) {
       const { fmt, def } = sel[gcase];
-      meta.case = String(fmt.value);
+      meta.case = String(fmt.getValue());
       meta.caseFallback = def;
     } else {
       meta.case = key[gcase];
@@ -86,7 +87,7 @@ export function getFormattedSelectMeta(
     hasMeta = true;
     if (fallback[gender]) {
       const { fmt, def } = sel[gender];
-      meta.gender = String(fmt.value);
+      meta.gender = String(fmt.getValue());
       meta.genderFallback = def;
     } else {
       meta.gender = key[gender];
@@ -98,7 +99,7 @@ export function getFormattedSelectMeta(
     if (fmt instanceof FormattableNumber) {
       hasMeta = true;
       if (fallback[plural]) {
-        meta.plural = fmt.getPluralCategory(locales);
+        meta.plural = fmt.getPluralCategory(ctx.locales, ctx.localeMatcher);
         meta.pluralFallback = def;
       } else {
         meta.plural = key[plural];
