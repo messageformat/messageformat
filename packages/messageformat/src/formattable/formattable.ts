@@ -11,10 +11,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     }
   ) {
     this.value = value;
-    if (format) {
-      if (format.toParts) this.toParts = format.toParts;
-      if (format.toString) this.toString = format.toString;
-    }
+    if (format) Object.assign(this, format);
   }
 
   getValue() {
@@ -26,32 +23,19 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     _localeMatcher: 'best fit' | 'lookup',
     key: string
   ) {
-    return String(this.value) === key;
+    return String(this.getValue()) === key;
   }
 
   toParts(
-    locales: string[],
-    localeMatcher: 'best fit' | 'lookup',
+    _locales: string[],
+    _localeMatcher: 'best fit' | 'lookup',
     source: string
   ): MessageFormatPart[] {
-    const value = this.getValue();
-    let res: MessageFormatPart[];
-    if (value instanceof Date) {
-      const dtf = new Intl.DateTimeFormat(locales, { localeMatcher });
-      res = dtf.formatToParts(value);
-    } else if (
-      value == null ||
-      typeof value === 'boolean' ||
-      value instanceof Boolean ||
-      value instanceof String
-    ) {
-      return [{ type: 'dynamic', value: String(value), source }];
-    } else {
-      // At this point, value is symbol | function | object
-      return [{ type: 'dynamic', value, source }];
-    }
-    for (const fmt of res) fmt.source = source;
-    return res;
+    let value: unknown = this.getValue();
+    if (value == null || typeof value === 'boolean' || value instanceof Boolean)
+      value = String(value);
+    // At this point, value is string | symbol | function | object
+    return [{ type: 'dynamic', value, source }];
   }
 
   toString(): string;
