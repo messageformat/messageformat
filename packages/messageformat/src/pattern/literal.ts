@@ -24,8 +24,9 @@ export const formatter: PatternFormatter = {
   asFormattable: (_ctx, lit: Literal) => asFormattable(lit.value),
   formatToParts(_ctx, lit: Literal) {
     const fmt: MessageFormatPart = { type: 'literal', value: lit.value };
-    if (lit.meta) fmt.meta = { ...lit.meta };
-    return [fmt];
+    return lit.meta
+      ? [{ type: 'meta', value: '', meta: { ...lit.meta } }, fmt]
+      : [fmt];
   },
   formatToString: (_ctx, lit: Literal) => lit.value
 };

@@ -39,7 +39,8 @@ function formatVariableToParts(
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
       : asFormattable(value).toParts(ctx.locales, ctx.localeMatcher, source);
-  if (part.meta) for (const fmt of res) fmt.meta = { ...part.meta };
+  if (part.meta)
+    res.unshift({ type: 'meta', value: '', meta: { ...part.meta }, source });
   return res;
 }
 

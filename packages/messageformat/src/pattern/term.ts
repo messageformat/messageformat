@@ -45,7 +45,7 @@ function formatTermToParts(ctx: Context, term: Term): MessageFormatPart[] {
     ? fmtMsg.toParts(ctx.locales, ctx.localeMatcher, source)
     : [{ type: 'fallback', value: fallbackValue(ctx, term), source }];
   if (term.meta)
-    for (const fmt of res) fmt.meta = { ...term.meta, ...fmt.meta };
+    res.unshift({ type: 'meta', value: '', meta: { ...term.meta }, source });
   return res;
 }
 

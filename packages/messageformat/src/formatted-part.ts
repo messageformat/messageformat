@@ -1,10 +1,9 @@
 import type { Meta } from './data-model';
 
-export type MessageFormatPart = { meta?: Meta; source?: string } & (
-  | Intl.DateTimeFormatPart
-  | Intl.NumberFormatPart
-  | { type: 'literal'; value: string }
+export type MessageFormatPart =
+  | (Intl.DateTimeFormatPart & { source?: string })
+  | (Intl.NumberFormatPart & { source?: string })
+  | { type: 'literal'; value: string; source?: string }
   | { type: 'dynamic'; value: unknown; source: string }
   | { type: 'fallback'; value: string; source: string }
-  | { type: 'meta'; value: ''; meta: Meta }
-);
+  | { type: 'meta'; value: ''; meta: Meta; source?: string };

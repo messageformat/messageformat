@@ -41,14 +41,19 @@ function formatFunctionToParts(
     let meta: Meta;
     if (error instanceof Error) {
       meta = {
+        ...fn.meta,
         error_name: error.name,
         error_message: error.message
       };
       if (error.stack) meta.error_stack = error.stack;
-    } else meta = { error_message: String(error) };
-    res = [{ type: 'fallback', value: fallbackValue(ctx, fn), source, meta }];
+    } else meta = { ...fn.meta, error_message: String(error) };
+    return [
+      { type: 'meta', value: '', meta, source },
+      { type: 'fallback', value: fallbackValue(ctx, fn), source }
+    ];
   }
-  if (fn.meta) for (const fmt of res) fmt.meta = { ...fn.meta, ...fmt.meta };
+  if (fn.meta)
+    res.unshift({ type: 'meta', value: '', source, meta: { ...fn.meta } });
   return res;
 }
 
