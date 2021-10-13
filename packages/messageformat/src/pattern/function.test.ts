@@ -63,7 +63,7 @@ describe('Function returns Formattable', () => {
       STRINGIFY: {
         call: (_lc, _opt, arg: string) =>
           new Formattable(String(arg), {
-            toParts: (_lc, _opt, source) => [
+            toParts: source => [
               {
                 type: 'dynamic',
                 value: String(arg),

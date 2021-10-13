@@ -19,17 +19,17 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
   }
 
   matchSelectKey(
+    key: string,
     _locales: string[],
-    _localeMatcher: 'best fit' | 'lookup',
-    key: string
+    _localeMatcher: 'best fit' | 'lookup'
   ) {
     return String(this.getValue()) === key;
   }
 
   toParts(
+    source: string,
     _locales: string[],
-    _localeMatcher: 'best fit' | 'lookup',
-    source: string
+    _localeMatcher: 'best fit' | 'lookup'
   ): MessageFormatPart[] {
     let value: unknown = this.getValue();
     if (value == null || typeof value === 'boolean' || value instanceof Boolean)

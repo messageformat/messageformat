@@ -25,7 +25,7 @@ describe('Formattable variables', () => {
 
   test('Formattable(number, { toParts })', () => {
     const val = new Formattable(42, {
-      toParts: (lc, _opt, source) => {
+      toParts: (source, lc) => {
         const nf = new Intl.NumberFormat(lc, {
           minimumFractionDigits: 1
         });

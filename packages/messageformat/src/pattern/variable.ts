@@ -38,7 +38,7 @@ function formatVariableToParts(
   const res: MessageFormatPart[] =
     value === undefined
       ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : asFormattable(value).toParts(ctx.locales, ctx.localeMatcher, source);
+      : asFormattable(value).toParts(source, ctx.locales, ctx.localeMatcher);
   if (part.meta)
     res.unshift({ type: 'meta', value: '', meta: { ...part.meta }, source });
   return res;

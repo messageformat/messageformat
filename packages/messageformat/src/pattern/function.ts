@@ -36,7 +36,7 @@ function formatFunctionToParts(
   let res: MessageFormatPart[];
   try {
     const fmt = callRuntimeFunction(ctx, fn);
-    res = fmt.toParts(ctx.locales, ctx.localeMatcher, source);
+    res = fmt.toParts(source, ctx.locales, ctx.localeMatcher);
   } catch (error) {
     let meta: Meta;
     if (error instanceof Error) {

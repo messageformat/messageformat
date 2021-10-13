@@ -50,9 +50,9 @@ export class FormattableDateTime extends Formattable<
   }
 
   toParts(
+    source: string,
     locales: string[],
-    localeMatcher: 'best fit' | 'lookup',
-    source: string
+    localeMatcher: 'best fit' | 'lookup'
   ) {
     const dtf = this.getDateTimeFormatter(locales, localeMatcher);
     const parts: MessageFormatPart[] = dtf.formatToParts(this.getValue());

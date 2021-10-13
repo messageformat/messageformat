@@ -65,9 +65,9 @@ export class FormattableNumber extends Formattable<
 
   /** Uses value directly due to plural offset weirdness */
   matchSelectKey(
+    key: string,
     locales: string[],
-    localeMatcher: 'best fit' | 'lookup',
-    key: string
+    localeMatcher: 'best fit' | 'lookup'
   ) {
     return (
       (/^[0-9]+$/.test(key) && key === String(this.value)) ||
@@ -76,9 +76,9 @@ export class FormattableNumber extends Formattable<
   }
 
   toParts(
+    source: string,
     locales: string[],
-    localeMatcher: 'best fit' | 'lookup',
-    source: string
+    localeMatcher: 'best fit' | 'lookup'
   ) {
     const nf = this.getNumberFormatter(locales, localeMatcher);
     const number = this.getValue() as number; // FIXME: TS should know that bigint is fine here
