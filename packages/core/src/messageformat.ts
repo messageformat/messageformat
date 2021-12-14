@@ -15,7 +15,7 @@ export { PluralFunction };
  * @public
  */
 export type MessageFunction<ReturnType extends 'string' | 'values'> = (
-  param?: Record<string, unknown>
+  param?: Record<string, unknown> | unknown[]
 ) => ReturnType extends 'string' ? string : unknown[];
 
 export type CustomFormatter = (
