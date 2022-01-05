@@ -27,6 +27,8 @@ const cases = [
 ];
 
 for (const { title, locale, messages } of cases) {
+  process.env.NODE_ENV = "mockTest"
+
   describe(title, () => {
     test('Array id', () => {
       const component = renderer.create(

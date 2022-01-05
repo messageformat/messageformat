@@ -65,7 +65,9 @@ function getOnError(
     throw new MessageError(path, code, asId);
   }
   function msgWarning(path: string[], code: ErrorCode) {
-    console.warn(errorMessages[code], path);
+    if (process.env.NODE_ENV !== "test") {
+      console.warn(errorMessages[code], path);
+    }
     return asId(path);
   }
 
