@@ -168,7 +168,7 @@ See alse [Custom Formatters](custom-formatters.md) for an extension of the spec 
 ### date and time
 
 For simple cases, both `date` and `time` support the parameters `short`, `default`, `long` , and `full`.
-For more precide date and time formatting, use `date` with a `::`-prefixed [DateFormat skeleton string](http://userguide.icu-project.org/formatparse/datetime) like `{T, date, ::hamszzzz}`
+For more precise date and time formatting, use `date` with a `::`-prefixed [DateFormat skeleton string](http://userguide.icu-project.org/formatparse/datetime) like `{T, date, ::hamszzzz}`
 
 ```
 It is now {T, time} on {T, date}
