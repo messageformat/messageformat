@@ -24,8 +24,7 @@ export const testCases: Record<string, TestCase[]> = {
   'CLDR locales': [
     {
       locale: 'cy',
-      src:
-        '{NUM, plural, zero{a} one{b} two{c} few{d} many{e} other{f} =42{omg42}}',
+      src: '{NUM, plural, zero{a} one{b} two{c} few{d} many{e} other{f} =42{omg42}}',
       exp: [
         [{ NUM: 0 }, 'a'],
         [{ NUM: 1 }, 'b'],
@@ -38,8 +37,7 @@ export const testCases: Record<string, TestCase[]> = {
     },
     {
       locale: 'cy',
-      src:
-        '{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}',
+      src: '{num, selectordinal, zero{0,7,8,9} one{1} two{2} few{3,4} many{5,6} other{+}}',
       exp: [[{ num: 5 }, '5,6']]
     }
   ],
@@ -183,8 +181,7 @@ export const testCases: Record<string, TestCase[]> = {
       ]
     },
     {
-      src:
-        'The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor.',
+      src: 'The {FLOOR, selectordinal, one{#st} two{#nd} few{#rd} other{#th}} floor.',
       exp: [
         [{ FLOOR: 0 }, 'The 0th floor.'],
         [{ FLOOR: 1 }, 'The 1st floor.'],
@@ -195,8 +192,7 @@ export const testCases: Record<string, TestCase[]> = {
 
   'Prototype methods as cases': [
     {
-      src:
-        'I am {FEELING, select, a{happy} hasOwnProperty{evil} other{indifferent}}.',
+      src: 'I am {FEELING, select, a{happy} hasOwnProperty{evil} other{indifferent}}.',
       exp: [[{ FEELING: 'toString' }, 'I am indifferent.']]
     },
     {
@@ -270,8 +266,7 @@ export const testCases: Record<string, TestCase[]> = {
       ]
     },
     {
-      src:
-        '{HOURS, plural, =0 {{MINUTES, plural, =0 {{SECONDS, plural, =0 {} other {#s}}} other {#m {SECONDS}s}}} other {#h {MINUTES}m {SECONDS}s}}',
+      src: '{HOURS, plural, =0 {{MINUTES, plural, =0 {{SECONDS, plural, =0 {} other {#s}}} other {#m {SECONDS}s}}} other {#h {MINUTES}m {SECONDS}s}}',
       exp: [[{ HOURS: 1, MINUTES: 10, SECONDS: 15 }, '1h 10m 15s']]
     }
   ],
