@@ -5,9 +5,11 @@ package-lock.json
 !/docs/*.md
 /examples/cli/*.mjs
 /packages/*/CHANGELOG.md
+/packages/compiler/lib/
 /packages/core/lib/
 /packages/core/messageformat.*
 /packages/date-skeleton/lib/
+/packages/messageformat/lib/
 /packages/number-skeleton/lib/
 /packages/parser/lib/
 /packages/react/lib/
@@ -15,4 +17,5 @@ package-lock.json
 /packages/rollup-plugin/lib/
 /packages/runtime/esm/
 /packages/runtime/lib/
+/packages/xliff/lib/
 /tmp/
