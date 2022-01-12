@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/loader",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0",
   "description": "Webpack loader for MessageFormat",
   "keywords": [
     "i18n",
@@ -34,6 +34,6 @@
     "yaml": "^1.10.2"
   },
   "peerDependencies": {
-    "@messageformat/core": "^3.0.0-beta.0"
+    "@messageformat/core": "^3.0.0"
   }
 }

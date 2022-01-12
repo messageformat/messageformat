@@ -90,9 +90,10 @@ function weekdayStyle(token: DateToken, onError: ErrorHandler) {
   return alpha(width);
 }
 
-function hourOptions(
-  token: DateToken
-): { hour: '2-digit' | 'numeric'; hourCycle?: 'h11' | 'h12' | 'h23' | 'h24' } {
+function hourOptions(token: DateToken): {
+  hour: '2-digit' | 'numeric';
+  hourCycle?: 'h11' | 'h12' | 'h23' | 'h24';
+} {
   const hour = numeric(token.width);
   let hourCycle: 'h11' | 'h12' | 'h23' | 'h24' | undefined;
   switch (token.char) {

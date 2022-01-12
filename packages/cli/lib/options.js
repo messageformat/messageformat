@@ -41,7 +41,7 @@ messageformat.rc.{js,json,yaml}.`;
       delimiters: {
         alias: 'd',
         array: true,
-        default: ['._' + path.sep]
+        default: ['._/\\']
       },
       'eslint-disable': {
         boolean: true,
@@ -63,8 +63,7 @@ messageformat.rc.{js,json,yaml}.`;
       outfile: {
         alias: 'o',
         default: '-',
-        desc:
-          'Write output to the specified file. If undefined or "-", prints to stdout.',
+        desc: 'Write output to the specified file. If undefined or "-", prints to stdout.',
         string: true
       },
       simplify: {
@@ -74,23 +73,18 @@ messageformat.rc.{js,json,yaml}.`;
     })
     .coerce({
       delimiters(delim) {
-        const str = delim
-          .join('')
-          .replace(/[/\\]+/g, '\\' + path.sep)
-          .replace(/[-\]]/g, '\\$&');
+        const str = delim.join('').replace(/[-\]\\]/g, '\\$&');
         return new RegExp(`[${str}]`);
       },
       extensions(ext) {
         return ext.map(x => x.trim().replace(/^([^.]*\.)?/, '.'));
       },
       locale(locales) {
-        const ls = locales.reduce(
-          (locales, lc) => locales.concat(lc.split(/[ ,]+/)),
-          []
-        );
+        if (!locales) return '*';
+        const ls = locales.reduce((ls, lc) => ls.concat(lc.split(/[ ,]+/)), []);
         return ls.length > 0 ? ls : '*';
       },
-      options(opt) {
+      options(opt = {}) {
         if (opt.customFormatters) {
           const cf = opt.customFormatters;
           if (typeof cf === 'string') {

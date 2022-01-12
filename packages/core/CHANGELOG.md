@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.0.0-beta.3...@messageformat/core@3.0.0) (2021-05-13)
+
+
+* test!: Drop Node.js 10 tests/support due to its EOL (#322) ([5b1172b](https://github.com/messageformat/messageformat/commit/5b1172b534baa2476bac281db9393d958a0f8272)), closes [#322](https://github.com/messageformat/messageformat/issues/322)
+
+
+### Bug Fixes
+
+* Allow overriding default formatters ([6faedbe](https://github.com/messageformat/messageformat/commit/6faedbefe4ae1e027ccb24cf05a55fc45be551b7))
+* Properly complain about reserved identifier names during build ([39cf8aa](https://github.com/messageformat/messageformat/commit/39cf8aab952495d6ea5aa3997d06fc07a689ca8b))
+* Tighten up TS types, getting rid of almost all `any` ([21de670](https://github.com/messageformat/messageformat/commit/21de670019d5467f804560565319bf37abfbac0a))
+
+
+### Features
+
+* **core:** Rename "strictNumberSign" option as "strict" ([#311](https://github.com/messageformat/messageformat/issues/311)) ([dead6b3](https://github.com/messageformat/messageformat/commit/dead6b38c93d7477ff7cf209351c9c9de4450c6c))
+* Allow for custom formatters imported from runtime modules ([a58ade1](https://github.com/messageformat/messageformat/commit/a58ade19595476cdeffe7b151831dbfe8f754581))
+* Make arg shape customisable for custom formatters ([8510f2c](https://github.com/messageformat/messageformat/commit/8510f2c4f849a8467eaa6cc46e7ec6d5cc111289))
+* Use TS generics to specify the message function return type ([530f13f](https://github.com/messageformat/messageformat/commit/530f13f8c8e91aed7306ecccc66efa1545cae29c))
+* **compiler:** Use fat-arrow notation for message functions ([d9a94bb](https://github.com/messageformat/messageformat/commit/d9a94bb45593e98bcf4e8ff209d29150fbaccb37))
+
+
+### BREAKING CHANGES
+
+* Tests for the library in Node.js 10 are dropped. No
+immediate changes should cause any part of the library not to work with
+Node.js 10, but that will no longer be verified by CI tests or otherwise.
+
+
+
+
+
 # 3.0.0-beta.3 (2020-11-29)
 
 

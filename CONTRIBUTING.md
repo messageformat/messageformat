@@ -30,4 +30,10 @@ Due to relying on Intl.NumberFormat pretty heavily, not all tests will pass in a
 
 ## Contributor License Agreement
 
-We require all code contributions to be covered under the OpenJS Foundation's [Contributor License Agreement](https://cla.js.foundation/messageformat/messageformat). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions and that you have the legal right to contribute them under our MIT license. If you've not previously signed the CLA, our bot will provide you with instructions for how to do so.
+This repository is managed by EasyCLA. Project participants must sign the free [OpenJS Foundation CLA](https://github.com/openjs-foundation/easycla) before making a contribution. You only need to do this one time, and it can be signed by [individual contributors](https://github.com/openjs-foundation/easycla#sign-as-an-individual) or their [employers](https://github.com/openjs-foundation/easycla#have-your-company-sign-for-you).
+
+To initiate the signature process please open a PR against this repo. The EasyCLA bot will block the merge if we still need a CLA from you.
+
+You can find [detailed instructions here](https://github.com/openjs-foundation/easycla). If you have issues, please email [operations@openjsf.org](mailto:operations@openjsf.org).
+
+If your company benefits from this project and you would like to provide essential financial support for the systems and people that power our community, please also consider [membership in the OpenJS Foundation](https://openjsf.org/about/join).

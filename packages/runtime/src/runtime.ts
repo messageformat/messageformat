@@ -74,7 +74,7 @@ export function plural(
  * @param data The object from which results are looked up
  * @returns The result of the select statement
  */
-export function select(value: number, data: { [key: string]: unknown }) {
+export function select(value: string, data: { [key: string]: unknown }) {
   return {}.hasOwnProperty.call(data, value) ? data[value] : data.other;
 }
 

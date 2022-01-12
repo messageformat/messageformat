@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.0-beta.2...@messageformat/runtime@3.0.0) (2021-05-13)
+
+
+### Bug Fixes
+
+* Tighten up TS types, getting rid of almost all `any` ([21de670](https://github.com/messageformat/messageformat/commit/21de670019d5467f804560565319bf37abfbac0a))
+* **runtime:** Add missing esm/package.json ([#308](https://github.com/messageformat/messageformat/issues/308)) ([057c84a](https://github.com/messageformat/messageformat/commit/057c84a708ddb4ea6e37c2a92b38fec296037569))
+
+
+
+
+
 # 3.0.0-beta.2 (2020-11-29)
 
 

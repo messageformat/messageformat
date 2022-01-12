@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/runtime",
-  "version": "3.0.0-beta.2",
+  "version": "3.0.0",
   "description": "Runtime components of messageformat",
   "keywords": [
     "i18n",
@@ -21,7 +21,7 @@
   "files": [
     "esm/",
     "lib/",
-    "messages.js"
+    "messages.*"
   ],
   "type": "commonjs",
   "main": "./lib/runtime.js",

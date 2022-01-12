@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/messageformat/messageformat/compare/rollup-plugin-messageformat@1.0.0-beta.2...rollup-plugin-messageformat@1.0.0) (2021-05-13)
+
+**Note:** Version bump only for package rollup-plugin-messageformat
+
+
+
+
+
 # 1.0.0-beta.2 (2020-11-29)
 
 

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.0.0...@messageformat/cli@3.0.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* Add manual input type checking to yargs coerce calls (fixes [#323](https://github.com/messageformat/messageformat/issues/323)) ([6d6d044](https://github.com/messageformat/messageformat/commit/6d6d044da96c0f475b4ca1f386e039dd5e4d63f2))
+
+
+
+
+
+# [3.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.0.0-beta.2...@messageformat/cli@3.0.0) (2021-05-13)
+
+**Note:** Version bump only for package @messageformat/cli
+
+
+
+
+
 # 3.0.0-beta.2 (2020-11-29)
 
 
