@@ -20,6 +20,7 @@ export interface MessageFormatOptions {
 }
 
 export const MFgetMessage = Symbol('getMessage');
+export const MFruntime = Symbol('runtime');
 
 /**
  * Create a new message formatter.
@@ -29,11 +30,12 @@ export const MFgetMessage = Symbol('getMessage');
  * equivalents.
  */
 export class MessageFormat {
-  #resolvers: PatternElementResolver[];
-  #localeMatcher: 'best fit' | 'lookup';
-  #locales: string[];
-  #resources: ResourceReader[];
-  #runtime: Readonly<Runtime>;
+  readonly #localeMatcher: 'best fit' | 'lookup';
+  readonly #locales: string[];
+  readonly #resolvers: readonly PatternElementResolver[];
+  readonly #resources: ResourceReader[];
+
+  readonly [MFruntime]: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
@@ -49,9 +51,10 @@ export class MessageFormat {
         } else return fmtOpt;
       }) ?? patternFormatters;
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
-    this.#locales = Array.isArray(locales) ? locales : [locales];
+    this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
     this.#resources = resources.map(ResourceReader.from);
-    this.#runtime = options?.runtime ?? defaultRuntime;
+    const rt = options?.runtime ?? defaultRuntime;
+    this[MFruntime] = Object.freeze({ ...rt });
   }
 
   addResources(...resources: (Resource | ResourceReader)[]) {
@@ -90,9 +93,10 @@ export class MessageFormat {
 
   resolvedOptions() {
     return {
+      elements: this.#resolvers.map(res => res.type),
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
-      runtime: this.#runtime
+      runtime: this[MFruntime]
     };
   }
 

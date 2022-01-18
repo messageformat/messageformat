@@ -1,6 +1,7 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { asFormattable, FormattableFallback } from '../formattable';
+import { MFruntime } from '../messageformat';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternElementResolver, Variable } from './index';
 import { isLiteral } from './literal';
@@ -64,7 +65,7 @@ function resolveOptions(
 export const resolver: PatternElementResolver<Runtime> = {
   type: 'function',
 
-  initContext: mf => mf.resolvedOptions().runtime,
+  initContext: mf => mf[MFruntime],
 
   resolve(ctx, { args, func, meta, options }: Function) {
     let source: string | undefined;

@@ -16,7 +16,7 @@ export interface Runtime {
 
 export interface RuntimeFunction<T> {
   call(
-    locales: string[],
+    locales: readonly string[],
     options: RuntimeOptions | undefined,
     ...args: any[]
   ): T;
