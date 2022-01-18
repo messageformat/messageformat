@@ -1,7 +1,7 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattableFallback, FormattableMessage } from '../formattable';
-import type { Literal, PatternFormatter, Variable } from './index';
+import type { Literal, PatternElementResolver, Variable } from './index';
 import type { Scope } from './variable';
 
 /**
@@ -56,7 +56,7 @@ function getMessageContext(ctx: TermContext, { res_id, scope }: Term) {
   return { ...ctx, types };
 }
 
-export const formatter: PatternFormatter<TermContext['types']['term']> = {
+export const resolver: PatternElementResolver<TermContext['types']['term']> = {
   type: 'term',
 
   initContext: (mf, resId) => (msgResId, msgPath) =>

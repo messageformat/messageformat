@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
 import { Formattable } from '../formattable';
-import type { PatternFormatter } from './index';
+import type { PatternElementResolver } from './index';
 
 /**
  * An immediately defined value.
@@ -18,7 +18,7 @@ export interface Literal extends PatternElement {
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
 
-export const formatter: PatternFormatter = {
+export const resolver: PatternElementResolver = {
   type: 'literal',
 
   resolve: (ctx, lit: Literal) =>

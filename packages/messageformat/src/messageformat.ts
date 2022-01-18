@@ -2,18 +2,18 @@ import { PatternElement, Resource } from './data-model';
 import type { Context } from './format-context';
 import { FormattableMessage } from './formattable';
 import { MessageFormatPart } from './formatted-part';
-import { PatternFormatter, patternFormatters } from './pattern';
+import { PatternElementResolver, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable';
 import { ResourceReader } from './resource-reader';
 import { defaultRuntime, Runtime } from './runtime';
 
 export interface MessageFormatOptions {
-  formatters?: (
+  elements?: (
     | 'function'
     | 'literal'
     | 'term'
     | 'variable'
-    | PatternFormatter
+    | PatternElementResolver
   )[];
   localeMatcher?: 'best fit' | 'lookup';
   runtime?: Runtime;
@@ -27,7 +27,7 @@ export interface MessageFormatOptions {
  * equivalents.
  */
 export class MessageFormat {
-  #formatters: PatternFormatter[];
+  #resolvers: PatternElementResolver[];
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
   #resources: ResourceReader[];
@@ -38,8 +38,8 @@ export class MessageFormat {
     options?: MessageFormatOptions | null,
     ...resources: (Resource | ResourceReader)[]
   ) {
-    this.#formatters =
-      options?.formatters?.map(fmtOpt => {
+    this.#resolvers =
+      options?.elements?.map(fmtOpt => {
         if (typeof fmtOpt === 'string') {
           const fmt = patternFormatters.find(fmt => fmt.type === fmtOpt);
           if (!fmt) throw new RangeError(`Unsupported pattern type: ${fmtOpt}`);
@@ -117,22 +117,22 @@ export class MessageFormat {
   }
 
   private createContext(resId: string, scope: Scope): Context {
-    const formatters = this.#formatters;
+    const resolvers = this.#resolvers;
 
     const ctx: Context = {
       resolve(elem: PatternElement) {
-        const fmt = formatters.find(fmt => fmt.type === elem.type);
-        if (!fmt) throw new Error(`Unsupported pattern element: ${elem.type}`);
-        return fmt.resolve(this, elem);
+        const res = resolvers.find(res => res.type === elem.type);
+        if (!res) throw new Error(`Unsupported pattern element: ${elem.type}`);
+        return res.resolve(this, elem);
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       types: {}
     };
 
-    for (const fmt of formatters) {
-      if (typeof fmt.initContext === 'function')
-        ctx.types[fmt.type] = fmt.initContext(this, resId, scope);
+    for (const res of resolvers) {
+      if (typeof res.initContext === 'function')
+        ctx.types[res.type] = res.initContext(this, resId, scope);
     }
 
     return ctx;

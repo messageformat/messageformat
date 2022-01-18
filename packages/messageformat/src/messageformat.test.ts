@@ -18,7 +18,7 @@ describe('options', () => {
 
     const mf2 = new MessageFormat(
       'en',
-      { formatters: ['literal', 'variable'], runtime: fluentRuntime },
+      { elements: ['literal', 'variable'], runtime: fluentRuntime },
       res
     );
     expect(mf2.format('var', { var: 12.34 })).toBe('12.34');

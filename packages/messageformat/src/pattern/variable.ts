@@ -5,7 +5,7 @@ import {
   Formattable,
   FormattableFallback
 } from '../formattable';
-import type { Literal, PatternFormatter } from './index';
+import type { Literal, PatternElementResolver } from './index';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -64,7 +64,7 @@ function getValue(ctx: Context, path: string[]): unknown {
   return val;
 }
 
-export const formatter: PatternFormatter<Scope> = {
+export const resolver: PatternElementResolver<Scope> = {
   type: 'variable',
 
   initContext: (_mf, _resId, scope) => scope,

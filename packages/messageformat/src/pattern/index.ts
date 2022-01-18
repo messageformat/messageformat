@@ -3,20 +3,20 @@ import type { Context } from '../format-context';
 import type { Formattable } from '../formattable';
 import type { MessageFormat } from '../messageformat';
 
-import { formatter as functionFormatter } from './function';
-import { formatter as literal } from './literal';
-import { formatter as term } from './term';
-import { formatter as variable, Scope } from './variable';
+import { resolver as functionResolver } from './function';
+import { resolver as literal } from './literal';
+import { resolver as term } from './term';
+import { resolver as variable, Scope } from './variable';
 
 export { isFunction, Function } from './function';
 export { isLiteral, Literal } from './literal';
 export { isTerm, Term } from './term';
 export { isVariable, Variable } from './variable';
 
-export interface PatternFormatter<T = unknown> {
+export interface PatternElementResolver<T = unknown> {
   type: string;
   resolve(ctx: Context, elem: PatternElement): Formattable;
   initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 
-export const patternFormatters = [literal, variable, functionFormatter, term];
+export const patternFormatters = [literal, variable, functionResolver, term];
