@@ -19,6 +19,8 @@ export interface MessageFormatOptions {
   runtime?: Runtime;
 }
 
+export const MFgetMessage = Symbol('getMessage');
+
 /**
  * Create a new message formatter.
  *
@@ -86,7 +88,15 @@ export class MessageFormat {
     return fmtMsg ? fmtMsg.toParts() : [];
   }
 
-  getMessage(resId: string, path: string | string[]) {
+  resolvedOptions() {
+    return {
+      localeMatcher: this.#localeMatcher,
+      locales: this.#locales.slice(),
+      runtime: this.#runtime
+    };
+  }
+
+  [MFgetMessage](resId: string, path: string | string[]) {
     const p = Array.isArray(path) ? path : [path];
     for (const res of this.#resources) {
       if (res.getId() === resId) {
@@ -97,20 +107,12 @@ export class MessageFormat {
     return undefined;
   }
 
-  resolvedOptions() {
-    return {
-      localeMatcher: this.#localeMatcher,
-      locales: this.#locales.slice(),
-      runtime: this.#runtime
-    };
-  }
-
   private getFormattableMessage(
     resId: string,
     msgPath: string | string[],
     scope: Scope
   ) {
-    const msg = this.getMessage(resId, msgPath);
+    const msg = this[MFgetMessage](resId, msgPath);
     if (!msg) return null;
     const ctx = this.createContext(resId, scope);
     return new FormattableMessage(ctx, msg);

@@ -417,10 +417,6 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
-    const msg: any = mf.getMessage('res', 'activity-needed-calculation-plural');
-    expect(msg.select).toHaveLength(4);
-    expect(msg.cases).toHaveLength(16);
-
     const one = mf.format('activity-needed-calculation-plural', {
       totalHours: 1,
       periodMonths: 1,

@@ -1,6 +1,7 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattableFallback, FormattableMessage } from '../formattable';
+import { MFgetMessage } from '../messageformat';
 import type { Literal, PatternElementResolver, Variable } from './index';
 import type { Scope } from './variable';
 
@@ -60,7 +61,7 @@ export const resolver: PatternElementResolver<TermContext['types']['term']> = {
   type: 'term',
 
   initContext: (mf, resId) => (msgResId, msgPath) =>
-    mf.getMessage(msgResId || resId, msgPath),
+    mf[MFgetMessage](msgResId || resId, msgPath),
 
   resolve(ctx, term: Term) {
     const { meta, msg_path, res_id } = term;
