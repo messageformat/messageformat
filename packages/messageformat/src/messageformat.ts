@@ -28,7 +28,6 @@ export interface MessageFormatOptions {
  */
 export class MessageFormat {
   #formatters: PatternFormatter[];
-  #getFormatter: (el: PatternElement) => PatternFormatter;
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
   #resources: ResourceReader[];
@@ -47,11 +46,6 @@ export class MessageFormat {
           return fmt;
         } else return fmtOpt;
       }) ?? patternFormatters;
-    this.#getFormatter = ({ type }: PatternElement) => {
-      const fmt = this.#formatters.find(fmt => fmt.type === type);
-      if (fmt) return fmt;
-      throw new Error(`Unsupported pattern element: ${type}`);
-    };
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales : [locales];
     this.#resources = resources.map(ResourceReader.from);
@@ -123,14 +117,20 @@ export class MessageFormat {
   }
 
   private createContext(resId: string, scope: Scope): Context {
+    const formatters = this.#formatters;
+
     const ctx: Context = {
-      getFormatter: this.#getFormatter,
+      resolve(elem: PatternElement) {
+        const fmt = formatters.find(fmt => fmt.type === elem.type);
+        if (!fmt) throw new Error(`Unsupported pattern element: ${elem.type}`);
+        return fmt.resolve(this, elem);
+      },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       types: {}
     };
 
-    for (const fmt of this.#formatters) {
+    for (const fmt of formatters) {
       if (typeof fmt.initContext === 'function')
         ctx.types[fmt.type] = fmt.initContext(this, resId, scope);
     }

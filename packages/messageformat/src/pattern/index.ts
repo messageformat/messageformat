@@ -11,12 +11,11 @@ import { formatter as variable, Scope } from './variable';
 export { isFunction, Function } from './function';
 export { isLiteral, Literal } from './literal';
 export { isTerm, Term } from './term';
-export { getArgSource } from './util-arg-source';
 export { isVariable, Variable } from './variable';
 
 export interface PatternFormatter<T = unknown> {
   type: string;
-  asFormattable(ctx: Context, part: PatternElement): Formattable;
+  resolve(ctx: Context, elem: PatternElement): Formattable;
   initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 

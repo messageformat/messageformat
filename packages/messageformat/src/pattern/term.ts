@@ -50,7 +50,7 @@ function getMessageContext(ctx: TermContext, { res_id, scope }: Term) {
     // If the variable type isn't actually available, this has no effect
     types.variable = { ...ctx.types.variable };
     for (const [key, value] of Object.entries(scope))
-      types.variable[key] = ctx.getFormatter(value).asFormattable(ctx, value);
+      types.variable[key] = ctx.resolve(value);
   }
 
   return { ...ctx, types };
@@ -58,11 +58,13 @@ function getMessageContext(ctx: TermContext, { res_id, scope }: Term) {
 
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
-  asFormattable(ctx, term: Term) {
+
+  initContext: (mf, resId) => (msgResId, msgPath) =>
+    mf.getMessage(msgResId || resId, msgPath),
+
+  resolve(ctx, term: Term) {
     const { meta, msg_path, res_id } = term;
-    const strPath = msg_path.map(elem =>
-      ctx.getFormatter(elem).asFormattable(ctx, elem).toString()
-    );
+    const strPath = msg_path.map(elem => ctx.resolve(elem).toString());
     let source = strPath.join('.');
     source = res_id ? `-${res_id}::${source}` : `-${source}`;
 
@@ -75,7 +77,5 @@ export const formatter: PatternFormatter<TermContext['types']['term']> = {
     }
 
     return new FormattableFallback(ctx, meta, { source });
-  },
-  initContext: (mf, resId) => (msgResId, msgPath) =>
-    mf.getMessage(msgResId || resId, msgPath)
+  }
 };

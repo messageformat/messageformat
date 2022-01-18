@@ -1,12 +1,11 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import {
-  asFormattableX,
+  asFormattable,
   Formattable,
   FormattableFallback
 } from '../formattable';
 import type { Literal, PatternFormatter } from './index';
-import { getArgSource } from './util-arg-source';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -32,43 +31,52 @@ export interface Variable extends PatternElement {
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-/** @returns `undefined` if value not found */
-function getValue(ctx: Context, { var_path }: Variable): unknown {
-  if (var_path.length === 0) return undefined;
-  let val: unknown = ctx.types.variable;
+function getPath(
+  ctx: Context,
+  { var_path }: Variable,
+  onError: (error: unknown) => void
+): string[] {
+  const path: string[] = [];
   for (const p of var_path) {
-    if (!val || val instanceof Formattable) return undefined;
     try {
-      const arg = ctx.getFormatter(p).asFormattable(ctx, p).getValue();
-      if (arg === undefined) return undefined;
-      val = (val as Scope)[String(arg)];
-    } catch (_) {
-      // TODO: report error
-      return undefined;
+      const fmt = ctx.resolve(p);
+      const val = fmt.getValue();
+      if (val === undefined) {
+        onError(new TypeError('Variable path part cannot be undefined'));
+        path.push(fmt.toString());
+      } else path.push(String(val));
+    } catch (error) {
+      onError(error);
+      path.push('???');
     }
+  }
+  return path;
+}
+
+/** @returns `undefined` if value not found */
+function getValue(ctx: Context, path: string[]): unknown {
+  if (path.length === 0) return undefined;
+  let val: unknown = ctx.types.variable;
+  for (const p of path) {
+    if (!val || val instanceof Formattable) return undefined;
+    val = (val as Scope)[p];
   }
   return val;
 }
 
-function fallbackValue(ctx: Context, { var_path }: Variable): string {
-  const path = var_path.map(v =>
-    ctx.getFormatter(v).asFormattable(ctx, v).getValue()
-  );
-  return '$' + path.join('.');
-}
-
 export const formatter: PatternFormatter<Scope> = {
   type: 'variable',
-  asFormattable(ctx: Context, part: Variable): Formattable {
-    const source = getArgSource(part);
-    const value = getValue(ctx, part);
+
+  initContext: (_mf, _resId, scope) => scope,
+
+  resolve(ctx, elem: Variable) {
+    let error: unknown;
+    const path = getPath(ctx, elem, err => (error = err));
+    const source = '$' + path.join('.');
+    const value = error ? undefined : getValue(ctx, path);
 
     return value === undefined
-      ? new FormattableFallback(ctx, part.meta, {
-          fallbackString: () => fallbackValue(ctx, part),
-          source
-        })
-      : asFormattableX(ctx, value, { meta: part.meta, source });
-  },
-  initContext: (_mf, _resId, scope) => scope
+      ? new FormattableFallback(ctx, elem.meta, { source })
+      : asFormattable(ctx, value, { meta: elem.meta, source });
+  }
 };

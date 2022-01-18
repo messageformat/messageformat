@@ -20,7 +20,8 @@ export const isLiteral = (part: any): part is Literal =>
 
 export const formatter: PatternFormatter = {
   type: 'literal',
-  asFormattable: (ctx, lit: Literal) =>
+
+  resolve: (ctx, lit: Literal) =>
     new Formattable<string>(ctx, lit.value, {
       meta: lit.meta,
       type: 'literal'

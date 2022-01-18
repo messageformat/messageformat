@@ -1,11 +1,9 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { asFormattableX } from '../formattable';
-import { FormattableFallback } from '../formattable';
+import { asFormattable, FormattableFallback } from '../formattable';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
 import { isLiteral } from './literal';
-import { getArgSource } from './util-arg-source';
 
 /**
  * To resolve a Function, an externally defined function is called.
@@ -40,7 +38,7 @@ function resolveOptions(
           ? expected
           : expected[key];
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = ctx.getFormatter(value).asFormattable(ctx, value).getValue();
+      const res = ctx.resolve(value).getValue();
       if (
         exp === 'any' ||
         exp === typeof res ||
@@ -65,21 +63,23 @@ function resolveOptions(
 
 export const formatter: PatternFormatter<Runtime> = {
   type: 'function',
-  asFormattable(ctx, { args, func, meta, options }: Function) {
-    const srcArgs = args.map(getArgSource);
-    const source = func + '(' + srcArgs.join(', ') + ')';
+
+  initContext: mf => mf.resolvedOptions().runtime,
+
+  resolve(ctx, { args, func, meta, options }: Function) {
+    let source: string | undefined;
     const rf = (ctx.types.function as Runtime)[func];
     try {
-      const fnArgs = args.map(arg =>
-        ctx.getFormatter(arg).asFormattable(ctx, arg)
-      );
+      const fnArgs = args.map(arg => ctx.resolve(arg));
+      const srcArgs = fnArgs.map(fa => fa.getSource(true)).join(', ');
+      source = `${func}(${srcArgs})`;
       const fnOpt = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
-      return asFormattableX(ctx, res, { meta, source });
+      return asFormattable(ctx, res, { meta, source });
     } catch (_) {
       // TODO: report error
+      if (!source) source = `${func}()`;
       return new FormattableFallback(ctx, meta, { source });
     }
-  },
-  initContext: mf => mf.resolvedOptions().runtime
+  }
 };

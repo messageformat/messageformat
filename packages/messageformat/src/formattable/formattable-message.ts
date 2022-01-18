@@ -21,7 +21,7 @@ export class FormattableMessage extends Formattable<Message, Context> {
 
     const ctx = this.#context;
     const sel = msg.select.map(({ value, fallback }) => ({
-      fmt: ctx.getFormatter(value).asFormattable(ctx, value),
+      fmt: ctx.resolve(value),
       def: fallback || 'other'
     }));
 
@@ -55,7 +55,7 @@ export class FormattableMessage extends Formattable<Message, Context> {
     const ctx = this.#context;
     const source = this.getSource(false);
     for (const elem of pattern) {
-      const parts = ctx.getFormatter(elem).asFormattable(ctx, elem).toParts();
+      const parts = ctx.resolve(elem).toParts();
       for (const part of parts) {
         if (source)
           part.source = part.source ? source + '/' + part.source : source;
@@ -68,12 +68,8 @@ export class FormattableMessage extends Formattable<Message, Context> {
   toString() {
     if (typeof this.#string !== 'string') {
       this.#string = '';
-      const ctx = this.#context;
       for (const elem of this.getPattern()) {
-        this.#string += ctx
-          .getFormatter(elem)
-          .asFormattable(ctx, elem)
-          .toString();
+        this.#string += this.#context.resolve(elem).toString();
       }
     }
     return this.#string;
