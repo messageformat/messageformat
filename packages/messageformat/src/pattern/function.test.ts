@@ -56,33 +56,19 @@ describe('Function returns generic value', () => {
 });
 
 describe('Function returns Formattable', () => {
-  test('with meta value', () => {
+  test('with custom toString method', () => {
     const src = `msg = { STRINGIFY($var) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
       STRINGIFY: {
-        call: (_lc, _opt, arg: string) =>
-          new Formattable(String(arg), {
-            toParts: source => [
-              {
-                type: 'dynamic',
-                value: String(arg),
-                source,
-                meta: { foo: 'FOO' }
-              }
-            ]
-          }),
+        call: (lc, _opt, arg: string) =>
+          new Formattable(lc, null, { toString: () => `str:${arg}` }),
         options: 'never'
       }
     };
     const mf = new MessageFormat('en', { runtime }, res);
     expect(mf.formatToParts('msg', { var: 42 })).toEqual([
-      {
-        type: 'dynamic',
-        value: '42',
-        source: 'STRINGIFY($var)',
-        meta: { foo: 'FOO' }
-      }
+      { type: 'dynamic', value: 'str:42', source: 'STRINGIFY($var)' }
     ]);
   });
 });
@@ -92,7 +78,9 @@ describe('Function uses Formattable argument', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    const val = new FormattableNumber(BigInt(12345678), { useGrouping: false });
+    const val = new FormattableNumber(null, BigInt(12345678), {
+      options: { useGrouping: false }
+    });
     const parts = mf.formatToParts('msg', { val });
 
     const nf = new Intl.NumberFormat('en', {
@@ -107,7 +95,9 @@ describe('Function uses Formattable argument', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    const val = new FormattableNumber(42, { minimumFractionDigits: 4 });
+    const val = new FormattableNumber(null, 42, {
+      options: { minimumFractionDigits: 4 }
+    });
     const parts = mf.formatToParts('msg', { val });
 
     const nf = new Intl.NumberFormat('en', { minimumFractionDigits: 2 });
@@ -119,7 +109,7 @@ describe('Function uses Formattable argument', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    const val = new FormattableNumber(12345, 'fi');
+    const val = new FormattableNumber('fi', 12345);
     const parts = mf.formatToParts('msg', { val });
 
     const nf = new Intl.NumberFormat('fi', { minimumFractionDigits: 2 });

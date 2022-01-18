@@ -35,7 +35,7 @@ export const date: RuntimeFunction<FormattableDateTime> = {
           : 'short',
       year: 'numeric'
     };
-    return new FormattableDateTime(date, locales, opt);
+    return new FormattableDateTime(locales, date, { options: opt });
   },
 
   options: { param: 'string' }
@@ -123,7 +123,7 @@ export const number: RuntimeFunction<FormattableNumber> = {
       if (options.type === 'ordinal') opt.type = 'ordinal';
     }
 
-    return new FormattableMF1Number(num, locales, opt);
+    return new FormattableMF1Number(locales, num, { options: opt });
   },
 
   options: {
@@ -153,7 +153,7 @@ export const time: RuntimeFunction<FormattableDateTime> = {
       hour: 'numeric',
       timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
     };
-    return new FormattableDateTime(time, locales, opt);
+    return new FormattableDateTime(locales, time, { options: opt });
   },
 
   options: { param: ['short', 'default', 'long', 'full'] }

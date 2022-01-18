@@ -1,21 +1,19 @@
-import { Message, Meta, PatternElement } from '../data-model';
+import { Message, PatternElement } from '../data-model';
 import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
-import type { MessageFormatPart } from '../formatted-part';
 import { Formattable } from './formattable';
 
 export class FormattableMessage extends Formattable<Message, Context> {
-  #context: Context;
-  #meta: Meta | null = null;
+  readonly #context: Context;
   #pattern: PatternElement[] | null = null;
   #string: string | null = null;
 
-  constructor(context: Context, message: Message) {
-    super(message);
+  constructor(context: Context, message: Message, source?: string) {
+    super(context, message, { meta: message.meta, source });
     this.#context = context;
-    if (message.meta) this.#meta = { ...message.meta };
   }
 
+  /** As a side effect, sets selection metadata */
   private getPattern() {
     if (this.#pattern) return this.#pattern;
     const msg = this.getValue();
@@ -33,23 +31,17 @@ export class FormattableMessage extends Formattable<Message, Context> {
         const k = key[i];
         const s = sel[i];
         if (typeof k !== 'string' || !s) continue cases;
-        if (s.fmt.matchSelectKey(k, ctx.locales, ctx.localeMatcher))
-          fallback[i] = false;
+        if (s.fmt.matchSelectKey(k)) fallback[i] = false;
         else if (s.def === k) fallback[i] = true;
         else continue cases;
       }
 
-      const meta = getFormattedSelectMeta(ctx, msg, key, sel, fallback);
-      if (meta) {
-        if (this.#meta) Object.assign(this.#meta, meta);
-        else this.#meta = meta;
-      }
-      if (this.#meta) this.#meta['selectResult'] = 'success';
+      const meta = getFormattedSelectMeta(msg, key, sel, fallback);
+      if (meta) this.setMeta(meta);
       return (this.#pattern = value);
     }
 
-    if (!this.#meta) this.#meta = {};
-    this.#meta['selectResult'] = 'no-match';
+    this.setMeta({ selectResult: 'no-match' });
     return (this.#pattern = []);
   }
 
@@ -57,19 +49,19 @@ export class FormattableMessage extends Formattable<Message, Context> {
     return this.toString() === key;
   }
 
-  toParts(source?: string) {
+  toParts() {
     const pattern = this.getPattern();
-    const res: MessageFormatPart[] = [];
-    if (this.#meta)
-      res.push({ type: 'meta', value: '', meta: { ...this.#meta } });
+    const res = this.initFormattedParts(false);
     const ctx = this.#context;
+    const source = this.getSource(false);
     for (const elem of pattern) {
-      const parts = ctx.getFormatter(elem).formatToParts(ctx, elem);
-      Array.prototype.push.apply(res, parts);
+      const parts = ctx.getFormatter(elem).asFormattable(ctx, elem).toParts();
+      for (const part of parts) {
+        if (source)
+          part.source = part.source ? source + '/' + part.source : source;
+        res.push(part);
+      }
     }
-    if (source)
-      for (const part of res)
-        part.source = part.source ? source + '/' + part.source : source;
     return res;
   }
 
@@ -77,8 +69,12 @@ export class FormattableMessage extends Formattable<Message, Context> {
     if (typeof this.#string !== 'string') {
       this.#string = '';
       const ctx = this.#context;
-      for (const elem of this.getPattern())
-        this.#string += ctx.getFormatter(elem).formatToString(ctx, elem);
+      for (const elem of this.getPattern()) {
+        this.#string += ctx
+          .getFormatter(elem)
+          .asFormattable(ctx, elem)
+          .toString();
+      }
     }
     return this.#string;
   }

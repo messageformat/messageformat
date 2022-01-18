@@ -3,7 +3,6 @@ import { source } from 'common-tags';
 import { compileFluent, compileMF1 } from '@messageformat/compiler';
 
 import {
-  asFormattable,
   fluentRuntime,
   Formattable,
   FormattableNumber,
@@ -522,7 +521,7 @@ maybe('List formatting', () => {
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
         list = list.map(li =>
-          String(fn.call(locales, undefined, asFormattable(li)))
+          String(fn.call(locales, undefined, new Formattable(null, li)))
         );
       }
       // @ts-ignore

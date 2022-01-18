@@ -1,9 +1,7 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { asFormattable, FormattableMessage } from '../formattable';
-import { MessageFormatPart } from '../formatted-part';
+import { FormattableFallback, FormattableMessage } from '../formattable';
 import type { Literal, PatternFormatter, Variable } from './index';
-import { getArgSource } from './util-arg-source';
 import type { Scope } from './variable';
 
 /**
@@ -38,71 +36,46 @@ const isTermContext = (ctx: Context): ctx is TermContext =>
 export const isTerm = (part: any): part is Term =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-function formatTermToParts(ctx: Context, term: Term): MessageFormatPart[] {
-  const fmtMsg = getFormattableMessage(ctx, term);
-  const source = getSource(term);
-  const res: MessageFormatPart[] = fmtMsg
-    ? fmtMsg.toParts(source)
-    : [{ type: 'fallback', value: fallbackValue(ctx, term), source }];
-  if (term.meta)
-    res.unshift({ type: 'meta', value: '', meta: { ...term.meta }, source });
-  return res;
-}
+function getMessageContext(ctx: TermContext, { res_id, scope }: Term) {
+  if (!res_id && !scope) return ctx;
 
-function getSource({ msg_path, res_id }: Term) {
-  const name = msg_path.map(getArgSource).join('.');
-  return res_id ? `-${res_id}::${name}` : `-${name}`;
-}
+  const types: TermContext['types'] = { ...ctx.types };
 
-function getFormattableMessage(
-  ctx: Context,
-  { msg_path, res_id, scope }: Term
-) {
-  if (!isTermContext(ctx)) return null;
-  const strPath = msg_path.map(elem =>
-    ctx.getFormatter(elem).formatToString(ctx, elem)
-  );
-  const msg = ctx.types.term(res_id, strPath);
-  if (!msg) return null;
-
-  let msgCtx = ctx;
-  if (res_id || scope) {
-    const types: TermContext['types'] = { ...ctx.types };
-    if (res_id)
-      types.term = (msgResId, msgPath) =>
-        ctx.types.term(msgResId || res_id, msgPath);
-    if (scope) {
-      // If the variable type isn't actually available, this has no effect
-      types.variable = { ...ctx.types.variable };
-      for (const [key, value] of Object.entries(scope))
-        types.variable[key] = ctx.getFormatter(value).asFormattable(ctx, value);
-    }
-    msgCtx = { ...ctx, types };
+  if (res_id) {
+    types.term = (msgResId, msgPath) =>
+      ctx.types.term(msgResId || res_id, msgPath);
   }
 
-  return new FormattableMessage(msgCtx, msg);
-}
+  if (scope) {
+    // If the variable type isn't actually available, this has no effect
+    types.variable = { ...ctx.types.variable };
+    for (const [key, value] of Object.entries(scope))
+      types.variable[key] = ctx.getFormatter(value).asFormattable(ctx, value);
+  }
 
-function fallbackValue(ctx: Context, term: Term): string {
-  const resolve = (v: Literal | Variable) =>
-    ctx.getFormatter(v).asFormattable(ctx, v).getValue();
-  let name = term.msg_path.map(resolve).join('.');
-  if (term.res_id) name = term.res_id + '::' + name;
-  if (!term.scope) return '-' + name;
-  const scope = Object.entries(term.scope).map(
-    ([key, value]) => `${key}: ${resolve(value)}`
-  );
-  return `-${name}(${scope.join(', ')})`;
+  return { ...ctx, types };
 }
 
 export const formatter: PatternFormatter<TermContext['types']['term']> = {
   type: 'term',
-  asFormattable: (ctx, term: Term) =>
-    getFormattableMessage(ctx, term) ?? asFormattable(undefined),
-  formatToParts: formatTermToParts,
-  formatToString: (ctx, term: Term) =>
-    getFormattableMessage(ctx, term)?.toString() ??
-    '{' + fallbackValue(ctx, term) + '}',
+  asFormattable(ctx, term: Term) {
+    const { meta, msg_path, res_id } = term;
+    const strPath = msg_path.map(elem =>
+      ctx.getFormatter(elem).asFormattable(ctx, elem).toString()
+    );
+    let source = strPath.join('.');
+    source = res_id ? `-${res_id}::${source}` : `-${source}`;
+
+    if (isTermContext(ctx)) {
+      const msg = ctx.types.term(res_id, strPath);
+      if (msg) {
+        const msgCtx = getMessageContext(ctx, term);
+        return new FormattableMessage(msgCtx, msg, source);
+      }
+    }
+
+    return new FormattableFallback(ctx, meta, { source });
+  },
   initContext: (mf, resId) => (msgResId, msgPath) =>
     mf.getMessage(msgResId || resId, msgPath)
 };

@@ -1,7 +1,10 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { asFormattable, Formattable } from '../formattable';
-import { MessageFormatPart } from '../formatted-part';
+import {
+  asFormattableX,
+  Formattable,
+  FormattableFallback
+} from '../formattable';
 import type { Literal, PatternFormatter } from './index';
 import { getArgSource } from './util-arg-source';
 
@@ -28,28 +31,6 @@ export interface Variable extends PatternElement {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isVariable = (part: any): part is Variable =>
   !!part && typeof part === 'object' && part.type === 'variable';
-
-function formatVariableToParts(
-  ctx: Context,
-  part: Variable
-): MessageFormatPart[] {
-  const value = getValue(ctx, part);
-  const source = getArgSource(part);
-  const res: MessageFormatPart[] =
-    value === undefined
-      ? [{ type: 'fallback', value: fallbackValue(ctx, part), source }]
-      : asFormattable(value).toParts(source, ctx.locales, ctx.localeMatcher);
-  if (part.meta)
-    res.unshift({ type: 'meta', value: '', meta: { ...part.meta }, source });
-  return res;
-}
-
-function formatVariableToString(ctx: Context, part: Variable): string {
-  const value = getValue(ctx, part);
-  return value === undefined
-    ? '{' + fallbackValue(ctx, part) + '}'
-    : asFormattable(value).toString(ctx.locales, ctx.localeMatcher);
-}
 
 /** @returns `undefined` if value not found */
 function getValue(ctx: Context, { var_path }: Variable): unknown {
@@ -78,8 +59,16 @@ function fallbackValue(ctx: Context, { var_path }: Variable): string {
 
 export const formatter: PatternFormatter<Scope> = {
   type: 'variable',
-  asFormattable: (ctx, part: Variable) => asFormattable(getValue(ctx, part)),
-  formatToParts: formatVariableToParts,
-  formatToString: formatVariableToString,
+  asFormattable(ctx: Context, part: Variable): Formattable {
+    const source = getArgSource(part);
+    const value = getValue(ctx, part);
+
+    return value === undefined
+      ? new FormattableFallback(ctx, part.meta, {
+          fallbackString: () => fallbackValue(ctx, part),
+          source
+        })
+      : asFormattableX(ctx, value, { meta: part.meta, source });
+  },
   initContext: (_mf, _resId, scope) => scope
 };

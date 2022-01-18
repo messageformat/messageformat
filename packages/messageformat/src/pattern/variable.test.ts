@@ -17,20 +17,15 @@ describe('Formattable variables', () => {
   });
 
   test('Formattable(number)', () => {
-    const val = new Formattable(42);
+    const val = new Formattable(null, 42);
     expect(mf.formatToParts('msg', { val })).toMatchObject([
-      { type: 'dynamic', value: 42, source: '$val' }
+      { type: 'dynamic', value: '42', source: '$val' }
     ]);
   });
 
-  test('Formattable(number, { toParts })', () => {
-    const val = new Formattable(42, {
-      toParts: (source, lc) => {
-        const nf = new Intl.NumberFormat(lc, {
-          minimumFractionDigits: 1
-        });
-        return nf.formatToParts(42).map(part => ({ ...part, source }));
-      }
+  test('FormattableNumber(null, number, { options })', () => {
+    const val: Formattable = new FormattableNumber(null, 42, {
+      options: { minimumFractionDigits: 1 }
     });
     expect(mf.formatToParts('msg', { val })).toMatchObject([
       { type: 'integer', value: '42', source: '$val' },
@@ -39,9 +34,9 @@ describe('Formattable variables', () => {
     ]);
   });
 
-  test('FormattableNumber(BigInt)', () => {
-    const val = new FormattableNumber(BigInt(42), 'en', {
-      minimumFractionDigits: 2
+  test('FormattableNumber("en", BigInt, { options })', () => {
+    const val = new FormattableNumber('en', BigInt(42), {
+      options: { minimumFractionDigits: 2 }
     });
     expect(mf.formatToParts('msg', { val })).toMatchObject([
       { type: 'integer', value: '42', source: '$val' },

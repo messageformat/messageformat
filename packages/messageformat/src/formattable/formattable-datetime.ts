@@ -1,5 +1,6 @@
-import { MessageFormatPart } from '../formatted-part';
-import { Formattable } from './formattable';
+import type { Meta } from '../data-model';
+import type { MessageFormatPart } from '../formatted-part';
+import { Formattable, LocaleContext } from './formattable';
 
 export class FormattableDateTime extends Formattable<
   Date,
@@ -9,69 +10,76 @@ export class FormattableDateTime extends Formattable<
   options: Intl.DateTimeFormatOptions | undefined;
 
   constructor(
+    locale: string | string[] | LocaleContext | null,
     date: Date | FormattableDateTime,
-    options?: Intl.DateTimeFormatOptions | undefined
-  );
-  constructor(
-    date: Date | FormattableDateTime,
-    locales: string | string[] | null,
-    options?: Intl.DateTimeFormatOptions | undefined
-  );
-  constructor(
-    date: Date | FormattableDateTime,
-    arg?: string | string[] | Intl.DateTimeFormatOptions | null,
-    options?: Intl.DateTimeFormatOptions
+    {
+      meta,
+      options,
+      source
+    }: {
+      meta?: Meta;
+      options?: Intl.DateTimeFormatOptions;
+      source?: string;
+    } = {}
   ) {
-    let lc: string[] | undefined;
-    if (typeof arg === 'string') lc = [arg];
-    else if (Array.isArray(arg)) lc = arg.slice();
-    else {
-      lc = undefined;
-      options = arg ?? undefined;
-    }
-
+    const fmt = { meta, source };
     if (date instanceof FormattableDateTime) {
-      super(date.value);
-      this.locales = date.locales || lc;
-      this.options = date.options ? { ...date.options, ...options } : options;
+      super(date.getLocaleContext(locale), date.value, fmt);
+      if (options || date.options)
+        this.options = date.options
+          ? { ...date.options, ...options }
+          : { ...options };
     } else {
-      super(date);
-      this.locales = lc;
-      this.options = options;
+      super(locale, date, fmt);
+      if (options) this.options = { ...options };
     }
   }
 
-  private getDateTimeFormatter(
-    locales?: string | string[] | undefined,
-    localeMatcher?: 'best fit' | 'lookup'
-  ): Intl.DateTimeFormat {
-    const options = { localeMatcher, ...this.options };
-    return new Intl.DateTimeFormat(this.locales || locales, options);
+  private getDateTimeFormatter() {
+    const lc = this.getLocaleContext();
+    const opt = lc
+      ? { localeMatcher: lc.localeMatcher, ...this.options }
+      : this.options;
+    return new Intl.DateTimeFormat(lc?.locales, opt);
   }
 
-  toParts(
-    source: string,
-    locales: string[],
-    localeMatcher: 'best fit' | 'lookup'
-  ) {
-    const dtf = this.getDateTimeFormatter(locales, localeMatcher);
-    const parts: MessageFormatPart[] = dtf.formatToParts(this.getValue());
-    for (const part of parts) part.source = source;
-    return parts;
+  toParts(): MessageFormatPart[] {
+    try {
+      const res = this.initFormattedParts(true);
+      const dtf = this.getDateTimeFormatter();
+      const date = this.getValue();
+      const source = this.getSource(false);
+      for (const part of dtf.formatToParts(date) as MessageFormatPart[]) {
+        part.source = source;
+        res.push(part);
+      }
+      return res;
+    } catch (_) {
+      // TODO: Report error
+      const value = this.toString();
+      const source = this.getSource(true);
+      return [{ type: 'fallback', value, source }];
+    }
   }
 
-  toString(locales?: string[], localeMatcher?: 'best fit' | 'lookup') {
-    const hasOpt =
-      this.options &&
-      Object.keys(this.options).some(key => key !== 'localeMatcher');
-    const date = this.getValue();
-    if (hasOpt) {
-      const dtf = this.getDateTimeFormatter(locales, localeMatcher);
-      return dtf.format(date);
-    } else {
-      const lm = this.options?.localeMatcher || localeMatcher;
-      const options = lm ? { localeMatcher: lm } : undefined;
-      return date.toLocaleString(this.locales || locales, options);
+  toString() {
+    let date: Date | undefined;
+    try {
+      const hasOpt = this.options && Object.keys(this.options).length > 0;
+      date = this.getValue();
+      if (hasOpt) {
+        const dtf = this.getDateTimeFormatter();
+        return dtf.format(date);
+      } else {
+        const lm = this.options?.localeMatcher;
+        const options = lm ? { localeMatcher: lm } : undefined;
+        return date.toLocaleString(this.getLocaleContext()?.locales, options);
+      }
+    } catch (_) {
+      // TODO: Report error
+      return date === undefined
+        ? '{' + this.getSource(true) + '}'
+        : String(date);
     }
   }
 }

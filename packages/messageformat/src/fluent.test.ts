@@ -88,11 +88,7 @@ const testCases: Record<string, TestCase> = {
     tests: [
       { msg: 'num-bare', scope: { arg: 1234 }, exp: '1,234' },
       { msg: 'num-fraction-valid', scope: { arg: 1234 }, exp: '1,234.0' },
-      {
-        msg: 'num-fraction-bad',
-        scope: { arg: 1234 },
-        exp: '{NUMBER(1234, minimumFractionDigits: oops)}' // FIXME should be '1234'
-      },
+      { msg: 'num-fraction-bad', scope: { arg: 1234 }, exp: '1234' },
       { msg: 'num-style', scope: { arg: 1234 }, exp: '123,400%' },
       { msg: 'num-currency', scope: { arg: 1234 }, exp: '€1,234.00' },
       { msg: 'num-unknown', scope: { arg: 1234 }, exp: '1,234' }
@@ -451,50 +447,29 @@ describe('formatToParts', () => {
     });
 
     test('case with match', () => {
-      const parts = mf.formatToParts('case', {
-        case: 'genitive',
-        selectResult: 'success'
-      });
+      const parts = mf.formatToParts('case', { case: 'genitive' });
       expect(parts).toEqual([
-        {
-          type: 'meta',
-          value: '',
-          meta: { case: 'genitive', selectResult: 'success' }
-        },
+        { type: 'meta', value: '', meta: { case: 'genitive' } },
         { type: 'literal', value: 'GEN' }
       ]);
     });
 
     test('case with fallback', () => {
-      const parts = mf.formatToParts('case', {
-        case: 'oblique',
-        selectResult: 'success'
-      });
+      const parts = mf.formatToParts('case', { case: 'oblique' });
       expect(parts).toEqual([
         {
           type: 'meta',
           value: '',
-          meta: {
-            case: 'oblique',
-            caseFallback: 'nominative',
-            selectResult: 'success'
-          }
+          meta: { case: 'oblique', caseFallback: 'nominative' }
         },
         { type: 'literal', value: 'NOM' }
       ]);
     });
 
     test('gender with match', () => {
-      const parts = mf.formatToParts('gender', {
-        gender: 'feminine',
-        selectResult: 'success'
-      });
+      const parts = mf.formatToParts('gender', { gender: 'feminine' });
       expect(parts).toEqual([
-        {
-          type: 'meta',
-          value: '',
-          meta: { gender: 'feminine', selectResult: 'success' }
-        },
+        { type: 'meta', value: '', meta: { gender: 'feminine' } },
         { type: 'literal', value: 'F' }
       ]);
     });
@@ -505,11 +480,7 @@ describe('formatToParts', () => {
         {
           type: 'meta',
           value: '',
-          meta: {
-            gender: 'undefined',
-            genderFallback: 'neuter',
-            selectResult: 'success'
-          }
+          meta: { gender: 'undefined', genderFallback: 'neuter' }
         },
         { type: 'literal', value: 'N' }
       ]);
@@ -521,7 +492,7 @@ describe('formatToParts', () => {
         {
           type: 'meta',
           value: '',
-          meta: { plural: 'other', selectResult: 'success' }
+          meta: { plural: 'other' }
         },
         { type: 'literal', value: 'Other' }
       ]);
@@ -533,11 +504,7 @@ describe('formatToParts', () => {
         {
           type: 'meta',
           value: '',
-          meta: {
-            plural: 'one',
-            pluralFallback: 'other',
-            selectResult: 'success'
-          }
+          meta: { plural: 'one', pluralFallback: 'other' }
         },
         { type: 'literal', value: 'Other' }
       ]);

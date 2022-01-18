@@ -1,6 +1,5 @@
 import type { PatternElement } from '../data-model';
-import { asFormattable } from '../formattable';
-import type { MessageFormatPart } from '../formatted-part';
+import { Formattable } from '../formattable';
 import type { PatternFormatter } from './index';
 
 /**
@@ -21,12 +20,9 @@ export const isLiteral = (part: any): part is Literal =>
 
 export const formatter: PatternFormatter = {
   type: 'literal',
-  asFormattable: (_ctx, lit: Literal) => asFormattable(lit.value),
-  formatToParts(_ctx, lit: Literal) {
-    const fmt: MessageFormatPart = { type: 'literal', value: lit.value };
-    return lit.meta
-      ? [{ type: 'meta', value: '', meta: { ...lit.meta } }, fmt]
-      : [fmt];
-  },
-  formatToString: (_ctx, lit: Literal) => lit.value
+  asFormattable: (ctx, lit: Literal) =>
+    new Formattable<string>(ctx, lit.value, {
+      meta: lit.meta,
+      type: 'literal'
+    })
 };

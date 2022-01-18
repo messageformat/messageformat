@@ -1,7 +1,7 @@
-import type { Meta, PatternElement } from '../data-model';
+import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { asFormattable } from '../formattable';
-import { MessageFormatPart } from '../formatted-part';
+import { asFormattableX } from '../formattable';
+import { FormattableFallback } from '../formattable';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternFormatter, Variable } from './index';
 import { isLiteral } from './literal';
@@ -26,64 +26,6 @@ export interface Function extends PatternElement {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isFunction = (part: any): part is Function =>
   !!part && typeof part === 'object' && part.type === 'function';
-
-function formatFunctionToParts(
-  ctx: Context,
-  fn: Function
-): MessageFormatPart[] {
-  const srcArgs = fn.args.map(getArgSource);
-  const source = fn.func + '(' + srcArgs.join(', ') + ')';
-  let res: MessageFormatPart[];
-  try {
-    const fmt = callRuntimeFunction(ctx, fn);
-    res = fmt.toParts(source, ctx.locales, ctx.localeMatcher);
-  } catch (error) {
-    let meta: Meta;
-    if (error instanceof Error) {
-      meta = {
-        ...fn.meta,
-        error_name: error.name,
-        error_message: error.message
-      };
-      if (error.stack) meta.error_stack = error.stack;
-    } else meta = { ...fn.meta, error_message: String(error) };
-    return [
-      { type: 'meta', value: '', meta, source },
-      { type: 'fallback', value: fallbackValue(ctx, fn), source }
-    ];
-  }
-  if (fn.meta)
-    res.unshift({ type: 'meta', value: '', source, meta: { ...fn.meta } });
-  return res;
-}
-
-function formatFunctionToString(ctx: Context, fn: Function): string {
-  try {
-    const fmt = callRuntimeFunction(ctx, fn);
-    return fmt.toString(ctx.locales, ctx.localeMatcher);
-  } catch (_) {
-    // TODO: report error
-    return '{' + fallbackValue(ctx, fn) + '}';
-  }
-}
-
-function callRuntimeFunction(ctx: Context, { args, func, options }: Function) {
-  const rf = (ctx.types.function as Runtime)[func];
-  const fnArgs = args.map(arg => ctx.getFormatter(arg).asFormattable(ctx, arg));
-  const fnOpt = resolveOptions(ctx, options, rf?.options);
-  const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
-  return asFormattable(res);
-}
-
-function fallbackValue(ctx: Context, fn: Function) {
-  const resolve = (v: Literal | Variable) =>
-    ctx.getFormatter(v).asFormattable(ctx, v).getValue();
-  const args = fn.args.map(resolve);
-  if (fn.options)
-    for (const [key, value] of Object.entries(fn.options))
-      args.push(`${key}: ${resolve(value)}`);
-  return `${fn.func}(${args.join(', ')})`;
-}
 
 function resolveOptions(
   ctx: Context,
@@ -123,15 +65,21 @@ function resolveOptions(
 
 export const formatter: PatternFormatter<Runtime> = {
   type: 'function',
-  asFormattable(ctx, fn: Function) {
+  asFormattable(ctx, { args, func, meta, options }: Function) {
+    const srcArgs = args.map(getArgSource);
+    const source = func + '(' + srcArgs.join(', ') + ')';
+    const rf = (ctx.types.function as Runtime)[func];
     try {
-      return callRuntimeFunction(ctx, fn);
+      const fnArgs = args.map(arg =>
+        ctx.getFormatter(arg).asFormattable(ctx, arg)
+      );
+      const fnOpt = resolveOptions(ctx, options, rf?.options);
+      const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
+      return asFormattableX(ctx, res, { meta, source });
     } catch (_) {
       // TODO: report error
-      return asFormattable(undefined);
+      return new FormattableFallback(ctx, meta, { source });
     }
   },
-  formatToParts: formatFunctionToParts,
-  formatToString: formatFunctionToString,
   initContext: mf => mf.resolvedOptions().runtime
 };

@@ -28,6 +28,7 @@ export interface MessageFormatOptions {
  */
 export class MessageFormat {
   #formatters: PatternFormatter[];
+  #getFormatter: (el: PatternElement) => PatternFormatter;
   #localeMatcher: 'best fit' | 'lookup';
   #locales: string[];
   #resources: ResourceReader[];
@@ -46,6 +47,11 @@ export class MessageFormat {
           return fmt;
         } else return fmtOpt;
       }) ?? patternFormatters;
+    this.#getFormatter = ({ type }: PatternElement) => {
+      const fmt = this.#formatters.find(fmt => fmt.type === type);
+      if (fmt) return fmt;
+      throw new Error(`Unsupported pattern element: ${type}`);
+    };
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales : [locales];
     this.#resources = resources.map(ResourceReader.from);
@@ -117,14 +123,8 @@ export class MessageFormat {
   }
 
   private createContext(resId: string, scope: Scope): Context {
-    const getFormatter = ({ type }: PatternElement) => {
-      const fmt = this.#formatters.find(fmt => fmt.type === type);
-      if (fmt) return fmt;
-      throw new Error(`Unsupported pattern element: ${type}`);
-    };
-
     const ctx: Context = {
-      getFormatter,
+      getFormatter: this.#getFormatter,
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       types: {}

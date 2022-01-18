@@ -17,7 +17,7 @@ export const datetime: RuntimeFunction<FormattableDateTime> = {
       const value = arg.getValue();
       date = new Date(typeof value === 'number' ? value : String(value));
     }
-    return new FormattableDateTime(date, locales, options);
+    return new FormattableDateTime(locales, date, { options });
   },
 
   options: {
@@ -53,7 +53,7 @@ export const number: RuntimeFunction<FormattableNumber> = {
     arg: Formattable
   ) {
     const num = arg instanceof FormattableNumber ? arg : Number(arg.getValue());
-    return new FormattableNumber(num, locales, options);
+    return new FormattableNumber(locales, num, { options });
   },
 
   options: {
