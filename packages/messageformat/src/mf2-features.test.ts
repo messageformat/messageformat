@@ -11,13 +11,11 @@ import {
   Runtime,
   RuntimeOptions
 } from './index';
-import type { Function } from './pattern/function';
-import type { Literal } from './pattern/literal';
-import type { Term } from './pattern/term';
 import { MessageFormatPart } from './formatted-part';
+import type { FunctionRef, Literal, MessageRef } from './pattern';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
-  const res: Resource<Literal | Term> = {
+  const res: Resource<Literal | MessageRef> = {
     type: 'resource',
     id: 'res',
     locale: 'fi',
@@ -161,7 +159,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const res: Resource<Literal | Function> = {
+    const res: Resource<Literal | FunctionRef> = {
       type: 'resource',
       id: 'res',
       locale: 'nl',
@@ -229,7 +227,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   });
 
   test('input as separate start, end falues', () => {
-    const res: Resource<Literal | Function> = {
+    const res: Resource<Literal | FunctionRef> = {
       type: 'resource',
       id: 'res',
       locale: 'nl',

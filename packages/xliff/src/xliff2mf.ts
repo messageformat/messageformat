@@ -1,7 +1,7 @@
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 
-import { hasMeta, isFunction, isLiteral, isTerm } from 'messageformat';
+import { hasMeta, isFunctionRef, isLiteral, isMessageRef } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -186,7 +186,8 @@ function resolveContents(
   contents: (X.Text | X.InlineElement)[],
   mf: X.MessageFormat | null
 ) {
-  const res: (MF.Literal | MF.Variable | MF.Function | MF.Term)[] = [];
+  const res: (MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef)[] =
+    [];
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
@@ -203,7 +204,7 @@ const resolveCharCode = (cc: X.CharCode) =>
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Literal | MF.Variable | MF.Function | MF.Term {
+): MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef {
   switch (ie.type) {
     case 'text':
     case 'cdata':
@@ -216,14 +217,14 @@ function resolveInlineElement(
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
           const part = resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-          if (!isFunction(part))
+          if (!isFunctionRef(part))
             throw new Error(`<pc mf:ref> is only valid for function values`);
           const arg = resolveContents(ie.elements, mf);
           if (arg.length > 1)
             throw new Error(
               'Forming function arguments by concatenation is not supported'
             );
-          if (isFunction(arg[0]) || isTerm(arg[0]))
+          if (isFunctionRef(arg[0]) || isMessageRef(arg[0]))
             throw new Error(`A ${arg[0].type} is not supported here`);
           part.args.unshift(arg[0] ?? '');
           return part;
@@ -240,7 +241,7 @@ function resolveRef(
   name: string,
   ref: string | undefined,
   mf: X.MessageFormat | null
-): MF.Literal | MF.Variable | MF.Function | MF.Term {
+): MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef {
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
@@ -259,19 +260,19 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 
 function resolvePart(
   part: X.MessagePart
-): MF.Literal | MF.Variable | MF.Function | MF.Term {
+): MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef {
   switch (part.name) {
     case 'mf:literal':
     case 'mf:variable':
       return resolveArgument(part);
 
     case 'mf:function': {
-      const fn: MF.Function = {
+      const fn: MF.FunctionRef = {
         type: 'function',
         func: part.attributes.name,
         args: []
       };
-      const options: Record<string, MF.Literal | MF.Variable> = {};
+      const options: Record<string, MF.Literal | MF.VariableRef> = {};
       let hasOptions = false;
       for (const el of part.elements) {
         if (el.name === 'mf:option') {
@@ -284,8 +285,8 @@ function resolvePart(
     }
 
     case 'mf:message': {
-      const mt: MF.Term = { type: 'term', msg_path: [] };
-      const scope: Record<string, MF.Literal | MF.Variable> = {};
+      const mt: MF.MessageRef = { type: 'term', msg_path: [] };
+      const scope: Record<string, MF.Literal | MF.VariableRef> = {};
       let hasScope = false;
       for (const el of part.elements) {
         if (el.name === 'mf:scope') {
@@ -306,7 +307,7 @@ function resolvePart(
   );
 }
 
-function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
+function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
   switch (part.name) {
     case 'mf:literal':
       return { type: 'literal', value: resolveText(part.elements) };
@@ -325,7 +326,7 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.Variable {
 
 function resolveOption(
   el: X.MessageOption | X.MessageScope
-): MF.Literal | MF.Variable {
+): MF.Literal | MF.VariableRef {
   const sv = el.elements.map(resolveArgument);
   switch (sv.length) {
     case 0:

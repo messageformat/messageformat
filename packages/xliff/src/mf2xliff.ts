@@ -1,11 +1,11 @@
 import deepEqual from 'fast-deep-equal';
 import {
-  isFunction,
+  isFunctionRef,
   isLiteral,
   isMessage,
+  isMessageRef,
   isSelectMessage,
-  isTerm,
-  isVariable,
+  isVariableRef,
   MessageFormat
 } from 'messageformat';
 import type * as MF from 'messageformat';
@@ -266,9 +266,9 @@ function resolvePart(
 ): X.MessagePart {
   const attributes = id ? { id } : undefined;
 
-  if (isLiteral(part) || isVariable(part)) return resolveArgument(id, part);
+  if (isLiteral(part) || isVariableRef(part)) return resolveArgument(id, part);
 
-  if (isFunction(part)) {
+  if (isFunctionRef(part)) {
     const elements: X.MessageFunction['elements'] = [];
     if (part.options)
       for (const [name, value] of Object.entries(part.options))
@@ -287,7 +287,7 @@ function resolvePart(
     };
   }
 
-  if (isTerm(part)) {
+  if (isMessageRef(part)) {
     const elements: X.MessageReference['elements'] = [];
     if (part.scope)
       for (const [name, value] of Object.entries(part.scope))
@@ -315,7 +315,7 @@ function resolvePart(
 
 function resolveArgument(
   id: string | null,
-  part: MF.Literal | MF.Variable | string | number | boolean
+  part: MF.Literal | MF.VariableRef | string | number | boolean
 ): X.MessageLiteral | X.MessageVariable {
   const attributes = id ? { id } : undefined;
 
@@ -328,7 +328,7 @@ function resolveArgument(
     };
   }
 
-  if (isVariable(part)) {
+  if (isVariableRef(part)) {
     const elements = part.var_path.map(p => resolveArgument(null, p));
     return { type: 'element', name: 'mf:variable', attributes, elements };
   }

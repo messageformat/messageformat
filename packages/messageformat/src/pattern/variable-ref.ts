@@ -16,24 +16,24 @@ export interface Scope {
 }
 
 /**
- * Variables are defined by the current Scope.
+ * The value of a VariableRef is defined by the current Scope.
  *
  * Using an array with more than one value refers to an inner property of an
  * object value, so e.g. `['user', 'name']` would require something like
  * `{ name: 'Kat' }` as the value of the `'user'` scope variable.
  */
-export interface Variable extends PatternElement {
+export interface VariableRef extends PatternElement {
   type: 'variable';
-  var_path: (Literal | Variable)[];
+  var_path: (Literal | VariableRef)[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isVariable = (part: any): part is Variable =>
+export const isVariableRef = (part: any): part is VariableRef =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
 function getPath(
   ctx: Context,
-  { var_path }: Variable,
+  { var_path }: VariableRef,
   onError: (error: unknown) => void
 ): string[] {
   const path: string[] = [];
@@ -69,7 +69,7 @@ export const resolver: PatternElementResolver<Scope> = {
 
   initContext: (_mf, _resId, scope) => scope,
 
-  resolve(ctx, elem: Variable) {
+  resolve(ctx, elem: VariableRef) {
     let error: unknown;
     const path = getPath(ctx, elem, err => (error = err));
     const source = '$' + path.join('.');

@@ -25,10 +25,7 @@ import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
 import { fluentRuntime, MessageFormat, Resource, validate } from './index';
-import type { Function } from './pattern/function';
-import type { Literal } from './pattern/literal';
-import type { Term } from './pattern/term';
-import type { Variable } from './pattern/variable';
+import type { FunctionRef, Literal, MessageRef, VariableRef } from './pattern';
 
 type TestCase = {
   locale?: string;
@@ -373,7 +370,7 @@ describe('formatToParts', () => {
       ### Other resource comment
     `;
 
-    let res: Resource<Literal | Variable | Function | Term>;
+    let res: Resource<Literal | FunctionRef | MessageRef | VariableRef>;
     let mf: MessageFormat;
     beforeAll(() => {
       res = compileFluent(src, { id: 'res', locale: 'en' });

@@ -3,15 +3,15 @@ import type { Context } from '../format-context';
 import type { Formattable } from '../formattable';
 import type { MessageFormat } from '../messageformat';
 
-import { resolver as functionResolver } from './function';
+import { resolver as functionResolver } from './function-ref';
 import { resolver as literal } from './literal';
-import { resolver as term } from './term';
-import { resolver as variable, Scope } from './variable';
+import { resolver as term } from './message-ref';
+import { resolver as variable, Scope } from './variable-ref';
 
-export { isFunction, Function } from './function';
+export { isFunctionRef, FunctionRef } from './function-ref';
 export { isLiteral, Literal } from './literal';
-export { isTerm, Term } from './term';
-export { isVariable, Variable } from './variable';
+export { isMessageRef, MessageRef } from './message-ref';
+export { isVariableRef, VariableRef } from './variable-ref';
 
 export interface PatternElementResolver<T = unknown> {
   type: string;

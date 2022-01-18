@@ -3,7 +3,7 @@ import type { Context } from './format-context';
 import { FormattableMessage } from './formattable';
 import { MessageFormatPart } from './formatted-part';
 import { PatternElementResolver, patternFormatters } from './pattern';
-import type { Scope } from './pattern/variable';
+import type { Scope } from './pattern/variable-ref';
 import { ResourceReader } from './resource-reader';
 import { defaultRuntime, Runtime } from './runtime';
 

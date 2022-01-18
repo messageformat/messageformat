@@ -2,11 +2,11 @@ import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { FormattableFallback, FormattableMessage } from '../formattable';
 import { MFgetMessage } from '../messageformat';
-import type { Literal, PatternElementResolver, Variable } from './index';
-import type { Scope } from './variable';
+import type { Literal, PatternElementResolver, VariableRef } from './index';
+import type { Scope } from './variable-ref';
 
 /**
- * A Term is a pointer to a Message or a Select.
+ * A MessageRef is a pointer to a Message or a Select.
  *
  * If `res_id` is undefined, the message is sought in the current Resource.
  * If it is set, it identifies the resource for the sought message. It is
@@ -16,11 +16,11 @@ import type { Scope } from './variable';
  *
  * `scope` overrides values in the current scope when resolving the message.
  */
-export interface Term extends PatternElement {
+export interface MessageRef extends PatternElement {
   type: 'term';
   res_id?: string;
-  msg_path: (Literal | Variable)[];
-  scope?: Record<string, Literal | Variable>;
+  msg_path: (Literal | VariableRef)[];
+  scope?: Record<string, Literal | VariableRef>;
 }
 
 interface TermContext extends Context {
@@ -34,10 +34,10 @@ const isTermContext = (ctx: Context): ctx is TermContext =>
   typeof ctx.types.term === 'function';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isTerm = (part: any): part is Term =>
+export const isMessageRef = (part: any): part is MessageRef =>
   !!part && typeof part === 'object' && part.type === 'term';
 
-function getMessageContext(ctx: TermContext, { res_id, scope }: Term) {
+function getMessageContext(ctx: TermContext, { res_id, scope }: MessageRef) {
   if (!res_id && !scope) return ctx;
 
   const types: TermContext['types'] = { ...ctx.types };
@@ -63,7 +63,7 @@ export const resolver: PatternElementResolver<TermContext['types']['term']> = {
   initContext: (mf, resId) => (msgResId, msgPath) =>
     mf[MFgetMessage](msgResId || resId, msgPath),
 
-  resolve(ctx, term: Term) {
+  resolve(ctx, term: MessageRef) {
     const { meta, msg_path, res_id } = term;
     const strPath = msg_path.map(elem => ctx.resolve(elem).toString());
     let source = strPath.join('.');

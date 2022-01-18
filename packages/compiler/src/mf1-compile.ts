@@ -1,11 +1,11 @@
 import { parse, ParseOptions } from '@messageformat/parser';
 import * as PluralCategories from 'make-plural/pluralCategories';
 import type {
-  Function,
+  FunctionRef,
   Literal,
   MessageGroup,
   Resource,
-  Variable
+  VariableRef
 } from 'messageformat';
 import { astToMessage } from './mf1-ast-to-message';
 
@@ -38,8 +38,9 @@ export interface StringStructure {
 function compileMessageGroup(
   src: StringStructure,
   options: ParseOptions
-): MessageGroup<Literal | Variable | Function> {
-  const entries: MessageGroup<Literal | Variable | Function>['entries'] = {};
+): MessageGroup<Literal | VariableRef | FunctionRef> {
+  const entries: MessageGroup<Literal | VariableRef | FunctionRef>['entries'] =
+    {};
   for (const [key, value] of Object.entries(src)) {
     entries[key] =
       typeof value === 'string'
@@ -52,7 +53,7 @@ function compileMessageGroup(
 export function compileMF1(
   src: StringStructure,
   { id, locale, strict }: { id: string; locale: string; strict?: boolean }
-): Resource<Literal | Variable | Function> {
+): Resource<Literal | VariableRef | FunctionRef> {
   const lc = normalize(locale);
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];

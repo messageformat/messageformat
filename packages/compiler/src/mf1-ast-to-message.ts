@@ -1,11 +1,11 @@
 import type * as AST from '@messageformat/parser';
 import {
-  Function,
+  FunctionRef,
   hasMeta,
   isLiteral,
   Message,
   SelectCase,
-  Variable,
+  VariableRef,
   Literal
 } from 'messageformat';
 
@@ -55,7 +55,7 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Literal | Variable | Function {
+): Literal | VariableRef | FunctionRef {
   switch (token.type) {
     case 'content':
       return { type: 'literal', value: token.value };
@@ -65,7 +65,7 @@ function tokenToPart(
         var_path: [{ type: 'literal', value: token.arg }]
       };
     case 'function': {
-      const fn: Function = {
+      const fn: FunctionRef = {
         type: 'function',
         func: token.key,
         args: [
@@ -87,7 +87,7 @@ function tokenToPart(
     }
     case 'octothorpe': {
       if (!pluralArg) return { type: 'literal', value: '#' };
-      const fn: Function = {
+      const fn: FunctionRef = {
         type: 'function',
         func: 'number',
         args: [
@@ -110,12 +110,12 @@ function tokenToPart(
 }
 
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
-  const argVar: Variable = {
+  const argVar: VariableRef = {
     type: 'variable',
     var_path: [{ type: 'literal', value: arg }]
   };
   if (type === 'select') return argVar;
-  const fn: Function = { type: 'function', func: 'number', args: [argVar] };
+  const fn: FunctionRef = { type: 'function', func: 'number', args: [argVar] };
 
   const po = pluralOffset
     ? { type: 'literal' as const, value: String(pluralOffset) }
@@ -153,7 +153,7 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
  */
 export function astToMessage(
   ast: AST.Token[]
-): Message<Literal | Variable | Function> {
+): Message<Literal | VariableRef | FunctionRef> {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {
@@ -175,10 +175,12 @@ export function astToMessage(
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: SelectCase<Literal | Variable | Function>[] = keys.map(key => ({
-    key: key.map(k => String(k)),
-    value: []
-  }));
+  const cases: SelectCase<Literal | VariableRef | FunctionRef>[] = keys.map(
+    key => ({
+      key: key.map(k => String(k)),
+      value: []
+    })
+  );
 
   /**
    * This reads `args` and modifies `cases`

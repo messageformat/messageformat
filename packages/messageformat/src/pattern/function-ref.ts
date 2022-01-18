@@ -3,11 +3,11 @@ import type { Context } from '../format-context';
 import { asFormattable, FormattableFallback } from '../formattable';
 import { MFruntime } from '../messageformat';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
-import type { Literal, PatternElementResolver, Variable } from './index';
+import type { Literal, PatternElementResolver, VariableRef } from './index';
 import { isLiteral } from './literal';
 
 /**
- * To resolve a Function, an externally defined function is called.
+ * To resolve a FunctionRef, an externally defined function is called.
  *
  * The `func` identifies a function that takes in the arguments `args`, the
  * current locale, as well as any `options`, and returns some corresponding
@@ -15,20 +15,20 @@ import { isLiteral } from './literal';
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
  */
-export interface Function extends PatternElement {
+export interface FunctionRef extends PatternElement {
   type: 'function';
   func: string;
-  args: (Literal | Variable)[];
-  options?: Record<string, Literal | Variable>;
+  args: (Literal | VariableRef)[];
+  options?: Record<string, Literal | VariableRef>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isFunction = (part: any): part is Function =>
+export const isFunctionRef = (part: any): part is FunctionRef =>
   !!part && typeof part === 'object' && part.type === 'function';
 
 function resolveOptions(
   ctx: Context,
-  options: Record<string, Literal | Variable> | undefined,
+  options: Record<string, Literal | VariableRef> | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
   const opt: RuntimeOptions = { localeMatcher: ctx.localeMatcher };
@@ -67,7 +67,7 @@ export const resolver: PatternElementResolver<Runtime> = {
 
   initContext: mf => mf[MFruntime],
 
-  resolve(ctx, { args, func, meta, options }: Function) {
+  resolve(ctx, { args, func, meta, options }: FunctionRef) {
     let source: string | undefined;
     const rf = (ctx.types.function as Runtime)[func];
     try {
