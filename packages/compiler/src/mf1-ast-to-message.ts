@@ -60,20 +60,12 @@ function tokenToPart(
     case 'content':
       return { type: 'literal', value: token.value };
     case 'argument':
-      return {
-        type: 'variable',
-        var_path: [{ type: 'literal', value: token.arg }]
-      };
+      return { type: 'variable', var_path: [token.arg] };
     case 'function': {
       const fn: FunctionRef = {
         type: 'function',
         func: token.key,
-        args: [
-          {
-            type: 'variable',
-            var_path: [{ type: 'literal', value: token.arg }]
-          }
-        ]
+        args: [{ type: 'variable', var_path: [token.arg] }]
       };
       if (token.param && token.param.length > 0) {
         let value = '';
@@ -90,12 +82,7 @@ function tokenToPart(
       const fn: FunctionRef = {
         type: 'function',
         func: 'number',
-        args: [
-          {
-            type: 'variable',
-            var_path: [{ type: 'literal', value: pluralArg }]
-          }
-        ]
+        args: [{ type: 'variable', var_path: [pluralArg] }]
       };
       if (pluralOffset)
         fn.options = {
@@ -110,10 +97,7 @@ function tokenToPart(
 }
 
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
-  const argVar: VariableRef = {
-    type: 'variable',
-    var_path: [{ type: 'literal', value: arg }]
-  };
+  const argVar: VariableRef = { type: 'variable', var_path: [arg] };
   if (type === 'select') return argVar;
   const fn: FunctionRef = { type: 'function', func: 'number', args: [argVar] };
 

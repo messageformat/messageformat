@@ -1247,5 +1247,5 @@ export interface MessageScope extends Element {
 export interface MessageVariable extends Element {
   name: 'mf:variable';
   attributes?: { id?: string; default?: string | number };
-  elements: (MessageLiteral | MessageVariable)[];
+  elements: MessageLiteral[];
 }

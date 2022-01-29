@@ -317,6 +317,18 @@ function resolvePart(
 
 function resolveArgument(
   id: string | null,
+  part: MF.Literal | string | number | boolean
+): X.MessageLiteral;
+function resolveArgument(
+  id: string | null,
+  part: MF.VariableRef
+): X.MessageVariable;
+function resolveArgument(
+  id: string | null,
+  part: MF.Literal | MF.VariableRef | string | number | boolean
+): X.MessageLiteral | X.MessageVariable;
+function resolveArgument(
+  id: string | null,
   part: MF.Literal | MF.VariableRef | string | number | boolean
 ): X.MessageLiteral | X.MessageVariable {
   const attributes = id ? { id } : undefined;

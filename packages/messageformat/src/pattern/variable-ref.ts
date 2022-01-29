@@ -5,7 +5,7 @@ import {
   Formattable,
   FormattableFallback
 } from '../formattable';
-import type { Literal, PatternElementResolver } from './index';
+import type { PatternElementResolver } from './index';
 
 /**
  * A representation of the parameters/arguments passed to a message formatter.
@@ -24,34 +24,12 @@ export interface Scope {
  */
 export interface VariableRef extends PatternElement {
   type: 'variable';
-  var_path: (Literal | VariableRef)[];
+  var_path: string[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isVariableRef = (part: any): part is VariableRef =>
   !!part && typeof part === 'object' && part.type === 'variable';
-
-function getPath(
-  ctx: Context,
-  { var_path }: VariableRef,
-  onError: (error: unknown) => void
-): string[] {
-  const path: string[] = [];
-  for (const p of var_path) {
-    try {
-      const fmt = ctx.resolve(p);
-      const val = fmt.getValue();
-      if (val === undefined) {
-        onError(new TypeError('Variable path part cannot be undefined'));
-        path.push(fmt.toString());
-      } else path.push(String(val));
-    } catch (error) {
-      onError(error);
-      path.push('???');
-    }
-  }
-  return path;
-}
 
 /** @returns `undefined` if value not found */
 function getValue(ctx: Context, path: string[]): unknown {
@@ -69,14 +47,11 @@ export const resolver: PatternElementResolver<Scope> = {
 
   initContext: (_mf, _resId, scope) => scope,
 
-  resolve(ctx, elem: VariableRef) {
-    let error: unknown;
-    const path = getPath(ctx, elem, err => (error = err));
-    const source = '$' + path.join('.');
-    const value = error ? undefined : getValue(ctx, path);
-
+  resolve(ctx, { meta, var_path }: VariableRef) {
+    const source = '$' + var_path.join('.');
+    const value = getValue(ctx, var_path);
     return value === undefined
-      ? new FormattableFallback(ctx, elem.meta, { source })
-      : asFormattable(ctx, value, { meta: elem.meta, source });
+      ? new FormattableFallback(ctx, meta, { source })
+      : asFormattable(ctx, value, { meta, source });
   }
 };

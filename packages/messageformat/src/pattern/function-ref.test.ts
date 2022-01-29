@@ -145,10 +145,7 @@ describe('Type casts based on runtime', () => {
 
     // Hacky, but Fluent doesn't allow for useGrouping
     (res.entries.msg as any).pattern[0].options = {
-      useGrouping: {
-        type: 'variable',
-        var_path: [{ type: 'literal', value: 'useGrouping' }]
-      }
+      useGrouping: { type: 'variable', var_path: ['useGrouping'] }
     };
 
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);

@@ -310,13 +310,19 @@ function resolvePart(
   );
 }
 
+function resolveArgument(part: X.MessageLiteral): MF.Literal;
+function resolveArgument(part: X.MessageVariable): MF.VariableRef;
+function resolveArgument(part: X.MessagePart): never;
 function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
   switch (part.name) {
     case 'mf:literal':
       return { type: 'literal', value: resolveText(part.elements) };
 
     case 'mf:variable':
-      return { type: 'variable', var_path: part.elements.map(resolveArgument) };
+      return {
+        type: 'variable',
+        var_path: part.elements.map(p => resolveArgument(p).value)
+      };
   }
 
   /* istanbul ignore next - never happens */
