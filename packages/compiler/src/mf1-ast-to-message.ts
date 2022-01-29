@@ -158,7 +158,7 @@ export function astToMessage(
   if (args.length === 0)
     return {
       type: 'message',
-      value: ast.map(token => tokenToPart(token, null, null))
+      pattern: ast.map(token => tokenToPart(token, null, null))
     };
 
   // First determine the keys for all cases, with empty values
@@ -178,7 +178,7 @@ export function astToMessage(
   const cases: SelectCase<Literal | VariableRef | FunctionRef>[] = keys.map(
     key => ({
       key: key.map(k => String(k)),
-      value: []
+      value: { type: 'message', pattern: [] }
     })
   );
 
@@ -205,9 +205,10 @@ export function astToMessage(
           addParts(c.tokens, pa, po, [...filter, { idx, value }]);
         }
       } else {
-        for (const c of cases)
+        for (const c of cases) {
+          const cp = c.value.pattern;
           if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
-            const last = c.value[c.value.length - 1];
+            const last = cp[cp.length - 1];
             const part = tokenToPart(token, pluralArg, pluralOffset);
             if (
               isLiteral(last) &&
@@ -216,8 +217,9 @@ export function astToMessage(
               !hasMeta(part)
             ) {
               last.value += part.value;
-            } else c.value.push(part);
+            } else cp.push(part);
           }
+        }
       }
     }
   }

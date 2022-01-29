@@ -127,10 +127,10 @@ describe('Type casts based on runtime', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
 
     // Hacky, but Fluent doesn't allow for useGrouping
-    (res.entries.true as any).value[0].options = {
+    (res.entries.true as any).pattern[0].options = {
       useGrouping: { type: 'literal', value: 'true' }
     };
-    (res.entries.false as any).value[0].options = {
+    (res.entries.false as any).pattern[0].options = {
       useGrouping: { type: 'literal', value: 'false' }
     };
 
@@ -144,7 +144,7 @@ describe('Type casts based on runtime', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
 
     // Hacky, but Fluent doesn't allow for useGrouping
-    (res.entries.msg as any).value[0].options = {
+    (res.entries.msg as any).pattern[0].options = {
       useGrouping: {
         type: 'variable',
         var_path: [{ type: 'literal', value: 'useGrouping' }]

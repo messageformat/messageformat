@@ -43,8 +43,8 @@ export function validate(
       if ('entries' in msg) handleMsgGroup(msg);
       else if (isSelectMessage(msg)) {
         handleMsgParts(msg.select.map(sel => sel.value));
-        for (const { value } of msg.cases) handleMsgParts(value);
-      } else handleMsgParts(msg.value);
+        for (const { value } of msg.cases) handleMsgParts(value.pattern);
+      } else handleMsgParts(msg.pattern);
     }
   }
 

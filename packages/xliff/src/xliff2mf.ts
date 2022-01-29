@@ -86,11 +86,11 @@ function resolveEntry(
       const key = entry.attributes.name || entry.attributes.id;
       source.entries[key] = {
         type: 'message',
-        value: resolveUnit(entry, 'source')
+        pattern: resolveUnit(entry, 'source')
       };
       target.entries[key] = {
         type: 'message',
-        value: resolveUnit(entry, 'target')
+        pattern: resolveUnit(entry, 'target')
       };
       return;
     }
@@ -126,7 +126,10 @@ function resolveSelect(
           const pu = prettyElement('unit', id);
           throw new Error(`The name attribute is required for ${pu}`);
         }
-        cases.push({ key: idList(name), value: resolveUnit(el, st) });
+        cases.push({
+          key: idList(name),
+          value: { type: 'message', pattern: resolveUnit(el, st) }
+        });
         break;
       }
       case 'group': {

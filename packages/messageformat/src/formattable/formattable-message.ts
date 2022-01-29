@@ -17,7 +17,7 @@ export class FormattableMessage extends Formattable<Message, Context> {
   private getPattern() {
     if (this.#pattern) return this.#pattern;
     const msg = this.getValue();
-    if (msg.type === 'message') return (this.#pattern = msg.value);
+    if (msg.type === 'message') return (this.#pattern = msg.pattern);
 
     const ctx = this.#context;
     const sel = msg.select.map(({ value, fallback }) => ({
@@ -38,7 +38,7 @@ export class FormattableMessage extends Formattable<Message, Context> {
 
       const meta = getFormattedSelectMeta(msg, key, sel, fallback);
       if (meta) this.setMeta(meta);
-      return (this.#pattern = value);
+      return (this.#pattern = value.pattern);
     }
 
     this.setMeta({ selectResult: 'no-match' });

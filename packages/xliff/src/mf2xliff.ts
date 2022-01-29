@@ -70,11 +70,11 @@ function resolveEntry(
       if (!isMessage(trgMsg)) throw new Error(mismatch(key));
       if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg))
         return resolveSelect(key, srcMsg, trgMsg);
-      else return resolvePattern(key, srcMsg.value, trgMsg.value);
+      else return resolvePattern(key, srcMsg, trgMsg);
     } else {
       return isSelectMessage(srcMsg)
         ? resolveSelect(key, srcMsg, undefined)
-        : resolvePattern(key, srcMsg.value, undefined);
+        : resolvePattern(key, srcMsg, undefined);
     }
   }
 
@@ -100,7 +100,9 @@ function resolveSelect(
       trgSel = {
         type: 'select',
         select: srcSel.select,
-        cases: [{ key: [], value: trgSel.value }]
+        cases: [
+          { key: [], value: { type: 'message', pattern: trgSel.pattern } }
+        ]
       };
   } else {
     if (!trgSel || !isSelectMessage(trgSel))
@@ -110,7 +112,7 @@ function resolveSelect(
     srcSel = {
       type: 'select',
       select: trgSel.select,
-      cases: [{ key: [], value: srcSel.value }]
+      cases: [{ key: [], value: { type: 'message', pattern: srcSel.pattern } }]
     };
   }
 
@@ -227,8 +229,8 @@ function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
 
 function resolvePattern(
   key: string[],
-  srcPattern: MF.PatternElement[],
-  trgPattern: MF.PatternElement[] | undefined
+  srcMsg: MF.PatternMessage,
+  trgMsg: MF.PatternMessage | undefined
 ): X.Unit {
   const parts: X.MessagePart[] = [];
   const handlePart = (p: MF.PatternElement): X.Text | X.InlineElement => {
@@ -240,11 +242,11 @@ function resolvePattern(
     return { type: 'element', name: 'ph', attributes };
   };
 
-  const se = srcPattern.map(handlePart);
+  const se = srcMsg.pattern.map(handlePart);
   const source: X.Source = { type: 'element', name: 'source', elements: se };
   let ge: X.Segment['elements'];
-  if (trgPattern) {
-    const te = trgPattern.map(handlePart);
+  if (trgMsg) {
+    const te = trgMsg.pattern.map(handlePart);
     const target: X.Target = { type: 'element', name: 'target', elements: te };
     ge = [source, target];
   } else ge = [source];

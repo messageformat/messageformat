@@ -152,7 +152,7 @@ export function astToMessage(
   if (args.length === 0) {
     const msg: PatternMessage<Part> = {
       type: 'message',
-      value: ast.elements.map(elementToPart)
+      pattern: ast.elements.map(elementToPart)
     };
     if (comment) msg.meta = { comment: comment.content };
     return msg;
@@ -176,7 +176,7 @@ export function astToMessage(
   }
   const cases: SelectCase<Part>[] = keys.map(key => ({
     key: key.map(k => String(k)),
-    value: []
+    value: { type: 'message', pattern: [] }
   }));
 
   /**
@@ -196,9 +196,10 @@ export function astToMessage(
         for (const v of sel.variants)
           addParts(v.value, [...filter, { idx, value: variantKey(v) }]);
       } else {
-        for (const c of cases)
+        for (const c of cases) {
+          const cp = c.value.pattern;
           if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
-            const last = c.value[c.value.length - 1];
+            const last = cp[cp.length - 1];
             const part = elementToPart(el);
             if (
               isLiteral(last) &&
@@ -207,8 +208,9 @@ export function astToMessage(
               !hasMeta(part)
             )
               last.value += part.value;
-            else c.value.push(part);
+            else cp.push(part);
           }
+        }
       }
     }
   }

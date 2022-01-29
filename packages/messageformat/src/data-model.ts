@@ -51,7 +51,7 @@ export type Message<P extends PatternElement = PatternElement> =
  */
 export interface PatternMessage<P extends PatternElement = PatternElement> {
   type: 'message';
-  value: P[];
+  pattern: P[];
   meta?: Meta;
 }
 
@@ -82,8 +82,7 @@ export interface Selector<P extends PatternElement = PatternElement> {
 
 export interface SelectCase<P extends PatternElement = PatternElement> {
   key: string[];
-  value: P[];
-  meta?: Meta;
+  value: PatternMessage<P>;
 }
 
 export const isMessage = <P extends PatternElement = PatternElement>(
