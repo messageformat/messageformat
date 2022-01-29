@@ -18,6 +18,7 @@ export function compileFluent(
         if (msg.value) {
           const entry = astToMessage(msg.value, msg.comment);
           if (groupComment) {
+            // TODO: Should this be in comment rather than meta?
             if (entry.meta) entry.meta.group = groupComment;
             else entry.meta = { group: groupComment };
           }
@@ -36,7 +37,6 @@ export function compileFluent(
     }
   }
   const res: Resource<Part> = { type: 'resource', id, locale, entries };
-  if (resourceComments.length > 0)
-    res.meta = { comment: resourceComments.join('\n\n') };
+  if (resourceComments.length > 0) res.comment = resourceComments.join('\n\n');
   return res;
 }

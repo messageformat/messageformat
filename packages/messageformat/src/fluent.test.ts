@@ -377,22 +377,41 @@ describe('formatToParts', () => {
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 
-    test('Resource comments', () => {
-      expect(res).toMatchObject({
+    test('Data model comments', () => {
+      expect(res).toEqual({
+        type: 'resource',
         id: 'res',
         locale: 'en',
-        meta: { comment: 'Resource comment\n\nOther resource comment' }
+        comment: 'Resource comment\n\nOther resource comment',
+        entries: {
+          foo: {
+            comment: 'First message',
+            meta: { group: 'Group 1' },
+            pattern: [
+              { type: 'literal', value: 'Foo ' },
+              { type: 'variable', var_path: ['num'] }
+            ],
+            type: 'message'
+          },
+          bar: {
+            meta: { group: 'Group 1' },
+            pattern: [{ type: 'literal', value: 'Bar' }],
+            type: 'message'
+          },
+          qux: {
+            comment: 'Other message',
+            meta: { group: 'Group 2' },
+            pattern: [{ type: 'literal', value: 'Qux' }],
+            type: 'message'
+          }
+        }
       });
     });
 
     test('foo', () => {
       const foo = mf.formatToParts('res', 'foo', { num: 42 });
       expect(foo).toEqual([
-        {
-          type: 'meta',
-          value: '',
-          meta: { comment: 'First message', group: 'Group 1' }
-        },
+        { type: 'meta', value: '', meta: { group: 'Group 1' } },
         { type: 'literal', value: 'Foo ' },
         { type: 'integer', value: '42', source: '$num' }
       ]);
@@ -409,11 +428,7 @@ describe('formatToParts', () => {
     test('qux', () => {
       const qux = mf.formatToParts('res', 'qux');
       expect(qux).toEqual([
-        {
-          type: 'meta',
-          value: '',
-          meta: { comment: 'Other message', group: 'Group 2' }
-        },
+        { type: 'meta', value: '', meta: { group: 'Group 2' } },
         { type: 'literal', value: 'Qux' }
       ]);
     });

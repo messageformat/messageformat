@@ -151,7 +151,7 @@ export function astToMessage(
       type: 'message',
       pattern: ast.elements.map(elementToPart)
     };
-    if (comment) msg.meta = { comment: comment.content };
+    if (comment) msg.comment = comment.content;
     return msg;
   }
 
@@ -201,6 +201,8 @@ export function astToMessage(
             if (
               isLiteral(last) &&
               isLiteral(part) &&
+              !last.comment &&
+              !part.comment &&
               !hasMeta(last) &&
               !hasMeta(part)
             )
@@ -218,6 +220,6 @@ export function astToMessage(
     fallback: String(arg.fallback)
   }));
   const msg: SelectMessage<Part> = { type: 'select', select, cases };
-  if (comment) msg.meta = { comment: comment.content };
+  if (comment) msg.comment = comment.content;
   return msg;
 }

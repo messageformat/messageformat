@@ -197,6 +197,8 @@ export function astToMessage(
             if (
               isLiteral(last) &&
               isLiteral(part) &&
+              !last.comment &&
+              !part.comment &&
               !hasMeta(last) &&
               !hasMeta(part)
             ) {

@@ -194,7 +194,14 @@ function resolveContents(
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
-    if (isLiteral(last) && isLiteral(part) && !hasMeta(last) && !hasMeta(part))
+    if (
+      isLiteral(last) &&
+      isLiteral(part) &&
+      !last.comment &&
+      !part.comment &&
+      !hasMeta(last) &&
+      !hasMeta(part)
+    )
       last.value += part;
     else res.push(part);
   }

@@ -13,12 +13,14 @@ export interface Resource<P extends PatternElement = PatternElement> {
   id: string;
   locale: string;
   entries: Record<string, Message<P> | MessageGroup<P>>;
+  comment?: string;
   meta?: Meta;
 }
 
 export interface MessageGroup<P extends PatternElement = PatternElement> {
   type: 'group';
   entries: Record<string, Message<P> | MessageGroup<P>>;
+  comment?: string;
   meta?: Meta;
 }
 
@@ -52,6 +54,7 @@ export type Message<P extends PatternElement = PatternElement> =
 export interface PatternMessage<P extends PatternElement = PatternElement> {
   type: 'message';
   pattern: P[];
+  comment?: string;
   meta?: Meta;
 }
 
@@ -72,6 +75,7 @@ export interface SelectMessage<P extends PatternElement = PatternElement> {
   type: 'select';
   select: Selector<P>[];
   cases: SelectCase<P>[];
+  comment?: string;
   meta?: Meta;
 }
 
@@ -107,5 +111,6 @@ export const isSelectMessage = <P extends PatternElement = PatternElement>(
  */
 export interface PatternElement {
   type: string;
+  comment?: string;
   meta?: Meta;
 }
