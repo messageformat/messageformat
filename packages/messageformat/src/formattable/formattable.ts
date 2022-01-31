@@ -20,7 +20,7 @@ function asLocaleContext(lc: string | string[] | LocaleContext): LocaleContext {
   return { locales, localeMatcher };
 }
 
-export class Formattable<T = unknown, O = Record<string, unknown>> {
+export class Formattable<T = unknown> {
   protected readonly value: T;
   #lc?: LocaleContext;
   #meta?: Meta;
@@ -33,7 +33,7 @@ export class Formattable<T = unknown, O = Record<string, unknown>> {
     format?: {
       meta?: Meta;
       source?: string;
-      toString?: Formattable<T, O>['toString'];
+      toString?: Formattable<T>['toString'];
       type?: 'dynamic' | 'literal';
     }
   ) {

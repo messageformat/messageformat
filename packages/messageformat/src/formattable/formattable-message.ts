@@ -3,7 +3,7 @@ import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
 import { Formattable } from './formattable';
 
-export class FormattableMessage extends Formattable<Message, Context> {
+export class FormattableMessage extends Formattable<Message> {
   readonly #context: Context;
   #pattern: PatternElement[] | null = null;
   #string: string | null = null;

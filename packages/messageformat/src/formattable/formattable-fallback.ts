@@ -10,10 +10,7 @@ export interface FormattableFallbackOptions {
   source: string;
 }
 
-export class FormattableFallback extends Formattable<
-  undefined,
-  Record<string, never>
-> {
+export class FormattableFallback extends Formattable<undefined> {
   #fallbackParts?: () => Array<
     MessageFormatPart | { type: 'fallback'; value: string }
   >;

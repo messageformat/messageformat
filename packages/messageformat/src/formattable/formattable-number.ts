@@ -2,10 +2,7 @@ import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
 import { Formattable, LocaleContext } from './formattable';
 
-export class FormattableNumber extends Formattable<
-  number | bigint,
-  Intl.NumberFormatOptions & Intl.PluralRulesOptions
-> {
+export class FormattableNumber extends Formattable<number | bigint> {
   options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
 
   constructor(

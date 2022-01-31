@@ -2,10 +2,7 @@ import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
 import { Formattable, LocaleContext } from './formattable';
 
-export class FormattableDateTime extends Formattable<
-  Date,
-  Intl.DateTimeFormatOptions
-> {
+export class FormattableDateTime extends Formattable<Date> {
   locales: string[] | undefined;
   options: Intl.DateTimeFormatOptions | undefined;
 
