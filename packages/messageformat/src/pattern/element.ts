@@ -1,0 +1,48 @@
+import type { PatternElement } from '../data-model';
+import type { Context } from '../format-context';
+import { FormattableFallback } from '../formattable';
+import { FormattableElement } from '../formattable/formattable-element';
+import type { Literal, PatternElementResolver, VariableRef } from './index';
+
+export interface Element extends PatternElement {
+  type: 'element';
+  name: string;
+  tag: 'empty' | 'start' | 'end';
+  options?: Record<string, Literal | VariableRef>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isElement = (part: any): part is Element =>
+  !!part && typeof part === 'object' && part.type === 'element';
+
+function resolveOptions(
+  ctx: Context,
+  options: Record<string, Literal | VariableRef> | undefined
+) {
+  const opt: Record<string, unknown> = {};
+  if (options) {
+    for (const [key, value] of Object.entries(options)) {
+      opt[key] = ctx.resolve(value).getValue();
+    }
+  }
+  return opt;
+}
+
+export const resolver: PatternElementResolver<never> = {
+  type: 'element',
+
+  resolve(ctx, { meta, name, options, tag }: Element) {
+    const source = `<${name}>`;
+    try {
+      return new FormattableElement(ctx, name, {
+        meta,
+        options: resolveOptions(ctx, options),
+        source,
+        tag
+      });
+    } catch (_) {
+      // TODO: report error
+      return new FormattableFallback(ctx, meta, { source });
+    }
+  }
+};

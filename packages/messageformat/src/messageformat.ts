@@ -9,6 +9,7 @@ import { defaultRuntime, Runtime } from './runtime';
 
 export interface MessageFormatOptions {
   elements?: (
+    | 'element'
     | 'function'
     | 'literal'
     | 'term'
