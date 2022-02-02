@@ -69,7 +69,7 @@ export class MessageFormat {
     arg1?: string | string[] | Scope,
     arg2?: Scope
   ) {
-    const fmtMsg = this.getResolvedMessage(...this.parseArgs(arg0, arg1, arg2));
+    const fmtMsg = this.getMessage(...this.parseArgs(arg0, arg1, arg2));
     return fmtMsg ? fmtMsg.toString() : '';
   }
 
@@ -84,7 +84,7 @@ export class MessageFormat {
     arg1?: string | string[] | Scope,
     arg2?: Scope
   ) {
-    const fmtMsg = this.getResolvedMessage(...this.parseArgs(arg0, arg1, arg2));
+    const fmtMsg = this.getMessage(...this.parseArgs(arg0, arg1, arg2));
     return fmtMsg ? fmtMsg.toParts() : [];
   }
 
@@ -108,13 +108,13 @@ export class MessageFormat {
     return undefined;
   }
 
-  private getResolvedMessage(
+  getMessage(
     resId: string,
     msgPath: string | string[],
-    scope: Scope
-  ) {
+    scope: Scope = {}
+  ): ResolvedMessage | undefined {
     const msg = this[MFgetMessage](resId, msgPath);
-    if (!msg) return null;
+    if (!msg) return undefined;
     const ctx = this.createContext(resId, scope);
     return new ResolvedMessage(ctx, msg);
   }
