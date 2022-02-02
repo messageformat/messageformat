@@ -53,11 +53,10 @@ export class MessageValue<T = unknown> {
     this.#localeContext = locale;
   }
 
-  getFormattedType() {
-    return this.#type ?? 'dynamic';
-  }
-
-  initFormattedParts(fallback: boolean, meta?: Meta): MessageFormatPart[] {
+  protected initFormattedParts(
+    fallback: boolean,
+    meta?: Meta
+  ): MessageFormatPart[] {
     if (!meta && !this.meta) return [];
 
     const mp: MessageFormatPart = {
@@ -77,7 +76,7 @@ export class MessageValue<T = unknown> {
   toParts(): MessageFormatPart[] {
     try {
       const res = this.initFormattedParts(false);
-      const type = this.getFormattedType();
+      const type = this.#type ?? 'dynamic';
 
       if (type === 'literal') {
         const part: MessageFormatPart = { type, value: this.toString() };
