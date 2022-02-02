@@ -1,4 +1,4 @@
-import { PatternElement, Resource } from './data-model';
+import { Message, PatternElement, Resource } from './data-model';
 import type { Context } from './format-context';
 import { MessageFormatPart } from './formatted-part';
 import { ResolvedMessage } from './message-value';
@@ -20,7 +20,6 @@ export interface MessageFormatOptions {
   runtime?: Runtime;
 }
 
-export const MFgetMessage = Symbol('getMessage');
 export const MFruntime = Symbol('runtime');
 
 /**
@@ -88,6 +87,26 @@ export class MessageFormat {
     return fmtMsg ? fmtMsg.toParts() : [];
   }
 
+  getMessage(
+    resId: string,
+    msgPath: string | string[],
+    scope: Scope = {}
+  ): ResolvedMessage | undefined {
+    let msg: Message | undefined;
+
+    const p = Array.isArray(msgPath) ? msgPath : [msgPath];
+    for (const res of this.#resources) {
+      if (res.getId() === resId) {
+        msg = res.getMessage(p);
+        if (msg) break;
+      }
+    }
+    if (!msg) return undefined;
+
+    const ctx = this.createContext(resId, scope);
+    return new ResolvedMessage(ctx, msg);
+  }
+
   resolvedOptions() {
     return {
       elements: this.#resolvers.map(res => res.type),
@@ -95,28 +114,6 @@ export class MessageFormat {
       locales: this.#locales.slice(),
       runtime: this[MFruntime]
     };
-  }
-
-  [MFgetMessage](resId: string, path: string | string[]) {
-    const p = Array.isArray(path) ? path : [path];
-    for (const res of this.#resources) {
-      if (res.getId() === resId) {
-        const msg = res.getMessage(p);
-        if (msg) return msg;
-      }
-    }
-    return undefined;
-  }
-
-  getMessage(
-    resId: string,
-    msgPath: string | string[],
-    scope: Scope = {}
-  ): ResolvedMessage | undefined {
-    const msg = this[MFgetMessage](resId, msgPath);
-    if (!msg) return undefined;
-    const ctx = this.createContext(resId, scope);
-    return new ResolvedMessage(ctx, msg);
   }
 
   private createContext(resId: string, scope: Scope): Context {
