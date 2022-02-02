@@ -7,9 +7,9 @@ export const FALLBACK_SOURCE = '???';
 export class MessageValue<T = unknown> {
   protected readonly value: T;
   declare source?: string;
+  declare meta?: Meta;
 
   #localeContext: string | string[] | LocaleContext | null;
-  #meta?: Meta;
   #type?: 'dynamic' | 'literal';
 
   constructor(
@@ -27,7 +27,7 @@ export class MessageValue<T = unknown> {
     if (format) {
       const { meta, source, toString, type } = format;
       if (source) this.source = source;
-      if (meta) this.#meta = meta;
+      if (meta) this.meta = { ...meta };
       if (toString && Object.prototype.hasOwnProperty.call(format, 'toString'))
         this.toString = toString;
       if (type) this.#type = type;
@@ -62,20 +62,16 @@ export class MessageValue<T = unknown> {
   }
 
   initFormattedParts(fallback: boolean, meta?: Meta): MessageFormatPart[] {
-    if (!meta && !this.#meta) return [];
+    if (!meta && !this.meta) return [];
 
     const mp: MessageFormatPart = {
       type: 'meta',
       value: '',
-      meta: { ...this.#meta, ...meta }
+      meta: { ...this.meta, ...meta }
     };
     if (this.source) mp.source = this.source;
     else if (fallback) mp.source = FALLBACK_SOURCE;
     return [mp];
-  }
-
-  setMeta(meta: Meta) {
-    this.#meta = this.#meta ? { ...this.#meta, ...meta } : meta;
   }
 
   matchSelectKey(key: string) {

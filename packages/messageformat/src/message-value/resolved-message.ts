@@ -37,11 +37,12 @@ export class ResolvedMessage extends MessageValue<Message> {
       }
 
       const meta = getFormattedSelectMeta(msg, key, sel, fallback);
-      if (meta) this.setMeta(meta);
+      if (meta) this.meta = { ...this.meta, ...meta };
       return (this.#pattern = value.pattern);
     }
 
-    this.setMeta({ selectResult: 'no-match' });
+    if (this.meta) this.meta.selectResult = 'no-match';
+    else this.meta = { selectResult: 'no-match' };
     return (this.#pattern = []);
   }
 

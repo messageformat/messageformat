@@ -10,7 +10,7 @@ export function asMessageValue(
   format?: { meta?: Meta; source?: string }
 ): MessageValue {
   if (value instanceof MessageValue) {
-    if (format?.meta) value.setMeta(format.meta);
+    if (format?.meta) value.meta = { ...value.meta, ...format.meta };
     if (format?.source) value.source = format.source;
     return value;
   }
