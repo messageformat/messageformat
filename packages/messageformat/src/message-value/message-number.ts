@@ -1,7 +1,7 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
 import { extendLocaleContext, LocaleContext } from './locale-context';
-import { MessageValue } from './message-value';
+import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageNumber extends MessageValue<number | bigint> {
   options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
@@ -66,16 +66,15 @@ export class MessageNumber extends MessageValue<number | bigint> {
       const res = this.initFormattedParts(true);
       const nf = this.getNumberFormatter();
       const num = this.getValue();
-      const source = this.getSource(false);
       for (const part of nf.formatToParts(num) as MessageFormatPart[]) {
-        part.source = source;
+        part.source = this.source;
         res.push(part);
       }
       return res;
     } catch (_) {
       // TODO: Report error
       const value = this.toString();
-      const source = this.getSource(true);
+      const source = this.source || FALLBACK_SOURCE;
       return [{ type: 'fallback', value, source }];
     }
   }
@@ -88,7 +87,8 @@ export class MessageNumber extends MessageValue<number | bigint> {
       return nf.format(num);
     } catch (_) {
       // TODO: Report error
-      return num === undefined ? '{' + this.getSource(true) + '}' : String(num);
+      const source = this.source || FALLBACK_SOURCE;
+      return num === undefined ? `{${source}}` : String(num);
     }
   }
 }

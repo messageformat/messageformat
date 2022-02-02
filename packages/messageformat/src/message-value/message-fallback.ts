@@ -1,7 +1,7 @@
 import type { Meta } from '../data-model';
 import { MessageFormatPart } from '../formatted-part';
 import type { LocaleContext } from './locale-context';
-import { MessageValue } from './message-value';
+import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 interface MessageFallbackOptions {
   fallbackParts?: () => Array<
@@ -27,7 +27,9 @@ export class MessageFallback extends MessageValue<undefined> {
     this.#fallbackParts = fallbackParts;
     this.#fallbackString = fallbackString;
     this.#fallbackValue = () =>
-      this.#fallbackString ? this.#fallbackString() : this.getSource(true);
+      this.#fallbackString
+        ? this.#fallbackString()
+        : this.source || FALLBACK_SOURCE;
   }
 
   matchSelectKey() {
@@ -36,7 +38,7 @@ export class MessageFallback extends MessageValue<undefined> {
 
   toParts() {
     const res = this.initFormattedParts(true);
-    const source = this.getSource(true);
+    const source = this.source || FALLBACK_SOURCE;
     if (this.#fallbackParts)
       for (const part of this.#fallbackParts()) res.push({ ...part, source });
     else {

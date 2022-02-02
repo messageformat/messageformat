@@ -53,7 +53,7 @@ export class ResolvedMessage extends MessageValue<Message> {
     const pattern = this.getPattern();
     const res = this.initFormattedParts(false);
     const ctx = this.#context;
-    const source = this.getSource(false);
+    const source = this.source;
     for (const elem of pattern) {
       const parts = ctx.resolve(elem).toParts();
       for (const part of parts) {

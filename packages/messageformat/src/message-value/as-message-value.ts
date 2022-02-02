@@ -11,7 +11,7 @@ export function asMessageValue(
 ): MessageValue {
   if (value instanceof MessageValue) {
     if (format?.meta) value.setMeta(format.meta);
-    if (format?.source) value.setSource(format.source);
+    if (format?.source) value.source = format.source;
     return value;
   }
 

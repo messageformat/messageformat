@@ -1,6 +1,7 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { asMessageValue, MessageFallback } from '../message-value';
+import { FALLBACK_SOURCE } from '../message-value/message-value';
 import { MFruntime } from '../messageformat';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
@@ -72,7 +73,7 @@ export const resolver: PatternElementResolver<Runtime> = {
     const rf = (ctx.types.function as Runtime)[func];
     try {
       const fnArgs = args.map(arg => ctx.resolve(arg));
-      const srcArgs = fnArgs.map(fa => fa.getSource(true)).join(', ');
+      const srcArgs = fnArgs.map(fa => fa.source || FALLBACK_SOURCE).join(', ');
       source = `${func}(${srcArgs})`;
       const fnOpt = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, fnOpt, ...fnArgs);

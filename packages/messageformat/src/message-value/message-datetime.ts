@@ -1,7 +1,7 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
 import { extendLocaleContext, LocaleContext } from './locale-context';
-import { MessageValue } from './message-value';
+import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageDateTime extends MessageValue<Date> {
   locales: string[] | undefined;
@@ -47,7 +47,7 @@ export class MessageDateTime extends MessageValue<Date> {
       const res = this.initFormattedParts(true);
       const dtf = this.getDateTimeFormatter();
       const date = this.getValue();
-      const source = this.getSource(false);
+      const source = this.source;
       for (const part of dtf.formatToParts(date) as MessageFormatPart[]) {
         part.source = source;
         res.push(part);
@@ -56,7 +56,7 @@ export class MessageDateTime extends MessageValue<Date> {
     } catch (_) {
       // TODO: Report error
       const value = this.toString();
-      const source = this.getSource(true);
+      const source = this.source || FALLBACK_SOURCE;
       return [{ type: 'fallback', value, source }];
     }
   }
@@ -77,9 +77,8 @@ export class MessageDateTime extends MessageValue<Date> {
       }
     } catch (_) {
       // TODO: Report error
-      return date === undefined
-        ? '{' + this.getSource(true) + '}'
-        : String(date);
+      const source = this.source || FALLBACK_SOURCE;
+      return date === undefined ? `{${source}}` : String(date);
     }
   }
 }

@@ -2,11 +2,14 @@ import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
 import { LocaleContext } from './locale-context';
 
+export const FALLBACK_SOURCE = '???';
+
 export class MessageValue<T = unknown> {
   protected readonly value: T;
+  declare source?: string;
+
   #localeContext: string | string[] | LocaleContext | null;
   #meta?: Meta;
-  #source?: string;
   #type?: 'dynamic' | 'literal';
 
   constructor(
@@ -23,8 +26,8 @@ export class MessageValue<T = unknown> {
     this.#localeContext = locale;
     if (format) {
       const { meta, source, toString, type } = format;
+      if (source) this.source = source;
       if (meta) this.#meta = meta;
-      if (source) this.#source = source;
       if (toString && Object.prototype.hasOwnProperty.call(format, 'toString'))
         this.toString = toString;
       if (type) this.#type = type;
@@ -50,14 +53,6 @@ export class MessageValue<T = unknown> {
     this.#localeContext = locale;
   }
 
-  getSource(fallback: boolean) {
-    return this.#source ?? (fallback ? '???' : '');
-  }
-
-  setSource(source: string) {
-    this.#source = source;
-  }
-
   getFormattedType() {
     return this.#type ?? 'dynamic';
   }
@@ -74,8 +69,8 @@ export class MessageValue<T = unknown> {
       value: '',
       meta: { ...this.#meta, ...meta }
     };
-    const source = this.getSource(fallback);
-    if (source) mp.source = source;
+    if (this.source) mp.source = this.source;
+    else if (fallback) mp.source = FALLBACK_SOURCE;
     return [mp];
   }
 
@@ -92,11 +87,10 @@ export class MessageValue<T = unknown> {
     try {
       const res = this.initFormattedParts(false);
       const type = this.getFormattedType();
-      const source = this.getSource(false);
 
       if (type === 'literal') {
         const part: MessageFormatPart = { type, value: this.toString() };
-        if (source) part.source = source;
+        if (this.source) part.source = this.source;
         res.push(part);
         return res;
       }
@@ -118,12 +112,14 @@ export class MessageValue<T = unknown> {
           value = this.toString();
       }
 
+      // For non-literals, source should always be set
+      const source = this.source || FALLBACK_SOURCE;
       res.push({ type, value, source });
       return res;
     } catch (_) {
       // TODO: Report error
       const value = this.toString();
-      const source = this.getSource(true);
+      const source = this.source || FALLBACK_SOURCE;
       return [{ type: 'fallback', value, source }];
     }
   }
@@ -140,7 +136,8 @@ export class MessageValue<T = unknown> {
       }
     } catch (_) {
       // TODO: Report error
-      if (value === undefined) value = '{' + this.getSource(true) + '}';
+      const source = this.source || FALLBACK_SOURCE;
+      if (value === undefined) value = `{${source}}`;
     }
     return String(value);
   }

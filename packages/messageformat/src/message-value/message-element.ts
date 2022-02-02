@@ -1,7 +1,7 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
 import type { LocaleContext } from './locale-context';
-import { MessageValue } from './message-value';
+import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageElement extends MessageValue<string> {
   tag: 'empty' | 'start' | 'end';
@@ -33,7 +33,7 @@ export class MessageElement extends MessageValue<string> {
 
   toParts(): MessageFormatPart[] {
     const value = this.toString();
-    const source = this.getSource(true);
+    const source = this.source || FALLBACK_SOURCE;
     return [{ type: 'fallback', value, source }];
   }
 
