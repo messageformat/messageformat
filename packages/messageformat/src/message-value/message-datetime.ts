@@ -46,9 +46,8 @@ export class MessageDateTime extends MessageValue<Date> {
     try {
       const res = this.initFormattedParts(true);
       const dtf = this.getDateTimeFormatter();
-      const date = this.getValue();
       const source = this.source;
-      for (const part of dtf.formatToParts(date) as MessageFormatPart[]) {
+      for (const part of dtf.formatToParts(this.value) as MessageFormatPart[]) {
         part.source = source;
         res.push(part);
       }
@@ -62,23 +61,24 @@ export class MessageDateTime extends MessageValue<Date> {
   }
 
   toString() {
-    let date: Date | undefined;
     try {
       const hasOpt = this.options && Object.keys(this.options).length > 0;
-      date = this.getValue();
       if (hasOpt) {
         const dtf = this.getDateTimeFormatter();
-        return dtf.format(date);
+        return dtf.format(this.value);
       } else {
         const lc = this.localeContext;
         return lc
-          ? date.toLocaleString(lc.locales, { localeMatcher: lc.localeMatcher })
-          : date.toString();
+          ? this.value.toLocaleString(lc.locales, lc)
+          : String(this.value);
       }
     } catch (_) {
       // TODO: Report error
-      const source = this.source || FALLBACK_SOURCE;
-      return date === undefined ? `{${source}}` : String(date);
+      if (this.value === undefined) {
+        const source = this.source || FALLBACK_SOURCE;
+        return `{${source}}`;
+      }
+      return String(this.value);
     }
   }
 }

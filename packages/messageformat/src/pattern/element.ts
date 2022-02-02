@@ -21,7 +21,7 @@ function resolveOptions(
   const opt: Record<string, unknown> = {};
   if (options) {
     for (const [key, value] of Object.entries(options)) {
-      opt[key] = ctx.resolve(value).getValue();
+      opt[key] = ctx.resolve(value).value;
     }
   }
   return opt;

@@ -20,8 +20,9 @@ export const date: RuntimeFunction<MessageDateTime> = {
     let date: Date | MessageDateTime;
     if (arg instanceof MessageDateTime) date = arg;
     else {
-      const value = arg.getValue();
-      date = new Date(typeof value === 'number' ? value : String(value));
+      date = new Date(
+        typeof arg.value === 'number' ? arg.value : String(arg.value)
+      );
     }
     const size = getParam(options) as DateTimeSize;
     const opt: Intl.DateTimeFormatOptions = {
@@ -55,7 +56,7 @@ export const duration: RuntimeFunction<string> = {
     _options: unknown,
     arg: MessageValue
   ) {
-    let value = Number(arg.getValue());
+    let value = Number(arg.value);
     if (!isFinite(value)) return String(value);
     let sign = '';
     if (value < 0) {
@@ -105,7 +106,7 @@ class MessageMF1Number extends MessageNumber {
         locale = extendLocaleContext(number.localeContext, locale);
         if (number.options)
           opt = { ...opt, options: { ...number.options, ...opt?.options } };
-        number = number.getValue();
+        number = number.value;
       }
       if (typeof number === 'number') number -= offset;
       else if (typeof number === 'bigint') number -= BigInt(offset);
@@ -133,7 +134,7 @@ export const number: RuntimeFunction<MessageNumber> = {
     options: RuntimeOptions | undefined,
     arg: MessageValue
   ) {
-    const num = arg instanceof MessageNumber ? arg : Number(arg.getValue());
+    const num = arg instanceof MessageNumber ? arg : Number(arg.value);
     const opt: Intl.NumberFormatOptions &
       Intl.PluralRulesOptions & { pluralOffset?: number } = {};
     if (options) {
@@ -177,8 +178,9 @@ export const time: RuntimeFunction<MessageDateTime> = {
     let time: Date | MessageDateTime;
     if (arg instanceof MessageDateTime) time = arg;
     else {
-      const value = arg.getValue();
-      time = new Date(typeof value === 'number' ? value : String(value));
+      time = new Date(
+        typeof arg.value === 'number' ? arg.value : String(arg.value)
+      );
     }
     const size = getParam(options) as DateTimeSize;
     const opt: Intl.DateTimeFormatOptions = {

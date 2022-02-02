@@ -40,7 +40,7 @@ function resolveOptions(
           ? expected
           : expected[key];
       if (!exp || exp === 'never') continue; // TODO: report error
-      const res = ctx.resolve(value).getValue();
+      const res = ctx.resolve(value).value;
       if (
         exp === 'any' ||
         exp === typeof res ||

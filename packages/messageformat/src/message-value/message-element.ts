@@ -39,14 +39,13 @@ export class MessageElement extends MessageValue<string> {
 
   toString() {
     // TODO: include options with valid XML name keys
-    const name = this.getValue();
     switch (this.tag) {
       case 'empty':
-        return `<${name}/>`;
+        return `<${this.value}/>`;
       case 'end':
-        return `</${name}>`;
+        return `</${this.value}>`;
       default:
-        return `<${name}>`;
+        return `<${this.value}>`;
     }
   }
 }

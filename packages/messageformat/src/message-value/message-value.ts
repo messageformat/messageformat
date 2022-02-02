@@ -5,7 +5,7 @@ import { LocaleContext } from './locale-context';
 export const FALLBACK_SOURCE = '???';
 
 export class MessageValue<T = unknown> {
-  protected readonly value: T;
+  readonly value: T;
   declare source?: string;
   declare meta?: Meta;
 
@@ -57,10 +57,6 @@ export class MessageValue<T = unknown> {
     return this.#type ?? 'dynamic';
   }
 
-  getValue() {
-    return this.value;
-  }
-
   initFormattedParts(fallback: boolean, meta?: Meta): MessageFormatPart[] {
     if (!meta && !this.meta) return [];
 
@@ -75,8 +71,7 @@ export class MessageValue<T = unknown> {
   }
 
   matchSelectKey(key: string) {
-    const value = this.getValue();
-    return value != null && String(value) === key;
+    return this.value != null && String(this.value) === key;
   }
 
   toParts(): MessageFormatPart[] {
@@ -92,7 +87,7 @@ export class MessageValue<T = unknown> {
       }
 
       // Limit value to string | symbol | function | object
-      let value: unknown = this.getValue();
+      let value: unknown = this.value;
       // HERE
       //console.log({ value });
       switch (typeof value) {
@@ -121,9 +116,10 @@ export class MessageValue<T = unknown> {
   }
 
   toString(): string {
-    let value: { toLocaleString: (...args: unknown[]) => string } | undefined;
+    const value:
+      | { toLocaleString: (...args: unknown[]) => string }
+      | undefined = this.value;
     try {
-      value = this.getValue();
       const lc = this.localeContext;
       if (lc && value && typeof value.toLocaleString === 'function') {
         const lm = lc.localeMatcher;
@@ -132,8 +128,10 @@ export class MessageValue<T = unknown> {
       }
     } catch (_) {
       // TODO: Report error
-      const source = this.source || FALLBACK_SOURCE;
-      if (value === undefined) value = `{${source}}`;
+      if (value === undefined) {
+        const source = this.source || FALLBACK_SOURCE;
+        return `{${source}}`;
+      }
     }
     return String(value);
   }

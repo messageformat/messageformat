@@ -112,8 +112,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     start_: MessageNumber | MessageValue<{ start: number; end: number }>,
     end_: MessageNumber | undefined
   ) {
-    const start = start_.getValue();
-    const end = end_?.getValue();
+    const start = start_.value;
+    const end = end_?.value;
     if (typeof end === 'number') {
       if (typeof start !== 'number' && typeof start !== 'string')
         throw new Error(`Invalid arguments (${start}, ${end})`);
@@ -422,7 +422,7 @@ maybe('List formatting', () => {
       ...args: MessageValue<string | string[]>[]
     ) {
       let list: string[] = [];
-      for (const arg of args) list = list.concat(arg.getValue());
+      for (const arg of args) list = list.concat(arg.value);
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
@@ -475,8 +475,7 @@ maybe('List formatting', () => {
         Ileana: 'Ilenei',
         Petre: 'lui Petre'
       };
-      const value = arg.getValue();
-      return data[value] || value;
+      return data[arg.value] || arg.value;
     }
 
     function LIST(
@@ -485,7 +484,7 @@ maybe('List formatting', () => {
       ...args: MessageValue<string | string[]>[]
     ) {
       let list: string[] = [];
-      for (const arg of args) list = list.concat(arg.getValue());
+      for (const arg of args) list = list.concat(arg.value);
       if (typeof options?.each === 'string') {
         const fn = runtime[options.each];
         if (!fn || typeof fn.call !== 'function')

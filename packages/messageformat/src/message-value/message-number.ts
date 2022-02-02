@@ -46,7 +46,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
     if (!this.localeContext) return 'other';
     const pr = this.getIntl(Intl.PluralRules);
     // Intl.PluralRules really does need a number
-    const num = Number(this.getValue());
+    const num = Number(this.value);
     return pr.select(num);
   }
 
@@ -62,8 +62,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
     try {
       const res = this.initFormattedParts(true);
       const nf = this.getIntl(Intl.NumberFormat);
-      const num = this.getValue();
-      for (const part of nf.formatToParts(num) as MessageFormatPart[]) {
+      for (const part of nf.formatToParts(this.value) as MessageFormatPart[]) {
         part.source = this.source;
         res.push(part);
       }
@@ -77,15 +76,16 @@ export class MessageNumber extends MessageValue<number | bigint> {
   }
 
   toString() {
-    let num: number | bigint | undefined;
     try {
-      num = this.getValue();
       const nf = this.getIntl(Intl.NumberFormat);
-      return nf.format(num);
+      return nf.format(this.value);
     } catch (_) {
       // TODO: Report error
-      const source = this.source || FALLBACK_SOURCE;
-      return num === undefined ? `{${source}}` : String(num);
+      if (this.value === undefined) {
+        const source = this.source || FALLBACK_SOURCE;
+        return `{${source}}`;
+      }
+      return String(this.value);
     }
   }
 }

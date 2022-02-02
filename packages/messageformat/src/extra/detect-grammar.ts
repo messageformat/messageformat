@@ -74,7 +74,7 @@ export function getFormattedSelectMeta(
     hasMeta = true;
     if (fallback[gcase]) {
       const { fmt, def } = sel[gcase];
-      meta.case = String(fmt.getValue());
+      meta.case = String(fmt.value);
       meta.caseFallback = def;
     } else {
       meta.case = key[gcase];
@@ -85,7 +85,7 @@ export function getFormattedSelectMeta(
     hasMeta = true;
     if (fallback[gender]) {
       const { fmt, def } = sel[gender];
-      meta.gender = String(fmt.getValue());
+      meta.gender = String(fmt.value);
       meta.genderFallback = def;
     } else {
       meta.gender = key[gender];

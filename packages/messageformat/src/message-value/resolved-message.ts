@@ -16,7 +16,7 @@ export class ResolvedMessage extends MessageValue<Message> {
   /** As a side effect, sets selection metadata */
   private getPattern() {
     if (this.#pattern) return this.#pattern;
-    const msg = this.getValue();
+    const msg = this.value;
     if (msg.type === 'message') return (this.#pattern = msg.pattern);
 
     const ctx = this.#context;
