@@ -1,6 +1,7 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-import { MessageValue, LocaleContext } from './message-value';
+import { extendLocaleContext, LocaleContext } from './locale-context';
+import { MessageValue } from './message-value';
 
 export class MessageDateTime extends MessageValue<Date> {
   locales: string[] | undefined;
@@ -21,7 +22,8 @@ export class MessageDateTime extends MessageValue<Date> {
   ) {
     const fmt = { meta, source };
     if (date instanceof MessageDateTime) {
-      super(date.getLocaleContext(locale), date.value, fmt);
+      const lc = extendLocaleContext(date.localeContext, locale);
+      super(lc, date.value, fmt);
       if (options || date.options)
         this.options = date.options
           ? { ...date.options, ...options }
@@ -33,7 +35,7 @@ export class MessageDateTime extends MessageValue<Date> {
   }
 
   private getDateTimeFormatter() {
-    const lc = this.getLocaleContext();
+    const lc = this.localeContext;
     const opt = lc
       ? { localeMatcher: lc.localeMatcher, ...this.options }
       : this.options;
@@ -68,9 +70,10 @@ export class MessageDateTime extends MessageValue<Date> {
         const dtf = this.getDateTimeFormatter();
         return dtf.format(date);
       } else {
-        const lm = this.options?.localeMatcher;
-        const options = lm ? { localeMatcher: lm } : undefined;
-        return date.toLocaleString(this.getLocaleContext()?.locales, options);
+        const lc = this.localeContext;
+        return lc
+          ? date.toLocaleString(lc.locales, { localeMatcher: lc.localeMatcher })
+          : date.toString();
       }
     } catch (_) {
       // TODO: Report error

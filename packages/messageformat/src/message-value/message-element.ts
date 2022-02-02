@@ -1,6 +1,7 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-import { MessageValue, LocaleContext } from './message-value';
+import type { LocaleContext } from './locale-context';
+import { MessageValue } from './message-value';
 
 export class MessageElement extends MessageValue<string> {
   tag: 'empty' | 'start' | 'end';

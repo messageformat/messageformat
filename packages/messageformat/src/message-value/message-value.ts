@@ -1,28 +1,10 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-
-export interface LocaleContext {
-  localeMatcher: 'best fit' | 'lookup' | undefined;
-  locales: string[];
-}
-
-function asLocaleContext(lc: string | string[] | LocaleContext): LocaleContext {
-  let locales: string[];
-  let localeMatcher: 'best fit' | 'lookup' | undefined = undefined;
-  if (lc && typeof lc === 'string') {
-    locales = [lc];
-  } else if (Array.isArray(lc)) {
-    locales = lc.slice();
-  } else if (lc && typeof lc === 'object') {
-    locales = lc.locales.slice();
-    localeMatcher = lc.localeMatcher;
-  } else throw new TypeError('Invalid locale context argument');
-  return { locales, localeMatcher };
-}
+import { LocaleContext } from './locale-context';
 
 export class MessageValue<T = unknown> {
   protected readonly value: T;
-  #lc?: LocaleContext;
+  #localeContext: string | string[] | LocaleContext | null;
   #meta?: Meta;
   #source?: string;
   #type?: 'dynamic' | 'literal';
@@ -38,7 +20,7 @@ export class MessageValue<T = unknown> {
     }
   ) {
     this.value = value;
-    if (locale) this.setLocaleContext(locale);
+    this.#localeContext = locale;
     if (format) {
       const { meta, source, toString, type } = format;
       if (meta) this.#meta = meta;
@@ -49,22 +31,23 @@ export class MessageValue<T = unknown> {
     }
   }
 
-  getLocaleContext(
-    locale?: string | string[] | LocaleContext | null
-  ): LocaleContext | null {
-    if (this.#lc) {
-      return {
-        locales: this.#lc.locales.slice(),
-        localeMatcher:
-          this.#lc.localeMatcher ??
-          (locale ? (locale as LocaleContext).localeMatcher : undefined)
-      };
+  get localeContext(): LocaleContext | null {
+    const lc = this.#localeContext;
+    if (!lc) return null;
+
+    let localeMatcher: 'best fit' | 'lookup' | undefined;
+    let locales: string[];
+    if (typeof lc === 'string') locales = [lc];
+    else if (Array.isArray(lc)) locales = lc.slice();
+    else {
+      locales = lc.locales.slice();
+      localeMatcher = lc.localeMatcher;
     }
-    return locale ? asLocaleContext(locale) : null;
+    return { locales, localeMatcher };
   }
 
-  setLocaleContext(locale: string | string[] | LocaleContext) {
-    this.#lc = asLocaleContext(locale);
+  set localeContext(locale: string | string[] | LocaleContext | null) {
+    this.#localeContext = locale;
   }
 
   getSource(fallback: boolean) {
@@ -149,7 +132,7 @@ export class MessageValue<T = unknown> {
     let value: { toLocaleString: (...args: unknown[]) => string } | undefined;
     try {
       value = this.getValue();
-      const lc = this.getLocaleContext();
+      const lc = this.localeContext;
       if (lc && value && typeof value.toLocaleString === 'function') {
         const lm = lc.localeMatcher;
         const opt = lm ? { localeMatcher: lm } : undefined;

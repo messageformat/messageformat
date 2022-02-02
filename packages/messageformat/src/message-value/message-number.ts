@@ -1,6 +1,7 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-import { MessageValue, LocaleContext } from './message-value';
+import { extendLocaleContext, LocaleContext } from './locale-context';
+import { MessageValue } from './message-value';
 
 export class MessageNumber extends MessageValue<number | bigint> {
   options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
@@ -20,7 +21,8 @@ export class MessageNumber extends MessageValue<number | bigint> {
   ) {
     const fmt = { meta, source };
     if (number instanceof MessageNumber) {
-      super(number.getLocaleContext(locale), number.value, fmt);
+      const lc = extendLocaleContext(number.localeContext, locale);
+      super(lc, number.value, fmt);
       if (options || number.options)
         this.options = number.options
           ? { ...number.options, ...options }
@@ -32,14 +34,14 @@ export class MessageNumber extends MessageValue<number | bigint> {
   }
 
   private getNumberFormatter() {
-    const lc = this.getLocaleContext();
+    const lc = this.localeContext;
     const lm = lc?.localeMatcher;
     const opt = lm ? { localeMatcher: lm, ...this.options } : this.options;
     return new Intl.NumberFormat(lc?.locales, opt);
   }
 
   getPluralCategory() {
-    const lc = this.getLocaleContext();
+    const lc = this.localeContext;
     if (!lc || !lc.locales[0]) return 'other';
 
     const lm = lc.localeMatcher;

@@ -1,6 +1,7 @@
 import type { Meta } from '../data-model';
 import { MessageFormatPart } from '../formatted-part';
-import { MessageValue, LocaleContext } from './message-value';
+import type { LocaleContext } from './locale-context';
+import { MessageValue } from './message-value';
 
 interface MessageFallbackOptions {
   fallbackParts?: () => Array<
