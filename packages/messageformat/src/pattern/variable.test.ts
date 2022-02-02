@@ -1,8 +1,8 @@
 import { compileFluent } from '@messageformat/compiler';
 
-import { Formattable, FormattableNumber, MessageFormat } from '../index';
+import { MessageNumber, MessageFormat, MessageValue } from '../index';
 
-describe('Formattable variables', () => {
+describe('MessageValue variables', () => {
   let mf: MessageFormat;
   beforeEach(() => {
     const src = `msg = { $val }`;
@@ -16,15 +16,15 @@ describe('Formattable variables', () => {
     ]);
   });
 
-  test('Formattable(number)', () => {
-    const val = new Formattable(null, 42);
+  test('MessageValue(number)', () => {
+    const val = new MessageValue(null, 42);
     expect(mf.formatToParts('msg', { val })).toMatchObject([
       { type: 'dynamic', value: '42', source: '$val' }
     ]);
   });
 
-  test('FormattableNumber(null, number, { options })', () => {
-    const val: Formattable = new FormattableNumber(null, 42, {
+  test('MessageNumber(null, number, { options })', () => {
+    const val: MessageValue = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 1 }
     });
     expect(mf.formatToParts('msg', { val })).toMatchObject([
@@ -34,8 +34,8 @@ describe('Formattable variables', () => {
     ]);
   });
 
-  test('FormattableNumber("en", BigInt, { options })', () => {
-    const val = new FormattableNumber('en', BigInt(42), {
+  test('MessageNumber("en", BigInt, { options })', () => {
+    const val = new MessageNumber('en', BigInt(42), {
       options: { minimumFractionDigits: 2 }
     });
     expect(mf.formatToParts('msg', { val })).toMatchObject([

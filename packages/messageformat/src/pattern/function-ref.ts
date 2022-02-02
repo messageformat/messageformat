@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { asFormattable, FormattableFallback } from '../formattable';
+import { asMessageValue, MessageFallback } from '../message-value';
 import { MFruntime } from '../messageformat';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
@@ -76,11 +76,11 @@ export const resolver: PatternElementResolver<Runtime> = {
       source = `${func}(${srcArgs})`;
       const fnOpt = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
-      return asFormattable(ctx, res, { meta, source });
+      return asMessageValue(ctx, res, { meta, source });
     } catch (_) {
       // TODO: report error
       if (!source) source = `${func}()`;
-      return new FormattableFallback(ctx, meta, { source });
+      return new MessageFallback(ctx, meta, { source });
     }
   }
 };

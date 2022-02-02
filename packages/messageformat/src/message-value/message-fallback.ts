@@ -1,8 +1,8 @@
 import type { Meta } from '../data-model';
 import { MessageFormatPart } from '../formatted-part';
-import { Formattable, LocaleContext } from './formattable';
+import { MessageValue, LocaleContext } from './message-value';
 
-export interface FormattableFallbackOptions {
+interface MessageFallbackOptions {
   fallbackParts?: () => Array<
     MessageFormatPart | { type: 'fallback'; value: string }
   >;
@@ -10,7 +10,7 @@ export interface FormattableFallbackOptions {
   source: string;
 }
 
-export class FormattableFallback extends Formattable<undefined> {
+export class MessageFallback extends MessageValue<undefined> {
   #fallbackParts?: () => Array<
     MessageFormatPart | { type: 'fallback'; value: string }
   >;
@@ -20,7 +20,7 @@ export class FormattableFallback extends Formattable<undefined> {
   constructor(
     locale: string | string[] | LocaleContext | null,
     meta: Meta | undefined,
-    { fallbackParts, fallbackString, source }: FormattableFallbackOptions
+    { fallbackParts, fallbackString, source }: MessageFallbackOptions
   ) {
     super(locale, undefined, { meta, source });
     this.#fallbackParts = fallbackParts;

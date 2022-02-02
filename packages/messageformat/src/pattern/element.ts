@@ -1,7 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { FormattableFallback } from '../formattable';
-import { FormattableElement } from '../formattable/formattable-element';
+import { MessageElement, MessageFallback } from '../message-value';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
 
 export interface Element extends PatternElement {
@@ -34,7 +33,7 @@ export const resolver: PatternElementResolver<never> = {
   resolve(ctx, { meta, name, options, tag }: Element) {
     const source = `<${name}>`;
     try {
-      return new FormattableElement(ctx, name, {
+      return new MessageElement(ctx, name, {
         meta,
         options: resolveOptions(ctx, options),
         source,
@@ -42,7 +41,7 @@ export const resolver: PatternElementResolver<never> = {
       });
     } catch (_) {
       // TODO: report error
-      return new FormattableFallback(ctx, meta, { source });
+      return new MessageFallback(ctx, meta, { source });
     }
   }
 };

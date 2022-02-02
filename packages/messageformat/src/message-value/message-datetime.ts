@@ -1,14 +1,14 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-import { Formattable, LocaleContext } from './formattable';
+import { MessageValue, LocaleContext } from './message-value';
 
-export class FormattableDateTime extends Formattable<Date> {
+export class MessageDateTime extends MessageValue<Date> {
   locales: string[] | undefined;
   options: Intl.DateTimeFormatOptions | undefined;
 
   constructor(
     locale: string | string[] | LocaleContext | null,
-    date: Date | FormattableDateTime,
+    date: Date | MessageDateTime,
     {
       meta,
       options,
@@ -20,7 +20,7 @@ export class FormattableDateTime extends Formattable<Date> {
     } = {}
   ) {
     const fmt = { meta, source };
-    if (date instanceof FormattableDateTime) {
+    if (date instanceof MessageDateTime) {
       super(date.getLocaleContext(locale), date.value, fmt);
       if (options || date.options)
         this.options = date.options

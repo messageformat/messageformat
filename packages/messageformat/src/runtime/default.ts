@@ -1,23 +1,19 @@
-import {
-  Formattable,
-  FormattableDateTime,
-  FormattableNumber
-} from '../formattable';
+import { MessageDateTime, MessageNumber, MessageValue } from '../message-value';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
-export const datetime: RuntimeFunction<FormattableDateTime> = {
+export const datetime: RuntimeFunction<MessageDateTime> = {
   call: function datetime(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: Formattable
+    arg: MessageValue
   ) {
-    let date: Date | FormattableDateTime;
-    if (arg instanceof FormattableDateTime) date = arg;
+    let date: Date | MessageDateTime;
+    if (arg instanceof MessageDateTime) date = arg;
     else {
       const value = arg.getValue();
       date = new Date(typeof value === 'number' ? value : String(value));
     }
-    return new FormattableDateTime(locales, date, { options });
+    return new MessageDateTime(locales, date, { options });
   },
 
   options: {
@@ -46,14 +42,14 @@ export const datetime: RuntimeFunction<FormattableDateTime> = {
   }
 };
 
-export const number: RuntimeFunction<FormattableNumber> = {
+export const number: RuntimeFunction<MessageNumber> = {
   call: function number(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: Formattable
+    arg: MessageValue
   ) {
-    const num = arg instanceof FormattableNumber ? arg : Number(arg.getValue());
-    return new FormattableNumber(locales, num, { options });
+    const num = arg instanceof MessageNumber ? arg : Number(arg.getValue());
+    return new MessageNumber(locales, num, { options });
   },
 
   options: {

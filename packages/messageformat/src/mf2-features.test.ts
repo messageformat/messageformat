@@ -4,8 +4,8 @@ import { compileFluent, compileMF1 } from '@messageformat/compiler';
 
 import {
   fluentRuntime,
-  Formattable,
-  FormattableNumber,
+  MessageValue,
+  MessageNumber,
   MessageFormat,
   Resource,
   Runtime,
@@ -109,8 +109,8 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function parseRangeArgs(
-    start_: FormattableNumber | Formattable<{ start: number; end: number }>,
-    end_: FormattableNumber | undefined
+    start_: MessageNumber | MessageValue<{ start: number; end: number }>,
+    end_: MessageNumber | undefined
   ) {
     const start = start_.getValue();
     const end = end_?.getValue();
@@ -127,8 +127,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   function formatRange(
     _locales: string[],
     _options: RuntimeOptions | undefined,
-    start: FormattableNumber | Formattable<{ start: number; end: number }>,
-    end?: FormattableNumber
+    start: MessageNumber | MessageValue<{ start: number; end: number }>,
+    end?: MessageNumber
   ) {
     const range = parseRangeArgs(start, end);
     return `${range.start} - ${range.end}`;
@@ -136,8 +136,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   function pluralRange(
     locales: string[],
     options: RuntimeOptions | undefined,
-    start: FormattableNumber | Formattable<{ start: number; end: number }>,
-    end?: FormattableNumber
+    start: MessageNumber | MessageValue<{ start: number; end: number }>,
+    end?: MessageNumber
   ) {
     if (locales[0] !== 'nl') throw new Error('Only Dutch supported');
     const range = parseRangeArgs(start, end);
@@ -419,7 +419,7 @@ maybe('List formatting', () => {
     function LIST(
       locales: string[],
       options: RuntimeOptions | undefined,
-      ...args: Formattable<string | string[]>[]
+      ...args: MessageValue<string | string[]>[]
     ) {
       let list: string[] = [];
       for (const arg of args) list = list.concat(arg.getValue());
@@ -467,7 +467,7 @@ maybe('List formatting', () => {
     function dative(
       locales: string[],
       _options: unknown,
-      arg: Formattable<string>
+      arg: MessageValue<string>
     ) {
       if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
       const data: Record<string, string> = {
@@ -482,7 +482,7 @@ maybe('List formatting', () => {
     function LIST(
       locales: string[],
       options: RuntimeOptions | undefined,
-      ...args: Formattable<string | string[]>[]
+      ...args: MessageValue<string | string[]>[]
     ) {
       let list: string[] = [];
       for (const arg of args) list = list.concat(arg.getValue());
@@ -491,7 +491,7 @@ maybe('List formatting', () => {
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
         list = list.map(li =>
-          String(fn.call(locales, undefined, new Formattable(null, li)))
+          String(fn.call(locales, undefined, new MessageValue(null, li)))
         );
       }
       // @ts-ignore

@@ -1,9 +1,9 @@
 import { Message, PatternElement } from '../data-model';
 import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
-import { Formattable } from './formattable';
+import { MessageValue } from './message-value';
 
-export class FormattableMessage extends Formattable<Message> {
+export class ResolvedMessage extends MessageValue<Message> {
   readonly #context: Context;
   #pattern: PatternElement[] | null = null;
   #string: string | null = null;

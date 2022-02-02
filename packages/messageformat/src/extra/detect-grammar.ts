@@ -1,5 +1,5 @@
 import type { Meta, SelectMessage } from '../data-model';
-import { Formattable, FormattableNumber } from '../formattable';
+import { MessageValue, MessageNumber } from '../message-value';
 
 const grammarCases = [
   'ablative',
@@ -56,7 +56,7 @@ const plurals = ['zero', 'one', 'two', 'few', 'many'];
 const isNumeric = (str: string) => Number.isFinite(Number(str));
 
 type ResolvedSelector = {
-  fmt: Formattable;
+  fmt: MessageValue;
   def: string;
 };
 
@@ -94,7 +94,7 @@ export function getFormattedSelectMeta(
 
   if (plural !== -1) {
     const { fmt, def } = sel[plural];
-    if (fmt instanceof FormattableNumber) {
+    if (fmt instanceof MessageNumber) {
       hasMeta = true;
       if (fallback[plural]) {
         meta.plural = fmt.getPluralCategory();

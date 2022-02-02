@@ -1,8 +1,4 @@
-import {
-  Formattable,
-  FormattableDateTime,
-  FormattableNumber
-} from '../formattable';
+import { MessageDateTime, MessageNumber, MessageValue } from '../message-value';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
 const getParam = (options: RuntimeOptions | undefined) =>
@@ -10,14 +6,14 @@ const getParam = (options: RuntimeOptions | undefined) =>
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
-export const date: RuntimeFunction<FormattableDateTime> = {
+export const date: RuntimeFunction<MessageDateTime> = {
   call: function date(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: Formattable
+    arg: MessageValue
   ) {
-    let date: Date | FormattableDateTime;
-    if (arg instanceof FormattableDateTime) date = arg;
+    let date: Date | MessageDateTime;
+    if (arg instanceof MessageDateTime) date = arg;
     else {
       const value = arg.getValue();
       date = new Date(typeof value === 'number' ? value : String(value));
@@ -35,7 +31,7 @@ export const date: RuntimeFunction<FormattableDateTime> = {
           : 'short',
       year: 'numeric'
     };
-    return new FormattableDateTime(locales, date, { options: opt });
+    return new MessageDateTime(locales, date, { options: opt });
   },
 
   options: { param: 'string' }
@@ -52,7 +48,7 @@ export const duration: RuntimeFunction<string> = {
   call: function duration(
     _locales: string[],
     _options: unknown,
-    arg: Formattable
+    arg: MessageValue
   ) {
     let value = Number(arg.getValue());
     if (!isFinite(value)) return String(value);
@@ -86,7 +82,7 @@ export const duration: RuntimeFunction<string> = {
   options: 'never'
 };
 
-class FormattableMF1Number extends FormattableNumber {
+class MessageMF1Number extends MessageNumber {
   getValue() {
     const num = this.value;
     const opt = (this.options || {}) as { pluralOffset?: number };
@@ -95,13 +91,13 @@ class FormattableMF1Number extends FormattableNumber {
   }
 }
 
-export const number: RuntimeFunction<FormattableNumber> = {
+export const number: RuntimeFunction<MessageNumber> = {
   call: function number(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: Formattable
+    arg: MessageValue
   ) {
-    const num = arg instanceof FormattableNumber ? arg : Number(arg.getValue());
+    const num = arg instanceof MessageNumber ? arg : Number(arg.getValue());
     const opt: Intl.NumberFormatOptions &
       Intl.PluralRulesOptions & { pluralOffset?: number } = {};
     if (options) {
@@ -123,7 +119,7 @@ export const number: RuntimeFunction<FormattableNumber> = {
       if (options.type === 'ordinal') opt.type = 'ordinal';
     }
 
-    return new FormattableMF1Number(locales, num, { options: opt });
+    return new MessageMF1Number(locales, num, { options: opt });
   },
 
   options: {
@@ -133,14 +129,14 @@ export const number: RuntimeFunction<FormattableNumber> = {
   }
 };
 
-export const time: RuntimeFunction<FormattableDateTime> = {
+export const time: RuntimeFunction<MessageDateTime> = {
   call: function time(
     locales: string[],
     options: RuntimeOptions | undefined,
-    arg: Formattable
+    arg: MessageValue
   ) {
-    let time: Date | FormattableDateTime;
-    if (arg instanceof FormattableDateTime) time = arg;
+    let time: Date | MessageDateTime;
+    if (arg instanceof MessageDateTime) time = arg;
     else {
       const value = arg.getValue();
       time = new Date(typeof value === 'number' ? value : String(value));
@@ -153,7 +149,7 @@ export const time: RuntimeFunction<FormattableDateTime> = {
       hour: 'numeric',
       timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
     };
-    return new FormattableDateTime(locales, time, { options: opt });
+    return new MessageDateTime(locales, time, { options: opt });
   },
 
   options: { param: ['short', 'default', 'long', 'full'] }

@@ -4,8 +4,8 @@ import { compileFluent } from '@messageformat/compiler';
 
 import {
   fluentRuntime,
-  Formattable,
-  FormattableNumber,
+  MessageValue,
+  MessageNumber,
   MessageFormat,
   Runtime
 } from '../index';
@@ -55,14 +55,14 @@ describe('Function returns generic value', () => {
   });
 });
 
-describe('Function returns Formattable', () => {
+describe('Function returns MessageValue', () => {
   test('with custom toString method', () => {
     const src = `msg = { STRINGIFY($var) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const runtime: Runtime = {
       STRINGIFY: {
         call: (lc, _opt, arg: string) =>
-          new Formattable(lc, null, { toString: () => `str:${arg}` }),
+          new MessageValue(lc, null, { toString: () => `str:${arg}` }),
         options: 'never'
       }
     };
@@ -73,12 +73,12 @@ describe('Function returns Formattable', () => {
   });
 });
 
-describe('Function uses Formattable argument', () => {
+describe('Function uses MessageValue argument', () => {
   test('Options are merged', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    const val = new FormattableNumber(null, BigInt(12345678), {
+    const val = new MessageNumber(null, BigInt(12345678), {
       options: { useGrouping: false }
     });
     const parts = mf.formatToParts('msg', { val });
@@ -95,7 +95,7 @@ describe('Function uses Formattable argument', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    const val = new FormattableNumber(null, 42, {
+    const val = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 4 }
     });
     const parts = mf.formatToParts('msg', { val });
@@ -105,11 +105,11 @@ describe('Function uses Formattable argument', () => {
     expect(parts[0].source).toBe('NUMBER($val)');
   });
 
-  test('Formattable locales take precedence', () => {
+  test('MessageValue locales take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    const val = new FormattableNumber('fi', 12345);
+    const val = new MessageNumber('fi', 12345);
     const parts = mf.formatToParts('msg', { val });
 
     const nf = new Intl.NumberFormat('fi', { minimumFractionDigits: 2 });

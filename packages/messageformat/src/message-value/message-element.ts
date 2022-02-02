@@ -1,8 +1,8 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-import { Formattable, LocaleContext } from './formattable';
+import { MessageValue, LocaleContext } from './message-value';
 
-export class FormattableElement extends Formattable<string> {
+export class MessageElement extends MessageValue<string> {
   tag: 'empty' | 'start' | 'end';
   options?: Record<string, unknown>;
 

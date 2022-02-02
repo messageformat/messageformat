@@ -1,6 +1,6 @@
 import type { Message, PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { FormattableFallback, FormattableMessage } from '../formattable';
+import { MessageFallback, ResolvedMessage } from '../message-value';
 import { MFgetMessage } from '../messageformat';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
 import type { Scope } from './variable-ref';
@@ -73,10 +73,10 @@ export const resolver: PatternElementResolver<TermContext['types']['term']> = {
       const msg = ctx.types.term(res_id, strPath);
       if (msg) {
         const msgCtx = getMessageContext(ctx, term);
-        return new FormattableMessage(msgCtx, msg, source);
+        return new ResolvedMessage(msgCtx, msg, source);
       }
     }
 
-    return new FormattableFallback(ctx, meta, { source });
+    return new MessageFallback(ctx, meta, { source });
   }
 };

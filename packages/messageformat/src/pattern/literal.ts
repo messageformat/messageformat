@@ -1,5 +1,5 @@
 import type { PatternElement } from '../data-model';
-import { Formattable } from '../formattable';
+import { MessageValue } from '../message-value';
 import type { PatternElementResolver } from './index';
 
 /**
@@ -22,7 +22,7 @@ export const resolver: PatternElementResolver = {
   type: 'literal',
 
   resolve: (ctx, lit: Literal) =>
-    new Formattable<string>(ctx, lit.value, {
+    new MessageValue<string>(ctx, lit.value, {
       meta: lit.meta,
       type: 'literal'
     })

@@ -1,6 +1,6 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import type { Formattable } from '../formattable';
+import type { MessageValue } from '../message-value';
 import type { MessageFormat } from '../messageformat';
 
 import { resolver as functionResolver } from './function-ref';
@@ -15,7 +15,7 @@ export { isVariableRef, VariableRef } from './variable-ref';
 
 export interface PatternElementResolver<T = unknown> {
   type: string;
-  resolve(ctx: Context, elem: PatternElement): Formattable;
+  resolve(ctx: Context, elem: PatternElement): MessageValue;
   initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
 }
 

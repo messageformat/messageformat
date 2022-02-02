@@ -1,13 +1,13 @@
 import type { Meta } from '../data-model';
 import type { MessageFormatPart } from '../formatted-part';
-import { Formattable, LocaleContext } from './formattable';
+import { MessageValue, LocaleContext } from './message-value';
 
-export class FormattableNumber extends Formattable<number | bigint> {
+export class MessageNumber extends MessageValue<number | bigint> {
   options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
 
   constructor(
     locale: string | string[] | LocaleContext | null,
-    number: number | bigint | FormattableNumber,
+    number: number | bigint | MessageNumber,
     {
       meta,
       options,
@@ -19,7 +19,7 @@ export class FormattableNumber extends Formattable<number | bigint> {
     } = {}
   ) {
     const fmt = { meta, source };
-    if (number instanceof FormattableNumber) {
+    if (number instanceof MessageNumber) {
       super(number.getLocaleContext(locale), number.value, fmt);
       if (options || number.options)
         this.options = number.options

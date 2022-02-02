@@ -1,10 +1,10 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import {
-  asFormattable,
-  Formattable,
-  FormattableFallback
-} from '../formattable';
+  asMessageValue,
+  MessageFallback,
+  MessageValue
+} from '../message-value';
 import type { PatternElementResolver } from './index';
 
 /**
@@ -36,7 +36,7 @@ function getValue(ctx: Context, path: string[]): unknown {
   if (path.length === 0) return undefined;
   let val: unknown = ctx.types.variable;
   for (const p of path) {
-    if (!val || val instanceof Formattable) return undefined;
+    if (!val || val instanceof MessageValue) return undefined;
     val = (val as Scope)[p];
   }
   return val;
@@ -51,7 +51,7 @@ export const resolver: PatternElementResolver<Scope> = {
     const source = '$' + var_path.join('.');
     const value = getValue(ctx, var_path);
     return value === undefined
-      ? new FormattableFallback(ctx, meta, { source })
-      : asFormattable(ctx, value, { meta, source });
+      ? new MessageFallback(ctx, meta, { source })
+      : asMessageValue(ctx, value, { meta, source });
   }
 };

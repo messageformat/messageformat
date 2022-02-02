@@ -1,7 +1,7 @@
 import { PatternElement, Resource } from './data-model';
 import type { Context } from './format-context';
-import { FormattableMessage } from './formattable';
 import { MessageFormatPart } from './formatted-part';
+import { ResolvedMessage } from './message-value';
 import { PatternElementResolver, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable-ref';
 import { ResourceReader } from './resource-reader';
@@ -69,9 +69,7 @@ export class MessageFormat {
     arg1?: string | string[] | Scope,
     arg2?: Scope
   ) {
-    const fmtMsg = this.getFormattableMessage(
-      ...this.parseArgs(arg0, arg1, arg2)
-    );
+    const fmtMsg = this.getResolvedMessage(...this.parseArgs(arg0, arg1, arg2));
     return fmtMsg ? fmtMsg.toString() : '';
   }
 
@@ -86,9 +84,7 @@ export class MessageFormat {
     arg1?: string | string[] | Scope,
     arg2?: Scope
   ) {
-    const fmtMsg = this.getFormattableMessage(
-      ...this.parseArgs(arg0, arg1, arg2)
-    );
+    const fmtMsg = this.getResolvedMessage(...this.parseArgs(arg0, arg1, arg2));
     return fmtMsg ? fmtMsg.toParts() : [];
   }
 
@@ -112,7 +108,7 @@ export class MessageFormat {
     return undefined;
   }
 
-  private getFormattableMessage(
+  private getResolvedMessage(
     resId: string,
     msgPath: string | string[],
     scope: Scope
@@ -120,7 +116,7 @@ export class MessageFormat {
     const msg = this[MFgetMessage](resId, msgPath);
     if (!msg) return null;
     const ctx = this.createContext(resId, scope);
-    return new FormattableMessage(ctx, msg);
+    return new ResolvedMessage(ctx, msg);
   }
 
   private createContext(resId: string, scope: Scope): Context {
