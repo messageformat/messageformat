@@ -1,4 +1,9 @@
-import { MessageDateTime, MessageNumber, MessageValue } from '../message-value';
+import {
+  extendLocaleContext,
+  MessageDateTime,
+  MessageNumber,
+  MessageValue
+} from '../message-value';
 import type { RuntimeFunction, RuntimeOptions } from './index';
 
 const getParam = (options: RuntimeOptions | undefined) =>
@@ -82,12 +87,43 @@ export const duration: RuntimeFunction<string> = {
   options: 'never'
 };
 
+function getMF1Offset(
+  opt: (MessageNumber['options'] & { pluralOffset?: number }) | undefined
+) {
+  return Number(opt?.pluralOffset ?? 0);
+}
+
 class MessageMF1Number extends MessageNumber {
-  getValue() {
-    const num = this.value;
-    const opt = (this.options || {}) as { pluralOffset?: number };
-    const offset = Number(opt.pluralOffset || 0);
-    return typeof num === 'bigint' ? num - BigInt(offset) : num - offset;
+  constructor(
+    locale: ConstructorParameters<typeof MessageNumber>[0],
+    number: ConstructorParameters<typeof MessageNumber>[1],
+    opt: ConstructorParameters<typeof MessageNumber>[2]
+  ) {
+    const offset = getMF1Offset(opt?.options);
+    if (offset) {
+      if (number instanceof MessageNumber) {
+        locale = extendLocaleContext(number.localeContext, locale);
+        if (number.options)
+          opt = { ...opt, options: { ...number.options, ...opt?.options } };
+        number = number.getValue();
+      }
+      if (typeof number === 'number') number -= offset;
+      else if (typeof number === 'bigint') number -= BigInt(offset);
+    }
+    super(locale, number, opt);
+  }
+
+  matchSelectKey(key: string) {
+    let num = this.value;
+    const offset = getMF1Offset(this.options);
+    if (offset) {
+      if (typeof num === 'bigint') num += BigInt(offset);
+      else num += offset;
+    }
+    return (
+      (/^[0-9]+$/.test(key) && key === String(num)) ||
+      key === this.getPluralCategory()
+    );
   }
 }
 
@@ -119,7 +155,10 @@ export const number: RuntimeFunction<MessageNumber> = {
       if (options.type === 'ordinal') opt.type = 'ordinal';
     }
 
-    return new MessageMF1Number(locales, num, { options: opt });
+    return new MessageMF1Number(locales, num, {
+      options: opt,
+      source: arg.source
+    });
   },
 
   options: {

@@ -33,21 +33,18 @@ export class MessageNumber extends MessageValue<number | bigint> {
     }
   }
 
-  private getNumberFormatter() {
+  private getIntl(Class: typeof Intl.NumberFormat): Intl.NumberFormat;
+  private getIntl(Class: typeof Intl.PluralRules): Intl.PluralRules;
+  private getIntl(Class: typeof Intl.NumberFormat | typeof Intl.PluralRules) {
     const lc = this.localeContext;
     const lm = lc?.localeMatcher;
     const opt = lm ? { localeMatcher: lm, ...this.options } : this.options;
-    return new Intl.NumberFormat(lc?.locales, opt);
+    return new Class(lc?.locales, opt);
   }
 
   getPluralCategory() {
-    const lc = this.localeContext;
-    if (!lc || !lc.locales[0]) return 'other';
-
-    const lm = lc.localeMatcher;
-    const opt = lm ? { localeMatcher: lm, ...this.options } : this.options;
-    const pr = new Intl.PluralRules(lc.locales, opt);
-
+    if (!this.localeContext) return 'other';
+    const pr = this.getIntl(Intl.PluralRules);
     // Intl.PluralRules really does need a number
     const num = Number(this.getValue());
     return pr.select(num);
@@ -64,7 +61,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
   toParts(): MessageFormatPart[] {
     try {
       const res = this.initFormattedParts(true);
-      const nf = this.getNumberFormatter();
+      const nf = this.getIntl(Intl.NumberFormat);
       const num = this.getValue();
       for (const part of nf.formatToParts(num) as MessageFormatPart[]) {
         part.source = this.source;
@@ -83,7 +80,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
     let num: number | bigint | undefined;
     try {
       num = this.getValue();
-      const nf = this.getNumberFormatter();
+      const nf = this.getIntl(Intl.NumberFormat);
       return nf.format(num);
     } catch (_) {
       // TODO: Report error
