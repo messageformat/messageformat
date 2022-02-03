@@ -490,7 +490,13 @@ maybe('List formatting', () => {
         if (!fn || typeof fn.call !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
         list = list.map(li =>
-          String(fn.call(locales, undefined, new MessageValue(null, li)))
+          String(
+            fn.call(
+              locales,
+              undefined,
+              new MessageValue(MessageValue.type, null, li)
+            )
+          )
         );
       }
       // @ts-ignore

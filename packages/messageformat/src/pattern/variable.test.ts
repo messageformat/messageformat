@@ -17,7 +17,7 @@ describe('MessageValue variables', () => {
   });
 
   test('MessageValue(number)', () => {
-    const val = new MessageValue(null, 42);
+    const val = new MessageValue(MessageValue.type, null, 42);
     expect(mf.formatToParts('msg', { val })).toMatchObject([
       { type: 'dynamic', value: '42', source: '$val' }
     ]);

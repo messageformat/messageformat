@@ -4,6 +4,8 @@ import { extendLocaleContext, LocaleContext } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageDateTime extends MessageValue<Date> {
+  static readonly type = 'datetime';
+
   locales: string[] | undefined;
   options: Intl.DateTimeFormatOptions | undefined;
 
@@ -23,13 +25,13 @@ export class MessageDateTime extends MessageValue<Date> {
     const fmt = { meta, source };
     if (date instanceof MessageDateTime) {
       const lc = extendLocaleContext(date.localeContext, locale);
-      super(lc, date.value, fmt);
+      super(MessageDateTime.type, lc, date.value, fmt);
       if (options || date.options)
         this.options = date.options
           ? { ...date.options, ...options }
           : { ...options };
     } else {
-      super(locale, date, fmt);
+      super(MessageDateTime.type, locale, date, fmt);
       if (options) this.options = { ...options };
     }
   }

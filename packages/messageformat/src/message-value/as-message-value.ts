@@ -35,5 +35,5 @@ export function asMessageValue(
 
   if (value instanceof Date) return new MessageDateTime(ctx, value, format);
 
-  return new MessageValue(ctx, value, format);
+  return new MessageValue(MessageValue.type, ctx, value, format);
 }

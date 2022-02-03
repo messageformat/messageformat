@@ -22,7 +22,7 @@ export const resolver: PatternElementResolver = {
   type: 'literal',
 
   resolve: (ctx, lit: Literal) =>
-    new MessageValue<string>(ctx, lit.value, {
+    new MessageValue<string>(resolver.type, ctx, lit.value, {
       meta: lit.meta,
       type: 'literal'
     })

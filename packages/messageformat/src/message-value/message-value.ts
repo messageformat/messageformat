@@ -5,6 +5,9 @@ import { LocaleContext } from './locale-context';
 export const FALLBACK_SOURCE = '???';
 
 export class MessageValue<T = unknown> {
+  static readonly type: string = 'value';
+
+  readonly type: string;
   readonly value: T;
   declare source?: string;
   declare meta?: Meta;
@@ -13,6 +16,7 @@ export class MessageValue<T = unknown> {
   #type?: 'dynamic' | 'literal';
 
   constructor(
+    type: string,
     locale: string | string[] | LocaleContext | null,
     value: T,
     format?: {
@@ -22,6 +26,7 @@ export class MessageValue<T = unknown> {
       type?: 'dynamic' | 'literal';
     }
   ) {
+    this.type = type;
     this.value = value;
     this.#localeContext = locale;
     if (format) {

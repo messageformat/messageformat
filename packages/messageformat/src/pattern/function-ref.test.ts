@@ -62,7 +62,9 @@ describe('Function returns MessageValue', () => {
     const runtime: Runtime = {
       STRINGIFY: {
         call: (lc, _opt, arg: string) =>
-          new MessageValue(lc, null, { toString: () => `str:${arg}` }),
+          new MessageValue(MessageValue.type, lc, null, {
+            toString: () => `str:${arg}`
+          }),
         options: 'never'
       }
     };

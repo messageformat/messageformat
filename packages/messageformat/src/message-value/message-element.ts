@@ -4,6 +4,8 @@ import type { LocaleContext } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageElement extends MessageValue<string> {
+  static readonly type = 'element';
+
   tag: 'empty' | 'start' | 'end';
   options?: Record<string, unknown>;
 
@@ -22,7 +24,7 @@ export class MessageElement extends MessageValue<string> {
       source?: string;
     }
   ) {
-    super(locale, elem, { meta, source });
+    super(MessageElement.type, locale, elem, { meta, source });
     this.tag = tag;
     if (options) this.options = { ...options };
   }

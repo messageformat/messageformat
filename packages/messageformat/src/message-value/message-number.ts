@@ -4,6 +4,8 @@ import { extendLocaleContext, LocaleContext } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageNumber extends MessageValue<number | bigint> {
+  static readonly type = 'number';
+
   options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
 
   constructor(
@@ -22,13 +24,13 @@ export class MessageNumber extends MessageValue<number | bigint> {
     const fmt = { meta, source };
     if (number instanceof MessageNumber) {
       const lc = extendLocaleContext(number.localeContext, locale);
-      super(lc, number.value, fmt);
+      super(MessageNumber.type, lc, number.value, fmt);
       if (options || number.options)
         this.options = number.options
           ? { ...number.options, ...options }
           : { ...options };
     } else {
-      super(locale, number, fmt);
+      super(MessageNumber.type, locale, number, fmt);
       if (options) this.options = { ...options };
     }
   }

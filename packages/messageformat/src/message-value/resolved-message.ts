@@ -38,6 +38,8 @@ function getPattern(
 const str = Symbol('str');
 
 export class ResolvedMessage extends MessageValue<MessageValue[]> {
+  static readonly type = 'message';
+
   // Cache for string value; TS complains if this is actually private
   // https://github.com/microsoft/TypeScript/issues/8277
   private declare [str]: string;
@@ -48,7 +50,7 @@ export class ResolvedMessage extends MessageValue<MessageValue[]> {
       meta = meta ? { ...meta, ...mt } : mt;
     });
     const resMsg = pattern.map(elem => context.resolve(elem));
-    super(context, resMsg, { meta, source });
+    super(ResolvedMessage.type, context, resMsg, { meta, source });
   }
 
   matchSelectKey(key: string) {

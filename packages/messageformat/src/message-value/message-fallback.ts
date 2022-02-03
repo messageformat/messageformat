@@ -12,6 +12,8 @@ interface MessageFallbackOptions {
 }
 
 export class MessageFallback extends MessageValue<undefined> {
+  static readonly type = 'fallback';
+
   #fallbackParts?: () => Array<
     MessageFormatPart | { type: 'fallback'; value: string }
   >;
@@ -23,7 +25,7 @@ export class MessageFallback extends MessageValue<undefined> {
     meta: Meta | undefined,
     { fallbackParts, fallbackString, source }: MessageFallbackOptions
   ) {
-    super(locale, undefined, { meta, source });
+    super(MessageFallback.type, locale, undefined, { meta, source });
     this.#fallbackParts = fallbackParts;
     this.#fallbackString = fallbackString;
     this.#fallbackValue = () =>
