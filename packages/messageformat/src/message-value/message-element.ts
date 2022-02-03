@@ -7,7 +7,7 @@ export class MessageElement extends MessageValue<string> {
   static readonly type = 'element';
 
   tag: 'empty' | 'start' | 'end';
-  options?: Record<string, unknown>;
+  declare options?: Record<string, unknown>;
 
   constructor(
     locale: string | string[] | LocaleContext | null,

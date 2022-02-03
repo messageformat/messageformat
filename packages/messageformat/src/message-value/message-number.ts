@@ -6,7 +6,7 @@ import { FALLBACK_SOURCE, MessageValue } from './message-value';
 export class MessageNumber extends MessageValue<number | bigint> {
   static readonly type = 'number';
 
-  options: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
+  declare options?: Intl.NumberFormatOptions & Intl.PluralRulesOptions;
 
   constructor(
     locale: string | string[] | LocaleContext | null,

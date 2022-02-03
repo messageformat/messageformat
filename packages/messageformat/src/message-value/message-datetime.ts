@@ -6,8 +6,7 @@ import { FALLBACK_SOURCE, MessageValue } from './message-value';
 export class MessageDateTime extends MessageValue<Date> {
   static readonly type = 'datetime';
 
-  locales: string[] | undefined;
-  options: Intl.DateTimeFormatOptions | undefined;
+  declare options?: Intl.DateTimeFormatOptions;
 
   constructor(
     locale: string | string[] | LocaleContext | null,

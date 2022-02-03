@@ -8,7 +8,7 @@ export class MessageValue<T = unknown> {
   static readonly type: string = 'value';
 
   readonly type: string;
-  readonly value: T;
+  value: T;
   declare source?: string;
   declare meta?: Meta;
 
