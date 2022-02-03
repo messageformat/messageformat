@@ -1,5 +1,4 @@
 import type { Meta } from '../data-model';
-import type { MessageFormatPart } from '../formatted-part';
 import { extendLocaleContext, LocaleContext } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
@@ -60,21 +59,9 @@ export class MessageNumber extends MessageValue<number | bigint> {
     );
   }
 
-  toParts(): MessageFormatPart[] {
-    try {
-      const res = this.initFormattedParts(true);
-      const nf = this.getIntl(Intl.NumberFormat);
-      for (const part of nf.formatToParts(this.value) as MessageFormatPart[]) {
-        part.source = this.source;
-        res.push(part);
-      }
-      return res;
-    } catch (_) {
-      // TODO: Report error
-      const value = this.toString();
-      const source = this.source || FALLBACK_SOURCE;
-      return [{ type: 'fallback', value, source }];
-    }
+  toParts(): Intl.NumberFormatPart[] {
+    const nf = this.getIntl(Intl.NumberFormat);
+    return nf.formatToParts(this.value);
   }
 
   toString() {

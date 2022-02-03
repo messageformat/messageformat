@@ -57,19 +57,6 @@ export class ResolvedMessage extends MessageValue<MessageValue[]> {
     return this.toString() === key;
   }
 
-  toParts() {
-    const res = this.initFormattedParts(false);
-    const source = this.source;
-    for (const mv of this.value) {
-      for (const part of mv.toParts()) {
-        if (source)
-          part.source = part.source ? source + '/' + part.source : source;
-        res.push(part);
-      }
-    }
-    return res;
-  }
-
   toString(noCache = false) {
     if (noCache || typeof this[str] !== 'string') {
       this[str] = '';

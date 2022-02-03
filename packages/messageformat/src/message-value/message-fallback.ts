@@ -1,53 +1,30 @@
 import type { Meta } from '../data-model';
-import { MessageFormatPart } from '../formatted-part';
 import type { LocaleContext } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
-
-interface MessageFallbackOptions {
-  fallbackParts?: () => Array<
-    MessageFormatPart | { type: 'fallback'; value: string }
-  >;
-  fallbackString?: () => string;
-  source: string;
-}
 
 export class MessageFallback extends MessageValue<undefined> {
   static readonly type = 'fallback';
 
-  #fallbackParts?: () => Array<
-    MessageFormatPart | { type: 'fallback'; value: string }
-  >;
-  #fallbackString?: () => string;
   #fallbackValue: () => string;
 
   constructor(
     locale: string | string[] | LocaleContext | null,
     meta: Meta | undefined,
-    { fallbackParts, fallbackString, source }: MessageFallbackOptions
+    {
+      fallbackString,
+      source
+    }: {
+      fallbackString?: () => string;
+      source: string;
+    }
   ) {
     super(MessageFallback.type, locale, undefined, { meta, source });
-    this.#fallbackParts = fallbackParts;
-    this.#fallbackString = fallbackString;
-    this.#fallbackValue = () =>
-      this.#fallbackString
-        ? this.#fallbackString()
-        : this.source || FALLBACK_SOURCE;
+    this.#fallbackValue =
+      fallbackString ?? (() => this.source || FALLBACK_SOURCE);
   }
 
   matchSelectKey() {
     return false;
-  }
-
-  toParts() {
-    const res = this.initFormattedParts(true);
-    const source = this.source || FALLBACK_SOURCE;
-    if (this.#fallbackParts)
-      for (const part of this.#fallbackParts()) res.push({ ...part, source });
-    else {
-      const value = this.#fallbackValue();
-      res.push({ type: 'fallback', value, source });
-    }
-    return res;
   }
 
   toString() {

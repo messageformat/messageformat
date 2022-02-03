@@ -43,22 +43,9 @@ export class MessageDateTime extends MessageValue<Date> {
     return new Intl.DateTimeFormat(lc?.locales, opt);
   }
 
-  toParts(): MessageFormatPart[] {
-    try {
-      const res = this.initFormattedParts(true);
-      const dtf = this.getDateTimeFormatter();
-      const source = this.source;
-      for (const part of dtf.formatToParts(this.value) as MessageFormatPart[]) {
-        part.source = source;
-        res.push(part);
-      }
-      return res;
-    } catch (_) {
-      // TODO: Report error
-      const value = this.toString();
-      const source = this.source || FALLBACK_SOURCE;
-      return [{ type: 'fallback', value, source }];
-    }
+  toParts(): Intl.DateTimeFormatPart[] {
+    const dtf = this.getDateTimeFormatter();
+    return dtf.formatToParts(this.value);
   }
 
   toString() {

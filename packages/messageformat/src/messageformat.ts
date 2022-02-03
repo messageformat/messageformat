@@ -1,6 +1,5 @@
 import { Message, PatternElement, Resource } from './data-model';
 import type { Context } from './format-context';
-import { MessageFormatPart } from './formatted-part';
 import { ResolvedMessage } from './message-value';
 import { PatternElementResolver, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable-ref';
@@ -70,21 +69,6 @@ export class MessageFormat {
   ) {
     const fmtMsg = this.getMessage(...this.parseArgs(arg0, arg1, arg2));
     return fmtMsg ? fmtMsg.toString() : '';
-  }
-
-  formatToParts(msgPath: string | string[], scope?: Scope): MessageFormatPart[];
-  formatToParts(
-    resId: string,
-    msgPath: string | string[],
-    scope?: Scope
-  ): MessageFormatPart[];
-  formatToParts(
-    arg0: string | string[],
-    arg1?: string | string[] | Scope,
-    arg2?: Scope
-  ) {
-    const fmtMsg = this.getMessage(...this.parseArgs(arg0, arg1, arg2));
-    return fmtMsg ? fmtMsg.toParts() : [];
   }
 
   getMessage(
