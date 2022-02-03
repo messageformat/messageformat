@@ -11,8 +11,8 @@ import {
   Runtime,
   RuntimeOptions
 } from './index';
-import { MessageFormatPart } from './formatted-part';
 import type { FunctionRef, Literal, MessageRef } from './pattern';
+import { ResolvedMessage } from './message-value';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const res: Resource<Literal | MessageRef> = {
@@ -95,16 +95,23 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   };
   const mf = new MessageFormat('fi', null, res);
 
-  const msg = mf.format('settings', { 'browser-id': 'firefox' });
-  expect(msg).toBe('Firefoxin asetukset');
+  const str = mf.format('settings', { 'browser-id': 'firefox' });
+  expect(str).toBe('Firefoxin asetukset');
 
-  const parts = mf.formatToParts('settings', {
+  const msg = mf.getMessage('res', 'settings', {
     'browser-id': 'firefox'
   });
-  expect(parts).toMatchObject([
-    { type: 'literal', value: 'Firefoxin' },
-    { type: 'literal', value: ' asetukset' }
-  ]);
+  expect(msg).toMatchObject({
+    type: 'message',
+    value: [
+      {
+        type: 'message',
+        source: '-browser.firefox.genitive',
+        value: [{ type: 'literal', value: 'Firefoxin' }]
+      },
+      { type: 'literal', value: ' asetukset' }
+    ]
+  });
 });
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
@@ -530,12 +537,16 @@ maybe('List formatting', () => {
 });
 
 describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
-  function hackyFixArticles(locales: string[], parts: MessageFormatPart[]) {
+  function hackyFixArticles(
+    locales: string[],
+    msg: ResolvedMessage | undefined
+  ) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
+    if (!msg) return;
     const articly = /(^|\s)(a|an|A|An)(\W*$)/;
     const vowely =
       /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;
-    const wordy = parts.filter(part => /\w/.test(String(part.value)));
+    const wordy = msg.value.filter(part => /\w/.test(String(part.value)));
     for (let i = 0; i < wordy.length - 1; ++i) {
       let fixed = false;
       const part = wordy[i];
@@ -557,53 +568,65 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   const src = source`
     foo = A { $foo } and an { $other }
     bar = The { $foo } and lotsa { $other }
-    baz = { $foo } foo and a
-    qux = { baz } ... { $other }
+    qux = { $foo } foo and a {"..."} { $other }
   `;
   const res = compileFluent(src, { id: 'res', locale: 'en' });
   const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
   test('Match, no change', () => {
-    const parts = mf.formatToParts('foo', { foo: 'foo', other: 'other' });
-    hackyFixArticles(['en'], parts);
-    expect(parts).toEqual([
-      { type: 'literal', value: 'A ' },
-      { type: 'dynamic', value: 'foo', source: '$foo' },
-      { type: 'literal', value: ' and an ' },
-      { type: 'dynamic', value: 'other', source: '$other' }
-    ]);
+    const msg = mf.getMessage('res', 'foo', { foo: 'foo', other: 'other' });
+    hackyFixArticles(['en'], msg);
+    expect(msg).toEqual({
+      type: 'message',
+      value: [
+        { type: 'literal', value: 'A ' },
+        { type: 'value', source: '$foo', value: 'foo' },
+        { type: 'literal', value: ' and an ' },
+        { type: 'value', source: '$other', value: 'other' }
+      ]
+    });
   });
 
   test('Match, changed', () => {
-    const parts = mf.formatToParts('foo', { foo: 'other', other: 'foo' });
-    hackyFixArticles(['en'], parts);
-    expect(parts).toEqual([
-      { type: 'literal', value: 'An ' },
-      { type: 'dynamic', value: 'other', source: '$foo' },
-      { type: 'literal', value: ' and a ' },
-      { type: 'dynamic', value: 'foo', source: '$other' }
-    ]);
+    const msg = mf.getMessage('res', 'foo', { foo: 'other', other: 'foo' });
+    hackyFixArticles(['en'], msg);
+    expect(msg).toEqual({
+      type: 'message',
+      value: [
+        { type: 'literal', value: 'An ' },
+        { type: 'value', source: '$foo', value: 'other' },
+        { type: 'literal', value: ' and a ' },
+        { type: 'value', source: '$other', value: 'foo' }
+      ]
+    });
   });
 
   test('No match, no change', () => {
-    const parts = mf.formatToParts('bar', { foo: 'foo', other: 'other' });
-    hackyFixArticles(['en'], parts);
-    expect(parts).toEqual([
-      { type: 'literal', value: 'The ' },
-      { type: 'dynamic', value: 'foo', source: '$foo' },
-      { type: 'literal', value: ' and lotsa ' },
-      { type: 'dynamic', value: 'other', source: '$other' }
-    ]);
+    const msg = mf.getMessage('res', 'bar', { foo: 'foo', other: 'other' });
+    hackyFixArticles(['en'], msg);
+    expect(msg).toEqual({
+      type: 'message',
+      value: [
+        { type: 'literal', value: 'The ' },
+        { type: 'value', source: '$foo', value: 'foo' },
+        { type: 'literal', value: ' and lotsa ' },
+        { type: 'value', source: '$other', value: 'other' }
+      ]
+    });
   });
 
-  test('Articles across messages & variables', () => {
-    const parts = mf.formatToParts('qux', { foo: 'An', other: 'other' });
-    hackyFixArticles(['en'], parts);
-    expect(parts).toEqual([
-      { type: 'dynamic', value: 'A', source: '-baz/$foo' },
-      { type: 'literal', value: ' foo and an', source: '-baz' },
-      { type: 'literal', value: ' ... ' },
-      { type: 'dynamic', value: 'other', source: '$other' }
-    ]);
+  test('Articles across non-wordy content', () => {
+    const msg = mf.getMessage('res', 'qux', { foo: 'An', other: 'other' });
+    hackyFixArticles(['en'], msg);
+    expect(msg).toEqual({
+      type: 'message',
+      value: [
+        { type: 'value', source: '$foo', value: 'A' },
+        { type: 'literal', value: ' foo and an ' },
+        { type: 'literal', value: '...' },
+        { type: 'literal', value: ' ' },
+        { type: 'value', source: '$other', value: 'other' }
+      ]
+    });
   });
 });

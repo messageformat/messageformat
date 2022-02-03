@@ -20,9 +20,10 @@ describe('Function returns generic value', () => {
       STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
     };
     const mf = new MessageFormat('en', { runtime }, res);
-    expect(mf.formatToParts('msg', { var: 42 })).toMatchObject([
-      { type: 'dynamic', value: '42' }
-    ]);
+    expect(mf.getMessage('res', 'msg', { var: 42 })).toMatchObject({
+      type: 'message',
+      value: [{ source: 'STRINGIFY($var)', type: 'value', value: '42' }]
+    });
     expect(mf.format('msg', { var: 42 })).toBe('42');
   });
 
@@ -33,9 +34,10 @@ describe('Function returns generic value', () => {
       NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
     };
     const mf = new MessageFormat('en', { runtime }, res);
-    expect(mf.formatToParts('msg', { var: '42' })).toEqual([
-      { type: 'integer', value: '42', source: 'NUMERIC($var)' }
-    ]);
+    expect(mf.getMessage('res', 'msg', { var: '42' })).toEqual({
+      type: 'message',
+      value: [{ source: 'NUMERIC($var)', type: 'number', value: 42 }]
+    });
     expect(mf.format('msg', { var: '42' })).toBe('42');
   });
 
@@ -48,7 +50,12 @@ describe('Function returns generic value', () => {
     };
     const mf = new MessageFormat('en', { runtime }, res);
     const dtf = new Intl.DateTimeFormat('en');
-    expect(mf.formatToParts('msg')).toEqual(
+    const msg = mf.getMessage('res', 'msg');
+    expect(msg).toEqual({
+      type: 'message',
+      value: [{ type: 'datetime', source: 'NOW()', value: date }]
+    });
+    expect(msg?.toParts()).toEqual(
       dtf.formatToParts(date).map(part => ({ ...part, source: 'NOW()' }))
     );
     expect(mf.format('msg')).toBe(date.toLocaleString('en'));
@@ -59,19 +66,23 @@ describe('Function returns MessageValue', () => {
   test('with custom toString method', () => {
     const src = `msg = { STRINGIFY($var) }`;
     const res = compileFluent(src, { id: 'res', locale: 'en' });
+    let toString: (() => string) | undefined;
     const runtime: Runtime = {
       STRINGIFY: {
-        call: (lc, _opt, arg: string) =>
-          new MessageValue(MessageValue.type, lc, null, {
-            toString: () => `str:${arg}`
-          }),
+        call: (lc, _opt, arg: string) => {
+          toString = () => `str:${arg}`;
+          return new MessageValue(MessageValue.type, lc, null, { toString });
+        },
         options: 'never'
       }
     };
     const mf = new MessageFormat('en', { runtime }, res);
-    expect(mf.formatToParts('msg', { var: 42 })).toEqual([
-      { type: 'dynamic', value: 'str:42', source: 'STRINGIFY($var)' }
-    ]);
+    expect(mf.getMessage('res', 'msg', { var: 42 })).toEqual({
+      type: 'message',
+      value: [
+        { type: 'value', source: 'STRINGIFY($var)', toString, value: null }
+      ]
+    });
   });
 });
 
@@ -83,14 +94,14 @@ describe('Function uses MessageValue argument', () => {
     const val = new MessageNumber(null, BigInt(12345678), {
       options: { useGrouping: false }
     });
-    const parts = mf.formatToParts('msg', { val });
+    const parts = mf.getMessage('res', 'msg', { val })?.toParts();
 
     const nf = new Intl.NumberFormat('en', {
       minimumFractionDigits: 2,
       useGrouping: false
     });
     expect(parts).toMatchObject(nf.formatToParts(12345678));
-    expect(parts[0].source).toBe('NUMBER($val)');
+    expect(parts?.[0].source).toBe('NUMBER($val)');
   });
 
   test('Function options take precedence', () => {
@@ -100,11 +111,11 @@ describe('Function uses MessageValue argument', () => {
     const val = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 4 }
     });
-    const parts = mf.formatToParts('msg', { val });
+    const parts = mf.getMessage('res', 'msg', { val })?.toParts();
 
     const nf = new Intl.NumberFormat('en', { minimumFractionDigits: 2 });
     expect(parts).toMatchObject(nf.formatToParts(42));
-    expect(parts[0].source).toBe('NUMBER($val)');
+    expect(parts?.[0].source).toBe('NUMBER($val)');
   });
 
   test('MessageValue locales take precedence', () => {
@@ -112,11 +123,11 @@ describe('Function uses MessageValue argument', () => {
     const res = compileFluent(src, { id: 'res', locale: 'en' });
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     const val = new MessageNumber('fi', 12345);
-    const parts = mf.formatToParts('msg', { val });
+    const parts = mf.getMessage('res', 'msg', { val })?.toParts();
 
     const nf = new Intl.NumberFormat('fi', { minimumFractionDigits: 2 });
     expect(parts).toMatchObject(nf.formatToParts(12345));
-    expect(parts[0].source).toBe('NUMBER($val)');
+    expect(parts?.[0].source).toBe('NUMBER($val)');
   });
 });
 
