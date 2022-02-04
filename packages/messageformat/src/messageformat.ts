@@ -72,10 +72,20 @@ export class MessageFormat {
   }
 
   getMessage(
+    msgPath: string | string[],
+    scope?: Scope
+  ): ResolvedMessage | undefined;
+  getMessage(
     resId: string,
     msgPath: string | string[],
-    scope: Scope = {}
+    scope?: Scope
+  ): ResolvedMessage | undefined;
+  getMessage(
+    arg0: string | string[],
+    arg1?: string | string[] | Scope,
+    arg2?: Scope
   ): ResolvedMessage | undefined {
+    const [resId, msgPath, scope] = this.parseArgs(arg0, arg1, arg2);
     let msg: Message | undefined;
 
     const p = Array.isArray(msgPath) ? msgPath : [msgPath];
