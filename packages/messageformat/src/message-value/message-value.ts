@@ -1,5 +1,9 @@
 import type { Meta } from '../data-model';
-import { LocaleContext } from './locale-context';
+import {
+  isLocaleContext,
+  LocaleContext,
+  LocaleContextArg
+} from './locale-context';
 
 export const FALLBACK_SOURCE = '???';
 
@@ -11,14 +15,14 @@ export class MessageValue<T = unknown> {
   declare source?: string;
   declare meta?: Meta;
 
-  #localeContext: string | string[] | LocaleContext | null;
+  #localeContext: LocaleContextArg;
 
   constructor(
     type: string,
-    locale: string | string[] | LocaleContext | null,
+    locale: LocaleContextArg,
     value: T,
     format?: {
-      meta?: Meta;
+      meta?: Readonly<Meta>;
       source?: string;
       toString?: MessageValue<T>['toString'];
     }
@@ -36,18 +40,16 @@ export class MessageValue<T = unknown> {
   }
 
   get localeContext(): LocaleContext | null {
-    const lc = this.#localeContext;
-    if (!lc) return null;
-
     let localeMatcher: 'best fit' | 'lookup' | undefined;
-    let locales: string[];
-    if (typeof lc === 'string') locales = [lc];
+    let locales: string[] | undefined;
+    const lc = this.#localeContext;
+    if (lc && typeof lc === 'string') locales = [lc];
     else if (Array.isArray(lc)) locales = lc.slice();
-    else {
+    else if (isLocaleContext(lc)) {
       locales = lc.locales.slice();
       localeMatcher = lc.localeMatcher;
     }
-    return { locales, localeMatcher };
+    return locales ? { locales, localeMatcher } : null;
   }
 
   set localeContext(locale: string | string[] | LocaleContext | null) {

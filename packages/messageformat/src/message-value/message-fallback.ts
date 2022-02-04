@@ -1,5 +1,5 @@
 import type { Meta } from '../data-model';
-import type { LocaleContext } from './locale-context';
+import type { LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageFallback extends MessageValue<undefined> {
@@ -8,8 +8,8 @@ export class MessageFallback extends MessageValue<undefined> {
   #fallbackValue: () => string;
 
   constructor(
-    locale: string | string[] | LocaleContext | null,
-    meta: Meta | undefined,
+    locale: LocaleContextArg,
+    meta: Readonly<Meta> | undefined,
     {
       fallbackString,
       source

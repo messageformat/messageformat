@@ -10,7 +10,6 @@ import {
   MessageFormat,
   Runtime
 } from '../index';
-import {} from '../message-value';
 
 describe('Function returns generic value', () => {
   test('string', () => {

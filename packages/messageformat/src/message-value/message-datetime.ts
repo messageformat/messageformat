@@ -1,6 +1,5 @@
 import type { Meta } from '../data-model';
-import type { MessageFormatPart } from '../formatted-part';
-import { extendLocaleContext, LocaleContext } from './locale-context';
+import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageDateTime extends MessageValue<Date> {
@@ -9,15 +8,15 @@ export class MessageDateTime extends MessageValue<Date> {
   declare options?: Intl.DateTimeFormatOptions;
 
   constructor(
-    locale: string | string[] | LocaleContext | null,
-    date: Date | MessageDateTime,
+    locale: LocaleContextArg,
+    date: number | Date | Readonly<MessageDateTime>,
     {
       meta,
       options,
       source
     }: {
-      meta?: Meta;
-      options?: Intl.DateTimeFormatOptions;
+      meta?: Readonly<Meta>;
+      options?: Readonly<Intl.DateTimeFormatOptions>;
       source?: string;
     } = {}
   ) {
@@ -30,8 +29,11 @@ export class MessageDateTime extends MessageValue<Date> {
           ? { ...date.options, ...options }
           : { ...options };
     } else {
-      super(MessageDateTime.type, locale, date, fmt);
-      if (options) this.options = { ...options };
+      if (typeof date === 'number') date = new Date(date)
+      if (date instanceof Date) {
+        super(MessageDateTime.type, locale, date, fmt);
+        if (options) this.options = { ...options };
+      } else throw new TypeError(`Invalid ${typeof date} as date argument`);
     }
   }
 

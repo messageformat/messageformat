@@ -7,22 +7,22 @@ import { MessageValue } from './message-value';
 export function asMessageValue(
   ctx: Context,
   value: number | bigint,
-  format?: { meta?: Meta; source?: string }
+  format?: { meta?: Readonly<Meta>; source?: string }
 ): MessageNumber;
 export function asMessageValue(
   ctx: Context,
   value: Date,
-  format?: { meta?: Meta; source?: string }
+  format?: { meta?: Readonly<Meta>; source?: string }
 ): MessageDateTime;
 export function asMessageValue(
   ctx: Context,
   value: unknown,
-  format?: { meta?: Meta; source?: string }
+  format?: { meta?: Readonly<Meta>; source?: string }
 ): MessageValue;
 export function asMessageValue(
   ctx: Context,
   value: unknown,
-  format?: { meta?: Meta; source?: string }
+  format?: { meta?: Readonly<Meta>; source?: string }
 ): MessageValue {
   if (value instanceof MessageValue) {
     if (format?.meta) value.meta = { ...value.meta, ...format.meta };

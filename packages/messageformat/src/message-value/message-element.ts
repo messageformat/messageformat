@@ -1,5 +1,5 @@
 import type { Meta } from '../data-model';
-import type { LocaleContext } from './locale-context';
+import type { LocaleContextArg } from './locale-context';
 import { MessageValue } from './message-value';
 
 const elementTags = new WeakMap<MessageElement, 'start' | 'end'>();
@@ -11,7 +11,7 @@ export class MessageElement extends MessageValue<MessageValue[]> {
   declare options?: Record<string, unknown>;
 
   constructor(
-    locale: string | string[] | LocaleContext | null,
+    locale: LocaleContextArg,
     name: string,
     {
       tag,
@@ -20,8 +20,8 @@ export class MessageElement extends MessageValue<MessageValue[]> {
       source
     }: {
       tag?: 'empty' | 'start' | 'end';
-      meta?: Meta;
-      options?: Record<string, unknown>;
+      meta?: Readonly<Meta>;
+      options?: Readonly<Record<string, unknown>>;
       source?: string;
     }
   ) {

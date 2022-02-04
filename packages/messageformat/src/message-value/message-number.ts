@@ -1,5 +1,5 @@
 import type { Meta } from '../data-model';
-import { extendLocaleContext, LocaleContext } from './locale-context';
+import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
 export class MessageNumber extends MessageValue<number | bigint> {
@@ -8,15 +8,15 @@ export class MessageNumber extends MessageValue<number | bigint> {
   declare options?: Intl.NumberFormatOptions & Intl.PluralRulesOptions;
 
   constructor(
-    locale: string | string[] | LocaleContext | null,
-    number: number | bigint | MessageNumber,
+    locale: LocaleContextArg,
+    number: number | bigint | Readonly<MessageNumber>,
     {
       meta,
       options,
       source
     }: {
-      meta?: Meta;
-      options?: Intl.NumberFormatOptions & Intl.PluralRulesOptions;
+      meta?: Readonly<Meta>;
+      options?: Readonly<Intl.NumberFormatOptions & Intl.PluralRulesOptions>;
       source?: string;
     } = {}
   ) {
@@ -28,10 +28,10 @@ export class MessageNumber extends MessageValue<number | bigint> {
         this.options = number.options
           ? { ...number.options, ...options }
           : { ...options };
-    } else {
+    } else if (typeof number === 'number' || typeof number === 'bigint') {
       super(MessageNumber.type, locale, number, fmt);
       if (options) this.options = { ...options };
-    }
+    } else throw TypeError(`Invalid ${typeof number} as number argument`);
   }
 
   private getIntl(Class: typeof Intl.NumberFormat): Intl.NumberFormat;
