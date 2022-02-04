@@ -98,9 +98,7 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   const str = mf.format('settings', { 'browser-id': 'firefox' });
   expect(str).toBe('Firefoxin asetukset');
 
-  const msg = mf.getMessage('res', 'settings', {
-    'browser-id': 'firefox'
-  });
+  const msg = mf.getMessage('settings', { 'browser-id': 'firefox' });
   expect(msg).toMatchObject({
     type: 'message',
     value: [
@@ -574,7 +572,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
   test('Match, no change', () => {
-    const msg = mf.getMessage('res', 'foo', { foo: 'foo', other: 'other' });
+    const msg = mf.getMessage('foo', { foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -588,7 +586,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Match, changed', () => {
-    const msg = mf.getMessage('res', 'foo', { foo: 'other', other: 'foo' });
+    const msg = mf.getMessage('foo', { foo: 'other', other: 'foo' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -602,7 +600,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('No match, no change', () => {
-    const msg = mf.getMessage('res', 'bar', { foo: 'foo', other: 'other' });
+    const msg = mf.getMessage('bar', { foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -616,7 +614,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Articles across non-wordy content', () => {
-    const msg = mf.getMessage('res', 'qux', { foo: 'An', other: 'other' });
+    const msg = mf.getMessage('qux', { foo: 'An', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',

@@ -53,9 +53,9 @@ function getMessageScope(ctx: MsgRefContext, { scope }: MessageRef): Scope {
 export const resolver: PatternElementResolver<MsgRefResolver> = {
   type: 'term',
 
-  initContext: (mf, resId) => (msgResId, msgPath, scope) => {
-    const res = mf.getMessage(msgResId || resId, msgPath, scope);
-    if (res) res.source = '-' + msgPath.join('.');
+  initContext: (mf, resId) => (msgResId, path, scope) => {
+    const res = mf.getMessage({ resId: msgResId || resId, path }, scope);
+    if (res) res.source = '-' + path.join('.');
     return res;
   },
 

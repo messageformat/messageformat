@@ -376,8 +376,7 @@ for (const [title, cases] of Object.entries(testCases)) {
             mf.addResources(ast);
             validate([ast], mf1Runtime);
             const msg = mf.format(
-              'res',
-              ['msg'],
+              { resId: 'res', path: ['msg'] },
               param as Record<string, string | number | Date>
             );
             if (res instanceof RegExp) expect(msg).toMatch(res);

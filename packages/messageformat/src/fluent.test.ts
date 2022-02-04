@@ -316,7 +316,7 @@ describe('getMessage', () => {
     });
 
     test('defined formatted variable', () => {
-      const foo = mf.getMessage('res', ['foo'], { num: 42 });
+      const foo = mf.getMessage(['foo'], { num: 42 });
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -327,7 +327,7 @@ describe('getMessage', () => {
     });
 
     test('undefined formatted variable', () => {
-      const foo = mf.getMessage('res', ['foo']);
+      const foo = mf.getMessage(['foo']);
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -338,7 +338,7 @@ describe('getMessage', () => {
     });
 
     test('message reference', () => {
-      const bar = mf.getMessage('res', ['bar'], { num: 42 });
+      const bar = mf.getMessage(['bar'], { num: 42 });
       expect(bar).toEqual({
         type: 'message',
         value: [
@@ -355,7 +355,7 @@ describe('getMessage', () => {
     });
 
     test('defined selector', () => {
-      const sel = mf.getMessage('res', ['sel'], { selector: 'a' });
+      const sel = mf.getMessage(['sel'], { selector: 'a' });
       expect(sel).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'A' }]
@@ -363,7 +363,7 @@ describe('getMessage', () => {
     });
 
     test('undefined selector', () => {
-      const sel = mf.getMessage('res', ['sel']);
+      const sel = mf.getMessage(['sel']);
       expect(sel).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'B' }]
@@ -430,7 +430,7 @@ describe('getMessage', () => {
     });
 
     test('foo', () => {
-      const foo = mf.getMessage('res', 'foo', { num: 42 });
+      const foo = mf.getMessage('foo', { num: 42 });
       expect(foo).toEqual({
         type: 'message',
         meta: { group: 'Group 1' },
@@ -442,7 +442,7 @@ describe('getMessage', () => {
     });
 
     test('bar', () => {
-      const bar = mf.getMessage('res', 'bar');
+      const bar = mf.getMessage('bar');
       expect(bar).toEqual({
         type: 'message',
         meta: { group: 'Group 1' },
@@ -451,7 +451,7 @@ describe('getMessage', () => {
     });
 
     test('qux', () => {
-      const qux = mf.getMessage('res', 'qux');
+      const qux = mf.getMessage('qux');
       expect(qux).toEqual({
         type: 'message',
         meta: { group: 'Group 2' },
@@ -485,7 +485,7 @@ describe('getMessage', () => {
     });
 
     test('case with match', () => {
-      const msg = mf.getMessage('res', 'case', { case: 'genitive' });
+      const msg = mf.getMessage('case', { case: 'genitive' });
       expect(msg).toEqual({
         type: 'message',
         meta: { case: 'genitive' },
@@ -494,7 +494,7 @@ describe('getMessage', () => {
     });
 
     test('case with fallback', () => {
-      const msg = mf.getMessage('res', 'case', { case: 'oblique' });
+      const msg = mf.getMessage('case', { case: 'oblique' });
       expect(msg).toEqual({
         type: 'message',
         meta: { case: 'oblique', caseFallback: 'nominative' },
@@ -503,7 +503,7 @@ describe('getMessage', () => {
     });
 
     test('gender with match', () => {
-      const msg = mf.getMessage('res', 'gender', { gender: 'feminine' });
+      const msg = mf.getMessage('gender', { gender: 'feminine' });
       expect(msg).toEqual({
         type: 'message',
         meta: { gender: 'feminine' },
@@ -512,7 +512,7 @@ describe('getMessage', () => {
     });
 
     test('gender with fallback', () => {
-      const msg = mf.getMessage('res', 'gender');
+      const msg = mf.getMessage('gender');
       expect(msg).toEqual({
         type: 'message',
         meta: { gender: 'undefined', genderFallback: 'neuter' },
@@ -521,7 +521,7 @@ describe('getMessage', () => {
     });
 
     test('plural with match', () => {
-      const msg = mf.getMessage('res', 'plural', { num: 2 });
+      const msg = mf.getMessage('plural', { num: 2 });
       expect(msg).toEqual({
         type: 'message',
         meta: { plural: 'other' },
@@ -530,7 +530,7 @@ describe('getMessage', () => {
     });
 
     test('plural with fallback', () => {
-      const msg = mf.getMessage('res', 'plural', { num: 1 });
+      const msg = mf.getMessage('plural', { num: 1 });
       expect(msg).toEqual({
         type: 'message',
         meta: { plural: 'one', pluralFallback: 'other' },
@@ -539,7 +539,7 @@ describe('getMessage', () => {
     });
 
     test('plural with non-plural input', () => {
-      const msg = mf.getMessage('res', 'plural', { num: 'NaN' });
+      const msg = mf.getMessage('plural', { num: 'NaN' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]

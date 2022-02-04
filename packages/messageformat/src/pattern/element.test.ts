@@ -26,7 +26,7 @@ describe('Simple element', () => {
       { type: 'literal', value: 'foo' },
       { type: 'element', name: 'b', tag: 'end' }
     ]);
-    expect(mf.getMessage('res', 'msg')).toEqual({
+    expect(mf.getMessage('msg')).toEqual({
       type: 'message',
       value: [
         {
@@ -56,7 +56,7 @@ describe('Simple element', () => {
       { type: 'variable', var_path: ['foo'] },
       { type: 'element', name: 'b', tag: 'end' }
     ]);
-    const msg = mf.getMessage('res', 'msg', { foo: 13 });
+    const msg = mf.getMessage('msg', { foo: 13 });
     expect(msg).toEqual({
       type: 'message',
       value: [
@@ -87,7 +87,7 @@ describe('Multiple elements', () => {
       { type: 'literal', value: 'bar' },
       { type: 'element', name: '1', tag: 'end' }
     ]);
-    expect(mf.getMessage('res', 'msg')).toEqual({
+    expect(mf.getMessage('msg')).toEqual({
       type: 'message',
       value: [
         {
@@ -119,7 +119,7 @@ describe('Multiple elements', () => {
       { type: 'element', name: '1', tag: 'end' },
       { type: 'element', name: 'b', tag: 'end' }
     ]);
-    expect(mf.getMessage('res', 'msg')).toEqual({
+    expect(mf.getMessage('msg')).toEqual({
       type: 'message',
       value: [
         {
@@ -154,7 +154,7 @@ describe('Multiple elements', () => {
       { type: 'literal', value: 'baz' },
       { type: 'element', name: '1', tag: 'end' }
     ]);
-    expect(mf.getMessage('res', 'msg')).toEqual({
+    expect(mf.getMessage('msg')).toEqual({
       type: 'message',
       value: [
         {

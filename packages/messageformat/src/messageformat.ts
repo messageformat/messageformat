@@ -60,38 +60,24 @@ export class MessageFormat {
     this.#resources.splice(0, 0, ...resources.map(ResourceReader.from));
   }
 
-  format(msgPath: string | string[], scope?: Scope): string;
-  format(resId: string, msgPath: string | string[], scope?: Scope): string;
   format(
-    arg0: string | string[],
-    arg1?: string | string[] | Scope,
-    arg2?: Scope
+    msgPath: string | string[] | { resId: string; path: string[] },
+    scope: Scope = {}
   ) {
-    const fmtMsg = this.getMessage(...this.parseArgs(arg0, arg1, arg2));
+    const fmtMsg = this.getMessage(msgPath, scope);
     return fmtMsg ? fmtMsg.toString() : '';
   }
 
   getMessage(
-    msgPath: string | string[],
-    scope?: Scope
-  ): ResolvedMessage | undefined;
-  getMessage(
-    resId: string,
-    msgPath: string | string[],
-    scope?: Scope
-  ): ResolvedMessage | undefined;
-  getMessage(
-    arg0: string | string[],
-    arg1?: string | string[] | Scope,
-    arg2?: Scope
+    msgPath: string | string[] | { resId: string; path: string[] },
+    scope: Scope = {}
   ): ResolvedMessage | undefined {
-    const [resId, msgPath, scope] = this.parseArgs(arg0, arg1, arg2);
+    const { resId, path } = this.parseMsgPath(msgPath);
     let msg: Message | undefined;
 
-    const p = Array.isArray(msgPath) ? msgPath : [msgPath];
     for (const res of this.#resources) {
       if (res.getId() === resId) {
-        msg = res.getMessage(p);
+        msg = res.getMessage(path);
         if (msg) break;
       }
     }
@@ -132,36 +118,28 @@ export class MessageFormat {
     return ctx;
   }
 
-  private parseArgs(
-    ...args: [
-      string | string[],
-      string | string[] | Scope | undefined,
-      Scope | undefined
-    ]
-  ): [string, string | string[], Scope] {
-    let resId: string;
-    let msgPath: string | string[];
-    let scope: Scope | undefined;
-
-    if (typeof args[1] === 'string' || Array.isArray(args[1])) {
-      // (resId: string, msgPath: string | string[], scope?: Scope)
-      if (typeof args[0] !== 'string')
-        throw new Error(`Invalid resId argument: ${args[0]}`);
-      [resId, msgPath, scope] = args;
-    } else {
-      // (msgPath: string | string[], scope?: Scope)
+  private parseMsgPath(
+    msgPath: string | string[] | { resId: string; path: string[] }
+  ): { resId: string; path: string[] } {
+    if (typeof msgPath === 'string') msgPath = [msgPath];
+    if (Array.isArray(msgPath)) {
       const r0 = this.#resources[0];
       if (!r0) throw new Error('No resources available');
-      const id0 = r0.getId();
+      const resId = r0.getId();
       for (const res of this.#resources)
-        if (res.getId() !== id0)
+        if (res.getId() !== resId)
           throw new Error(
             'Explicit resource id required to differentiate resources'
           );
-      resId = id0;
-      [msgPath, scope] = args;
+      return { resId, path: msgPath };
     }
 
-    return [resId, msgPath, scope || {}];
+    if (msgPath && typeof msgPath === 'object') {
+      const { resId, path } = msgPath;
+      if (typeof resId === 'string' && Array.isArray(path))
+        return { resId, path };
+    }
+
+    throw new TypeError('Invalid msgPath argument');
   }
 }

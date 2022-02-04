@@ -11,7 +11,7 @@ describe('MessageValue variables', () => {
   });
 
   test('number', () => {
-    expect(mf.getMessage('res', 'msg', { val: 42 })).toMatchObject({
+    expect(mf.getMessage('msg', { val: 42 })).toMatchObject({
       type: 'message',
       value: [{ type: 'number', source: '$val', value: 42 }]
     });
@@ -19,7 +19,7 @@ describe('MessageValue variables', () => {
 
   test('MessageValue(number)', () => {
     const val = new MessageValue(MessageValue.type, null, 42);
-    expect(mf.getMessage('res', 'msg', { val })).toMatchObject({
+    expect(mf.getMessage('msg', { val })).toMatchObject({
       type: 'message',
       value: [{ type: 'value', source: '$val', value: 42 }]
     });
@@ -29,7 +29,7 @@ describe('MessageValue variables', () => {
     const val: MessageValue = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 1 }
     });
-    expect(mf.getMessage('res', 'msg', { val })).toMatchObject({
+    expect(mf.getMessage('msg', { val })).toMatchObject({
       type: 'message',
       value: [
         {
@@ -46,7 +46,7 @@ describe('MessageValue variables', () => {
     const val = new MessageNumber('en', BigInt(42), {
       options: { minimumFractionDigits: 2 }
     });
-    expect(mf.getMessage('res', 'msg', { val })).toMatchObject({
+    expect(mf.getMessage('msg', { val })).toMatchObject({
       type: 'message',
       value: [
         {
