@@ -1,6 +1,6 @@
-import { Message, PatternElement, Resource } from './data-model';
+import { Message, Resource } from './data-model';
 import type { Context } from './format-context';
-import { ResolvedMessage } from './message-value';
+import { MessageValue, ResolvedMessage } from './message-value';
 import { PatternElementResolver, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable-ref';
 import { ResourceReader } from './resource-reader';
@@ -62,15 +62,17 @@ export class MessageFormat {
 
   format(
     msgPath: string | string[] | { resId: string; path: string[] },
-    scope: Scope = {}
+    scope: Scope = {},
+    onError?: (error: unknown, value: MessageValue) => void
   ) {
-    const fmtMsg = this.getMessage(msgPath, scope);
-    return fmtMsg ? fmtMsg.toString() : '';
+    const resMsg = this.getMessage(msgPath, scope, onError);
+    return resMsg ? resMsg.toString(onError) : '';
   }
 
   getMessage(
     msgPath: string | string[] | { resId: string; path: string[] },
-    scope: Scope = {}
+    scope: Scope = {},
+    onError?: (error: unknown, value: MessageValue) => void
   ): ResolvedMessage | undefined {
     const { resId, path } = this.parseMsgPath(msgPath);
     let msg: Message | undefined;
@@ -83,7 +85,7 @@ export class MessageFormat {
     }
     if (!msg) return undefined;
 
-    const ctx = this.createContext(resId, scope);
+    const ctx = this.createContext(resId, scope, onError);
     return new ResolvedMessage(ctx, msg);
   }
 
@@ -96,11 +98,18 @@ export class MessageFormat {
     };
   }
 
-  private createContext(resId: string, scope: Scope): Context {
+  private createContext(
+    resId: string,
+    scope: Scope,
+    onError: Context['onError'] = () => {
+      // Ignore errors by default
+    }
+  ): Context {
     const resolvers = this.#resolvers;
 
     const ctx: Context = {
-      resolve(elem: PatternElement) {
+      onError,
+      resolve(elem) {
         const res = resolvers.find(res => res.type === elem.type);
         if (!res) throw new Error(`Unsupported pattern element: ${elem.type}`);
         return res.resolve(this, elem);

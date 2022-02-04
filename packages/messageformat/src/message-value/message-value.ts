@@ -1,4 +1,5 @@
 import type { Meta } from '../data-model';
+import { Context } from '../format-context';
 import {
   isLocaleContext,
   LocaleContext,
@@ -60,7 +61,7 @@ export class MessageValue<T = unknown> {
     return this.value != null && String(this.value) === key;
   }
 
-  toString(): string {
+  toString(onError?: Context['onError']): string {
     const value:
       | { toLocaleString: (...args: unknown[]) => string }
       | undefined = this.value;
@@ -71,8 +72,8 @@ export class MessageValue<T = unknown> {
         const opt = lm ? { localeMatcher: lm } : undefined;
         return value.toLocaleString(lc.locales, opt);
       }
-    } catch (_) {
-      // TODO: Report error
+    } catch (error) {
+      if (onError) onError(error, this);
       if (value === undefined) {
         const source = this.source || FALLBACK_SOURCE;
         return `{${source}}`;

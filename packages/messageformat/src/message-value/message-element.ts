@@ -1,4 +1,5 @@
 import type { Meta } from '../data-model';
+import { Context } from '../format-context';
 import type { LocaleContextArg } from './locale-context';
 import { MessageValue } from './message-value';
 
@@ -39,15 +40,19 @@ export class MessageElement extends MessageValue<MessageValue[]> {
     return false;
   }
 
-  toString() {
+  toString(onError?: Context['onError']) {
     const { name, options, value } = this;
     if (this.isEndTag) return `</${name}>`;
 
     let start = name;
     if (options) {
       for (const [key, opt] of Object.entries(options)) {
-        if (/^\w[\w-]*$/.test(key))
-          start += ` ${key}=${JSON.stringify(String(opt))}`;
+        try {
+          if (/^\w[\w-]*$/.test(key))
+            start += ` ${key}=${JSON.stringify(String(opt))}`;
+        } catch (error) {
+          if (onError) onError(error, this);
+        }
       }
     }
 

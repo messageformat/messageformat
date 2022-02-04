@@ -39,9 +39,10 @@ export const resolver: PatternElementResolver<never> = {
         source,
         tag
       });
-    } catch (_) {
-      // TODO: report error
-      return new MessageFallback(ctx, meta, { source });
+    } catch (error) {
+      const fb = new MessageFallback(ctx, { meta, source });
+      ctx.onError(error, fb);
+      return fb;
     }
   }
 };

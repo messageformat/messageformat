@@ -71,6 +71,8 @@ export const resolver: PatternElementResolver<MsgRefResolver> = {
       if (msg) return msg;
     }
 
-    return new MessageFallback(ctx, meta, { source });
+    const fb = new MessageFallback(ctx, { meta, source });
+    ctx.onError(new Error(`Message not available: ${source}`), fb);
+    return fb;
   }
 };

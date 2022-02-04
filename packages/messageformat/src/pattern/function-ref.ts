@@ -33,13 +33,17 @@ function resolveOptions(
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
   const opt: RuntimeOptions = { localeMatcher: ctx.localeMatcher };
+  const errorKeys: string[] = [];
   if (options && expected) {
     for (const [key, value] of Object.entries(options)) {
       const exp =
         typeof expected === 'string' || Array.isArray(expected)
           ? expected
           : expected[key];
-      if (!exp || exp === 'never') continue; // TODO: report error
+      if (!exp || exp === 'never') {
+        errorKeys.push(key);
+        continue;
+      }
       const res = ctx.resolve(value).value;
       if (
         exp === 'any' ||
@@ -57,10 +61,10 @@ function resolveOptions(
             opt[key] = Number(res);
         }
       }
-      // TODO: else report error
+      errorKeys.push(key);
     }
   }
-  return opt;
+  return { opt, errorKeys };
 }
 
 export const resolver: PatternElementResolver<Runtime> = {
@@ -75,13 +79,17 @@ export const resolver: PatternElementResolver<Runtime> = {
       const fnArgs = args.map(arg => ctx.resolve(arg));
       const srcArgs = fnArgs.map(fa => fa.source || FALLBACK_SOURCE).join(', ');
       source = `${func}(${srcArgs})`;
-      const fnOpt = resolveOptions(ctx, options, rf?.options);
-      const res = rf.call(ctx.locales, fnOpt, ...fnArgs);
-      return asMessageValue(ctx, res, { meta, source });
-    } catch (_) {
-      // TODO: report error
+      const { opt, errorKeys } = resolveOptions(ctx, options, rf?.options);
+      const res = rf.call(ctx.locales, opt, ...fnArgs);
+      const mv = asMessageValue(ctx, res, { meta, source });
+      for (const key of errorKeys)
+        ctx.onError(new TypeError(`Invalid value for option ${key}`), mv);
+      return mv;
+    } catch (error) {
       if (!source) source = `${func}()`;
-      return new MessageFallback(ctx, meta, { source });
+      const fb = new MessageFallback(ctx, { meta, source });
+      ctx.onError(error, fb);
+      return fb;
     }
   }
 };

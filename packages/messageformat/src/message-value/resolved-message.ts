@@ -59,10 +59,10 @@ export class ResolvedMessage extends MessageValue<MessageValue[]> {
     return this.toString() === key;
   }
 
-  toString(noCache = false) {
+  toString(onError?: Context['onError'], noCache = false) {
     if (noCache || typeof this[str] !== 'string') {
       this[str] = '';
-      for (const mv of this.value) this[str] += mv.toString();
+      for (const mv of this.value) this[str] += mv.toString(onError);
     }
     return this[str];
   }

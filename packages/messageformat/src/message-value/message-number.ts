@@ -1,4 +1,5 @@
 import type { Meta } from '../data-model';
+import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
@@ -64,12 +65,12 @@ export class MessageNumber extends MessageValue<number | bigint> {
     return nf.formatToParts(this.value);
   }
 
-  toString() {
+  toString(onError?: Context['onError']) {
     try {
       const nf = this.getIntl(Intl.NumberFormat);
       return nf.format(this.value);
-    } catch (_) {
-      // TODO: Report error
+    } catch (error) {
+      if (onError) onError(error, this)
       if (this.value === undefined) {
         const source = this.source || FALLBACK_SOURCE;
         return `{${source}}`;

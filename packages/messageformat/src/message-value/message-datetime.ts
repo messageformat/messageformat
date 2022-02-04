@@ -1,4 +1,5 @@
 import type { Meta } from '../data-model';
+import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue } from './message-value';
 
@@ -29,7 +30,7 @@ export class MessageDateTime extends MessageValue<Date> {
           ? { ...date.options, ...options }
           : { ...options };
     } else {
-      if (typeof date === 'number') date = new Date(date)
+      if (typeof date === 'number') date = new Date(date);
       if (date instanceof Date) {
         super(MessageDateTime.type, locale, date, fmt);
         if (options) this.options = { ...options };
@@ -50,7 +51,7 @@ export class MessageDateTime extends MessageValue<Date> {
     return dtf.formatToParts(this.value);
   }
 
-  toString() {
+  toString(onError?: Context['onError']) {
     try {
       const hasOpt = this.options && Object.keys(this.options).length > 0;
       if (hasOpt) {
@@ -62,8 +63,8 @@ export class MessageDateTime extends MessageValue<Date> {
           ? this.value.toLocaleString(lc.locales, lc)
           : String(this.value);
       }
-    } catch (_) {
-      // TODO: Report error
+    } catch (error) {
+      if (onError) onError(error, this)
       if (this.value === undefined) {
         const source = this.source || FALLBACK_SOURCE;
         return `{${source}}`;
