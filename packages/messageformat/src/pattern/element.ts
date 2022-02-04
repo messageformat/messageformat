@@ -31,7 +31,7 @@ export const resolver: PatternElementResolver<never> = {
   type: 'element',
 
   resolve(ctx, { meta, name, options, tag }: Element) {
-    const source = `<${name}>`;
+    const source = tag === 'end' ? `</${name}>` : `<${name}>`;
     try {
       return new MessageElement(ctx, name, {
         meta,
