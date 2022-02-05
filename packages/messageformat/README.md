@@ -67,7 +67,7 @@ const resMsg = mf.getMessage('msg', { today: new Date('2022-02-02') })
 // ResolvedMessage {
 //   type: 'message',
 //   value: [
-//     MessageValue { type: 'literal', value: 'Today is ' },
+//     MessageLiteral { type: 'literal', value: 'Today is ' },
 //     MessageDateTime {
 //       type: 'datetime',
 //       value: 2022-02-02T00:00:00.000Z,

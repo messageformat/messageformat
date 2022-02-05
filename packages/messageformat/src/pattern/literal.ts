@@ -1,5 +1,5 @@
 import type { PatternElement } from '../data-model';
-import { MessageValue } from '../message-value';
+import { MessageLiteral } from '../message-value';
 import type { PatternElementResolver } from './index';
 
 /**
@@ -21,6 +21,6 @@ export const isLiteral = (part: any): part is Literal =>
 export const resolver: PatternElementResolver = {
   type: 'literal',
 
-  resolve: (ctx, lit: Literal) =>
-    new MessageValue<string>(resolver.type, ctx, lit.value, { meta: lit.meta })
+  resolve: (_ctx, lit: Literal) =>
+    new MessageLiteral(lit.value, { meta: lit.meta })
 };
