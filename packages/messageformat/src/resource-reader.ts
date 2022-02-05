@@ -2,9 +2,9 @@ import { isMessage, Message, MessageGroup, Resource } from './data-model';
 
 /**
  * Provides the minimum required runtime interface for accessing resources.
- * This base class is applied automatically for Resource values, but an
- * implementation may extend this to provide its own `getId()` and
- * `getMessage(path)`.
+ * This base class is applied automatically for Resource values,
+ * but an implementation may extend this to provide its own
+ * `id` and `getMessage(path)`.
  */
 export class ResourceReader {
   static from(src: Resource | ResourceReader) {
@@ -17,7 +17,7 @@ export class ResourceReader {
     this.#data = data;
   }
 
-  getId(): string {
+  get id(): string {
     return this.#data.id;
   }
 

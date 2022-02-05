@@ -32,7 +32,7 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
   readonly #resolvers: readonly PatternElementResolver[];
-  readonly #resources: ResourceReader[];
+  readonly #resources: ResourceReader[] = []
 
   readonly [MFruntime]: Readonly<Runtime>;
 
@@ -51,9 +51,9 @@ export class MessageFormat {
       }) ?? patternFormatters;
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
-    this.#resources = resources.map(ResourceReader.from);
     const rt = options?.runtime ?? defaultRuntime;
     this[MFruntime] = Object.freeze({ ...rt });
+    this.addResources(...resources)
   }
 
   addResources(...resources: (Resource | ResourceReader)[]) {
@@ -78,7 +78,7 @@ export class MessageFormat {
     let msg: Message | undefined;
 
     for (const res of this.#resources) {
-      if (res.getId() === resId) {
+      if (res.id === resId) {
         msg = res.getMessage(path);
         if (msg) break;
       }
@@ -134,9 +134,9 @@ export class MessageFormat {
     if (Array.isArray(msgPath)) {
       const r0 = this.#resources[0];
       if (!r0) throw new Error('No resources available');
-      const resId = r0.getId();
+      const resId = r0.id;
       for (const res of this.#resources)
-        if (res.getId() !== resId)
+        if (res.id !== resId)
           throw new Error(
             'Explicit resource id required to differentiate resources'
           );
