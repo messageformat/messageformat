@@ -41,8 +41,8 @@ overrides:
       '@typescript-eslint/ban-ts-comment': off
       '@typescript-eslint/no-explicit-any': off
   - files:
-      - 'packages/compiler/**/*.{ts,tsx}'
-      - 'packages/messageformat/**/*.{ts,tsx}'
+      - 'packages/mf2-compiler/**/*.{ts,tsx}'
+      - 'packages/mf2-messageformat/**/*.{ts,tsx}'
     rules:
       '@typescript-eslint/ban-types':
         [error, { extendDefaults: true, types: { Function: false } }]

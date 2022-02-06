@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@messageformat/cli": "file:packages/cli",
-    "@messageformat/compiler": "file:packages/compiler",
+    "@messageformat/compiler": "file:packages/mf2-compiler",
     "@messageformat/convert": "file:packages/convert",
     "@messageformat/core": "file:packages/core",
     "@messageformat/date-skeleton": "file:packages/date-skeleton",
@@ -48,8 +48,8 @@
     "@messageformat/parser": "file:packages/parser",
     "@messageformat/react": "file:packages/react",
     "@messageformat/runtime": "file:packages/runtime",
-    "@messageformat/xliff": "file:packages/xliff",
-    "messageformat": "file:packages/messageformat",
+    "@messageformat/xliff": "file:packages/mf2-xliff",
+    "messageformat": "file:packages/mf2-messageformat",
     "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {
