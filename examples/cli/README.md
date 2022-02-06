@@ -2,10 +2,17 @@
 
 This uses [@messageformat/cli](http://messageformat.github.io/messageformat/cli/) to compile the ES module `message.mjs` from the English and French message source files under `messages/`.
 
-To build the example, run this command at the root of the repository:
+To build the example, starting from the root of the repository:
 
-```
-npx lerna run build --scope cli-example
+```sh
+npm install
+npm run build
+
+cd examples/
+npm install
+
+cd cli/
+npm run build
 ```
 
 That will produce two files in this directory:
