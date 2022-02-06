@@ -10,7 +10,7 @@
     "example": "example"
   },
   "scripts": {
-    "clean": "git clean -fdxe node_modules",
+    "clean": "git clean -fdx -e node_modules -e config/husky/_",
     "build": "lerna run build --no-private --stream",
     "build:examples": "lerna run build --scope *-example --stream",
     "predocs": "lerna run extract-api --stream",
@@ -19,6 +19,7 @@
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "prettier": "prettier --write .",
     "start": "node -i -r ./scripts/start.js",
+    "prepare": "husky install config/husky",
     "pretest:browsers": "cd test && rollup -c",
     "test:browsers": "mocha --parallel --jobs 5 --require test/browser/browserstack-fixtures.js --timeout 120000 test/browser/tests/",
     "test:chrome": "npm run pretest:browsers && mocha-selenium-bridge -b chrome test/browser/test.html",
@@ -30,11 +31,6 @@
     "arrowParens": "avoid",
     "singleQuote": true,
     "trailingComma": "none"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   },
   "dependencies": {
     "@messageformat/cli": "file:packages/cli",
@@ -55,8 +51,8 @@
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-react": "^7.12.7",
     "@babel/preset-typescript": "^7.12.7",
-    "@commitlint/cli": "^12.0.1",
-    "@commitlint/config-conventional": "^12.0.1",
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0",
     "@microsoft/api-documenter": "^7.11.0",
     "@microsoft/api-extractor": "^7.12.0",
     "@rollup/plugin-alias": "^3.1.2",
@@ -77,7 +73,7 @@
     "common-tags": "^2.0.0-alpha.1",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.1.0",
-    "husky": "^4.3.0",
+    "husky": "^7.0.4",
     "intl-list-format": "^1.0.3",
     "jest": "^27.4.7",
     "jest-ts-webcompat-resolver": "^1.0.0",
