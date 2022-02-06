@@ -63,7 +63,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "make-plural": "^6.2.1"
+    "make-plural": "^7.0.0"
   },
   "browserslist": [
     "last 1 version",

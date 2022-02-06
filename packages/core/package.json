@@ -34,7 +34,7 @@
     "@messageformat/number-skeleton": "file:../number-skeleton",
     "@messageformat/parser": "file:../parser",
     "@messageformat/runtime": "file:../runtime",
-    "make-plural": "^6.2.1",
+    "make-plural": "^7.0.0",
     "safe-identifier": "^0.4.1"
   },
   "scripts": {
