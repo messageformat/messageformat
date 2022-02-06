@@ -38,32 +38,32 @@ npm run build:mf2
 With ICU MessageFormat, formatting to a string:
 
 ```js
-import { compileMF1 } from '@messageformat/compiler'
-import { MessageFormat, mf1Runtime } from 'messageformat'
+import { compileMF1 } from '@messageformat/compiler';
+import { MessageFormat, mf1Runtime } from 'messageformat';
 
-const locale = 'en-US'
-const msg = 'Today is {today, date}'
+const locale = 'en-US';
+const msg = 'Today is {today, date}';
 
-const res = compileMF1({ msg }, { id: 'res', locale })
-const mf = new MessageFormat(locale, { runtime: mf1Runtime }, res)
+const res = compileMF1({ msg }, { id: 'res', locale });
+const mf = new MessageFormat(locale, { runtime: mf1Runtime }, res);
 
-mf.format('msg', { today: new Date('2022-02-02') })
+mf.format('msg', { today: new Date('2022-02-02') });
 // 'Today is Feb 2, 2022'
 ```
 
 With Fluent, formatting to a message:
 
 ```js
-import { compileFluent } from '@messageformat/compiler'
-import { MessageFormat, fluentRuntime } from 'messageformat'
+import { compileFluent } from '@messageformat/compiler';
+import { MessageFormat, fluentRuntime } from 'messageformat';
 
-const locale = 'en-US'
-const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n'
+const locale = 'en-US';
+const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
 
-const res = compileFluent(src, { id: 'res', locale })
-const mf = new MessageFormat(locale, { runtime: fluentRuntime }, res)
+const res = compileFluent(src, { id: 'res', locale });
+const mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
 
-const resMsg = mf.getMessage('msg', { today: new Date('2022-02-02') })
+const resMsg = mf.getMessage('msg', { today: new Date('2022-02-02') });
 // ResolvedMessage {
 //   type: 'message',
 //   value: [
@@ -77,8 +77,6 @@ const resMsg = mf.getMessage('msg', { today: new Date('2022-02-02') })
 //   ]
 // }
 
-resMsg.toString()
+resMsg.toString();
 // 'Today is Feb 2, 2022'
 ```
-
-

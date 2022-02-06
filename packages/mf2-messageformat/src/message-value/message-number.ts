@@ -70,7 +70,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
       const nf = this.getIntl(Intl.NumberFormat);
       return nf.format(this.value);
     } catch (error) {
-      if (onError) onError(error, this)
+      if (onError) onError(error, this);
       if (this.value === undefined) {
         const source = this.source || FALLBACK_SOURCE;
         return `{${source}}`;

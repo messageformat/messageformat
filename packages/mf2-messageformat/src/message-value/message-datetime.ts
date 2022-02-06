@@ -64,7 +64,7 @@ export class MessageDateTime extends MessageValue<Date> {
           : String(this.value);
       }
     } catch (error) {
-      if (onError) onError(error, this)
+      if (onError) onError(error, this);
       if (this.value === undefined) {
         const source = this.source || FALLBACK_SOURCE;
         return `{${source}}`;

@@ -32,7 +32,7 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
   readonly #resolvers: readonly PatternElementResolver[];
-  readonly #resources: ResourceReader[] = []
+  readonly #resources: ResourceReader[] = [];
 
   readonly [MFruntime]: Readonly<Runtime>;
 
@@ -53,7 +53,7 @@ export class MessageFormat {
     this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
     const rt = options?.runtime ?? defaultRuntime;
     this[MFruntime] = Object.freeze({ ...rt });
-    this.addResources(...resources)
+    this.addResources(...resources);
   }
 
   addResources(...resources: (Resource | ResourceReader)[]) {
