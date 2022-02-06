@@ -19,7 +19,7 @@ To run the browser tests locally, do one of the following:
 
 - Install [ChromeDriver] and run `npm run test:chrome`
 - Install [geckodriver] and run `npm run test:firefox`
-- Run `npm run test:serve` and then open <http://localhost:5000/test/browser/test.html> in your browser
+- Run `npm run test:serve` and then open <http://localhost:3000/test/browser/test.html> in your browser
 - Ensure that the `BROWSERSTACK_USER` and `BROWSERSTACK_ACCESS_KEY` env vars are set to a valid account and its access key, and run `npm run test:browsers`
 
 Due to relying on Intl.NumberFormat pretty heavily, not all tests will pass in all environments; some will be skipped.
