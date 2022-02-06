@@ -4,7 +4,9 @@
     "baseUrl": ".",
     "paths": {
       "@messageformat/core": ["packages/core/src/messageformat"],
-      "@messageformat/core/compile-module": ["packages/core/src/compile-module"],
+      "@messageformat/core/compile-module": [
+        "packages/core/src/compile-module"
+      ],
       "@messageformat/date-skeleton": ["packages/date-skeleton/src/index"],
       "@messageformat/number-skeleton": ["packages/number-skeleton/src/index"],
       "@messageformat/parser": ["packages/parser/src/parser"],
