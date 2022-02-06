@@ -23,7 +23,7 @@ npx messageformat [options] [input]
 ```
 
 `input` should consist of one or more files or directories, unless defined in a configuration file.
-Directories are recursively scanned for `.json`, `.yaml`, `.yml` and `.properties` files.
+Directories are recursively scanned for `.json`, `.json5`, `.yaml`, `.yml` and `.properties` files.
 With multiple input files, shared parts of the start of their paths are dropped out of the generated module's structure.
 
 ## Options
@@ -35,7 +35,7 @@ Command-line options override configuration files.
 | Option       | Short | Description                                                                                                                                                                                                                                                    |
 | ------------ | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `delimiters` | `-d`  | Set of characters by which the file path is split into output object. Default value is `._/\`.                                                                                                                                                                 |
-| `extensions` | `-e`  | Array or comma-separated list of file extensions to parse as source files. Default: `['.json', '.yaml', '.yml', '.properties']`                                                                                                                                |
+| `extensions` | `-e`  | Array or comma-separated list of file extensions to parse as source files. Default: `['.json', '.json5', '.yaml', '.yml', '.properties']`                                                                                                                      |
 | `locale=lc`  | `-l`  | The locale(s) _`lc`_ to include; if multiple, first is default and others are selected by matching message key. If not set or empty, path keys matching any locale code will set the active locale, starting with a default `en` locale.                       |
 | `options`    |       | Options to pass to the MessageFormat constructor via its second argument. On the command line, use dot-notation to set values, e.g. `--options.currency=EUR`. For custom formatters, string values will be require()'d based on the current working directory. |
 | `outfile=of` | `-o`  | Write output to the file _`of`_. If unspecified or `-`, prints to stdout.                                                                                                                                                                                      |
