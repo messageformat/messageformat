@@ -438,7 +438,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         src: '{X, selectordinal, one{#} other{{Y, time, short}}}',
         exp: [
           [{ X: 1, Y: 5 }, '1'],
-          [{ X: 3, Y: 5 }, /^1?\d:00 [AP]M$/]
+          [{ X: 3, Y: 5 }, /^1?\d:[03]0 [AP]M$/]
         ]
       },
       {

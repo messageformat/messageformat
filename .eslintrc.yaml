@@ -11,12 +11,13 @@ extends:
 
 rules:
   array-callback-return: error
-  camelcase: error
+  camelcase: off
   consistent-return: error
   eqeqeq: [error, smart]
   no-constant-condition: [error, checkLoops: false]
   no-implicit-globals: error
   no-unused-vars: [warn, argsIgnorePattern: '^_']
+  prefer-const: [error, destructuring: all]
 
 overrides:
   - files:
@@ -39,3 +40,9 @@ overrides:
     rules:
       '@typescript-eslint/ban-ts-comment': off
       '@typescript-eslint/no-explicit-any': off
+  - files:
+      - 'packages/mf2-compiler/**/*.{ts,tsx}'
+      - 'packages/mf2-messageformat/**/*.{ts,tsx}'
+    rules:
+      '@typescript-eslint/ban-types':
+        [error, { extendDefaults: true, types: { Function: false } }]

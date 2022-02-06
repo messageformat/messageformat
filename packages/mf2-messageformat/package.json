@@ -1,0 +1,35 @@
+{
+  "name": "messageformat",
+  "version": "4.0.0-0",
+  "description": "MessageFormat 2",
+  "keywords": [
+    "i18n",
+    "pluralformat",
+    "icu",
+    "selectformat",
+    "messageformat",
+    "internationalization"
+  ],
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "http://messageformat.github.io/messageformat/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/messageformat"
+  },
+  "main": "lib/index.js",
+  "browser": "./lib/index.js",
+  "files": [
+    "lib/"
+  ],
+  "dependencies": {
+    "make-plural": "^6.2.1"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "extract-api": "api-extractor run --local --verbose"
+  }
+}
