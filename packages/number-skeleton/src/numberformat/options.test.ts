@@ -1,10 +1,10 @@
 import { UnsupportedError } from '../errors';
 import { Skeleton } from '../types/skeleton';
-import { getNumberFormatOptions, NumberFormatOptions } from './options';
+import { getNumberFormatOptions } from './options';
 
 interface TestCase {
   skeleton: Skeleton;
-  result?: NumberFormatOptions;
+  result?: Intl.NumberFormatOptions;
   unsupported?: string[][];
 }
 
@@ -213,6 +213,8 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     },
     'sign-except-zero': {
       skeleton: { sign: 'sign-except-zero' },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore https://github.com/microsoft/TypeScript/issues/46712
       result: { signDisplay: 'exceptZero' }
     },
     'sign-never': {
@@ -229,6 +231,8 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     },
     'sign-accounting-except-zero': {
       skeleton: { sign: 'sign-accounting-except-zero' },
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore https://github.com/microsoft/TypeScript/issues/46712
       result: { currencySign: 'accounting', signDisplay: 'exceptZero' }
     }
   },

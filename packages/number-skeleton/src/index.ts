@@ -21,9 +21,7 @@
  * {@link https://www.npmjs.com/package/esm | esm}.
  *
  * Uses {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat | Intl.NumberFormat}
- * internally, including features provided by the
- * {@link https://github.com/tc39/proposal-unified-intl-numberformat | Unified
- * API Proposal}.
+ * internally (ES2020).
  *
  * @packageDocumentation
  */
