@@ -9,10 +9,22 @@
     "doc": "docs",
     "example": "example"
   },
+  "workspaces": [
+    "packages/cli",
+    "packages/convert",
+    "packages/date-skeleton",
+    "packages/number-skeleton",
+    "packages/parser",
+    "packages/react",
+    "packages/runtime",
+    "packages/core",
+    "packages/rollup-plugin",
+    "packages/webpack-loader"
+  ],
   "scripts": {
     "clean": "git clean -fdx -e node_modules -e config/husky/_",
-    "build": "lerna run build --no-private --stream",
-    "predocs": "lerna run extract-api --stream",
+    "build": "npm run build --workspaces --if-present",
+    "predocs": "npm run extract-api --workspaces --if-present",
     "docs": "api-documenter markdown -i tmp/ -o docs/api/",
     "postdocs": "node scripts/set-api-docs-frontmatter docs/api/",
     "lint": "eslint '**/*.{js,ts,tsx}'",
@@ -30,18 +42,6 @@
     "arrowParens": "avoid",
     "singleQuote": true,
     "trailingComma": "none"
-  },
-  "dependencies": {
-    "@messageformat/cli": "file:packages/cli",
-    "@messageformat/convert": "file:packages/convert",
-    "@messageformat/core": "file:packages/core",
-    "@messageformat/date-skeleton": "file:packages/date-skeleton",
-    "@messageformat/loader": "file:packages/webpack-loader",
-    "@messageformat/number-skeleton": "file:packages/number-skeleton",
-    "@messageformat/parser": "file:packages/parser",
-    "@messageformat/react": "file:packages/react",
-    "@messageformat/runtime": "file:packages/runtime",
-    "rollup-plugin-messageformat": "file:packages/rollup-plugin"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

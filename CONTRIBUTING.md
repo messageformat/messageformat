@@ -9,7 +9,10 @@ Our current governance is pretty straightforward; our core contributors [Alex Se
 
 ## Getting Started
 
-The monorepo uses [Lerna](https://lerna.js.org/) for package management. Each package is included in the root package.json as a `file:` dependency, and all the dev dependencies are at the root level. This means that just running `npm install` should get you set up with everything. Note that the dependency binaries are not linked from each package, so you may need to use `lerna run` or `lerna exec` to execute scripts in packages.
+The monorepo uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) for package management.
+Each package is included in the root package.json as a workspace,
+and all the dev dependencies are at the root level.
+This means that just running `npm install` should get you set up with everything.
 
 ## Testing & Linting
 
