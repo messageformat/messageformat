@@ -1,0 +1,14 @@
+{
+  "name": "messageformat-examples",
+  "private": true,
+  "workspaces": [
+    "cli",
+    "custom-formatter",
+    "react",
+    "rollup",
+    "webpack"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces"
+  }
+}

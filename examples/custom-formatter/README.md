@@ -2,10 +2,17 @@
 
 This uses [rollup-plugin-messageformat](http://messageformat.github.io/messageformat/rollup/) to compile `src/messages.yaml`, using a custom number formatter implementation.
 
-To build the example, run this command at the root of the repository:
+To build the example, starting from the root of the repository:
 
-```
-npx lerna run build --scope custom-formatter-example
+```sh
+npm install
+npm run build
+
+cd examples/
+npm install
+
+cd custom-formatter/
+npm run build
 ```
 
 That will produce `dist/main.js` under this directory.

@@ -2,10 +2,16 @@
 
 This uses [@messageformat/loader](http://messageformat.github.io/messageformat/webpack/) to compile the `src/messages.yaml` that's imported from JS code.
 
-To build the example, run these commands in this directory:
+To build the example, starting from the root of the repository:
 
-```
+```sh
 npm install
+npm run build
+
+cd examples/
+npm install
+
+cd react/
 npm run build
 ```
 
