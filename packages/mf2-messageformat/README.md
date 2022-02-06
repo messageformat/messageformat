@@ -29,9 +29,8 @@ as the packages are not yet published on npm:
 ```sh
 git clone https://github.com/messageformat/messageformat.git
 cd messageformat
-git checkout --track origin/mf2
 npm install
-npm run build:mf2
+npm run build
 # The examples below will now run within the source repo.
 ```
 
