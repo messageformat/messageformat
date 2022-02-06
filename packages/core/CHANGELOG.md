@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.0.0...@messageformat/core@3.0.1) (2022-02-06)
+
+### Bug Fixes
+
+* Relax MessageFunction argument type ([#351](https://github.com/messageformat/messageformat/issues/351))
+
 # [3.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.0.0-beta.3...@messageformat/core@3.0.0) (2021-05-13)
 
 

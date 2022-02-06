@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.0.1...@messageformat/cli@3.1.0) (2022-02-06)
+
+### Features
+
+* **cli:** Support JSON5 ([#345](https://github.com/messageformat/messageformat/issues/345))
+
+### Bug Fixes
+
+* **cli:** Always include both `/` and `\` in delimiters ([#343](https://github.com/messageformat/messageformat/issues/343))
+* **cli:** Do not drop initial keys for single-message input files ([#340](https://github.com/messageformat/messageformat/issues/340))
+
 ## [3.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.0.0...@messageformat/cli@3.0.1) (2021-06-05)
 
 
