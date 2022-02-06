@@ -18,6 +18,13 @@ export type MessageFunction<ReturnType extends 'string' | 'values'> = (
   param?: Record<string, unknown> | unknown[]
 ) => ReturnType extends 'string' ? string : unknown[];
 
+/**
+ * A custom formatter function. See
+ * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
+ * for more details.
+ *
+ * @public
+ */
 export type CustomFormatter = (
   value: unknown,
   locale: string,

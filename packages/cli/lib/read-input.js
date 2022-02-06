@@ -4,6 +4,7 @@ const glob = require('glob');
 const path = require('path');
 const uv = require('uv');
 const YAML = require('yaml');
+const JSON5 = require('json5');
 
 function listFiles(include, extensions) {
   const ls = [];
@@ -39,6 +40,8 @@ function parseFile(fn, ext, sep) {
     case '.js':
     case '.cjs':
       return require(fn);
+    case '.json5':
+      return JSON5.parse(fs.readFileSync(fn, 'utf-8'));
     default: {
       const src = fs.readFileSync(fn, 'utf8');
       return YAML.parse(src, { prettyErrors: true });

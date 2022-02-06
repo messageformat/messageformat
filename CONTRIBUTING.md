@@ -9,7 +9,10 @@ Our current governance is pretty straightforward; our core contributors [Alex Se
 
 ## Getting Started
 
-The monorepo uses [Lerna](https://lerna.js.org/) for package management. Each package is included in the root package.json as a `file:` dependency, and all the dev dependencies are at the root level. This means that just running `npm install` should get you set up with everything. Note that the dependency binaries are not linked from each package, so you may need to use `lerna run` or `lerna exec` to execute scripts in packages.
+The monorepo uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) for package management.
+Each package is included in the root package.json as a workspace,
+and all the dev dependencies are at the root level.
+This means that just running `npm install` should get you set up with everything.
 
 ## Testing & Linting
 
@@ -19,7 +22,7 @@ To run the browser tests locally, do one of the following:
 
 - Install [ChromeDriver] and run `npm run test:chrome`
 - Install [geckodriver] and run `npm run test:firefox`
-- Run `npm run test:serve` and then open <http://localhost:5000/test/browser/test.html> in your browser
+- Run `npm run test:serve` and then open <http://localhost:3000/test/browser/test.html> in your browser
 - Ensure that the `BROWSERSTACK_USER` and `BROWSERSTACK_ACCESS_KEY` env vars are set to a valid account and its access key, and run `npm run test:browsers`
 
 Due to relying on Intl.NumberFormat pretty heavily, not all tests will pass in all environments; some will be skipped.

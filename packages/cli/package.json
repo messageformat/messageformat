@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/cli",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "MessageFormat CLI",
   "keywords": [
     "i18n",
@@ -32,6 +32,7 @@
   "dependencies": {
     "dot-properties": "^1.0.1",
     "glob": "^7.1.6",
+    "json5": "^2.2.0",
     "uv": "^1.3.1",
     "yaml": "^1.10.2",
     "yargs": "^17.0.1"

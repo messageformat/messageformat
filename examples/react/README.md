@@ -5,19 +5,19 @@ A simple, but fully functional example of using [@messageformat/react] and [@mes
 [@messageformat/react]: http://messageformat.github.io/messageformat/react/
 [@messageformat/loader]: http://messageformat.github.io/messageformat/webpack/
 
-To install and run:
+To build the example, starting from the root of the repository:
 
 ```sh
-git clone https://github.com/messageformat/messageformat.git
-
-# Need to build the core packages first
-cd messageformat
 npm install
 npm run build
 
-cd examples/react
+cd examples/
 npm install
-npm run build
 
-open dist/index.html
+cd react/
+npm run build
 ```
+
+That will produce output files in `dist/` under this directory.
+
+To see the output in a browser, open `dist/index.html` in a browser.

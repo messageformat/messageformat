@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/runtime",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Runtime components of messageformat",
   "keywords": [
     "i18n",
@@ -63,7 +63,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "make-plural": "^6.2.1"
+    "make-plural": "^7.0.0"
   },
   "browserslist": [
     "last 1 version",

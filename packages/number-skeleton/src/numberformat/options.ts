@@ -2,29 +2,11 @@ import { UnsupportedError } from '../errors.js';
 import { Skeleton } from '../types/skeleton.js';
 
 /**
- * Extends `Intl.NumberFormat` options to include features brought by the
- * {@link https://github.com/tc39/proposal-unified-intl-numberformat | Unified
- * API Proposal}
- *
- * @internal
- */
-export interface NumberFormatOptions extends Intl.NumberFormatOptions {
-  compactDisplay?: 'long' | 'short';
-  currencySign?: 'standard' | 'accounting';
-  notation?: 'standard' | 'engineering' | 'scientific' | 'compact';
-  signDisplay?: 'auto' | 'always' | 'never' | 'exceptZero';
-  unit?: string;
-  unitDisplay?: 'long' | 'short' | 'narrow';
-}
-
-/**
  * Given an input ICU NumberFormatter skeleton, does its best to construct a
  * corresponding `Intl.NumberFormat` options structure.
  *
  * @remarks
- * In addition to standard `Intl.NumberFormat` options, some features make use
- * of the {@link https://github.com/tc39/proposal-unified-intl-numberformat |
- * Unified API Proposal}, which has limited support.
+ * Some features depend on `Intl.NumberFormat` features defined in ES2020.
  *
  * @internal
  * @param onUnsupported - If defined, called when encountering unsupported (but
@@ -85,7 +67,7 @@ export function getNumberFormatOptions(
     if (onUnsupported) onUnsupported(new UnsupportedError(stem, source));
   };
 
-  const opt: NumberFormatOptions = {};
+  const opt: Intl.NumberFormatOptions = {};
 
   if (unit) {
     switch (unit.style) {
@@ -226,6 +208,8 @@ export function getNumberFormatOptions(
       opt.signDisplay = 'always';
       break;
     case 'sign-except-zero':
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore https://github.com/microsoft/TypeScript/issues/46712
       opt.signDisplay = 'exceptZero';
       break;
     case 'sign-never':
@@ -240,6 +224,8 @@ export function getNumberFormatOptions(
       break;
     case 'sign-accounting-except-zero':
       opt.currencySign = 'accounting';
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore https://github.com/microsoft/TypeScript/issues/46712
       opt.signDisplay = 'exceptZero';
       break;
   }

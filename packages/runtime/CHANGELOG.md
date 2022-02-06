@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.0...@messageformat/runtime@3.0.1) (2022-02-06)
+
+### Bug Fixes
+
+* **runtime:** Use a string type in the `select()` arguments ([#344](https://github.com/messageformat/messageformat/issues/344))
+* **runtime:** Add missing `messages.d.ts` ([#342](https://github.com/messageformat/messageformat/issues/342))
+
 # [3.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.0-beta.2...@messageformat/runtime@3.0.0) (2021-05-13)
 
 

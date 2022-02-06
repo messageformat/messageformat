@@ -13,9 +13,7 @@ import { Skeleton } from './types/skeleton.js';
  * Returns a number formatter function for the given locales and number skeleton
  *
  * @remarks
- * Uses `Intl.NumberFormat` internally, including features provided by the
- * {@link https://github.com/tc39/proposal-unified-intl-numberformat | Unified
- * API Proposal}.
+ * Uses `Intl.NumberFormat` (ES2020) internally.
  *
  * @public
  * @param locales - One or more valid BCP 47 language tags, e.g. `fr` or `en-CA`
@@ -71,10 +69,7 @@ export function getNumberFormatter(
  * returned by {@link getNumberFormatter}.
  *
  * @remarks
- * The returned function will memoize an `Intl.NumberFormat` instance that makes
- * use of features provided by the {@link
- * https://github.com/tc39/proposal-unified-intl-numberformat | Unified API
- * Proposal}.
+ * The returned function will memoize an `Intl.NumberFormat` instance.
  *
  * @public
  * @param locales - One or more valid BCP 47 language tags, e.g. `fr` or `en-CA`

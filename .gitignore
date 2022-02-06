@@ -4,5 +4,6 @@ dist/
 node_modules/
 /docs/_site/
 /examples/cli/*.mjs
+/examples/package-lock.json
 /test/browser/*.log
 /tmp/
