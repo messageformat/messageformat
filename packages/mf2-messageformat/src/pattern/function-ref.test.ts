@@ -16,7 +16,7 @@ describe('Function returns generic value', () => {
     const src = source`
       msg = { STRINGIFY($var) }
     `;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const runtime: Runtime = {
       STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
     };
@@ -30,7 +30,7 @@ describe('Function returns generic value', () => {
 
   test('number', () => {
     const src = `msg = { NUMERIC($var) }\n`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const runtime: Runtime = {
       NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
     };
@@ -44,7 +44,7 @@ describe('Function returns generic value', () => {
 
   test('Date', () => {
     const src = `msg = { NOW() }\n`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const date = new Date();
     const runtime: Runtime = {
       NOW: { call: () => date, options: 'never' }
@@ -65,7 +65,7 @@ describe('Function returns generic value', () => {
 describe('Function returns MessageValue', () => {
   test('with custom toString method', () => {
     const src = `msg = { STRINGIFY($var) }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     let toString: (() => string) | undefined;
     const runtime: Runtime = {
       STRINGIFY: {
@@ -89,7 +89,7 @@ describe('Function returns MessageValue', () => {
 describe('Function uses MessageValue argument', () => {
   test('Options are merged', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     const val = new MessageNumber(null, BigInt(12345678), {
       options: { useGrouping: false }
@@ -106,7 +106,7 @@ describe('Function uses MessageValue argument', () => {
 
   test('Function options take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     const val = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 4 }
@@ -120,7 +120,7 @@ describe('Function uses MessageValue argument', () => {
 
   test('MessageValue locales take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     const val = new MessageNumber('fi', 12345);
     const msg = mf.getMessage('msg', { val });
@@ -137,7 +137,7 @@ describe('Type casts based on runtime', () => {
       true = { NUMBER($var) }
       false = { NUMBER($var) }
     `;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
 
     // Hacky, but Fluent doesn't allow for useGrouping
     (res.entries.true as any).pattern[0].options = {
@@ -154,7 +154,7 @@ describe('Type casts based on runtime', () => {
 
   test('boolean function option with variable value', () => {
     const src = `msg = { NUMBER($var) }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
 
     // Hacky, but Fluent doesn't allow for useGrouping
     (res.entries.msg as any).pattern[0].options = {

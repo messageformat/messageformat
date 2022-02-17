@@ -1,4 +1,4 @@
-import { Resource } from './data-model';
+import { MessageGroup } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
 import { PatternElementResolver, patternFormatters } from './pattern';
@@ -39,7 +39,7 @@ export class MessageFormat {
   constructor(
     locales: string | string[],
     options: MessageFormatOptions | null,
-    resource: Resource | ResourceReader
+    resource: MessageGroup | ResourceReader
   ) {
     this.#resolvers =
       options?.elements?.map(fmtOpt => {

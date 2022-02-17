@@ -1,22 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-//// RESOURCES ////
+//// MESSAGE GROUPS ////
 
 /**
- * The root of a message structure is a Resource. It is somewhat (but not
- * necessarily entirely) analogous to a single file in a file system.
- *
- * The `[id, locale]` tuple should probably be unique for each resource.
+ * The root of a message structure is a MessageGroup,
+ * which may contain messages as well as other message groups.
  */
-export interface Resource<P extends PatternElement = PatternElement> {
-  type: 'resource';
-  id: string;
-  locale: string;
-  entries: Record<string, Message<P> | MessageGroup<P>>;
-  comment?: string;
-  meta?: Meta;
-}
-
 export interface MessageGroup<P extends PatternElement = PatternElement> {
   type: 'group';
   entries: Record<string, Message<P> | MessageGroup<P>>;
@@ -90,7 +79,7 @@ export interface SelectCase<P extends PatternElement = PatternElement> {
 }
 
 export const isMessage = <P extends PatternElement = PatternElement>(
-  msg: Resource<P> | MessageGroup<P> | Message<P> | undefined
+  msg: MessageGroup<P> | Message<P> | undefined
 ): msg is Message<P> =>
   !!msg &&
   typeof msg === 'object' &&

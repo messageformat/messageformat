@@ -6,7 +6,7 @@ describe('MessageValue variables', () => {
   let mf: MessageFormat;
   beforeEach(() => {
     const src = `msg = { $val }`;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     mf = new MessageFormat('en', null, res);
   });
 

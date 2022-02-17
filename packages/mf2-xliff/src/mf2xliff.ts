@@ -9,14 +9,15 @@ import {
   MessageFormat
 } from 'messageformat';
 import type * as MF from 'messageformat';
+import type { MessageFormatInfo } from './index';
 import type * as X from './xliff-spec';
 
 let _id = 0;
 const nextId = () => `m${++_id}`;
 
 export function mf2xliff(
-  source: MF.Resource,
-  target?: MF.Resource | undefined
+  source: MessageFormatInfo,
+  target?: MessageFormatInfo | undefined
 ): X.Xliff {
   _id = 0;
   const attributes: X.Xliff['attributes'] = {
@@ -31,8 +32,8 @@ export function mf2xliff(
   else if (target) attributes.trgLang = target.locale;
 
   const elements: (X.Unit | X.Group)[] = [];
-  for (const [key, srcMsg] of Object.entries(source.entries)) {
-    const trgMsg = target?.entries[key];
+  for (const [key, srcMsg] of Object.entries(source.data.entries)) {
+    const trgMsg = target?.data.entries[key];
     const entry = resolveEntry([key], srcMsg, trgMsg);
     elements.push(entry);
   }

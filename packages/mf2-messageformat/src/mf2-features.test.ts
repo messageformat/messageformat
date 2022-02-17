@@ -7,7 +7,7 @@ import {
   MessageValue,
   MessageNumber,
   MessageFormat,
-  Resource,
+  MessageGroup,
   Runtime,
   RuntimeOptions
 } from './index';
@@ -15,10 +15,8 @@ import type { FunctionRef, Literal, MessageRef } from './pattern';
 import { ResolvedMessage } from './message-value';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
-  const res: Resource<Literal | MessageRef> = {
-    type: 'resource',
-    id: 'res',
-    locale: 'fi',
+  const res: MessageGroup<Literal | MessageRef> = {
+    type: 'group',
     entries: {
       browser: {
         type: 'group',
@@ -161,10 +159,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const res: Resource<Literal | FunctionRef> = {
-      type: 'resource',
-      id: 'res',
-      locale: 'nl',
+    const res: MessageGroup<Literal | FunctionRef> = {
+      type: 'group',
       entries: {
         msg: {
           type: 'select',
@@ -220,10 +216,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   });
 
   test('input as separate start, end falues', () => {
-    const res: Resource<Literal | FunctionRef> = {
-      type: 'resource',
-      id: 'res',
-      locale: 'nl',
+    const res: MessageGroup<Literal | FunctionRef> = {
+      type: 'group',
       entries: {
         msg: {
           type: 'select',
@@ -300,7 +294,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       } and {golfCount, plural,
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
-    const res = compileMF1({ msg: src }, { id: 'res', locale: 'en' });
+    const res = compileMF1({ msg: src }, { locale: 'en' });
     expect((res.entries.msg as any).select).toHaveLength(4);
     expect((res.entries.msg as any).cases).toHaveLength(81);
 
@@ -348,7 +342,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {AREA, select, undefined{} other{in {AREA}}}
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
-    const res = compileMF1({ msg: src }, { id: 'res', locale: 'en' });
+    const res = compileMF1({ msg: src }, { locale: 'en' });
     expect((res.entries.msg as any).select).toHaveLength(6);
     expect((res.entries.msg as any).cases).toHaveLength(64);
 
@@ -393,7 +387,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         *[other] {$clipsPerDay} clips
       } a day.
     `;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
     const one = mf.format('activity-needed-calculation-plural', {
@@ -443,7 +437,7 @@ maybe('List formatting', () => {
       or = { LIST($list, style: "long", type: "disjunction") }
       or-other = { LIST($list, "another vehicle", type: "disjunction") }
     `;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime }, res);
     const list = ['Motorcycle', 'Bus', 'Car'];
 
@@ -515,7 +509,7 @@ maybe('List formatting', () => {
         *[other] Le-am dat cadouri { LIST($list, each: "dative") }.
       }
     `;
-    const res = compileFluent(src, { id: 'res', locale: 'ro' });
+    const res = compileFluent(src);
     const mf = new MessageFormat('ro', { runtime }, res);
 
     const list1 = ['Petre'];
@@ -568,7 +562,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     bar = The { $foo } and lotsa { $other }
     qux = { $foo } foo and a {"..."} { $other }
   `;
-  const res = compileFluent(src, { id: 'res', locale: 'en' });
+  const res = compileFluent(src);
   const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
   test('Match, no change', () => {

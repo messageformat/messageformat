@@ -371,7 +371,7 @@ for (const [title, cases] of Object.entries(testCases)) {
           else strParam.push(String(param));
 
           test(strParam.join(', '), () => {
-            const ast = compileMF1({ msg: src }, { id: 'res', locale });
+            const ast = compileMF1({ msg: src }, { locale });
             const mf = new MessageFormat(locale, { runtime: mf1Runtime }, ast);
             validate(ast, mf1Runtime);
             const msg = mf.format(

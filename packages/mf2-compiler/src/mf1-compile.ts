@@ -4,7 +4,6 @@ import type {
   FunctionRef,
   Literal,
   MessageGroup,
-  Resource,
   VariableRef
 } from 'messageformat';
 import { astToMessage } from './mf1-ast-to-message';
@@ -52,11 +51,11 @@ function compileMessageGroup(
 
 export function compileMF1(
   src: StringStructure,
-  { id, locale, strict }: { id: string; locale: string; strict?: boolean }
-): Resource<Literal | VariableRef | FunctionRef> {
+  { locale, strict }: { locale: string; strict?: boolean }
+): MessageGroup<Literal | VariableRef | FunctionRef> {
   const lc = normalize(locale);
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];
   const { entries } = compileMessageGroup(src, { cardinal, ordinal, strict });
-  return { type: 'resource', id, locale, entries };
+  return { type: 'group', entries };
 }

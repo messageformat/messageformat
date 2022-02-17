@@ -10,7 +10,7 @@ describe('options', () => {
       var = { $var }
       func = { NUMBER($var, maximumFractionDigits: 1) }
     `;
-    const res = compileFluent(src, { id: 'res', locale: 'en' });
+    const res = compileFluent(src);
 
     const mf1 = new MessageFormat('en', { runtime: fluentRuntime }, res);
     expect(mf1.format('var', { var: 12.34 })).toBe('12.34');

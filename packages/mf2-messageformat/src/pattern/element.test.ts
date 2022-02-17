@@ -3,17 +3,15 @@ import {
   FunctionRef,
   Literal,
   MessageFormat,
+  MessageGroup,
   MessageRef,
-  Resource,
   VariableRef
 } from '../index';
 
 type Part = Literal | VariableRef | FunctionRef | MessageRef | Element;
 function getMF(pattern: Part[]) {
-  const res: Resource<Part> = {
-    type: 'resource',
-    id: 'res',
-    locale: 'en',
+  const res: MessageGroup<Part> = {
+    type: 'group',
     entries: { msg: { type: 'message', pattern } }
   };
   return new MessageFormat('en', {}, res);

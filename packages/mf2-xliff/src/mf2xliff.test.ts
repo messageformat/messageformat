@@ -12,8 +12,8 @@ test('source only', () => {
         [a] A
        *[b] B
     }`;
-  const res = compileFluent(src, { id: 'res', locale: 'en' });
-  const xliff = stringify(mf2xliff(res));
+  const res = compileFluent(src);
+  const xliff = stringify(mf2xliff({ data: res, id: 'res', locale: 'en' }));
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
@@ -77,7 +77,7 @@ test('combine source & target', () => {
         [a] A
        *[b] B
     }`;
-  const srcRes = compileFluent(src, { id: 'res', locale: 'en' });
+  const srcRes = compileFluent(src);
 
   const trg = source`
     msg = Viesti
@@ -86,9 +86,14 @@ test('combine source & target', () => {
         [a] Ä
        *[b] B
     }`;
-  const trgRes = compileFluent(trg, { id: 'res', locale: 'fi' });
+  const trgRes = compileFluent(trg);
 
-  const xliff = stringify(mf2xliff(srcRes, trgRes));
+  const xliff = stringify(
+    mf2xliff(
+      { data: srcRes, id: 'res', locale: 'en' },
+      { data: trgRes, id: 'res', locale: 'fi' }
+    )
+  );
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
@@ -148,16 +153,21 @@ test('selector mismatch between source & target languages', () => {
         [feminine] her house
        *[other] their house
     }`;
-  const srcRes = compileFluent(src, { id: 'res', locale: 'en' });
+  const srcRes = compileFluent(src);
 
   const trg = source`
     select = {$case ->
         [allative] hänen talolle
        *[nominative] hänen talo
     }`;
-  const trgRes = compileFluent(trg, { id: 'res', locale: 'fi' });
+  const trgRes = compileFluent(trg);
 
-  const xliff = stringify(mf2xliff(srcRes, trgRes));
+  const xliff = stringify(
+    mf2xliff(
+      { data: srcRes, id: 'res', locale: 'en' },
+      { data: trgRes, id: 'res', locale: 'fi' }
+    )
+  );
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">

@@ -24,7 +24,7 @@
 import { compileFluent } from '@messageformat/compiler';
 // @ts-ignore
 import { source } from 'common-tags';
-import { fluentRuntime, MessageFormat, Resource, validate } from './index';
+import { fluentRuntime, MessageFormat, MessageGroup, validate } from './index';
 import type { FunctionRef, Literal, MessageRef, VariableRef } from './pattern';
 
 type TestCase = {
@@ -269,9 +269,9 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 )) {
   describe(title, () => {
     let mf: MessageFormat;
-    let res: Resource;
+    let res: MessageGroup;
     beforeAll(() => {
-      res = compileFluent(src, { id: 'res', locale });
+      res = compileFluent(src);
       mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
     });
 
@@ -311,7 +311,7 @@ describe('getMessage', () => {
 
     let mf: MessageFormat;
     beforeAll(() => {
-      const res = compileFluent(src, { id: 'res', locale: 'en' });
+      const res = compileFluent(src);
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 
@@ -391,18 +391,16 @@ describe('getMessage', () => {
       ### Other resource comment
     `;
 
-    let res: Resource<Literal | FunctionRef | MessageRef | VariableRef>;
+    let res: MessageGroup<Literal | FunctionRef | MessageRef | VariableRef>;
     let mf: MessageFormat;
     beforeAll(() => {
-      res = compileFluent(src, { id: 'res', locale: 'en' });
+      res = compileFluent(src);
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 
     test('Data model comments', () => {
       expect(res).toEqual({
-        type: 'resource',
-        id: 'res',
-        locale: 'en',
+        type: 'group',
         comment: 'Resource comment\n\nOther resource comment',
         entries: {
           foo: {
@@ -480,7 +478,7 @@ describe('getMessage', () => {
 
     let mf: MessageFormat;
     beforeAll(() => {
-      const res = compileFluent(src, { id: 'res', locale: 'en' });
+      const res = compileFluent(src);
       mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
     });
 

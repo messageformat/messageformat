@@ -43,7 +43,7 @@ import { MessageFormat, mf1Runtime } from 'messageformat';
 const locale = 'en-US';
 const msg = 'Today is {today, date}';
 
-const res = compileMF1({ msg }, { id: 'res', locale });
+const res = compileMF1({ msg }, { locale });
 const mf = new MessageFormat(locale, { runtime: mf1Runtime }, res);
 
 mf.format('msg', { today: new Date('2022-02-02') });
@@ -59,7 +59,7 @@ import { MessageFormat, fluentRuntime } from 'messageformat';
 const locale = 'en-US';
 const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
 
-const res = compileFluent(src, { id: 'res', locale });
+const res = compileFluent(src);
 const mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
 
 const resMsg = mf.getMessage('msg', { today: new Date('2022-02-02') });

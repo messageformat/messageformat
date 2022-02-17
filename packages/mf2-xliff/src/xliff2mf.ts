@@ -1,4 +1,5 @@
 import type * as MF from 'messageformat';
+import type { MessageFormatInfo } from './index';
 import type * as X from './xliff-spec';
 
 import { hasMeta, isFunctionRef, isLiteral, isMessageRef } from 'messageformat';
@@ -6,7 +7,7 @@ import { parse } from './xliff';
 
 export function xliff2mf(
   xliff: string | X.Xliff | X.XliffDoc
-): { source: MF.Resource; target?: MF.Resource }[] {
+): { source: MessageFormatInfo; target?: MessageFormatInfo }[] {
   if (typeof xliff === 'string') xliff = parse(xliff);
   if (xliff.name !== 'xliff') xliff = xliff.elements[0];
   const xAttr = xliff.attributes;
@@ -22,20 +23,18 @@ function resolveFile(
 ) {
   checkResegment(file);
   const { id } = file.attributes;
-  const source: MF.Resource = {
-    type: 'resource',
+  const source: MessageFormatInfo = {
     id,
     locale: srcLang,
-    entries: {}
+    data: { type: 'group', entries: {} }
   };
-  const target: MF.Resource = {
-    type: 'resource',
+  const target: MessageFormatInfo = {
     id,
     locale: trgLang || '',
-    entries: {}
+    data: { type: 'group', entries: {} }
   };
   for (const el of file.elements) {
-    resolveEntry(el, source, target);
+    resolveEntry(el, source.data, target.data);
   }
   return { source, target };
 }
@@ -59,8 +58,8 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 function resolveEntry(
   entry: ArrayElement<X.File['elements'] | X.Group['elements']>,
-  source: MF.Resource | MF.MessageGroup,
-  target: MF.Resource | MF.MessageGroup
+  source: MF.MessageGroup,
+  target: MF.MessageGroup
 ) {
   switch (entry.name) {
     case 'group': {

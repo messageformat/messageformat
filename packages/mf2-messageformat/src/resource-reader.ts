@@ -1,4 +1,4 @@
-import { isMessage, Message, MessageGroup, Resource } from './data-model';
+import { isMessage, Message, MessageGroup } from './data-model';
 
 /**
  * Provides the minimum required runtime interface for accessing resources.
@@ -7,13 +7,13 @@ import { isMessage, Message, MessageGroup, Resource } from './data-model';
  * `id` and `getMessage(path)`.
  */
 export class ResourceReader {
-  static from(src: Resource | ResourceReader) {
+  static from(src: MessageGroup | ResourceReader) {
     return src instanceof ResourceReader ? src : new ResourceReader(src);
   }
 
-  #data: Resource;
+  #data: MessageGroup;
 
-  constructor(data: Resource) {
+  constructor(data: MessageGroup) {
     this.#data = data;
   }
 
