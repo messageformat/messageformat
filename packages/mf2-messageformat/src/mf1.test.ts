@@ -371,12 +371,11 @@ for (const [title, cases] of Object.entries(testCases)) {
           else strParam.push(String(param));
 
           test(strParam.join(', '), () => {
-            const mf = new MessageFormat(locale, { runtime: mf1Runtime });
             const ast = compileMF1({ msg: src }, { id: 'res', locale });
-            mf.addResources(ast);
-            validate([ast], mf1Runtime);
+            const mf = new MessageFormat(locale, { runtime: mf1Runtime }, ast);
+            validate(ast, mf1Runtime);
             const msg = mf.format(
-              { resId: 'res', path: ['msg'] },
+              ['msg'],
               param as Record<string, string | number | Date>
             );
             if (res instanceof RegExp) expect(msg).toMatch(res);

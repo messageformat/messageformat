@@ -7,10 +7,7 @@ import {
 import { isFunctionRef, isMessageRef } from '../pattern';
 import type { Runtime } from '../runtime';
 
-export function validate(
-  resources: Iterable<Readonly<Resource>>,
-  runtime: Runtime
-) {
+export function validate(resource: Readonly<Resource>, runtime: Runtime) {
   function handleMsgParts(parts: PatternElement[]) {
     for (const part of parts) {
       if (isFunctionRef(part)) {
@@ -21,19 +18,7 @@ export function validate(
         handleMsgParts(args);
         // TODO: Once runtime arg requirements are defined, test against them
       } else if (isMessageRef(part)) {
-        const { msg_path, res_id } = part;
-        if (res_id) {
-          let found = false;
-          for (const res of resources) {
-            if (res.id === res_id) {
-              found = true;
-              break;
-            }
-          }
-          if (!found)
-            throw new ReferenceError(`Resource not available: ${res_id}`);
-        }
-        handleMsgParts(msg_path);
+        handleMsgParts(part.msg_path);
       }
     }
   }
@@ -48,5 +33,5 @@ export function validate(
     }
   }
 
-  for (const res of resources) handleMsgGroup(res);
+  handleMsgGroup(resource);
 }

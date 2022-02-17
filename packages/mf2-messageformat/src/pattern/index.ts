@@ -18,7 +18,7 @@ export { isVariableRef, VariableRef } from './variable-ref';
 export interface PatternElementResolver<T = unknown> {
   type: string;
   resolve(ctx: Context, elem: PatternElement): MessageValue;
-  initContext?: (mf: Readonly<MessageFormat>, resId: string, scope: Scope) => T;
+  initContext?: (mf: Readonly<MessageFormat>, scope: Scope) => T;
 }
 
 export const patternFormatters = [

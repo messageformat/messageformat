@@ -303,10 +303,7 @@ function resolvePart(
     return {
       type: 'element',
       name: 'mf:message',
-      attributes: Object.assign(
-        part.res_id ? { resourceId: part.res_id } : {},
-        attributes
-      ),
+      attributes,
       elements
     };
   }

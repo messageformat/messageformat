@@ -276,7 +276,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     });
 
     test('validate', () => {
-      validate([res], fluentRuntime);
+      validate(res, fluentRuntime);
     });
 
     for (const { msg, scope, exp, only } of tests) {

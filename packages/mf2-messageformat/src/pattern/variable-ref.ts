@@ -45,7 +45,7 @@ function getValue(ctx: Context, path: string[]): unknown {
 export const resolver: PatternElementResolver<Scope> = {
   type: 'variable',
 
-  initContext: (_mf, _resId, scope) => scope,
+  initContext: (_mf, scope) => scope,
 
   resolve(ctx, { meta, var_path }: VariableRef) {
     const source = '$' + var_path.join('.');

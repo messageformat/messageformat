@@ -17,10 +17,6 @@ export class ResourceReader {
     this.#data = data;
   }
 
-  get id(): string {
-    return this.#data.id;
-  }
-
   getMessage(path: string[]): Message | undefined {
     if (path.length === 0) return undefined;
     let msg: MessageGroup | Message | undefined = this.#data.entries[path[0]];

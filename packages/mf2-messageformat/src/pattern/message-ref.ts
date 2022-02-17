@@ -1,6 +1,7 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { MessageFallback, ResolvedMessage } from '../message-value';
+import { MessageFallback } from '../message-value';
+import type { MessageFormat } from '../messageformat';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
 import type { Scope } from './variable-ref';
 
@@ -17,20 +18,13 @@ import type { Scope } from './variable-ref';
  */
 export interface MessageRef extends PatternElement {
   type: 'term';
-  res_id?: string;
   msg_path: (Literal | VariableRef)[];
   scope?: Record<string, Literal | VariableRef>;
 }
 
-type MsgRefResolver = (
-  resId: string | undefined,
-  msgPath: string[],
-  scope?: Scope
-) => ResolvedMessage | undefined;
-
 interface MsgRefContext extends Context {
   types: {
-    term: MsgRefResolver;
+    term: MessageFormat['getMessage'];
     variable: Scope;
   };
 }
@@ -50,25 +44,23 @@ function getMessageScope(ctx: MsgRefContext, { scope }: MessageRef): Scope {
   return res;
 }
 
-export const resolver: PatternElementResolver<MsgRefResolver> = {
+export const resolver: PatternElementResolver<MessageFormat['getMessage']> = {
   type: 'term',
 
-  initContext: (mf, resId) => (msgResId, path, scope) => {
-    const res = mf.getMessage({ resId: msgResId || resId, path }, scope);
-    if (res) res.source = '-' + path.join('.');
-    return res;
-  },
+  initContext: mf => mf.getMessage.bind(mf),
 
   resolve(ctx, term: MessageRef) {
-    const { meta, msg_path, res_id } = term;
+    const { meta, msg_path } = term;
     const strPath = msg_path.map(elem => ctx.resolve(elem).toString());
-    let source = strPath.join('.');
-    source = res_id ? `-${res_id}::${source}` : `-${source}`;
+    const source = '-' + strPath.join('.');
 
     if (isMsgRefContext(ctx)) {
       const msgScope = getMessageScope(ctx, term);
-      const msg = ctx.types.term(res_id, strPath, msgScope);
-      if (msg) return msg;
+      const msg = ctx.types.term(strPath, msgScope);
+      if (msg) {
+        msg.source = source;
+        return msg;
+      }
     }
 
     const fb = new MessageFallback(ctx, { meta, source });

@@ -1,4 +1,4 @@
-import { Message, Resource } from './data-model';
+import { Resource } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
 import { PatternElementResolver, patternFormatters } from './pattern';
@@ -32,14 +32,14 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
   readonly #resolvers: readonly PatternElementResolver[];
-  readonly #resources: ResourceReader[] = [];
+  readonly #resource: ResourceReader;
 
   readonly [MFruntime]: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
-    options?: MessageFormatOptions | null,
-    ...resources: (Resource | ResourceReader)[]
+    options: MessageFormatOptions | null,
+    resource: Resource | ResourceReader
   ) {
     this.#resolvers =
       options?.elements?.map(fmtOpt => {
@@ -53,15 +53,11 @@ export class MessageFormat {
     this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
     const rt = options?.runtime ?? defaultRuntime;
     this[MFruntime] = Object.freeze({ ...rt });
-    this.addResources(...resources);
-  }
-
-  addResources(...resources: (Resource | ResourceReader)[]) {
-    this.#resources.splice(0, 0, ...resources.map(ResourceReader.from));
+    this.#resource = ResourceReader.from(resource);
   }
 
   format(
-    msgPath: string | string[] | { resId: string; path: string[] },
+    msgPath: string | string[],
     scope: Scope = {},
     onError?: (error: unknown, value: MessageValue) => void
   ) {
@@ -70,22 +66,14 @@ export class MessageFormat {
   }
 
   getMessage(
-    msgPath: string | string[] | { resId: string; path: string[] },
+    msgPath: string | string[],
     scope: Scope = {},
     onError?: (error: unknown, value: MessageValue) => void
   ): ResolvedMessage | undefined {
-    const { resId, path } = this.parseMsgPath(msgPath);
-    let msg: Message | undefined;
-
-    for (const res of this.#resources) {
-      if (res.id === resId) {
-        msg = res.getMessage(path);
-        if (msg) break;
-      }
-    }
+    const path = typeof msgPath === 'string' ? [msgPath] : msgPath;
+    const msg = this.#resource.getMessage(path);
     if (!msg) return undefined;
-
-    const ctx = this.createContext(resId, scope, onError);
+    const ctx = this.createContext(scope, onError);
     return new ResolvedMessage(ctx, msg);
   }
 
@@ -99,7 +87,6 @@ export class MessageFormat {
   }
 
   private createContext(
-    resId: string,
     scope: Scope,
     onError: Context['onError'] = () => {
       // Ignore errors by default
@@ -121,34 +108,9 @@ export class MessageFormat {
 
     for (const res of resolvers) {
       if (typeof res.initContext === 'function')
-        ctx.types[res.type] = res.initContext(this, resId, scope);
+        ctx.types[res.type] = res.initContext(this, scope);
     }
 
     return ctx;
-  }
-
-  private parseMsgPath(
-    msgPath: string | string[] | { resId: string; path: string[] }
-  ): { resId: string; path: string[] } {
-    if (typeof msgPath === 'string') msgPath = [msgPath];
-    if (Array.isArray(msgPath)) {
-      const r0 = this.#resources[0];
-      if (!r0) throw new Error('No resources available');
-      const resId = r0.id;
-      for (const res of this.#resources)
-        if (res.id !== resId)
-          throw new Error(
-            'Explicit resource id required to differentiate resources'
-          );
-      return { resId, path: msgPath };
-    }
-
-    if (msgPath && typeof msgPath === 'object') {
-      const { resId, path } = msgPath;
-      if (typeof resId === 'string' && Array.isArray(path))
-        return { resId, path };
-    }
-
-    throw new TypeError('Invalid msgPath argument');
   }
 }
