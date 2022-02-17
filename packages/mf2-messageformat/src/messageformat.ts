@@ -1,9 +1,8 @@
-import { MessageGroup } from './data-model';
+import { isMessage, Message, MessageGroup } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
 import { PatternElementResolver, patternFormatters } from './pattern';
 import type { Scope } from './pattern/variable-ref';
-import { ResourceReader } from './resource-reader';
 import { defaultRuntime, Runtime } from './runtime';
 
 export interface MessageFormatOptions {
@@ -32,14 +31,14 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
   readonly #resolvers: readonly PatternElementResolver[];
-  readonly #resource: ResourceReader;
+  readonly #resource: MessageGroup;
 
   readonly [MFruntime]: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
     options: MessageFormatOptions | null,
-    resource: MessageGroup | ResourceReader
+    resource: MessageGroup
   ) {
     this.#resolvers =
       options?.elements?.map(fmtOpt => {
@@ -53,7 +52,7 @@ export class MessageFormat {
     this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
     const rt = options?.runtime ?? defaultRuntime;
     this[MFruntime] = Object.freeze({ ...rt });
-    this.#resource = ResourceReader.from(resource);
+    this.#resource = resource;
   }
 
   format(
@@ -66,13 +65,22 @@ export class MessageFormat {
   }
 
   getMessage(
-    msgPath: string | string[],
+    msgPath: string | Iterable<string>,
     scope: Scope = {},
     onError?: (error: unknown, value: MessageValue) => void
   ): ResolvedMessage | undefined {
-    const path = typeof msgPath === 'string' ? [msgPath] : msgPath;
-    const msg = this.#resource.getMessage(path);
-    if (!msg) return undefined;
+    let msg: Message | MessageGroup;
+    if (typeof msgPath === 'string') {
+      msg = this.#resource.entries[msgPath];
+    } else {
+      msg = this.#resource;
+      for (const part of msgPath) {
+        if (!msg || isMessage(msg) || part == null) return undefined;
+        msg = msg.entries[part];
+      }
+    }
+
+    if (!isMessage(msg)) return undefined;
     const ctx = this.createContext(scope, onError);
     return new ResolvedMessage(ctx, msg);
   }
@@ -82,6 +90,7 @@ export class MessageFormat {
       elements: this.#resolvers.map(res => res.type),
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
+      resource: this.#resource,
       runtime: this[MFruntime]
     };
   }
