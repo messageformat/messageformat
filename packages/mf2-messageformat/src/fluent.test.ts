@@ -290,7 +290,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const _test = only ? test.only : test;
       _test(name, () => {
-        const str = mf.format(msg, scope);
+        const str = mf.getMessage(msg, scope)?.toString();
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
       });

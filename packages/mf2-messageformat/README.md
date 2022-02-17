@@ -46,7 +46,7 @@ const msg = 'Today is {today, date}';
 const res = compileMF1({ msg }, { locale });
 const mf = new MessageFormat(locale, { runtime: mf1Runtime }, res);
 
-mf.format('msg', { today: new Date('2022-02-02') });
+mf.getMessage('msg', { today: new Date('2022-02-02') }).toString();
 // 'Today is Feb 2, 2022'
 ```
 

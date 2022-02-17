@@ -13,16 +13,16 @@ describe('options', () => {
     const res = compileFluent(src);
 
     const mf1 = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    expect(mf1.format('var', { var: 12.34 })).toBe('12.34');
-    expect(mf1.format('func', { var: 12.34 })).toBe('12.3');
+    expect(mf1.getMessage('var', { var: 12.34 })?.toString()).toBe('12.34');
+    expect(mf1.getMessage('func', { var: 12.34 })?.toString()).toBe('12.3');
 
     const mf2 = new MessageFormat(
       'en',
       { elements: ['literal', 'variable'], runtime: fluentRuntime },
       res
     );
-    expect(mf2.format('var', { var: 12.34 })).toBe('12.34');
-    expect(() => mf2.format('func', { var: 12.34 })).toThrow(
+    expect(mf2.getMessage('var', { var: 12.34 })?.toString()).toBe('12.34');
+    expect(() => mf2.getMessage('func', { var: 12.34 })?.toString()).toThrow(
       'Unsupported pattern element: function'
     );
   });

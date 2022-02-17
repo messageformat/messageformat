@@ -36,7 +36,7 @@ describe('Simple element', () => {
         }
       ]
     });
-    expect(mf.format('msg')).toBe('<b>foo</b>');
+    expect(mf.getMessage('msg')?.toString()).toBe('<b>foo</b>');
   });
 
   test('options, variables', () => {
@@ -104,7 +104,7 @@ describe('Multiple elements', () => {
         }
       ]
     });
-    expect(mf.format('msg')).toBe('<b>foo</b><1>bar</1>');
+    expect(mf.getMessage('msg')?.toString()).toBe('<b>foo</b><1>bar</1>');
   });
 
   test('nested', () => {
@@ -138,7 +138,7 @@ describe('Multiple elements', () => {
         }
       ]
     });
-    expect(mf.format('msg')).toBe('<b>foo<1>bar</1></b>');
+    expect(mf.getMessage('msg')?.toString()).toBe('<b>foo<1>bar</1></b>');
   });
 
   test('overlapping', () => {
@@ -180,6 +180,8 @@ describe('Multiple elements', () => {
         }
       ]
     });
-    expect(mf.format('msg')).toBe('<b>foo<1>bar</1></b><1>baz</1>');
+    expect(mf.getMessage('msg')?.toString()).toBe(
+      '<b>foo<1>bar</1></b><1>baz</1>'
+    );
   });
 });

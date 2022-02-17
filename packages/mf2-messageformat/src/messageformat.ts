@@ -55,15 +55,6 @@ export class MessageFormat {
     this.#resource = resource;
   }
 
-  format(
-    msgPath: string | string[],
-    scope: Scope = {},
-    onError?: (error: unknown, value: MessageValue) => void
-  ) {
-    const resMsg = this.getMessage(msgPath, scope, onError);
-    return resMsg ? resMsg.toString(onError) : '';
-  }
-
   getMessage(
     msgPath: string | Iterable<string>,
     scope: Scope = {},

@@ -374,10 +374,12 @@ for (const [title, cases] of Object.entries(testCases)) {
             const ast = compileMF1({ msg: src }, { locale });
             const mf = new MessageFormat(locale, { runtime: mf1Runtime }, ast);
             validate(ast, mf1Runtime);
-            const msg = mf.format(
-              ['msg'],
-              param as Record<string, string | number | Date>
-            );
+            const msg = mf
+              .getMessage(
+                ['msg'],
+                param as Record<string, string | number | Date>
+              )
+              ?.toString();
             if (res instanceof RegExp) expect(msg).toMatch(res);
             else expect(msg).toBe(res);
           });

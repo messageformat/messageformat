@@ -25,7 +25,7 @@ describe('Function returns generic value', () => {
       type: 'message',
       value: [{ source: 'STRINGIFY($var)', type: 'value', value: '42' }]
     });
-    expect(mf.format('msg', { var: 42 })).toBe('42');
+    expect(mf.getMessage('msg', { var: 42 })?.toString()).toBe('42');
   });
 
   test('number', () => {
@@ -39,7 +39,7 @@ describe('Function returns generic value', () => {
       type: 'message',
       value: [{ source: 'NUMERIC($var)', type: 'number', value: 42 }]
     });
-    expect(mf.format('msg', { var: '42' })).toBe('42');
+    expect(mf.getMessage('msg', { var: '42' })?.toString()).toBe('42');
   });
 
   test('Date', () => {
@@ -148,8 +148,8 @@ describe('Type casts based on runtime', () => {
     };
 
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    expect(mf.format('true', { var: 1234 })).toBe('1,234');
-    expect(mf.format('false', { var: 1234 })).toBe('1234');
+    expect(mf.getMessage('true', { var: 1234 })?.toString()).toBe('1,234');
+    expect(mf.getMessage('false', { var: 1234 })?.toString()).toBe('1234');
   });
 
   test('boolean function option with variable value', () => {
@@ -162,7 +162,11 @@ describe('Type casts based on runtime', () => {
     };
 
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
-    expect(mf.format('msg', { var: 1234, useGrouping: 'false' })).toBe('1,234');
-    expect(mf.format('msg', { var: 1234, useGrouping: false })).toBe('1234');
+    expect(
+      mf.getMessage('msg', { var: 1234, useGrouping: 'false' })?.toString()
+    ).toBe('1,234');
+    expect(
+      mf.getMessage('msg', { var: 1234, useGrouping: false })?.toString()
+    ).toBe('1234');
   });
 });

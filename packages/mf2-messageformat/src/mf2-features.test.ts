@@ -93,9 +93,6 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
   };
   const mf = new MessageFormat('fi', null, res);
 
-  const str = mf.format('settings', { 'browser-id': 'firefox' });
-  expect(str).toBe('Firefoxin asetukset');
-
   const msg = mf.getMessage('settings', { 'browser-id': 'firefox' });
   expect(msg).toMatchObject({
     type: 'message',
@@ -108,6 +105,7 @@ test('Dynamic References (unicode-org/message-format-wg#130)', () => {
       { type: 'literal', value: ' asetukset' }
     ]
   });
+  expect(msg?.toString()).toBe('Firefoxin asetukset');
 });
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
@@ -208,11 +206,11 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     };
     const mf = new MessageFormat('nl', { runtime }, res);
 
-    const msg1 = mf.format('msg', { range: { start: 0, end: 1 } });
-    expect(msg1).toBe('0 - 1 dag');
+    const msg1 = mf.getMessage('msg', { range: { start: 0, end: 1 } });
+    expect(msg1?.toString()).toBe('0 - 1 dag');
 
-    const msg2 = mf.format('msg', { range: { start: 1, end: 2 } });
-    expect(msg2).toBe('1 - 2 dagen');
+    const msg2 = mf.getMessage('msg', { range: { start: 1, end: 2 } });
+    expect(msg2?.toString()).toBe('1 - 2 dagen');
   });
 
   test('input as separate start, end falues', () => {
@@ -274,11 +272,11 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     };
     const mf = new MessageFormat('nl', { runtime }, res);
 
-    const msg1 = mf.format('msg', { start: 0, end: 1 });
-    expect(msg1).toBe('0 - 1 dag');
+    const msg1 = mf.getMessage('msg', { start: 0, end: 1 });
+    expect(msg1?.toString()).toBe('0 - 1 dag');
 
-    const msg2 = mf.format('msg', { start: 1, end: 2 });
-    expect(msg2).toBe('1 - 2 dagen');
+    const msg2 = mf.getMessage('msg', { start: 1, end: 2 });
+    expect(msg2?.toString()).toBe('1 - 2 dagen');
   });
 });
 
@@ -300,33 +298,33 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
     const mf = new MessageFormat('en', null, res);
 
-    const none = mf.format('msg', {
+    const none = mf.getMessage('msg', {
       poolCount: 0,
       restaurantCount: 0,
       beachCount: 0,
       golfCount: 0
     });
-    expect(none).toBe(
+    expect(none?.toString()).toBe(
       'This all-inclusive resort includes no pools, no restaurants, no beaches and no golf courses.'
     );
 
-    const one = mf.format('msg', {
+    const one = mf.getMessage('msg', {
       poolCount: 1,
       restaurantCount: 1,
       beachCount: 1,
       golfCount: 1
     });
-    expect(one).toBe(
+    expect(one?.toString()).toBe(
       'This all-inclusive resort includes 1 pool, 1 restaurant, 1 beach and 1 golf course.'
     );
 
-    const two = mf.format('msg', {
+    const two = mf.getMessage('msg', {
       poolCount: 2,
       restaurantCount: 2,
       beachCount: 2,
       golfCount: 2
     });
-    expect(two).toBe(
+    expect(two?.toString()).toBe(
       'This all-inclusive resort includes 2 pools, 2 restaurants, 2 beaches and 2 golf courses.'
     );
   });
@@ -348,7 +346,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
     const mf = new MessageFormat('en', null, res);
 
-    const one = mf.format('msg', {
+    const one = mf.getMessage('msg', {
       N: 1,
       LIVE: String(undefined),
       TAG: 'foo',
@@ -356,9 +354,11 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       AREA: String(undefined),
       Q: String(undefined)
     });
-    expect(one.replace(/\s+/g, ' ').trim()).toBe('Listing one foo item');
+    expect(one?.toString().replace(/\s+/g, ' ').trim()).toBe(
+      'Listing one foo item'
+    );
 
-    const two = mf.format('msg', {
+    const two = mf.getMessage('msg', {
       N: 2,
       LIVE: true,
       TAG: 'foo',
@@ -366,7 +366,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       AREA: 'there',
       Q: '"bar"'
     });
-    expect(two.replace(/\s+/g, ' ').trim()).toBe(
+    expect(two?.toString().replace(/\s+/g, ' ').trim()).toBe(
       'Listing 2 current and future foo items in there matching the query "bar"'
     );
   });
@@ -390,23 +390,23 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
 
-    const one = mf.format('activity-needed-calculation-plural', {
+    const one = mf.getMessage('activity-needed-calculation-plural', {
       totalHours: 1,
       periodMonths: 1,
       people: 1,
       clipsPerDay: 1
     });
-    expect(one).toBe(
+    expect(one?.toString()).toBe(
       '1 hour is achievable in just over 1 month if 1 person record 1 clip a day.'
     );
 
-    const two = mf.format('activity-needed-calculation-plural', {
+    const two = mf.getMessage('activity-needed-calculation-plural', {
       totalHours: 2,
       periodMonths: 2,
       people: 2,
       clipsPerDay: 2
     });
-    expect(two).toBe(
+    expect(two?.toString()).toBe(
       '2 hours is achievable in just over 2 months if 2 people record 2 clips a day.'
     );
   });
@@ -441,17 +441,19 @@ maybe('List formatting', () => {
     const mf = new MessageFormat('en', { runtime }, res);
     const list = ['Motorcycle', 'Bus', 'Car'];
 
-    const plainMsg = mf.format('plain', { list });
-    expect(plainMsg).toBe('Motorcycle, Bus, and Car');
+    const plainMsg = mf.getMessage('plain', { list });
+    expect(plainMsg?.toString()).toBe('Motorcycle, Bus, and Car');
 
-    const andMsg = mf.format('and', { list });
-    expect(andMsg).toBe('Motorcycle, Bus, & Car');
+    const andMsg = mf.getMessage('and', { list });
+    expect(andMsg?.toString()).toBe('Motorcycle, Bus, & Car');
 
-    const orMsg = mf.format('or', { list });
-    expect(orMsg).toBe('Motorcycle, Bus, or Car');
+    const orMsg = mf.getMessage('or', { list });
+    expect(orMsg?.toString()).toBe('Motorcycle, Bus, or Car');
 
-    const otherMsg = mf.format('or-other', { list });
-    expect(otherMsg).toBe('Motorcycle, Bus, Car, or another vehicle');
+    const otherMsg = mf.getMessage('or-other', { list });
+    expect(otherMsg?.toString()).toBe(
+      'Motorcycle, Bus, Car, or another vehicle'
+    );
   });
 
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
@@ -513,18 +515,20 @@ maybe('List formatting', () => {
     const mf = new MessageFormat('ro', { runtime }, res);
 
     const list1 = ['Petre'];
-    const msg1 = mf.format('msg', {
+    const msg1 = mf.getMessage('msg', {
       count: list1.length,
       list: list1
     });
-    expect(msg1).toBe('I-am dat cadouri lui Petre.');
+    expect(msg1?.toString()).toBe('I-am dat cadouri lui Petre.');
 
     const list3 = ['Maria', 'Ileana', 'Petre'];
-    const msg3 = mf.format('msg', {
+    const msg3 = mf.getMessage('msg', {
       count: list3.length,
       list: list3
     });
-    expect(msg3).toBe('Le-am dat cadouri Mariei, Ilenei și lui Petre.');
+    expect(msg3?.toString()).toBe(
+      'Le-am dat cadouri Mariei, Ilenei și lui Petre.'
+    );
   });
 });
 
