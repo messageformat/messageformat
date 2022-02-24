@@ -3,7 +3,7 @@ import * as PluralCategories from 'make-plural/pluralCategories';
 import * as Plurals from 'make-plural/plurals';
 import { identifier } from 'safe-identifier';
 
-function normalize(locale: string) {
+export function normalize(locale: string) {
   if (typeof locale !== 'string' || locale.length < 2)
     throw new RangeError(`Invalid language tag: ${locale}`);
 

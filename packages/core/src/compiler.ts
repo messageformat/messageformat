@@ -12,7 +12,7 @@ import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 import { MessageFormatOptions } from './messageformat';
-import { PluralObject } from './plurals';
+import { PluralObject, normalize } from './plurals';
 
 const RUNTIME_MODULE = '@messageformat/runtime';
 const CARDINAL_MODULE = '@messageformat/runtime/lib/cardinals';
@@ -74,7 +74,8 @@ export default class Compiler {
     if (typeof src === 'object') {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
-        const pl = (plurals && plurals[key]) || plural;
+        const normalizedPluralsKey = key.length > 2 ? normalize(key) : key;
+        const pl = (plurals && plurals[normalizedPluralsKey])  || plural;
         result[key] = this.compile(src[key], pl, plurals);
       }
       return result;

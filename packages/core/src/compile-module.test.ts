@@ -329,4 +329,63 @@ describe('compileModule()', function () {
       );
     });
   });
+
+  describe('locale variants', () => {
+    it('valid variants', async () => {
+      const mf = new MessageFormat("*");
+      const mp = {
+        "en-US": {
+          key: 'en-US'
+        },
+        "es-MX": {
+          key: "en-MX"
+        },
+        "es-ES": {
+          key: "en-ES"
+        }
+      }
+
+      const m = await getModule(mf, mp);
+
+      expect(m['en-US']['key']()).toEqual("en-US");
+      expect(m['es-MX']['key']()).toEqual("en-MX");
+      expect(m['es-ES']['key']()).toEqual("en-ES");
+    });
+
+    it('valid variants', async () => {
+      const mf = new MessageFormat("*");
+      const mp = {
+        "en-US": {
+          key: 'en-US'
+        },
+        "es-MX": {
+          key: "en-MX"
+        },
+        "es-ES": {
+          key: "en-ES"
+        }
+      }
+
+      const m = await getModule(mf, mp);
+      expect(m['en-US']['key']()).toEqual("en-US");
+      expect(m['es-MX']['key']()).toEqual("en-MX");
+      expect(m['es-ES']['key']()).toEqual("en-ES");
+    });
+
+    it('mixed variants', async () => {
+      const mf = new MessageFormat("*");
+      const mp = {
+        "en": {
+          key: 'en'
+        },
+        "es-MX": {
+          key: "en-MX"
+        },
+      }
+
+      const m = await getModule(mf, mp);
+      expect(m['en']['key']()).toEqual("en");
+      expect(m['es-MX']['key']()).toEqual("en-MX");
+    });
+  })
 });
