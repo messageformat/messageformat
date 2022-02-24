@@ -387,5 +387,22 @@ describe('compileModule()', function () {
       expect(m['en']['key']()).toEqual("en");
       expect(m['es-MX']['key']()).toEqual("en-MX");
     });
+
+    it('date regression specification', async () => {
+      const mf = new MessageFormat("*");
+      const mp = {
+        "en-US": {
+          utilsDate: "{date, date, ::EEEMMMd}"
+        },
+        "es-MX": {
+          utilsDate: "{date, date, ::EEEMMMd}"
+        },
+      }
+
+      const result = compileModule(mf, mp);
+
+      expect(result).toMatch(`new Intl.DateTimeFormat("en", opt);`);
+      expect(result).toMatch(`new Intl.DateTimeFormat("es", opt);`);
+    });
   })
 });
