@@ -75,7 +75,7 @@ export default class Compiler {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
         const normalizedPluralsKey = key.length > 2 ? normalize(key) : key;
-        const pl = (plurals && plurals[normalizedPluralsKey])  || plural;
+        const pl = (plurals && plurals[normalizedPluralsKey]) || plural;
         result[key] = this.compile(src[key], pl, plurals);
       }
       return result;

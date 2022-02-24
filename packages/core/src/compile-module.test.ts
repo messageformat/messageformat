@@ -332,77 +332,77 @@ describe('compileModule()', function () {
 
   describe('locale variants', () => {
     it('valid variants', async () => {
-      const mf = new MessageFormat("*");
+      const mf = new MessageFormat('*');
       const mp = {
-        "en-US": {
+        'en-US': {
           key: 'en-US'
         },
-        "es-MX": {
-          key: "en-MX"
+        'es-MX': {
+          key: 'en-MX'
         },
-        "es-ES": {
-          key: "en-ES"
+        'es-ES': {
+          key: 'en-ES'
         }
-      }
+      };
 
       const m = await getModule(mf, mp);
 
-      expect(m['en-US']['key']()).toEqual("en-US");
-      expect(m['es-MX']['key']()).toEqual("en-MX");
-      expect(m['es-ES']['key']()).toEqual("en-ES");
+      expect(m['en-US']['key']()).toEqual('en-US');
+      expect(m['es-MX']['key']()).toEqual('en-MX');
+      expect(m['es-ES']['key']()).toEqual('en-ES');
     });
 
     it('valid variants', async () => {
-      const mf = new MessageFormat("*");
+      const mf = new MessageFormat('*');
       const mp = {
-        "en-US": {
+        'en-US': {
           key: 'en-US'
         },
-        "es-MX": {
-          key: "en-MX"
+        'es-MX': {
+          key: 'en-MX'
         },
-        "es-ES": {
-          key: "en-ES"
+        'es-ES': {
+          key: 'en-ES'
         }
-      }
+      };
 
       const m = await getModule(mf, mp);
-      expect(m['en-US']['key']()).toEqual("en-US");
-      expect(m['es-MX']['key']()).toEqual("en-MX");
-      expect(m['es-ES']['key']()).toEqual("en-ES");
+      expect(m['en-US']['key']()).toEqual('en-US');
+      expect(m['es-MX']['key']()).toEqual('en-MX');
+      expect(m['es-ES']['key']()).toEqual('en-ES');
     });
 
     it('mixed variants', async () => {
-      const mf = new MessageFormat("*");
+      const mf = new MessageFormat('*');
       const mp = {
-        "en": {
+        en: {
           key: 'en'
         },
-        "es-MX": {
-          key: "en-MX"
-        },
-      }
+        'es-MX': {
+          key: 'en-MX'
+        }
+      };
 
       const m = await getModule(mf, mp);
-      expect(m['en']['key']()).toEqual("en");
-      expect(m['es-MX']['key']()).toEqual("en-MX");
+      expect(m['en']['key']()).toEqual('en');
+      expect(m['es-MX']['key']()).toEqual('en-MX');
     });
 
     it('date regression specification', async () => {
-      const mf = new MessageFormat("*");
+      const mf = new MessageFormat('*');
       const mp = {
-        "en-US": {
-          utilsDate: "{date, date, ::EEEMMMd}"
+        'en-US': {
+          utilsDate: '{date, date, ::EEEMMMd}'
         },
-        "es-MX": {
-          utilsDate: "{date, date, ::EEEMMMd}"
-        },
-      }
+        'es-MX': {
+          utilsDate: '{date, date, ::EEEMMMd}'
+        }
+      };
 
       const result = compileModule(mf, mp);
 
       expect(result).toMatch(`new Intl.DateTimeFormat("en", opt);`);
       expect(result).toMatch(`new Intl.DateTimeFormat("es", opt);`);
     });
-  })
+  });
 });
