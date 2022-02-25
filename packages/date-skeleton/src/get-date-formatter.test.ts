@@ -120,7 +120,8 @@ describe('Options', () => {
     expect([
       '2 Dhuʻl-Hijjah 1426',
       'Dhuʻl-Hijjah 2, 1426',
-      'Dhuʻl-Hijjah 2, 1426 AH'
+      'Dhuʻl-Hijjah 2, 1426 AH',
+      '2 Dhuʻl-Hijjah 1426 AH'
     ]).toContain(fmt(date));
     expect(onError).not.toHaveBeenCalled();
   });
