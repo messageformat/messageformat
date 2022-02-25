@@ -65,17 +65,21 @@ export default class Compiler {
    * @param src - The source for which the JS code should be generated
    * @param plural - The default locale
    * @param plurals - A map of pluralization keys for all available locales
+   * @param isDescendentCall - Indicates whether or not this is the top level of the recursive call
    */
   compile(
     src: string | StringStructure,
     plural: PluralObject,
-    plurals?: { [key: string]: PluralObject }
+    plurals?: { [key: string]: PluralObject },
+    isDescendentCall?: boolean
   ) {
     if (typeof src === 'object') {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
-        const pl = (plurals && plurals[key]) || plural;
-        result[key] = this.compile(src[key], pl, plurals);
+        const pl = isDescendentCall
+          ? plural
+          : (plurals && plurals[key]) || plural;
+        result[key] = this.compile(src[key], pl, plurals, true);
       }
       return result;
     }

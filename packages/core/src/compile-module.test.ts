@@ -329,4 +329,23 @@ describe('compileModule()', function () {
       );
     });
   });
+
+  describe('issue 361 regression', () => {
+    it('should produce the correct output given nested keys that look like plurals', () => {
+      const mf = new MessageFormat('*');
+
+      const messagePacks = {
+        en: {
+          es: 'Estimation Date: {date, date, ::EEEMMMd}',
+          fi: 'Financial Incentive Date: {date, date, ::EEEMMMd}'
+        }
+      };
+
+      const result = compileModule(mf, messagePacks);
+
+      expect(result).toMatch(`new Intl.DateTimeFormat("en", opt);`);
+      expect(result).not.toMatch(`new Intl.DateTimeFormat("fi", opt);`);
+      expect(result).not.toMatch(`new Intl.DateTimeFormat("es", opt);`);
+    });
+  });
 });
