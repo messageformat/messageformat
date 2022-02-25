@@ -368,7 +368,7 @@ describe('compileModule()', function () {
       expect(m['es-MX']['key']()).toEqual('en-MX');
     });
 
-    it('date regression specification', async () => {
+    it('date regression specification', () => {
       const mf = new MessageFormat('*');
       const mp = {
         'en-US': {
