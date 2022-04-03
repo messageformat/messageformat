@@ -78,6 +78,8 @@ export interface Skeleton {
     | 'rounding-mode-floor'
     | 'rounding-mode-down'
     | 'rounding-mode-up'
+    | 'rounding-mode-half-ceiling'
+    | 'rounding-mode-half-floor'
     | 'rounding-mode-half-even'
     | 'rounding-mode-half-down'
     | 'rounding-mode-half-up'
