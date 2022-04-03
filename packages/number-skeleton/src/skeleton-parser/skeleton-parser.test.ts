@@ -176,7 +176,11 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
     'rounding-mode-ceiling': { roundingMode: 'rounding-mode-ceiling' },
     'rounding-mode-down': { roundingMode: 'rounding-mode-down' },
     'rounding-mode-floor': { roundingMode: 'rounding-mode-floor' },
-    'rounding-mode-up': { roundingMode: 'rounding-mode-up' }
+    'rounding-mode-up': { roundingMode: 'rounding-mode-up' },
+    'rounding-mode-half-ceiling': {
+      roundingMode: 'rounding-mode-half-ceiling'
+    },
+    'rounding-mode-half-floor': { roundingMode: 'rounding-mode-half-floor' }
   }
 };
 

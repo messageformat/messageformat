@@ -139,6 +139,8 @@ export class TokenParser {
       case 'rounding-mode-down':
       case 'rounding-mode-up':
       case 'rounding-mode-half-even':
+      case 'rounding-mode-half-ceiling':
+      case 'rounding-mode-half-floor':
       case 'rounding-mode-half-down':
       case 'rounding-mode-half-up':
       case 'rounding-mode-unnecessary':
