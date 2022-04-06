@@ -79,6 +79,7 @@ export interface Skeleton {
     | 'rounding-mode-down'
     | 'rounding-mode-up'
     | 'rounding-mode-half-even'
+    | 'rounding-mode-half-odd'
     | 'rounding-mode-half-ceiling'
     | 'rounding-mode-half-floor'
     | 'rounding-mode-half-down'
