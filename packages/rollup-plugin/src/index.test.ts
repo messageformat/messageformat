@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 jest.mock('fs', () => require('memfs').fs);
 
-import { source } from 'common-tags';
 import { fs } from 'memfs';
+import { source } from '@messageformat/test-utils';
 import plugin from './index';
 
 const jsonSrc = '{"key":{"inner":"value {foo}"}}';
@@ -94,7 +94,7 @@ describe('load .properties', () => {
     try {
       await plugin().load('/nonesuch.properties');
       throw new Error('Should not happen');
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe('ENOENT');
     }
   });

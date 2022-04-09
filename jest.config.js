@@ -22,7 +22,8 @@ module.exports = {
     '^@messageformat/parser$': '<rootDir>/packages/parser/src/parser.ts',
     '^@messageformat/react$': '<rootDir>/packages/react/src/index.ts',
     '^@messageformat/runtime$': '<rootDir>/packages/runtime/src/runtime.ts',
-    '^@messageformat/runtime/lib/(.*)$': '<rootDir>/packages/runtime/src/$1.ts'
+    '^@messageformat/runtime/lib/(.*)$': '<rootDir>/packages/runtime/src/$1.ts',
+    '^@messageformat/test-utils$': '<rootDir>/packages/test-utils/src/index.ts'
   },
   resolver: 'jest-ts-webcompat-resolver',
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/examples/react/'],

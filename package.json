@@ -10,6 +10,7 @@
     "example": "example"
   },
   "workspaces": [
+    "packages/test-utils",
     "packages/cli",
     "packages/convert",
     "packages/date-skeleton",
@@ -74,7 +75,6 @@
     "babel-plugin-const-enum": "^1.0.1",
     "browserstack-local": "^1.4.8",
     "chai": "^4.2.0",
-    "common-tags": "^2.0.0-alpha.1",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.1.0",
     "husky": "^7.0.4",
