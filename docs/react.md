@@ -84,8 +84,8 @@ import React from 'react';
 import { Message, MessageProvider } from '@messageformat/react';
 
 export const Example = () => (
-  <MessageProvider locale="en" messages={{ foo: 'FOO', qux: 'QUX' }}>
-    <MessageProvider locale="fi" messages={{ foo: 'FÖÖ', bar: 'BÄR' }}>
+  <MessageProvider locale="en" messages={{ '{{' }} foo: 'FOO', qux: 'QUX' }}>
+    <MessageProvider locale="fi" messages={{ '{{' }} foo: 'FÖÖ', bar: 'BÄR' }}>
       <ul>
         <li>
           <Message id="foo" />
