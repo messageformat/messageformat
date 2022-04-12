@@ -27,6 +27,6 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "extract-api": "api-extractor run --local --verbose"
+    "extract-api": "api-extractor run --verbose"
   }
 }
