@@ -1,6 +1,5 @@
-// @ts-ignore
-import { source } from 'common-tags';
 import { compileFluent, compileMF1 } from '@messageformat/compiler';
+import { source } from '@messageformat/test-utils';
 
 import {
   fluentRuntime,

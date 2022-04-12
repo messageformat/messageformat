@@ -22,8 +22,7 @@
  */
 
 import { compileFluent } from '@messageformat/compiler';
-// @ts-ignore
-import { source } from 'common-tags';
+import { source } from '@messageformat/test-utils';
 import { fluentRuntime, MessageFormat, MessageGroup, validate } from './index';
 import type { FunctionRef, Literal, MessageRef, VariableRef } from './pattern';
 

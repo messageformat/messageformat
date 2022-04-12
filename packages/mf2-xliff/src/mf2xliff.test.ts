@@ -1,6 +1,5 @@
-// @ts-ignore
-import { source } from 'common-tags';
 import { compileFluent } from '@messageformat/compiler';
+import { source } from '@messageformat/test-utils';
 import { mf2xliff, stringify } from './index';
 
 test('source only', () => {

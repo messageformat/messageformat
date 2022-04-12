@@ -6,5 +6,6 @@ node_modules/
 /examples/cli/*.mjs
 /examples/package-lock.json
 /packages/mf2-*/lib/
+/packages/test-utils/lib/
 /test/browser/*.log
 /tmp/

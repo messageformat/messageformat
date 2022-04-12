@@ -19,4 +19,5 @@ package-lock.json
 /packages/rollup-plugin/lib/*
 /packages/runtime/esm/*
 /packages/runtime/lib/*
+/packages/test-utils/lib/*
 /tmp/

@@ -31,7 +31,7 @@
     "dot-properties": "^1.0.1",
     "loader-utils": "^2.0.0",
     "uv": "^1.3.1",
-    "yaml": "^1.10.2"
+    "yaml": "^2.0.0"
   },
   "peerDependencies": {
     "@messageformat/core": "^3.0.0"
