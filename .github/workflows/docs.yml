@@ -14,11 +14,12 @@ jobs:
       - uses: actions/setup-node@v1
         with: { node-version: 16.x }
       - uses: ruby/setup-ruby@v1
-        with: { ruby-version: '2.7' }
+        with:
+          bundler-cache: true
+          ruby-version: '2.7'
+          working-directory: ./docs
       - run: npm ci
       - run: npm run build
       - run: npm run docs
-      - run: bundle install
-        working-directory: ./docs
       - run: bundle exec jekyll build
         working-directory: ./docs
