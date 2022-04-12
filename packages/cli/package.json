@@ -27,7 +27,7 @@
     "lib/"
   ],
   "engines": {
-    "node": ">=6.0"
+    "node": ">=14"
   },
   "dependencies": {
     "dot-properties": "^1.0.1",
