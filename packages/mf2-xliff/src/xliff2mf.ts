@@ -2,7 +2,7 @@ import type * as MF from 'messageformat';
 import type { MessageFormatInfo } from './index';
 import type * as X from './xliff-spec';
 
-import { hasMeta, isFunctionRef, isLiteral, isMessageRef } from 'messageformat';
+import { hasMeta, isExpression, isLiteral, isMessageRef } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -113,7 +113,7 @@ function resolveSelect(
       `Select ${prettyElement('group', attributes.id)} cannot be empty`
     );
   let mf: X.MessageFormat | null = null;
-  const cases: MF.SelectCase[] = [];
+  const variants: MF.Variant[] = [];
   for (const el of elements) {
     switch (el.name) {
       case 'mf:messageformat':
@@ -125,7 +125,7 @@ function resolveSelect(
           const pu = prettyElement('unit', id);
           throw new Error(`The name attribute is required for ${pu}`);
         }
-        cases.push({
+        variants.push({
           key: idList(name),
           value: { type: 'message', pattern: resolveUnit(el, st) }
         });
@@ -142,7 +142,7 @@ function resolveSelect(
     const el = prettyElement('group', attributes.id);
     throw new Error(`<mf:messageformat> not found in ${el}`);
   }
-  const select = idList(attributes['mf:select']).map(selId => {
+  const match = idList(attributes['mf:select']).map(selId => {
     const part = mf?.elements.find(part => part.attributes?.id === selId);
     if (!part) {
       const el = prettyElement('group', attributes.id);
@@ -152,7 +152,7 @@ function resolveSelect(
     const value = resolvePart(part);
     return def ? { value, default: String(def) } : { value };
   });
-  return { type: 'select', select, cases };
+  return { type: 'select', match, variants };
 }
 
 function resolveUnit(
@@ -188,7 +188,7 @@ function resolveContents(
   contents: (X.Text | X.InlineElement)[],
   mf: X.MessageFormat | null
 ) {
-  const res: (MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef)[] =
+  const res: (MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef)[] =
     [];
   for (const ie of contents) {
     const last = res[res.length - 1];
@@ -213,7 +213,7 @@ const resolveCharCode = (cc: X.CharCode) =>
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef {
+): MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef {
   switch (ie.type) {
     case 'text':
     case 'cdata':
@@ -226,14 +226,14 @@ function resolveInlineElement(
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
           const part = resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-          if (!isFunctionRef(part))
+          if (!isExpression(part))
             throw new Error(`<pc mf:ref> is only valid for function values`);
           const arg = resolveContents(ie.elements, mf);
           if (arg.length > 1)
             throw new Error(
               'Forming function arguments by concatenation is not supported'
             );
-          if (isFunctionRef(arg[0]) || isMessageRef(arg[0]))
+          if (isExpression(arg[0]) || isMessageRef(arg[0]))
             throw new Error(`A ${arg[0].type} is not supported here`);
           part.args.unshift(arg[0] ?? '');
           return part;
@@ -250,7 +250,7 @@ function resolveRef(
   name: string,
   ref: string | undefined,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef {
+): MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef {
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
@@ -269,15 +269,15 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 
 function resolvePart(
   part: X.MessagePart
-): MF.Literal | MF.VariableRef | MF.FunctionRef | MF.MessageRef {
+): MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef {
   switch (part.name) {
     case 'mf:literal':
     case 'mf:variable':
       return resolveArgument(part);
 
     case 'mf:function': {
-      const fn: MF.FunctionRef = {
-        type: 'function',
+      const fn: MF.Expression = {
+        type: 'expression',
         func: part.attributes.name,
         args: []
       };

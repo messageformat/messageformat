@@ -1,6 +1,6 @@
 import deepEqual from 'fast-deep-equal';
 import {
-  isFunctionRef,
+  isExpression,
   isLiteral,
   isMessage,
   isMessageRef,
@@ -100,8 +100,8 @@ function resolveSelect(
     if (trgSel && !isSelectMessage(trgSel))
       trgSel = {
         type: 'select',
-        select: srcSel.select,
-        cases: [
+        match: srcSel.match,
+        variants: [
           { key: [], value: { type: 'message', pattern: trgSel.pattern } }
         ]
       };
@@ -112,13 +112,15 @@ function resolveSelect(
       );
     srcSel = {
       type: 'select',
-      select: trgSel.select,
-      cases: [{ key: [], value: { type: 'message', pattern: srcSel.pattern } }]
+      match: trgSel.match,
+      variants: [
+        { key: [], value: { type: 'message', pattern: srcSel.pattern } }
+      ]
     };
   }
 
   const select: { id: string; default: string; keys: string[] }[] = [];
-  const parts: X.MessagePart[] = srcSel.select.map(sel => {
+  const parts: X.MessagePart[] = srcSel.match.map(sel => {
     const id = nextId();
     select.push({ id, default: sel.fallback ?? 'other', keys: [] });
     return resolveSelector(id, sel);
@@ -130,7 +132,7 @@ function resolveSelect(
 
   if (!trgSel) {
     // If there's only a source, we use its cases directly
-    for (const c of srcSel.cases)
+    for (const c of srcSel.variants)
       elements.push(
         resolvePattern([...key, c.key.join(' ')], c.value, undefined)
       );
@@ -139,8 +141,8 @@ function resolveSelect(
     // First, let's make sure that `selIds` and `parts` includes all the selectors
     // and that we have mappings between the array indices.
     const trgSelMap: number[] = [];
-    for (const sel of trgSel.select) {
-      const prevIdx = srcSel.select.findIndex(prev => deepEqual(sel, prev));
+    for (const sel of trgSel.match) {
+      const prevIdx = srcSel.match.findIndex(prev => deepEqual(sel, prev));
       if (prevIdx !== -1) trgSelMap.push(prevIdx);
       else {
         const id = nextId();
@@ -166,18 +168,18 @@ function resolveSelect(
         keys.splice(pos, 0, key);
       }
     };
-    for (const c of srcSel.cases)
+    for (const c of srcSel.variants)
       for (let i = 0; i < c.key.length; ++i) addSorted(i, c.key[i]);
-    for (const c of trgSel.cases)
+    for (const c of trgSel.variants)
       for (let i = 0; i < c.key.length; ++i) addSorted(trgSelMap[i], c.key[i]);
 
     // Add a separate entry for each combined case
     // TODO: Collapse duplicates to default value only, where possible
     for (const sk of everyKey(select)) {
-      const srcCase = srcSel.cases.find(c =>
+      const srcCase = srcSel.variants.find(c =>
         c.key.every((k, i) => k === sk[i] || k === select[i].default)
       );
-      const trgCase = trgSel.cases.find(c =>
+      const trgCase = trgSel.variants.find(c =>
         c.key.every((k, i) => {
           const ti = trgSelMap[i];
           return k === sk[ti] || k === select[ti].default;
@@ -271,7 +273,7 @@ function resolvePart(
 
   if (isLiteral(part) || isVariableRef(part)) return resolveArgument(id, part);
 
-  if (isFunctionRef(part)) {
+  if (isExpression(part)) {
     const elements: X.MessageFunction['elements'] = [];
     if (part.options)
       for (const [name, value] of Object.entries(part.options))

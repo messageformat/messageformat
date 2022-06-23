@@ -1,6 +1,6 @@
 import {
   Element,
-  FunctionRef,
+  Expression,
   Literal,
   MessageFormat,
   MessageGroup,
@@ -8,7 +8,7 @@ import {
   VariableRef
 } from '../index';
 
-type Part = Literal | VariableRef | FunctionRef | MessageRef | Element;
+type Part = Literal | VariableRef | Expression | MessageRef | Element;
 function getMF(pattern: Part[]) {
   const res: MessageGroup<Part> = {
     type: 'group',

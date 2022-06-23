@@ -11,12 +11,12 @@ function getPattern(
 ): PatternElement[] {
   if (message.type === 'message') return message.pattern;
 
-  const sel = message.select.map(({ value, fallback }) => ({
+  const sel = message.match.map(({ value, fallback }) => ({
     fmt: context.resolve(value),
     def: fallback || 'other'
   }));
 
-  cases: for (const { key, value } of message.cases) {
+  cases: for (const { key, value } of message.variants) {
     const fallback = new Array<boolean>(key.length);
     for (let i = 0; i < key.length; ++i) {
       const k = key[i];

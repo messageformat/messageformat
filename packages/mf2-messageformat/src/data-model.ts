@@ -27,9 +27,9 @@ export const hasMeta = (part: Record<string, any>): part is { meta: Meta } =>
 //// MESSAGES ////
 
 /**
- * The core of the spec, the representation of a single message.
- * The shape of the value is an implementation detail, and may vary for the
- * same message in different languages.
+ * The representation of a single message.
+ * The shape of the value is an implementation detail,
+ * and may vary for the same message in different languages.
  */
 export type Message<P extends PatternElement = PatternElement> =
   | PatternMessage<P>
@@ -62,8 +62,8 @@ export interface PatternMessage<P extends PatternElement = PatternElement> {
  */
 export interface SelectMessage<P extends PatternElement = PatternElement> {
   type: 'select';
-  select: Selector<P>[];
-  cases: SelectCase<P>[];
+  match: Selector<P>[];
+  variants: Variant<P>[];
   comment?: string;
   meta?: Meta;
 }
@@ -73,7 +73,7 @@ export interface Selector<P extends PatternElement = PatternElement> {
   fallback?: string;
 }
 
-export interface SelectCase<P extends PatternElement = PatternElement> {
+export interface Variant<P extends PatternElement = PatternElement> {
   key: string[];
   value: PatternMessage<P>;
 }

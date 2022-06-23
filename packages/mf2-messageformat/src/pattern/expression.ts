@@ -8,7 +8,7 @@ import type { Literal, PatternElementResolver, VariableRef } from './index';
 import { isLiteral } from './literal';
 
 /**
- * To resolve a FunctionRef, an externally defined function is called.
+ * To resolve an Expression, an externally defined function is called.
  *
  * The `func` identifies a function that takes in the arguments `args`, the
  * current locale, as well as any `options`, and returns some corresponding
@@ -16,16 +16,16 @@ import { isLiteral } from './literal';
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
  */
-export interface FunctionRef extends PatternElement {
-  type: 'function';
+export interface Expression extends PatternElement {
+  type: 'expression';
   func: string;
   args: (Literal | VariableRef)[];
   options?: Record<string, Literal | VariableRef>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isFunctionRef = (part: any): part is FunctionRef =>
-  !!part && typeof part === 'object' && part.type === 'function';
+export const isExpression = (part: any): part is Expression =>
+  !!part && typeof part === 'object' && part.type === 'expression';
 
 function resolveOptions(
   ctx: Context,
@@ -68,13 +68,13 @@ function resolveOptions(
 }
 
 export const resolver: PatternElementResolver<Runtime> = {
-  type: 'function',
+  type: 'expression',
 
   initContext: mf => mf[MFruntime],
 
-  resolve(ctx, { args, func, meta, options }: FunctionRef) {
+  resolve(ctx, { args, func, meta, options }: Expression) {
     let source: string | undefined;
-    const rf = (ctx.types.function as Runtime)[func];
+    const rf = (ctx.types.expression as Runtime)[func];
     try {
       const fnArgs = args.map(arg => ctx.resolve(arg));
       const srcArgs = fnArgs.map(fa => fa.source || FALLBACK_SOURCE).join(', ');

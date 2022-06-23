@@ -4,13 +4,13 @@ import type { MessageValue } from '../message-value';
 import type { MessageFormat } from '../messageformat';
 
 import { resolver as element } from './element';
-import { resolver as functionResolver } from './function-ref';
+import { resolver as functionResolver } from './expression';
 import { resolver as literal } from './literal';
 import { resolver as term } from './message-ref';
 import { resolver as variable, Scope } from './variable-ref';
 
 export { isElement, Element } from './element';
-export { isFunctionRef, FunctionRef } from './function-ref';
+export { isExpression, Expression } from './expression';
 export { isLiteral, Literal } from './literal';
 export { isMessageRef, MessageRef } from './message-ref';
 export { isVariableRef, VariableRef } from './variable-ref';

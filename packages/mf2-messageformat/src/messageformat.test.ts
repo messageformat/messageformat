@@ -22,7 +22,7 @@ describe('options', () => {
     );
     expect(mf2.getMessage('var', { var: 12.34 })?.toString()).toBe('12.34');
     expect(() => mf2.getMessage('func', { var: 12.34 })?.toString()).toThrow(
-      'Unsupported pattern element: function'
+      'Unsupported pattern element: expression'
     );
   });
 });

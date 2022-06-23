@@ -10,7 +10,7 @@ import {
   Runtime,
   RuntimeOptions
 } from './index';
-import type { FunctionRef, Literal, MessageRef } from './pattern';
+import type { Expression, Literal, MessageRef } from './pattern';
 import { ResolvedMessage } from './message-value';
 
 test('Dynamic References (unicode-org/message-format-wg#130)', () => {
@@ -156,28 +156,28 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const res: MessageGroup<Literal | FunctionRef> = {
+    const res: MessageGroup<Literal | Expression> = {
       type: 'group',
       entries: {
         msg: {
           type: 'select',
-          select: [
+          match: [
             {
               value: {
-                type: 'function',
+                type: 'expression',
                 func: 'pluralRange',
                 args: [{ type: 'variable', var_path: ['range'] }]
               }
             }
           ],
-          cases: [
+          variants: [
             {
               key: ['one'],
               value: {
                 type: 'message',
                 pattern: [
                   {
-                    type: 'function',
+                    type: 'expression',
                     func: 'formatRange',
                     args: [{ type: 'variable', var_path: ['range'] }]
                   },
@@ -191,7 +191,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                 type: 'message',
                 pattern: [
                   {
-                    type: 'function',
+                    type: 'expression',
                     func: 'formatRange',
                     args: [{ type: 'variable', var_path: ['range'] }]
                   },
@@ -213,15 +213,15 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   });
 
   test('input as separate start, end falues', () => {
-    const res: MessageGroup<Literal | FunctionRef> = {
+    const res: MessageGroup<Literal | Expression> = {
       type: 'group',
       entries: {
         msg: {
           type: 'select',
-          select: [
+          match: [
             {
               value: {
-                type: 'function',
+                type: 'expression',
                 func: 'pluralRange',
                 args: [
                   { type: 'variable', var_path: ['start'] },
@@ -230,14 +230,14 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
               }
             }
           ],
-          cases: [
+          variants: [
             {
               key: ['one'],
               value: {
                 type: 'message',
                 pattern: [
                   {
-                    type: 'function',
+                    type: 'expression',
                     func: 'formatRange',
                     args: [
                       { type: 'variable', var_path: ['start'] },
@@ -254,7 +254,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                 type: 'message',
                 pattern: [
                   {
-                    type: 'function',
+                    type: 'expression',
                     func: 'formatRange',
                     args: [
                       { type: 'variable', var_path: ['start'] },
@@ -292,8 +292,8 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
     const res = compileMF1({ msg: src }, { locale: 'en' });
-    expect((res.entries.msg as any).select).toHaveLength(4);
-    expect((res.entries.msg as any).cases).toHaveLength(81);
+    expect((res.entries.msg as any).match).toHaveLength(4);
+    expect((res.entries.msg as any).variants).toHaveLength(81);
 
     const mf = new MessageFormat('en', null, res);
 
@@ -340,8 +340,8 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
     const res = compileMF1({ msg: src }, { locale: 'en' });
-    expect((res.entries.msg as any).select).toHaveLength(6);
-    expect((res.entries.msg as any).cases).toHaveLength(64);
+    expect((res.entries.msg as any).match).toHaveLength(6);
+    expect((res.entries.msg as any).variants).toHaveLength(64);
 
     const mf = new MessageFormat('en', null, res);
 

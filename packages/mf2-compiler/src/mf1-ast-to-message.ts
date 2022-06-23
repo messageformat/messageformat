@@ -1,12 +1,12 @@
 import type * as AST from '@messageformat/parser';
 import {
-  FunctionRef,
+  Expression,
   hasMeta,
   isLiteral,
+  Literal,
   Message,
-  SelectCase,
   VariableRef,
-  Literal
+  Variant
 } from 'messageformat';
 
 const isAstSelect = (token: AST.Token): token is AST.Select =>
@@ -55,15 +55,15 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Literal | VariableRef | FunctionRef {
+): Literal | VariableRef | Expression {
   switch (token.type) {
     case 'content':
       return { type: 'literal', value: token.value };
     case 'argument':
       return { type: 'variable', var_path: [token.arg] };
     case 'function': {
-      const fn: FunctionRef = {
-        type: 'function',
+      const fn: Expression = {
+        type: 'expression',
         func: token.key,
         args: [{ type: 'variable', var_path: [token.arg] }]
       };
@@ -79,8 +79,8 @@ function tokenToPart(
     }
     case 'octothorpe': {
       if (!pluralArg) return { type: 'literal', value: '#' };
-      const fn: FunctionRef = {
-        type: 'function',
+      const fn: Expression = {
+        type: 'expression',
         func: 'number',
         args: [{ type: 'variable', var_path: [pluralArg] }]
       };
@@ -99,7 +99,11 @@ function tokenToPart(
 function argToPart({ arg, pluralOffset, type }: SelectArg) {
   const argVar: VariableRef = { type: 'variable', var_path: [arg] };
   if (type === 'select') return argVar;
-  const fn: FunctionRef = { type: 'function', func: 'number', args: [argVar] };
+  const fn: Expression = {
+    type: 'expression',
+    func: 'number',
+    args: [argVar]
+  };
 
   const po = pluralOffset
     ? { type: 'literal' as const, value: String(pluralOffset) }
@@ -137,7 +141,7 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
  */
 export function astToMessage(
   ast: AST.Token[]
-): Message<Literal | VariableRef | FunctionRef> {
+): Message<Literal | VariableRef | Expression> {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {
@@ -159,7 +163,7 @@ export function astToMessage(
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: SelectCase<Literal | VariableRef | FunctionRef>[] = keys.map(
+  const variants: Variant<Literal | VariableRef | Expression>[] = keys.map(
     key => ({
       key: key.map(k => String(k)),
       value: { type: 'message', pattern: [] }
@@ -189,10 +193,10 @@ export function astToMessage(
           addParts(c.tokens, pa, po, [...filter, { idx, value }]);
         }
       } else {
-        for (const c of cases) {
-          const cp = c.value.pattern;
-          if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
-            const last = cp[cp.length - 1];
+        for (const v of variants) {
+          const vp = v.value.pattern;
+          if (filter.every(({ idx, value }) => v.key[idx] === String(value))) {
+            const last = vp[vp.length - 1];
             const part = tokenToPart(token, pluralArg, pluralOffset);
             if (
               isLiteral(last) &&
@@ -203,7 +207,7 @@ export function astToMessage(
               !hasMeta(part)
             ) {
               last.value += part.value;
-            } else cp.push(part);
+            } else vp.push(part);
           }
         }
       }
@@ -211,6 +215,6 @@ export function astToMessage(
   }
   addParts(ast, null, null, []);
 
-  const select = args.map(arg => ({ value: argToPart(arg) }));
-  return { type: 'select', select, cases };
+  const match = args.map(arg => ({ value: argToPart(arg) }));
+  return { type: 'select', match, variants };
 }

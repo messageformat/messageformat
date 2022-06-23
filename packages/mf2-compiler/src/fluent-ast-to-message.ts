@@ -1,21 +1,21 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
-  FunctionRef,
+  Expression,
   hasMeta,
-  isFunctionRef,
+  isExpression,
   isLiteral,
   isMessageRef,
   Literal,
   Message,
-  PatternMessage,
-  SelectCase,
-  SelectMessage,
   MessageRef,
-  VariableRef
+  PatternMessage,
+  SelectMessage,
+  VariableRef,
+  Variant
 } from 'messageformat';
 
-export type Part = Literal | VariableRef | FunctionRef | MessageRef;
+export type Part = Literal | VariableRef | Expression | MessageRef;
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -56,7 +56,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
   switch (exp.type) {
     case 'NumberLiteral':
       return {
-        type: 'function',
+        type: 'expression',
         func: 'NUMBER',
         args: [{ type: 'literal', value: exp.value }]
       };
@@ -69,11 +69,11 @@ function expressionToPart(exp: Fluent.Expression): Part {
       const { positional, named } = exp.arguments;
       const args = positional.map(exp => {
         const part = expressionToPart(exp);
-        if (isFunctionRef(part) || isMessageRef(part))
+        if (isExpression(part) || isMessageRef(part))
           throw new Error(`A Fluent ${exp.type} is not supported here.`);
         return part;
       });
-      if (named.length === 0) return { type: 'function', func, args };
+      if (named.length === 0) return { type: 'expression', func, args };
       const options: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of named)
         options[name.name] = {
@@ -81,7 +81,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return { type: 'function', func, args, options };
+      return { type: 'expression', func, args, options };
     }
     case 'MessageReference': {
       const id = exp.attribute
@@ -171,7 +171,7 @@ export function astToMessage(
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const cases: SelectCase<Part>[] = keys.map(key => ({
+  const variants: Variant<Part>[] = keys.map(key => ({
     key: key.map(k => String(k)),
     value: { type: 'message', pattern: [] }
   }));
@@ -193,10 +193,10 @@ export function astToMessage(
         for (const v of sel.variants)
           addParts(v.value, [...filter, { idx, value: variantKey(v) }]);
       } else {
-        for (const c of cases) {
-          const cp = c.value.pattern;
-          if (filter.every(({ idx, value }) => c.key[idx] === String(value))) {
-            const last = cp[cp.length - 1];
+        for (const v of variants) {
+          const vp = v.value.pattern;
+          if (filter.every(({ idx, value }) => v.key[idx] === String(value))) {
+            const last = vp[vp.length - 1];
             const part = elementToPart(el);
             if (
               isLiteral(last) &&
@@ -207,7 +207,7 @@ export function astToMessage(
               !hasMeta(part)
             )
               last.value += part.value;
-            else cp.push(part);
+            else vp.push(part);
           }
         }
       }
@@ -215,11 +215,11 @@ export function astToMessage(
   }
   addParts(ast, []);
 
-  const select = args.map(arg => ({
+  const match = args.map(arg => ({
     value: expressionToPart(arg.selector),
     fallback: String(arg.fallback)
   }));
-  const msg: SelectMessage<Part> = { type: 'select', select, cases };
+  const msg: SelectMessage<Part> = { type: 'select', match, variants };
   if (comment) msg.comment = comment.content;
   return msg;
 }

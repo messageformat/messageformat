@@ -122,7 +122,10 @@ const enum GC {
  *
  * @returns Indices of first matching selectors, or -1 for no match.
  */
-function detectGrammarSelectors({ cases, select }: SelectMessage) {
+function detectGrammarSelectors({
+  variants: cases,
+  match: select
+}: SelectMessage) {
   const defaults = select.map(s => s.fallback || 'other');
 
   const gc: (GC | null)[] = new Array(select.length).fill(null);

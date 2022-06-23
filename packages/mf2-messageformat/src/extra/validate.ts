@@ -1,10 +1,10 @@
 import { isSelectMessage, MessageGroup, PatternElement } from '../data-model';
-import { isFunctionRef, isMessageRef } from '../pattern';
+import { isExpression, isMessageRef } from '../pattern';
 import type { Runtime } from '../runtime';
 
 function validateParts(parts: PatternElement[], runtime: Runtime) {
   for (const part of parts) {
-    if (isFunctionRef(part)) {
+    if (isExpression(part)) {
       const { args, func } = part;
       const fn = runtime[func];
       if (!fn || typeof fn !== 'object' || typeof fn.call !== 'function')
@@ -25,10 +25,11 @@ export function validate(
     if ('entries' in msg) validate(msg, runtime);
     else if (isSelectMessage(msg)) {
       validateParts(
-        msg.select.map(sel => sel.value),
+        msg.match.map(sel => sel.value),
         runtime
       );
-      for (const { value } of msg.cases) validateParts(value.pattern, runtime);
+      for (const { value } of msg.variants)
+        validateParts(value.pattern, runtime);
     } else validateParts(msg.pattern, runtime);
   }
 }

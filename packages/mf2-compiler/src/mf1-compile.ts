@@ -1,7 +1,7 @@
 import { parse, ParseOptions } from '@messageformat/parser';
 import * as PluralCategories from 'make-plural/pluralCategories';
 import type {
-  FunctionRef,
+  Expression,
   Literal,
   MessageGroup,
   VariableRef
@@ -37,8 +37,8 @@ export interface StringStructure {
 function compileMessageGroup(
   src: StringStructure,
   options: ParseOptions
-): MessageGroup<Literal | VariableRef | FunctionRef> {
-  const entries: MessageGroup<Literal | VariableRef | FunctionRef>['entries'] =
+): MessageGroup<Literal | VariableRef | Expression> {
+  const entries: MessageGroup<Literal | VariableRef | Expression>['entries'] =
     {};
   for (const [key, value] of Object.entries(src)) {
     entries[key] =
@@ -52,7 +52,7 @@ function compileMessageGroup(
 export function compileMF1(
   src: StringStructure,
   { locale, strict }: { locale: string; strict?: boolean }
-): MessageGroup<Literal | VariableRef | FunctionRef> {
+): MessageGroup<Literal | VariableRef | Expression> {
   const lc = normalize(locale);
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];

@@ -24,7 +24,7 @@
 import { compileFluent } from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
 import { fluentRuntime, MessageFormat, MessageGroup, validate } from './index';
-import type { FunctionRef, Literal, MessageRef, VariableRef } from './pattern';
+import type { Expression, Literal, MessageRef, VariableRef } from './pattern';
 
 type TestCase = {
   locale?: string;
@@ -390,7 +390,7 @@ describe('getMessage', () => {
       ### Other resource comment
     `;
 
-    let res: MessageGroup<Literal | FunctionRef | MessageRef | VariableRef>;
+    let res: MessageGroup<Literal | Expression | MessageRef | VariableRef>;
     let mf: MessageFormat;
     beforeAll(() => {
       res = compileFluent(src);

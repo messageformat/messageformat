@@ -8,7 +8,7 @@ import { defaultRuntime, Runtime } from './runtime';
 export interface MessageFormatOptions {
   elements?: (
     | 'element'
-    | 'function'
+    | 'expression'
     | 'literal'
     | 'term'
     | 'variable'
