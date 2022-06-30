@@ -6,7 +6,7 @@ import type { Literal, PatternElementResolver, VariableRef } from './index';
 export interface Element extends PatternElement {
   type: 'element';
   name: string;
-  tag: 'empty' | 'start' | 'end';
+  tag: 'start' | 'end';
   options?: Record<string, Literal | VariableRef>;
 }
 
