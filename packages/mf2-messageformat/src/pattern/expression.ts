@@ -72,7 +72,7 @@ export const resolver: PatternElementResolver<Runtime> = {
 
   initContext: mf => mf[MFruntime],
 
-  resolve(ctx, { args, func, meta, options }: Expression) {
+  resolve(ctx, { args, func, options }: Expression) {
     let source: string | undefined;
     const rf = (ctx.types.expression as Runtime)[func];
     try {
@@ -81,13 +81,13 @@ export const resolver: PatternElementResolver<Runtime> = {
       source = `${func}(${srcArgs})`;
       const { opt, errorKeys } = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, opt, ...fnArgs);
-      const mv = asMessageValue(ctx, res, { meta, source });
+      const mv = asMessageValue(ctx, res, { source });
       for (const key of errorKeys)
         ctx.onError(new TypeError(`Invalid value for option ${key}`), mv);
       return mv;
     } catch (error) {
       if (!source) source = `${func}()`;
-      const fb = new MessageFallback(ctx, { meta, source });
+      const fb = new MessageFallback(ctx, { source });
       ctx.onError(error, fb);
       return fb;
     }

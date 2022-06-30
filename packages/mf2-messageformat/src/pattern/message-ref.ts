@@ -50,7 +50,7 @@ export const resolver: PatternElementResolver<MessageFormat['getMessage']> = {
   initContext: mf => mf.getMessage.bind(mf),
 
   resolve(ctx, term: MessageRef) {
-    const { meta, msg_path } = term;
+    const { msg_path } = term;
     const strPath = msg_path.map(elem => ctx.resolve(elem).toString());
     const source = '-' + strPath.join('.');
 
@@ -63,7 +63,7 @@ export const resolver: PatternElementResolver<MessageFormat['getMessage']> = {
       }
     }
 
-    const fb = new MessageFallback(ctx, { meta, source });
+    const fb = new MessageFallback(ctx, { source });
     ctx.onError(new Error(`Message not available: ${source}`), fb);
     return fb;
   }

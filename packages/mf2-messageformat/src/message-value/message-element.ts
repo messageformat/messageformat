@@ -1,7 +1,6 @@
-import type { Meta } from '../data-model';
 import { Context } from '../format-context';
 import type { LocaleContextArg } from './locale-context';
-import { MessageValue } from './message-value';
+import { MessageValue, Meta } from './message-value';
 
 const elementTags = new WeakMap<MessageElement, 'start' | 'end'>();
 

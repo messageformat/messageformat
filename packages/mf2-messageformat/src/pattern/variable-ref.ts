@@ -47,13 +47,13 @@ export const resolver: PatternElementResolver<Scope> = {
 
   initContext: (_mf, scope) => scope,
 
-  resolve(ctx, { meta, var_path }: VariableRef) {
+  resolve(ctx, { var_path }: VariableRef) {
     const source = '$' + var_path.join('.');
     const value = getValue(ctx, var_path);
     if (value !== undefined)
-      return asMessageValue(ctx, value, { meta, source });
+      return asMessageValue(ctx, value, { source });
 
-    const fb = new MessageFallback(ctx, { meta, source });
+    const fb = new MessageFallback(ctx, { source });
     ctx.onError(new Error(`Variable not available: ${source}`), fb);
     return fb;
   }

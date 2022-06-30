@@ -30,17 +30,16 @@ function resolveOptions(
 export const resolver: PatternElementResolver<never> = {
   type: 'element',
 
-  resolve(ctx, { meta, name, options, tag }: Element) {
+  resolve(ctx, { name, options, tag }: Element) {
     const source = tag === 'end' ? `</${name}>` : `<${name}>`;
     try {
       return new MessageElement(ctx, name, {
-        meta,
         options: resolveOptions(ctx, options),
         source,
         tag
       });
     } catch (error) {
-      const fb = new MessageFallback(ctx, { meta, source });
+      const fb = new MessageFallback(ctx, { source });
       ctx.onError(error, fb);
       return fb;
     }

@@ -403,8 +403,7 @@ describe('getMessage', () => {
         comment: 'Resource comment\n\nOther resource comment',
         entries: {
           foo: {
-            comment: 'First message',
-            meta: { group: 'Group 1' },
+            comment: 'Group 1\n\nFirst message',
             pattern: [
               { type: 'literal', value: 'Foo ' },
               { type: 'variable', var_path: ['num'] }
@@ -412,13 +411,12 @@ describe('getMessage', () => {
             type: 'message'
           },
           bar: {
-            meta: { group: 'Group 1' },
+            comment: 'Group 1',
             pattern: [{ type: 'literal', value: 'Bar' }],
             type: 'message'
           },
           qux: {
-            comment: 'Other message',
-            meta: { group: 'Group 2' },
+            comment: 'Group 2\n\nOther message',
             pattern: [{ type: 'literal', value: 'Qux' }],
             type: 'message'
           }
@@ -430,7 +428,6 @@ describe('getMessage', () => {
       const foo = mf.getMessage('foo', { num: 42 });
       expect(foo).toEqual({
         type: 'message',
-        meta: { group: 'Group 1' },
         value: [
           { type: 'literal', value: 'Foo ' },
           { type: 'number', source: '$num', value: 42 }
@@ -442,7 +439,6 @@ describe('getMessage', () => {
       const bar = mf.getMessage('bar');
       expect(bar).toEqual({
         type: 'message',
-        meta: { group: 'Group 1' },
         value: [{ type: 'literal', value: 'Bar' }]
       });
     });
@@ -451,7 +447,6 @@ describe('getMessage', () => {
       const qux = mf.getMessage('qux');
       expect(qux).toEqual({
         type: 'message',
-        meta: { group: 'Group 2' },
         value: [{ type: 'literal', value: 'Qux' }]
       });
     });

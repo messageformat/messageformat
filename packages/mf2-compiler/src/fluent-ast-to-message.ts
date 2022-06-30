@@ -2,7 +2,6 @@ import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
   Expression,
-  hasMeta,
   isExpression,
   isLiteral,
   isMessageRef,
@@ -202,9 +201,7 @@ export function astToMessage(
               isLiteral(last) &&
               isLiteral(part) &&
               !last.comment &&
-              !part.comment &&
-              !hasMeta(last) &&
-              !hasMeta(part)
+              !part.comment
             )
               last.value += part.value;
             else vp.push(part);

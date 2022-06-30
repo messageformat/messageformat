@@ -2,7 +2,7 @@ import type * as MF from 'messageformat';
 import type { MessageFormatInfo } from './index';
 import type * as X from './xliff-spec';
 
-import { hasMeta, isExpression, isLiteral, isMessageRef } from 'messageformat';
+import { isExpression, isLiteral, isMessageRef } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -193,14 +193,7 @@ function resolveContents(
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
-    if (
-      isLiteral(last) &&
-      isLiteral(part) &&
-      !last.comment &&
-      !part.comment &&
-      !hasMeta(last) &&
-      !hasMeta(part)
-    )
+    if (isLiteral(last) && isLiteral(part) && !last.comment && !part.comment)
       last.value += part;
     else res.push(part);
   }

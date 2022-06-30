@@ -1,4 +1,3 @@
-import type { Meta } from '../data-model';
 import { Context } from '../format-context';
 import {
   isLocaleContext,
@@ -7,6 +6,19 @@ import {
 } from './locale-context';
 
 export const FALLBACK_SOURCE = '???';
+
+/**
+ * Additional meta information amy be attached to most nodes. In common use,
+ * this information is not required when formatting a message.
+ */
+export type Meta = Record<string, string>;
+
+export const hasMeta = <T>(
+  part: MessageValue<T>
+): part is MessageValue<T> & { meta: Meta } =>
+  !!part.meta &&
+  typeof part.meta === 'object' &&
+  Object.keys(part.meta).length > 0;
 
 export class MessageValue<T = unknown> {
   static readonly type: string = 'value';

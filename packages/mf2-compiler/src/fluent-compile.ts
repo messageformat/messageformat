@@ -15,9 +15,9 @@ export function compileFluent(src: string): MessageGroup<Part> {
         if (msg.value) {
           const entry = astToMessage(msg.value, msg.comment);
           if (groupComment) {
-            // TODO: Should this be in comment rather than meta?
-            if (entry.meta) entry.meta.group = groupComment;
-            else entry.meta = { group: groupComment };
+            entry.comment = entry.comment
+              ? `${groupComment}\n\n${entry.comment}`
+              : groupComment;
           }
           entries[id] = entry;
         }

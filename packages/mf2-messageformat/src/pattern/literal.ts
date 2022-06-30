@@ -21,6 +21,5 @@ export const isLiteral = (part: any): part is Literal =>
 export const resolver: PatternElementResolver = {
   type: 'literal',
 
-  resolve: (_ctx, lit: Literal) =>
-    new MessageLiteral(lit.value, { meta: lit.meta })
+  resolve: (_ctx, lit: Literal) => new MessageLiteral(lit.value)
 };

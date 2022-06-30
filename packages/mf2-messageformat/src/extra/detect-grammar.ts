@@ -1,5 +1,5 @@
-import type { Meta, SelectMessage } from '../data-model';
-import { MessageValue, MessageNumber } from '../message-value';
+import type { SelectMessage } from '../data-model';
+import { MessageValue, MessageNumber, Meta } from '../message-value';
 
 const grammarCases = [
   'ablative',
@@ -105,7 +105,7 @@ export function getFormattedSelectMeta(
     }
   }
 
-  return hasMeta ? meta : null;
+  return hasMeta ? meta : undefined;
 }
 
 const enum GC {

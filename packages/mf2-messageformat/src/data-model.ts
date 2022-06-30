@@ -10,19 +10,7 @@ export interface MessageGroup<P extends PatternElement = PatternElement> {
   type: 'group';
   entries: Record<string, Message<P> | MessageGroup<P>>;
   comment?: string;
-  meta?: Meta;
 }
-
-/**
- * Additional meta information amy be attached to most nodes. In common use,
- * this information is not required when formatting a message.
- */
-export type Meta = Record<string, string>;
-
-export const hasMeta = (part: Record<string, any>): part is { meta: Meta } =>
-  !!part.meta &&
-  typeof part.meta === 'object' &&
-  Object.keys(part.meta).length > 0;
 
 //// MESSAGES ////
 
@@ -44,7 +32,6 @@ export interface PatternMessage<P extends PatternElement = PatternElement> {
   type: 'message';
   pattern: P[];
   comment?: string;
-  meta?: Meta;
 }
 
 /**
@@ -65,7 +52,6 @@ export interface SelectMessage<P extends PatternElement = PatternElement> {
   match: Selector<P>[];
   variants: Variant<P>[];
   comment?: string;
-  meta?: Meta;
 }
 
 export interface Selector<P extends PatternElement = PatternElement> {
@@ -101,5 +87,4 @@ export const isSelectMessage = <P extends PatternElement = PatternElement>(
 export interface PatternElement {
   type: string;
   comment?: string;
-  meta?: Meta;
 }

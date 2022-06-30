@@ -1,8 +1,7 @@
-import type { Meta } from '../data-model';
 import type { Context } from '../format-context';
 import { MessageDateTime } from './message-datetime';
 import { MessageNumber } from './message-number';
-import { MessageValue } from './message-value';
+import { MessageValue, Meta } from './message-value';
 
 export function asMessageValue(
   ctx: Context,

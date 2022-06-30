@@ -1,7 +1,6 @@
 import type * as AST from '@messageformat/parser';
 import {
   Expression,
-  hasMeta,
   isLiteral,
   Literal,
   Message,
@@ -202,9 +201,7 @@ export function astToMessage(
               isLiteral(last) &&
               isLiteral(part) &&
               !last.comment &&
-              !part.comment &&
-              !hasMeta(last) &&
-              !hasMeta(part)
+              !part.comment
             ) {
               last.value += part.value;
             } else vp.push(part);

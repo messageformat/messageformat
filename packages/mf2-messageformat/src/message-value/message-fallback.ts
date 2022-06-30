@@ -1,6 +1,5 @@
-import type { Meta } from '../data-model';
 import type { LocaleContextArg } from './locale-context';
-import { FALLBACK_SOURCE, MessageValue } from './message-value';
+import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
 export class MessageFallback extends MessageValue<undefined> {
   static readonly type = 'fallback';

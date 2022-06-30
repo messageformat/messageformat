@@ -1,7 +1,6 @@
-import type { Meta } from '../data-model';
 import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
-import { FALLBACK_SOURCE, MessageValue } from './message-value';
+import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
 export class MessageDateTime extends MessageValue<Date> {
   static readonly type = 'datetime';
