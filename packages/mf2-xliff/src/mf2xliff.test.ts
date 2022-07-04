@@ -36,7 +36,9 @@ test('source only', () => {
         </unit>
         <unit id="u:ref" name="ref">
           <mf:messageformat>
-            <mf:message id="m2" msgId="msg"/>
+            <mf:function id="m2" name="MESSAGE">
+              <mf:literal>msg</mf:literal>
+            </mf:function>
           </mf:messageformat>
           <segment>
             <source>This is the·

@@ -77,7 +77,12 @@ export const resolver: PatternElementResolver<Runtime> = {
     const rf = (ctx.types.expression as Runtime)[func];
     try {
       const fnArgs = args.map(arg => ctx.resolve(arg));
-      const srcArgs = fnArgs.map(fa => fa.source || FALLBACK_SOURCE).join(', ');
+      const srcArgs = fnArgs
+        .map(
+          fa =>
+            fa.source || (fa.type === 'literal' && fa.value) || FALLBACK_SOURCE
+        )
+        .join(', ');
       source = `${func}(${srcArgs})`;
       const { opt, errorKeys } = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, opt, ...fnArgs);

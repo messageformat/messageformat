@@ -2,7 +2,7 @@ import { compileFluent } from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
 
 import {
-  fluentRuntime,
+  getFluentRuntime,
   MessageDateTime,
   MessageValue,
   MessageNumber,
@@ -89,7 +89,7 @@ describe('Function uses MessageValue argument', () => {
   test('Options are merged', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src);
-    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     const val = new MessageNumber(null, BigInt(12345678), {
       options: { useGrouping: false }
     });
@@ -106,7 +106,7 @@ describe('Function uses MessageValue argument', () => {
   test('Function options take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src);
-    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     const val = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 4 }
     });
@@ -120,7 +120,7 @@ describe('Function uses MessageValue argument', () => {
   test('MessageValue locales take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
     const res = compileFluent(src);
-    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     const val = new MessageNumber('fi', 12345);
     const msg = mf.getMessage('msg', { val });
     const parts = (msg?.value[0] as MessageNumber).toParts();
@@ -146,7 +146,7 @@ describe('Type casts based on runtime', () => {
       useGrouping: { type: 'literal', value: 'false' }
     };
 
-    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     expect(mf.getMessage('true', { var: 1234 })?.toString()).toBe('1,234');
     expect(mf.getMessage('false', { var: 1234 })?.toString()).toBe('1234');
   });
@@ -160,7 +160,7 @@ describe('Type casts based on runtime', () => {
       useGrouping: { type: 'variable', var_path: ['useGrouping'] }
     };
 
-    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     expect(
       mf.getMessage('msg', { var: 1234, useGrouping: 'false' })?.toString()
     ).toBe('1,234');

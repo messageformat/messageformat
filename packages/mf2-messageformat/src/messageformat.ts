@@ -15,7 +15,7 @@ export interface MessageFormatOptions {
     | PatternElementResolver
   )[];
   localeMatcher?: 'best fit' | 'lookup';
-  runtime?: Runtime;
+  runtime?: Runtime | ((mf: MessageFormat) => Runtime);
 }
 
 export const MFruntime = Symbol('runtime');
@@ -51,7 +51,9 @@ export class MessageFormat {
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
     const rt = options?.runtime ?? defaultRuntime;
-    this[MFruntime] = Object.freeze({ ...rt });
+    this[MFruntime] = Object.freeze({
+      ...(typeof rt === 'function' ? rt(this) : rt)
+    });
     this.#resource = resource;
   }
 

@@ -83,25 +83,30 @@ function expressionToPart(exp: Fluent.Expression): Part {
       return { type: 'expression', func, args, options };
     }
     case 'MessageReference': {
-      const id = exp.attribute
+      const msgId = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
-      return { type: 'term', msg_id: id };
+      return {
+        type: 'expression',
+        func: 'MESSAGE',
+        args: [{ type: 'literal', value: msgId }]
+      };
     }
     case 'TermReference': {
-      const id = exp.attribute
+      const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      if (!exp.arguments)
-        return { type: 'term', msg_id: id };
-      const scope: Record<string, Literal | VariableRef> = {};
+      const args: Literal[] = [{ type: 'literal', value: msgId }];
+      if (!exp.arguments) return { type: 'expression', func: 'MESSAGE', args };
+
+      const options: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of exp.arguments.named)
-        scope[name.name] = {
+        options[name.name] = {
           type: 'literal',
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return { type: 'term', msg_id: id, scope };
+      return { type: 'expression', func: 'MESSAGE', args, options };
     }
 
     /* istanbul ignore next - never happens */

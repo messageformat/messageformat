@@ -2,7 +2,7 @@ import { compileFluent, compileMF1 } from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
 
 import {
-  fluentRuntime,
+  getFluentRuntime,
   MessageValue,
   MessageNumber,
   MessageFormat,
@@ -293,7 +293,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       } a day.
     `;
     const res = compileFluent(src);
-    const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
 
     const one = mf.getMessage('activity-needed-calculation-plural', {
       totalHours: 1,
@@ -331,10 +331,11 @@ maybe('List formatting', () => {
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
     }
-    const runtime = Object.assign(
-      { LIST: { call: LIST, options: 'any' as const } },
-      fluentRuntime
-    );
+    const runtime = (mf: MessageFormat) =>
+      Object.assign(
+        { LIST: { call: LIST, options: 'any' as const } },
+        getFluentRuntime(mf)
+      );
 
     const src = source`
       plain = { LIST($list) }
@@ -362,14 +363,6 @@ maybe('List formatting', () => {
   });
 
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
-    const runtime: Runtime = Object.assign(
-      {
-        dative: { call: dative, options: 'never' as const },
-        LIST: { call: LIST, options: 'any' as const }
-      },
-      fluentRuntime
-    );
-
     function dative(
       locales: string[],
       _options: unknown,
@@ -384,31 +377,43 @@ maybe('List formatting', () => {
       return data[arg.value] || arg.value;
     }
 
-    function LIST(
-      locales: string[],
-      options: RuntimeOptions | undefined,
-      ...args: MessageValue<string | string[]>[]
-    ) {
-      let list: string[] = [];
-      for (const arg of args) list = list.concat(arg.value);
-      if (typeof options?.each === 'string') {
-        const fn = runtime[options.each];
-        if (!fn || typeof fn.call !== 'function')
-          throw new Error(`list each function not found: ${options.each}`);
-        list = list.map(li =>
-          String(
-            fn.call(
-              locales,
-              undefined,
-              new MessageValue(MessageValue.type, null, li)
+    const getListCall = (runtime: Runtime) =>
+      function LIST(
+        locales: string[],
+        options: RuntimeOptions | undefined,
+        ...args: MessageValue<string | string[]>[]
+      ) {
+        let list: string[] = [];
+        for (const arg of args) list = list.concat(arg.value);
+        if (typeof options?.each === 'string') {
+          const fn = runtime[options.each];
+          if (!fn || typeof fn.call !== 'function')
+            throw new Error(`list each function not found: ${options.each}`);
+          list = list.map(li =>
+            String(
+              fn.call(
+                locales,
+                undefined,
+                new MessageValue(MessageValue.type, null, li)
+              )
             )
-          )
-        );
-      }
-      // @ts-ignore
-      const lf = new Intl.ListFormat(locales, options);
-      return lf.format(list);
-    }
+          );
+        }
+        // @ts-ignore
+        const lf = new Intl.ListFormat(locales, options);
+        return lf.format(list);
+      };
+
+    const runtime = (mf: MessageFormat) => {
+      const rt = Object.assign(
+        { dative: { call: dative, options: 'never' as const } },
+        getFluentRuntime(mf)
+      );
+      return Object.assign(
+        { LIST: { call: getListCall(rt), options: 'any' as const } },
+        rt
+      );
+    };
 
     const src = source`
       msg = { $count ->
@@ -472,7 +477,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     qux = { $foo } foo and a {"..."} { $other }
   `;
   const res = compileFluent(src);
-  const mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+  const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
 
   test('Match, no change', () => {
     const msg = mf.getMessage('foo', { foo: 'foo', other: 'other' });

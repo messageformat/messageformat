@@ -23,7 +23,12 @@
 
 import { compileFluent } from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
-import { fluentRuntime, MessageFormat, MessageGroup, validate } from './index';
+import {
+  getFluentRuntime,
+  MessageFormat,
+  MessageGroup,
+  validate
+} from './index';
 import type { Expression, Literal, MessageRef, VariableRef } from './pattern';
 
 type TestCase = {
@@ -271,11 +276,12 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     let res: MessageGroup;
     beforeAll(() => {
       res = compileFluent(src);
-      mf = new MessageFormat(locale, { runtime: fluentRuntime }, res);
+      mf = new MessageFormat(locale, { runtime: getFluentRuntime }, res);
     });
 
     test('validate', () => {
-      validate(res, fluentRuntime);
+      const { runtime } = mf.resolvedOptions();
+      validate(res, runtime);
     });
 
     for (const { msg, scope, exp, only } of tests) {
@@ -311,7 +317,7 @@ describe('getMessage', () => {
     let mf: MessageFormat;
     beforeAll(() => {
       const res = compileFluent(src);
-      mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+      mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     });
 
     test('defined formatted variable', () => {
@@ -343,7 +349,7 @@ describe('getMessage', () => {
         value: [
           {
             type: 'message',
-            source: '-foo',
+            source: 'MESSAGE(foo)',
             value: [
               { type: 'literal', value: 'Foo ' },
               { type: 'fallback', source: '$num', value: undefined }
@@ -394,7 +400,7 @@ describe('getMessage', () => {
     let mf: MessageFormat;
     beforeAll(() => {
       res = compileFluent(src);
-      mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+      mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     });
 
     test('Data model comments', () => {
@@ -473,7 +479,7 @@ describe('getMessage', () => {
     let mf: MessageFormat;
     beforeAll(() => {
       const res = compileFluent(src);
-      mf = new MessageFormat('en', { runtime: fluentRuntime }, res);
+      mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     });
 
     test('case with match', () => {

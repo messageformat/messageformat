@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export { runtime as defaultRuntime } from './default';
-export { runtime as fluentRuntime } from './fluent';
+export { getFluentRuntime } from './fluent';
 export { runtime as mf1Runtime } from './mf1';
 
 /**
