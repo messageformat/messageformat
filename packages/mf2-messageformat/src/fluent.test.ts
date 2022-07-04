@@ -153,9 +153,9 @@ const testCases: Record<string, TestCase> = {
     `,
     tests: [
       { msg: 'ref-attr', exp: 'It' },
-      { msg: 'ref-attr', scope: { style: 'chicago' }, exp: 'She' }, // Fluent: 'It'
+      { msg: 'ref-attr', scope: { style: 'chicago' }, exp: 'It' },
       { msg: 'call-attr-no-args', exp: 'It' },
-      { msg: 'call-attr-no-args', scope: { style: 'chicago' }, exp: 'She' }, // Fluent: 'It'
+      { msg: 'call-attr-no-args', scope: { style: 'chicago' }, exp: 'It' },
       { msg: 'call-attr-with-expected-arg', exp: 'She' },
       {
         msg: 'call-attr-with-expected-arg',
@@ -166,8 +166,8 @@ const testCases: Record<string, TestCase> = {
       {
         msg: 'call-attr-with-other-arg',
         scope: { style: 'chicago' },
-        exp: 'She'
-      } // Fluent: 'It'
+        exp: 'It'
+      }
     ]
   },
 
@@ -183,10 +183,10 @@ const testCases: Record<string, TestCase> = {
       { msg: '-foo', scope: { arg: 3 }, exp: 'Foo 3' }, // Fluent: 'Foo {$arg}'
       { msg: '-foo', scope: {}, exp: 'Foo {$arg}' },
       { msg: 'ref-foo', exp: 'Foo {$arg}' },
-      { msg: 'call-foo-no-args', scope: { arg: 3 }, exp: 'Foo 3' },
+      { msg: 'call-foo-no-args', scope: { arg: 3 }, exp: 'Foo {$arg}' },
       { msg: 'call-foo-with-expected-arg', scope: { arg: 3 }, exp: 'Foo 1' },
       { msg: 'call-foo-with-other-arg', exp: 'Foo {$arg}' },
-      { msg: 'call-foo-with-other-arg', scope: { arg: 3 }, exp: 'Foo 3' } // Fluent: 'Foo {$arg}'
+      { msg: 'call-foo-with-other-arg', scope: { arg: 3 }, exp: 'Foo {$arg}' }
     ]
   },
 
@@ -242,7 +242,7 @@ const testCases: Record<string, TestCase> = {
     `,
     tests: [
       { msg: 'foo', scope: { num: 3 }, exp: 'Foo 3' },
-      { msg: 'bar', scope: { num: 3 }, exp: 'Foo 3' },
+      { msg: 'bar', scope: { num: 3 }, exp: 'Foo {$num}' },
       { msg: 'baz.attr', scope: { num: 3 }, exp: 'Baz Attribute 3' },
       { msg: 'qux', scope: { num: 3 }, exp: 'Baz Variant A 3' },
       { msg: 'zig', scope: { arg: 'Argument' }, exp: 'Argument' }
@@ -346,7 +346,7 @@ describe('getMessage', () => {
             source: '-foo',
             value: [
               { type: 'literal', value: 'Foo ' },
-              { type: 'number', source: '$num', value: 42 }
+              { type: 'fallback', source: '$num', value: undefined }
             ]
           }
         ]

@@ -37,10 +37,12 @@ export const isMessageRef = (part: any): part is MessageRef =>
   !!part && typeof part === 'object' && part.type === 'term';
 
 function getMessageScope(ctx: MsgRefContext, { scope }: MessageRef): Scope {
-  if (!scope) return ctx.types.variable;
-  const res = { ...ctx.types.variable };
-  for (const [key, value] of Object.entries(scope))
-    res[key] = ctx.resolve(value);
+  const res: Scope = {};
+  if (scope) {
+    for (const [key, value] of Object.entries(scope)) {
+      res[key] = ctx.resolve(value);
+    }
+  }
   return res;
 }
 
