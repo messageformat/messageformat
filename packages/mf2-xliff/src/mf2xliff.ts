@@ -3,7 +3,6 @@ import {
   isExpression,
   isLiteral,
   isMessage,
-  isMessageRef,
   isSelectMessage,
   isVariableRef,
   MessageFormat
@@ -284,20 +283,6 @@ function resolvePart(
     for (const p of part.args) elements.push(resolveArgument(null, p));
     const attributes = { id: id ?? undefined, name: part.func };
     return { type: 'element', name: 'mf:function', attributes, elements };
-  }
-
-  if (isMessageRef(part)) {
-    const elements: X.MessageReference['elements'] = [];
-    if (part.scope)
-      for (const [name, value] of Object.entries(part.scope))
-        elements.push({
-          type: 'element',
-          name: 'mf:scope',
-          attributes: { name },
-          elements: [resolveArgument(null, value)]
-        });
-    const attributes = { id: id ?? undefined, msgId: part.msg_id };
-    return { type: 'element', name: 'mf:message', attributes, elements };
   }
 
   /* istanbul ignore next - never happens */

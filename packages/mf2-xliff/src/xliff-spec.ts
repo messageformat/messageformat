@@ -1170,11 +1170,7 @@ export interface ValidationRule extends Element {
  * MessageFormat Module
  */
 
-export type MessagePart =
-  | MessageLiteral
-  | MessageFunction
-  | MessageReference
-  | MessageVariable;
+export type MessagePart = MessageLiteral | MessageFunction | MessageVariable;
 
 export interface MessageFormat extends Element {
   name: 'mf:messageformat';
@@ -1218,26 +1214,6 @@ export interface MessageFunction extends Element {
 
 export interface MessageOption extends Element {
   name: 'mf:option';
-  attributes: {
-    name: string;
-    values?: string;
-  };
-  elements: (MessageLiteral | MessageVariable)[];
-}
-
-export interface MessageReference extends Element {
-  name: 'mf:message';
-  attributes: {
-    id?: string;
-    default?: string | number;
-    msgId: string;
-    resourceId?: string;
-  };
-  elements: MessageScope[];
-}
-
-export interface MessageScope extends Element {
-  name: 'mf:scope';
   attributes: {
     name: string;
     values?: string;

@@ -2,7 +2,7 @@ import type * as MF from 'messageformat';
 import type { MessageFormatInfo } from './index';
 import type * as X from './xliff-spec';
 
-import { isExpression, isLiteral, isMessageRef } from 'messageformat';
+import { isExpression, isLiteral } from 'messageformat';
 import { parse } from './xliff';
 
 export function xliff2mf(
@@ -188,8 +188,7 @@ function resolveContents(
   contents: (X.Text | X.InlineElement)[],
   mf: X.MessageFormat | null
 ) {
-  const res: (MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef)[] =
-    [];
+  const res: (MF.Literal | MF.VariableRef | MF.Expression)[] = [];
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
@@ -206,7 +205,7 @@ const resolveCharCode = (cc: X.CharCode) =>
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef {
+): MF.Literal | MF.VariableRef | MF.Expression {
   switch (ie.type) {
     case 'text':
     case 'cdata':
@@ -226,7 +225,7 @@ function resolveInlineElement(
             throw new Error(
               'Forming function arguments by concatenation is not supported'
             );
-          if (isExpression(arg[0]) || isMessageRef(arg[0]))
+          if (isExpression(arg[0]))
             throw new Error(`A ${arg[0].type} is not supported here`);
           part.args.unshift(arg[0] ?? '');
           return part;
@@ -243,7 +242,7 @@ function resolveRef(
   name: string,
   ref: string | undefined,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef {
+): MF.Literal | MF.VariableRef | MF.Expression {
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
@@ -262,7 +261,7 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 
 function resolvePart(
   part: X.MessagePart
-): MF.Literal | MF.VariableRef | MF.Expression | MF.MessageRef {
+): MF.Literal | MF.VariableRef | MF.Expression {
   switch (part.name) {
     case 'mf:literal':
     case 'mf:variable':
@@ -284,20 +283,6 @@ function resolvePart(
       }
       if (hasOptions) fn.options = options;
       return fn;
-    }
-
-    case 'mf:message': {
-      const mt: MF.MessageRef = { type: 'term', msg_id: part.attributes.msgId };
-      const scope: Record<string, MF.Literal | MF.VariableRef> = {};
-      let hasScope = false;
-      for (const el of part.elements) {
-        if (el.name === 'mf:scope') {
-          scope[el.attributes.name] = resolveOption(el);
-          hasScope = true;
-        }
-      }
-      if (hasScope) mt.scope = scope;
-      return mt;
     }
   }
 
@@ -332,10 +317,8 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
   );
 }
 
-function resolveOption(
-  el: X.MessageOption | X.MessageScope
-): MF.Literal | MF.VariableRef {
-  const sv = el.elements.map(resolveArgument);
+function resolveOption(opt: X.MessageOption): MF.Literal | MF.VariableRef {
+  const sv = opt.elements.map(resolveArgument);
   switch (sv.length) {
     case 0:
       return { type: 'literal', value: '' };

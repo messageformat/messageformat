@@ -4,17 +4,15 @@ import {
   Expression,
   isExpression,
   isLiteral,
-  isMessageRef,
   Literal,
   Message,
-  MessageRef,
   PatternMessage,
   SelectMessage,
   VariableRef,
   Variant
 } from 'messageformat';
 
-export type Part = Literal | VariableRef | Expression | MessageRef;
+export type Part = Literal | VariableRef | Expression;
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -68,7 +66,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
       const { positional, named } = exp.arguments;
       const args = positional.map(exp => {
         const part = expressionToPart(exp);
-        if (isExpression(part) || isMessageRef(part))
+        if (isExpression(part))
           throw new Error(`A Fluent ${exp.type} is not supported here.`);
         return part;
       });

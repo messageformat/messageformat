@@ -4,11 +4,10 @@ import {
   Literal,
   MessageFormat,
   MessageGroup,
-  MessageRef,
   VariableRef
 } from '../index';
 
-type Part = Literal | VariableRef | Expression | MessageRef | Element;
+type Part = Literal | VariableRef | Expression | Element;
 function getMF(pattern: Part[]) {
   const res: MessageGroup<Part> = {
     type: 'group',

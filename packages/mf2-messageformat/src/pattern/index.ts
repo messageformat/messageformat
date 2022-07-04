@@ -6,13 +6,11 @@ import type { MessageFormat } from '../messageformat';
 import { resolver as element } from './element';
 import { resolver as functionResolver } from './expression';
 import { resolver as literal } from './literal';
-import { resolver as term } from './message-ref';
 import { resolver as variable, Scope } from './variable-ref';
 
 export { isElement, Element } from './element';
 export { isExpression, Expression } from './expression';
 export { isLiteral, Literal } from './literal';
-export { isMessageRef, MessageRef } from './message-ref';
 export { isVariableRef, VariableRef } from './variable-ref';
 
 export interface PatternElementResolver<T = unknown> {
@@ -21,10 +19,4 @@ export interface PatternElementResolver<T = unknown> {
   initContext?: (mf: Readonly<MessageFormat>, scope: Scope) => T;
 }
 
-export const patternFormatters = [
-  literal,
-  variable,
-  functionResolver,
-  element,
-  term
-];
+export const patternFormatters = [literal, variable, functionResolver, element];
