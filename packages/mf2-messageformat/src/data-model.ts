@@ -69,7 +69,6 @@ export const isMessage = <P extends PatternElement = PatternElement>(
 ): msg is Message<P> =>
   !!msg &&
   typeof msg === 'object' &&
-  'type' in msg &&
   (msg.type === 'message' || msg.type === 'select');
 
 export const isSelectMessage = <P extends PatternElement = PatternElement>(
@@ -86,5 +85,4 @@ export const isSelectMessage = <P extends PatternElement = PatternElement>(
  */
 export interface PatternElement {
   type: string;
-  comment?: string;
 }

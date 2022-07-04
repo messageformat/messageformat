@@ -196,13 +196,7 @@ export function astToMessage(
           if (filter.every(({ idx, value }) => v.key[idx] === String(value))) {
             const last = vp[vp.length - 1];
             const part = elementToPart(el);
-            if (
-              isLiteral(last) &&
-              isLiteral(part) &&
-              !last.comment &&
-              !part.comment
-            )
-              last.value += part.value;
+            if (isLiteral(last) && isLiteral(part)) last.value += part.value;
             else vp.push(part);
           }
         }
