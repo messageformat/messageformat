@@ -18,7 +18,7 @@ import type { Scope } from './variable-ref';
  */
 export interface MessageRef extends PatternElement {
   type: 'term';
-  msg_path: (Literal | VariableRef)[];
+  msg_id: string;
   scope?: Record<string, Literal | VariableRef>;
 }
 
@@ -50,13 +50,11 @@ export const resolver: PatternElementResolver<MessageFormat['getMessage']> = {
   initContext: mf => mf.getMessage.bind(mf),
 
   resolve(ctx, term: MessageRef) {
-    const { msg_path } = term;
-    const strPath = msg_path.map(elem => ctx.resolve(elem).toString());
-    const source = '-' + strPath.join('.');
+    const source = '-' + term.msg_id;
 
     if (isMsgRefContext(ctx)) {
       const msgScope = getMessageScope(ctx, term);
-      const msg = ctx.types.term(strPath, msgScope);
+      const msg = ctx.types.term(term.msg_id, msgScope);
       if (msg) {
         msg.source = source;
         return msg;

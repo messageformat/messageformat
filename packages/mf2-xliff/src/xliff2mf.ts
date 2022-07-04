@@ -287,14 +287,14 @@ function resolvePart(
     }
 
     case 'mf:message': {
-      const mt: MF.MessageRef = { type: 'term', msg_path: [] };
+      const mt: MF.MessageRef = { type: 'term', msg_id: part.attributes.msgId };
       const scope: Record<string, MF.Literal | MF.VariableRef> = {};
       let hasScope = false;
       for (const el of part.elements) {
         if (el.name === 'mf:scope') {
           scope[el.attributes.name] = resolveOption(el);
           hasScope = true;
-        } else mt.msg_path.push(resolveArgument(el));
+        }
       }
       if (hasScope) mt.scope = scope;
       return mt;

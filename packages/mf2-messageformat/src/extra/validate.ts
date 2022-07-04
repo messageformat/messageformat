@@ -1,5 +1,5 @@
 import { isSelectMessage, MessageGroup, PatternElement } from '../data-model';
-import { isExpression, isMessageRef } from '../pattern';
+import { isExpression } from '../pattern';
 import type { Runtime } from '../runtime';
 
 function validateParts(parts: PatternElement[], runtime: Runtime) {
@@ -11,8 +11,6 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
         throw new ReferenceError(`Runtime function not available: ${func}`);
       validateParts(args, runtime);
       // TODO: Once runtime arg requirements are defined, test against them
-    } else if (isMessageRef(part)) {
-      validateParts(part.msg_path, runtime);
     }
   }
 }

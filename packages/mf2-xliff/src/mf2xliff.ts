@@ -269,8 +269,6 @@ function resolvePart(
   id: string | null,
   part: MF.PatternElement
 ): X.MessagePart {
-  const attributes = id ? { id } : undefined;
-
   if (isLiteral(part) || isVariableRef(part)) return resolveArgument(id, part);
 
   if (isExpression(part)) {
@@ -284,12 +282,8 @@ function resolvePart(
           elements: [resolveArgument(null, value)]
         });
     for (const p of part.args) elements.push(resolveArgument(null, p));
-    return {
-      type: 'element',
-      name: 'mf:function',
-      attributes: Object.assign({ name: part.func }, attributes),
-      elements
-    };
+    const attributes = { id: id ?? undefined, name: part.func };
+    return { type: 'element', name: 'mf:function', attributes, elements };
   }
 
   if (isMessageRef(part)) {
@@ -302,13 +296,8 @@ function resolvePart(
           attributes: { name },
           elements: [resolveArgument(null, value)]
         });
-    for (const p of part.msg_path) elements.push(resolveArgument(null, p));
-    return {
-      type: 'element',
-      name: 'mf:message',
-      attributes,
-      elements
-    };
+    const attributes = { id: id ?? undefined, msgId: part.msg_id };
+    return { type: 'element', name: 'mf:message', attributes, elements };
   }
 
   /* istanbul ignore next - never happens */

@@ -86,14 +86,14 @@ function expressionToPart(exp: Fluent.Expression): Part {
       const id = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
-      return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
+      return { type: 'term', msg_id: id };
     }
     case 'TermReference': {
       const id = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
       if (!exp.arguments)
-        return { type: 'term', msg_path: [{ type: 'literal', value: id }] };
+        return { type: 'term', msg_id: id };
       const scope: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of exp.arguments.named)
         scope[name.name] = {
@@ -101,11 +101,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return {
-        type: 'term',
-        msg_path: [{ type: 'literal', value: id }],
-        scope
-      };
+      return { type: 'term', msg_id: id, scope };
     }
 
     /* istanbul ignore next - never happens */

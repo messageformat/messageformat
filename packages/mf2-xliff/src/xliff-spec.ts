@@ -1227,12 +1227,13 @@ export interface MessageOption extends Element {
 
 export interface MessageReference extends Element {
   name: 'mf:message';
-  attributes?: {
+  attributes: {
     id?: string;
     default?: string | number;
+    msgId: string;
     resourceId?: string;
   };
-  elements: (MessageScope | MessageLiteral | MessageVariable)[];
+  elements: MessageScope[];
 }
 
 export interface MessageScope extends Element {
