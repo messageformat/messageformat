@@ -142,7 +142,7 @@ function resolveSelect(
     const el = prettyElement('group', attributes.id);
     throw new Error(`<mf:messageformat> not found in ${el}`);
   }
-  const match = idList(attributes['mf:select']).map(selId => {
+  const selectors = idList(attributes['mf:select']).map(selId => {
     const part = mf?.elements.find(part => part.attributes?.id === selId);
     if (!part) {
       const el = prettyElement('group', attributes.id);
@@ -152,7 +152,7 @@ function resolveSelect(
     const value = resolvePart(part);
     return def ? { value, default: String(def) } : { value };
   });
-  return { type: 'select', match, variants };
+  return { type: 'select', selectors, variants };
 }
 
 function resolveUnit(

@@ -207,6 +207,6 @@ export function astToMessage(
   }
   addParts(ast, null, null, []);
 
-  const match = args.map(arg => ({ value: argToPart(arg) }));
-  return { type: 'select', match, variants };
+  const selectors = args.map(arg => ({ value: argToPart(arg) }));
+  return { type: 'select', selectors, variants };
 }

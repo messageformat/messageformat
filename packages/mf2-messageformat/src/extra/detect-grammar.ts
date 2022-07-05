@@ -124,7 +124,7 @@ const enum GC {
  */
 function detectGrammarSelectors({
   variants: cases,
-  match: select
+  selectors: select
 }: SelectMessage) {
   const defaults = select.map(s => s.fallback || 'other');
 

@@ -49,7 +49,7 @@ export interface PatternMessage<P extends PatternElement = PatternElement> {
  */
 export interface SelectMessage<P extends PatternElement = PatternElement> {
   type: 'select';
-  match: Selector<P>[];
+  selectors: Selector<P>[];
   variants: Variant<P>[];
   comment?: string;
 }

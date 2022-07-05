@@ -205,11 +205,11 @@ export function astToMessage(
   }
   addParts(ast, []);
 
-  const match = args.map(arg => ({
+  const selectors = args.map(arg => ({
     value: expressionToPart(arg.selector),
     fallback: String(arg.fallback)
   }));
-  const msg: SelectMessage<Part> = { type: 'select', match, variants };
+  const msg: SelectMessage<Part> = { type: 'select', selectors, variants };
   if (comment) msg.comment = comment.content;
   return msg;
 }

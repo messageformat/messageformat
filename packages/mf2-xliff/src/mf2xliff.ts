@@ -99,7 +99,7 @@ function resolveSelect(
     if (trgSel && !isSelectMessage(trgSel))
       trgSel = {
         type: 'select',
-        match: srcSel.match,
+        selectors: srcSel.selectors,
         variants: [
           { key: [], value: { type: 'message', pattern: trgSel.pattern } }
         ]
@@ -111,7 +111,7 @@ function resolveSelect(
       );
     srcSel = {
       type: 'select',
-      match: trgSel.match,
+      selectors: trgSel.selectors,
       variants: [
         { key: [], value: { type: 'message', pattern: srcSel.pattern } }
       ]
@@ -119,7 +119,7 @@ function resolveSelect(
   }
 
   const select: { id: string; default: string; keys: string[] }[] = [];
-  const parts: X.MessagePart[] = srcSel.match.map(sel => {
+  const parts: X.MessagePart[] = srcSel.selectors.map(sel => {
     const id = nextId();
     select.push({ id, default: sel.fallback ?? 'other', keys: [] });
     return resolveSelector(id, sel);
@@ -140,8 +140,8 @@ function resolveSelect(
     // First, let's make sure that `selIds` and `parts` includes all the selectors
     // and that we have mappings between the array indices.
     const trgSelMap: number[] = [];
-    for (const sel of trgSel.match) {
-      const prevIdx = srcSel.match.findIndex(prev => deepEqual(sel, prev));
+    for (const sel of trgSel.selectors) {
+      const prevIdx = srcSel.selectors.findIndex(prev => deepEqual(sel, prev));
       if (prevIdx !== -1) trgSelMap.push(prevIdx);
       else {
         const id = nextId();

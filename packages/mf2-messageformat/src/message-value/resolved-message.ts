@@ -11,7 +11,7 @@ function getPattern(
   if (message.type === 'message')
     return { pattern: message.pattern, meta: undefined };
 
-  const sel = message.match.map(({ value, fallback }) => ({
+  const sel = message.selectors.map(({ value, fallback }) => ({
     fmt: context.resolve(value),
     def: fallback || 'other'
   }));

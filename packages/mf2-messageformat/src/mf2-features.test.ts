@@ -67,7 +67,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       entries: {
         msg: {
           type: 'select',
-          match: [
+          selectors: [
             {
               value: {
                 type: 'expression',
@@ -124,7 +124,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       entries: {
         msg: {
           type: 'select',
-          match: [
+          selectors: [
             {
               value: {
                 type: 'expression',
@@ -198,7 +198,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
     const res = compileMF1({ msg: src }, { locale: 'en' });
-    expect((res.entries.msg as any).match).toHaveLength(4);
+    expect((res.entries.msg as any).selectors).toHaveLength(4);
     expect((res.entries.msg as any).variants).toHaveLength(81);
 
     const mf = new MessageFormat('en', null, res);
@@ -246,7 +246,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
     const res = compileMF1({ msg: src }, { locale: 'en' });
-    expect((res.entries.msg as any).match).toHaveLength(6);
+    expect((res.entries.msg as any).selectors).toHaveLength(6);
     expect((res.entries.msg as any).variants).toHaveLength(64);
 
     const mf = new MessageFormat('en', null, res);
