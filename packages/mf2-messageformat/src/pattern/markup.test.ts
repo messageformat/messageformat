@@ -1,13 +1,14 @@
 import {
   Expression,
   Literal,
-  Markup,
+  MarkupEnd,
+  MarkupStart,
   MessageFormat,
   MessageGroup,
   VariableRef
 } from '../index';
 
-type Part = Literal | VariableRef | Expression | Markup;
+type Part = Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
 function getMF(pattern: Part[]) {
   const res: MessageGroup<Part> = {
     type: 'group',
@@ -19,9 +20,9 @@ function getMF(pattern: Part[]) {
 describe('Simple element', () => {
   test('no options, literal body', () => {
     const mf = getMF([
-      { type: 'markup', name: 'b', tag: 'start' },
+      { type: 'markup-start', name: 'b' },
       { type: 'literal', value: 'foo' },
-      { type: 'markup', name: 'b', tag: 'end' }
+      { type: 'markup-end', name: 'b' }
     ]);
     expect(mf.getMessage('msg')).toEqual({
       type: 'message',
@@ -41,9 +42,8 @@ describe('Simple element', () => {
   test('options, variables', () => {
     const mf = getMF([
       {
-        type: 'markup',
+        type: 'markup-start',
         name: 'b',
-        tag: 'start',
         options: {
           foo: { type: 'literal', value: '42' },
           bar: { type: 'variable', var_path: ['foo'] }
@@ -51,7 +51,7 @@ describe('Simple element', () => {
       },
       { type: 'literal', value: 'foo' },
       { type: 'variable', var_path: ['foo'] },
-      { type: 'markup', name: 'b', tag: 'end' }
+      { type: 'markup-end', name: 'b' }
     ]);
     const msg = mf.getMessage('msg', { foo: 13 });
     expect(msg).toEqual({
@@ -77,12 +77,12 @@ describe('Multiple elements', () => {
   // <b>foo</b><1>bar</1>
   test('adjacent', () => {
     const mf = getMF([
-      { type: 'markup', name: 'b', tag: 'start' },
+      { type: 'markup-start', name: 'b' },
       { type: 'literal', value: 'foo' },
-      { type: 'markup', name: 'b', tag: 'end' },
-      { type: 'markup', name: '1', tag: 'start' },
+      { type: 'markup-end', name: 'b' },
+      { type: 'markup-start', name: '1' },
       { type: 'literal', value: 'bar' },
-      { type: 'markup', name: '1', tag: 'end' }
+      { type: 'markup-end', name: '1' }
     ]);
     expect(mf.getMessage('msg')).toEqual({
       type: 'message',
@@ -109,12 +109,12 @@ describe('Multiple elements', () => {
   test('nested', () => {
     // <b>foo<1>bar</1></b>
     const mf = getMF([
-      { type: 'markup', name: 'b', tag: 'start' },
+      { type: 'markup-start', name: 'b' },
       { type: 'literal', value: 'foo' },
-      { type: 'markup', name: '1', tag: 'start' },
+      { type: 'markup-start', name: '1' },
       { type: 'literal', value: 'bar' },
-      { type: 'markup', name: '1', tag: 'end' },
-      { type: 'markup', name: 'b', tag: 'end' }
+      { type: 'markup-end', name: '1' },
+      { type: 'markup-end', name: 'b' }
     ]);
     expect(mf.getMessage('msg')).toEqual({
       type: 'message',
@@ -143,13 +143,13 @@ describe('Multiple elements', () => {
   test('overlapping', () => {
     // <b>foo<1>bar</b>baz</1>
     const mf = getMF([
-      { type: 'markup', name: 'b', tag: 'start' },
+      { type: 'markup-start', name: 'b' },
       { type: 'literal', value: 'foo' },
-      { type: 'markup', name: '1', tag: 'start' },
+      { type: 'markup-start', name: '1' },
       { type: 'literal', value: 'bar' },
-      { type: 'markup', name: 'b', tag: 'end' },
+      { type: 'markup-end', name: 'b' },
       { type: 'literal', value: 'baz' },
-      { type: 'markup', name: '1', tag: 'end' }
+      { type: 'markup-end', name: '1' }
     ]);
     expect(mf.getMessage('msg')).toEqual({
       type: 'message',

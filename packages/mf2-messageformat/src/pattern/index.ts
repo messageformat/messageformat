@@ -5,12 +5,12 @@ import type { MessageFormat } from '../messageformat';
 
 import { resolver as functionResolver } from './expression';
 import { resolver as literal } from './literal';
-import { resolver as markup } from './markup';
+import { markupEndResolver, markupStartResolver } from './markup';
 import { resolver as variable, Scope } from './variable-ref';
 
 export { isExpression, Expression } from './expression';
 export { isLiteral, Literal } from './literal';
-export { isMarkup, Markup } from './markup';
+export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
 
 export interface PatternElementResolver<T = unknown> {
@@ -19,4 +19,10 @@ export interface PatternElementResolver<T = unknown> {
   initContext?: (mf: Readonly<MessageFormat>, scope: Scope) => T;
 }
 
-export const patternFormatters = [literal, variable, functionResolver, markup];
+export const patternFormatters = [
+  literal,
+  variable,
+  functionResolver,
+  markupStartResolver,
+  markupEndResolver
+];

@@ -3,16 +3,24 @@ import type { Context } from '../format-context';
 import { MessageMarkup, MessageFallback } from '../message-value';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
 
-export interface Markup extends PatternElement {
-  type: 'markup';
+export interface MarkupStart extends PatternElement {
+  type: 'markup-start';
   name: string;
-  tag: 'start' | 'end';
   options?: Record<string, Literal | VariableRef>;
 }
 
+export interface MarkupEnd extends PatternElement {
+  type: 'markup-end';
+  name: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isMarkup = (part: any): part is Markup =>
-  !!part && typeof part === 'object' && part.type === 'markup';
+export const isMarkupStart = (part: any): part is MarkupStart =>
+  !!part && typeof part === 'object' && part.type === 'markup-start';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isMarkupEnd = (part: any): part is MarkupEnd =>
+  !!part && typeof part === 'object' && part.type === 'markup-end';
 
 function resolveOptions(
   ctx: Context,
@@ -27,16 +35,16 @@ function resolveOptions(
   return opt;
 }
 
-export const resolver: PatternElementResolver<never> = {
-  type: 'markup',
+export const markupStartResolver: PatternElementResolver<never> = {
+  type: 'markup-start',
 
-  resolve(ctx, { name, options, tag }: Markup) {
-    const source = tag === 'end' ? `</${name}>` : `<${name}>`;
+  resolve(ctx, { name, options }: MarkupStart) {
+    const source = `<${name}>`;
     try {
       return new MessageMarkup(ctx, name, {
         options: resolveOptions(ctx, options),
         source,
-        tag
+        tag: 'start'
       });
     } catch (error) {
       const fb = new MessageFallback(ctx, { source });
@@ -44,4 +52,11 @@ export const resolver: PatternElementResolver<never> = {
       return fb;
     }
   }
+};
+
+export const markupEndResolver: PatternElementResolver<never> = {
+  type: 'markup-end',
+
+  resolve: (ctx, { name }: MarkupEnd) =>
+    new MessageMarkup(ctx, name, { source: `</${name}>`, tag: 'end' })
 };
