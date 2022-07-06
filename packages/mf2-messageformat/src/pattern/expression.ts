@@ -1,6 +1,10 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { asMessageValue, MessageFallback } from '../message-value';
+import {
+  asMessageValue,
+  MessageFallback,
+  MessageValue
+} from '../message-value';
 import { FALLBACK_SOURCE } from '../message-value/message-value';
 import { MFruntime } from '../messageformat';
 import type { Runtime, RuntimeOptions, RuntimeType } from '../runtime';
@@ -19,7 +23,7 @@ import { isLiteral } from './literal';
 export interface Expression extends PatternElement {
   type: 'expression';
   func: string;
-  args: (Literal | VariableRef)[];
+  operand?: Literal | VariableRef;
   options?: Record<string, Literal | VariableRef>;
 }
 
@@ -72,18 +76,23 @@ export const resolver: PatternElementResolver<Runtime> = {
 
   initContext: mf => mf[MFruntime],
 
-  resolve(ctx, { args, func, options }: Expression) {
+  resolve(ctx, { operand, func, options }: Expression) {
     let source: string | undefined;
     const rf = (ctx.types.expression as Runtime)[func];
     try {
-      const fnArgs = args.map(arg => ctx.resolve(arg));
-      const srcArgs = fnArgs
-        .map(
-          fa =>
-            fa.source || (fa.type === 'literal' && fa.value) || FALLBACK_SOURCE
-        )
-        .join(', ');
-      source = `${func}(${srcArgs})`;
+      let fnArgs: MessageValue[];
+      if (operand) {
+        const arg = ctx.resolve(operand);
+        fnArgs = [arg];
+        const argSrc =
+          arg.source ||
+          (arg.type === 'literal' && arg.value) ||
+          FALLBACK_SOURCE;
+        source = `${func}(${argSrc})`;
+      } else {
+        fnArgs = [];
+        source = `${func}()`;
+      }
       const { opt, errorKeys } = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, opt, ...fnArgs);
       const mv = asMessageValue(ctx, res, { source });
@@ -91,7 +100,7 @@ export const resolver: PatternElementResolver<Runtime> = {
         ctx.onError(new TypeError(`Invalid value for option ${key}`), mv);
       return mv;
     } catch (error) {
-      if (!source) source = `${func}()`;
+      source ??= `${func}(${operand ? FALLBACK_SOURCE : ''})`;
       const fb = new MessageFallback(ctx, { source });
       ctx.onError(error, fb);
       return fb;

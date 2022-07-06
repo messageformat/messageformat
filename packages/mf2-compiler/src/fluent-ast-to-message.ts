@@ -55,7 +55,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
       return {
         type: 'expression',
         func: 'NUMBER',
-        args: [{ type: 'literal', value: exp.value }]
+        operand: { type: 'literal', value: exp.value }
       };
     case 'StringLiteral':
       return { type: 'literal', value: exp.parse().value };
@@ -70,7 +70,11 @@ function expressionToPart(exp: Fluent.Expression): Part {
           throw new Error(`A Fluent ${exp.type} is not supported here.`);
         return part;
       });
-      if (named.length === 0) return { type: 'expression', func, args };
+      if (args.length > 1) {
+        throw new Error(`More than one positional argument is not supported.`);
+      }
+      const operand = args[0];
+      if (named.length === 0) return { type: 'expression', func, operand };
       const options: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of named)
         options[name.name] = {
@@ -78,7 +82,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return { type: 'expression', func, args, options };
+      return { type: 'expression', func, operand, options };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
@@ -87,15 +91,16 @@ function expressionToPart(exp: Fluent.Expression): Part {
       return {
         type: 'expression',
         func: 'MESSAGE',
-        args: [{ type: 'literal', value: msgId }]
+        operand: { type: 'literal', value: msgId }
       };
     }
     case 'TermReference': {
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      const args: Literal[] = [{ type: 'literal', value: msgId }];
-      if (!exp.arguments) return { type: 'expression', func: 'MESSAGE', args };
+      const operand: Literal = { type: 'literal', value: msgId };
+      if (!exp.arguments)
+        return { type: 'expression', func: 'MESSAGE', operand };
 
       const options: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of exp.arguments.named)
@@ -104,7 +109,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return { type: 'expression', func: 'MESSAGE', args, options };
+      return { type: 'expression', func: 'MESSAGE', operand, options };
     }
 
     /* istanbul ignore next - never happens */

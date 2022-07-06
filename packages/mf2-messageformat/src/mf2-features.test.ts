@@ -72,7 +72,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
               value: {
                 type: 'expression',
                 func: 'pluralRange',
-                args: [{ type: 'variable', var_path: ['range'] }]
+                operand: { type: 'variable', var_path: ['range'] }
               }
             }
           ],
@@ -85,7 +85,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   {
                     type: 'expression',
                     func: 'formatRange',
-                    args: [{ type: 'variable', var_path: ['range'] }]
+                    operand: { type: 'variable', var_path: ['range'] }
                   },
                   { type: 'literal', value: ' dag' }
                 ]
@@ -99,7 +99,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   {
                     type: 'expression',
                     func: 'formatRange',
-                    args: [{ type: 'variable', var_path: ['range'] }]
+                    operand: { type: 'variable', var_path: ['range'] }
                   },
                   { type: 'literal', value: ' dagen' }
                 ]
@@ -115,72 +115,6 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     expect(msg1?.toString()).toBe('0 - 1 dag');
 
     const msg2 = mf.getMessage('msg', { range: { start: 1, end: 2 } });
-    expect(msg2?.toString()).toBe('1 - 2 dagen');
-  });
-
-  test('input as separate start, end falues', () => {
-    const res: MessageGroup<Literal | Expression> = {
-      type: 'group',
-      entries: {
-        msg: {
-          type: 'select',
-          selectors: [
-            {
-              value: {
-                type: 'expression',
-                func: 'pluralRange',
-                args: [
-                  { type: 'variable', var_path: ['start'] },
-                  { type: 'variable', var_path: ['end'] }
-                ]
-              }
-            }
-          ],
-          variants: [
-            {
-              key: ['one'],
-              value: {
-                type: 'message',
-                pattern: [
-                  {
-                    type: 'expression',
-                    func: 'formatRange',
-                    args: [
-                      { type: 'variable', var_path: ['start'] },
-                      { type: 'variable', var_path: ['end'] }
-                    ]
-                  },
-                  { type: 'literal', value: ' dag' }
-                ]
-              }
-            },
-            {
-              key: ['other'],
-              value: {
-                type: 'message',
-                pattern: [
-                  {
-                    type: 'expression',
-                    func: 'formatRange',
-                    args: [
-                      { type: 'variable', var_path: ['start'] },
-                      { type: 'variable', var_path: ['end'] }
-                    ]
-                  },
-                  { type: 'literal', value: ' dagen' }
-                ]
-              }
-            }
-          ]
-        }
-      }
-    };
-    const mf = new MessageFormat('nl', { runtime }, res);
-
-    const msg1 = mf.getMessage('msg', { start: 0, end: 1 });
-    expect(msg1?.toString()).toBe('0 - 1 dag');
-
-    const msg2 = mf.getMessage('msg', { start: 1, end: 2 });
     expect(msg2?.toString()).toBe('1 - 2 dagen');
   });
 });
@@ -323,10 +257,13 @@ maybe('List formatting', () => {
     function LIST(
       locales: string[],
       options: RuntimeOptions | undefined,
-      ...args: MessageValue<string | string[]>[]
+      arg?: MessageValue<string | string[]>
     ) {
-      let list: string[] = [];
-      for (const arg of args) list = list.concat(arg.value);
+      const list = arg
+        ? Array.isArray(arg.value)
+          ? arg.value
+          : [arg.value]
+        : [];
       // @ts-ignore
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
@@ -341,7 +278,6 @@ maybe('List formatting', () => {
       plain = { LIST($list) }
       and = { LIST($list, style: "short", type: "conjunction") }
       or = { LIST($list, style: "long", type: "disjunction") }
-      or-other = { LIST($list, "another vehicle", type: "disjunction") }
     `;
     const res = compileFluent(src);
     const mf = new MessageFormat('en', { runtime }, res);
@@ -355,11 +291,6 @@ maybe('List formatting', () => {
 
     const orMsg = mf.getMessage('or', { list });
     expect(orMsg?.toString()).toBe('Motorcycle, Bus, or Car');
-
-    const otherMsg = mf.getMessage('or-other', { list });
-    expect(otherMsg?.toString()).toBe(
-      'Motorcycle, Bus, Car, or another vehicle'
-    );
   });
 
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
@@ -381,10 +312,13 @@ maybe('List formatting', () => {
       function LIST(
         locales: string[],
         options: RuntimeOptions | undefined,
-        ...args: MessageValue<string | string[]>[]
+        arg?: MessageValue<string | string[]>
       ) {
-        let list: string[] = [];
-        for (const arg of args) list = list.concat(arg.value);
+        let list = arg
+          ? Array.isArray(arg.value)
+            ? arg.value
+            : [arg.value]
+          : [];
         if (typeof options?.each === 'string') {
           const fn = runtime[options.each];
           if (!fn || typeof fn.call !== 'function')

@@ -224,9 +224,10 @@ function resolveInlineElement(
             throw new Error(
               'Forming function arguments by concatenation is not supported'
             );
-          if (isExpression(arg[0]))
-            throw new Error(`A ${arg[0].type} is not supported here`);
-          part.args.unshift(arg[0] ?? '');
+          const operand = arg[0];
+          if (isExpression(operand))
+            throw new Error(`A ${operand.type} is not supported here`);
+          part.operand = operand;
           return part;
         }
         case 'sc':
@@ -269,8 +270,7 @@ function resolvePart(
     case 'mf:function': {
       const fn: MF.Expression = {
         type: 'expression',
-        func: part.attributes.name,
-        args: []
+        func: part.attributes.name
       };
       const options: Record<string, MF.Literal | MF.VariableRef> = {};
       let hasOptions = false;
@@ -278,7 +278,13 @@ function resolvePart(
         if (el.name === 'mf:option') {
           options[el.attributes.name] = resolveOption(el);
           hasOptions = true;
-        } else fn.args.push(resolveArgument(el));
+        } else if (fn.operand) {
+          throw new Error(
+            `More than one positional argument is not supported.`
+          );
+        } else {
+          fn.operand = resolveArgument(el);
+        }
       }
       if (hasOptions) fn.options = options;
       return fn;
@@ -295,7 +301,7 @@ function resolvePart(
 
 function resolveArgument(part: X.MessageLiteral): MF.Literal;
 function resolveArgument(part: X.MessageVariable): MF.VariableRef;
-function resolveArgument(part: X.MessagePart): never;
+function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef;
 function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
   switch (part.name) {
     case 'mf:literal':

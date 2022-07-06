@@ -272,15 +272,17 @@ function resolvePart(
 
   if (isExpression(part)) {
     const elements: X.MessageFunction['elements'] = [];
-    if (part.options)
-      for (const [name, value] of Object.entries(part.options))
+    if (part.options) {
+      for (const [name, value] of Object.entries(part.options)) {
         elements.push({
           type: 'element',
           name: 'mf:option',
           attributes: { name },
           elements: [resolveArgument(null, value)]
         });
-    for (const p of part.args) elements.push(resolveArgument(null, p));
+      }
+    }
+    if (part.operand) elements.push(resolveArgument(null, part.operand));
     const attributes = { id: id ?? undefined, name: part.func };
     return { type: 'element', name: 'mf:function', attributes, elements };
   }
