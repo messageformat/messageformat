@@ -1,7 +1,7 @@
 import { Message, PatternElement } from '../data-model';
 import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
-import { fillMessageElements } from './message-element';
+import { fillMessageMarkups } from './message-markup';
 import { MessageValue, Meta } from './message-value';
 
 function getPattern(
@@ -46,7 +46,7 @@ export class ResolvedMessage extends MessageValue<MessageValue[]> {
   constructor(context: Context, message: Message, source?: string) {
     const { meta, pattern } = getPattern(context, message);
     const resMsg = pattern.map(elem => context.resolve(elem));
-    fillMessageElements(resMsg);
+    fillMessageMarkups(resMsg);
     super(ResolvedMessage.type, context, resMsg, { meta, source });
   }
 

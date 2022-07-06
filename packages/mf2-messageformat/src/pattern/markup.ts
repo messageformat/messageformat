@@ -1,18 +1,18 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
-import { MessageElement, MessageFallback } from '../message-value';
+import { MessageMarkup, MessageFallback } from '../message-value';
 import type { Literal, PatternElementResolver, VariableRef } from './index';
 
-export interface Element extends PatternElement {
-  type: 'element';
+export interface Markup extends PatternElement {
+  type: 'markup';
   name: string;
   tag: 'start' | 'end';
   options?: Record<string, Literal | VariableRef>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isElement = (part: any): part is Element =>
-  !!part && typeof part === 'object' && part.type === 'element';
+export const isMarkup = (part: any): part is Markup =>
+  !!part && typeof part === 'object' && part.type === 'markup';
 
 function resolveOptions(
   ctx: Context,
@@ -28,12 +28,12 @@ function resolveOptions(
 }
 
 export const resolver: PatternElementResolver<never> = {
-  type: 'element',
+  type: 'markup',
 
-  resolve(ctx, { name, options, tag }: Element) {
+  resolve(ctx, { name, options, tag }: Markup) {
     const source = tag === 'end' ? `</${name}>` : `<${name}>`;
     try {
-      return new MessageElement(ctx, name, {
+      return new MessageMarkup(ctx, name, {
         options: resolveOptions(ctx, options),
         source,
         tag

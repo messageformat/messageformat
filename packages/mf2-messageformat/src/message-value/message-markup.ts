@@ -2,10 +2,10 @@ import { Context } from '../format-context';
 import type { LocaleContextArg } from './locale-context';
 import { MessageValue, Meta } from './message-value';
 
-const elementTags = new WeakMap<MessageElement, 'start' | 'end'>();
+const elementTags = new WeakMap<MessageMarkup, 'start' | 'end'>();
 
-export class MessageElement extends MessageValue<MessageValue[]> {
-  static readonly type = 'element';
+export class MessageMarkup extends MessageValue<MessageValue[]> {
+  static readonly type = 'markup';
 
   name: string;
   declare options?: Record<string, unknown>;
@@ -25,7 +25,7 @@ export class MessageElement extends MessageValue<MessageValue[]> {
       source?: string;
     }
   ) {
-    super(MessageElement.type, locale, [], { meta, source });
+    super(MessageMarkup.type, locale, [], { meta, source });
     this.name = name;
     if (options) this.options = { ...options };
     if (tag === 'start' || tag === 'end') elementTags.set(this, tag);
@@ -62,15 +62,15 @@ export class MessageElement extends MessageValue<MessageValue[]> {
 }
 
 /**
- * Fill out MessageElement `value`s with their appropriate contents
+ * Fill out MessageMarkup `value`s with their appropriate contents
  *
  * @param body Modified, assigning element contents & dropping end tags
  */
-export function fillMessageElements(body: MessageValue[]) {
-  const stack: MessageElement[] = [];
+export function fillMessageMarkups(body: MessageValue[]) {
+  const stack: MessageMarkup[] = [];
   for (let i = 0; i < body.length; ++i) {
     const mv = body[i];
-    if (mv instanceof MessageElement) {
+    if (mv instanceof MessageMarkup) {
       switch (elementTags.get(mv)) {
         case 'start':
           stack.push(mv);
@@ -95,7 +95,7 @@ export function fillMessageElements(body: MessageValue[]) {
             //   3. Re-handle this </b>, now with stack = [<b>]
             //
             // Result: <b>bold <i>both</i></b><i> italic</i>
-            body.splice(start + 1, 0, copyStartElement(el));
+            body.splice(start + 1, 0, copyStartMarkup(el));
           }
           break;
         }
@@ -112,8 +112,8 @@ export function fillMessageElements(body: MessageValue[]) {
   }
 }
 
-function copyStartElement(el: MessageElement) {
+function copyStartMarkup(el: MessageMarkup) {
   const { localeContext, name, meta, options, source } = el;
   const fmt = { tag: 'start' as const, meta, options, source };
-  return new MessageElement(localeContext, name, fmt);
+  return new MessageMarkup(localeContext, name, fmt);
 }
