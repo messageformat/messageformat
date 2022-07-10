@@ -307,20 +307,21 @@ function resolveArgument(
   id: string | null,
   part: MF.Literal | MF.VariableRef | string | number | boolean
 ): X.MessageLiteral | X.MessageVariable {
-  const attributes = id ? { id } : undefined;
-
   if (isLiteral(part) || typeof part !== 'object') {
     return {
       type: 'element',
       name: 'mf:literal',
-      attributes,
+      attributes: { id: id ?? undefined },
       elements: [asText(part)]
     };
   }
 
   if (isVariableRef(part)) {
-    const elements = part.var_path.map(p => resolveArgument(null, p));
-    return { type: 'element', name: 'mf:variable', attributes, elements };
+    return {
+      type: 'element',
+      name: 'mf:variable',
+      attributes: { id: id ?? undefined, name: part.name }
+    };
   }
 
   throw new Error(`Unsupported part: ${JSON.stringify(part)}`);

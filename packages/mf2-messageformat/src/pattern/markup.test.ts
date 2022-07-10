@@ -46,11 +46,11 @@ describe('Simple element', () => {
         name: 'b',
         options: [
           { name: 'foo', value: { type: 'literal', value: '42' } },
-          { name: 'bar', value: { type: 'variable', var_path: ['foo'] } }
+          { name: 'bar', value: { type: 'variable', name: 'foo' } }
         ]
       },
       { type: 'literal', value: 'foo' },
-      { type: 'variable', var_path: ['foo'] },
+      { type: 'variable', name: 'foo' },
       { type: 'markup-end', name: 'b' }
     ]);
     const msg = mf.getMessage('msg', { foo: 13 });

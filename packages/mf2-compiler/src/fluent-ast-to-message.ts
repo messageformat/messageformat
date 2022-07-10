@@ -61,7 +61,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
     case 'StringLiteral':
       return { type: 'literal', value: exp.parse().value };
     case 'VariableReference':
-      return { type: 'variable', var_path: [exp.id.name] };
+      return { type: 'variable', name: exp.id.name };
     case 'FunctionReference': {
       const func = exp.id.name;
       const { positional, named } = exp.arguments;

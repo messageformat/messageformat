@@ -1,5 +1,4 @@
 import type { PatternElement } from '../data-model';
-import type { Context } from '../format-context';
 import {
   asMessageValue,
   MessageFallback,
@@ -18,28 +17,41 @@ export interface Scope {
 /**
  * The value of a VariableRef is defined by the current Scope.
  *
- * Using an array with more than one value refers to an inner property of an
- * object value, so e.g. `['user', 'name']` would require something like
- * `{ name: 'Kat' }` as the value of the `'user'` scope variable.
+ * To refer to an inner property of an object value, use `.` as a separator;
+ * in case of conflict, the longest starting substring wins.
+ * For example, `'user.name'` would be first matched by an exactly matching top-level key,
+ * and in case that fails, with the `'name'` property of the `'user'` object:
+ * The runtime scopes `{ 'user.name': 'Kat' }` and `{ user: { name: 'Kat' } }`
+ * would both resolve a `'user.name'` VariableRef as the string `'Kat'`.
  */
 export interface VariableRef extends PatternElement {
   type: 'variable';
-  var_path: string[];
+  name: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isVariableRef = (part: any): part is VariableRef =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
-/** @returns `undefined` if value not found */
-function getValue(ctx: Context, path: string[]): unknown {
-  if (path.length === 0) return undefined;
-  let val: unknown = ctx.types.variable;
-  for (const p of path) {
-    if (!val || val instanceof MessageValue) return undefined;
-    val = (val as Scope)[p];
+/**
+ * Looks for the longest matching `.` delimited starting substring of name.
+ * @returns `undefined` if value not found
+ */
+function getValue(scope: unknown, name: string): unknown {
+  if (scope instanceof Object && !(scope instanceof MessageValue)) {
+    if (name in scope) return (scope as Record<string, unknown>)[name];
+
+    const parts = name.split('.');
+    for (let i = parts.length - 1; i > 0; --i) {
+      const head = parts.slice(0, i).join('.');
+      if (head in scope) {
+        const tail = parts.slice(i).join('.');
+        return getValue((scope as Record<string, unknown>)[head], tail);
+      }
+    }
   }
-  return val;
+
+  return undefined;
 }
 
 export const resolver: PatternElementResolver<Scope> = {
@@ -47,9 +59,9 @@ export const resolver: PatternElementResolver<Scope> = {
 
   initContext: (_mf, scope) => scope,
 
-  resolve(ctx, { var_path }: VariableRef) {
-    const source = '$' + var_path.join('.');
-    const value = getValue(ctx, var_path);
+  resolve(ctx, { name }: VariableRef) {
+    const source = '$' + name;
+    const value = getValue(ctx.types.variable, name);
     if (value !== undefined) return asMessageValue(ctx, value, { source });
 
     const fb = new MessageFallback(ctx, { source });

@@ -1,6 +1,12 @@
 import { compileFluent } from '@messageformat/compiler';
 
-import { MessageNumber, MessageFormat, MessageValue } from '../index';
+import {
+  MessageFormat,
+  MessageGroup,
+  MessageNumber,
+  MessageValue,
+  VariableRef
+} from '../index';
 
 describe('MessageValue variables', () => {
   let mf: MessageFormat;
@@ -56,6 +62,45 @@ describe('MessageValue variables', () => {
           value: BigInt(42)
         }
       ]
+    });
+  });
+});
+
+describe('Variable paths', () => {
+  let mf: MessageFormat;
+  beforeEach(() => {
+    const res: MessageGroup<VariableRef> = {
+      type: 'group',
+      entries: {
+        msg: {
+          type: 'message',
+          pattern: [{ type: 'variable', name: 'user.name' }]
+        }
+      }
+    };
+    mf = new MessageFormat('en', null, res);
+  });
+
+  test('top-level match', () => {
+    expect(mf.getMessage('msg', { 'user.name': 42 })).toMatchObject({
+      type: 'message',
+      value: [{ type: 'number', source: '$user.name', value: 42 }]
+    });
+  });
+
+  test('scoped match', () => {
+    expect(mf.getMessage('msg', { user: { name: 42 } })).toMatchObject({
+      type: 'message',
+      value: [{ type: 'number', source: '$user.name', value: 42 }]
+    });
+  });
+
+  test('top-level overrides scoped match', () => {
+    expect(
+      mf.getMessage('msg', { user: { name: 13 }, 'user.name': 42 })
+    ).toMatchObject({
+      type: 'message',
+      value: [{ type: 'number', source: '$user.name', value: 42 }]
     });
   });
 });

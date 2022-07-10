@@ -412,7 +412,7 @@ describe('getMessage', () => {
             comment: 'Group 1\n\nFirst message',
             pattern: [
               { type: 'literal', value: 'Foo ' },
-              { type: 'variable', var_path: ['num'] }
+              { type: 'variable', name: 'num' }
             ],
             type: 'message'
           },

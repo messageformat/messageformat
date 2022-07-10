@@ -308,10 +308,7 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
       return { type: 'literal', value: resolveText(part.elements) };
 
     case 'mf:variable':
-      return {
-        type: 'variable',
-        var_path: part.elements.map(p => resolveArgument(p).value)
-      };
+      return { type: 'variable', name: part.attributes.name };
   }
 
   /* istanbul ignore next - never happens */

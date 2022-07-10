@@ -24,9 +24,7 @@ test('source only', () => {
         </unit>
         <unit id="u:var" name="var">
           <mf:messageformat>
-            <mf:variable id="m1">
-              <mf:literal>num</mf:literal>
-            </mf:variable>
+            <mf:variable id="m1" name="num"/>
           </mf:messageformat>
           <segment>
             <source>Foo·
@@ -48,9 +46,7 @@ test('source only', () => {
         </unit>
         <group id="g:select" name="select" mf:select="m3">
           <mf:messageformat>
-            <mf:variable default="b" id="m3">
-              <mf:literal>selector</mf:literal>
-            </mf:variable>
+            <mf:variable default="b" id="m3" name="selector"/>
           </mf:messageformat>
           <unit id="u:select.a" name="a">
             <segment>
@@ -105,12 +101,8 @@ test('combine source & target', () => {
         </unit>
         <unit id="u:var" name="var">
           <mf:messageformat>
-            <mf:variable id="m1">
-              <mf:literal>num</mf:literal>
-            </mf:variable>
-            <mf:variable id="m2">
-              <mf:literal>num</mf:literal>
-            </mf:variable>
+            <mf:variable id="m1" name="num"/>
+            <mf:variable id="m2" name="num"/>
           </mf:messageformat>
           <segment>
             <source>Foo·
@@ -123,9 +115,7 @@ test('combine source & target', () => {
         </unit>
         <group id="g:select" name="select" mf:select="m3">
           <mf:messageformat>
-            <mf:variable default="b" id="m3">
-              <mf:literal>selector</mf:literal>
-            </mf:variable>
+            <mf:variable default="b" id="m3" name="selector"/>
           </mf:messageformat>
           <unit id="u:select.a" name="a">
             <segment>
@@ -173,12 +163,8 @@ test('selector mismatch between source & target languages', () => {
       <file id="f:res" mf:resourceId="res">
         <group id="g:select" name="select" mf:select="m1 m2">
           <mf:messageformat>
-            <mf:variable default="other" id="m1">
-              <mf:literal>gender</mf:literal>
-            </mf:variable>
-            <mf:variable default="nominative" id="m2">
-              <mf:literal>case</mf:literal>
-            </mf:variable>
+            <mf:variable default="other" id="m1" name="gender"/>
+            <mf:variable default="nominative" id="m2" name="case"/>
           </mf:messageformat>
           <unit id="u:select.masculine_allative" name="masculine allative">
             <segment>

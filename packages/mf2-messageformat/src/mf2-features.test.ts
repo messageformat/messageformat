@@ -72,7 +72,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
               value: {
                 type: 'expression',
                 name: 'pluralRange',
-                operand: { type: 'variable', var_path: ['range'] }
+                operand: { type: 'variable', name: 'range' }
               }
             }
           ],
@@ -85,7 +85,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   {
                     type: 'expression',
                     name: 'formatRange',
-                    operand: { type: 'variable', var_path: ['range'] }
+                    operand: { type: 'variable', name: 'range' }
                   },
                   { type: 'literal', value: ' dag' }
                 ]
@@ -99,7 +99,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
                   {
                     type: 'expression',
                     name: 'formatRange',
-                    operand: { type: 'variable', var_path: ['range'] }
+                    operand: { type: 'variable', name: 'range' }
                   },
                   { type: 'literal', value: ' dagen' }
                 ]

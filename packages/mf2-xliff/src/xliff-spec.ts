@@ -1223,6 +1223,9 @@ export interface MessageOption extends Element {
 
 export interface MessageVariable extends Element {
   name: 'mf:variable';
-  attributes?: { id?: string; default?: string | number };
-  elements: MessageLiteral[];
+  attributes: {
+    name: string;
+    id?: string;
+    default?: string | number;
+  };
 }
