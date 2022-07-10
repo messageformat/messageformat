@@ -14,7 +14,7 @@ import { isLiteral } from './literal';
 /**
  * To resolve an Expression, an externally defined function is called.
  *
- * The `func` identifies a function that takes in the arguments `args`, the
+ * The `name` identifies a function that takes in the arguments `args`, the
  * current locale, as well as any `options`, and returns some corresponding
  * output. Likely functions available by default would include `'plural'` for
  * determining the plural category of a numeric value, as well as `'number'`
@@ -22,7 +22,7 @@ import { isLiteral } from './literal';
  */
 export interface Expression extends PatternElement {
   type: 'expression';
-  func: string;
+  name: string;
   operand?: Literal | VariableRef;
   options?: Record<string, Literal | VariableRef>;
 }
@@ -76,9 +76,9 @@ export const resolver: PatternElementResolver<Runtime> = {
 
   initContext: mf => mf[MFruntime],
 
-  resolve(ctx, { operand, func, options }: Expression) {
+  resolve(ctx, { operand, name, options }: Expression) {
     let source: string | undefined;
-    const rf = (ctx.types.expression as Runtime)[func];
+    const rf = (ctx.types.expression as Runtime)[name];
     try {
       let fnArgs: MessageValue[];
       if (operand) {
@@ -88,10 +88,10 @@ export const resolver: PatternElementResolver<Runtime> = {
           arg.source ||
           (arg.type === 'literal' && arg.value) ||
           FALLBACK_SOURCE;
-        source = `${func}(${argSrc})`;
+        source = `${name}(${argSrc})`;
       } else {
         fnArgs = [];
-        source = `${func}()`;
+        source = `${name}()`;
       }
       const { opt, errorKeys } = resolveOptions(ctx, options, rf?.options);
       const res = rf.call(ctx.locales, opt, ...fnArgs);
@@ -100,7 +100,7 @@ export const resolver: PatternElementResolver<Runtime> = {
         ctx.onError(new TypeError(`Invalid value for option ${key}`), mv);
       return mv;
     } catch (error) {
-      source ??= `${func}(${operand ? FALLBACK_SOURCE : ''})`;
+      source ??= `${name}(${operand ? FALLBACK_SOURCE : ''})`;
       const fb = new MessageFallback(ctx, { source });
       ctx.onError(error, fb);
       return fb;

@@ -270,7 +270,7 @@ function resolvePart(
     case 'mf:function': {
       const fn: MF.Expression = {
         type: 'expression',
-        func: part.attributes.name
+        name: part.attributes.name
       };
       const options: Record<string, MF.Literal | MF.VariableRef> = {};
       let hasOptions = false;

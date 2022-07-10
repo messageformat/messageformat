@@ -54,7 +54,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
     case 'NumberLiteral':
       return {
         type: 'expression',
-        func: 'NUMBER',
+        name: 'NUMBER',
         operand: { type: 'literal', value: exp.value }
       };
     case 'StringLiteral':
@@ -74,7 +74,8 @@ function expressionToPart(exp: Fluent.Expression): Part {
         throw new Error(`More than one positional argument is not supported.`);
       }
       const operand = args[0];
-      if (named.length === 0) return { type: 'expression', func, operand };
+      if (named.length === 0)
+        return { type: 'expression', name: func, operand };
       const options: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of named)
         options[name.name] = {
@@ -82,7 +83,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return { type: 'expression', func, operand, options };
+      return { type: 'expression', name: func, operand, options };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
@@ -90,7 +91,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
         : exp.id.name;
       return {
         type: 'expression',
-        func: 'MESSAGE',
+        name: 'MESSAGE',
         operand: { type: 'literal', value: msgId }
       };
     }
@@ -100,7 +101,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
         : `-${exp.id.name}`;
       const operand: Literal = { type: 'literal', value: msgId };
       if (!exp.arguments)
-        return { type: 'expression', func: 'MESSAGE', operand };
+        return { type: 'expression', name: 'MESSAGE', operand };
 
       const options: Record<string, Literal | VariableRef> = {};
       for (const { name, value } of exp.arguments.named)
@@ -109,7 +110,7 @@ function expressionToPart(exp: Fluent.Expression): Part {
           value:
             value.type === 'NumberLiteral' ? value.value : value.parse().value
         };
-      return { type: 'expression', func: 'MESSAGE', operand, options };
+      return { type: 'expression', name: 'MESSAGE', operand, options };
     }
 
     /* istanbul ignore next - never happens */

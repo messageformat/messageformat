@@ -283,7 +283,7 @@ function resolvePart(
       }
     }
     if (part.operand) elements.push(resolveArgument(null, part.operand));
-    const attributes = { id: id ?? undefined, name: part.func };
+    const attributes = { id: id ?? undefined, name: part.name };
     return { type: 'element', name: 'mf:function', attributes, elements };
   }
 

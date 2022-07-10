@@ -5,10 +5,10 @@ import type { Runtime } from '../runtime';
 function validateParts(parts: PatternElement[], runtime: Runtime) {
   for (const part of parts) {
     if (isExpression(part)) {
-      const fn = runtime[part.func];
+      const fn = runtime[part.name];
       if (!fn || typeof fn !== 'object' || typeof fn.call !== 'function') {
         throw new ReferenceError(
-          `Runtime function not available: ${part.func}`
+          `Runtime function not available: ${part.name}`
         );
       }
       // TODO: Once runtime arg requirements are defined, test against them

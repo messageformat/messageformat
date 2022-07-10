@@ -63,7 +63,7 @@ function tokenToPart(
     case 'function': {
       const fn: Expression = {
         type: 'expression',
-        func: token.key,
+        name: token.key,
         operand: { type: 'variable', var_path: [token.arg] }
       };
       if (token.param && token.param.length > 0) {
@@ -80,7 +80,7 @@ function tokenToPart(
       if (!pluralArg) return { type: 'literal', value: '#' };
       const fn: Expression = {
         type: 'expression',
-        func: 'number',
+        name: 'number',
         operand: { type: 'variable', var_path: [pluralArg] }
       };
       if (pluralOffset)
@@ -100,7 +100,7 @@ function argToPart({ arg, pluralOffset, type }: SelectArg) {
   if (type === 'select') return argVar;
   const fn: Expression = {
     type: 'expression',
-    func: 'number',
+    name: 'number',
     operand: argVar
   };
 
