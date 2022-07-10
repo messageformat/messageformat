@@ -4,6 +4,7 @@ import {
   isLiteral,
   Literal,
   Message,
+  Option,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -72,7 +73,7 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        fn.options = { param: { type: 'literal', value } };
+        fn.options = [{ name: 'param', value: { type: 'literal', value } }];
       }
       return fn;
     }
@@ -84,9 +85,12 @@ function tokenToPart(
         operand: { type: 'variable', var_path: [pluralArg] }
       };
       if (pluralOffset)
-        fn.options = {
-          pluralOffset: { type: 'literal', value: String(pluralOffset) }
-        };
+        fn.options = [
+          {
+            name: 'pluralOffset',
+            value: { type: 'literal', value: String(pluralOffset) }
+          }
+        ];
       return fn;
     }
     /* istanbul ignore next - never happens */
@@ -95,27 +99,34 @@ function tokenToPart(
   }
 }
 
-function argToPart({ arg, pluralOffset, type }: SelectArg) {
+function argToPart({
+  arg,
+  pluralOffset,
+  type
+}: SelectArg): VariableRef | Expression {
   const argVar: VariableRef = { type: 'variable', var_path: [arg] };
   if (type === 'select') return argVar;
-  const fn: Expression = {
+
+  const options: Option[] = [];
+  if (pluralOffset) {
+    options.push({
+      name: 'pluralOffset',
+      value: { type: 'literal', value: String(pluralOffset) }
+    });
+  }
+  if (type === 'selectordinal') {
+    options.push({
+      name: 'type',
+      value: { type: 'literal', value: 'ordinal' }
+    });
+  }
+
+  return {
     type: 'expression',
     name: 'number',
-    operand: argVar
+    operand: argVar,
+    options
   };
-
-  const po = pluralOffset
-    ? { type: 'literal' as const, value: String(pluralOffset) }
-    : null;
-  const oo =
-    type === 'selectordinal'
-      ? { type: 'literal' as const, value: 'ordinal' }
-      : null;
-  if (po && oo) fn.options = { pluralOffset: po, type: oo };
-  else if (po) fn.options = { pluralOffset: po };
-  else if (oo) fn.options = { type: oo };
-
-  return fn;
 }
 
 /**

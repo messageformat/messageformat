@@ -139,12 +139,12 @@ describe('Type casts based on runtime', () => {
     const res = compileFluent(src);
 
     // Hacky, but Fluent doesn't allow for useGrouping
-    (res.entries.true as any).pattern[0].options = {
-      useGrouping: { type: 'literal', value: 'true' }
-    };
-    (res.entries.false as any).pattern[0].options = {
-      useGrouping: { type: 'literal', value: 'false' }
-    };
+    (res.entries.true as any).pattern[0].options = [
+      { name: 'useGrouping', value: { type: 'literal', value: 'true' } }
+    ];
+    (res.entries.false as any).pattern[0].options = [
+      { name: 'useGrouping', value: { type: 'literal', value: 'false' } }
+    ];
 
     const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     expect(mf.getMessage('true', { var: 1234 })?.toString()).toBe('1,234');
@@ -156,9 +156,12 @@ describe('Type casts based on runtime', () => {
     const res = compileFluent(src);
 
     // Hacky, but Fluent doesn't allow for useGrouping
-    (res.entries.msg as any).pattern[0].options = {
-      useGrouping: { type: 'variable', var_path: ['useGrouping'] }
-    };
+    (res.entries.msg as any).pattern[0].options = [
+      {
+        name: 'useGrouping',
+        value: { type: 'variable', var_path: ['useGrouping'] }
+      }
+    ];
 
     const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
     expect(

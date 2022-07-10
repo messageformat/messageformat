@@ -24,7 +24,12 @@ export interface Expression extends PatternElement {
   type: 'expression';
   name: string;
   operand?: Literal | VariableRef;
-  options?: Record<string, Literal | VariableRef>;
+  options?: Option[];
+}
+
+export interface Option {
+  name: string;
+  value: Literal | VariableRef;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,19 +38,19 @@ export const isExpression = (part: any): part is Expression =>
 
 function resolveOptions(
   ctx: Context,
-  options: Record<string, Literal | VariableRef> | undefined,
+  options: Option[] | undefined,
   expected: RuntimeType | Record<string, RuntimeType> | undefined
 ) {
   const opt: RuntimeOptions = { localeMatcher: ctx.localeMatcher };
   const errorKeys: string[] = [];
   if (options && expected) {
-    for (const [key, value] of Object.entries(options)) {
+    for (const { name, value } of options) {
       const exp =
         typeof expected === 'string' || Array.isArray(expected)
           ? expected
-          : expected[key];
+          : expected[name];
       if (!exp || exp === 'never') {
-        errorKeys.push(key);
+        errorKeys.push(name);
         continue;
       }
       const res = ctx.resolve(value).value;
@@ -54,18 +59,18 @@ function resolveOptions(
         exp === typeof res ||
         (Array.isArray(exp) && typeof res === 'string' && exp.includes(res))
       ) {
-        opt[key] = res;
+        opt[name] = res;
       } else if (isLiteral(value)) {
         switch (exp) {
           case 'boolean':
-            if (res === 'true') opt[key] = true;
-            else if (res === 'false') opt[key] = false;
+            if (res === 'true') opt[name] = true;
+            else if (res === 'false') opt[name] = false;
             break;
           case 'number':
-            opt[key] = Number(res);
+            opt[name] = Number(res);
         }
       }
-      errorKeys.push(key);
+      errorKeys.push(name);
     }
   }
   return { opt, errorKeys };

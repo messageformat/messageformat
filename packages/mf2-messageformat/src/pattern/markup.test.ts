@@ -44,10 +44,10 @@ describe('Simple element', () => {
       {
         type: 'markup-start',
         name: 'b',
-        options: {
-          foo: { type: 'literal', value: '42' },
-          bar: { type: 'variable', var_path: ['foo'] }
-        }
+        options: [
+          { name: 'foo', value: { type: 'literal', value: '42' } },
+          { name: 'bar', value: { type: 'variable', var_path: ['foo'] } }
+        ]
       },
       { type: 'literal', value: 'foo' },
       { type: 'variable', var_path: ['foo'] },

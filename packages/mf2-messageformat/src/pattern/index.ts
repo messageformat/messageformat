@@ -8,7 +8,7 @@ import { resolver as literal } from './literal';
 import { markupEndResolver, markupStartResolver } from './markup';
 import { resolver as variable, Scope } from './variable-ref';
 
-export { isExpression, Expression } from './expression';
+export { isExpression, Expression, Option } from './expression';
 export { isLiteral, Literal } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';

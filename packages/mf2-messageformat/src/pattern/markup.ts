@@ -1,12 +1,12 @@
 import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { MessageMarkup, MessageFallback } from '../message-value';
-import type { Literal, PatternElementResolver, VariableRef } from './index';
+import type { Option, PatternElementResolver } from './index';
 
 export interface MarkupStart extends PatternElement {
   type: 'markup-start';
   name: string;
-  options?: Record<string, Literal | VariableRef>;
+  options?: Option[];
 }
 
 export interface MarkupEnd extends PatternElement {
@@ -22,14 +22,11 @@ export const isMarkupStart = (part: any): part is MarkupStart =>
 export const isMarkupEnd = (part: any): part is MarkupEnd =>
   !!part && typeof part === 'object' && part.type === 'markup-end';
 
-function resolveOptions(
-  ctx: Context,
-  options: Record<string, Literal | VariableRef> | undefined
-) {
+function resolveOptions(ctx: Context, options: Option[] | undefined) {
   const opt: Record<string, unknown> = {};
   if (options) {
-    for (const [key, value] of Object.entries(options)) {
-      opt[key] = ctx.resolve(value).value;
+    for (const { name, value } of options) {
+      opt[name] = ctx.resolve(value).value;
     }
   }
   return opt;

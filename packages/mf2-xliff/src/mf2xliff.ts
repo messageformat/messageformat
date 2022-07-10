@@ -273,7 +273,7 @@ function resolvePart(
   if (isExpression(part)) {
     const elements: X.MessageFunction['elements'] = [];
     if (part.options) {
-      for (const [name, value] of Object.entries(part.options)) {
+      for (const { name, value } of part.options) {
         elements.push({
           type: 'element',
           name: 'mf:option',

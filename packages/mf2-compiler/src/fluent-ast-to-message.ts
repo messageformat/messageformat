@@ -6,6 +6,7 @@ import {
   isLiteral,
   Literal,
   Message,
+  Option,
   PatternMessage,
   SelectMessage,
   VariableRef,
@@ -76,13 +77,17 @@ function expressionToPart(exp: Fluent.Expression): Part {
       const operand = args[0];
       if (named.length === 0)
         return { type: 'expression', name: func, operand };
-      const options: Record<string, Literal | VariableRef> = {};
-      for (const { name, value } of named)
-        options[name.name] = {
-          type: 'literal',
-          value:
-            value.type === 'NumberLiteral' ? value.value : value.parse().value
-        };
+      const options: Option[] = [];
+      for (const { name, value } of named) {
+        options.push({
+          name: name.name,
+          value: {
+            type: 'literal',
+            value:
+              value.type === 'NumberLiteral' ? value.value : value.parse().value
+          }
+        });
+      }
       return { type: 'expression', name: func, operand, options };
     }
     case 'MessageReference': {
@@ -103,13 +108,17 @@ function expressionToPart(exp: Fluent.Expression): Part {
       if (!exp.arguments)
         return { type: 'expression', name: 'MESSAGE', operand };
 
-      const options: Record<string, Literal | VariableRef> = {};
-      for (const { name, value } of exp.arguments.named)
-        options[name.name] = {
-          type: 'literal',
-          value:
-            value.type === 'NumberLiteral' ? value.value : value.parse().value
-        };
+      const options: Option[] = [];
+      for (const { name, value } of exp.arguments.named) {
+        options.push({
+          name: name.name,
+          value: {
+            type: 'literal',
+            value:
+              value.type === 'NumberLiteral' ? value.value : value.parse().value
+          }
+        });
+      }
       return { type: 'expression', name: 'MESSAGE', operand, options };
     }
 

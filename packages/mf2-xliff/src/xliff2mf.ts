@@ -268,26 +268,26 @@ function resolvePart(
       return resolveArgument(part);
 
     case 'mf:function': {
-      const fn: MF.Expression = {
-        type: 'expression',
-        name: part.attributes.name
-      };
-      const options: Record<string, MF.Literal | MF.VariableRef> = {};
-      let hasOptions = false;
+      let operand: MF.Expression['operand'] = undefined;
+      const options: MF.Option[] = [];
       for (const el of part.elements) {
         if (el.name === 'mf:option') {
-          options[el.attributes.name] = resolveOption(el);
-          hasOptions = true;
-        } else if (fn.operand) {
+          options.push({ name: el.attributes.name, value: resolveOption(el) });
+        } else if (operand) {
           throw new Error(
             `More than one positional argument is not supported.`
           );
         } else {
-          fn.operand = resolveArgument(el);
+          operand = resolveArgument(el);
         }
       }
-      if (hasOptions) fn.options = options;
-      return fn;
+
+      return {
+        type: 'expression',
+        name: part.attributes.name,
+        operand,
+        options
+      };
     }
   }
 
