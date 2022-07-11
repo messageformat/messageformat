@@ -2,7 +2,7 @@ import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 
 import { Expression, resolveExpression } from './expression';
-import { Literal, resolveLiteral } from './literal';
+import { Literal, resolveLiteral, Text } from './literal';
 import {
   MarkupEnd,
   MarkupStart,
@@ -16,17 +16,26 @@ export { isLiteral, Literal } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
 
+export interface Placeholder {
+  type: 'placeholder';
+  body: Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
+}
+
 /**
  * The contents of a message are a sequence of pattern elements, which may be
  * immediately defined literal values, a reference to a value that depends on
  * another message, the value of some runtime variable, or some function
  * defined elsewhere.
+ *
+ * Depending on the syntax, pattern elements may be wrapped within a placeholder.
  */
 export type PatternElement =
   | Expression
   | Literal
   | MarkupEnd
   | MarkupStart
+  | Placeholder
+  | Text
   | VariableRef;
 
 export function resolvePatternElement(
@@ -35,7 +44,11 @@ export function resolvePatternElement(
 ): MessageValue {
   switch (elem.type) {
     case 'literal':
+    case 'nmtoken':
+    case 'text':
       return resolveLiteral(elem);
+    case 'placeholder':
+      return resolvePatternElement(ctx, elem.body);
     case 'variable':
       return resolveVariableRef(ctx, elem);
     case 'expression':
