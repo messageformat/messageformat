@@ -149,9 +149,7 @@ function argToPart({
  * Only literal values are supported in formatter parameters. Any
  * such value will be passed in as an option `{ param: string }`.
  */
-export function astToMessage(
-  ast: AST.Token[]
-): Message<Literal | VariableRef | Expression> {
+export function astToMessage(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {
@@ -173,12 +171,10 @@ export function astToMessage(
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const variants: Variant<Literal | VariableRef | Expression>[] = keys.map(
-    key => ({
-      key: key.map(k => String(k)),
-      value: { type: 'message', pattern: [] }
-    })
-  );
+  const variants: Variant[] = keys.map(key => ({
+    key: key.map(k => String(k)),
+    value: { type: 'message', pattern: [] }
+  }));
 
   /**
    * This reads `args` and modifies `cases`

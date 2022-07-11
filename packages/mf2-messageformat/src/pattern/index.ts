@@ -1,17 +1,34 @@
-import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 import type { MessageFormat } from '../messageformat';
 
-import { resolver as functionResolver } from './expression';
-import { resolver as literal } from './literal';
-import { markupEndResolver, markupStartResolver } from './markup';
-import { resolver as variable, Scope } from './variable-ref';
+import { Expression, expressionResolver } from './expression';
+import { Literal, literalResolver } from './literal';
+import {
+  MarkupEnd,
+  markupEndResolver,
+  MarkupStart,
+  markupStartResolver
+} from './markup';
+import { Scope, VariableRef, variableRefResolver } from './variable-ref';
 
 export { isExpression, Expression, Option } from './expression';
 export { isLiteral, Literal } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
+
+/**
+ * The contents of a message are a sequence of pattern elements, which may be
+ * immediately defined literal values, a reference to a value that depends on
+ * another message, the value of some runtime variable, or some function
+ * defined elsewhere.
+ */
+export type PatternElement =
+  | Expression
+  | Literal
+  | MarkupEnd
+  | MarkupStart
+  | VariableRef;
 
 export interface PatternElementResolver<T = unknown> {
   type: string;
@@ -20,9 +37,9 @@ export interface PatternElementResolver<T = unknown> {
 }
 
 export const patternFormatters = [
-  literal,
-  variable,
-  functionResolver,
+  literalResolver,
+  variableRefResolver,
+  expressionResolver,
   markupStartResolver,
   markupEndResolver
 ];

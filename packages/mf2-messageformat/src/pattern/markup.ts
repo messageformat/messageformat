@@ -1,15 +1,14 @@
-import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import { MessageMarkup, MessageFallback } from '../message-value';
 import type { Option, PatternElementResolver } from './index';
 
-export interface MarkupStart extends PatternElement {
+export interface MarkupStart {
   type: 'markup-start';
   name: string;
   options?: Option[];
 }
 
-export interface MarkupEnd extends PatternElement {
+export interface MarkupEnd {
   type: 'markup-end';
   name: string;
 }

@@ -1,4 +1,3 @@
-import type { PatternElement } from '../data-model';
 import {
   asMessageValue,
   MessageFallback,
@@ -24,7 +23,7 @@ export interface Scope {
  * The runtime scopes `{ 'user.name': 'Kat' }` and `{ user: { name: 'Kat' } }`
  * would both resolve a `'user.name'` VariableRef as the string `'Kat'`.
  */
-export interface VariableRef extends PatternElement {
+export interface VariableRef {
   type: 'variable';
   name: string;
 }
@@ -54,7 +53,7 @@ function getValue(scope: unknown, name: string): unknown {
   return undefined;
 }
 
-export const resolver: PatternElementResolver<Scope> = {
+export const variableRefResolver: PatternElementResolver<Scope> = {
   type: 'variable',
 
   initContext: (_mf, scope) => scope,

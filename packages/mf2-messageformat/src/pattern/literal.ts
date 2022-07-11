@@ -1,4 +1,3 @@
-import type { PatternElement } from '../data-model';
 import { MessageLiteral } from '../message-value';
 import type { PatternElementResolver } from './index';
 
@@ -9,7 +8,7 @@ import type { PatternElementResolver } from './index';
  * the expeted type of the value may result in the value being
  * further parsed as a boolean or a number.
  */
-export interface Literal extends PatternElement {
+export interface Literal {
   type: 'literal';
   value: string;
 }
@@ -18,7 +17,7 @@ export interface Literal extends PatternElement {
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
 
-export const resolver: PatternElementResolver = {
+export const literalResolver: PatternElementResolver = {
   type: 'literal',
 
   resolve: (_ctx, lit: Literal) => new MessageLiteral(lit.value)

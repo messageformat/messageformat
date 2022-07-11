@@ -1,10 +1,10 @@
 import { parse } from '@fluent/syntax';
 import { MessageGroup } from 'messageformat';
-import { astToMessage, Part } from './fluent-ast-to-message';
+import { astToMessage } from './fluent-ast-to-message';
 
-export function compileFluent(src: string): MessageGroup<Part> {
+export function compileFluent(src: string): MessageGroup {
   const ast = parse(src, { withSpans: false });
-  const entries: MessageGroup<Part>['entries'] = {};
+  const entries: MessageGroup['entries'] = {};
   let groupComment = '';
   const resourceComments: string[] = [];
   for (const msg of ast.body) {
@@ -33,7 +33,7 @@ export function compileFluent(src: string): MessageGroup<Part> {
         break;
     }
   }
-  const res: MessageGroup<Part> = { type: 'group', entries };
+  const res: MessageGroup = { type: 'group', entries };
   if (resourceComments.length > 0) res.comment = resourceComments.join('\n\n');
   return res;
 }

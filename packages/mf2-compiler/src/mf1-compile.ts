@@ -1,11 +1,6 @@
 import { parse, ParseOptions } from '@messageformat/parser';
 import * as PluralCategories from 'make-plural/pluralCategories';
-import type {
-  Expression,
-  Literal,
-  MessageGroup,
-  VariableRef
-} from 'messageformat';
+import type { MessageGroup } from 'messageformat';
 import { astToMessage } from './mf1-ast-to-message';
 
 const isPluralId = (id: string): id is keyof typeof PluralCategories =>
@@ -37,9 +32,8 @@ export interface StringStructure {
 function compileMessageGroup(
   src: StringStructure,
   options: ParseOptions
-): MessageGroup<Literal | VariableRef | Expression> {
-  const entries: MessageGroup<Literal | VariableRef | Expression>['entries'] =
-    {};
+): MessageGroup {
+  const entries: MessageGroup['entries'] = {};
   for (const [key, value] of Object.entries(src)) {
     entries[key] =
       typeof value === 'string'
@@ -52,7 +46,7 @@ function compileMessageGroup(
 export function compileMF1(
   src: StringStructure,
   { locale, strict }: { locale: string; strict?: boolean }
-): MessageGroup<Literal | VariableRef | Expression> {
+): MessageGroup {
   const lc = normalize(locale);
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];

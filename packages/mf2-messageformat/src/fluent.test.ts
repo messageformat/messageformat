@@ -29,7 +29,6 @@ import {
   MessageGroup,
   validate
 } from './index';
-import type { Expression, Literal, VariableRef } from './pattern';
 
 type TestCase = {
   locale?: string;
@@ -396,7 +395,7 @@ describe('getMessage', () => {
       ### Other resource comment
     `;
 
-    let res: MessageGroup<Literal | Expression | VariableRef>;
+    let res: MessageGroup;
     let mf: MessageFormat;
     beforeAll(() => {
       res = compileFluent(src);

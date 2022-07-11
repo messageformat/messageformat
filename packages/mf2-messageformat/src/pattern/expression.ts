@@ -1,4 +1,3 @@
-import type { PatternElement } from '../data-model';
 import type { Context } from '../format-context';
 import {
   asMessageValue,
@@ -20,7 +19,7 @@ import { isLiteral } from './literal';
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
  */
-export interface Expression extends PatternElement {
+export interface Expression {
   type: 'expression';
   name: string;
   operand?: Literal | VariableRef;
@@ -76,7 +75,7 @@ function resolveOptions(
   return { opt, errorKeys };
 }
 
-export const resolver: PatternElementResolver<Runtime> = {
+export const expressionResolver: PatternElementResolver<Runtime> = {
   type: 'expression',
 
   initContext: mf => mf[MFruntime],

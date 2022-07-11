@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import type { PatternElement } from './pattern';
+
 //// MESSAGE GROUPS ////
 
 /**
  * The root of a message structure is a MessageGroup,
  * which may contain messages as well as other message groups.
  */
-export interface MessageGroup<P extends PatternElement = PatternElement> {
+export interface MessageGroup {
   type: 'group';
-  entries: Record<string, Message<P> | MessageGroup<P>>;
+  entries: Record<string, Message | MessageGroup>;
   comment?: string;
 }
 
@@ -19,18 +21,16 @@ export interface MessageGroup<P extends PatternElement = PatternElement> {
  * The shape of the value is an implementation detail,
  * and may vary for the same message in different languages.
  */
-export type Message<P extends PatternElement = PatternElement> =
-  | PatternMessage<P>
-  | SelectMessage<P>;
+export type Message = PatternMessage | SelectMessage;
 
 /**
  * The body of each message is composed of a sequence of parts, some of them
  * fixed (Literal), others placeholders for values depending on additional
  * data.
  */
-export interface PatternMessage<P extends PatternElement = PatternElement> {
+export interface PatternMessage {
   type: 'message';
-  pattern: P[];
+  pattern: PatternElement[];
   comment?: string;
 }
 
@@ -47,42 +47,29 @@ export interface PatternMessage<P extends PatternElement = PatternElement> {
  * If a selection argument does not define an explicit `default` value for
  * itself, the string `'other'` is used.
  */
-export interface SelectMessage<P extends PatternElement = PatternElement> {
+export interface SelectMessage {
   type: 'select';
-  selectors: Selector<P>[];
-  variants: Variant<P>[];
+  selectors: Selector[];
+  variants: Variant[];
   comment?: string;
 }
 
-export interface Selector<P extends PatternElement = PatternElement> {
-  value: P;
+export interface Selector {
+  value: PatternElement;
   fallback?: string;
 }
 
-export interface Variant<P extends PatternElement = PatternElement> {
+export interface Variant {
   key: string[];
-  value: PatternMessage<P>;
+  value: PatternMessage;
 }
 
-export const isMessage = <P extends PatternElement = PatternElement>(
-  msg: MessageGroup<P> | Message<P> | undefined
-): msg is Message<P> =>
+export const isMessage = (
+  msg: MessageGroup | Message | undefined
+): msg is Message =>
   !!msg &&
   typeof msg === 'object' &&
   (msg.type === 'message' || msg.type === 'select');
 
-export const isSelectMessage = <P extends PatternElement = PatternElement>(
-  msg: Message<P>
-): msg is SelectMessage<P> => msg.type === 'select';
-
-//// MESSAGE PARTS ////
-
-/**
- * The contents of a message are a sequence of pattern elements, which may be
- * immediately defined literal values, a reference to a value that depends on
- * another message, the value of some runtime variable, or some function
- * defined elsewhere.
- */
-export interface PatternElement {
-  type: string;
-}
+export const isSelectMessage = (msg: Message): msg is SelectMessage =>
+  msg.type === 'select';

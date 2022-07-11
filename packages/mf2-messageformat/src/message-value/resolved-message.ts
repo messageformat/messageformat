@@ -1,6 +1,7 @@
-import { Message, PatternElement } from '../data-model';
+import type { Message } from '../data-model';
 import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
+import type { PatternElement } from '../pattern';
 import { fillMessageMarkups } from './message-markup';
 import { MessageValue, Meta } from './message-value';
 

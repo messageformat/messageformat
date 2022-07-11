@@ -1,5 +1,5 @@
-import { isSelectMessage, MessageGroup, PatternElement } from '../data-model';
-import { isExpression } from '../pattern';
+import { isSelectMessage, MessageGroup } from '../data-model';
+import { isExpression, PatternElement } from '../pattern';
 import type { Runtime } from '../runtime';
 
 function validateParts(parts: PatternElement[], runtime: Runtime) {

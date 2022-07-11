@@ -13,7 +13,7 @@ import {
   Variant
 } from 'messageformat';
 
-export type Part = Literal | VariableRef | Expression;
+type Part = Literal | VariableRef | Expression;
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
@@ -157,10 +157,10 @@ function asFluentSelect(
 export function astToMessage(
   ast: Fluent.Pattern,
   comment: Fluent.Comment | null
-): Message<Part> {
+): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
-    const msg: PatternMessage<Part> = {
+    const msg: PatternMessage = {
       type: 'message',
       pattern: ast.elements.map(elementToPart)
     };
@@ -184,7 +184,7 @@ export function astToMessage(
       for (let i = keys.length - 1; i >= 0; --i)
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
-  const variants: Variant<Part>[] = keys.map(key => ({
+  const variants: Variant[] = keys.map(key => ({
     key: key.map(k => String(k)),
     value: { type: 'message', pattern: [] }
   }));
@@ -224,7 +224,7 @@ export function astToMessage(
     value: expressionToPart(arg.selector),
     fallback: String(arg.fallback)
   }));
-  const msg: SelectMessage<Part> = { type: 'select', selectors, variants };
+  const msg: SelectMessage = { type: 'select', selectors, variants };
   if (comment) msg.comment = comment.content;
   return msg;
 }

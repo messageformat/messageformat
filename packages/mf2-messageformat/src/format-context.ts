@@ -1,5 +1,5 @@
-import type { PatternElement } from './data-model';
 import type { MessageValue } from './message-value';
+import type { PatternElement } from './pattern';
 
 export interface Context {
   onError(error: unknown, value: MessageValue): void;

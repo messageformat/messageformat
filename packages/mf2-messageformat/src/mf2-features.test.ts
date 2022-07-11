@@ -10,7 +10,6 @@ import {
   Runtime,
   RuntimeOptions
 } from './index';
-import type { Expression, Literal } from './pattern';
 import { ResolvedMessage } from './message-value';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
@@ -62,7 +61,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const res: MessageGroup<Literal | Expression> = {
+    const res: MessageGroup = {
       type: 'group',
       entries: {
         msg: {
