@@ -2,6 +2,7 @@ import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 
 import { Expression, resolveExpression } from './expression';
+import { Junk, resolveJunk } from './junk';
 import { Literal, resolveLiteral, Text } from './literal';
 import {
   MarkupEnd,
@@ -12,13 +13,14 @@ import {
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isExpression, Expression, Option } from './expression';
+export { isJunk, Junk } from './junk';
 export { isLiteral, Literal } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
 
 export interface Placeholder {
   type: 'placeholder';
-  body: Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
+  body: Literal | VariableRef | Expression | MarkupStart | MarkupEnd | Junk;
 }
 
 /**
@@ -31,6 +33,7 @@ export interface Placeholder {
  */
 export type PatternElement =
   | Expression
+  | Junk
   | Literal
   | MarkupEnd
   | MarkupStart
@@ -57,6 +60,8 @@ export function resolvePatternElement(
       return resolveMarkupStart(ctx, elem);
     case 'markup-end':
       return resolveMarkupEnd(ctx, elem);
+    case 'junk':
+      return resolveJunk(ctx, elem);
     default:
       // @ts-expect-error - should never happen
       throw new Error(`Unsupported pattern element: ${elem.type}`);
