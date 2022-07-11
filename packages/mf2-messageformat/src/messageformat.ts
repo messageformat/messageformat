@@ -1,24 +1,13 @@
 import { isMessage, Message, MessageGroup } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
-import { PatternElementResolver, patternFormatters } from './pattern';
-import type { Scope } from './pattern/variable-ref';
+import { resolvePatternElement } from './pattern';
 import { defaultRuntime, Runtime } from './runtime';
 
 export interface MessageFormatOptions {
-  elements?: (
-    | 'markup'
-    | 'expression'
-    | 'literal'
-    | 'term'
-    | 'variable'
-    | PatternElementResolver
-  )[];
   localeMatcher?: 'best fit' | 'lookup';
   runtime?: Runtime | ((mf: MessageFormat) => Runtime);
 }
-
-export const MFruntime = Symbol('runtime');
 
 /**
  * Create a new message formatter.
@@ -30,28 +19,18 @@ export const MFruntime = Symbol('runtime');
 export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
-  readonly #resolvers: readonly PatternElementResolver[];
   readonly #resource: MessageGroup;
-
-  readonly [MFruntime]: Readonly<Runtime>;
+  readonly #runtime: Readonly<Runtime>;
 
   constructor(
     locales: string | string[],
     options: MessageFormatOptions | null,
     resource: MessageGroup
   ) {
-    this.#resolvers =
-      options?.elements?.map(fmtOpt => {
-        if (typeof fmtOpt === 'string') {
-          const fmt = patternFormatters.find(fmt => fmt.type === fmtOpt);
-          if (!fmt) throw new RangeError(`Unsupported pattern type: ${fmtOpt}`);
-          return fmt;
-        } else return fmtOpt;
-      }) ?? patternFormatters;
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
     const rt = options?.runtime ?? defaultRuntime;
-    this[MFruntime] = Object.freeze({
+    this.#runtime = Object.freeze({
       ...(typeof rt === 'function' ? rt(this) : rt)
     });
     this.#resource = resource;
@@ -59,7 +38,7 @@ export class MessageFormat {
 
   getMessage(
     msgPath: string | Iterable<string>,
-    scope: Scope = {},
+    scope: Record<string, unknown> = {},
     onError?: (error: unknown, value: MessageValue) => void
   ): ResolvedMessage | undefined {
     let msg: Message | MessageGroup;
@@ -80,39 +59,28 @@ export class MessageFormat {
 
   resolvedOptions() {
     return {
-      elements: this.#resolvers.map(res => res.type),
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
       resource: this.#resource,
-      runtime: this[MFruntime]
+      runtime: this.#runtime
     };
   }
 
   private createContext(
-    scope: Scope,
+    scope: Context['scope'],
     onError: Context['onError'] = () => {
       // Ignore errors by default
     }
   ): Context {
-    const resolvers = this.#resolvers;
-
-    const ctx: Context = {
+    return {
       onError,
       resolve(elem) {
-        const res = resolvers.find(res => res.type === elem.type);
-        if (!res) throw new Error(`Unsupported pattern element: ${elem.type}`);
-        return res.resolve(this, elem);
+        return resolvePatternElement(this, elem);
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
-      types: {}
+      runtime: this.#runtime,
+      scope
     };
-
-    for (const res of resolvers) {
-      if (typeof res.initContext === 'function')
-        ctx.types[res.type] = res.initContext(this, scope);
-    }
-
-    return ctx;
   }
 }

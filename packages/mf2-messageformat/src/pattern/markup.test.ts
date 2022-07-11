@@ -10,7 +10,7 @@ import {
 
 type Part = Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
 function getMF(pattern: Part[]) {
-  const res: MessageGroup<Part> = {
+  const res: MessageGroup = {
     type: 'group',
     entries: { msg: { type: 'message', pattern } }
   };

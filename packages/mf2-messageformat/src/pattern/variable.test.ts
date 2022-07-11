@@ -4,8 +4,7 @@ import {
   MessageFormat,
   MessageGroup,
   MessageNumber,
-  MessageValue,
-  VariableRef
+  MessageValue
 } from '../index';
 
 describe('MessageValue variables', () => {
@@ -69,7 +68,7 @@ describe('MessageValue variables', () => {
 describe('Variable paths', () => {
   let mf: MessageFormat;
   beforeEach(() => {
-    const res: MessageGroup<VariableRef> = {
+    const res: MessageGroup = {
       type: 'group',
       entries: {
         msg: {

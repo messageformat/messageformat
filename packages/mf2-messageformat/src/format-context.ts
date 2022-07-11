@@ -1,10 +1,16 @@
 import type { MessageValue } from './message-value';
-import type { PatternElement } from './pattern';
+import { PatternElement } from './pattern';
+import { Runtime } from './runtime';
 
 export interface Context {
   onError(error: unknown, value: MessageValue): void;
   resolve(elem: PatternElement): MessageValue;
   localeMatcher: 'best fit' | 'lookup';
   locales: string[];
-  types: Record<string, unknown>;
+  runtime: Runtime;
+  /**
+   * A representation of the parameters/arguments passed to a message formatter.
+   * Used by the Variable resolver.
+   */
+  scope: Record<string, unknown>;
 }

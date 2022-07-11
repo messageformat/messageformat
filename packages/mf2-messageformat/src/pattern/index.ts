@@ -1,16 +1,15 @@
 import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
-import type { MessageFormat } from '../messageformat';
 
-import { Expression, expressionResolver } from './expression';
-import { Literal, literalResolver } from './literal';
+import { Expression, resolveExpression } from './expression';
+import { Literal, resolveLiteral } from './literal';
 import {
   MarkupEnd,
-  markupEndResolver,
   MarkupStart,
-  markupStartResolver
+  resolveMarkupEnd,
+  resolveMarkupStart
 } from './markup';
-import { Scope, VariableRef, variableRefResolver } from './variable-ref';
+import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isExpression, Expression, Option } from './expression';
 export { isLiteral, Literal } from './literal';
@@ -30,16 +29,23 @@ export type PatternElement =
   | MarkupStart
   | VariableRef;
 
-export interface PatternElementResolver<T = unknown> {
-  type: string;
-  resolve(ctx: Context, elem: PatternElement): MessageValue;
-  initContext?: (mf: Readonly<MessageFormat>, scope: Scope) => T;
+export function resolvePatternElement(
+  ctx: Context,
+  elem: PatternElement
+): MessageValue {
+  switch (elem.type) {
+    case 'literal':
+      return resolveLiteral(elem);
+    case 'variable':
+      return resolveVariableRef(ctx, elem);
+    case 'expression':
+      return resolveExpression(ctx, elem);
+    case 'markup-start':
+      return resolveMarkupStart(ctx, elem);
+    case 'markup-end':
+      return resolveMarkupEnd(ctx, elem);
+    default:
+      // @ts-expect-error - should never happen
+      throw new Error(`Unsupported pattern element: ${elem.type}`);
+  }
 }
-
-export const patternFormatters = [
-  literalResolver,
-  variableRefResolver,
-  expressionResolver,
-  markupStartResolver,
-  markupEndResolver
-];

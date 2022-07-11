@@ -1,5 +1,4 @@
 import { MessageLiteral } from '../message-value';
-import type { PatternElementResolver } from './index';
 
 /**
  * An immediately defined value.
@@ -17,8 +16,6 @@ export interface Literal {
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
 
-export const literalResolver: PatternElementResolver = {
-  type: 'literal',
-
-  resolve: (_ctx, lit: Literal) => new MessageLiteral(lit.value)
-};
+export function resolveLiteral(lit: Literal) {
+  return new MessageLiteral(lit.value);
+}

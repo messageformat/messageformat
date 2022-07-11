@@ -1,6 +1,6 @@
 import type { Context } from '../format-context';
 import { MessageMarkup, MessageFallback } from '../message-value';
-import type { Option, PatternElementResolver } from './index';
+import type { Option } from './index';
 
 export interface MarkupStart {
   type: 'markup-start';
@@ -31,28 +31,24 @@ function resolveOptions(ctx: Context, options: Option[] | undefined) {
   return opt;
 }
 
-export const markupStartResolver: PatternElementResolver<never> = {
-  type: 'markup-start',
-
-  resolve(ctx, { name, options }: MarkupStart) {
-    const source = `<${name}>`;
-    try {
-      return new MessageMarkup(ctx, name, {
-        options: resolveOptions(ctx, options),
-        source,
-        tag: 'start'
-      });
-    } catch (error) {
-      const fb = new MessageFallback(ctx, { source });
-      ctx.onError(error, fb);
-      return fb;
-    }
+export function resolveMarkupStart(
+  ctx: Context,
+  { name, options }: MarkupStart
+) {
+  const source = `<${name}>`;
+  try {
+    return new MessageMarkup(ctx, name, {
+      options: resolveOptions(ctx, options),
+      source,
+      tag: 'start'
+    });
+  } catch (error) {
+    const fb = new MessageFallback(ctx, { source });
+    ctx.onError(error, fb);
+    return fb;
   }
-};
+}
 
-export const markupEndResolver: PatternElementResolver<never> = {
-  type: 'markup-end',
-
-  resolve: (ctx, { name }: MarkupEnd) =>
-    new MessageMarkup(ctx, name, { source: `</${name}>`, tag: 'end' })
-};
+export function resolveMarkupEnd(ctx: Context, { name }: MarkupEnd) {
+  return new MessageMarkup(ctx, name, { source: `</${name}>`, tag: 'end' });
+}

@@ -1,17 +1,9 @@
+import { Context } from '../format-context';
 import {
   asMessageValue,
   MessageFallback,
   MessageValue
 } from '../message-value';
-import type { PatternElementResolver } from './index';
-
-/**
- * A representation of the parameters/arguments passed to a message formatter.
- * Used by the Variable resolver.
- */
-export interface Scope {
-  [key: string]: unknown;
-}
 
 /**
  * The value of a VariableRef is defined by the current Scope.
@@ -53,18 +45,12 @@ function getValue(scope: unknown, name: string): unknown {
   return undefined;
 }
 
-export const variableRefResolver: PatternElementResolver<Scope> = {
-  type: 'variable',
+export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
+  const source = '$' + name;
+  const value = getValue(ctx.scope, name);
+  if (value !== undefined) return asMessageValue(ctx, value, { source });
 
-  initContext: (_mf, scope) => scope,
-
-  resolve(ctx, { name }: VariableRef) {
-    const source = '$' + name;
-    const value = getValue(ctx.types.variable, name);
-    if (value !== undefined) return asMessageValue(ctx, value, { source });
-
-    const fb = new MessageFallback(ctx, { source });
-    ctx.onError(new Error(`Variable not available: ${source}`), fb);
-    return fb;
-  }
-};
+  const fb = new MessageFallback(ctx, { source });
+  ctx.onError(new Error(`Variable not available: ${source}`), fb);
+  return fb;
+}
