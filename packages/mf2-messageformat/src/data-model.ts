@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type {
   Junk,
   Literal,
@@ -7,20 +5,6 @@ import type {
   Placeholder,
   VariableRef
 } from './pattern';
-
-//// MESSAGE GROUPS ////
-
-/**
- * The root of a message structure is a MessageGroup,
- * which may contain messages as well as other message groups.
- */
-export interface MessageGroup {
-  type: 'group';
-  entries: Record<string, Message | MessageGroup>;
-  comment?: string;
-}
-
-//// MESSAGES ////
 
 /**
  * The representation of a single message.
@@ -77,9 +61,8 @@ export interface CatchallKey {
   type: '*';
 }
 
-export const isMessage = (
-  msg: MessageGroup | Message | undefined
-): msg is Message =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isMessage = (msg: any): msg is Message =>
   !!msg &&
   typeof msg === 'object' &&
   (msg.type === 'message' || msg.type === 'select');

@@ -2,16 +2,17 @@ import {
   extendLocaleContext,
   MessageDateTime,
   MessageNumber,
-  MessageValue
-} from '../message-value';
-import type { RuntimeFunction, RuntimeOptions } from './index';
+  MessageValue,
+  RuntimeFunction,
+  RuntimeOptions
+} from 'messageformat';
 
 const getParam = (options: RuntimeOptions | undefined) =>
   (options && String(options.param).trim()) || undefined;
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
-export const date: RuntimeFunction<MessageDateTime> = {
+const date: RuntimeFunction<MessageDateTime> = {
   call: function date(
     locales: string[],
     options: RuntimeOptions | undefined,
@@ -50,7 +51,7 @@ export const date: RuntimeFunction<MessageDateTime> = {
  *   `hhhh:mm:ss`, possibly with a leading `-` for negative values and a
  *   trailing `.sss` part for non-integer input
  */
-export const duration: RuntimeFunction<string> = {
+const duration: RuntimeFunction<string> = {
   call: function duration(
     _locales: string[],
     _options: unknown,
@@ -128,7 +129,7 @@ class MessageMF1Number extends MessageNumber {
   }
 }
 
-export const number: RuntimeFunction<MessageNumber> = {
+const number: RuntimeFunction<MessageNumber> = {
   call: function number(
     locales: string[],
     options: RuntimeOptions | undefined,
@@ -169,7 +170,7 @@ export const number: RuntimeFunction<MessageNumber> = {
   }
 };
 
-export const time: RuntimeFunction<MessageDateTime> = {
+const time: RuntimeFunction<MessageDateTime> = {
   call: function time(
     locales: string[],
     options: RuntimeOptions | undefined,
@@ -196,9 +197,4 @@ export const time: RuntimeFunction<MessageDateTime> = {
   options: { param: ['short', 'default', 'long', 'full'] }
 };
 
-export const runtime = {
-  date,
-  duration,
-  number,
-  time
-};
+export const getMF1Runtime = () => ({ date, duration, number, time });

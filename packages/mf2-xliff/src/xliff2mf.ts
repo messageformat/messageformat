@@ -1,5 +1,5 @@
 import type * as MF from 'messageformat';
-import type { MessageFormatInfo } from './index';
+import type { MessageFormatInfo, MessageResourceData } from './index';
 import type * as X from './xliff-spec';
 
 import { isExpression, isLiteral } from 'messageformat';
@@ -27,12 +27,12 @@ function resolveFile(
   const source: MessageFormatInfo = {
     id,
     locale: srcLang,
-    data: { type: 'group', entries: {} }
+    data: new Map()
   };
   const target: MessageFormatInfo = {
     id,
     locale: trgLang || '',
-    data: { type: 'group', entries: {} }
+    data: new Map()
   };
   for (const el of file.elements) {
     resolveEntry(el, source.data, target.data);
@@ -59,8 +59,8 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 function resolveEntry(
   entry: ArrayElement<X.File['elements'] | X.Group['elements']>,
-  source: MF.MessageGroup,
-  target: MF.MessageGroup
+  source: MessageResourceData,
+  target: MessageResourceData
 ) {
   switch (entry.name) {
     case 'group': {
@@ -68,13 +68,13 @@ function resolveEntry(
       const key = entry.attributes.name || entry.attributes.id;
       if (entry.elements) {
         if (entry.attributes['mf:select']) {
-          source.entries[key] = resolveSelect(entry, 'source');
-          target.entries[key] = resolveSelect(entry, 'target');
+          source.set(key, resolveSelect(entry, 'source'));
+          target.set(key, resolveSelect(entry, 'target'));
         } else {
-          const sg: MF.MessageGroup = { type: 'group', entries: {} };
-          const tg: MF.MessageGroup = { type: 'group', entries: {} };
-          source.entries[key] = sg;
-          target.entries[key] = tg;
+          const sg: MessageResourceData = new Map();
+          const tg: MessageResourceData = new Map();
+          source.set(key, sg);
+          target.set(key, tg);
           for (const el of entry.elements) resolveEntry(el, sg, tg);
         }
       }
@@ -84,16 +84,16 @@ function resolveEntry(
     case 'unit': {
       checkResegment(entry);
       const key = entry.attributes.name || entry.attributes.id;
-      source.entries[key] = {
+      source.set(key, {
         type: 'message',
         declarations: [],
         pattern: { body: resolveUnit(entry, 'source') }
-      };
-      target.entries[key] = {
+      });
+      target.set(key, {
         type: 'message',
         declarations: [],
         pattern: { body: resolveUnit(entry, 'target') }
-      };
+      });
       return;
     }
 

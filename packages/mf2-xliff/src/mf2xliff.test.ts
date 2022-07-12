@@ -1,4 +1,4 @@
-import { compileFluent } from '@messageformat/compiler';
+import { compileFluentResourceData } from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
 import { mf2xliff, stringify } from './index';
 
@@ -11,8 +11,8 @@ test('source only', () => {
         [a] A
        *[b] B
     }`;
-  const res = compileFluent(src);
-  const xliff = stringify(mf2xliff({ data: res, id: 'res', locale: 'en' }));
+  const { data } = compileFluentResourceData(src);
+  const xliff = stringify(mf2xliff({ data, id: 'res', locale: 'en' }));
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
@@ -72,7 +72,7 @@ test('combine source & target', () => {
         [a] A
        *[b] B
     }`;
-  const srcRes = compileFluent(src);
+  const srcRes = compileFluentResourceData(src).data;
 
   const trg = source`
     msg = Viesti
@@ -81,7 +81,7 @@ test('combine source & target', () => {
         [a] Ä
        *[b] B
     }`;
-  const trgRes = compileFluent(trg);
+  const trgRes = compileFluentResourceData(trg).data;
 
   const xliff = stringify(
     mf2xliff(
@@ -142,14 +142,14 @@ test('selector mismatch between source & target languages', () => {
         [feminine] her house
        *[other] their house
     }`;
-  const srcRes = compileFluent(src);
+  const srcRes = compileFluentResourceData(src).data;
 
   const trg = source`
     select = {$case ->
         [allative] hänen talolle
        *[nominative] hänen talo
     }`;
-  const trgRes = compileFluent(trg);
+  const trgRes = compileFluentResourceData(trg).data;
 
   const xliff = stringify(
     mf2xliff(

@@ -1,4 +1,4 @@
-import { isSelectMessage, MessageGroup } from '../data-model';
+import { isSelectMessage, Message } from '../data-model';
 import { isExpression, PatternElement } from '../pattern';
 import type { Runtime } from '../runtime';
 
@@ -16,15 +16,11 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
   }
 }
 
-export function validate(
-  { entries }: Readonly<MessageGroup>,
-  runtime: Runtime
-) {
-  for (const msg of Object.values(entries)) {
-    if ('entries' in msg) validate(msg, runtime);
-    else if (isSelectMessage(msg)) {
-      validateParts(msg.selectors, runtime);
-      for (const { value } of msg.variants) validateParts(value.body, runtime);
-    } else validateParts(msg.pattern.body, runtime);
+export function validate(msg: Readonly<Message>, runtime: Runtime) {
+  if (isSelectMessage(msg)) {
+    validateParts(msg.selectors, runtime);
+    for (const { value } of msg.variants) validateParts(value.body, runtime);
+  } else {
+    validateParts(msg.pattern.body, runtime);
   }
 }

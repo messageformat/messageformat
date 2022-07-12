@@ -1,7 +1,8 @@
-import { parse, ParseOptions } from '@messageformat/parser';
+import { parse } from '@messageformat/parser';
 import * as PluralCategories from 'make-plural/pluralCategories';
-import type { MessageGroup } from 'messageformat';
+import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import { astToMessage } from './mf1-ast-to-message';
+import { getMF1Runtime } from './mf1-runtime';
 
 const isPluralId = (id: string): id is keyof typeof PluralCategories =>
   id in PluralCategories;
@@ -18,38 +19,31 @@ function normalize(locale: string) {
   return m ? m[0] : locale;
 }
 
-/**
- * A hierarchical structure of ICU MessageFormat strings
- *
- * @public
- * @remarks
- * Used in {@link compileMessageGroup} and {@link compileResource} arguments
- */
-export interface StringStructure {
-  [key: string]: StringStructure | string;
+export type MF1Options = {
+  strict?: boolean;
+};
+
+export function compileMF1Message(
+  source: string | Message,
+  locale: string,
+  { strict, ...opt }: MF1Options & MessageFormatOptions = {}
+) {
+  const msg =
+    typeof source === 'string'
+      ? compileMF1MessageData(source, locale, { strict })
+      : source;
+  opt.runtime = Object.assign(getMF1Runtime(), opt.runtime);
+  return new MessageFormat(msg, [locale], opt);
 }
 
-function compileMessageGroup(
-  src: StringStructure,
-  options: ParseOptions
-): MessageGroup {
-  const entries: MessageGroup['entries'] = {};
-  for (const [key, value] of Object.entries(src)) {
-    entries[key] =
-      typeof value === 'string'
-        ? astToMessage(parse(value, options))
-        : compileMessageGroup(value, options);
-  }
-  return { type: 'group', entries };
-}
-
-export function compileMF1(
-  src: StringStructure,
-  { locale, strict }: { locale: string; strict?: boolean }
-): MessageGroup {
+export function compileMF1MessageData(
+  src: string,
+  locale: string,
+  { strict }: MF1Options = {}
+) {
   const lc = normalize(locale);
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];
-  const { entries } = compileMessageGroup(src, { cardinal, ordinal, strict });
-  return { type: 'group', entries };
+  const ast = parse(src, { cardinal, ordinal, strict });
+  return astToMessage(ast);
 }

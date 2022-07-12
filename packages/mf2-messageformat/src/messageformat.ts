@@ -1,4 +1,4 @@
-import { isMessage, Message, MessageGroup } from './data-model';
+import { Message } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
 import { resolvePatternElement } from './pattern';
@@ -6,7 +6,7 @@ import { defaultRuntime, Runtime } from './runtime';
 
 export interface MessageFormatOptions {
   localeMatcher?: 'best fit' | 'lookup';
-  runtime?: Runtime | ((mf: MessageFormat) => Runtime);
+  runtime?: Runtime;
 }
 
 /**
@@ -19,69 +19,58 @@ export interface MessageFormatOptions {
 export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
-  readonly #resource: MessageGroup;
+  readonly #message: Message;
   readonly #runtime: Readonly<Runtime>;
 
   constructor(
-    locales: string | string[],
-    options: MessageFormatOptions | null,
-    resource: MessageGroup
+    source: Message,
+    locales?: string | string[],
+    options?: MessageFormatOptions
   ) {
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
-    this.#locales = Array.isArray(locales) ? locales.slice() : [locales];
+    this.#locales = Array.isArray(locales)
+      ? locales.slice()
+      : locales
+      ? [locales]
+      : [];
+    this.#message = source;
     const rt = options?.runtime ?? defaultRuntime;
-    this.#runtime = Object.freeze({
-      ...(typeof rt === 'function' ? rt(this) : rt)
-    });
-    this.#resource = resource;
+    this.#runtime = Object.freeze({ ...rt });
   }
 
-  getMessage(
-    msgPath: string | Iterable<string>,
+  resolveMessage(
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown, value: MessageValue) => void
-  ): ResolvedMessage | undefined {
-    let msg: Message | MessageGroup;
-    if (typeof msgPath === 'string') {
-      msg = this.#resource.entries[msgPath];
-    } else {
-      msg = this.#resource;
-      for (const part of msgPath) {
-        if (!msg || isMessage(msg) || part == null) return undefined;
-        msg = msg.entries[part];
-      }
-    }
-
-    if (!isMessage(msg)) return undefined;
-    const ctx = this.createContext(msg, msgParams, onError);
-    return new ResolvedMessage(ctx, msg);
+  ): ResolvedMessage {
+    const ctx = this.createContext(msgParams, onError);
+    return new ResolvedMessage(ctx, this.#message);
   }
 
   resolvedOptions() {
     return {
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
-      resource: this.#resource,
+      message: this.#message,
       runtime: this.#runtime
     };
   }
 
   private createContext(
-    msg: Message,
     scope: Context['scope'] = {},
     onError: Context['onError'] = () => {
       // Ignore errors by default
     }
   ) {
+    const { declarations } = this.#message;
     const ctx: Context = {
       onError,
       resolve: elem => resolvePatternElement(ctx, elem),
-      declarations: msg.declarations,
+      declarations,
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       runtime: this.#runtime,
       // If declarations exist, scope may be modified during formatting
-      scope: msg.declarations.length > 0 ? { ...scope } : scope
+      scope: declarations.length > 0 ? { ...scope } : scope
     };
     return ctx;
   }

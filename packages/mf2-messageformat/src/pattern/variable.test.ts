@@ -1,22 +1,18 @@
-import { compileFluent } from '@messageformat/compiler';
+import { compileFluentResource } from '@messageformat/compiler';
 
-import {
-  MessageFormat,
-  MessageGroup,
-  MessageNumber,
-  MessageValue
-} from '../index';
+import { MessageFormat, MessageNumber, MessageValue } from '../index';
 
 describe('MessageValue variables', () => {
   let mf: MessageFormat;
   beforeEach(() => {
     const src = `msg = { $val }`;
-    const res = compileFluent(src);
-    mf = new MessageFormat('en', null, res);
+    const res = compileFluentResource(src, 'en');
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    mf = res.get('msg')!;
   });
 
   test('number', () => {
-    expect(mf.getMessage('msg', { val: 42 })).toMatchObject({
+    expect(mf.resolveMessage({ val: 42 })).toMatchObject({
       type: 'message',
       value: [{ type: 'number', source: '$val', value: 42 }]
     });
@@ -24,7 +20,7 @@ describe('MessageValue variables', () => {
 
   test('MessageValue(number)', () => {
     const val = new MessageValue(MessageValue.type, null, 42);
-    expect(mf.getMessage('msg', { val })).toMatchObject({
+    expect(mf.resolveMessage({ val })).toMatchObject({
       type: 'message',
       value: [{ type: 'value', source: '$val', value: 42 }]
     });
@@ -34,7 +30,7 @@ describe('MessageValue variables', () => {
     const val: MessageValue = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 1 }
     });
-    expect(mf.getMessage('msg', { val })).toMatchObject({
+    expect(mf.resolveMessage({ val })).toMatchObject({
       type: 'message',
       value: [
         {
@@ -51,7 +47,7 @@ describe('MessageValue variables', () => {
     const val = new MessageNumber('en', BigInt(42), {
       options: { minimumFractionDigits: 2 }
     });
-    expect(mf.getMessage('msg', { val })).toMatchObject({
+    expect(mf.resolveMessage({ val })).toMatchObject({
       type: 'message',
       value: [
         {
@@ -68,28 +64,25 @@ describe('MessageValue variables', () => {
 describe('Variable paths', () => {
   let mf: MessageFormat;
   beforeEach(() => {
-    const res: MessageGroup = {
-      type: 'group',
-      entries: {
-        msg: {
-          type: 'message',
-          declarations: [],
-          pattern: { body: [{ type: 'variable', name: 'user.name' }] }
-        }
-      }
-    };
-    mf = new MessageFormat('en', null, res);
+    mf = new MessageFormat(
+      {
+        type: 'message',
+        declarations: [],
+        pattern: { body: [{ type: 'variable', name: 'user.name' }] }
+      },
+      'en'
+    );
   });
 
   test('top-level match', () => {
-    expect(mf.getMessage('msg', { 'user.name': 42 })).toMatchObject({
+    expect(mf.resolveMessage({ 'user.name': 42 })).toMatchObject({
       type: 'message',
       value: [{ type: 'number', source: '$user.name', value: 42 }]
     });
   });
 
   test('scoped match', () => {
-    expect(mf.getMessage('msg', { user: { name: 42 } })).toMatchObject({
+    expect(mf.resolveMessage({ user: { name: 42 } })).toMatchObject({
       type: 'message',
       value: [{ type: 'number', source: '$user.name', value: 42 }]
     });
@@ -97,7 +90,7 @@ describe('Variable paths', () => {
 
   test('top-level overrides scoped match', () => {
     expect(
-      mf.getMessage('msg', { user: { name: 13 }, 'user.name': 42 })
+      mf.resolveMessage({ user: { name: 13 }, 'user.name': 42 })
     ).toMatchObject({
       type: 'message',
       value: [{ type: 'number', source: '$user.name', value: 42 }]

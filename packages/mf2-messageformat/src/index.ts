@@ -1,6 +1,6 @@
 export * from './data-model';
 export * from './message-value';
-export { MessageFormat } from './messageformat';
+export { MessageFormat, MessageFormatOptions } from './messageformat';
 export { parseMessage } from './parser/message.js';
 export * from './pattern';
 export * from './runtime';

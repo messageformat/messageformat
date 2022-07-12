@@ -1,5 +1,8 @@
-import { compileMF1 } from '@messageformat/compiler';
-import { MessageFormat, mf1Runtime, validate } from './index';
+import {
+  compileMF1Message,
+  compileMF1MessageData
+} from '@messageformat/compiler';
+import { MessageFormat, validate } from './index';
 
 export type TestCase = {
   locale?: string;
@@ -371,15 +374,12 @@ for (const [title, cases] of Object.entries(testCases)) {
           else strParam.push(String(param));
 
           test(strParam.join(', '), () => {
-            const ast = compileMF1({ msg: src }, { locale });
-            const mf = new MessageFormat(locale, { runtime: mf1Runtime }, ast);
-            validate(ast, mf1Runtime);
+            const data = compileMF1MessageData(src, locale);
+            const mf = compileMF1Message(data, locale);
+            validate(data, mf.resolvedOptions().runtime);
             const msg = mf
-              .getMessage(
-                ['msg'],
-                param as Record<string, string | number | Date>
-              )
-              ?.toString();
+              .resolveMessage(param as Record<string, string | number | Date>)
+              .toString();
             if (res instanceof RegExp) expect(msg).toMatch(res);
             else expect(msg).toBe(res);
           });

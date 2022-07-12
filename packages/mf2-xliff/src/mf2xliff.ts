@@ -8,7 +8,7 @@ import {
   MessageFormat
 } from 'messageformat';
 import type * as MF from 'messageformat';
-import type { MessageFormatInfo } from './index';
+import type { MessageFormatInfo, MessageResourceData } from './index';
 import type * as X from './xliff-spec';
 
 let _id = 0;
@@ -32,8 +32,8 @@ export function mf2xliff(
   else if (target) attributes.trgLang = target.locale;
 
   const elements: (X.Unit | X.Group)[] = [];
-  for (const [key, srcMsg] of Object.entries(source.data.entries)) {
-    const trgMsg = target?.data.entries[key];
+  for (const [key, srcMsg] of source.data) {
+    const trgMsg = target?.data.get(key);
     const entry = resolveEntry([key], srcMsg, trgMsg);
     elements.push(entry);
   }
@@ -63,8 +63,8 @@ const mismatch = (key: string[]) =>
 
 function resolveEntry(
   key: string[],
-  srcMsg: MF.Message | MF.MessageGroup,
-  trgMsg: MF.Message | MF.MessageGroup | undefined
+  srcMsg: MF.Message | MessageResourceData,
+  trgMsg: MF.Message | MessageResourceData | undefined
 ): X.Unit | X.Group {
   if (isMessage(srcMsg)) {
     if (trgMsg) {
@@ -84,8 +84,8 @@ function resolveEntry(
     type: 'element',
     name: 'group',
     attributes: msgAttributes('g', key),
-    elements: Object.entries(srcMsg.entries).map(([k, srcMsg]) =>
-      resolveEntry([...key, k], srcMsg, trgMsg?.entries[k])
+    elements: Array.from(srcMsg).map(([k, srcMsg]) =>
+      resolveEntry([...key, k], srcMsg, trgMsg?.get(k))
     )
   };
 }

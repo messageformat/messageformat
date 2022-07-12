@@ -1,14 +1,19 @@
-import { compileFluent, compileMF1 } from '@messageformat/compiler';
+import {
+  compileFluentResource,
+  compileMF1Message,
+  compileMF1MessageData
+} from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
+import { en } from 'make-plural';
 
 import {
-  getFluentRuntime,
+  Message,
   MessageValue,
   MessageNumber,
   MessageFormat,
-  MessageGroup,
   Runtime,
-  RuntimeOptions
+  RuntimeOptions,
+  SelectMessage
 } from './index';
 import { ResolvedMessage } from './message-value';
 
@@ -61,56 +66,51 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const res: MessageGroup = {
-      type: 'group',
-      entries: {
-        msg: {
-          type: 'select',
-          declarations: [],
-          selectors: [
-            {
-              type: 'expression',
-              name: 'pluralRange',
-              operand: { type: 'variable', name: 'range' }
-            }
-          ],
-          variants: [
-            {
-              keys: [{ type: 'nmtoken', value: 'one' }],
-              value: {
-                body: [
-                  {
-                    type: 'expression',
-                    name: 'formatRange',
-                    operand: { type: 'variable', name: 'range' }
-                  },
-                  { type: 'literal', value: ' dag' }
-                ]
-              }
-            },
-            {
-              keys: [{ type: '*' }],
-              value: {
-                body: [
-                  {
-                    type: 'expression',
-                    name: 'formatRange',
-                    operand: { type: 'variable', name: 'range' }
-                  },
-                  { type: 'literal', value: ' dagen' }
-                ]
-              }
-            }
-          ]
+    const msg: Message = {
+      type: 'select',
+      declarations: [],
+      selectors: [
+        {
+          type: 'expression',
+          name: 'pluralRange',
+          operand: { type: 'variable', name: 'range' }
         }
-      }
+      ],
+      variants: [
+        {
+          keys: [{ type: 'nmtoken', value: 'one' }],
+          value: {
+            body: [
+              {
+                type: 'expression',
+                name: 'formatRange',
+                operand: { type: 'variable', name: 'range' }
+              },
+              { type: 'literal', value: ' dag' }
+            ]
+          }
+        },
+        {
+          keys: [{ type: '*' }],
+          value: {
+            body: [
+              {
+                type: 'expression',
+                name: 'formatRange',
+                operand: { type: 'variable', name: 'range' }
+              },
+              { type: 'literal', value: ' dagen' }
+            ]
+          }
+        }
+      ]
     };
-    const mf = new MessageFormat('nl', { runtime }, res);
+    const mf = new MessageFormat(msg, 'nl', { runtime });
 
-    const msg1 = mf.getMessage('msg', { range: { start: 0, end: 1 } });
+    const msg1 = mf.resolveMessage({ range: { start: 0, end: 1 } });
     expect(msg1?.toString()).toBe('0 - 1 dag');
 
-    const msg2 = mf.getMessage('msg', { range: { start: 1, end: 2 } });
+    const msg2 = mf.resolveMessage({ range: { start: 1, end: 2 } });
     expect(msg2?.toString()).toBe('1 - 2 dagen');
   });
 });
@@ -127,13 +127,13 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       } and {golfCount, plural,
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
-    const res = compileMF1({ msg: src }, { locale: 'en' });
-    expect((res.entries.msg as any).selectors).toHaveLength(4);
-    expect((res.entries.msg as any).variants).toHaveLength(81);
+    const msg = compileMF1MessageData(src, 'en') as SelectMessage;
+    expect(msg.selectors).toHaveLength(4);
+    expect(msg.variants).toHaveLength(81);
 
-    const mf = new MessageFormat('en', null, res);
+    const mf = compileMF1Message(msg, 'en');
 
-    const none = mf.getMessage('msg', {
+    const none = mf.resolveMessage({
       poolCount: 0,
       restaurantCount: 0,
       beachCount: 0,
@@ -143,7 +143,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       'This all-inclusive resort includes no pools, no restaurants, no beaches and no golf courses.'
     );
 
-    const one = mf.getMessage('msg', {
+    const one = mf.resolveMessage({
       poolCount: 1,
       restaurantCount: 1,
       beachCount: 1,
@@ -153,7 +153,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       'This all-inclusive resort includes 1 pool, 1 restaurant, 1 beach and 1 golf course.'
     );
 
-    const two = mf.getMessage('msg', {
+    const two = mf.resolveMessage({
       poolCount: 2,
       restaurantCount: 2,
       beachCount: 2,
@@ -175,13 +175,13 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {AREA, select, undefined{} other{in {AREA}}}
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
-    const res = compileMF1({ msg: src }, { locale: 'en' });
-    expect((res.entries.msg as any).selectors).toHaveLength(6);
-    expect((res.entries.msg as any).variants).toHaveLength(64);
+    const msg = compileMF1MessageData(src, 'en') as SelectMessage;
+    expect(msg.selectors).toHaveLength(6);
+    expect(msg.variants).toHaveLength(64);
 
-    const mf = new MessageFormat('en', null, res);
+    const mf = new MessageFormat(msg, 'en');
 
-    const one = mf.getMessage('msg', {
+    const one = mf.resolveMessage({
       N: 1,
       LIVE: String(undefined),
       TAG: 'foo',
@@ -193,7 +193,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       'Listing one foo item'
     );
 
-    const two = mf.getMessage('msg', {
+    const two = mf.resolveMessage({
       N: 2,
       LIVE: true,
       TAG: 'foo',
@@ -222,10 +222,9 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         *[other] {$clipsPerDay} clips
       } a day.
     `;
-    const res = compileFluent(src);
-    const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
+    const res = compileFluentResource(src, 'en');
 
-    const one = mf.getMessage('activity-needed-calculation-plural', {
+    const one = res.get('activity-needed-calculation-plural')?.resolveMessage({
       totalHours: 1,
       periodMonths: 1,
       people: 1,
@@ -235,7 +234,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       '1 hour is achievable in just over 1 month if 1 person record 1 clip a day.'
     );
 
-    const two = mf.getMessage('activity-needed-calculation-plural', {
+    const two = res.get('activity-needed-calculation-plural')?.resolveMessage({
       totalHours: 2,
       periodMonths: 2,
       people: 2,
@@ -264,37 +263,29 @@ maybe('List formatting', () => {
       const lf = new Intl.ListFormat(locales, options);
       return lf.format(list);
     }
-    const runtime = (mf: MessageFormat) =>
-      Object.assign(
-        { LIST: { call: LIST, options: 'any' as const } },
-        getFluentRuntime(mf)
-      );
 
     const src = source`
       plain = { LIST($list) }
       and = { LIST($list, style: "short", type: "conjunction") }
       or = { LIST($list, style: "long", type: "disjunction") }
     `;
-    const res = compileFluent(src);
-    const mf = new MessageFormat('en', { runtime }, res);
+    const res = compileFluentResource(src, 'en', {
+      runtime: { LIST: { call: LIST, options: 'any' } }
+    });
     const list = ['Motorcycle', 'Bus', 'Car'];
 
-    const plainMsg = mf.getMessage('plain', { list });
+    const plainMsg = res.get('plain')?.resolveMessage({ list });
     expect(plainMsg?.toString()).toBe('Motorcycle, Bus, and Car');
 
-    const andMsg = mf.getMessage('and', { list });
+    const andMsg = res.get('and')?.resolveMessage({ list });
     expect(andMsg?.toString()).toBe('Motorcycle, Bus, & Car');
 
-    const orMsg = mf.getMessage('or', { list });
+    const orMsg = res.get('or')?.resolveMessage({ list });
     expect(orMsg?.toString()).toBe('Motorcycle, Bus, or Car');
   });
 
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
-    function dative(
-      locales: string[],
-      _options: unknown,
-      arg: MessageValue<string>
-    ) {
+    function dative(locales: string[], arg: MessageValue<string>) {
       if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
       const data: Record<string, string> = {
         Maria: 'Mariei',
@@ -304,46 +295,29 @@ maybe('List formatting', () => {
       return data[arg.value] || arg.value;
     }
 
-    const getListCall = (runtime: Runtime) =>
-      function LIST(
-        locales: string[],
-        options: RuntimeOptions | undefined,
-        arg?: MessageValue<string | string[]>
-      ) {
-        let list = arg
-          ? Array.isArray(arg.value)
-            ? arg.value
-            : [arg.value]
-          : [];
-        if (typeof options?.each === 'string') {
-          const fn = runtime[options.each];
-          if (!fn || typeof fn.call !== 'function')
-            throw new Error(`list each function not found: ${options.each}`);
-          list = list.map(li =>
-            String(
-              fn.call(
-                locales,
-                undefined,
-                new MessageValue(MessageValue.type, null, li)
-              )
-            )
-          );
-        }
-        // @ts-ignore
-        const lf = new Intl.ListFormat(locales, options);
-        return lf.format(list);
-      };
-
-    const runtime = (mf: MessageFormat) => {
-      const rt = Object.assign(
-        { dative: { call: dative, options: 'never' as const } },
-        getFluentRuntime(mf)
-      );
-      return Object.assign(
-        { LIST: { call: getListCall(rt), options: 'any' as const } },
-        rt
-      );
-    };
+    const listFormatters: Record<string, typeof dative> = { dative };
+    function LIST(
+      locales: string[],
+      options: RuntimeOptions | undefined,
+      arg?: MessageValue<string | string[]>
+    ) {
+      let list = arg
+        ? Array.isArray(arg.value)
+          ? arg.value
+          : [arg.value]
+        : [];
+      if (typeof options?.each === 'string') {
+        const fn = listFormatters[options.each];
+        if (typeof fn !== 'function')
+          throw new Error(`list each function not found: ${options.each}`);
+        list = list.map(li =>
+          String(fn(locales, new MessageValue(MessageValue.type, null, li)))
+        );
+      }
+      // @ts-ignore
+      const lf = new Intl.ListFormat(locales, options);
+      return lf.format(list);
+    }
 
     const src = source`
       msg = { $count ->
@@ -351,18 +325,19 @@ maybe('List formatting', () => {
         *[other] Le-am dat cadouri { LIST($list, each: "dative") }.
       }
     `;
-    const res = compileFluent(src);
-    const mf = new MessageFormat('ro', { runtime }, res);
+    const res = compileFluentResource(src, 'ro', {
+      runtime: { LIST: { call: LIST, options: 'any' } }
+    });
 
     const list1 = ['Petre'];
-    const msg1 = mf.getMessage('msg', {
+    const msg1 = res.get('msg')?.resolveMessage({
       count: list1.length,
       list: list1
     });
     expect(msg1?.toString()).toBe('I-am dat cadouri lui Petre.');
 
     const list3 = ['Maria', 'Ileana', 'Petre'];
-    const msg3 = mf.getMessage('msg', {
+    const msg3 = res.get('msg')?.resolveMessage({
       count: list3.length,
       list: list3
     });
@@ -406,11 +381,10 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     bar = The { $foo } and lotsa { $other }
     qux = { $foo } foo and a {"..."} { $other }
   `;
-  const res = compileFluent(src);
-  const mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
+  const res = compileFluentResource(src, 'en');
 
   test('Match, no change', () => {
-    const msg = mf.getMessage('foo', { foo: 'foo', other: 'other' });
+    const msg = res.get('foo')?.resolveMessage({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -424,7 +398,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Match, changed', () => {
-    const msg = mf.getMessage('foo', { foo: 'other', other: 'foo' });
+    const msg = res.get('foo')?.resolveMessage({ foo: 'other', other: 'foo' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -438,7 +412,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('No match, no change', () => {
-    const msg = mf.getMessage('bar', { foo: 'foo', other: 'other' });
+    const msg = res.get('bar')?.resolveMessage({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -452,7 +426,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Articles across non-wordy content', () => {
-    const msg = mf.getMessage('qux', { foo: 'An', other: 'other' });
+    const msg = res.get('qux')?.resolveMessage({ foo: 'An', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',

@@ -77,8 +77,3 @@ export const number: RuntimeFunction<MessageNumber> = {
     type: ['cardinal', 'ordinal']
   }
 };
-
-export const runtime = {
-  datetime,
-  number
-};

@@ -1,10 +1,34 @@
 import { parse } from '@fluent/syntax';
-import { MessageGroup } from 'messageformat';
+import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import { astToMessage } from './fluent-ast-to-message';
+import { getFluentRuntime } from './fluent-runtime';
 
-export function compileFluent(src: string): MessageGroup {
+export function compileFluentResource(
+  source: string | Map<string, Message>,
+  locales?: string | string[],
+  options?: MessageFormatOptions
+): Map<string, MessageFormat> {
+  const res: Map<string, MessageFormat> = new Map();
+
+  const runtime = Object.assign(getFluentRuntime(res), options?.runtime);
+  const opt = { ...options, runtime };
+
+  const data =
+    typeof source === 'string'
+      ? compileFluentResourceData(source).data
+      : source;
+  for (const [id, msg] of data)
+    res.set(id, new MessageFormat(msg, locales, opt));
+
+  return res;
+}
+
+export function compileFluentResourceData(src: string): {
+  data: Map<string, Message>;
+  comments: string;
+} {
   const ast = parse(src, { withSpans: false });
-  const entries: MessageGroup['entries'] = {};
+  const data = new Map<string, Message>();
   let groupComment = '';
   const resourceComments: string[] = [];
   for (const msg of ast.body) {
@@ -19,10 +43,10 @@ export function compileFluent(src: string): MessageGroup {
               ? `${groupComment}\n\n${entry.comment}`
               : groupComment;
           }
-          entries[id] = entry;
+          data.set(id, entry);
         }
         for (const attr of msg.attributes)
-          entries[`${id}.${attr.id.name}`] = astToMessage(attr.value, null);
+          data.set(`${id}.${attr.id.name}`, astToMessage(attr.value, null));
         break;
       }
       case 'GroupComment':
@@ -33,7 +57,6 @@ export function compileFluent(src: string): MessageGroup {
         break;
     }
   }
-  const res: MessageGroup = { type: 'group', entries };
-  if (resourceComments.length > 0) res.comment = resourceComments.join('\n\n');
-  return res;
+
+  return { data, comments: resourceComments.join('\n\n') };
 }

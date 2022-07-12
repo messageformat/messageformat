@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export { runtime as defaultRuntime } from './default';
-export { getFluentRuntime } from './fluent';
-export { runtime as mf1Runtime } from './mf1';
+import { datetime, number } from './default';
+
+export const defaultRuntime = { datetime, number };
 
 /**
  * The runtime function registry available for function references.

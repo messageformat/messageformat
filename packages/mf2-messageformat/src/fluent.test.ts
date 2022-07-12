@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 /**
  * The test cases included in this file have been extracted from the
  * @fluent/bundle 0.16.1 test files available at:
@@ -21,14 +23,12 @@
  *     limitations under the License.
  */
 
-import { compileFluent } from '@messageformat/compiler';
-import { source } from '@messageformat/test-utils';
 import {
-  getFluentRuntime,
-  MessageFormat,
-  MessageGroup,
-  validate
-} from './index';
+  compileFluentResource,
+  compileFluentResourceData
+} from '@messageformat/compiler';
+import { source } from '@messageformat/test-utils';
+import { Message, MessageFormat, validate } from './index';
 
 type TestCase = {
   locale?: string;
@@ -271,16 +271,18 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
   describe(title, () => {
-    let mf: MessageFormat;
-    let res: MessageGroup;
+    let data: Map<string, Message>;
+    let res: Map<string, MessageFormat>;
     beforeAll(() => {
-      res = compileFluent(src);
-      mf = new MessageFormat(locale, { runtime: getFluentRuntime }, res);
+      data = compileFluentResourceData(src).data;
+      res = compileFluentResource(data, locale);
     });
 
     test('validate', () => {
-      const { runtime } = mf.resolvedOptions();
-      validate(res, runtime);
+      for (const [id, mf] of res) {
+        const { runtime } = mf.resolvedOptions();
+        validate(data.get(id)!, runtime);
+      }
     });
 
     for (const { msg, scope, exp, only } of tests) {
@@ -294,7 +296,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const _test = only ? test.only : test;
       _test(name, () => {
-        const str = mf.getMessage(msg, scope)?.toString();
+        const str = res.get(msg)?.resolveMessage(scope)?.toString();
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
       });
@@ -313,14 +315,13 @@ describe('getMessage', () => {
       }
     `;
 
-    let mf: MessageFormat;
+    let res: Map<string, MessageFormat>;
     beforeAll(() => {
-      const res = compileFluent(src);
-      mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
+      res = compileFluentResource(src);
     });
 
     test('defined formatted variable', () => {
-      const foo = mf.getMessage(['foo'], { num: 42 });
+      const foo = res.get('foo')?.resolveMessage({ num: 42 });
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -331,7 +332,7 @@ describe('getMessage', () => {
     });
 
     test('undefined formatted variable', () => {
-      const foo = mf.getMessage(['foo']);
+      const foo = res.get('foo')?.resolveMessage();
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -342,7 +343,7 @@ describe('getMessage', () => {
     });
 
     test('message reference', () => {
-      const bar = mf.getMessage(['bar'], { num: 42 });
+      const bar = res.get('bar')?.resolveMessage({ num: 42 });
       expect(bar).toEqual({
         type: 'message',
         value: [
@@ -359,7 +360,7 @@ describe('getMessage', () => {
     });
 
     test('defined selector', () => {
-      const sel = mf.getMessage(['sel'], { selector: 'a' });
+      const sel = res.get('sel')?.resolveMessage({ selector: 'a' });
       expect(sel).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'A' }]
@@ -367,7 +368,7 @@ describe('getMessage', () => {
     });
 
     test('undefined selector', () => {
-      const sel = mf.getMessage(['sel']);
+      const sel = res.get('sel')?.resolveMessage();
       expect(sel).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'B' }]
@@ -395,19 +396,18 @@ describe('getMessage', () => {
       ### Other resource comment
     `;
 
-    let res: MessageGroup;
-    let mf: MessageFormat;
+    let res: Map<string, MessageFormat>;
     beforeAll(() => {
-      res = compileFluent(src);
-      mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
+      res = compileFluentResource(src, 'en');
     });
 
     test('Data model comments', () => {
-      expect(res).toEqual({
-        type: 'group',
-        comment: 'Resource comment\n\nOther resource comment',
-        entries: {
-          foo: {
+      const { comments, data } = compileFluentResourceData(src);
+      expect(comments).toBe('Resource comment\n\nOther resource comment');
+      expect(Array.from(data.entries())).toEqual([
+        [
+          'foo',
+          {
             type: 'message',
             comment: 'Group 1\n\nFirst message',
             declarations: [],
@@ -417,25 +417,31 @@ describe('getMessage', () => {
                 { type: 'variable', name: 'num' }
               ]
             }
-          },
-          bar: {
+          }
+        ],
+        [
+          'bar',
+          {
             type: 'message',
             comment: 'Group 1',
             declarations: [],
             pattern: { body: [{ type: 'literal', value: 'Bar' }] }
-          },
-          qux: {
+          }
+        ],
+        [
+          'qux',
+          {
             type: 'message',
             comment: 'Group 2\n\nOther message',
             declarations: [],
             pattern: { body: [{ type: 'literal', value: 'Qux' }] }
           }
-        }
-      });
+        ]
+      ]);
     });
 
     test('foo', () => {
-      const foo = mf.getMessage('foo', { num: 42 });
+      const foo = res.get('foo')?.resolveMessage({ num: 42 });
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -446,7 +452,7 @@ describe('getMessage', () => {
     });
 
     test('bar', () => {
-      const bar = mf.getMessage('bar');
+      const bar = res.get('bar')?.resolveMessage();
       expect(bar).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Bar' }]
@@ -454,7 +460,7 @@ describe('getMessage', () => {
     });
 
     test('qux', () => {
-      const qux = mf.getMessage('qux');
+      const qux = res.get('qux')?.resolveMessage();
       expect(qux).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Qux' }]
@@ -480,14 +486,13 @@ describe('getMessage', () => {
       }
     `;
 
-    let mf: MessageFormat;
+    let res: Map<string, MessageFormat>;
     beforeAll(() => {
-      const res = compileFluent(src);
-      mf = new MessageFormat('en', { runtime: getFluentRuntime }, res);
+      res = compileFluentResource(src, 'en');
     });
 
     test('case with match', () => {
-      const msg = mf.getMessage('case', { case: 'genitive' });
+      const msg = res.get('case')?.resolveMessage({ case: 'genitive' });
       expect(msg).toEqual({
         type: 'message',
         meta: { case: 'genitive' },
@@ -496,7 +501,7 @@ describe('getMessage', () => {
     });
 
     test('case with fallback', () => {
-      const msg = mf.getMessage('case', { case: 'oblique' });
+      const msg = res.get('case')?.resolveMessage({ case: 'oblique' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'NOM' }]
@@ -504,7 +509,7 @@ describe('getMessage', () => {
     });
 
     test('gender with match', () => {
-      const msg = mf.getMessage('gender', { gender: 'feminine' });
+      const msg = res.get('gender')?.resolveMessage({ gender: 'feminine' });
       expect(msg).toEqual({
         type: 'message',
         meta: { gender: 'feminine' },
@@ -513,7 +518,7 @@ describe('getMessage', () => {
     });
 
     test('gender with fallback', () => {
-      const msg = mf.getMessage('gender');
+      const msg = res.get('gender')?.resolveMessage();
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'N' }]
@@ -521,7 +526,7 @@ describe('getMessage', () => {
     });
 
     test('plural with match', () => {
-      const msg = mf.getMessage('plural', { num: 2 });
+      const msg = res.get('plural')?.resolveMessage({ num: 2 });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]
@@ -529,7 +534,7 @@ describe('getMessage', () => {
     });
 
     test('plural with fallback', () => {
-      const msg = mf.getMessage('plural', { num: 1 });
+      const msg = res.get('plural')?.resolveMessage({ num: 1 });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]
@@ -537,7 +542,7 @@ describe('getMessage', () => {
     });
 
     test('plural with non-plural input', () => {
-      const msg = mf.getMessage('plural', { num: 'NaN' });
+      const msg = res.get('plural')?.resolveMessage({ num: 'NaN' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]
