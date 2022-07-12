@@ -1,16 +1,16 @@
 import type {
-  CatchallKey,
-  Declaration,
-  Literal,
+  CatchallKeyParsed,
+  DeclarationParsed,
+  LiteralParsed,
   Message,
-  Nmtoken,
-  Pattern,
-  PatternMessage,
-  Placeholder,
-  SelectMessage,
-  Text,
-  TokenError,
-  Variant
+  NmtokenParsed,
+  PatternParsed,
+  PatternMessageParsed,
+  PlaceholderParsed,
+  SelectMessageParsed,
+  TextParsed,
+  ParseError,
+  VariantParsed
 } from './data-model.js';
 import { parseDeclarations } from './declarations.js';
 import { parseNmtoken } from './names.js';
@@ -21,7 +21,7 @@ import { parseLiteral, parseText } from './values.js';
 // Message ::= Declaration* ( Pattern | Selector Variant+ )
 // Selector ::= 'match' ( '{' Expression '}' )+
 export function parseMessage(src: string): Message {
-  const errors: TokenError[] = [];
+  const errors: ParseError[] = [];
   const { declarations, end: pos } = parseDeclarations(src, errors);
 
   if (src.startsWith('match', pos)) {
@@ -37,9 +37,9 @@ export function parseMessage(src: string): Message {
 function parsePatternMessage(
   src: string,
   start: number,
-  declarations: Declaration[],
-  errors: TokenError[]
-): PatternMessage {
+  declarations: DeclarationParsed[],
+  errors: ParseError[]
+): PatternMessageParsed {
   const pattern = parsePattern(src, start, errors);
   let pos = pattern.end;
   pos += whitespaces(src, pos);
@@ -48,19 +48,19 @@ function parsePatternMessage(
     errors.push({ type: 'extra-content', start: pos, end: src.length });
   }
 
-  return { type: 'pattern', declarations, pattern, errors };
+  return { type: 'message', declarations, pattern, errors };
 }
 
 function parseSelectMessage(
   src: string,
   start: number,
-  declarations: Declaration[],
-  errors: TokenError[]
-): SelectMessage {
+  declarations: DeclarationParsed[],
+  errors: ParseError[]
+): SelectMessageParsed {
   let pos = start + 5; // 'match'
   pos += whitespaces(src, pos);
 
-  const selectors: Placeholder[] = [];
+  const selectors: PlaceholderParsed[] = [];
   while (src[pos] === '{') {
     const ph = parsePlaceholder(src, pos, errors);
     switch (ph.body.type) {
@@ -81,7 +81,7 @@ function parseSelectMessage(
     errors.push({ type: 'empty-token', start: pos });
   }
 
-  const variants: Variant[] = [];
+  const variants: VariantParsed[] = [];
   pos += whitespaces(src, pos);
   while (src.startsWith('when', pos)) {
     const variant = parseVariant(src, pos, selectors.length, errors);
@@ -103,10 +103,10 @@ function parseVariant(
   src: string,
   start: number,
   selCount: number,
-  errors: TokenError[]
-): Variant {
+  errors: ParseError[]
+): VariantParsed {
   let pos = start + 4; // 'when'
-  const keys: Array<Literal | Nmtoken | CatchallKey> = [];
+  const keys: Array<LiteralParsed | NmtokenParsed | CatchallKeyParsed> = [];
   while (pos < src.length) {
     const ws = whitespaces(src, pos);
     pos += ws;
@@ -117,7 +117,7 @@ function parseVariant(
       errors.push({ type: 'missing-char', char: ' ', start: pos });
     }
 
-    let key: CatchallKey | Literal | Nmtoken;
+    let key: CatchallKeyParsed | LiteralParsed | NmtokenParsed;
     switch (ch) {
       case '*':
         key = { type: '*', start: pos, end: pos + 1 };
@@ -138,23 +138,23 @@ function parseVariant(
     errors.push({ type: 'key-mismatch', start, end });
   }
 
-  const pattern = parsePattern(src, pos, errors);
-  return { start, end: pattern.end, keys, pattern };
+  const value = parsePattern(src, pos, errors);
+  return { start, end: value.end, keys, value };
 }
 
 // Pattern ::= '{' (Text | Placeholder)* '}' /* ws: explicit */
 function parsePattern(
   src: string,
   start: number,
-  errors: TokenError[]
-): Pattern {
+  errors: ParseError[]
+): PatternParsed {
   if (src[start] !== '{') {
     errors.push({ type: 'missing-char', char: '{', start });
     return { start, end: start, body: [] };
   }
 
   let pos = start + 1;
-  const body: Array<Text | Placeholder> = [];
+  const body: Array<TextParsed | PlaceholderParsed> = [];
   loop: while (pos < src.length) {
     switch (src[pos]) {
       case '{': {

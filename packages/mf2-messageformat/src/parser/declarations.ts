@@ -1,9 +1,9 @@
 import type {
-  Declaration,
-  Junk,
-  Placeholder,
-  TokenError,
-  Variable
+  DeclarationParsed,
+  JunkParsed,
+  PlaceholderParsed,
+  ParseError,
+  VariableRefParsed
 } from './data-model.js';
 import { parsePlaceholder } from './placeholder.js';
 import { whitespaces } from './util.js';
@@ -12,13 +12,13 @@ import { parseVariable } from './values.js';
 // Declaration ::= 'let' WhiteSpace Variable '=' '{' Expression '}'
 export function parseDeclarations(
   src: string,
-  errors: TokenError[]
+  errors: ParseError[]
 ): {
-  declarations: Declaration[];
+  declarations: DeclarationParsed[];
   end: number;
 } {
   let pos = whitespaces(src, 0);
-  const declarations: Declaration[] = [];
+  const declarations: DeclarationParsed[] = [];
   while (src.startsWith('let', pos)) {
     const decl = parseDeclaration(src, pos, errors);
     declarations.push(decl);
@@ -31,15 +31,15 @@ export function parseDeclarations(
 function parseDeclaration(
   src: string,
   start: number,
-  errors: TokenError[]
-): Declaration {
+  errors: ParseError[]
+): DeclarationParsed {
   let pos = start + 3; // 'let'
   const ws = whitespaces(src, pos);
   pos += ws;
 
   if (ws === 0) errors.push({ type: 'missing-char', char: ' ', start: pos });
 
-  let target: Variable | Junk;
+  let target: VariableRefParsed | JunkParsed;
   if (src[pos] === '$') {
     target = parseVariable(src, pos, errors);
     pos = target.end;
@@ -47,7 +47,12 @@ function parseDeclaration(
     const junkStart = pos;
     const junkEndOffset = src.substring(pos).search(/[\t\n\r ={}]/);
     pos = junkEndOffset === -1 ? src.length : pos + junkEndOffset;
-    target = { type: 'junk', start: junkStart, end: pos };
+    target = {
+      type: 'junk',
+      start: junkStart,
+      end: pos,
+      source: src.substring(junkStart, pos)
+    };
     errors.push({ type: 'parse-error', start: junkStart, end: pos });
   }
 
@@ -55,7 +60,7 @@ function parseDeclaration(
   if (src[pos] === '=') pos += 1;
   else errors.push({ type: 'missing-char', char: '=', start: pos });
 
-  let value: Placeholder | Junk;
+  let value: PlaceholderParsed | JunkParsed;
   pos += whitespaces(src, pos);
   if (src[pos] === '{') {
     value = parsePlaceholder(src, pos, errors);
@@ -66,7 +71,12 @@ function parseDeclaration(
       .substring(pos)
       .search(/\blet|\bmatch|\bwhen|[${}]/);
     pos = junkEndOffset === -1 ? src.length : pos + junkEndOffset;
-    value = { type: 'junk', start: junkStart, end: pos };
+    value = {
+      type: 'junk',
+      start: junkStart,
+      end: pos,
+      source: src.substring(junkStart, pos)
+    };
     errors.push({ type: 'parse-error', start: junkStart, end: pos });
   }
 

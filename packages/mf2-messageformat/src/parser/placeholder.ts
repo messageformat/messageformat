@@ -1,14 +1,14 @@
 import type {
-  Expression,
-  Junk,
-  Literal,
-  Markup,
-  MarkupEnd,
-  Nmtoken,
-  Option,
-  Placeholder,
-  TokenError,
-  Variable
+  ExpressionParsed,
+  JunkParsed,
+  LiteralParsed,
+  MarkupStartParsed,
+  MarkupEndParsed,
+  NmtokenParsed,
+  OptionParsed,
+  PlaceholderParsed,
+  ParseError,
+  VariableRefParsed
 } from './data-model.js';
 import { parseNameValue, parseNmtoken } from './names.js';
 import { whitespaces } from './util.js';
@@ -18,12 +18,12 @@ import { parseLiteral, parseVariable } from './values.js';
 export function parsePlaceholder(
   src: string,
   start: number,
-  errors: TokenError[]
-): Placeholder {
+  errors: ParseError[]
+): PlaceholderParsed {
   let pos = start + 1; // '{'
   pos += whitespaces(src, pos);
 
-  let arg: Literal | Variable | undefined;
+  let arg: LiteralParsed | VariableRefParsed | undefined;
   switch (src[pos]) {
     case '(':
       arg = parseLiteral(src, pos, errors);
@@ -36,8 +36,14 @@ export function parsePlaceholder(
     }
   }
 
-  let body: Literal | Variable | Expression | Markup | MarkupEnd | Junk;
-  let junkError: TokenError | undefined;
+  let body:
+    | LiteralParsed
+    | VariableRefParsed
+    | ExpressionParsed
+    | MarkupStartParsed
+    | MarkupEndParsed
+    | JunkParsed;
+  let junkError: ParseError | undefined;
   pos += whitespaces(src, pos);
   switch (src[pos]) {
     case ':':
@@ -50,7 +56,8 @@ export function parsePlaceholder(
       if (arg) {
         body = arg;
       } else {
-        body = { type: 'junk', start: pos, end: pos };
+        const source = src.substring(pos, pos + 1);
+        body = { type: 'junk', start: pos, end: pos, source };
         junkError = { type: 'parse-error', start: pos, end: pos };
         errors.push(junkError);
       }
@@ -64,6 +71,7 @@ export function parsePlaceholder(
     while (pos < src.length && src[pos] !== '}') pos += 1;
     if (body.type === 'junk') {
       body.end = pos;
+      body.source = src.substring(body.start, pos);
       if (junkError) junkError.end = pos;
     } else {
       errors.push({ type: 'extra-content', start: errStart, end: pos });
@@ -85,14 +93,14 @@ export function parsePlaceholder(
 function parseExpressionOrMarkup(
   src: string,
   start: number,
-  operand: Literal | Variable | undefined,
-  errors: TokenError[]
-): Expression | Markup | MarkupEnd {
+  operand: LiteralParsed | VariableRefParsed | undefined,
+  errors: ParseError[]
+): ExpressionParsed | MarkupStartParsed | MarkupEndParsed {
   const sigil = src[start];
   let pos = start + 1; // ':' | '+' | '-'
   const name = parseNameValue(src, pos);
   if (!name) errors.push({ type: 'empty-token', start: pos });
-  const options: Option[] = [];
+  const options: OptionParsed[] = [];
   pos += name.length;
   while (pos < src.length) {
     const ws = whitespaces(src, pos);
@@ -129,14 +137,18 @@ function parseExpressionOrMarkup(
 }
 
 // Option ::= Name '=' (Literal | Nmtoken | Variable)
-function parseOption(src: string, start: number, errors: TokenError[]): Option {
+function parseOption(
+  src: string,
+  start: number,
+  errors: ParseError[]
+): OptionParsed {
   const name = parseNameValue(src, start);
   let pos = start + name.length;
   pos += whitespaces(src, pos);
   if (src[pos] === '=') pos += 1;
   else errors.push({ type: 'missing-char', char: '=', start: pos });
   pos += whitespaces(src, pos);
-  let value: Literal | Nmtoken | Variable;
+  let value: LiteralParsed | NmtokenParsed | VariableRefParsed;
   switch (src[pos]) {
     case '(':
       value = parseLiteral(src, pos, errors);

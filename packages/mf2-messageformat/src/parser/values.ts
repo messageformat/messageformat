@@ -1,4 +1,9 @@
-import type { Literal, Text, TokenError, Variable } from './data-model.js';
+import type {
+  LiteralParsed,
+  TextParsed,
+  ParseError,
+  VariableRefParsed
+} from './data-model.js';
 import { parseNameValue } from './names.js';
 
 // Text ::= (TextChar | TextEscape)+
@@ -9,8 +14,8 @@ import { parseNameValue } from './names.js';
 export function parseText(
   src: string,
   start: number,
-  errors: TokenError[]
-): Text {
+  errors: ParseError[]
+): TextParsed {
   let value = '';
   let pos = start;
   let i = start;
@@ -43,8 +48,8 @@ export function parseText(
 export function parseLiteral(
   src: string,
   start: number,
-  errors: TokenError[]
-): Literal {
+  errors: ParseError[]
+): LiteralParsed {
   let value = '';
   let pos = start + 1;
   for (let i = pos; i < src.length; ++i) {
@@ -77,8 +82,8 @@ export function parseLiteral(
 export function parseVariable(
   src: string,
   start: number,
-  errors: TokenError[]
-): Variable {
+  errors: ParseError[]
+): VariableRefParsed {
   const pos = start + 1;
   const name = parseNameValue(src, pos);
   const end = pos + name.length;
