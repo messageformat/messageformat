@@ -14,7 +14,7 @@ import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isExpression, Expression, Option } from './expression';
 export { isJunk, Junk } from './junk';
-export { isLiteral, Literal } from './literal';
+export { isLiteral, Literal, Text } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
 

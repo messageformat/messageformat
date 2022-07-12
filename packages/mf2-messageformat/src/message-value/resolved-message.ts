@@ -10,7 +10,7 @@ function getPattern(
   message: Message
 ): { pattern: PatternElement[]; meta: Meta | undefined } {
   if (message.type === 'message')
-    return { pattern: message.pattern, meta: undefined };
+    return { pattern: message.pattern.body, meta: undefined };
 
   const rs = message.selectors.map(sel => context.resolve(sel));
 
@@ -23,7 +23,7 @@ function getPattern(
     }
 
     const meta = getFormattedSelectMeta(message, keys);
-    return { pattern: value.pattern, meta };
+    return { pattern: value.body, meta };
   }
 
   return { pattern: [], meta: { selectResult: 'no-match' } };

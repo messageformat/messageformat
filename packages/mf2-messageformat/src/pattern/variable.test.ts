@@ -74,7 +74,7 @@ describe('Variable paths', () => {
         msg: {
           type: 'message',
           declarations: [],
-          pattern: [{ type: 'variable', name: 'user.name' }]
+          pattern: { body: [{ type: 'variable', name: 'user.name' }] }
         }
       }
     };

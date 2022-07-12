@@ -163,7 +163,7 @@ export function astToMessage(
     const msg: PatternMessage = {
       type: 'message',
       declarations: [],
-      pattern: ast.elements.map(elementToPart)
+      pattern: { body: ast.elements.map(elementToPart) }
     };
     if (comment) msg.comment = comment.content;
     return msg;
@@ -189,7 +189,7 @@ export function astToMessage(
     keys: key.map(k =>
       k === CATCHALL ? { type: '*' } : { type: 'nmtoken', value: String(k) }
     ),
-    value: { type: 'message', declarations: [], pattern: [] }
+    value: { body: [] }
   }));
 
   /**
@@ -210,7 +210,7 @@ export function astToMessage(
           addParts(v.value, [...filter, { idx, value: variantKey(v) }]);
       } else {
         for (const v of variants) {
-          const vp = v.value.pattern;
+          const vp = v.value.body;
           if (
             filter.every(({ idx, value }) => {
               const vi = v.keys[idx];

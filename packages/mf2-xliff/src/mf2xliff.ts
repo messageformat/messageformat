@@ -71,11 +71,11 @@ function resolveEntry(
       if (!isMessage(trgMsg)) throw new Error(mismatch(key));
       if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg))
         return resolveSelect(key, srcMsg, trgMsg);
-      else return resolvePattern(key, srcMsg, trgMsg);
+      else return resolvePattern(key, srcMsg.pattern, trgMsg.pattern);
     } else {
       return isSelectMessage(srcMsg)
         ? resolveSelect(key, srcMsg, undefined)
-        : resolvePattern(key, srcMsg, undefined);
+        : resolvePattern(key, srcMsg.pattern, undefined);
     }
   }
 
@@ -102,16 +102,7 @@ function resolveSelect(
         type: 'select',
         declarations: [],
         selectors: srcSel.selectors,
-        variants: [
-          {
-            keys: [],
-            value: {
-              type: 'message',
-              declarations: [],
-              pattern: trgSel.pattern
-            }
-          }
-        ]
+        variants: [{ keys: [], value: trgSel.pattern }]
       };
   } else {
     if (!trgSel || !isSelectMessage(trgSel))
@@ -122,12 +113,7 @@ function resolveSelect(
       type: 'select',
       declarations: [],
       selectors: trgSel.selectors,
-      variants: [
-        {
-          keys: [],
-          value: { type: 'message', declarations: [], pattern: srcSel.pattern }
-        }
-      ]
+      variants: [{ keys: [], value: srcSel.pattern }]
     };
   }
 
@@ -239,8 +225,8 @@ function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
 
 function resolvePattern(
   key: string[],
-  srcMsg: MF.PatternMessage,
-  trgMsg: MF.PatternMessage | undefined
+  srcPattern: MF.Pattern,
+  trgPattern: MF.Pattern | undefined
 ): X.Unit {
   const parts: X.MessagePart[] = [];
   const handlePart = (p: MF.PatternElement): X.Text | X.InlineElement => {
@@ -252,11 +238,11 @@ function resolvePattern(
     return { type: 'element', name: 'ph', attributes };
   };
 
-  const se = srcMsg.pattern.map(handlePart);
+  const se = srcPattern.body.map(handlePart);
   const source: X.Source = { type: 'element', name: 'source', elements: se };
   let ge: X.Segment['elements'];
-  if (trgMsg) {
-    const te = trgMsg.pattern.map(handlePart);
+  if (trgPattern) {
+    const te = trgPattern.body.map(handlePart);
     const target: X.Target = { type: 'element', name: 'target', elements: te };
     ge = [source, target];
   } else ge = [source];

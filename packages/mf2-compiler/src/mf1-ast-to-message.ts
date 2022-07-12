@@ -155,7 +155,7 @@ export function astToMessage(ast: AST.Token[]): Message {
     return {
       type: 'message',
       declarations: [],
-      pattern: ast.map(token => tokenToPart(token, null, null))
+      pattern: { body: ast.map(token => tokenToPart(token, null, null)) }
     };
 
   // First determine the keys for all cases, with empty values
@@ -176,7 +176,7 @@ export function astToMessage(ast: AST.Token[]): Message {
     keys: key.map(k =>
       k === 'other' ? { type: '*' } : { type: 'nmtoken', value: String(k) }
     ),
-    value: { type: 'message', declarations: [], pattern: [] }
+    value: { body: [] }
   }));
 
   /**
@@ -203,7 +203,7 @@ export function astToMessage(ast: AST.Token[]): Message {
         }
       } else {
         for (const v of variants) {
-          const vp = v.value.pattern;
+          const vp = v.value.body;
           if (
             filter.every(({ idx, value }) => {
               const vi = v.keys[idx];

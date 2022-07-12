@@ -9,10 +9,10 @@ import {
 } from '../index';
 
 type Part = Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
-function getMF(pattern: Part[]) {
+function getMF(body: Part[]) {
   const res: MessageGroup = {
     type: 'group',
-    entries: { msg: { type: 'message', declarations: [], pattern } }
+    entries: { msg: { type: 'message', declarations: [], pattern: { body } } }
   };
   return new MessageFormat('en', {}, res);
 }

@@ -78,9 +78,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
             {
               keys: [{ type: 'nmtoken', value: 'one' }],
               value: {
-                type: 'message',
-                declarations: [],
-                pattern: [
+                body: [
                   {
                     type: 'expression',
                     name: 'formatRange',
@@ -93,9 +91,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
             {
               keys: [{ type: '*' }],
               value: {
-                type: 'message',
-                declarations: [],
-                pattern: [
+                body: [
                   {
                     type: 'expression',
                     name: 'formatRange',

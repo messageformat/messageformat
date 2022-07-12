@@ -37,13 +37,17 @@ export type Message = PatternMessage | SelectMessage;
 export interface PatternMessage {
   type: 'message';
   declarations: Declaration[];
-  pattern: PatternElement[];
+  pattern: Pattern;
   comment?: string;
 }
 
 export interface Declaration {
   target: VariableRef | Junk;
   value: Placeholder | Junk;
+}
+
+export interface Pattern {
+  body: PatternElement[];
 }
 
 /**
@@ -66,7 +70,7 @@ export interface SelectMessage {
 
 export interface Variant {
   keys: Array<Literal | CatchallKey>;
-  value: PatternMessage;
+  value: Pattern;
 }
 
 export interface CatchallKey {

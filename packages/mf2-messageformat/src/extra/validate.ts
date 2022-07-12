@@ -24,8 +24,7 @@ export function validate(
     if ('entries' in msg) validate(msg, runtime);
     else if (isSelectMessage(msg)) {
       validateParts(msg.selectors, runtime);
-      for (const { value } of msg.variants)
-        validateParts(value.pattern, runtime);
-    } else validateParts(msg.pattern, runtime);
+      for (const { value } of msg.variants) validateParts(value.body, runtime);
+    } else validateParts(msg.pattern.body, runtime);
   }
 }

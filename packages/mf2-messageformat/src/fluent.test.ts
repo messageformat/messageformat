@@ -411,22 +411,24 @@ describe('getMessage', () => {
             type: 'message',
             comment: 'Group 1\n\nFirst message',
             declarations: [],
-            pattern: [
-              { type: 'literal', value: 'Foo ' },
-              { type: 'variable', name: 'num' }
-            ]
+            pattern: {
+              body: [
+                { type: 'literal', value: 'Foo ' },
+                { type: 'variable', name: 'num' }
+              ]
+            }
           },
           bar: {
             type: 'message',
             comment: 'Group 1',
             declarations: [],
-            pattern: [{ type: 'literal', value: 'Bar' }]
+            pattern: { body: [{ type: 'literal', value: 'Bar' }] }
           },
           qux: {
             type: 'message',
             comment: 'Group 2\n\nOther message',
             declarations: [],
-            pattern: [{ type: 'literal', value: 'Qux' }]
+            pattern: { body: [{ type: 'literal', value: 'Qux' }] }
           }
         }
       });

@@ -87,12 +87,12 @@ function resolveEntry(
       source.entries[key] = {
         type: 'message',
         declarations: [],
-        pattern: resolveUnit(entry, 'source')
+        pattern: { body: resolveUnit(entry, 'source') }
       };
       target.entries[key] = {
         type: 'message',
         declarations: [],
-        pattern: resolveUnit(entry, 'target')
+        pattern: { body: resolveUnit(entry, 'target') }
       };
       return;
     }
@@ -132,11 +132,7 @@ function resolveSelect(
           keys: idList(name).map(id =>
             id === '*' ? { type: '*' } : { type: 'nmtoken', value: id }
           ),
-          value: {
-            type: 'message',
-            declarations: [],
-            pattern: resolveUnit(el, st)
-          }
+          value: { body: resolveUnit(el, st) }
         });
         break;
       }
