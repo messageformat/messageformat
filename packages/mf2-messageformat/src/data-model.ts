@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { PatternElement } from './pattern';
+import type { Literal, PatternElement } from './pattern';
 
 //// MESSAGE GROUPS ////
 
@@ -43,25 +43,21 @@ export interface PatternMessage {
  *
  * It is likely that in nearly all cases the source of the placeholder's value
  * will be a variable in the local scope.
- *
- * If a selection argument does not define an explicit `default` value for
- * itself, the string `'other'` is used.
  */
 export interface SelectMessage {
   type: 'select';
-  selectors: Selector[];
+  selectors: PatternElement[];
   variants: Variant[];
   comment?: string;
 }
 
-export interface Selector {
-  value: PatternElement;
-  fallback?: string;
+export interface Variant {
+  keys: Array<Literal | CatchallKey>;
+  value: PatternMessage;
 }
 
-export interface Variant {
-  key: string[];
-  value: PatternMessage;
+export interface CatchallKey {
+  type: '*';
 }
 
 export const isMessage = (

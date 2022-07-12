@@ -23,10 +23,7 @@ export function validate(
   for (const msg of Object.values(entries)) {
     if ('entries' in msg) validate(msg, runtime);
     else if (isSelectMessage(msg)) {
-      validateParts(
-        msg.selectors.map(sel => sel.value),
-        runtime
-      );
+      validateParts(msg.selectors, runtime);
       for (const { value } of msg.variants)
         validateParts(value.pattern, runtime);
     } else validateParts(msg.pattern, runtime);

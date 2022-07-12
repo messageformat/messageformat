@@ -101,7 +101,7 @@ function resolveSelect(
         type: 'select',
         selectors: srcSel.selectors,
         variants: [
-          { key: [], value: { type: 'message', pattern: trgSel.pattern } }
+          { keys: [], value: { type: 'message', pattern: trgSel.pattern } }
         ]
       };
   } else {
@@ -113,16 +113,16 @@ function resolveSelect(
       type: 'select',
       selectors: trgSel.selectors,
       variants: [
-        { key: [], value: { type: 'message', pattern: srcSel.pattern } }
+        { keys: [], value: { type: 'message', pattern: srcSel.pattern } }
       ]
     };
   }
 
-  const select: { id: string; default: string; keys: string[] }[] = [];
+  const select: { id: string; keys: string[] }[] = [];
   const parts: X.MessagePart[] = srcSel.selectors.map(sel => {
     const id = nextId();
-    select.push({ id, default: sel.fallback ?? 'other', keys: [] });
-    return resolveSelector(id, sel);
+    select.push({ id, keys: [] });
+    return resolvePart(id, sel);
   });
 
   const elements: (X.MessageFormat | X.Unit)[] = [
@@ -131,10 +131,10 @@ function resolveSelect(
 
   if (!trgSel) {
     // If there's only a source, we use its cases directly
-    for (const c of srcSel.variants)
-      elements.push(
-        resolvePattern([...key, c.key.join(' ')], c.value, undefined)
-      );
+    for (const v of srcSel.variants) {
+      const vk = v.keys.map(k => (k.type === '*' ? '*' : k.value)).join(' ');
+      elements.push(resolvePattern([...key, ...vk], v.value, undefined));
+    }
   } else {
     // If the source and target have different selectors, it gets a bit complicated.
     // First, let's make sure that `selIds` and `parts` includes all the selectors
@@ -145,43 +145,45 @@ function resolveSelect(
       if (prevIdx !== -1) trgSelMap.push(prevIdx);
       else {
         const id = nextId();
-        select.push({ id, default: sel.fallback ?? 'other', keys: [] });
+        select.push({ id, keys: [] });
         trgSelMap.push(select.length - 1);
-        parts.push(resolveSelector(id, sel));
+        parts.push(resolvePart(id, sel));
       }
     }
 
     // Collect all of the key values for each case, in the right order
-    const addSorted = (i: number, key: string) => {
-      const { default: def, keys } = select[i];
-      if (keys.includes(key)) return;
-      if (key === def) keys.push(key);
-      else if (Number.isFinite(Number(key))) {
+    const addSorted = (i: number, key: MF.Literal | MF.CatchallKey) => {
+      const { keys } = select[i];
+      const sk = key.type === '*' ? '*' : key.value;
+      if (keys.includes(sk)) return;
+      if (sk === '*') keys.push(sk);
+      else if (Number.isFinite(Number(sk))) {
         let pos = 0;
-        while (keys[pos] !== def && Number.isFinite(Number(keys[pos])))
+        while (keys[pos] !== '*' && Number.isFinite(Number(keys[pos])))
           pos += 1;
-        keys.splice(pos, 0, key);
+        keys.splice(pos, 0, sk);
       } else {
         let pos = keys.length;
-        while (keys[pos - 1] === def) pos -= 1;
-        keys.splice(pos, 0, key);
+        while (keys[pos - 1] === '*') pos -= 1;
+        keys.splice(pos, 0, sk);
       }
     };
     for (const c of srcSel.variants)
-      for (let i = 0; i < c.key.length; ++i) addSorted(i, c.key[i]);
+      for (let i = 0; i < c.keys.length; ++i) addSorted(i, c.keys[i]);
     for (const c of trgSel.variants)
-      for (let i = 0; i < c.key.length; ++i) addSorted(trgSelMap[i], c.key[i]);
+      for (let i = 0; i < c.keys.length; ++i)
+        addSorted(trgSelMap[i], c.keys[i]);
 
     // Add a separate entry for each combined case
     // TODO: Collapse duplicates to default value only, where possible
     for (const sk of everyKey(select)) {
       const srcCase = srcSel.variants.find(c =>
-        c.key.every((k, i) => k === sk[i] || k === select[i].default)
+        c.keys.every((k, i) => k.type === '*' || k.value === sk[i])
       );
       const trgCase = trgSel.variants.find(c =>
-        c.key.every((k, i) => {
+        c.keys.every((k, i) => {
           const ti = trgSelMap[i];
-          return k === sk[ti] || k === select[ti].default;
+          return k.type === '*' || k.value === sk[ti];
         })
       );
       if (!srcCase || !trgCase)
@@ -200,13 +202,6 @@ function resolveSelect(
     }),
     elements
   };
-}
-
-function resolveSelector(id: string, sel: MF.Selector) {
-  const part = resolvePart(id, sel.value);
-  if (typeof sel.fallback === 'string')
-    part.attributes = Object.assign({ default: sel.fallback }, part.attributes);
-  return part;
 }
 
 function everyKey(select: { keys: string[] }[]): Iterable<string[]> {

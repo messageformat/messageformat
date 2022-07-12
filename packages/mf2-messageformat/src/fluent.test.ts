@@ -494,7 +494,6 @@ describe('getMessage', () => {
       const msg = mf.getMessage('case', { case: 'oblique' });
       expect(msg).toEqual({
         type: 'message',
-        meta: { case: 'oblique', caseFallback: 'nominative' },
         value: [{ type: 'literal', value: 'NOM' }]
       });
     });
@@ -512,7 +511,6 @@ describe('getMessage', () => {
       const msg = mf.getMessage('gender');
       expect(msg).toEqual({
         type: 'message',
-        meta: { gender: 'undefined', genderFallback: 'neuter' },
         value: [{ type: 'literal', value: 'N' }]
       });
     });
@@ -521,7 +519,6 @@ describe('getMessage', () => {
       const msg = mf.getMessage('plural', { num: 2 });
       expect(msg).toEqual({
         type: 'message',
-        meta: { plural: 'other' },
         value: [{ type: 'literal', value: 'Other' }]
       });
     });
@@ -530,7 +527,6 @@ describe('getMessage', () => {
       const msg = mf.getMessage('plural', { num: 1 });
       expect(msg).toEqual({
         type: 'message',
-        meta: { plural: 'one', pluralFallback: 'other' },
         value: [{ type: 'literal', value: 'Other' }]
       });
     });

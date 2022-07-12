@@ -172,7 +172,9 @@ export function astToMessage(ast: AST.Token[]): Message {
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
   const variants: Variant[] = keys.map(key => ({
-    key: key.map(k => String(k)),
+    keys: key.map(k =>
+      k === 'other' ? { type: '*' } : { type: 'nmtoken', value: String(k) }
+    ),
     value: { type: 'message', pattern: [] }
   }));
 
@@ -201,7 +203,14 @@ export function astToMessage(ast: AST.Token[]): Message {
       } else {
         for (const v of variants) {
           const vp = v.value.pattern;
-          if (filter.every(({ idx, value }) => v.key[idx] === String(value))) {
+          if (
+            filter.every(({ idx, value }) => {
+              const vi = v.keys[idx];
+              return vi.type === '*'
+                ? value === 'other'
+                : String(value) === vi.value;
+            })
+          ) {
             const last = vp[vp.length - 1];
             const part = tokenToPart(token, pluralArg, pluralOffset);
             if (isLiteral(last) && isLiteral(part)) {
@@ -214,6 +223,5 @@ export function astToMessage(ast: AST.Token[]): Message {
   }
   addParts(ast, null, null, []);
 
-  const selectors = args.map(arg => ({ value: argToPart(arg) }));
-  return { type: 'select', selectors, variants };
+  return { type: 'select', selectors: args.map(argToPart), variants };
 }

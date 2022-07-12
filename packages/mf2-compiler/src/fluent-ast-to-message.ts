@@ -15,23 +15,23 @@ import {
 
 type Part = Literal | VariableRef | Expression;
 
+const CATCHALL = Symbol('catchall');
+
 interface SelectArg {
   selector: Fluent.InlineExpression;
-  fallback: string | number;
-  keys: (string | number)[];
+  keys: (string | number | symbol)[];
 }
 
-const variantKey = ({ key }: Fluent.Variant) =>
-  key.type === 'Identifier' ? key.name : key.parse().value;
+const variantKey = (v: Fluent.Variant) =>
+  v.default
+    ? CATCHALL
+    : v.key.type === 'Identifier'
+    ? v.key.name
+    : v.key.parse().value;
 
 function asSelectArg(sel: Fluent.SelectExpression): SelectArg {
-  let fallback: string | number = '';
-  const keys = sel.variants.map(v => {
-    const id = variantKey(v);
-    if (v.default) fallback = id;
-    return id;
-  });
-  return { selector: sel.selector, fallback, keys };
+  const keys = sel.variants.map(variantKey);
+  return { selector: sel.selector, keys };
 }
 
 function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
@@ -169,13 +169,13 @@ export function astToMessage(
   }
 
   // First determine the keys for all cases, with empty values
-  let keys: (string | number)[][] = [];
+  let keys: (string | number | symbol)[][] = [];
   for (let i = 0; i < args.length; ++i) {
     const arg = args[i];
     const kk = Array.from(new Set(arg.keys));
     kk.sort((a, b) => {
-      if (a === arg.fallback) return 1;
-      if (typeof a === 'number' || b === arg.fallback) return -1;
+      if (a === CATCHALL) return 1;
+      if (typeof a === 'number' || b === CATCHALL) return -1;
       if (typeof b === 'number') return 1;
       return 0;
     });
@@ -185,7 +185,9 @@ export function astToMessage(
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
   const variants: Variant[] = keys.map(key => ({
-    key: key.map(k => String(k)),
+    keys: key.map(k =>
+      k === CATCHALL ? { type: '*' } : { type: 'nmtoken', value: String(k) }
+    ),
     value: { type: 'message', pattern: [] }
   }));
 
@@ -197,7 +199,7 @@ export function astToMessage(
    */
   function addParts(
     pattern: Fluent.Pattern,
-    filter: readonly { idx: number; value: string | number }[]
+    filter: readonly { idx: number; value: string | number | symbol }[]
   ) {
     for (const el of pattern.elements) {
       const sel = asFluentSelect(el);
@@ -208,7 +210,14 @@ export function astToMessage(
       } else {
         for (const v of variants) {
           const vp = v.value.pattern;
-          if (filter.every(({ idx, value }) => v.key[idx] === String(value))) {
+          if (
+            filter.every(({ idx, value }) => {
+              const vi = v.keys[idx];
+              return vi.type === '*'
+                ? value === CATCHALL
+                : String(value) === vi.value;
+            })
+          ) {
             const last = vp[vp.length - 1];
             const part = elementToPart(el);
             if (isLiteral(last) && isLiteral(part)) last.value += part.value;
@@ -220,10 +229,7 @@ export function astToMessage(
   }
   addParts(ast, []);
 
-  const selectors = args.map(arg => ({
-    value: expressionToPart(arg.selector),
-    fallback: String(arg.fallback)
-  }));
+  const selectors = args.map(arg => expressionToPart(arg.selector));
   const msg: SelectMessage = { type: 'select', selectors, variants };
   if (comment) msg.comment = comment.content;
   return msg;

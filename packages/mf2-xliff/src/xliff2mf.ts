@@ -126,7 +126,9 @@ function resolveSelect(
           throw new Error(`The name attribute is required for ${pu}`);
         }
         variants.push({
-          key: idList(name),
+          keys: idList(name).map(id =>
+            id === '*' ? { type: '*' } : { type: 'nmtoken', value: id }
+          ),
           value: { type: 'message', pattern: resolveUnit(el, st) }
         });
         break;
@@ -148,9 +150,7 @@ function resolveSelect(
       const el = prettyElement('group', attributes.id);
       throw new Error(`Selector ${selId} not found in ${el}`);
     }
-    const def = part.attributes?.default;
-    const value = resolvePart(part);
-    return def ? { value, default: String(def) } : { value };
+    return resolvePart(part);
   });
   return { type: 'select', selectors, variants };
 }

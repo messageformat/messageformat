@@ -46,14 +46,14 @@ test('source only', () => {
         </unit>
         <group id="g:select" name="select" mf:select="m3">
           <mf:messageformat>
-            <mf:variable default="b" id="m3" name="selector"/>
+            <mf:variable id="m3" name="selector"/>
           </mf:messageformat>
           <unit id="u:select.a" name="a">
             <segment>
               <source>A</source>
             </segment>
           </unit>
-          <unit id="u:select.b" name="b">
+          <unit id="u:select.*" name="*">
             <segment>
               <source>B</source>
             </segment>
@@ -115,7 +115,7 @@ test('combine source & target', () => {
         </unit>
         <group id="g:select" name="select" mf:select="m3">
           <mf:messageformat>
-            <mf:variable default="b" id="m3" name="selector"/>
+            <mf:variable id="m3" name="selector"/>
           </mf:messageformat>
           <unit id="u:select.a" name="a">
             <segment>
@@ -123,7 +123,7 @@ test('combine source & target', () => {
               <target>Ä</target>
             </segment>
           </unit>
-          <unit id="u:select.b" name="b">
+          <unit id="u:select.*" name="*">
             <segment>
               <source>B</source>
               <target>B</target>
@@ -163,8 +163,8 @@ test('selector mismatch between source & target languages', () => {
       <file id="f:res" mf:resourceId="res">
         <group id="g:select" name="select" mf:select="m1 m2">
           <mf:messageformat>
-            <mf:variable default="other" id="m1" name="gender"/>
-            <mf:variable default="nominative" id="m2" name="case"/>
+            <mf:variable id="m1" name="gender"/>
+            <mf:variable id="m2" name="case"/>
           </mf:messageformat>
           <unit id="u:select.masculine_allative" name="masculine allative">
             <segment>
@@ -172,7 +172,7 @@ test('selector mismatch between source & target languages', () => {
               <target>hänen talolle</target>
             </segment>
           </unit>
-          <unit id="u:select.masculine_nominative" name="masculine nominative">
+          <unit id="u:select.masculine_*" name="masculine *">
             <segment>
               <source>his house</source>
               <target>hänen talo</target>
@@ -184,19 +184,19 @@ test('selector mismatch between source & target languages', () => {
               <target>hänen talolle</target>
             </segment>
           </unit>
-          <unit id="u:select.feminine_nominative" name="feminine nominative">
+          <unit id="u:select.feminine_*" name="feminine *">
             <segment>
               <source>her house</source>
               <target>hänen talo</target>
             </segment>
           </unit>
-          <unit id="u:select.other_allative" name="other allative">
+          <unit id="u:select.*_allative" name="* allative">
             <segment>
               <source>their house</source>
               <target>hänen talolle</target>
             </segment>
           </unit>
-          <unit id="u:select.other_nominative" name="other nominative">
+          <unit id="u:select.*_*" name="* *">
             <segment>
               <source>their house</source>
               <target>hänen talo</target>

@@ -1181,7 +1181,6 @@ export interface MessageLiteral extends Element {
   name: 'mf:literal';
   attributes?: {
     id?: string;
-    default?: string | number;
 
     /**
      * Directionality of content: `ltr` (Left-To-Right), `rtl` (Right-To-Left),
@@ -1207,7 +1206,6 @@ export interface MessageFunction extends Element {
   attributes: {
     id?: string;
     name: string;
-    default?: string | number;
   };
   elements: (MessageOption | MessageLiteral | MessageVariable)[];
 }
@@ -1224,8 +1222,7 @@ export interface MessageOption extends Element {
 export interface MessageVariable extends Element {
   name: 'mf:variable';
   attributes: {
-    name: string;
     id?: string;
-    default?: string | number;
+    name: string;
   };
 }

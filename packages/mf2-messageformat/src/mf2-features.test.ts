@@ -68,16 +68,14 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
           type: 'select',
           selectors: [
             {
-              value: {
-                type: 'expression',
-                name: 'pluralRange',
-                operand: { type: 'variable', name: 'range' }
-              }
+              type: 'expression',
+              name: 'pluralRange',
+              operand: { type: 'variable', name: 'range' }
             }
           ],
           variants: [
             {
-              key: ['one'],
+              keys: [{ type: 'nmtoken', value: 'one' }],
               value: {
                 type: 'message',
                 pattern: [
@@ -91,7 +89,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
               }
             },
             {
-              key: ['other'],
+              keys: [{ type: '*' }],
               value: {
                 type: 'message',
                 pattern: [

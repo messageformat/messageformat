@@ -1,5 +1,5 @@
-import type { SelectMessage } from '../data-model';
-import { MessageValue, MessageNumber, Meta } from '../message-value';
+import type { SelectMessage, Variant } from '../data-model';
+import type { Meta } from '../message-value';
 
 const grammarCases = [
   'ablative',
@@ -51,61 +51,43 @@ const grammarCases = [
 
 const genders = ['common', 'feminine', 'masculine', 'neuter'];
 
-const plurals = ['zero', 'one', 'two', 'few', 'many'];
+const plurals = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
 const isNumeric = (str: string) => Number.isFinite(Number(str));
 
-type ResolvedSelector = {
-  fmt: MessageValue;
-  def: string;
-};
-
 export function getFormattedSelectMeta(
   selectMsg: SelectMessage,
-  key: string[],
-  sel: ResolvedSelector[],
-  fallback: boolean[]
-) {
-  let hasMeta = false;
-  const meta: Meta = {};
-  const { gcase, gender, plural } = detectGrammarSelectors(selectMsg);
+  keys: Variant['keys']
+): Meta | undefined {
+  const det = detectGrammarSelectors(selectMsg);
 
-  if (gcase !== -1) {
-    hasMeta = true;
-    if (fallback[gcase]) {
-      const { fmt, def } = sel[gcase];
-      meta.case = String(fmt.value);
-      meta.caseFallback = def;
-    } else {
-      meta.case = key[gcase];
-    }
+  let gcase: string | undefined;
+  if (det.case !== -1) {
+    const key = keys[det.case];
+    if (key.type !== '*') gcase = key.value;
   }
 
-  if (gender !== -1) {
-    hasMeta = true;
-    if (fallback[gender]) {
-      const { fmt, def } = sel[gender];
-      meta.gender = String(fmt.value);
-      meta.genderFallback = def;
-    } else {
-      meta.gender = key[gender];
-    }
+  let gender: string | undefined;
+  if (det.gender !== -1) {
+    const key = keys[det.gender];
+    if (key.type !== '*') gender = key.value;
   }
 
-  if (plural !== -1) {
-    const { fmt, def } = sel[plural];
-    if (fmt instanceof MessageNumber) {
-      hasMeta = true;
-      if (fallback[plural]) {
-        meta.plural = fmt.getPluralCategory();
-        meta.pluralFallback = def;
-      } else {
-        meta.plural = key[plural];
-      }
-    }
+  let plural: string | undefined;
+  if (det.plural !== -1) {
+    const key = keys[det.plural];
+    if (key.type !== '*') plural = key.value;
   }
 
-  return hasMeta ? meta : undefined;
+  if (gcase || gender || plural) {
+    const meta: Meta = {};
+    if (gcase) meta.case = gcase;
+    if (gender) meta.gender = gender;
+    if (plural) meta.plural = plural;
+    return meta;
+  }
+
+  return undefined;
 }
 
 const enum GC {
@@ -122,26 +104,21 @@ const enum GC {
  *
  * @returns Indices of first matching selectors, or -1 for no match.
  */
-function detectGrammarSelectors({
-  variants: cases,
-  selectors: select
-}: SelectMessage) {
-  const defaults = select.map(s => s.fallback || 'other');
-
-  const gc: (GC | null)[] = new Array(select.length).fill(null);
-  for (const { key } of cases) {
+function detectGrammarSelectors({ selectors, variants }: SelectMessage) {
+  const gc: (GC | null)[] = new Array(selectors.length).fill(null);
+  for (const { keys } of variants) {
     for (let i = 0; i < gc.length; ++i) {
       const c = gc[i];
       if (c === GC.Other) continue;
 
-      const k = key[i];
-      if (k === defaults[i]) continue;
+      const key = keys[i];
+      if (key.type === '*') continue;
 
-      if (isNumeric(k) || plurals.includes(k)) {
+      if (isNumeric(key.value) || plurals.includes(key.value)) {
         if (c !== GC.Plural) gc[i] = c ? GC.Other : GC.Plural;
-      } else if (grammarCases.includes(k)) {
+      } else if (grammarCases.includes(key.value)) {
         if (c !== GC.Case) gc[i] = c ? GC.Other : GC.Case;
-      } else if (genders.includes(k)) {
+      } else if (genders.includes(key.value)) {
         if (c !== GC.Gender) gc[i] = c ? GC.Other : GC.Gender;
       } else {
         gc[i] = GC.Other;
@@ -150,7 +127,7 @@ function detectGrammarSelectors({
   }
 
   return {
-    gcase: gc.indexOf(GC.Case),
+    case: gc.indexOf(GC.Case),
     gender: gc.indexOf(GC.Gender),
     plural: gc.indexOf(GC.Plural)
   };
