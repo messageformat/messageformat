@@ -162,6 +162,7 @@ export function astToMessage(
   if (args.length === 0) {
     const msg: PatternMessage = {
       type: 'message',
+      declarations: [],
       pattern: ast.elements.map(elementToPart)
     };
     if (comment) msg.comment = comment.content;
@@ -188,7 +189,7 @@ export function astToMessage(
     keys: key.map(k =>
       k === CATCHALL ? { type: '*' } : { type: 'nmtoken', value: String(k) }
     ),
-    value: { type: 'message', pattern: [] }
+    value: { type: 'message', declarations: [], pattern: [] }
   }));
 
   /**
@@ -230,7 +231,12 @@ export function astToMessage(
   addParts(ast, []);
 
   const selectors = args.map(arg => expressionToPart(arg.selector));
-  const msg: SelectMessage = { type: 'select', selectors, variants };
+  const msg: SelectMessage = {
+    type: 'select',
+    declarations: [],
+    selectors,
+    variants
+  };
   if (comment) msg.comment = comment.content;
   return msg;
 }

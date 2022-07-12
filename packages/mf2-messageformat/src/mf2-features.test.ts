@@ -66,6 +66,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       entries: {
         msg: {
           type: 'select',
+          declarations: [],
           selectors: [
             {
               type: 'expression',
@@ -78,6 +79,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
               keys: [{ type: 'nmtoken', value: 'one' }],
               value: {
                 type: 'message',
+                declarations: [],
                 pattern: [
                   {
                     type: 'expression',
@@ -92,6 +94,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
               keys: [{ type: '*' }],
               value: {
                 type: 'message',
+                declarations: [],
                 pattern: [
                   {
                     type: 'expression',

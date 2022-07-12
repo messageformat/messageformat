@@ -38,7 +38,7 @@ export class MessageFormat {
 
   getMessage(
     msgPath: string | Iterable<string>,
-    scope: Record<string, unknown> = {},
+    msgParams?: Record<string, unknown>,
     onError?: (error: unknown, value: MessageValue) => void
   ): ResolvedMessage | undefined {
     let msg: Message | MessageGroup;
@@ -53,7 +53,7 @@ export class MessageFormat {
     }
 
     if (!isMessage(msg)) return undefined;
-    const ctx = this.createContext(scope, onError);
+    const ctx = this.createContext(msg, msgParams, onError);
     return new ResolvedMessage(ctx, msg);
   }
 
@@ -67,20 +67,22 @@ export class MessageFormat {
   }
 
   private createContext(
-    scope: Context['scope'],
+    msg: Message,
+    scope: Context['scope'] = {},
     onError: Context['onError'] = () => {
       // Ignore errors by default
     }
-  ): Context {
-    return {
+  ) {
+    const ctx: Context = {
       onError,
-      resolve(elem) {
-        return resolvePatternElement(this, elem);
-      },
+      resolve: elem => resolvePatternElement(ctx, elem),
+      declarations: msg.declarations,
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       runtime: this.#runtime,
-      scope
+      // If declarations exist, scope may be modified during formatting
+      scope: msg.declarations.length > 0 ? { ...scope } : scope
     };
+    return ctx;
   }
 }

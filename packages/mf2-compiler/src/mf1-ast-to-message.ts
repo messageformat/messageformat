@@ -154,6 +154,7 @@ export function astToMessage(ast: AST.Token[]): Message {
   if (args.length === 0)
     return {
       type: 'message',
+      declarations: [],
       pattern: ast.map(token => tokenToPart(token, null, null))
     };
 
@@ -175,7 +176,7 @@ export function astToMessage(ast: AST.Token[]): Message {
     keys: key.map(k =>
       k === 'other' ? { type: '*' } : { type: 'nmtoken', value: String(k) }
     ),
-    value: { type: 'message', pattern: [] }
+    value: { type: 'message', declarations: [], pattern: [] }
   }));
 
   /**
@@ -223,5 +224,10 @@ export function astToMessage(ast: AST.Token[]): Message {
   }
   addParts(ast, null, null, []);
 
-  return { type: 'select', selectors: args.map(argToPart), variants };
+  return {
+    type: 'select',
+    declarations: [],
+    selectors: args.map(argToPart),
+    variants
+  };
 }

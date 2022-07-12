@@ -408,22 +408,25 @@ describe('getMessage', () => {
         comment: 'Resource comment\n\nOther resource comment',
         entries: {
           foo: {
+            type: 'message',
             comment: 'Group 1\n\nFirst message',
+            declarations: [],
             pattern: [
               { type: 'literal', value: 'Foo ' },
               { type: 'variable', name: 'num' }
-            ],
-            type: 'message'
+            ]
           },
           bar: {
+            type: 'message',
             comment: 'Group 1',
-            pattern: [{ type: 'literal', value: 'Bar' }],
-            type: 'message'
+            declarations: [],
+            pattern: [{ type: 'literal', value: 'Bar' }]
           },
           qux: {
+            type: 'message',
             comment: 'Group 2\n\nOther message',
-            pattern: [{ type: 'literal', value: 'Qux' }],
-            type: 'message'
+            declarations: [],
+            pattern: [{ type: 'literal', value: 'Qux' }]
           }
         }
       });

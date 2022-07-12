@@ -5,6 +5,7 @@ import type * as X from './xliff-spec';
 import { isExpression, isLiteral } from 'messageformat';
 import { parse } from './xliff';
 
+// TODO: Support declarations
 export function xliff2mf(
   xliff: string | X.Xliff | X.XliffDoc
 ): { source: MessageFormatInfo; target?: MessageFormatInfo }[] {
@@ -85,10 +86,12 @@ function resolveEntry(
       const key = entry.attributes.name || entry.attributes.id;
       source.entries[key] = {
         type: 'message',
+        declarations: [],
         pattern: resolveUnit(entry, 'source')
       };
       target.entries[key] = {
         type: 'message',
+        declarations: [],
         pattern: resolveUnit(entry, 'target')
       };
       return;
@@ -129,7 +132,11 @@ function resolveSelect(
           keys: idList(name).map(id =>
             id === '*' ? { type: '*' } : { type: 'nmtoken', value: id }
           ),
-          value: { type: 'message', pattern: resolveUnit(el, st) }
+          value: {
+            type: 'message',
+            declarations: [],
+            pattern: resolveUnit(el, st)
+          }
         });
         break;
       }
@@ -152,7 +159,7 @@ function resolveSelect(
     }
     return resolvePart(part);
   });
-  return { type: 'select', selectors, variants };
+  return { type: 'select', declarations: [], selectors, variants };
 }
 
 function resolveUnit(

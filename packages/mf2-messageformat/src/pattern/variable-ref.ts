@@ -47,7 +47,14 @@ function getValue(scope: unknown, name: string): unknown {
 
 export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
   const source = '$' + name;
-  const value = getValue(ctx.scope, name);
+  let value = getValue(ctx.scope, name);
+  if (value === undefined) {
+    const decl = ctx.declarations.find(decl => decl.target.name === name);
+    if (decl) {
+      value = ctx.resolve(decl.value);
+      ctx.scope[name] = value;
+    }
+  }
   if (value !== undefined) return asMessageValue(ctx, value, { source });
 
   const fb = new MessageFallback(ctx, { source });

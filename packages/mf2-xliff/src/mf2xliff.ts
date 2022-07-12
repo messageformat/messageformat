@@ -14,6 +14,7 @@ import type * as X from './xliff-spec';
 let _id = 0;
 const nextId = () => `m${++_id}`;
 
+// TODO: Support declarations
 export function mf2xliff(
   source: MessageFormatInfo,
   target?: MessageFormatInfo | undefined
@@ -99,9 +100,17 @@ function resolveSelect(
     if (trgSel && !isSelectMessage(trgSel))
       trgSel = {
         type: 'select',
+        declarations: [],
         selectors: srcSel.selectors,
         variants: [
-          { keys: [], value: { type: 'message', pattern: trgSel.pattern } }
+          {
+            keys: [],
+            value: {
+              type: 'message',
+              declarations: [],
+              pattern: trgSel.pattern
+            }
+          }
         ]
       };
   } else {
@@ -111,9 +120,13 @@ function resolveSelect(
       );
     srcSel = {
       type: 'select',
+      declarations: [],
       selectors: trgSel.selectors,
       variants: [
-        { keys: [], value: { type: 'message', pattern: srcSel.pattern } }
+        {
+          keys: [],
+          value: { type: 'message', declarations: [], pattern: srcSel.pattern }
+        }
       ]
     };
   }

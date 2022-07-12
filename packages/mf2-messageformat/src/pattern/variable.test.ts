@@ -73,6 +73,7 @@ describe('Variable paths', () => {
       entries: {
         msg: {
           type: 'message',
+          declarations: [],
           pattern: [{ type: 'variable', name: 'user.name' }]
         }
       }

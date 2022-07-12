@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { Literal, PatternElement } from './pattern';
+import type {
+  Junk,
+  Literal,
+  PatternElement,
+  Placeholder,
+  VariableRef
+} from './pattern';
 
 //// MESSAGE GROUPS ////
 
@@ -30,8 +36,14 @@ export type Message = PatternMessage | SelectMessage;
  */
 export interface PatternMessage {
   type: 'message';
+  declarations: Declaration[];
   pattern: PatternElement[];
   comment?: string;
+}
+
+export interface Declaration {
+  target: VariableRef | Junk;
+  value: Placeholder | Junk;
 }
 
 /**
@@ -46,6 +58,7 @@ export interface PatternMessage {
  */
 export interface SelectMessage {
   type: 'select';
+  declarations: Declaration[];
   selectors: PatternElement[];
   variants: Variant[];
   comment?: string;

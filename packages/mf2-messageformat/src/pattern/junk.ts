@@ -11,6 +11,7 @@ import { MessageFallback } from '../message-value';
 export interface Junk {
   type: 'junk';
   source: string;
+  name?: never;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

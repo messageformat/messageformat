@@ -12,7 +12,7 @@ type Part = Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
 function getMF(pattern: Part[]) {
   const res: MessageGroup = {
     type: 'group',
-    entries: { msg: { type: 'message', pattern } }
+    entries: { msg: { type: 'message', declarations: [], pattern } }
   };
   return new MessageFormat('en', {}, res);
 }
