@@ -13,7 +13,9 @@ which is built on top of the developing [Unicode MessageFormat 2.0 specification
 > please see [`@messageformat/core`](https://www.npmjs.com/package/@messageformat/core) instead.
 
 The API provided by this Intl.MessageFormat polyfill is current as of
-[2022-02-05](https://github.com/dminor/proposal-intl-messageformat/blob/9e3eb30/README.md).
+[2022-07-13](https://github.com/dminor/proposal-intl-messageformat/blob/72eefa5/README.md).
+The static `MessageFormat.parseResource()` method is not yet provided,
+as the message resource syntax is still under development.
 
 ## Usage
 
