@@ -1,6 +1,7 @@
 export * from './data-model';
 export * from './message-value';
 export { MessageFormat, MessageFormatOptions } from './messageformat';
+export type { ParseError } from './parser/data-model.js';
 export { parseMessage } from './parser/message.js';
 export * from './pattern';
 export * from './runtime';

@@ -58,6 +58,7 @@ export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
   if (value !== undefined) return asMessageValue(ctx, value, { source });
 
   const fb = new MessageFallback(ctx, { source });
-  ctx.onError(new Error(`Variable not available: ${source}`), fb);
+  const error = new Error(`Variable not available: ${source}`);
+  ctx.onError(Object.assign(error, { type: 'missing-var' }), fb);
   return fb;
 }

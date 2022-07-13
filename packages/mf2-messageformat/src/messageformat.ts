@@ -43,8 +43,10 @@ export class MessageFormat {
     onError?: (error: unknown, value: MessageValue | undefined) => void
   ): ResolvedMessage {
     if (onError && this.#message.errors)
-      for (const { start, type } of this.#message.errors)
-        onError(new Error(`Parse error: ${type} at ${start}`), undefined);
+      for (const pErr of this.#message.errors) {
+        const error = new Error(`Parse error: ${pErr.type} at ${pErr.start}`);
+        onError(Object.assign(error, pErr), undefined);
+      }
     const ctx = this.createContext(msgParams, onError);
     return new ResolvedMessage(ctx, this.#message);
   }

@@ -87,16 +87,22 @@ export function resolveExpression(
       fnArgs = [arg];
       const argSrc =
         arg.source || (arg.type === 'literal' && arg.value) || FALLBACK_SOURCE;
-      source = `${name}(${argSrc})`;
+      source = `${argSrc} :${name}`;
     } else {
       fnArgs = [];
-      source = `${name}()`;
+      source = `:${name}`;
     }
-    const { opt, errorKeys } = resolveOptions(ctx, options, rf?.options);
+    if (!rf) {
+      const error = new ReferenceError(`Unknown formatter ${name}`);
+      throw Object.assign(error, { type: 'missing-func' });
+    }
+    const { opt, errorKeys } = resolveOptions(ctx, options, rf.options);
     const res = rf.call(ctx.locales, opt, ...fnArgs);
     const mv = asMessageValue(ctx, res, { source });
-    for (const key of errorKeys)
-      ctx.onError(new TypeError(`Invalid value for option ${key}`), mv);
+    for (const key of errorKeys) {
+      const error = new TypeError(`Invalid value for option ${key}`);
+      ctx.onError(Object.assign(error, { type: 'invalid-type' }), mv);
+    }
     return mv;
   } catch (error) {
     source ??= `${name}(${operand ? FALLBACK_SOURCE : ''})`;

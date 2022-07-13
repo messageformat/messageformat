@@ -25,7 +25,7 @@ describe('Function returns generic value', () => {
     const mf = res.get('msg');
     expect(mf?.resolveMessage({ var: 42 })).toMatchObject({
       type: 'message',
-      value: [{ source: 'STRINGIFY($var)', type: 'value', value: '42' }]
+      value: [{ source: '$var :STRINGIFY', type: 'value', value: '42' }]
     });
     expect(mf?.resolveMessage({ var: 42 }).toString()).toBe('42');
   });
@@ -39,7 +39,7 @@ describe('Function returns generic value', () => {
     const mf = res.get('msg');
     expect(mf?.resolveMessage({ var: '42' })).toEqual({
       type: 'message',
-      value: [{ source: 'NUMERIC($var)', type: 'number', value: 42 }]
+      value: [{ source: '$var :NUMERIC', type: 'number', value: 42 }]
     });
     expect(mf?.resolveMessage({ var: '42' })?.toString()).toBe('42');
   });
@@ -56,7 +56,7 @@ describe('Function returns generic value', () => {
     const msg = mf?.resolveMessage();
     expect(msg).toEqual({
       type: 'message',
-      value: [{ type: 'datetime', source: 'NOW()', value: date }]
+      value: [{ type: 'datetime', source: ':NOW', value: date }]
     });
     const parts = (msg?.value[0] as MessageDateTime).toParts();
     expect(parts).toEqual(dtf.formatToParts(date));
@@ -82,7 +82,7 @@ describe('Function returns MessageValue', () => {
     expect(mf?.resolveMessage({ var: 42 })).toEqual({
       type: 'message',
       value: [
-        { type: 'value', source: 'STRINGIFY($var)', toString, value: null }
+        { type: 'value', source: '$var :STRINGIFY', toString, value: null }
       ]
     });
   });

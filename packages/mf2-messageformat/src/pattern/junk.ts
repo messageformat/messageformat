@@ -20,6 +20,7 @@ export const isJunk = (part: any): part is Junk =>
 
 export function resolveJunk(ctx: Context, { source }: Junk) {
   const fb = new MessageFallback(ctx, { source });
-  ctx.onError(new Error('Junk pattern element cannot be resolved'), fb);
+  const error = new Error('Junk pattern element cannot be resolved');
+  ctx.onError(Object.assign(error, { type: 'junk-element' }), fb);
   return fb;
 }

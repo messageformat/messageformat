@@ -349,7 +349,7 @@ describe('getMessage', () => {
         value: [
           {
             type: 'message',
-            source: 'MESSAGE(foo)',
+            source: 'foo :MESSAGE',
             value: [
               { type: 'literal', value: 'Foo ' },
               { type: 'fallback', source: '$num', value: undefined }

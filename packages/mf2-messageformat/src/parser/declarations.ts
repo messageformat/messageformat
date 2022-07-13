@@ -53,7 +53,7 @@ function parseDeclaration(
       end: pos,
       source: src.substring(junkStart, pos)
     };
-    errors.push({ type: 'parse-error', start: junkStart, end: pos });
+    errors.push({ type: 'missing-char', char: '$', start: junkStart });
   }
 
   pos += whitespaces(src, pos);
@@ -77,7 +77,7 @@ function parseDeclaration(
       end: pos,
       source: src.substring(junkStart, pos)
     };
-    errors.push({ type: 'parse-error', start: junkStart, end: pos });
+    errors.push({ type: 'missing-char', char: '{', start: junkStart });
   }
 
   return { start, end: pos, target, value };
