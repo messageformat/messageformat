@@ -8,25 +8,32 @@ import { MessageValue, Meta } from './message-value';
 function getPattern(
   context: Context,
   message: Message
-): { pattern: PatternElement[]; meta: Meta | undefined } {
-  if (message.type === 'message')
-    return { pattern: message.pattern.body, meta: undefined };
+): { pattern: PatternElement[]; meta?: Meta } {
+  switch (message.type) {
+    case 'message':
+      return { pattern: message.pattern.body };
 
-  const rs = message.selectors.map(sel => context.resolve(sel));
+    case 'select': {
+      const rs = message.selectors.map(sel => context.resolve(sel));
 
-  cases: for (const { keys, value } of message.variants) {
-    for (let i = 0; i < keys.length; ++i) {
-      const key = keys[i];
-      if (key.type !== '*' && !rs[i].matchSelectKey(key.value)) {
-        continue cases;
+      cases: for (const { keys, value } of message.variants) {
+        for (let i = 0; i < keys.length; ++i) {
+          const key = keys[i];
+          if (key.type !== '*' && !rs[i].matchSelectKey(key.value)) {
+            continue cases;
+          }
+        }
+
+        const meta = getFormattedSelectMeta(message, keys);
+        return { pattern: value.body, meta };
       }
+
+      return { pattern: [], meta: { selectResult: 'no-match' } };
     }
 
-    const meta = getFormattedSelectMeta(message, keys);
-    return { pattern: value.body, meta };
+    default:
+      return { pattern: [{ type: 'junk', source: message.source }] };
   }
-
-  return { pattern: [], meta: { selectResult: 'no-match' } };
 }
 
 const str = Symbol('str');

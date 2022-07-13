@@ -1,4 +1,4 @@
-import { isSelectMessage, Message } from '../data-model';
+import type { Message } from '../data-model';
 import { isExpression, PatternElement } from '../pattern';
 import type { Runtime } from '../runtime';
 
@@ -17,10 +17,15 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
 }
 
 export function validate(msg: Readonly<Message>, runtime: Runtime) {
-  if (isSelectMessage(msg)) {
-    validateParts(msg.selectors, runtime);
-    for (const { value } of msg.variants) validateParts(value.body, runtime);
-  } else {
-    validateParts(msg.pattern.body, runtime);
+  switch (msg.type) {
+    case 'message':
+      validateParts(msg.pattern.body, runtime);
+      break;
+    case 'select':
+      validateParts(msg.selectors, runtime);
+      for (const { value } of msg.variants) validateParts(value.body, runtime);
+      break;
+    default:
+      throw new Error(`Invalid message type: ${msg.type}`);
   }
 }

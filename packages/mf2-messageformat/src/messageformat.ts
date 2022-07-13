@@ -40,8 +40,11 @@ export class MessageFormat {
 
   resolveMessage(
     msgParams?: Record<string, unknown>,
-    onError?: (error: unknown, value: MessageValue) => void
+    onError?: (error: unknown, value: MessageValue | undefined) => void
   ): ResolvedMessage {
+    if (onError && this.#message.errors)
+      for (const { start, type } of this.#message.errors)
+        onError(new Error(`Parse error: ${type} at ${start}`), undefined);
     const ctx = this.createContext(msgParams, onError);
     return new ResolvedMessage(ctx, this.#message);
   }

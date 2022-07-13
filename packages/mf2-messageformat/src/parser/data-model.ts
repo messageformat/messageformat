@@ -1,6 +1,7 @@
 import type {
   CatchallKey,
   Declaration,
+  JunkMessage,
   Pattern,
   PatternMessage,
   SelectMessage,
@@ -31,7 +32,7 @@ export type ParseError =
     }
   | { type: 'missing-char'; char: string; start: number; end?: never };
 
-export type Message =
+export type MessageParsed =
   | PatternMessageParsed
   | SelectMessageParsed
   | JunkMessageParsed;
@@ -49,10 +50,11 @@ export interface SelectMessageParsed extends SelectMessage {
   variants: VariantParsed[];
   errors: ParseError[];
 }
-export interface JunkMessageParsed {
+export interface JunkMessageParsed extends JunkMessage {
   type: 'junk';
   declarations: DeclarationParsed[];
   errors: ParseError[];
+  source: string;
 }
 
 export interface DeclarationParsed extends Declaration {

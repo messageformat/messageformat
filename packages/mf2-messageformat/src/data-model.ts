@@ -1,3 +1,4 @@
+import type { ParseError } from './parser/data-model';
 import type {
   Junk,
   Literal,
@@ -11,7 +12,7 @@ import type {
  * The shape of the value is an implementation detail,
  * and may vary for the same message in different languages.
  */
-export type Message = PatternMessage | SelectMessage;
+export type Message = PatternMessage | SelectMessage | JunkMessage;
 
 /**
  * The body of each message is composed of a sequence of parts, some of them
@@ -23,6 +24,7 @@ export interface PatternMessage {
   declarations: Declaration[];
   pattern: Pattern;
   comment?: string;
+  errors?: ParseError[];
 }
 
 export interface Declaration {
@@ -50,6 +52,7 @@ export interface SelectMessage {
   selectors: PatternElement[];
   variants: Variant[];
   comment?: string;
+  errors?: ParseError[];
 }
 
 export interface Variant {
@@ -59,6 +62,14 @@ export interface Variant {
 
 export interface CatchallKey {
   type: '*';
+}
+
+export interface JunkMessage {
+  type: 'junk';
+  declarations: Declaration[];
+  source: string;
+  comment?: string;
+  errors?: ParseError[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

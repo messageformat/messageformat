@@ -67,8 +67,12 @@ function resolveEntry(
   trgMsg: MF.Message | MessageResourceData | undefined
 ): X.Unit | X.Group {
   if (isMessage(srcMsg)) {
+    if (srcMsg.type === 'junk')
+      throw new Error(`Junk source message at ${key.join('.')}`);
     if (trgMsg) {
       if (!isMessage(trgMsg)) throw new Error(mismatch(key));
+      if (trgMsg.type === 'junk')
+        throw new Error(`Junk target message at ${key.join('.')}`);
       if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg))
         return resolveSelect(key, srcMsg, trgMsg);
       else return resolvePattern(key, srcMsg.pattern, trgMsg.pattern);
@@ -97,18 +101,23 @@ function resolveSelect(
 ): X.Group {
   // We might be combining a Pattern and a Select, so let's normalise
   if (isSelectMessage(srcSel)) {
-    if (trgSel && !isSelectMessage(trgSel))
+    if (trgSel && !isSelectMessage(trgSel)) {
+      if (trgSel.type === 'junk')
+        throw new Error(`Junk target message at ${key.join('.')}`);
       trgSel = {
         type: 'select',
         declarations: [],
         selectors: srcSel.selectors,
         variants: [{ keys: [], value: trgSel.pattern }]
       };
+    }
   } else {
     if (!trgSel || !isSelectMessage(trgSel))
       throw new Error(
         `At least one of source & target at ${key.join('.')} must be a select`
       );
+    if (srcSel.type === 'junk')
+      throw new Error(`Junk source message at ${key.join('.')}`);
     srcSel = {
       type: 'select',
       declarations: [],

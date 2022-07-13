@@ -1,4 +1,4 @@
-import { Context } from '../format-context';
+import type { Context } from '../format-context';
 import { MessageFallback } from '../message-value';
 
 /**

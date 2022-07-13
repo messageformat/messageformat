@@ -2,7 +2,7 @@ import type {
   CatchallKeyParsed,
   DeclarationParsed,
   LiteralParsed,
-  Message,
+  MessageParsed,
   NmtokenParsed,
   PatternParsed,
   PatternMessageParsed,
@@ -20,7 +20,7 @@ import { parseLiteral, parseText } from './values.js';
 
 // Message ::= Declaration* ( Pattern | Selector Variant+ )
 // Selector ::= 'match' ( '{' Expression '}' )+
-export function parseMessage(src: string): Message {
+export function parseMessage(src: string): MessageParsed {
   const errors: ParseError[] = [];
   const { declarations, end: pos } = parseDeclarations(src, errors);
 
@@ -30,7 +30,7 @@ export function parseMessage(src: string): Message {
     return parsePatternMessage(src, pos, declarations, errors);
   } else {
     errors.push({ type: 'parse-error', start: pos, end: src.length });
-    return { type: 'junk', declarations, errors };
+    return { type: 'junk', declarations, errors, source: src };
   }
 }
 
