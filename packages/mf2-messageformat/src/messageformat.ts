@@ -1,6 +1,7 @@
 import { Message } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
+import { parseMessage } from './parser/message';
 import { resolvePatternElement } from './pattern';
 import { defaultRuntime, Runtime } from './runtime';
 
@@ -23,7 +24,7 @@ export class MessageFormat {
   readonly #runtime: Readonly<Runtime>;
 
   constructor(
-    source: Message,
+    source: string | Message,
     locales?: string | string[],
     options?: MessageFormatOptions
   ) {
@@ -33,7 +34,7 @@ export class MessageFormat {
       : locales
       ? [locales]
       : [];
-    this.#message = source;
+    this.#message = typeof source === 'string' ? parseMessage(source) : source;
     const rt = options?.runtime ?? defaultRuntime;
     this.#runtime = Object.freeze({ ...rt });
   }
