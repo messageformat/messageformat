@@ -47,31 +47,43 @@ function resolveOptions(
         typeof expected === 'string' || Array.isArray(expected)
           ? expected
           : expected[name];
-      if (!exp || exp === 'never') {
-        errorKeys.push(name);
-        continue;
-      }
-      const res = ctx.resolve(value).value;
-      if (
-        exp === 'any' ||
-        exp === typeof res ||
-        (Array.isArray(exp) && typeof res === 'string' && exp.includes(res))
-      ) {
-        opt[name] = res;
-      } else if (isLiteral(value)) {
-        switch (exp) {
-          case 'boolean':
-            if (res === 'true') opt[name] = true;
-            else if (res === 'false') opt[name] = false;
-            break;
-          case 'number':
-            opt[name] = Number(res);
-        }
-      }
-      errorKeys.push(name);
+      const { res, valid } = resolveOptionValue(ctx, exp, value);
+      opt[name] = res;
+      if (!valid) errorKeys.push(name);
     }
   }
   return { opt, errorKeys };
+}
+
+function resolveOptionValue(
+  ctx: Context,
+  exp: RuntimeType | undefined,
+  elem: Literal | VariableRef
+): { res: unknown; valid: boolean } {
+  const { value } = ctx.resolve(elem);
+
+  if (
+    exp === 'any' ||
+    exp === typeof value ||
+    (Array.isArray(exp) && typeof value === 'string' && exp.includes(value))
+  ) {
+    return { res: value, valid: true };
+  }
+
+  if (isLiteral(elem)) {
+    switch (exp) {
+      case 'boolean':
+        if (value === 'true') return { res: true, valid: true };
+        if (value === 'false') return { res: false, valid: true };
+        return { res: value === '0' ? false : Boolean(value), valid: false };
+      case 'number': {
+        const num = Number(value);
+        return { res: num, valid: Number.isFinite(num) };
+      }
+    }
+  }
+
+  return { res: value, valid: false };
 }
 
 export function resolveExpression(

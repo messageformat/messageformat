@@ -8,11 +8,11 @@ export const datetime: RuntimeFunction<MessageDateTime> = {
     arg: MessageValue
   ) {
     let date: Date | MessageDateTime;
-    if (arg instanceof MessageDateTime) date = arg;
-    else {
-      date = new Date(
-        typeof arg.value === 'number' ? arg.value : String(arg.value)
-      );
+    if (arg instanceof MessageDateTime) {
+      date = arg;
+    } else {
+      const av = arg?.value;
+      date = new Date(typeof av === 'number' ? av : String(av));
     }
     return new MessageDateTime(locales, date, { options });
   },
@@ -49,7 +49,7 @@ export const number: RuntimeFunction<MessageNumber> = {
     options: RuntimeOptions | undefined,
     arg: MessageValue
   ) {
-    const num = arg instanceof MessageNumber ? arg : Number(arg.value);
+    const num = arg instanceof MessageNumber ? arg : Number(arg?.value);
     return new MessageNumber(locales, num, { options });
   },
 

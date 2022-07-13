@@ -14,12 +14,13 @@ function getPattern(
       return { pattern: message.pattern.body };
 
     case 'select': {
-      const rs = message.selectors.map(sel => context.resolve(sel));
+      const resSelectors = message.selectors.map(sel => context.resolve(sel));
 
       cases: for (const { keys, value } of message.variants) {
         for (let i = 0; i < keys.length; ++i) {
           const key = keys[i];
-          if (key.type !== '*' && !rs[i].matchSelectKey(key.value)) {
+          const rs = resSelectors[i];
+          if (key.type !== '*' && rs && !rs.matchSelectKey(key.value)) {
             continue cases;
           }
         }

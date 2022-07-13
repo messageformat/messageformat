@@ -112,7 +112,7 @@ function detectGrammarSelectors({ selectors, variants }: SelectMessage) {
       if (c === GC.Other) continue;
 
       const key = keys[i];
-      if (key.type === '*') continue;
+      if (!key || key.type === '*') continue;
 
       if (isNumeric(key.value) || plurals.includes(key.value)) {
         if (c !== GC.Plural) gc[i] = c ? GC.Other : GC.Plural;

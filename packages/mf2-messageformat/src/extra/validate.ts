@@ -17,6 +17,7 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
 }
 
 export function validate(msg: Readonly<Message>, runtime: Runtime) {
+  if (msg.errors?.length) throw new Error('Message parse failed');
   switch (msg.type) {
     case 'message':
       validateParts(msg.pattern.body, runtime);
