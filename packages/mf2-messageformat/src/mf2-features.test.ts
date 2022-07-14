@@ -4,7 +4,6 @@ import {
   compileMF1MessageData
 } from '@messageformat/compiler';
 import { source } from '@messageformat/test-utils';
-import { en } from 'make-plural';
 
 import {
   Message,

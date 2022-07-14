@@ -21,13 +21,9 @@
     "directory": "packages/messageformat"
   },
   "main": "lib/index.js",
-  "browser": "./lib/index.js",
   "files": [
     "lib/"
   ],
-  "dependencies": {
-    "make-plural": "^7.1.0"
-  },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "extract-api": "api-extractor run --local --verbose"
