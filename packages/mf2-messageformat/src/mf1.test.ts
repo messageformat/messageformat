@@ -1,8 +1,8 @@
 import {
   compileMF1Message,
   compileMF1MessageData
-} from '@messageformat/compiler';
-import { MessageFormat, validate } from './index';
+} from '@messageformat/icu-messageformat-1';
+import { validate } from './index';
 
 export type TestCase = {
   locale?: string;

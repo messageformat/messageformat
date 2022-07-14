@@ -11,12 +11,14 @@ module.exports = {
   moduleFileExtensions: ['mjs', ...defaults.moduleFileExtensions],
   moduleNameMapper: {
     '^messageformat$': '<rootDir>/packages/mf2-messageformat/src/index.ts',
-    '^@messageformat/compiler$': '<rootDir>/packages/mf2-compiler/src/index.ts',
     '^@messageformat/core$': '<rootDir>/packages/core/src/messageformat.ts',
     '^@messageformat/core/compile-module$':
       '<rootDir>/packages/core/src/compile-module.ts',
     '^@messageformat/date-skeleton$':
       '<rootDir>/packages/date-skeleton/src/index.ts',
+    '^@messageformat/fluent$': '<rootDir>/packages/mf2-fluent/src/index.ts',
+    '^@messageformat/icu-messageformat-1$':
+      '<rootDir>/packages/mf2-icu-mf1/src/index.ts',
     '^@messageformat/number-skeleton$':
       '<rootDir>/packages/number-skeleton/src/index.ts',
     '^@messageformat/parser$': '<rootDir>/packages/parser/src/parser.ts',

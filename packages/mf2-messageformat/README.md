@@ -51,7 +51,7 @@ mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
 With ICU MessageFormat, formatting to a string:
 
 ```js
-import { compileMF1Message } from '@messageformat/compiler';
+import { compileMF1Message } from '@messageformat/icu-messageformat-1';
 
 const locale = 'en-US';
 const msg = 'Today is {today, date}';
@@ -65,7 +65,7 @@ mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
 With Fluent, formatting to a message:
 
 ```js
-import { compileFluentResource } from '@messageformat/compiler';
+import { compileFluentResource } from '@messageformat/fluent';
 
 const locale = 'en-US';
 const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';

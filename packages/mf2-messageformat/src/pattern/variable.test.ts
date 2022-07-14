@@ -1,4 +1,4 @@
-import { compileFluentResource } from '@messageformat/compiler';
+import { compileFluentResource } from '@messageformat/fluent';
 
 import { MessageFormat, MessageNumber, MessageValue } from '../index';
 

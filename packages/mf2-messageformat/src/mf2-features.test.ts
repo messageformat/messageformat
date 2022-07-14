@@ -1,8 +1,8 @@
+import { compileFluentResource } from '@messageformat/fluent';
 import {
-  compileFluentResource,
   compileMF1Message,
   compileMF1MessageData
-} from '@messageformat/compiler';
+} from '@messageformat/icu-messageformat-1';
 import { source } from '@messageformat/test-utils';
 
 import {

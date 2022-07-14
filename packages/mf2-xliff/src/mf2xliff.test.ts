@@ -1,4 +1,4 @@
-import { compileFluentResourceData } from '@messageformat/compiler';
+import { compileFluentResourceData } from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
 import { mf2xliff, stringify } from './index';
 

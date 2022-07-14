@@ -17,7 +17,8 @@
     "packages/number-skeleton",
     "packages/parser",
     "packages/mf2-messageformat",
-    "packages/mf2-compiler",
+    "packages/mf2-fluent",
+    "packages/mf2-icu-mf1",
     "packages/mf2-xliff",
     "packages/react",
     "packages/runtime",
@@ -28,7 +29,7 @@
   "scripts": {
     "clean": "git clean -fdx -e node_modules -e config/husky/_",
     "build": "npm run build --workspaces --if-present",
-    "build:mf2": "npm run build -w packages/mf2-messageformat -w packages/mf2-compiler -w packages/mf2-xliff",
+    "build:mf2": "npm run build -w packages/mf2-messageformat -w packages/mf2-fluent -w packages/mf2-icu-mf2 -w packages/mf2-xliff",
     "predocs": "npm run extract-api --workspaces --if-present",
     "docs": "api-documenter markdown -i tmp/ -o docs/api/",
     "postdocs": "node scripts/set-api-docs-frontmatter docs/api/",

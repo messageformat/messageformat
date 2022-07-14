@@ -9,9 +9,7 @@ package-lock.json
 /packages/core/lib/*
 /packages/core/messageformat.*
 /packages/date-skeleton/lib/*
-/packages/mf2-compiler/lib/*
-/packages/mf2-messageformat/lib/*
-/packages/mf2-xliff/lib/*
+/packages/mf2-*/lib/*
 /packages/number-skeleton/lib/*
 /packages/parser/lib/*
 /packages/react/lib/*

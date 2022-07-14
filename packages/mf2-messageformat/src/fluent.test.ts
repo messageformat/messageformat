@@ -26,7 +26,7 @@
 import {
   compileFluentResource,
   compileFluentResourceData
-} from '@messageformat/compiler';
+} from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
 import { Message, MessageFormat, validate } from './index';
 

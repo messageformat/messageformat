@@ -1,8 +1,8 @@
 import { parse } from '@messageformat/parser';
 import * as PluralCategories from 'make-plural/pluralCategories';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import { astToMessage } from './mf1-ast-to-message';
-import { getMF1Runtime } from './mf1-runtime';
+import { astToMessage } from './ast-to-message';
+import { getMF1Runtime } from './runtime';
 
 const isPluralId = (id: string): id is keyof typeof PluralCategories =>
   id in PluralCategories;

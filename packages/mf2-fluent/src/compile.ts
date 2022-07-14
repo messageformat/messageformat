@@ -1,7 +1,7 @@
 import { parse } from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import { astToMessage } from './fluent-ast-to-message';
-import { getFluentRuntime } from './fluent-runtime';
+import { astToMessage } from './ast-to-message';
+import { getFluentRuntime } from './runtime';
 
 export function compileFluentResource(
   source: string | Map<string, Message>,
