@@ -23,12 +23,9 @@
  *     limitations under the License.
  */
 
-import {
-  compileFluentResource,
-  compileFluentResourceData
-} from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
-import { Message, MessageFormat, validate } from './index';
+import { Message, MessageFormat, validate } from 'messageformat';
+import { compileFluentResource, compileFluentResourceData } from './index';
 
 type TestCase = {
   locale?: string;
