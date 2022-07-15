@@ -32,6 +32,9 @@
     "build": "tsc --project tsconfig.build.json",
     "prepublishOnly": "npm run build"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "dependencies": {
     "@messageformat/convert": "^1.0.0",
     "@messageformat/core": "^3.0.1",

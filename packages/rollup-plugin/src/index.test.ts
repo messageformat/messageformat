@@ -5,6 +5,9 @@ import { fs } from 'memfs';
 import { source } from '@messageformat/test-utils';
 import plugin from './index';
 
+// rollup-plugin-messageformat requires Node.js 14 or later
+if (process.version < 'v14.') test = test.skip;
+
 const jsonSrc = '{"key":{"inner":"value {foo}"}}';
 const code = `
 export default {
