@@ -2,9 +2,6 @@ import { resolve } from 'path';
 import { rollup } from 'rollup';
 import plugin from './index';
 
-// rollup-plugin-messageformat requires Node.js 14 or later
-if (process.version < 'v14.') test = test.skip;
-
 const external = /^@messageformat\/runtime\b/;
 const fixtures = resolve(__dirname, '__fixtures__');
 
