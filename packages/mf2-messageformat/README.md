@@ -12,80 +12,40 @@ which is built on top of the developing [Unicode MessageFormat 2.0 specification
 > For that,
 > please see [`@messageformat/core`](https://www.npmjs.com/package/@messageformat/core) instead.
 
-The API provided by this Intl.MessageFormat polyfill is current as of
-[2022-07-13](https://github.com/dminor/proposal-intl-messageformat/blob/72eefa5/README.md).
-The static `MessageFormat.parseResource()` method is not yet provided,
-as the message resource syntax is still under development.
-
 ## Usage
 
-In addition to supporting MF2 syntax,
-compilers and formatting function runtimes are also provided for
-ICU MessageFormat and Fluent messages.
-
-Setup is currently a little tedious,
-as the packages are not yet published on npm:
-
 ```sh
-git clone https://github.com/messageformat/messageformat.git
-cd messageformat
-npm install
-npm run build
-# The examples below will now run within the source repo.
+npm install --save-exact messageformat@next
 ```
-
-With MessageFormat 2, formatting to a string:
 
 ```js
 import { MessageFormat } from 'messageformat';
+Intl.MessageFormat = MessageFormat;
+```
 
+In addition to supporting MF2 syntax,
+compilers and formatting function runtimes are also provided for
+ICU MessageFormat and Fluent messages:
+
+- [@messageformat/icu-messageformat-1](https://www.npmjs.com/package/@messageformat/icu-messageformat-1)
+- [@messageformat/fluent](https://www.npmjs.com/package/@messageformat/fluent)
+
+## API
+
+The API provided by this Intl.MessageFormat polyfill is current as of
+[2022-07-13](https://github.com/tc39/proposal-intl-messageformat/blob/72eefa5/README.md).
+The static `MessageFormat.parseResource()` method is not yet provided,
+as the message resource syntax is still under development.
+
+```js
 const locale = 'en-US';
 const msg = '{Today is {$today :datetime dateStyle=medium}}';
 
-const mf = new MessageFormat(msg, locale);
+const mf = new Intl.MessageFormat(msg, locale);
 
 mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
 // 'Today is Feb 2, 2022'
 ```
 
-With ICU MessageFormat, formatting to a string:
-
-```js
-import { compileMF1Message } from '@messageformat/icu-messageformat-1';
-
-const locale = 'en-US';
-const msg = 'Today is {today, date}';
-
-const mf = compileMF1Message(msg, locale);
-
-mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
-// 'Today is Feb 2, 2022'
-```
-
-With Fluent, formatting to a message:
-
-```js
-import { compileFluentResource } from '@messageformat/fluent';
-
-const locale = 'en-US';
-const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
-
-const res = compileFluentResource(src, locale);
-
-const msg = res.get('msg').resolveMessage({ today: new Date('2022-02-02') });
-// ResolvedMessage {
-//   type: 'message',
-//   value: [
-//     MessageLiteral { type: 'literal', value: 'Today is ' },
-//     MessageDateTime {
-//       type: 'datetime',
-//       value: 2022-02-02T00:00:00.000Z,
-//       options: { localeMatcher: 'best fit', dateStyle: 'medium' },
-//       source: 'DATETIME($today)'
-//     }
-//   ]
-// }
-
-msg.toString();
-// 'Today is Feb 2, 2022'
-```
+For more information on additional types and functions provided by this package,
+see the [API documentation site](https://messageformat.github.io/messageformat/api/).
