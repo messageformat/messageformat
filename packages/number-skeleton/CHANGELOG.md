@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.0.0...@messageformat/number-skeleton@1.1.0) (2022-07-16)
+
+### Features
+
+* Add rounding-modes Half Ceiling, Half Floor and Half Odd ([#370](https://github.com/messageformat/messageformat/issues/370))
+* Use Intl.NumberFormatOptions defined in TS 4.5 ([fd93870](https://github.com/messageformat/messageformat/commit/fd93870feff6475e37c99f7f7d88a39b3eb7495f))
+
 # [1.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.0.0-beta.1...@messageformat/number-skeleton@1.0.0) (2021-05-13)
 
 

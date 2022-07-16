@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/date-skeleton@1.0.0...@messageformat/date-skeleton@1.0.1) (2022-07-16)
+
+### Bug Fixes
+
+* **date-skeleton:** Fix test broken by ICU update ([021d157](https://github.com/messageformat/messageformat/commit/021d15788f250170b9e09c5869f2942d6f4cc43a))
+
 # [1.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/date-skeleton@1.0.0-beta.1...@messageformat/date-skeleton@1.0.0) (2021-05-13)
 
 **Note:** Version bump only for package @messageformat/date-skeleton

@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.1.0...@messageformat/cli@4.0.0) (2022-07-16)
+
+### ⚠ Breaking Changes
+
+* Due to updated dependency requirements,
+  a newer Node.js version is required: v14 or later.
+  The previously claimed ">= 6" was also erroneous,
+  as at least one dependency already had ">= 10".
+
 ## [3.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.0.1...@messageformat/cli@3.1.0) (2022-02-06)
 
 ### Features

@@ -39,7 +39,6 @@ msg.toString();
 // 'Today is Feb 2, 2022'
 ```
 
-
 ## API
 
 ```js

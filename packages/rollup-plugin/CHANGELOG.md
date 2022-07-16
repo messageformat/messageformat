@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0](https://github.com/messageformat/messageformat/compare/rollup-plugin-messageformat@1.0.0...rollup-plugin-messageformat@2.0.0) (2022-07-16)
+
+### ⚠ Breaking Changes
+
+* Due to updated dependency requirements,
+  a newer Node.js version is required: v14 or later.
+
 # [1.0.0](https://github.com/messageformat/messageformat/compare/rollup-plugin-messageformat@1.0.0-beta.2...rollup-plugin-messageformat@1.0.0) (2021-05-13)
 
 **Note:** Version bump only for package rollup-plugin-messageformat
