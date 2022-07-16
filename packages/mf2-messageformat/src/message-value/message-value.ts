@@ -8,11 +8,18 @@ import {
 export const FALLBACK_SOURCE = '???';
 
 /**
- * Additional meta information amy be attached to most nodes. In common use,
+ * Additional meta information may be attached to most nodes. In common use,
  * this information is not required when formatting a message.
+ *
+ * @beta
  */
 export type Meta = Record<string, string>;
 
+/**
+ * Type guard for message values that may contain a `meta` member
+ *
+ * @beta
+ */
 export const hasMeta = <T>(
   part: MessageValue<T>
 ): part is MessageValue<T> & { meta: Meta } =>
@@ -20,6 +27,11 @@ export const hasMeta = <T>(
   typeof part.meta === 'object' &&
   Object.keys(part.meta).length > 0;
 
+/**
+ * The base class of all message values.
+ *
+ * @beta
+ */
 export class MessageValue<T = unknown> {
   static readonly type: string = 'value';
 

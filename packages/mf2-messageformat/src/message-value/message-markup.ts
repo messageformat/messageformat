@@ -4,6 +4,11 @@ import { MessageValue, Meta } from './message-value';
 
 const elementTags = new WeakMap<MessageMarkup, 'start' | 'end'>();
 
+/**
+ * A child class of {@link MessageValue} for numerical values.
+ *
+ * @beta
+ */
 export class MessageMarkup extends MessageValue<MessageValue[]> {
   static readonly type = 'markup';
 

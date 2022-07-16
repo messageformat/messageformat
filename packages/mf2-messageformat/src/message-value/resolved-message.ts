@@ -37,6 +37,11 @@ function getPattern(
   }
 }
 
+/**
+ * The result of resolving a {@link MessageFormat} message.
+ *
+ * @beta
+ */
 export class ResolvedMessage extends MessageValue<MessageValue[]> {
   static readonly type = 'message';
 

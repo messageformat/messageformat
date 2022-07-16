@@ -7,6 +7,8 @@ import { MessageFallback } from '../message-value';
  *
  * Garbage in, garbage out: Resolving a message that includes junk will always
  * resolve it using a fallback representation.
+ *
+ * @beta
  */
 export interface Junk {
   type: 'junk';
@@ -14,6 +16,11 @@ export interface Junk {
   name?: never;
 }
 
+/**
+ * Type guard for {@link Junk} pattern elements
+ *
+ * @beta
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isJunk = (part: any): part is Junk =>
   !!part && typeof part === 'object' && part.type === 'junk';

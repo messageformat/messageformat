@@ -1,14 +1,32 @@
+/**
+ * The minimum amount of information required to determine the locale to use
+ * when formatting a MessageValue.
+ *
+ * @beta
+ */
 export interface LocaleContext {
   localeMatcher: 'best fit' | 'lookup' | undefined;
   locales: string[];
 }
 
+/**
+ * When constructing a {@link LocaleContext},
+ * {@link MessageValue} or one of its child classes,
+ * the locale information may be given in a number of different shapes.
+ *
+ * @beta
+ */
 export type LocaleContextArg =
   | string
   | readonly string[]
   | Readonly<LocaleContext>
   | null;
 
+/**
+ * Type guard for {@link LocaleContext}
+ *
+ * @beta
+ */
 export const isLocaleContext = (
   lc: LocaleContextArg
 ): lc is Readonly<LocaleContext> =>
@@ -20,6 +38,7 @@ export const isLocaleContext = (
 /**
  * Create a new LocaleContext, using `orig` as a base.
  *
+ * @beta
  * @returns `null` if both arguments are `null`
  */
 export function extendLocaleContext(

@@ -14,12 +14,19 @@ import {
  * and in case that fails, with the `'name'` property of the `'user'` object:
  * The runtime scopes `{ 'user.name': 'Kat' }` and `{ user: { name: 'Kat' } }`
  * would both resolve a `'user.name'` VariableRef as the string `'Kat'`.
+ *
+ * @beta
  */
 export interface VariableRef {
   type: 'variable';
   name: string;
 }
 
+/**
+ * Type guard for {@link VariableRef} pattern elements
+ *
+ * @beta
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isVariableRef = (part: any): part is VariableRef =>
   !!part && typeof part === 'object' && part.type === 'variable';

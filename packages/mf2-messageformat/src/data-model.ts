@@ -9,15 +9,17 @@ import type {
 
 /**
  * The representation of a single message.
- * The shape of the value is an implementation detail,
+ * The shape of the message is an implementation detail,
  * and may vary for the same message in different languages.
+ *
+ * @beta
  */
 export type Message = PatternMessage | SelectMessage | JunkMessage;
 
 /**
- * The body of each message is composed of a sequence of parts, some of them
- * fixed (Literal), others placeholders for values depending on additional
- * data.
+ * A single message with no variants.
+ *
+ * @beta
  */
 export interface PatternMessage {
   type: 'message';
@@ -27,24 +29,41 @@ export interface PatternMessage {
   errors?: ParseError[];
 }
 
+/**
+ * A message may declare any number of local variables or aliases,
+ * each with a value defined by a placeholder.
+ * The order of the declarations is not relevant,
+ * but a valid message may not include a dependency loop amond them.
+ *
+ * @beta
+ */
 export interface Declaration {
   target: VariableRef | Junk;
   value: Placeholder | Junk;
 }
 
+/**
+ * The body of each message is composed of a sequence of parts, some of them
+ * fixed (Text), others placeholders for values depending on additional
+ * data.
+ *
+ * @beta
+ */
 export interface Pattern {
   body: PatternElement[];
 }
 
 /**
- * Select generalises the plural, selectordinal and select argument types of
- * MessageFormat 1. Each case is defined by a key of one or more string
- * identifiers, and selection between them is made according to the values of
- * a corresponding number of placeholders. The result of the selection is
- * always a single Pattern.
+ * SelectMessage generalises the plural, selectordinal and select
+ * argument types of MessageFormat 1.
+ * Each case is defined by a key of one or more string identifiers,
+ * and selection between them is made according to
+ * the values of a corresponding number of placeholders.
+ * Selection iterates among the `variants` in order,
+ * and terminates when all of the Variant keys match.
+ * The result of the selection is always a single Pattern.
  *
- * It is likely that in nearly all cases the source of the placeholder's value
- * will be a variable in the local scope.
+ * @beta
  */
 export interface SelectMessage {
   type: 'select';
@@ -55,15 +74,27 @@ export interface SelectMessage {
   errors?: ParseError[];
 }
 
+/** @beta */
 export interface Variant {
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
 }
 
+/**
+ * The catch-all key matches all values.
+ *
+ * @beta
+ */
 export interface CatchallKey {
   type: '*';
 }
 
+/**
+ * The result of parsing input that cannot be represented by
+ * a {@link PatternMessage} or a {@link SelectMessage}.
+ *
+ * @beta
+ */
 export interface JunkMessage {
   type: 'junk';
   declarations: Declaration[];
@@ -72,6 +103,11 @@ export interface JunkMessage {
   errors?: ParseError[];
 }
 
+/**
+ * A type guard for {@link Message} values
+ *
+ * @beta
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isMessage = (msg: any): msg is Message =>
   !!msg &&
@@ -80,5 +116,10 @@ export const isMessage = (msg: any): msg is Message =>
     msg.type === 'select' ||
     (msg.type === 'junk' && msg.declarations));
 
+/**
+ * A type guard for {@link SelectMessage} values
+ *
+ * @beta
+ */
 export const isSelectMessage = (msg: Message): msg is SelectMessage =>
   msg.type === 'select';

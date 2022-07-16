@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "description": "Compile Fluent sources into MessageFormat 2 resources",
   "keywords": [
-    "i18n",
-    "fluent",
     "messageformat",
+    "fluent",
+    "unicode",
     "internationalization",
-    "localization"
+    "i18n",
+    "localization",
+    "l10n"
   ],
   "contributors": [
     "Eemeli Aro <eemeli@gmail.com>"

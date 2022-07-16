@@ -20,6 +20,12 @@ import { parseLiteral, parseText } from './values.js';
 
 // Message ::= Declaration* ( Pattern | Selector Variant+ )
 // Selector ::= 'match' ( '{' Expression '}' )+
+/**
+ * Parse the string syntax representation of a message into
+ * its corresponding data model representation.
+ *
+ * @beta
+ */
 export function parseMessage(src: string): MessageParsed {
   const errors: ParseError[] = [];
   const { declarations, end: pos } = parseDeclarations(src, errors);

@@ -16,6 +16,19 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
   }
 }
 
+/**
+ * Validate a message.
+ *
+ * Throws if `msg` is a {@link JunkMessage},
+ * if it contains parse `errors`,
+ * or of if references runtime functions that are not available in the `runtime`.
+ *
+ * Formatting a message that passes validation may still fail,
+ * as it may depend on parameters that are not passed in,
+ * or its runtime function calls may fail.
+ *
+ * @beta
+ */
 export function validate(msg: Readonly<Message>, runtime: Runtime) {
   if (msg.errors?.length) throw new Error('Message parse failed');
   switch (msg.type) {

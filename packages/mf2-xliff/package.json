@@ -31,7 +31,6 @@
     "xml-js": "^1.6.11"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "extract-api": "api-extractor run --local --verbose"
+    "build": "tsc --project tsconfig.build.json"
   }
 }

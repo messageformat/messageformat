@@ -1,15 +1,15 @@
 {
   "name": "@messageformat/icu-messageformat-1",
   "version": "0.1.0",
-  "description": "Compile MessageFormat 1 sources into MessageFormat 2 resources",
+  "description": "Compile ICU MessageFormat 1 sources into MessageFormat 2 formatters",
   "keywords": [
-    "i18n",
-    "pluralformat",
-    "icu",
-    "gettext",
-    "selectformat",
     "messageformat",
-    "internationalization"
+    "icu",
+    "unicode",
+    "internationalization",
+    "i18n",
+    "localization",
+    "l10n"
   ],
   "contributors": [
     "Eemeli Aro <eemeli@gmail.com>"

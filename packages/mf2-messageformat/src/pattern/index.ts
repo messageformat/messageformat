@@ -18,6 +18,11 @@ export { isLiteral, Literal, Text } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
 
+/**
+ * Wrapper for non-literal content.
+ *
+ * @beta
+ */
 export interface Placeholder {
   type: 'placeholder';
   body: Literal | VariableRef | Expression | MarkupStart | MarkupEnd | Junk;
@@ -29,7 +34,9 @@ export interface Placeholder {
  * another message, the value of some runtime variable, or some function
  * defined elsewhere.
  *
- * Depending on the syntax, pattern elements may be wrapped within a placeholder.
+ * Depending on the syntax, pattern elements may be wrapped within a Placeholder.
+ *
+ * @beta
  */
 export type PatternElement =
   | Expression
@@ -41,6 +48,7 @@ export type PatternElement =
   | Text
   | VariableRef;
 
+/** @internal */
 export function resolvePatternElement(
   ctx: Context,
   elem: PatternElement

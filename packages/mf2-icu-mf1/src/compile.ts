@@ -19,15 +19,28 @@ function normalize(locale: string) {
   return m ? m[0] : locale;
 }
 
+/** @beta */
 export type MF1Options = {
+  /** See {@link @messageformat/parser#ParseOptions.strict} */
   strict?: boolean;
 };
 
+/**
+ * Compile an ICU MessageFormat 1 message into a {@link messageformat#MessageFormat} instance.
+ *
+ * A runtime provided by {@link getMF1Runtime} is automatically used in these instances.
+ *
+ * @beta
+ * @param source - An ICU MessageFormat message, either as its string contents,
+ *   or as a {@link messageformat#Message} data structure.
+ * @param locale - The locale code to use for the message.
+ * @param options - See {@link MF1Options} and {@link messageformat#MessageFormatOptions}
+ */
 export function compileMF1Message(
   source: string | Message,
   locale: string,
   { strict, ...opt }: MF1Options & MessageFormatOptions = {}
-) {
+): MessageFormat {
   const msg =
     typeof source === 'string'
       ? compileMF1MessageData(source, locale, { strict })
@@ -36,11 +49,19 @@ export function compileMF1Message(
   return new MessageFormat(msg, [locale], opt);
 }
 
+/**
+ * Compile an ICU MessageFormat 1 message into a {@link messageformat#Message} data object.
+ *
+ * @beta
+ * @param src - A Fluent resource, as the string contents of an FTL file.
+ * @param locale - The locale code to use for the message.
+ * @param options - See {@link MF1Options}
+ */
 export function compileMF1MessageData(
   src: string,
   locale: string,
   { strict }: MF1Options = {}
-) {
+): Message {
   const lc = normalize(locale);
   if (!isPluralId(lc)) throw new Error(`Unsupported locale: ${locale}`);
   const { cardinal, ordinal } = PluralCategories[lc];

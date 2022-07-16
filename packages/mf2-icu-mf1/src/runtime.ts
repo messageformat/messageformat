@@ -191,4 +191,12 @@ const time: RuntimeFunction<MessageDateTime> = {
   options: { param: ['short', 'default', 'long', 'full'] }
 };
 
+/**
+ * Build a {@link messageformat#MessageFormat} runtime to use with ICU MessageFormat 1 messages.
+ *
+ * The structure of this runtime and the options available for its formatters
+ * follow the MF1 specifications, rather than being based on the MF2 default runtime.
+ *
+ * @beta
+ */
 export const getMF1Runtime = () => ({ date, duration, number, time });

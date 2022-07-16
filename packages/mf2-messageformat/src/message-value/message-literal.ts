@@ -1,5 +1,10 @@
 import { MessageValue, Meta } from './message-value';
 
+/**
+ * A child class of {@link MessageValue} for values defined directly in the message data.
+ *
+ * @beta
+ */
 export class MessageLiteral extends MessageValue<string> {
   static readonly type = 'literal';
 

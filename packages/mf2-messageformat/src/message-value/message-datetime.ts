@@ -2,6 +2,11 @@ import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
+/**
+ * A child class of {@link MessageValue} for Date values.
+ *
+ * @beta
+ */
 export class MessageDateTime extends MessageValue<Date> {
   static readonly type = 'datetime';
 

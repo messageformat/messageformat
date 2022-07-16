@@ -1,14 +1,15 @@
 {
   "name": "messageformat",
   "version": "4.0.0-0",
-  "description": "MessageFormat 2",
+  "description": "Intl.MessageFormat / Unicode MessageFormat 2 parser, runtime and polyfill",
   "keywords": [
-    "i18n",
-    "pluralformat",
-    "icu",
-    "selectformat",
     "messageformat",
-    "internationalization"
+    "unicode",
+    "polyfill",
+    "internationalization",
+    "i18n",
+    "localization",
+    "l10n"
   ],
   "contributors": [
     "Eemeli Aro <eemeli@gmail.com>"
@@ -18,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/messageformat/messageformat.git",
-    "directory": "packages/messageformat"
+    "directory": "packages/mf2-messageformat"
   },
   "main": "lib/index.js",
   "files": [

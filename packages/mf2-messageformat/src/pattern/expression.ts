@@ -17,6 +17,8 @@ import { isLiteral } from './literal';
  * output. Likely functions available by default would include `'plural'` for
  * determining the plural category of a numeric value, as well as `'number'`
  * and `'date'` for formatting values.
+ *
+ * @beta
  */
 export interface Expression {
   type: 'expression';
@@ -25,11 +27,22 @@ export interface Expression {
   options?: Option[];
 }
 
+/**
+ * {@link Expression} and {@link MarkupStart} options are expressed as
+ * `key`/`value` pairs to allow their order to be maintained.
+ *
+ * @beta
+ */
 export interface Option {
   name: string;
   value: Literal | VariableRef;
 }
 
+/**
+ * Type guard for {@link Expression} pattern elements
+ *
+ * @beta
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isExpression = (part: any): part is Expression =>
   !!part && typeof part === 'object' && part.type === 'expression';

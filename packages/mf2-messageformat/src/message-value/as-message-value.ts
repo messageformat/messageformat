@@ -3,16 +3,31 @@ import { MessageDateTime } from './message-datetime';
 import { MessageNumber } from './message-number';
 import { MessageValue, Meta } from './message-value';
 
+/**
+ * Convert any numerical value into a {@link MessageNumber}.
+ *
+ * @beta
+ */
 export function asMessageValue(
   ctx: Context,
   value: number | bigint,
   format?: { meta?: Readonly<Meta>; source?: string }
 ): MessageNumber;
+/**
+ * Convert any Date value into a {@link MessageDateTime}.
+ *
+ * @beta
+ */
 export function asMessageValue(
   ctx: Context,
   value: Date,
   format?: { meta?: Readonly<Meta>; source?: string }
 ): MessageDateTime;
+/**
+ * Convert any value into a {@link MessageValue} or one of its child classes.
+ *
+ * @beta
+ */
 export function asMessageValue(
   ctx: Context,
   value: unknown,

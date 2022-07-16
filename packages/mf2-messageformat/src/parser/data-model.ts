@@ -18,6 +18,7 @@ import type {
   VariableRef
 } from '../pattern';
 
+/** @beta */
 export type ParseError =
   | { type: 'empty-token'; start: number; end?: never }
   | {

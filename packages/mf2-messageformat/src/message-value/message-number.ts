@@ -2,6 +2,11 @@ import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
+/**
+ * A child class of {@link MessageValue} for numerical values.
+ *
+ * @beta
+ */
 export class MessageNumber extends MessageValue<number | bigint> {
   static readonly type = 'number';
 
@@ -51,7 +56,15 @@ export class MessageNumber extends MessageValue<number | bigint> {
     return pr.select(num);
   }
 
-  /** Uses value directly due to plural offset weirdness */
+  /**
+   * In addition to matching exact values,
+   * numerical values will also match keys with the same plural rule category,
+   * i.e. one of `zero`, `one`, `two`, `few`, `many`, and `other`.
+   *
+   * Different languages use different subset of plural rule categories.
+   * For example, cardinal English plurals only use `one` and `other`,
+   * so a key `zero` will never be matched for that locale.
+   */
   matchSelectKey(key: string) {
     return (
       (/^[0-9]+$/.test(key) && key === String(this.value)) ||
