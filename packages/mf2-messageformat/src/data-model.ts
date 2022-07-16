@@ -76,7 +76,9 @@ export interface JunkMessage {
 export const isMessage = (msg: any): msg is Message =>
   !!msg &&
   typeof msg === 'object' &&
-  (msg.type === 'message' || msg.type === 'select');
+  (msg.type === 'message' ||
+    msg.type === 'select' ||
+    (msg.type === 'junk' && msg.declarations));
 
 export const isSelectMessage = (msg: Message): msg is SelectMessage =>
   msg.type === 'select';
