@@ -7,10 +7,12 @@ The experience and subtlety of your program's text can be important.
 Messageformat is a mechanism for handling both **pluralization** and **gender** in your applications.
 It can also lead to much better translations, as it's designed to support [all the languages] included in the [Unicode CLDR].
 
-This monorepo consists of the following packages that make up our JS implementation of ICU MessageFormat:
+This monorepo provides packages supporting JS implementations of both [ICU MessageFormat] (MF1) and [Unicode MessageFormat 2] (MF2):
+
+## ICU MessageFormat 1 Packages
 
 - [@messageformat/cli](packages/cli/) - A command-line client for the library
-- [@messageformat/convert](packages/convert/) - Converts other localization formats into MessageFormat
+- [@messageformat/convert](packages/convert/) - Converts other localization formats into ICU MessageFormat
 - [@messageformat/core](packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
 - [@messageformat/date-skeleton](packages/date-skeleton) - Tools for working with [ICU DateFormat skeletons]
 - [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON, YAML, & .properties message files
@@ -20,12 +22,20 @@ This monorepo consists of the following packages that make up our JS implementat
 - [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
 - [rollup-plugin-messageformat](packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
+## Unicode MessageFormat 2 Packages
+
+- [messageformat](packages/mf2-messageformat/) - **_(BETA)_** Intl.MessageFormat / MF2 parser, runtime and polyfill
+- [@messageformat/fluent](packages/mf2-fluent) - **_(BETA)_** Compile Fluent sources into MF2 resources
+- [@messageformat/icu-messageformat-1](packages/mf2-icu-mf1) - **_(BETA)_** Compile MF1 sources into MF2 formatters
+
 [all the languages]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [unicode cldr]: http://cldr.unicode.org/
-[icu dateformat skeletons]: http://userguide.icu-project.org/formatparse/datetime
-[icu numberformat skeletons]: https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md
+[icu messageformat]: https://unicode-org.github.io/icu/userguide/format_parse/messages/
+[unicode messageformat 2]: https://github.com/unicode-org/message-format-wg
+[icu dateformat skeletons]: https://unicode-org.github.io/icu/userguide/format_parse/datetime/
+[icu numberformat skeletons]: https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html
 
-## Getting Started
+## Getting Started (MF1)
 
 Depending on your situation, consult one or more of the following guides:
 
