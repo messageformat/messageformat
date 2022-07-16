@@ -26,11 +26,10 @@ import {
  Skeleton, // TS only
  Unit // TS only
 } from '@messageformat/number-skeleton'
-
 ```
 The package is released as an ES module only. If using from a CommonJS context, you may need to `import()` it, or use a module loader like [esm](https://www.npmjs.com/package/esm)<!-- -->.
 
-Uses [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat) internally, including features provided by the [Unified API Proposal](https://github.com/tc39/proposal-unified-intl-numberformat)<!-- -->.
+Uses [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat) internally (ES2020).
 
 ## Classes
 

@@ -16,9 +16,9 @@ Returns a new object with properties reflecting the default locale, plurals, and
 <b>Signature:</b>
 
 ```typescript
-resolvedOptions(): ResolvedMessageFormatOptions;
+resolvedOptions(): ResolvedMessageFormatOptions<ReturnType>;
 ```
 <b>Returns:</b>
 
-[ResolvedMessageFormatOptions](./core.resolvedmessageformatoptions.md)
+[ResolvedMessageFormatOptions](./core.resolvedmessageformatoptions.md)<!-- -->&lt;ReturnType&gt;
 

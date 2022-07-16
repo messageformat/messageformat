@@ -36,7 +36,6 @@ import { MessageProvider, useLocales } from '@messageformat/react'
     }
   </MessageProvider>
 </MessageProvider>
-
 ```
 
 ## Example 2
@@ -55,6 +54,5 @@ class Foo extends Component {
     return locales.join(',')
   }
 }
-
 ```
 

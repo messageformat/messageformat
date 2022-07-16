@@ -16,5 +16,5 @@ Always defined in MessageProvider children
 <b>Signature:</b>
 
 ```typescript
-onError?: (path: string[], code: ErrorCode) => any;
+onError?: (path: string[], code: ErrorCode) => unknown;
 ```

@@ -81,7 +81,6 @@ parse(msg, { cardinal: [ 'one', 'other' ], ordinal: [ 'one', 'two', 'few', 'othe
 //
 //   {words, plural, zero{
 //                   ^
-
 ```
 
 ## Classes

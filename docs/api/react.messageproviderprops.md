@@ -19,14 +19,14 @@ export interface MessageProviderProps
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [children](./react.messageproviderprops.children.md) | any |  |
-|  [context](./react.messageproviderprops.context.md) | [MessageContext](./react.messagecontext.md) |  |
-|  [debug](./react.messageproviderprops.debug.md) | 'error' \| 'warn' \| ((msg: string) =&gt; any) |  |
-|  [locale](./react.messageproviderprops.locale.md) | string | A key for the locale of the given messages. If uset, will inherit the locale from the parent context, or ultimately use en empty string. |
-|  [merge](./react.messageproviderprops.merge.md) | [MessageContext](./react.messagecontext.md)<!-- -->\['merge'\] | By default, top-level namespaces defined in a child <code>MessageProvider</code> overwrite those defined in a parent. Set this to [\_.merge](https://lodash.com/docs/#merge) or some other function with the same arguments as [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign) to allow for deep merges. |
-|  [messages](./react.messageproviderprops.messages.md) | MessageObject | A hierarchical object containing the messages as boolean, number, string or function values. |
-|  [onError](./react.messageproviderprops.onerror.md) | 'error' \| 'silent' \| 'warn' \| ((error: MessageError) =&gt; any) | What to do on errors; most often called if a message is not found.<!-- -->- <code>&quot;silent&quot;</code>: Ignore the error; use the message's id as the replacement message.<!-- -->- <code>&quot;error&quot;</code>: Throw the error.<!-- -->- <code>&quot;warn&quot;</code> (default): Print a warning in the console and use the message's id as the replacement message.<!-- -->- <code>(error) =&gt; any</code>: A custom function that is called with an <code>Error</code> object with <code>code: string</code> and <code>path: string[]</code> fields set. The return falue is used as the replacement message. |
-|  [pathSep](./react.messageproviderprops.pathsep.md) | string | By default, <code>.</code> in a <code>&lt;Message id&gt;</code> splits the path into parts, such that e.g. <code>'a.b'</code> is equivalent to <code>['a', 'b']</code>. Use this option to customize or disable this behaviour (by setting it to <code>null</code>). |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [children](./react.messageproviderprops.children.md) |  | ReactNode |  |
+|  [context?](./react.messageproviderprops.context.md) |  | [MessageContext](./react.messagecontext.md) | <i>(Optional)</i> |
+|  [debug?](./react.messageproviderprops.debug.md) |  | 'error' \| 'warn' \| ((msg: string) =&gt; unknown) | <i>(Optional)</i> |
+|  [locale?](./react.messageproviderprops.locale.md) |  | string | <i>(Optional)</i> A key for the locale of the given messages. If uset, will inherit the locale from the parent context, or ultimately use en empty string. |
+|  [merge?](./react.messageproviderprops.merge.md) |  | [MessageContext](./react.messagecontext.md)<!-- -->\['merge'\] | <i>(Optional)</i> By default, top-level namespaces defined in a child <code>MessageProvider</code> overwrite those defined in a parent. Set this to [\_.merge](https://lodash.com/docs/#merge) or some other function with the same arguments as [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign) to allow for deep merges. |
+|  [messages](./react.messageproviderprops.messages.md) |  | MessageObject | A hierarchical object containing the messages as boolean, number, string or function values. |
+|  [onError?](./react.messageproviderprops.onerror.md) |  | 'error' \| 'silent' \| 'warn' \| ((error: MessageError) =&gt; unknown) | <p><i>(Optional)</i> What to do on errors; most often called if a message is not found.</p><p>- <code>&quot;silent&quot;</code>: Ignore the error; use the message's id as the replacement message.</p><p>- <code>&quot;error&quot;</code>: Throw the error.</p><p>- <code>&quot;warn&quot;</code> (default): Print a warning in the console and use the message's id as the replacement message.</p><p>- <code>(error) =&gt; any</code>: A custom function that is called with an <code>Error</code> object with <code>code: string</code> and <code>path: string[]</code> fields set. The return falue is used as the replacement message.</p> |
+|  [pathSep?](./react.messageproviderprops.pathsep.md) |  | string \| null | <i>(Optional)</i> By default, <code>.</code> in a <code>&lt;Message id&gt;</code> splits the path into parts, such that e.g. <code>'a.b'</code> is equivalent to <code>['a', 'b']</code>. Use this option to customize or disable this behaviour (by setting it to <code>null</code>). |
 

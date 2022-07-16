@@ -20,9 +20,9 @@ export interface SelectCase
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [ctx](./parser.selectcase.ctx.md) | [Context](./parser.context.md) |  |
-|  [key](./parser.selectcase.key.md) | string |  |
-|  [tokens](./parser.selectcase.tokens.md) | Array&lt;[Content](./parser.content.md) \| [PlainArg](./parser.plainarg.md) \| [FunctionArg](./parser.functionarg.md) \| [Select](./parser.select.md) \| [Octothorpe](./parser.octothorpe.md)<!-- -->&gt; |  |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [ctx](./parser.selectcase.ctx.md) |  | [Context](./parser.context.md) |  |
+|  [key](./parser.selectcase.key.md) |  | string |  |
+|  [tokens](./parser.selectcase.tokens.md) |  | Array&lt;[Content](./parser.content.md) \| [PlainArg](./parser.plainarg.md) \| [FunctionArg](./parser.functionarg.md) \| [Select](./parser.select.md) \| [Octothorpe](./parser.octothorpe.md)<!-- -->&gt; |  |
 

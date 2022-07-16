@@ -23,7 +23,6 @@ export default class Messages
 
 ```js
 import Messages from '@messageformat/runtime/messages'
-
 ```
 
 ## Example
@@ -33,6 +32,7 @@ import Messages from '@messageformat/runtime/messages'
 // build.js
 import { writeFileSync } from 'fs';
 import MessageFormat from '@messageformat/core';
+import compileModule from '@messageformat/core/compile-module'
 
 const mf = new MessageFormat(['en', 'fi']);
 const msgSet = {
@@ -48,8 +48,7 @@ const msgSet = {
     e: 'Minä puhun vain suomea.'
   }
 };
-writeFileSync('messages.js', String(mf.compile(msgSet)));
-
+writeFileSync('messages.js', compileModule(mf, msgSet));
 ```
 
 ```js
@@ -75,7 +74,6 @@ messages.hasMessage('a', null, true)    // true
 messages.hasObject('c')                 // false
 messages.get('b', { COUNT: 3 })         // 'Tällä on 3 käyttäjää.'
 messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'
-
 ```
 
 ## Constructors
@@ -88,7 +86,7 @@ messages.get('c').d({ P: 0.628 })       // 'We have 63% code coverage.'
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [availableLocales](./runtime.messages.availablelocales.md) |  | string\[\] | Read-only list of available locales |
+|  [availableLocales](./runtime.messages.availablelocales.md) | <code>readonly</code> | string\[\] | Read-only list of available locales |
 |  [defaultLocale](./runtime.messages.defaultlocale.md) |  | string \| null | Default fallback locale |
 |  [locale](./runtime.messages.locale.md) |  | string \| null | Current locale |
 

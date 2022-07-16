@@ -17,7 +17,7 @@ The returned function takes two parameters `(msgId, msgParams)`<!-- -->, which w
 <b>Signature:</b>
 
 ```typescript
-export declare function useMessageGetter(rootId: string | string[], opt?: MessageGetterOptions): (id?: string | string[] | undefined, params?: any) => any;
+export declare function useMessageGetter(rootId: string | string[], opt?: MessageGetterOptions): (id?: string | string[] | undefined, params?: Record<string, unknown> | undefined) => any;
 ```
 
 ## Parameters
@@ -25,11 +25,11 @@ export declare function useMessageGetter(rootId: string | string[], opt?: Messag
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  rootId | string \| string\[\] | The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
-|  opt | MessageGetterOptions |  |
+|  opt | MessageGetterOptions | <i>(Optional)</i> |
 
 <b>Returns:</b>
 
-(id?: string \| string\[\] \| undefined, params?: any) =&gt; any
+(id?: string \| string\[\] \| undefined, params?: Record&lt;string, unknown&gt; \| undefined) =&gt; any
 
 ## Example
 
@@ -56,6 +56,5 @@ export const App = () => (
     <Example />
   </MessageProvider>
 )
-
 ```
 

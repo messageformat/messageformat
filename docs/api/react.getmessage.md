@@ -15,7 +15,7 @@ Given a `MessageContext` instance, fetches an entry from the messages object of 
 <b>Signature:</b>
 
 ```typescript
-export declare function getMessage(context: MessageContext, id?: string | string[], locale?: string | string[]): any;
+export declare function getMessage(context: MessageContext, id?: string | string[], locale?: string | string[]): unknown;
 ```
 
 ## Parameters
@@ -23,10 +23,10 @@ export declare function getMessage(context: MessageContext, id?: string | string
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  context | [MessageContext](./react.messagecontext.md) |  |
-|  id | string \| string\[\] | The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
-|  locale | string \| string\[\] | If set, overrides the current locale precedence as set by parent MessageProviders. |
+|  id | string \| string\[\] | <i>(Optional)</i> The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
+|  locale | string \| string\[\] | <i>(Optional)</i> If set, overrides the current locale precedence as set by parent MessageProviders. |
 
 <b>Returns:</b>
 
-any
+unknown
 

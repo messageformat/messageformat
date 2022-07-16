@@ -31,7 +31,6 @@ import {
   useMessage,
   useMessageGetter
 } from '@messageformat/react'
-
 ```
 
 ## Functions
@@ -39,12 +38,12 @@ import {
 |  Function | Description |
 |  --- | --- |
 |  [getMessage(context, id, locale)](./react.getmessage.md) | Given a <code>MessageContext</code> instance, fetches an entry from the messages object of the current or given locale. The returned value will be <code>undefined</code> if not found, or otherwise exactly as set in the <code>MessageProvider</code> props. |
-|  [getMessageGetter(context, rootId, { baseParams, locale })](./react.getmessagegetter.md) | Given a <code>MessageContext</code> instance, returns a message getter function, which may have a preset root id path, locale, and/or base parameters for message functions.<!-- -->The returned function takes two parameters <code>(msgId, msgParams)</code>, which will extend any values set by the hook's arguments. |
-|  [Message(props)](./react.message.md) | <code>&lt;Message id [locale] [params] [...msgParams]&gt;</code>The value of a message. May also be used with a render prop: <code>&lt;Message id={id}&gt;{msg =&gt; {...}}&lt;/Message&gt;</code>. |
-|  [MessageProvider(props)](./react.messageprovider.md) | <code>&lt;MessageProvider messages [locale] [merge] [onError] [pathSep]&gt;</code>Makes the messages available for its descendants via a React Context. To support multiple locales and/or namespaces, MessageProviders may be used within each other, merging each provider's messages with those of its parents. The locale preference order is also set similarly, from nearest to furthest. |
+|  [getMessageGetter(context, rootId, { baseParams, locale })](./react.getmessagegetter.md) | <p>Given a <code>MessageContext</code> instance, returns a message getter function, which may have a preset root id path, locale, and/or base parameters for message functions.</p><p>The returned function takes two parameters <code>(msgId, msgParams)</code>, which will extend any values set by the hook's arguments.</p> |
+|  [Message(props)](./react.message.md) | <p><code>&lt;Message id [locale] [params] [...msgParams]&gt;</code></p><p>The value of a message. May also be used with a render prop: <code>&lt;Message id={id}&gt;{msg =&gt; {...}}&lt;/Message&gt;</code>.</p> |
+|  [MessageProvider(props)](./react.messageprovider.md) | <p><code>&lt;MessageProvider messages [locale] [merge] [onError] [pathSep]&gt;</code></p><p>Makes the messages available for its descendants via a React Context. To support multiple locales and/or namespaces, MessageProviders may be used within each other, merging each provider's messages with those of its parents. The locale preference order is also set similarly, from nearest to furthest.</p> |
 |  [useLocales()](./react.uselocales.md) | A custom React hook providing the current locales as an array of string identifiers, with earlier entries taking precedence over latter ones. Undefined locales are identified by an empty string <code>''</code>. |
-|  [useMessage(id, params, locale)](./react.usemessage.md) | A custom React hook providing an entry from the messages object of the current or given locale. The returned value will be <code>undefined</code> if not found.<!-- -->If the identified message value is a function, the returned value will be the result of calling it with a single argument <code>params</code>, or <code>{}</code> if empty. Otherwise the value set in the <code>MessageProvider</code> props will be returned directly. |
-|  [useMessageGetter(rootId, opt)](./react.usemessagegetter.md) | A custom \[React hook\] providing a message getter function, which may have a preset root id path, locale, and/or base parameters for message functions.<!-- -->The returned function takes two parameters <code>(msgId, msgParams)</code>, which will extend any values set by the hook's arguments. |
+|  [useMessage(id, params, locale)](./react.usemessage.md) | <p>A custom React hook providing an entry from the messages object of the current or given locale. The returned value will be <code>undefined</code> if not found.</p><p>If the identified message value is a function, the returned value will be the result of calling it with a single argument <code>params</code>, or <code>{}</code> if empty. Otherwise the value set in the <code>MessageProvider</code> props will be returned directly.</p> |
+|  [useMessageGetter(rootId, opt)](./react.usemessagegetter.md) | <p>A custom \[React hook\] providing a message getter function, which may have a preset root id path, locale, and/or base parameters for message functions.</p><p>The returned function takes two parameters <code>(msgId, msgParams)</code>, which will extend any values set by the hook's arguments.</p> |
 
 ## Interfaces
 

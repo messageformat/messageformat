@@ -19,10 +19,10 @@ export interface MessageProps
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [children](./react.messageprops.children.md) | any | If a function, will be called with the found message. In this case, <code>params</code> will be ignored and <code>id</code> is optional. If some other type of non-empty renderable node, it will be used as a fallback value if the message is not found. |
-|  [id](./react.messageprops.id.md) | string \| string\[\] | The key or key path of the message. |
-|  [locale](./react.messageprops.locale.md) | string \| string\[\] | If set, overrides the <code>locale</code> of the nearest MessageProvider. |
-|  [params](./react.messageprops.params.md) | any | Parameters to pass to function messages as their first and only argument. <code>params</code> will override <code>msgParams</code>, to allow for data keys such as <code>key</code> and <code>locale</code>. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [children?](./react.messageprops.children.md) |  | unknown | <i>(Optional)</i> If a function, will be called with the found message. In this case, <code>params</code> will be ignored and <code>id</code> is optional. If some other type of non-empty renderable node, it will be used as a fallback value if the message is not found. |
+|  [id?](./react.messageprops.id.md) |  | string \| string\[\] | <i>(Optional)</i> The key or key path of the message. |
+|  [locale?](./react.messageprops.locale.md) |  | string \| string\[\] | <i>(Optional)</i> If set, overrides the <code>locale</code> of the nearest MessageProvider. |
+|  [params?](./react.messageprops.params.md) |  | unknown | <i>(Optional)</i> Parameters to pass to function messages as their first and only argument. <code>params</code> will override <code>msgParams</code>, to allow for data keys such as <code>key</code> and <code>locale</code>. |
 

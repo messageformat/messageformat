@@ -23,7 +23,7 @@ export declare function parse(src: string, options?: ParseOptions): Array<Conten
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  src | string |  |
-|  options | [ParseOptions](./parser.parseoptions.md) |  |
+|  options | [ParseOptions](./parser.parseoptions.md) | <i>(Optional)</i> |
 
 <b>Returns:</b>
 

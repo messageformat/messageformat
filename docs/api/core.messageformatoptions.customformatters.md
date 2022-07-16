@@ -17,6 +17,11 @@ Map of custom formatting functions to include. See [Custom Formatters](https://m
 
 ```typescript
 customFormatters?: {
-        [key: string]: (value: any, locale: string, arg: string | null) => string;
+        [key: string]: CustomFormatter | {
+            formatter: CustomFormatter;
+            arg?: 'string' | 'raw' | 'options';
+            id?: string;
+            module?: string;
+        };
     };
 ```

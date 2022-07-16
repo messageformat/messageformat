@@ -15,5 +15,5 @@ A compiled message function, which may accept an object parameter
 <b>Signature:</b>
 
 ```typescript
-export declare type MessageFunction = (param?: object) => string | any[];
+export declare type MessageFunction<ReturnType extends 'string' | 'values'> = (param?: Record<string, unknown> | unknown[]) => ReturnType extends 'string' ? string : unknown[];
 ```

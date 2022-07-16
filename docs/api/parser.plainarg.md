@@ -24,9 +24,9 @@ export interface PlainArg
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [arg](./parser.plainarg.arg.md) | string |  |
-|  [ctx](./parser.plainarg.ctx.md) | [Context](./parser.context.md) |  |
-|  [type](./parser.plainarg.type.md) | 'argument' |  |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [arg](./parser.plainarg.arg.md) |  | string |  |
+|  [ctx](./parser.plainarg.ctx.md) |  | [Context](./parser.context.md) |  |
+|  [type](./parser.plainarg.type.md) |  | 'argument' |  |
 

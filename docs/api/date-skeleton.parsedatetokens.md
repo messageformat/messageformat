@@ -45,6 +45,5 @@ parseDateTokens('GrMMMdd', console.error)
 //   { char: 'M', field: 'month', desc: 'Month in year', width: 3 },
 //   { char: 'd', field: 'day', desc: 'Day in month', width: 2 }
 // ]
-
 ```
 

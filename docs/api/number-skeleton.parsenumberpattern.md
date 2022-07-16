@@ -23,8 +23,8 @@ export declare function parseNumberPattern(src: string, currency?: string | null
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  src | string | The pattern string |
-|  currency | string \| null | If the pattern includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
-|  onError | (error: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it will be incomplete and/or inaccurate. If not defined, the error will be thrown instead. |
+|  currency | string \| null | <i>(Optional)</i> If the pattern includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
+|  onError | (error: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it will be incomplete and/or inaccurate. If not defined, the error will be thrown instead. |
 
 <b>Returns:</b>
 
@@ -50,6 +50,5 @@ parseNumberPattern('#,##0.00 ¤', 'EUR', console.error)
 //   },
 //   unit: { style: 'currency', currency: 'EUR' }
 // }
-
 ```
 

@@ -16,7 +16,7 @@ Get the message or object corresponding to `key`
 <b>Signature:</b>
 
 ```typescript
-get(key: string | string[], props?: object, locale?: string): string | any[] | MessageData;
+get(key: string | string[], props?: Record<string, unknown>, locale?: string): string | unknown[] | MessageData;
 ```
 
 ## Parameters
@@ -24,12 +24,12 @@ get(key: string | string[], props?: object, locale?: string): string | any[] | M
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  key | string \| string\[\] | The key or keypath being sought |
-|  props | object | Optional properties passed to the function |
-|  locale | string |  |
+|  props | Record&lt;string, unknown&gt; | <i>(Optional)</i> Optional properties passed to the function |
+|  locale | string | <i>(Optional)</i> |
 
 <b>Returns:</b>
 
-string \| any\[\] \| [MessageData](./runtime.messagedata.md)
+string \| unknown\[\] \| [MessageData](./runtime.messagedata.md)
 
 ## Remarks
 

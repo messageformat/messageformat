@@ -20,9 +20,9 @@ export interface ParseOptions
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [cardinal](./parser.parseoptions.cardinal.md) | [PluralCategory](./parser.pluralcategory.md)<!-- -->\[\] | Array of valid plural categories for the current locale, used to validate <code>plural</code> keys.<!-- -->If undefined, the full set of valid [PluralCategory](./parser.pluralcategory.md) keys is used. To disable this check, pass in an empty array. |
-|  [ordinal](./parser.parseoptions.ordinal.md) | [PluralCategory](./parser.pluralcategory.md)<!-- -->\[\] | Array of valid plural categories for the current locale, used to validate <code>selectordinal</code> keys.<!-- -->If undefined, the full set of valid [PluralCategory](./parser.pluralcategory.md) keys is used. To disable this check, pass in an empty array. |
-|  [strict](./parser.parseoptions.strict.md) | boolean | By default, the parsing applies a few relaxations to the ICU MessageFormat spec. Setting <code>strict: true</code> will disable these relaxations. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [cardinal?](./parser.parseoptions.cardinal.md) |  | [PluralCategory](./parser.pluralcategory.md)<!-- -->\[\] | <p><i>(Optional)</i> Array of valid plural categories for the current locale, used to validate <code>plural</code> keys.</p><p>If undefined, the full set of valid [PluralCategory](./parser.pluralcategory.md) keys is used. To disable this check, pass in an empty array.</p> |
+|  [ordinal?](./parser.parseoptions.ordinal.md) |  | [PluralCategory](./parser.pluralcategory.md)<!-- -->\[\] | <p><i>(Optional)</i> Array of valid plural categories for the current locale, used to validate <code>selectordinal</code> keys.</p><p>If undefined, the full set of valid [PluralCategory](./parser.pluralcategory.md) keys is used. To disable this check, pass in an empty array.</p> |
+|  [strict?](./parser.parseoptions.strict.md) |  | boolean | <i>(Optional)</i> By default, the parsing applies a few relaxations to the ICU MessageFormat spec. Setting <code>strict: true</code> will disable these relaxations. |
 

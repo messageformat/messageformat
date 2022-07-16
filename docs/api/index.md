@@ -10,7 +10,7 @@ has_toc: false
 
 # API Reference
 
-## Packages
+## ICU MessageFormat 1 Packages
 
 |  Package | Description |
 |  --- | --- |
@@ -20,4 +20,12 @@ has_toc: false
 |  [@messageformat/parser](./parser.md) | An AST parser for ICU MessageFormat strings |
 |  [@messageformat/react](./react.md) | An efficient React front-end for message formatting |
 |  [@messageformat/runtime](./runtime.md) | A collection of runtime utility functions |
+
+## Unicode MessageFormat 2 Packages
+
+|  Package | Description |
+|  --- | --- |
+|  [messageformat](./messageformat.md) | <b><i>(BETA)</i></b> Intl.MessageFormat / Unicode MessageFormat 2 parser, runtime and polyfill |
+|  [@messageformat/fluent](./fluent.md) | <b><i>(BETA)</i></b> Compile Fluent sources into MessageFormat 2 resources |
+|  [@messageformat/icu-messageformat-1](./icu-messageformat-1.md) | <b><i>(BETA)</i></b> Compile ICU MessageFormat 1 sources into MessageFormat 2 formatters |
 

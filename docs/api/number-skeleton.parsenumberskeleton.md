@@ -23,7 +23,7 @@ export declare function parseNumberSkeleton(src: string, onError?: (err: NumberF
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  src | string | The skeleton string |
-|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it may not contain information for all tokens. If not defined, the error will be thrown instead. |
+|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it may not contain information for all tokens. If not defined, the error will be thrown instead. |
 
 <b>Returns:</b>
 
@@ -40,6 +40,5 @@ parseNumberSkeleton('compact-short currency/GBP', console.error)
 //   notation: { style: 'compact-short' },
 //   unit: { style: 'currency', currency: 'GBP' }
 // }
-
 ```
 

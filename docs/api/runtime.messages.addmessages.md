@@ -24,8 +24,8 @@ addMessages(data: MessageData | MessageFunction, locale?: string, keypath?: stri
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  data | [MessageData](./runtime.messagedata.md) \| [MessageFunction](./runtime.messagefunction.md) | Hierarchical map of keys to functions, or a single message function |
-|  locale | string | If empty or undefined, defaults to <code>this.locale</code> |
-|  keypath | string\[\] | The keypath being added |
+|  locale | string | <i>(Optional)</i> If empty or undefined, defaults to <code>this.locale</code> |
+|  keypath | string\[\] | <i>(Optional)</i> The keypath being added |
 
 <b>Returns:</b>
 

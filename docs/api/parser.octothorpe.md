@@ -24,8 +24,8 @@ Within a `plural` or `selectordinal` [Select](./parser.select.md)<!-- -->, the `
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [ctx](./parser.octothorpe.ctx.md) | [Context](./parser.context.md) |  |
-|  [type](./parser.octothorpe.type.md) | 'octothorpe' |  |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [ctx](./parser.octothorpe.ctx.md) |  | [Context](./parser.context.md) |  |
+|  [type](./parser.octothorpe.type.md) |  | 'octothorpe' |  |
 

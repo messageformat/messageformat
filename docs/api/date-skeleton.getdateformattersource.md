@@ -24,7 +24,7 @@ export declare function getDateFormatterSource(locales: string | string[], token
 |  --- | --- | --- |
 |  locales | string \| string\[\] | One or more valid BCP 47 language tags, e.g. <code>fr</code> or <code>en-CA</code> |
 |  tokens | string \| [DateToken](./date-skeleton.datetoken.md)<!-- -->\[\] | An ICU DateFormat skeleton string, or an array or parsed <code>DateToken</code> tokens |
-|  onError | (err: [DateFormatError](./date-skeleton.dateformaterror.md)<!-- -->) =&gt; void | If defined, will be called separately for each encountered parsing error and unsupported feature. |
+|  onError | (err: [DateFormatError](./date-skeleton.dateformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> If defined, will be called separately for each encountered parsing error and unsupported feature. |
 
 <b>Returns:</b>
 
@@ -59,6 +59,5 @@ const src = getDateFormatterSource('en-CA', 'hamszzzz', console.error)
 const fmt = new Function(`return ${src}`)()
 const date = new Date(2006, 0, 2, 15, 4, 5, 789)
 fmt(date) // '3:04:05 p.m. Newfoundland Daylight Time'
-
 ```
 

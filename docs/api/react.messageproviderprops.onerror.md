@@ -24,5 +24,5 @@ What to do on errors; most often called if a message is not found.
 <b>Signature:</b>
 
 ```typescript
-onError?: 'error' | 'silent' | 'warn' | ((error: MessageError) => any);
+onError?: 'error' | 'silent' | 'warn' | ((error: MessageError) => unknown);
 ```

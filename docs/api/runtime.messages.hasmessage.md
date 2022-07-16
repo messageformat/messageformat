@@ -24,8 +24,8 @@ hasMessage(key: string | string[], locale?: string, fallback?: boolean): boolean
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  key | string \| string\[\] | The key or keypath being sought |
-|  locale | string | If empty or undefined, defaults to <code>this.locale</code> |
-|  fallback | boolean | If true, also checks fallback locales |
+|  locale | string | <i>(Optional)</i> If empty or undefined, defaults to <code>this.locale</code> |
+|  fallback | boolean | <i>(Optional)</i> If true, also checks fallback locales |
 
 <b>Returns:</b>
 

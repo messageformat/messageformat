@@ -15,12 +15,13 @@ The type of the generated ES module, once executed
 <b>Signature:</b>
 
 ```typescript
-export declare type MessageModule<T> = T extends string ? MessageFunction : {
-    [P in keyof T]: MessageModule<T[P]>;
+export declare type MessageModule<Shape, ReturnType extends 'string' | 'values' = 'string'> = Shape extends string ? MessageFunction<ReturnType> : {
+    [P in keyof Shape]: MessageModule<Shape[P], ReturnType>;
 };
 ```
+<b>References:</b> [MessageFunction](./core.messagefunction.md)<!-- -->, [MessageModule](./core.messagemodule.md)
 
 ## Remarks
 
-Use with `T` extending the [StringStructure](./core.stringstructure.md) that was used as the module source.
+Use with `Shape` extending the [StringStructure](./core.stringstructure.md) that was used as the module source.
 

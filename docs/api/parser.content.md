@@ -20,9 +20,9 @@ export interface Content
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [ctx](./parser.content.ctx.md) | [Context](./parser.context.md) |  |
-|  [type](./parser.content.type.md) | 'content' |  |
-|  [value](./parser.content.value.md) | string |  |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [ctx](./parser.content.ctx.md) |  | [Context](./parser.context.md) |  |
+|  [type](./parser.content.type.md) |  | 'content' |  |
+|  [value](./parser.content.value.md) |  | string |  |
 

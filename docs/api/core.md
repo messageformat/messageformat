@@ -38,6 +38,7 @@ The core MessageFormat-to-JavaScript compiler
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [CustomFormatter](./core.customformatter.md) | A custom formatter function. See [Custom Formatters](https://messageformat.github.io/messageformat/custom-formatters/) for more details. |
 |  [MessageFunction](./core.messagefunction.md) | A compiled message function, which may accept an object parameter |
 |  [MessageModule](./core.messagemodule.md) | The type of the generated ES module, once executed |
 

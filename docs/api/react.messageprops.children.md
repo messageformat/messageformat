@@ -16,5 +16,5 @@ If a function, will be called with the found message. In this case, `params` wil
 <b>Signature:</b>
 
 ```typescript
-children?: any;
+children?: unknown;
 ```

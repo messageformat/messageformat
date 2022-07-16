@@ -16,5 +16,5 @@ Parameters to pass to function messages as their first and only argument. `param
 <b>Signature:</b>
 
 ```typescript
-params?: any;
+params?: unknown;
 ```

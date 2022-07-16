@@ -24,7 +24,7 @@ static escape(str: string, octothorpe?: boolean): string;
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  str | string | The input string |
-|  octothorpe | boolean | Also escape <code>#</code> |
+|  octothorpe | boolean | <i>(Optional)</i> Also escape <code>#</code> |
 
 <b>Returns:</b>
 

@@ -26,5 +26,5 @@ constructor(msgData: {
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  msgData | { \[key: string\]: [MessageData](./runtime.messagedata.md)<!-- -->; } | A map of locale codes to their function objects |
-|  defaultLocale | string | If not defined, default and initial locale is the first key of <code>msgData</code> |
+|  defaultLocale | string | <i>(Optional)</i> If not defined, default and initial locale is the first key of <code>msgData</code> |
 

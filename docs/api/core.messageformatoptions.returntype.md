@@ -11,12 +11,12 @@ nav_exclude: true
 
 # MessageFormatOptions.returnType property
 
-Return type of compiled functions; either a concatenated string or an array (possibly hierarchical) of values
+Return type of compiled functions; either a concatenated `'string'` or an array (possibly hierarchical) of `'values'`<!-- -->.
 
 Default: `'string'`
 
 <b>Signature:</b>
 
 ```typescript
-returnType?: 'string' | 'values';
+returnType?: ReturnType;
 ```

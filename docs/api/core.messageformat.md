@@ -15,7 +15,7 @@ The core MessageFormat-to-JavaScript compiler
 <b>Signature:</b>
 
 ```typescript
-export default class MessageFormat 
+export default class MessageFormat<ReturnType extends 'string' | 'values' = 'string'> 
 ```
 
 ## Example
@@ -36,7 +36,6 @@ msg({ GENDER: 'male', RES: 1 })    // 'He found 1 result.'
 msg({ GENDER: 'female', RES: 1 })  // 'She found 1 result.'
 msg({ GENDER: 'male', RES: 0 })    // 'He found no results.'
 msg({ RES: 2 })                    // 'They found 2 results.'
-
 ```
 
 ## Constructors

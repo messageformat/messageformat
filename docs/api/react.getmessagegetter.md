@@ -17,7 +17,7 @@ The returned function takes two parameters `(msgId, msgParams)`<!-- -->, which w
 <b>Signature:</b>
 
 ```typescript
-export declare function getMessageGetter(context: MessageContext, rootId?: string | string[], { baseParams, locale }?: MessageGetterOptions): (id?: string | string[] | undefined, params?: any) => any;
+export declare function getMessageGetter(context: MessageContext, rootId?: string | string[], { baseParams, locale }?: MessageGetterOptions): (id?: string | string[], params?: Record<string, unknown>) => any;
 ```
 
 ## Parameters
@@ -25,10 +25,10 @@ export declare function getMessageGetter(context: MessageContext, rootId?: strin
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  context | [MessageContext](./react.messagecontext.md) | The <code>MessageContext</code> instance |
-|  rootId | string \| string\[\] | The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
-|  { baseParams, locale } | MessageGetterOptions |  |
+|  rootId | string \| string\[\] | <i>(Optional)</i> The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
+|  { baseParams, locale } | MessageGetterOptions | <i>(Optional)</i> |
 
 <b>Returns:</b>
 
-(id?: string \| string\[\] \| undefined, params?: any) =&gt; any
+(id?: string \| string\[\], params?: Record&lt;string, unknown&gt;) =&gt; any
 

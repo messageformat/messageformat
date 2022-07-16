@@ -16,5 +16,5 @@ By default, `.` in a `<Message id>` splits the path into parts, such that e.g. `
 <b>Signature:</b>
 
 ```typescript
-pathSep?: string;
+pathSep?: string | null;
 ```

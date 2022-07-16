@@ -24,8 +24,8 @@ export declare function getNumberFormatter(locales: string | string[], skeleton:
 |  --- | --- | --- |
 |  locales | string \| string\[\] | One or more valid BCP 47 language tags, e.g. <code>fr</code> or <code>en-CA</code> |
 |  skeleton | string \| [Skeleton](./number-skeleton.skeleton.md) | An ICU NumberFormatter pattern or <code>::</code>-prefixed skeleton string, or a parsed <code>Skeleton</code> structure |
-|  currency | string \| null | If <code>skeleton</code> is a pattern string that includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
-|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | If defined, will be called separately for each encountered parsing error and unsupported feature. |
+|  currency | string \| null | <i>(Optional)</i> If <code>skeleton</code> is a pattern string that includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
+|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> If defined, will be called separately for each encountered parsing error and unsupported feature. |
 
 <b>Returns:</b>
 
@@ -33,7 +33,7 @@ export declare function getNumberFormatter(locales: string | string[], skeleton:
 
 ## Remarks
 
-Uses `Intl.NumberFormat` internally, including features provided by the [Unified API Proposal](https://github.com/tc39/proposal-unified-intl-numberformat)<!-- -->.
+Uses `Intl.NumberFormat` (ES2020) internally.
 
 ## Example
 
@@ -48,6 +48,5 @@ fmt(42) // '$42.00'
 src = '::percent scale/100'
 fmt = getNumberFormatter('en', src, console.error)
 fmt(0.3) // '30%'
-
 ```
 

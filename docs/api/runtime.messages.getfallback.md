@@ -23,7 +23,7 @@ getFallback(locale?: string | null): string[];
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  locale | string \| null | If empty or undefined, defaults to <code>this.locale</code> |
+|  locale | string \| null | <i>(Optional)</i> If empty or undefined, defaults to <code>this.locale</code> |
 
 <b>Returns:</b>
 

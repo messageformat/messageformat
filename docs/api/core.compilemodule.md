@@ -15,14 +15,14 @@ Compile a collection of messages into an ES module
 <b>Signature:</b>
 
 ```typescript
-export default function compileModule(messageformat: MessageFormat, messages: StringStructure): string;
+export default function compileModule(messageformat: MessageFormat<'string' | 'values'>, messages: StringStructure): string;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  messageformat | MessageFormat | A [MessageFormat](./core.messageformat.md) instance |
+|  messageformat | MessageFormat&lt;'string' \| 'values'&gt; | A [MessageFormat](./core.messageformat.md) instance |
 |  messages | [StringStructure](./core.stringstructure.md) | A hierarchical structure of ICU MessageFormat strings |
 
 <b>Returns:</b>
@@ -60,6 +60,5 @@ import messages from './messages'
 
 messages.a({ TYPE: 'more complex' })  // 'A more complex example.'
 messages.b({ COUNT: 3 })              // 'This has 3 members.'
-
 ```
 

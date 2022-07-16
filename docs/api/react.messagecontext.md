@@ -53,6 +53,5 @@ export const App = () => (
     <Example />
   </MessageProvider>
 )
-
 ```
 

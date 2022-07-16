@@ -20,11 +20,11 @@ export interface Context
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [col](./parser.context.col.md) | number | Token start column, starting from 1 |
-|  [line](./parser.context.line.md) | number | Token start line number, starting from 1 |
-|  [lineBreaks](./parser.context.linebreaks.md) | number | The number of line breaks consumed while parsing the token |
-|  [offset](./parser.context.offset.md) | number | Token start index from the beginning of the input string |
-|  [text](./parser.context.text.md) | string | The raw input source for the token |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [col](./parser.context.col.md) |  | number | Token start column, starting from 1 |
+|  [line](./parser.context.line.md) |  | number | Token start line number, starting from 1 |
+|  [lineBreaks](./parser.context.linebreaks.md) |  | number | The number of line breaks consumed while parsing the token |
+|  [offset](./parser.context.offset.md) |  | number | Token start index from the beginning of the input string |
+|  [text](./parser.context.text.md) |  | string | The raw input source for the token |
 

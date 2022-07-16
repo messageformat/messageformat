@@ -19,5 +19,5 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-debug?: 'error' | 'warn' | ((msg: string) => any);
+debug?: 'error' | 'warn' | ((msg: string) => unknown);
 ```

@@ -14,5 +14,5 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-children: any;
+children: ReactNode;
 ```

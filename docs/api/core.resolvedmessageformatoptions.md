@@ -15,14 +15,14 @@ Returned by [MessageFormat.resolvedOptions()](./core.messageformat.resolvedoptio
 <b>Signature:</b>
 
 ```typescript
-export interface ResolvedMessageFormatOptions extends Required<MessageFormatOptions> 
+export interface ResolvedMessageFormatOptions<ReturnType extends 'string' | 'values'> extends Required<MessageFormatOptions<ReturnType>> 
 ```
-<b>Extends:</b> Required&lt;[MessageFormatOptions](./core.messageformatoptions.md)<!-- -->&gt;
+<b>Extends:</b> Required&lt;[MessageFormatOptions](./core.messageformatoptions.md)
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [locale](./core.resolvedmessageformatoptions.locale.md) | string | The default locale |
-|  [plurals](./core.resolvedmessageformatoptions.plurals.md) | PluralObject\[\] | All of the supported plurals |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [locale](./core.resolvedmessageformatoptions.locale.md) |  | string | The default locale |
+|  [plurals](./core.resolvedmessageformatoptions.plurals.md) |  | PluralObject\[\] | All of the supported plurals |
 

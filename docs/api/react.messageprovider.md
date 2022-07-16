@@ -55,6 +55,5 @@ export const App = () => (
     </MessageProvider>
   </MessageProvider>
 )
-
 ```
 

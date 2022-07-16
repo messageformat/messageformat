@@ -16,7 +16,7 @@ Compile a message into a function
 <b>Signature:</b>
 
 ```typescript
-compile(message: string): MessageFunction;
+compile(message: string): MessageFunction<ReturnType>;
 ```
 
 ## Parameters
@@ -27,7 +27,7 @@ compile(message: string): MessageFunction;
 
 <b>Returns:</b>
 
-[MessageFunction](./core.messagefunction.md)
+[MessageFunction](./core.messagefunction.md)<!-- -->&lt;ReturnType&gt;
 
 The compiled function
 
@@ -43,6 +43,5 @@ const mf = new MessageFormat('en')
 const msg = mf.compile('A {TYPE} example.')
 
 msg({ TYPE: 'simple' })  // 'A simple example.'
-
 ```
 
