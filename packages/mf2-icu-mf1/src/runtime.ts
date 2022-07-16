@@ -7,27 +7,25 @@ import {
   RuntimeOptions
 } from 'messageformat';
 
-const getParam = (options: RuntimeOptions | undefined) =>
-  (options && String(options.param).trim()) || undefined;
+const getParam = (options: RuntimeOptions) =>
+  (options.param && String(options.param).trim()) || undefined;
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
 const date: RuntimeFunction<MessageDateTime> = {
   call: function date(
     locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: MessageValue
+    options: RuntimeOptions,
+    arg?: MessageValue
   ) {
     let date: Date | MessageDateTime;
-    if (arg instanceof MessageDateTime) date = arg;
-    else {
-      date = new Date(
-        typeof arg.value === 'number' ? arg.value : String(arg.value)
-      );
-    }
+    if (!arg) date = new Date(NaN); // Invalid Date
+    else if (arg instanceof MessageDateTime) date = arg;
+    else if (typeof arg.value === 'number') date = new Date(arg.value);
+    else date = new Date(String(arg.value));
     const size = getParam(options) as DateTimeSize;
     const opt: Intl.DateTimeFormatOptions = {
-      localeMatcher: options?.localeMatcher,
+      localeMatcher: options.localeMatcher,
       weekday: size === 'full' ? 'long' : undefined,
       day: 'numeric',
       month:
@@ -55,9 +53,9 @@ const duration: RuntimeFunction<string> = {
   call: function duration(
     _locales: string[],
     _options: unknown,
-    arg: MessageValue
+    arg?: MessageValue
   ) {
-    let value = Number(arg.value);
+    let value = Number(arg?.value);
     if (!isFinite(value)) return String(value);
     let sign = '';
     if (value < 0) {
@@ -132,34 +130,32 @@ class MessageMF1Number extends MessageNumber {
 const number: RuntimeFunction<MessageNumber> = {
   call: function number(
     locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: MessageValue
+    options: RuntimeOptions,
+    arg?: MessageValue
   ) {
-    const num = arg instanceof MessageNumber ? arg : Number(arg.value);
+    const num = arg instanceof MessageNumber ? arg : Number(arg?.value);
     const opt: Intl.NumberFormatOptions &
       Intl.PluralRulesOptions & { pluralOffset?: number } = {};
-    if (options) {
-      switch (String(options.param).trim()) {
-        case 'integer':
-          opt.maximumFractionDigits = 0;
-          break;
-        case 'percent':
-          opt.style = 'percent';
-          break;
-        case 'currency': {
-          opt.style = 'currency';
-          opt.currency = 'USD';
-          break;
-        }
+    switch (String(options.param).trim()) {
+      case 'integer':
+        opt.maximumFractionDigits = 0;
+        break;
+      case 'percent':
+        opt.style = 'percent';
+        break;
+      case 'currency': {
+        opt.style = 'currency';
+        opt.currency = 'USD';
+        break;
       }
-      const offset = Number(options.pluralOffset);
-      if (Number.isFinite(offset)) opt.pluralOffset = offset;
-      if (options.type === 'ordinal') opt.type = 'ordinal';
     }
+    const offset = Number(options.pluralOffset);
+    if (Number.isFinite(offset)) opt.pluralOffset = offset;
+    if (options.type === 'ordinal') opt.type = 'ordinal';
 
     return new MessageMF1Number(locales, num, {
       options: opt,
-      source: arg.source
+      source: arg?.source
     });
   },
 
@@ -173,19 +169,17 @@ const number: RuntimeFunction<MessageNumber> = {
 const time: RuntimeFunction<MessageDateTime> = {
   call: function time(
     locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: MessageValue
+    options: RuntimeOptions,
+    arg?: MessageValue
   ) {
     let time: Date | MessageDateTime;
-    if (arg instanceof MessageDateTime) time = arg;
-    else {
-      time = new Date(
-        typeof arg.value === 'number' ? arg.value : String(arg.value)
-      );
-    }
+    if (!arg) time = new Date(NaN); // Invalid Date
+    else if (arg instanceof MessageDateTime) time = arg;
+    else if (typeof arg.value === 'number') time = new Date(arg.value);
+    else time = new Date(String(arg.value));
     const size = getParam(options) as DateTimeSize;
     const opt: Intl.DateTimeFormatOptions = {
-      localeMatcher: options?.localeMatcher,
+      localeMatcher: options.localeMatcher,
       second: size === 'short' ? undefined : 'numeric',
       minute: 'numeric',
       hour: 'numeric',

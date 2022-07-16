@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import type { MessageValue } from '../message-value';
 import { datetime, number } from './default';
 
 export const defaultRuntime = { datetime, number };
@@ -17,8 +18,8 @@ export interface Runtime {
 export interface RuntimeFunction<T> {
   call(
     locales: readonly string[],
-    options: RuntimeOptions | undefined,
-    ...args: any[]
+    options: RuntimeOptions,
+    arg?: MessageValue
   ): T;
   options: RuntimeType | Record<string, RuntimeType>;
 }

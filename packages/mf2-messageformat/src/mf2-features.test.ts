@@ -35,7 +35,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   }
   function formatRange(
     _locales: string[],
-    _options: RuntimeOptions | undefined,
+    _options: RuntimeOptions,
     start: MessageNumber | MessageValue<{ start: number; end: number }>,
     end?: MessageNumber
   ) {
@@ -44,7 +44,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   }
   function pluralRange(
     locales: string[],
-    options: RuntimeOptions | undefined,
+    options: RuntimeOptions,
     start: MessageNumber | MessageValue<{ start: number; end: number }>,
     end?: MessageNumber
   ) {
@@ -250,7 +250,7 @@ maybe('List formatting', () => {
   test('Intl.ListFormat, combine/flatten inputs (unicode-org/message-format-wg#36)', () => {
     function LIST(
       locales: string[],
-      options: RuntimeOptions | undefined,
+      options: RuntimeOptions,
       arg?: MessageValue<string | string[]>
     ) {
       const list = arg
@@ -297,7 +297,7 @@ maybe('List formatting', () => {
     const listFormatters: Record<string, typeof dative> = { dative };
     function LIST(
       locales: string[],
-      options: RuntimeOptions | undefined,
+      options: RuntimeOptions,
       arg?: MessageValue<string | string[]>
     ) {
       let list = arg
@@ -305,7 +305,7 @@ maybe('List formatting', () => {
           ? arg.value
           : [arg.value]
         : [];
-      if (typeof options?.each === 'string') {
+      if (typeof options.each === 'string') {
         const fn = listFormatters[options.each];
         if (typeof fn !== 'function')
           throw new Error(`list each function not found: ${options.each}`);

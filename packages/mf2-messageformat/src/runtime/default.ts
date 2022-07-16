@@ -4,16 +4,14 @@ import type { RuntimeFunction, RuntimeOptions } from './index';
 export const datetime: RuntimeFunction<MessageDateTime> = {
   call: function datetime(
     locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: MessageValue
+    options: RuntimeOptions,
+    arg?: MessageValue
   ) {
     let date: Date | MessageDateTime;
-    if (arg instanceof MessageDateTime) {
-      date = arg;
-    } else {
-      const av = arg?.value;
-      date = new Date(typeof av === 'number' ? av : String(av));
-    }
+    if (!arg) date = new Date();
+    else if (arg instanceof MessageDateTime) date = arg;
+    else if (typeof arg.value === 'number') date = new Date(arg.value);
+    else date = new Date(String(arg.value));
     return new MessageDateTime(locales, date, { options });
   },
 
@@ -46,8 +44,8 @@ export const datetime: RuntimeFunction<MessageDateTime> = {
 export const number: RuntimeFunction<MessageNumber> = {
   call: function number(
     locales: string[],
-    options: RuntimeOptions | undefined,
-    arg: MessageValue
+    options: RuntimeOptions,
+    arg?: MessageValue
   ) {
     const num = arg instanceof MessageNumber ? arg : Number(arg?.value);
     return new MessageNumber(locales, num, { options });

@@ -11,10 +11,10 @@ export function getFluentRuntime(res: Map<string, MessageFormat>) {
   const MESSAGE: RuntimeFunction<ResolvedMessage> = {
     call: function resolveMessageRef(
       _locales: string[],
-      options: RuntimeOptions | undefined,
-      arg: MessageValue
+      options: RuntimeOptions,
+      arg?: MessageValue
     ) {
-      const msgId = arg.toString();
+      const msgId = arg?.toString() ?? '';
       const mf = res.get(msgId);
       if (!mf) throw new Error(`Message not available: ${msgId}`);
       const msg = mf.resolveMessage(options);
