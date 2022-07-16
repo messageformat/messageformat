@@ -37,14 +37,11 @@ function getPattern(
   }
 }
 
-const str = Symbol('str');
-
 export class ResolvedMessage extends MessageValue<MessageValue[]> {
   static readonly type = 'message';
 
-  // Cache for string value; TS complains if this is actually private
-  // https://github.com/microsoft/TypeScript/issues/8277
-  private declare [str]: string;
+  // Cache for string value
+  #str: string | undefined;
 
   constructor(context: Context, message: Message, source?: string) {
     const { meta, pattern } = getPattern(context, message);
@@ -58,10 +55,10 @@ export class ResolvedMessage extends MessageValue<MessageValue[]> {
   }
 
   toString(onError?: Context['onError'], noCache = false) {
-    if (noCache || typeof this[str] !== 'string') {
-      this[str] = '';
-      for (const mv of this.value) this[str] += mv.toString(onError);
+    if (noCache || typeof this.#str !== 'string') {
+      this.#str = '';
+      for (const mv of this.value) this.#str += mv.toString(onError);
     }
-    return this[str];
+    return this.#str;
   }
 }
