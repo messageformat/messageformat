@@ -34,6 +34,7 @@ export interface Placeholder {
  * another message, the value of some runtime variable, or some function
  * defined elsewhere.
  *
+ * @remarks
  * Depending on the syntax, pattern elements may be wrapped within a Placeholder.
  *
  * @beta

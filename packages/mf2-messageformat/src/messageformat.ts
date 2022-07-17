@@ -12,24 +12,20 @@ export interface MessageFormatOptions {
    * determines which algorithm to use when selecting between them;
    * the default for `Intl` formatters is `'best fit'`.
    *
+   * @remarks
    * See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_negotiation
    */
   localeMatcher?: 'best fit' | 'lookup';
 
   /**
    * The set of functions available during message resolution.
-   *
-   * Default: {@link defaultRuntime}
+   * If not set, defaults to {@link defaultRuntime}.
    */
   runtime?: Runtime;
 }
 
 /**
  * Create a new message formatter.
- *
- * If `runtime` is unset, a default minimal set is used, consisting of `plural`
- * for selection and `datetime` & `number` formatters based on the `Intl`
- * equivalents.
  *
  * @beta
  */

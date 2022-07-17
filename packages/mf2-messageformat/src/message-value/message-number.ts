@@ -61,6 +61,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
    * numerical values will also match keys with the same plural rule category,
    * i.e. one of `zero`, `one`, `two`, `few`, `many`, and `other`.
    *
+   * @remarks
    * Different languages use different subset of plural rule categories.
    * For example, cardinal English plurals only use `one` and `other`,
    * so a key `zero` will never be matched for that locale.

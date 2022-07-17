@@ -4,7 +4,9 @@ import { MessageValue } from '../message-value';
 import { datetime, number } from './default';
 
 /**
- * The default Runtime includes two functions:
+ * The default Runtime includes two functions, `datetime` and `number`.
+ *
+ * @remarks
  * - `datetime` accepts an optional Date, number or string as its argument
  *   and formats it with the same options as
  *   {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat | Intl.DateTimeFormat}.
@@ -12,6 +14,8 @@ import { datetime, number } from './default';
  * - `number` accepts a number, BigInt or string representing a number as its argument
  *   and formats it with the same options as
  *   {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
+ *   It also supports plural category selection via
+ *   {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}
  *
  * @beta
  */
@@ -38,6 +42,8 @@ export interface RuntimeFunction<T> {
 
 /**
  * Basic type checking is performed on option values.
+ *
+ * @remarks
  * - `'any'` - Value type is not checked
  * - `'never'` - No value is valid
  * - `'string'`, `'number'`, `'boolean'`, `'object'` - `typeof value` must match

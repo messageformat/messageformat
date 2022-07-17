@@ -4,6 +4,7 @@ import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 /**
  * A child class of {@link MessageValue} for fallback values.
  *
+ * @remarks
  * Used to represent parse errors as well as runtime/formatting errors.
  *
  * @beta

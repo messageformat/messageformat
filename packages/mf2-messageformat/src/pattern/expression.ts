@@ -12,6 +12,7 @@ import { isLiteral } from './literal';
 /**
  * To resolve an Expression, an externally defined function is called.
  *
+ * @remarks
  * The `name` identifies a function that takes in the arguments `args`, the
  * current locale, as well as any `options`, and returns some corresponding
  * output. Likely functions available by default would include `'plural'` for

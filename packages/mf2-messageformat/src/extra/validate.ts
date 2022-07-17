@@ -19,6 +19,7 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
 /**
  * Validate a message.
  *
+ * @remarks
  * Throws if `msg` is a {@link JunkMessage},
  * if it contains parse `errors`,
  * or of if references runtime functions that are not available in the `runtime`.

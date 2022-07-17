@@ -5,6 +5,7 @@ import { MessageFallback } from '../message-value';
  * When the parser encounters an error, it may emit a Junk pattern element to
  * represent it.
  *
+ * @remarks
  * Garbage in, garbage out: Resolving a message that includes junk will always
  * resolve it using a fallback representation.
  *
