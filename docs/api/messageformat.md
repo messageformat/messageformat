@@ -33,6 +33,7 @@ has_toc: false
 |  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_2.md) | <b><i>(BETA)</i></b> Convert any value into a [MessageValue](./messageformat.messagevalue.md) or one of its child classes. |
 |  [extendLocaleContext(orig, lc)](./messageformat.extendlocalecontext.md) | <b><i>(BETA)</i></b> Create a new LocaleContext, using <code>orig</code> as a base. |
 |  [parseMessage(src)](./messageformat.parsemessage.md) | <b><i>(BETA)</i></b> Parse the string syntax representation of a message into its corresponding data model representation. |
+|  [stringifyMessage(msg)](./messageformat.stringifymessage.md) | <b><i>(BETA)</i></b> Stringify a message using its syntax representation. |
 |  [validate(msg, runtime)](./messageformat.validate.md) | <b><i>(BETA)</i></b> Validate a message. |
 
 ## Interfaces
@@ -71,6 +72,8 @@ has_toc: false
 |  [isMarkupEnd](./messageformat.ismarkupend.md) | <b><i>(BETA)</i></b> Type guard for [MarkupEnd](./messageformat.markupend.md) pattern elements |
 |  [isMarkupStart](./messageformat.ismarkupstart.md) | <b><i>(BETA)</i></b> Type guard for [MarkupStart](./messageformat.markupstart.md) pattern elements |
 |  [isMessage](./messageformat.ismessage.md) | <b><i>(BETA)</i></b> A type guard for [Message](./messageformat.message.md) values |
+|  [isPatternMessage](./messageformat.ispatternmessage.md) | <b><i>(BETA)</i></b> A type guard for [PatternMessage](./messageformat.patternmessage.md) values |
+|  [isPlaceholder](./messageformat.isplaceholder.md) | <b><i>(BETA)</i></b> Type guard for [Placeholder](./messageformat.placeholder.md) pattern elements |
 |  [isSelectMessage](./messageformat.isselectmessage.md) | <b><i>(BETA)</i></b> A type guard for [SelectMessage](./messageformat.selectmessage.md) values |
 |  [isVariableRef](./messageformat.isvariableref.md) | <b><i>(BETA)</i></b> Type guard for [VariableRef](./messageformat.variableref.md) pattern elements |
 
