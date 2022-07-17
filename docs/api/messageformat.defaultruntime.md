@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-The default Runtime includes two functions: - `datetime` accepts an optional Date, number or string as its argument and formats it with the same options as [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)<!-- -->. If not given any argument, the current date/time is used. - `number` accepts a number, BigInt or string representing a number as its argument and formats it with the same options as [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat)<!-- -->.
+The default Runtime includes two functions, `datetime` and `number`<!-- -->.
 
 <b>Signature:</b>
 
@@ -23,3 +23,8 @@ defaultRuntime: {
     number: RuntimeFunction<import("../message-value").MessageNumber>;
 }
 ```
+
+## Remarks
+
+- `datetime` accepts an optional Date, number or string as its argument and formats it with the same options as [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)<!-- -->. If not given any argument, the current date/time is used. - `number` accepts a number, BigInt or string representing a number as its argument and formats it with the same options as [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat)<!-- -->. It also supports plural category selection via [Intl.PluralRules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules)
+

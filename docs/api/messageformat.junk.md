@@ -15,13 +15,15 @@ grand_parent: API Reference
 
 When the parser encounters an error, it may emit a Junk pattern element to represent it.
 
-Garbage in, garbage out: Resolving a message that includes junk will always resolve it using a fallback representation.
-
 <b>Signature:</b>
 
 ```typescript
 export interface Junk 
 ```
+
+## Remarks
+
+Garbage in, garbage out: Resolving a message that includes junk will always resolve it using a fallback representation.
 
 ## Properties
 

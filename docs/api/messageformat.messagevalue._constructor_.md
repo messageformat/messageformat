@@ -19,7 +19,7 @@ Constructs a new instance of the `MessageValue` class
 <b>Signature:</b>
 
 ```typescript
-constructor(type: string, locale: LocaleContextArg, value: T, format?: {
+constructor(type: string | null, locale: LocaleContextArg, value: T, format?: {
         meta?: Readonly<Meta>;
         source?: string;
         toString?: MessageValue<T>['toString'];
@@ -30,7 +30,7 @@ constructor(type: string, locale: LocaleContextArg, value: T, format?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  type | string |  |
+|  type | string \| null |  |
 |  locale | LocaleContextArg |  |
 |  value | T |  |
 |  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; toString?: [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;T&gt;\['toString'\]; } | <i>(Optional)</i> |

@@ -15,8 +15,6 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values.
 
-Used to represent parse errors as well as runtime/formatting errors.
-
 <b>Signature:</b>
 
 ```typescript
@@ -24,17 +22,15 @@ export declare class MessageFallback extends MessageValue<undefined>
 ```
 <b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)
 
+## Remarks
+
+Used to represent parse errors as well as runtime/formatting errors.
+
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
 |  [(constructor)(locale, fmt)](./messageformat.messagefallback._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageFallback</code> class |
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [type](./messageformat.messagefallback.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | (not declared) | <b><i>(BETA)</i></b> |
 
 ## Methods
 

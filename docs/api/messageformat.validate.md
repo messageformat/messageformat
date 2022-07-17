@@ -15,10 +15,6 @@ grand_parent: API Reference
 
 Validate a message.
 
-Throws if `msg` is a [JunkMessage](./messageformat.junkmessage.md)<!-- -->, if it contains parse `errors`<!-- -->, or of if references runtime functions that are not available in the `runtime`<!-- -->.
-
-Formatting a message that passes validation may still fail, as it may depend on parameters that are not passed in, or its runtime function calls may fail.
-
 <b>Signature:</b>
 
 ```typescript
@@ -35,4 +31,10 @@ export declare function validate(msg: Readonly<Message>, runtime: Runtime): void
 <b>Returns:</b>
 
 void
+
+## Remarks
+
+Throws if `msg` is a [JunkMessage](./messageformat.junkmessage.md)<!-- -->, if it contains parse `errors`<!-- -->, or of if references runtime functions that are not available in the `runtime`<!-- -->.
+
+Formatting a message that passes validation may still fail, as it may depend on parameters that are not passed in, or its runtime function calls may fail.
 

@@ -35,7 +35,6 @@ export declare class MessageValue<T = unknown>
 |  [meta?](./messageformat.messagevalue.meta.md) |  | [Meta](./messageformat.meta.md) | <b><i>(BETA)</i></b> <i>(Optional)</i> |
 |  [source?](./messageformat.messagevalue.source.md) |  | string | <b><i>(BETA)</i></b> <i>(Optional)</i> |
 |  [type](./messageformat.messagevalue.type.md) | <code>readonly</code> | string | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.messagevalue.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | string | <b><i>(BETA)</i></b> |
 |  [value](./messageformat.messagevalue.value.md) |  | T | <b><i>(BETA)</i></b> |
 
 ## Methods

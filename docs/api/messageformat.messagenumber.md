@@ -33,14 +33,13 @@ export declare class MessageNumber extends MessageValue<number | bigint>
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [options?](./messageformat.messagenumber.options.md) |  | Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [type](./messageformat.messagenumber.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | (not declared) | <b><i>(BETA)</i></b> |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [getPluralCategory()](./messageformat.messagenumber.getpluralcategory.md) |  | <b><i>(BETA)</i></b> |
-|  [matchSelectKey(key)](./messageformat.messagenumber.matchselectkey.md) |  | <p><b><i>(BETA)</i></b> In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>.</p><p>Different languages use different subset of plural rule categories. For example, cardinal English plurals only use <code>one</code> and <code>other</code>, so a key <code>zero</code> will never be matched for that locale.</p> |
+|  [matchSelectKey(key)](./messageformat.messagenumber.matchselectkey.md) |  | <b><i>(BETA)</i></b> In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
 |  [toParts()](./messageformat.messagenumber.toparts.md) |  | <b><i>(BETA)</i></b> |
 |  [toString(onError)](./messageformat.messagenumber.tostring.md) |  | <b><i>(BETA)</i></b> |
 

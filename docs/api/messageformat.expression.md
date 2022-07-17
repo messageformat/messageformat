@@ -15,13 +15,15 @@ grand_parent: API Reference
 
 To resolve an Expression, an externally defined function is called.
 
-The `name` identifies a function that takes in the arguments `args`<!-- -->, the current locale, as well as any `options`<!-- -->, and returns some corresponding output. Likely functions available by default would include `'plural'` for determining the plural category of a numeric value, as well as `'number'` and `'date'` for formatting values.
-
 <b>Signature:</b>
 
 ```typescript
 export interface Expression 
 ```
+
+## Remarks
+
+The `name` identifies a function that takes in the arguments `args`<!-- -->, the current locale, as well as any `options`<!-- -->, and returns some corresponding output. Likely functions available by default would include `'plural'` for determining the plural category of a numeric value, as well as `'number'` and `'date'` for formatting values.
 
 ## Properties
 

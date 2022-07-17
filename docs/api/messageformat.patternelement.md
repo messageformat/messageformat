@@ -15,12 +15,14 @@ grand_parent: API Reference
 
 The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere.
 
-Depending on the syntax, pattern elements may be wrapped within a Placeholder.
-
 <b>Signature:</b>
 
 ```typescript
 export declare type PatternElement = Expression | Junk | Literal | MarkupEnd | MarkupStart | Placeholder | Text | VariableRef;
 ```
 <b>References:</b> [Expression](./messageformat.expression.md)<!-- -->, [Junk](./messageformat.junk.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [MarkupEnd](./messageformat.markupend.md)<!-- -->, [MarkupStart](./messageformat.markupstart.md)<!-- -->, [Placeholder](./messageformat.placeholder.md)<!-- -->, [VariableRef](./messageformat.variableref.md)
+
+## Remarks
+
+Depending on the syntax, pattern elements may be wrapped within a Placeholder.
 

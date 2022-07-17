@@ -14,9 +14,7 @@ nav_exclude: true
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-The set of functions available during message resolution.
-
-Default: [defaultRuntime](./messageformat.defaultruntime.md)
+The set of functions available during message resolution. If not set, defaults to [defaultRuntime](./messageformat.defaultruntime.md)<!-- -->.
 
 <b>Signature:</b>
 

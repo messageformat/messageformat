@@ -28,12 +28,6 @@ export declare class MessageLiteral extends MessageValue<string>
 |  --- | --- | --- |
 |  [(constructor)(literal, fmt)](./messageformat.messageliteral._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageLiteral</code> class |
 
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [type](./messageformat.messageliteral.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | (not declared) | <b><i>(BETA)</i></b> |
-
 ## Methods
 
 |  Method | Modifiers | Description |

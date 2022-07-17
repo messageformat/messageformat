@@ -15,13 +15,15 @@ grand_parent: API Reference
 
 An immediately defined value.
 
-Always contains a string value. In Function arguments and options, the expeted type of the value may result in the value being further parsed as a boolean or a number.
-
 <b>Signature:</b>
 
 ```typescript
 export interface Literal 
 ```
+
+## Remarks
+
+Always contains a string value. In Function arguments and options, the expeted type of the value may result in the value being further parsed as a boolean or a number.
 
 ## Properties
 

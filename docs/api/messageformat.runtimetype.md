@@ -13,12 +13,17 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-Basic type checking is performed on option values. - `'any'` - Value type is not checked - `'never'` - No value is valid - `'string'`<!-- -->, `'number'`<!-- -->, `'boolean'`<!-- -->, `'object'` - `typeof value` must match - `string[]` - The value must be one of the enumerated string values
-
-For literal values, the strings `'true'` and `'false'` are valid for `'boolean'`<!-- -->, and strings representing finite numbers in JavaScript are valid for `'number'`<!-- -->.
+Basic type checking is performed on option values.
 
 <b>Signature:</b>
 
 ```typescript
 export declare type RuntimeType = 'string' | 'number' | 'boolean' | 'object' | 'any' | 'never' | string[];
 ```
+
+## Remarks
+
+- `'any'` - Value type is not checked - `'never'` - No value is valid - `'string'`<!-- -->, `'number'`<!-- -->, `'boolean'`<!-- -->, `'object'` - `typeof value` must match - `string[]` - The value must be one of the enumerated string values
+
+For literal values, the strings `'true'` and `'false'` are valid for `'boolean'`<!-- -->, and strings representing finite numbers in JavaScript are valid for `'number'`<!-- -->.
+

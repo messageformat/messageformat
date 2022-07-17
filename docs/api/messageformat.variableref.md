@@ -15,13 +15,15 @@ grand_parent: API Reference
 
 The value of a VariableRef is defined by the current Scope.
 
-To refer to an inner property of an object value, use `.` as a separator; in case of conflict, the longest starting substring wins. For example, `'user.name'` would be first matched by an exactly matching top-level key, and in case that fails, with the `'name'` property of the `'user'` object: The runtime scopes `{ 'user.name': 'Kat' }` and `{ user: { name: 'Kat' } }` would both resolve a `'user.name'` VariableRef as the string `'Kat'`<!-- -->.
-
 <b>Signature:</b>
 
 ```typescript
 export interface VariableRef 
 ```
+
+## Remarks
+
+To refer to an inner property of an object value, use `.` as a separator; in case of conflict, the longest starting substring wins. For example, `'user.name'` would be first matched by an exactly matching top-level key, and in case that fails, with the `'name'` property of the `'user'` object: The runtime scopes `{ 'user.name': 'Kat' }` and `{ user: { name: 'Kat' } }` would both resolve a `'user.name'` VariableRef as the string `'Kat'`<!-- -->.
 
 ## Properties
 

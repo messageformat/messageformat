@@ -15,8 +15,6 @@ grand_parent: API Reference
 
 Create a new message formatter.
 
-If `runtime` is unset, a default minimal set is used, consisting of `plural` for selection and `datetime` &amp; `number` formatters based on the `Intl` equivalents.
-
 <b>Signature:</b>
 
 ```typescript

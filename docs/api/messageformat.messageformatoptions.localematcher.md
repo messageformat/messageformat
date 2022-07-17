@@ -16,10 +16,13 @@ nav_exclude: true
 
 If given multiple locales, determines which algorithm to use when selecting between them; the default for `Intl` formatters is `'best fit'`<!-- -->.
 
-See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Intl\#locale\_negotiation
-
 <b>Signature:</b>
 
 ```typescript
 localeMatcher?: 'best fit' | 'lookup';
 ```
+
+## Remarks
+
+See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Intl\#locale\_negotiation
+

@@ -28,12 +28,6 @@ export declare class ResolvedMessage extends MessageValue<MessageValue[]>
 |  --- | --- | --- |
 |  [(constructor)(context, message, source)](./messageformat.resolvedmessage._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>ResolvedMessage</code> class |
 
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [type](./messageformat.resolvedmessage.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | (not declared) | <b><i>(BETA)</i></b> |
-
 ## Methods
 
 |  Method | Modifiers | Description |

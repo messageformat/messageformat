@@ -17,5 +17,5 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-static readonly type: string;
+readonly type: string;
 ```

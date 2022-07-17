@@ -16,8 +16,6 @@ nav_exclude: true
 
 In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of `zero`<!-- -->, `one`<!-- -->, `two`<!-- -->, `few`<!-- -->, `many`<!-- -->, and `other`<!-- -->.
 
-Different languages use different subset of plural rule categories. For example, cardinal English plurals only use `one` and `other`<!-- -->, so a key `zero` will never be matched for that locale.
-
 <b>Signature:</b>
 
 ```typescript
@@ -33,4 +31,8 @@ matchSelectKey(key: string): boolean;
 <b>Returns:</b>
 
 boolean
+
+## Remarks
+
+Different languages use different subset of plural rule categories. For example, cardinal English plurals only use `one` and `other`<!-- -->, so a key `zero` will never be matched for that locale.
 

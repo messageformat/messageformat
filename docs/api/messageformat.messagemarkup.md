@@ -35,7 +35,6 @@ export declare class MessageMarkup extends MessageValue<MessageValue[]>
 |  [isEndTag](./messageformat.messagemarkup.isendtag.md) | <code>readonly</code> | boolean | <b><i>(BETA)</i></b> |
 |  [name](./messageformat.messagemarkup.name.md) |  | string | <b><i>(BETA)</i></b> |
 |  [options?](./messageformat.messagemarkup.options.md) |  | Record&lt;string, unknown&gt; | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [type](./messageformat.messagemarkup.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | (not declared) | <b><i>(BETA)</i></b> |
 
 ## Methods
 

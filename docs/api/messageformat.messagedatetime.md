@@ -33,7 +33,6 @@ export declare class MessageDateTime extends MessageValue<Date>
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [options?](./messageformat.messagedatetime.options.md) |  | Intl.DateTimeFormatOptions | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [type](./messageformat.messagedatetime.type.md) | <p><code>readonly</code></p><p><code>static</code></p> | (not declared) | <b><i>(BETA)</i></b> |
 
 ## Methods
 

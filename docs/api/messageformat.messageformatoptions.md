@@ -24,6 +24,6 @@ export interface MessageFormatOptions
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [localeMatcher?](./messageformat.messageformatoptions.localematcher.md) |  | 'best fit' \| 'lookup' | <p><b><i>(BETA)</i></b> <i>(Optional)</i> If given multiple locales, determines which algorithm to use when selecting between them; the default for <code>Intl</code> formatters is <code>'best fit'</code>.</p><p>See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global\_Objects/Intl\#locale\_negotiation</p> |
-|  [runtime?](./messageformat.messageformatoptions.runtime.md) |  | [Runtime](./messageformat.runtime.md) | <p><b><i>(BETA)</i></b> <i>(Optional)</i> The set of functions available during message resolution.</p><p>Default: [defaultRuntime](./messageformat.defaultruntime.md)</p> |
+|  [localeMatcher?](./messageformat.messageformatoptions.localematcher.md) |  | 'best fit' \| 'lookup' | <b><i>(BETA)</i></b> <i>(Optional)</i> If given multiple locales, determines which algorithm to use when selecting between them; the default for <code>Intl</code> formatters is <code>'best fit'</code>. |
+|  [runtime?](./messageformat.messageformatoptions.runtime.md) |  | [Runtime](./messageformat.runtime.md) | <b><i>(BETA)</i></b> <i>(Optional)</i> The set of functions available during message resolution. If not set, defaults to [defaultRuntime](./messageformat.defaultruntime.md)<!-- -->. |
 
