@@ -19,7 +19,7 @@ describe('MessageValue variables', () => {
   });
 
   test('MessageValue(number)', () => {
-    const val = new MessageValue(MessageValue.type, null, 42);
+    const val = new MessageValue(null, null, 42);
     expect(mf.resolveMessage({ val })).toMatchObject({
       type: 'message',
       value: [{ type: 'value', source: '$val', value: 42 }]

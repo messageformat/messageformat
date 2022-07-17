@@ -33,8 +33,6 @@ export const hasMeta = <T>(
  * @beta
  */
 export class MessageValue<T = unknown> {
-  static readonly type: string = 'value';
-
   readonly type: string;
   value: T;
   declare source?: string;
@@ -43,7 +41,7 @@ export class MessageValue<T = unknown> {
   #localeContext: LocaleContextArg;
 
   constructor(
-    type: string,
+    type: string | null,
     locale: LocaleContextArg,
     value: T,
     format?: {
@@ -52,7 +50,7 @@ export class MessageValue<T = unknown> {
       toString?: MessageValue<T>['toString'];
     }
   ) {
-    this.type = type;
+    this.type = type ?? 'value';
     this.value = value;
     this.#localeContext = locale;
     if (format) {

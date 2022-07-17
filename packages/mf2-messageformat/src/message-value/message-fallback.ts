@@ -1,6 +1,8 @@
 import type { LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
+const FALLBACK = 'fallback';
+
 /**
  * A child class of {@link MessageValue} for fallback values.
  *
@@ -10,13 +12,11 @@ import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
  * @beta
  */
 export class MessageFallback extends MessageValue<undefined> {
-  static readonly type = 'fallback';
-
   constructor(
     locale: LocaleContextArg,
     fmt: { meta?: Readonly<Meta>; source: string }
   ) {
-    super(MessageFallback.type, locale, undefined, fmt);
+    super(FALLBACK, locale, undefined, fmt);
   }
 
   matchSelectKey() {

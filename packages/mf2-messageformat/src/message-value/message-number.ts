@@ -2,14 +2,14 @@ import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
+const NUMBER = 'number';
+
 /**
  * A child class of {@link MessageValue} for numerical values.
  *
  * @beta
  */
 export class MessageNumber extends MessageValue<number | bigint> {
-  static readonly type = 'number';
-
   declare options?: Intl.NumberFormatOptions & Intl.PluralRulesOptions;
 
   constructor(
@@ -28,13 +28,13 @@ export class MessageNumber extends MessageValue<number | bigint> {
     const fmt = { meta, source };
     if (number instanceof MessageNumber) {
       const lc = extendLocaleContext(number.localeContext, locale);
-      super(MessageNumber.type, lc, number.value, fmt);
+      super(NUMBER, lc, number.value, fmt);
       if (options || number.options)
         this.options = number.options
           ? { ...number.options, ...options }
           : { ...options };
     } else if (typeof number === 'number' || typeof number === 'bigint') {
-      super(MessageNumber.type, locale, number, fmt);
+      super(NUMBER, locale, number, fmt);
       if (options) this.options = { ...options };
     } else throw TypeError(`Invalid ${typeof number} as number argument`);
   }

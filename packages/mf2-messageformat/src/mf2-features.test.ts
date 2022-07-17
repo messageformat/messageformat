@@ -310,7 +310,7 @@ maybe('List formatting', () => {
         if (typeof fn !== 'function')
           throw new Error(`list each function not found: ${options.each}`);
         list = list.map(li =>
-          String(fn(locales, new MessageValue(MessageValue.type, null, li)))
+          String(fn(locales, new MessageValue(null, null, li)))
         );
       }
       // @ts-ignore

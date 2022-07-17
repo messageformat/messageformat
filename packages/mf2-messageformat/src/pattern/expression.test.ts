@@ -70,9 +70,9 @@ describe('Function returns MessageValue', () => {
     let toString: (() => string) | undefined;
     const runtime: Runtime = {
       STRINGIFY: {
-        call: (lc, _opt, arg: string) => {
+        call: (lc, _opt, arg: MessageValue) => {
           toString = () => `str:${arg}`;
-          return new MessageValue(MessageValue.type, lc, null, { toString });
+          return new MessageValue(null, lc, null, { toString });
         },
         options: 'never'
       }

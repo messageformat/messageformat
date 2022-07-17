@@ -2,6 +2,8 @@ import { Context } from '../format-context';
 import type { LocaleContextArg } from './locale-context';
 import { MessageValue, Meta } from './message-value';
 
+const MARKUP = 'markup';
+
 const elementTags = new WeakMap<MessageMarkup, 'start' | 'end'>();
 
 /**
@@ -10,8 +12,6 @@ const elementTags = new WeakMap<MessageMarkup, 'start' | 'end'>();
  * @beta
  */
 export class MessageMarkup extends MessageValue<MessageValue[]> {
-  static readonly type = 'markup';
-
   name: string;
   declare options?: Record<string, unknown>;
 
@@ -30,7 +30,7 @@ export class MessageMarkup extends MessageValue<MessageValue[]> {
       source?: string;
     }
   ) {
-    super(MessageMarkup.type, locale, [], { meta, source });
+    super(MARKUP, locale, [], { meta, source });
     this.name = name;
     if (options) this.options = { ...options };
     if (tag === 'start' || tag === 'end') elementTags.set(this, tag);

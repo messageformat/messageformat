@@ -5,6 +5,8 @@ import type { PatternElement } from '../pattern';
 import { fillMessageMarkups } from './message-markup';
 import { MessageValue, Meta } from './message-value';
 
+const MESSAGE = 'message';
+
 function getPattern(
   context: Context,
   message: Message
@@ -43,8 +45,6 @@ function getPattern(
  * @beta
  */
 export class ResolvedMessage extends MessageValue<MessageValue[]> {
-  static readonly type = 'message';
-
   // Cache for string value
   #str: string | undefined;
 
@@ -52,7 +52,7 @@ export class ResolvedMessage extends MessageValue<MessageValue[]> {
     const { meta, pattern } = getPattern(context, message);
     const resMsg = pattern.map(elem => context.resolve(elem));
     fillMessageMarkups(resMsg);
-    super(ResolvedMessage.type, context, resMsg, { meta, source });
+    super(MESSAGE, context, resMsg, { meta, source });
   }
 
   matchSelectKey(key: string) {

@@ -2,14 +2,14 @@ import { Context } from '../format-context';
 import { extendLocaleContext, LocaleContextArg } from './locale-context';
 import { FALLBACK_SOURCE, MessageValue, Meta } from './message-value';
 
+const DATETIME = 'datetime';
+
 /**
  * A child class of {@link MessageValue} for Date values.
  *
  * @beta
  */
 export class MessageDateTime extends MessageValue<Date> {
-  static readonly type = 'datetime';
-
   declare options?: Intl.DateTimeFormatOptions;
 
   constructor(
@@ -28,7 +28,7 @@ export class MessageDateTime extends MessageValue<Date> {
     const fmt = { meta, source };
     if (date instanceof MessageDateTime) {
       const lc = extendLocaleContext(date.localeContext, locale);
-      super(MessageDateTime.type, lc, date.value, fmt);
+      super(DATETIME, lc, date.value, fmt);
       if (options || date.options)
         this.options = date.options
           ? { ...date.options, ...options }
@@ -36,7 +36,7 @@ export class MessageDateTime extends MessageValue<Date> {
     } else {
       if (typeof date === 'number') date = new Date(date);
       if (date instanceof Date) {
-        super(MessageDateTime.type, locale, date, fmt);
+        super(DATETIME, locale, date, fmt);
         if (options) this.options = { ...options };
       } else throw new TypeError(`Invalid ${typeof date} as date argument`);
     }
