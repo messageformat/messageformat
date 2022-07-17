@@ -49,7 +49,7 @@ has_toc: false
 |  [MarkupEnd](./messageformat.markupend.md) | <b><i>(BETA)</i></b> An element indicating the end of a span of elements, starting from the most recent [MarkupStart](./messageformat.markupstart.md) that has the same <code>name</code>. |
 |  [MarkupStart](./messageformat.markupstart.md) | <b><i>(BETA)</i></b> An element indicating the start of a span of further elements that should have some markup applied to them. |
 |  [MessageFormatOptions](./messageformat.messageformatoptions.md) | <b><i>(BETA)</i></b> |
-|  [Option\_2](./messageformat.option_2.md) | <b><i>(BETA)</i></b> [Expression](./messageformat.expression.md) and [MarkupStart](./messageformat.markupstart.md) options are expressed as <code>key</code>/<code>value</code> pairs to allow their order to be maintained. |
+|  [Option](./messageformat.option.md) | <b><i>(BETA)</i></b> [Expression](./messageformat.expression.md) and [MarkupStart](./messageformat.markupstart.md) options are expressed as <code>key</code>/<code>value</code> pairs to allow their order to be maintained. |
 |  [Pattern](./messageformat.pattern.md) | <b><i>(BETA)</i></b> The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data. |
 |  [PatternMessage](./messageformat.patternmessage.md) | <b><i>(BETA)</i></b> A single message with no variants. |
 |  [Placeholder](./messageformat.placeholder.md) | <b><i>(BETA)</i></b> Wrapper for non-literal content. |
@@ -83,5 +83,5 @@ has_toc: false
 |  [ParseError](./messageformat.parseerror.md) | <b><i>(BETA)</i></b> |
 |  [PatternElement](./messageformat.patternelement.md) | <b><i>(BETA)</i></b> The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere. |
 |  [RuntimeType](./messageformat.runtimetype.md) | <b><i>(BETA)</i></b> Basic type checking is performed on option values. |
-|  [Text\_2](./messageformat.text_2.md) | <b><i>(BETA)</i></b> Top-level literal content. |
+|  [Text](./messageformat.text.md) | <b><i>(BETA)</i></b> Top-level literal content. |
 

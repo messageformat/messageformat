@@ -1,5 +1,5 @@
 ---
-title: "Option\\_2"
+title: "Option"
 parent: "messageformat"
 grand_parent: API Reference
 ---
@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# Option\_2 interface
+# Option interface
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -25,6 +25,6 @@ export interface Option
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.option_2.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.option_2.value.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> |
+|  [name](./messageformat.option.name.md) |  | string | <b><i>(BETA)</i></b> |
+|  [value](./messageformat.option.value.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> |
 

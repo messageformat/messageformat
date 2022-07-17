@@ -1,5 +1,5 @@
 ---
-title: "Text\\_2"
+title: "Text"
 parent: "messageformat"
 grand_parent: API Reference
 ---
@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# Text\_2 type
+# Text type
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
