@@ -38,6 +38,14 @@ const isNameCharCode = (cc: number) =>
   cc === 0x203f || // ‿
   cc === 0x2040; // ⁀
 
+export function isValidNmtoken(str: string): boolean {
+  for (let i = 0; i < str.length; ++i) {
+    const cc = str.charCodeAt(i);
+    if (!isNameCharCode(cc)) return false;
+  }
+  return str.length > 0;
+}
+
 // Name ::= NameStart NameChar* /* ws: explicit */
 export function parseNameValue(src: string, start: number): string {
   if (!isNameStartCode(src.charCodeAt(start))) return '';

@@ -36,6 +36,15 @@ export const isLiteral = (part: any): part is Literal =>
   typeof part === 'object' &&
   (part.type === 'literal' || part.type === 'nmtoken');
 
+/**
+ * Type guard for {@link Text} pattern elements
+ *
+ * @beta
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isText = (part: any): part is Text =>
+  !!part && typeof part === 'object' && part.type === 'text';
+
 export function resolveLiteral(lit: Literal | Text) {
   return new MessageLiteral(lit.value);
 }

@@ -117,6 +117,14 @@ export const isMessage = (msg: any): msg is Message =>
     (msg.type === 'junk' && msg.declarations));
 
 /**
+ * A type guard for {@link PatternMessage} values
+ *
+ * @beta
+ */
+export const isPatternMessage = (msg: Message): msg is PatternMessage =>
+  msg.type === 'message';
+
+/**
  * A type guard for {@link SelectMessage} values
  *
  * @beta

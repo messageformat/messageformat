@@ -29,6 +29,15 @@ export interface Placeholder {
 }
 
 /**
+ * Type guard for {@link Placeholder} pattern elements
+ *
+ * @beta
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isPlaceholder = (part: any): part is Placeholder =>
+  !!part && typeof part === 'object' && part.type === 'placeholder';
+
+/**
  * The contents of a message are a sequence of pattern elements, which may be
  * immediately defined literal values, a reference to a value that depends on
  * another message, the value of some runtime variable, or some function
