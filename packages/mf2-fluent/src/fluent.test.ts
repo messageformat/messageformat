@@ -410,7 +410,7 @@ describe('getMessage', () => {
             declarations: [],
             pattern: {
               body: [
-                { type: 'literal', value: 'Foo ' },
+                { type: 'text', value: 'Foo ' },
                 { type: 'variable', name: 'num' }
               ]
             }
@@ -422,7 +422,7 @@ describe('getMessage', () => {
             type: 'message',
             comment: 'Group 1',
             declarations: [],
-            pattern: { body: [{ type: 'literal', value: 'Bar' }] }
+            pattern: { body: [{ type: 'text', value: 'Bar' }] }
           }
         ],
         [
@@ -431,7 +431,7 @@ describe('getMessage', () => {
             type: 'message',
             comment: 'Group 2\n\nOther message',
             declarations: [],
-            pattern: { body: [{ type: 'literal', value: 'Qux' }] }
+            pattern: { body: [{ type: 'text', value: 'Qux' }] }
           }
         ]
       ]);

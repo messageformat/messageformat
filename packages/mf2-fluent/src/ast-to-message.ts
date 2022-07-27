@@ -9,11 +9,10 @@ import {
   Option,
   PatternMessage,
   SelectMessage,
+  Text,
   VariableRef,
   Variant
 } from 'messageformat';
-
-type Part = Literal | VariableRef | Expression;
 
 const CATCHALL = Symbol('catchall');
 
@@ -50,7 +49,9 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
   return args;
 }
 
-function expressionToPart(exp: Fluent.Expression): Part {
+function expressionToPart(
+  exp: Fluent.Expression
+): Literal | VariableRef | Expression {
   switch (exp.type) {
     case 'NumberLiteral':
       return {
@@ -132,9 +133,11 @@ function expressionToPart(exp: Fluent.Expression): Part {
   }
 }
 
-const elementToPart = (el: Fluent.PatternElement): Part =>
+const elementToPart = (
+  el: Fluent.PatternElement
+): Literal | VariableRef | Expression | Text =>
   el.type === 'TextElement'
-    ? { type: 'literal', value: el.value }
+    ? { type: 'text', value: el.value }
     : expressionToPart(el.expression);
 
 function asFluentSelect(

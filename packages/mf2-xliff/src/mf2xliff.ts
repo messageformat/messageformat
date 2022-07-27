@@ -4,6 +4,7 @@ import {
   isLiteral,
   isMessage,
   isSelectMessage,
+  isText,
   isVariableRef,
   MessageFormat
 } from 'messageformat';
@@ -55,7 +56,7 @@ const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({
 // TODO Add <cp> escapes
 const asText = (value: unknown): X.Text => ({
   type: 'text',
-  text: String(isLiteral(value) ? value.value : value)
+  text: String(isText(value) || isLiteral(value) ? value.value : value)
 });
 
 const mismatch = (key: string[]) =>
@@ -239,7 +240,7 @@ function resolvePattern(
 ): X.Unit {
   const parts: X.MessagePart[] = [];
   const handlePart = (p: MF.PatternElement): X.Text | X.InlineElement => {
-    if (isLiteral(p)) return asText(p);
+    if (isText(p)) return asText(p);
     const id = nextId();
     const part = resolvePart(id, p);
     parts.push(part);
