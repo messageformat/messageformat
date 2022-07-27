@@ -6,6 +6,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "resolveJsonModule": true,
     "strict": true,
     "target": "ES2017"
   }

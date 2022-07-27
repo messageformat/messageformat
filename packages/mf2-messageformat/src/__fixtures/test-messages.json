@@ -1,0 +1,330 @@
+[
+  { "src": "{hello}", "exp": "hello" },
+  { "src": "{hello {(world)}}", "exp": "hello world" },
+  { "src": "{hello {()}}", "exp": "hello " },
+  {
+    "src": "{hello {$place}}",
+    "params": { "place": "world" },
+    "exp": "hello world"
+  },
+  {
+    "src": "{hello {$place}}",
+    "errors": [{ "type": "missing-var" }],
+    "exp": "hello {$place}"
+  },
+  {
+    "src": "{{$one} and {$two}}",
+    "params": { "one": 1.3, "two": 4.2 },
+    "exp": "1.3 and 4.2"
+  },
+  {
+    "src": "{{$one} et {$two}}",
+    "locale": "fr",
+    "params": { "one": 1.3, "two": 4.2 },
+    "exp": "1,3 et 4,2"
+  },
+  { "src": "{hello {(4.2) :number}}", "exp": "hello 4.2" },
+  { "src": "{hello {(foo) :number}}", "exp": "hello NaN" },
+  { "src": "{hello {:number}}", "exp": "hello NaN" },
+  {
+    "src": "{hello {(4.2) :number minimumFractionDigits=2}}",
+    "exp": "hello 4.20"
+  },
+  {
+    "src": "{hello {(4.2) :number minimumFractionDigits=(2)}}",
+    "exp": "hello 4.20"
+  },
+  {
+    "src": "{hello {(4.2) :number minimumFractionDigits=$foo}}",
+    "params": { "foo": 2 },
+    "exp": "hello 4.20"
+  },
+  {
+    "src": "{hello {(4.2) :number minimumFractionDigits=$foo}}",
+    "params": { "foo": "2" },
+    "exp": "hello 4.20",
+    "errors": [{ "type": "invalid-type" }]
+  },
+  {
+    "src": "let $foo = {(bar)} {bar {$foo}}",
+    "exp": "bar bar"
+  },
+  {
+    "src": "let $foo = {(bar)} {bar {$foo}}",
+    "params": { "foo": "foo" },
+    "exp": "bar foo"
+  },
+  {
+    "src": "let $foo = {$bar} {bar {$foo}}",
+    "params": { "bar": "foo" },
+    "exp": "bar foo"
+  },
+  {
+    "src": "let $foo = {$bar :number} {bar {$foo}}",
+    "params": { "bar": 4.2 },
+    "exp": "bar 4.2"
+  },
+  {
+    "src": "let $foo = {$bar :number minimumFractionDigits=2} {bar {$foo}}",
+    "params": { "bar": 4.2 },
+    "exp": "bar 4.20"
+  },
+  {
+    "src": "let $foo = {$bar :number minimumFractionDigits=foo} {bar {$foo}}",
+    "params": { "bar": 4.2 },
+    "exp": "bar 4.2",
+    "errors": [{ "type": "invalid-type" }]
+  },
+  {
+    "src": "let $foo = {$bar :number} {bar {$foo}}",
+    "params": { "bar": "foo" },
+    "exp": "bar NaN",
+    "errors": []
+  },
+  {
+    "src": "let $foo = {$bar} let $bar = {$baz} {bar {$foo}}",
+    "params": { "baz": "foo" },
+    "exp": "bar foo"
+  },
+  {
+    "src": "match {$foo} when (1) {one} when * {other}",
+    "params": { "foo": "1" },
+    "exp": "one"
+  },
+  {
+    "src": "match {$foo} when 1 {one} when * {other}",
+    "params": { "foo": 1 },
+    "exp": "one"
+  },
+  {
+    "src": "match {$foo} when 1 {one} when * {other}",
+    "params": { "foo": null },
+    "exp": "other"
+  },
+  {
+    "src": "match {$foo} when 1 {one} when * {other}",
+    "exp": "other",
+    "errors": [{ "type": "missing-var" }]
+  },
+  {
+    "src": "match {$foo} when one {one} when * {other}",
+    "params": { "foo": 1 },
+    "exp": "one"
+  },
+  {
+    "src": "match {$foo} when 1 {=1} when one {one} when * {other}",
+    "params": { "foo": 1 },
+    "exp": "=1"
+  },
+  {
+    "src": "match {$foo} when one {one} when 1 {=1} when * {other}",
+    "params": { "foo": 1 },
+    "exp": "one"
+  },
+  {
+    "src": "match {$foo} {$bar} when one one {one one} when one * {one other} when * * {other}",
+    "params": { "foo": 1, "bar": 1 },
+    "exp": "one one"
+  },
+  {
+    "src": "match {$foo} {$bar} when one one {one one} when one * {one other} when * * {other}",
+    "params": { "foo": 1, "bar": 2 },
+    "exp": "one other"
+  },
+  {
+    "src": "match {$foo} {$bar} when one one {one one} when one * {one other} when * * {other}",
+    "params": { "foo": 2, "bar": 2 },
+    "exp": "other"
+  },
+  {
+    "src": "let $foo = {$bar} match {$foo} when one {one} when * {other}",
+    "params": { "bar": 1 },
+    "exp": "one"
+  },
+  {
+    "src": "let $foo = {$bar} match {$foo} when one {one} when * {other}",
+    "params": { "bar": 2 },
+    "exp": "other"
+  },
+  {
+    "src": "let $bar = {$none} match {$foo} when one {one} when * {{$bar}}",
+    "params": { "foo": 1 },
+    "exp": "one",
+    "errors": []
+  },
+  {
+    "src": "let $bar = {$none} match {$foo} when one {one} when * {{$bar}}",
+    "params": { "foo": 2 },
+    "exp": "{$bar}",
+    "errors": [{ "type": "missing-var" }]
+  },
+  {
+    "src": "let bar = {(foo)} {{$bar}}",
+    "exp": "{$bar}",
+    "errors": [{ "type": "missing-char" }, { "type": "missing-var" }]
+  },
+  {
+    "src": "let $bar {(foo)} {{$bar}}",
+    "exp": "foo",
+    "errors": [{ "type": "missing-char" }]
+  },
+  {
+    "src": "let $bar = (foo) {{$bar}}",
+    "exp": "{$bar}",
+    "errors": [{ "type": "missing-char" }, { "type": "junk-element" }]
+  },
+  { "src": "{{+tag}}", "exp": "<tag/>" },
+  { "src": "{{+tag}content{-tag}}", "exp": "<tag>content</tag>" },
+  { "src": "{{-tag}content}", "exp": "</tag>content" },
+  { "src": "{{+tag foo=bar}}", "exp": "<tag foo=\"bar\"/>" },
+  {
+    "src": "{{-tag foo=bar}}",
+    "exp": "</tag>",
+    "errors": [{ "type": "extra-content" }]
+  },
+  {
+    "src": "no braces",
+    "exp": "{no braces}",
+    "errors": [{ "type": "parse-error" }, { "type": "junk-element" }]
+  },
+  {
+    "src": "no braces {$foo}",
+    "exp": "{no braces {$foo}}",
+    "params": { "foo": 2 },
+    "errors": [{ "type": "parse-error" }, { "type": "junk-element" }]
+  },
+  {
+    "src": "{missing end brace",
+    "exp": "missing end brace",
+    "errors": [{ "type": "missing-char" }]
+  },
+  {
+    "src": "{missing end {$brace",
+    "exp": "missing end {$brace}",
+    "errors": [
+      { "type": "missing-char" },
+      { "type": "missing-char" },
+      { "type": "missing-var" }
+    ]
+  },
+  {
+    "src": "{extra} content",
+    "exp": "extra",
+    "errors": [{ "type": "extra-content" }]
+  },
+  {
+    "src": "{empty { }}",
+    "exp": "empty {}}",
+    "errors": [{ "type": "parse-error" }, { "type": "junk-element" }]
+  },
+  {
+    "src": "{bad {:}}",
+    "exp": "bad {:}",
+    "errors": [{ "type": "empty-token" }, { "type": "missing-func" }]
+  },
+  {
+    "src": "{bad {placeholder}}",
+    "exp": "bad {placeholder}",
+    "errors": [
+      { "type": "parse-error" },
+      { "type": "extra-content" },
+      { "type": "junk-element" }
+    ]
+  },
+  {
+    "src": "{no-equal {(42) :number minimumFractionDigits 2}}",
+    "exp": "no-equal 42.00",
+    "errors": [{ "type": "missing-char" }]
+  },
+  {
+    "src": "{bad {:placeholder option=}}",
+    "exp": "bad {:placeholder}",
+    "errors": [{ "type": "empty-token" }, { "type": "missing-func" }]
+  },
+  {
+    "src": "{bad {:placeholder option value}}",
+    "exp": "bad {:placeholder}",
+    "errors": [{ "type": "missing-char" }, { "type": "missing-func" }]
+  },
+  {
+    "src": "{bad {:placeholder option}}",
+    "exp": "bad {:placeholder}",
+    "errors": [
+      { "type": "missing-char" },
+      { "type": "empty-token" },
+      { "type": "missing-func" }
+    ]
+  },
+  {
+    "src": "{bad {$placeholder option}}",
+    "exp": "bad {$placeholder}",
+    "errors": [
+      { "type": "extra-content" },
+      { "type": "extra-content" },
+      { "type": "missing-var" }
+    ]
+  },
+  {
+    "src": "{bad {(foo) +markup}}",
+    "exp": "bad <markup/>",
+    "errors": [{ "type": "extra-content" }]
+  },
+  {
+    "src": "{no {$placeholder end}",
+    "exp": "no {$placeholder}",
+    "errors": [{ "type": "extra-content" }, { "type": "missing-var" }]
+  },
+  {
+    "src": "match {} when * {foo}",
+    "exp": "foo",
+    "errors": [
+      { "type": "parse-error" },
+      { "type": "bad-selector" },
+      { "type": "junk-element" }
+    ]
+  },
+  {
+    "src": "match {+foo} when * {foo}",
+    "exp": "foo",
+    "errors": [{ "type": "bad-selector" }]
+  },
+  {
+    "src": "match {(foo)} when*{foo}",
+    "exp": "foo",
+    "errors": [{ "type": "missing-char" }]
+  },
+  {
+    "src": "match when * {foo}",
+    "exp": "foo",
+    "errors": [{ "type": "empty-token" }]
+  },
+  {
+    "src": "match {(x)} when * foo",
+    "exp": "",
+    "errors": [{ "type": "key-mismatch" }, { "type": "missing-char" }]
+  },
+  {
+    "src": "match {(x)} when * {foo} extra",
+    "exp": "foo",
+    "errors": [{ "type": "extra-content" }]
+  },
+  {
+    "src": "match (x) when * {foo}",
+    "exp": "",
+    "errors": [{ "type": "empty-token" }, { "type": "extra-content" }]
+  },
+  {
+    "src": "match {$foo} when * * {foo}",
+    "exp": "foo",
+    "errors": [{ "type": "key-mismatch" }, { "type": "missing-var" }]
+  },
+  {
+    "src": "match {$foo} {$bar} when * {foo}",
+    "exp": "foo",
+    "errors": [
+      { "type": "key-mismatch" },
+      { "type": "missing-var" },
+      { "type": "missing-var" }
+    ]
+  }
+]
