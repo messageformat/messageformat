@@ -90,6 +90,15 @@ export interface CatchallKey {
 }
 
 /**
+ * A type guard for {@link CatchallKey} values
+ *
+ * @beta
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isCatchallKey = (key: any): key is CatchallKey =>
+  !!key && typeof key === 'object' && key.type === '*';
+
+/**
  * The result of parsing input that cannot be represented by
  * a {@link PatternMessage} or a {@link SelectMessage}.
  *

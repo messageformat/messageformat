@@ -11,6 +11,7 @@ import {
   Expression,
   isLiteral,
   isPlaceholder,
+  isText,
   isVariableRef,
   Junk,
   Literal,
@@ -20,7 +21,6 @@ import {
   PatternElement,
   VariableRef
 } from '../pattern';
-import { isText } from '../pattern/literal';
 
 /**
  * Stringify a message using its syntax representation.
