@@ -25,8 +25,8 @@
 
 import * as Fluent from '@fluent/syntax';
 import { source } from '@messageformat/test-utils';
-import { MessageFormat, validate } from 'messageformat';
-import { compileFluentResource, compileFluentResourceData } from './index';
+import { validate } from 'messageformat';
+import { fluentToResource, fluentToResourceData } from './index';
 import { resourceToFluent } from './resource-to-fluent';
 
 type TestCase = {
@@ -270,8 +270,8 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
   describe(title, () => {
-    const data = compileFluentResourceData(src).data;
-    const res = compileFluentResource(data, locale);
+    const data = fluentToResourceData(src).data;
+    const res = fluentToResource(data, locale);
 
     test('validate', () => {
       for (const [id, mf] of res) {
@@ -333,10 +333,7 @@ describe('getMessage', () => {
       }
     `;
 
-    let res: Map<string, MessageFormat>;
-    beforeAll(() => {
-      res = compileFluentResource(src);
-    });
+    const res = fluentToResource(src);
 
     test('defined formatted variable', () => {
       const foo = res.get('foo')?.resolveMessage({ num: 42 });
@@ -414,13 +411,10 @@ describe('getMessage', () => {
       ### Other resource comment
     `;
 
-    let res: Map<string, MessageFormat>;
-    beforeAll(() => {
-      res = compileFluentResource(src, 'en');
-    });
+    const res = fluentToResource(src, 'en');
 
     test('Data model comments', () => {
-      const { comments, data } = compileFluentResourceData(src);
+      const { comments, data } = fluentToResourceData(src);
       expect(comments).toBe('Resource comment\n\nOther resource comment');
       expect(Array.from(data.entries())).toEqual([
         [
@@ -504,10 +498,7 @@ describe('getMessage', () => {
       }
     `;
 
-    let res: Map<string, MessageFormat>;
-    beforeAll(() => {
-      res = compileFluentResource(src, 'en');
-    });
+    const res = fluentToResource(src, 'en');
 
     test('case with match', () => {
       const msg = res.get('case')?.resolveMessage({ case: 'genitive' });

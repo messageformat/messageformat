@@ -1,4 +1,4 @@
-import { compileFluentResource } from '@messageformat/fluent';
+import { fluentToResource } from '@messageformat/fluent';
 
 import { MessageFormat, MessageNumber, MessageValue } from '../index';
 
@@ -6,7 +6,7 @@ describe('MessageValue variables', () => {
   let mf: MessageFormat;
   beforeEach(() => {
     const src = `msg = { $val }`;
-    const res = compileFluentResource(src, 'en');
+    const res = fluentToResource(src, 'en');
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     mf = res.get('msg')!;
   });

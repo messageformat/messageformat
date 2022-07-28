@@ -1,7 +1,4 @@
-import {
-  compileFluentResource,
-  compileFluentResourceData
-} from '@messageformat/fluent';
+import { fluentToResource, fluentToResourceData } from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
 
 import {
@@ -21,7 +18,7 @@ describe('Function returns generic value', () => {
     const runtime: Runtime = {
       STRINGIFY: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
     };
-    const res = compileFluentResource(src, 'en', { runtime });
+    const res = fluentToResource(src, 'en', { runtime });
     const mf = res.get('msg');
     expect(mf?.resolveMessage({ var: 42 })).toMatchObject({
       type: 'message',
@@ -35,7 +32,7 @@ describe('Function returns generic value', () => {
     const runtime: Runtime = {
       NUMERIC: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
     };
-    const res = compileFluentResource(src, 'en', { runtime });
+    const res = fluentToResource(src, 'en', { runtime });
     const mf = res.get('msg');
     expect(mf?.resolveMessage({ var: '42' })).toEqual({
       type: 'message',
@@ -50,7 +47,7 @@ describe('Function returns generic value', () => {
     const runtime: Runtime = {
       NOW: { call: () => date, options: 'never' }
     };
-    const res = compileFluentResource(src, 'en', { runtime });
+    const res = fluentToResource(src, 'en', { runtime });
     const mf = res.get('msg');
     const dtf = new Intl.DateTimeFormat('en');
     const msg = mf?.resolveMessage();
@@ -77,7 +74,7 @@ describe('Function returns MessageValue', () => {
         options: 'never'
       }
     };
-    const res = compileFluentResource(src, 'en', { runtime });
+    const res = fluentToResource(src, 'en', { runtime });
     const mf = res.get('msg');
     expect(mf?.resolveMessage({ var: 42 })).toEqual({
       type: 'message',
@@ -91,7 +88,7 @@ describe('Function returns MessageValue', () => {
 describe('Function uses MessageValue argument', () => {
   test('Options are merged', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
-    const res = compileFluentResource(src, 'en');
+    const res = fluentToResource(src, 'en');
     const mf = res.get('msg');
     const val = new MessageNumber(null, BigInt(12345678), {
       options: { useGrouping: false }
@@ -108,7 +105,7 @@ describe('Function uses MessageValue argument', () => {
 
   test('Function options take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
-    const res = compileFluentResource(src, 'en');
+    const res = fluentToResource(src, 'en');
     const mf = res.get('msg');
     const val = new MessageNumber(null, 42, {
       options: { minimumFractionDigits: 4 }
@@ -122,7 +119,7 @@ describe('Function uses MessageValue argument', () => {
 
   test('MessageValue locales take precedence', () => {
     const src = `msg = { NUMBER($val, minimumFractionDigits: 2) }`;
-    const res = compileFluentResource(src, 'en');
+    const res = fluentToResource(src, 'en');
     const mf = res.get('msg');
     const val = new MessageNumber('fi', 12345);
     const msg = mf?.resolveMessage({ val });
@@ -139,7 +136,7 @@ describe('Type casts based on runtime', () => {
       true = { NUMBER($var) }
       false = { NUMBER($var) }
     `;
-    const { data } = compileFluentResourceData(src);
+    const { data } = fluentToResourceData(src);
 
     // Hacky, but Fluent doesn't allow for useGrouping
     const tx = (data.get('true') as PatternMessage).pattern
@@ -153,7 +150,7 @@ describe('Type casts based on runtime', () => {
       { name: 'useGrouping', value: { type: 'nmtoken', value: 'false' } }
     ];
 
-    const res = compileFluentResource(data, 'en');
+    const res = fluentToResource(data, 'en');
     expect(res.get('true')?.resolveMessage({ var: 1234 })?.toString()).toBe(
       '1,234'
     );
@@ -164,7 +161,7 @@ describe('Type casts based on runtime', () => {
 
   test('boolean function option with variable value', () => {
     const src = `msg = { NUMBER($var) }`;
-    const { data } = compileFluentResourceData(src);
+    const { data } = fluentToResourceData(src);
 
     // Hacky, but Fluent doesn't allow for useGrouping
     const vx = (data.get('msg') as PatternMessage).pattern
@@ -173,7 +170,7 @@ describe('Type casts based on runtime', () => {
       { name: 'useGrouping', value: { type: 'variable', name: 'useGrouping' } }
     ];
 
-    const res = compileFluentResource(data, 'en');
+    const res = fluentToResource(data, 'en');
     const mf = res.get('msg');
     expect(
       mf?.resolveMessage({ var: 1234, useGrouping: 'false' })?.toString()

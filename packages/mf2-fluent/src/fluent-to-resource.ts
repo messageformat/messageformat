@@ -4,17 +4,18 @@ import { fluentToMessage } from './fluent-to-message';
 import { getFluentRuntime } from './runtime';
 
 /**
- * Compile a Fluent resource (i.e. an FTL file) into a Map of {@link messageformat#MessageFormat} instances.
+ * Compile a Fluent resource (i.e. an FTL file) into a Map of
+ * {@link messageformat#MessageFormat} instances.
  *
  * A runtime provided by {@link getFluentRuntime} is automatically used in these instances.
  *
  * @beta
  * @param source - A Fluent resource, either as the string contents of an FTL file,
- *   or in the shape output by {@link compileFluentResourceData}.
+ *   or in the shape output by {@link fluentToResourceData}.
  * @param locales - The locale code or codes to use for all of the resource's messages.
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
  */
-export function compileFluentResource(
+export function fluentToResource(
   source: string | Map<string, Message>,
   locales?: string | string[],
   options?: MessageFormatOptions
@@ -25,9 +26,7 @@ export function compileFluentResource(
   const opt = { ...options, runtime };
 
   const data =
-    typeof source === 'string'
-      ? compileFluentResourceData(source).data
-      : source;
+    typeof source === 'string' ? fluentToResourceData(source).data : source;
   for (const [id, msg] of data)
     res.set(id, new MessageFormat(msg, locales, opt));
 
@@ -35,14 +34,15 @@ export function compileFluentResource(
 }
 
 /**
- * Compile a Fluent resource (i.e. and FTL file) into a Map of {@link messageformat#Message} data objects.
+ * Compile a Fluent resource (i.e. an FTL file) into a Map of
+ * {@link messageformat#Message} data objects.
  *
  * @beta
  * @param src - A Fluent resource, as the string contents of an FTL file.
  * @returns An object containing the messages as `data` and any resource-level
  *   `comments` of the resource.
  */
-export function compileFluentResourceData(src: string): {
+export function fluentToResourceData(src: string): {
   data: Map<string, Message>;
   comments: string;
 } {

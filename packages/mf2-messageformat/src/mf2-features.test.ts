@@ -1,4 +1,4 @@
-import { compileFluentResource } from '@messageformat/fluent';
+import { fluentToResource } from '@messageformat/fluent';
 import {
   compileMF1Message,
   compileMF1MessageData
@@ -221,7 +221,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         *[other] {$clipsPerDay} clips
       } a day.
     `;
-    const res = compileFluentResource(src, 'en');
+    const res = fluentToResource(src, 'en');
 
     const one = res.get('activity-needed-calculation-plural')?.resolveMessage({
       totalHours: 1,
@@ -268,7 +268,7 @@ maybe('List formatting', () => {
       and = { LIST($list, style: "short", type: "conjunction") }
       or = { LIST($list, style: "long", type: "disjunction") }
     `;
-    const res = compileFluentResource(src, 'en', {
+    const res = fluentToResource(src, 'en', {
       runtime: { LIST: { call: LIST, options: 'any' } }
     });
     const list = ['Motorcycle', 'Bus', 'Car'];
@@ -324,7 +324,7 @@ maybe('List formatting', () => {
         *[other] Le-am dat cadouri { LIST($list, each: "dative") }.
       }
     `;
-    const res = compileFluentResource(src, 'ro', {
+    const res = fluentToResource(src, 'ro', {
       runtime: { LIST: { call: LIST, options: 'any' } }
     });
 
@@ -380,7 +380,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     bar = The { $foo } and lotsa { $other }
     qux = { $foo } foo and a {"..."} { $other }
   `;
-  const res = compileFluentResource(src, 'en');
+  const res = fluentToResource(src, 'en');
 
   test('Match, no change', () => {
     const msg = res.get('foo')?.resolveMessage({ foo: 'foo', other: 'other' });

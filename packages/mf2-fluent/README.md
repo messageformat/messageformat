@@ -14,12 +14,12 @@ npm install @messageformat/fluent
 ```
 
 ```js
-import { compileFluentResource } from '@messageformat/fluent';
+import { fluentToResource } from '@messageformat/fluent';
 
 const locale = 'en-US';
 const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
 
-const res = compileFluentResource(src, locale);
+const res = fluentToResource(src, locale);
 
 const msg = res.get('msg').resolveMessage({ today: new Date('2022-02-02') });
 // ResolvedMessage {
@@ -43,8 +43,8 @@ msg.toString();
 
 ```js
 import {
-  compileFluentResource,
-  compileFluentResourceData,
+  fluentToResource,
+  fluentToResourceData,
   getFluentRuntime
 } from '@messageformat/fluent';
 ```

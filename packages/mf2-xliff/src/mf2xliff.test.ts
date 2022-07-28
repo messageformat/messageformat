@@ -1,4 +1,4 @@
-import { compileFluentResourceData } from '@messageformat/fluent';
+import { fluentToResourceData } from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
 import { mf2xliff, stringify } from './index';
 
@@ -11,7 +11,7 @@ test('source only', () => {
         [a] A
        *[b] B
     }`;
-  const { data } = compileFluentResourceData(src);
+  const { data } = fluentToResourceData(src);
   const xliff = stringify(mf2xliff({ data, id: 'res', locale: 'en' }));
   expect(xliff).toBe(
     source`
@@ -72,7 +72,7 @@ test('combine source & target', () => {
         [a] A
        *[b] B
     }`;
-  const srcRes = compileFluentResourceData(src).data;
+  const srcRes = fluentToResourceData(src).data;
 
   const trg = source`
     msg = Viesti
@@ -81,7 +81,7 @@ test('combine source & target', () => {
         [a] Ä
        *[b] B
     }`;
-  const trgRes = compileFluentResourceData(trg).data;
+  const trgRes = fluentToResourceData(trg).data;
 
   const xliff = stringify(
     mf2xliff(
@@ -142,14 +142,14 @@ test('selector mismatch between source & target languages', () => {
         [feminine] her house
        *[other] their house
     }`;
-  const srcRes = compileFluentResourceData(src).data;
+  const srcRes = fluentToResourceData(src).data;
 
   const trg = source`
     select = {$case ->
         [allative] hänen talolle
        *[nominative] hänen talo
     }`;
-  const trgRes = compileFluentResourceData(trg).data;
+  const trgRes = fluentToResourceData(trg).data;
 
   const xliff = stringify(
     mf2xliff(
