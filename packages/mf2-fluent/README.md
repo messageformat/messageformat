@@ -43,6 +43,7 @@ msg.toString();
 
 ```js
 import {
+  fluentToMessage,
   fluentToResource,
   fluentToResourceData,
   getFluentRuntime

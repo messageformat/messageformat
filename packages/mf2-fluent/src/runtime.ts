@@ -10,6 +10,7 @@ import {
 /**
  * Build a {@link messageformat#MessageFormat} runtime to use with Fluent messages.
  *
+ * @remarks
  * This builds on top of the default runtime, but uses all-caps names for the
  * `DATETIME` and `NUMBER` message formatters.
  * A custom function `MESSAGE` is also included to support

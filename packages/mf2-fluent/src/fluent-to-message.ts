@@ -5,7 +5,6 @@ import {
   isExpression,
   isLiteral,
   Literal,
-  Message,
   Option,
   PatternMessage,
   SelectMessage,
@@ -157,19 +156,23 @@ function asFluentSelect(
   }
 }
 
+/**
+ * Compile a {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
+ * (i.e. the value of a Fluent message or an attribute) into a
+ * {@link messageformat#Message} data object.
+ *
+ * @beta
+ */
 export function fluentToMessage(
-  ast: Fluent.Pattern,
-  comment: Fluent.Comment | null
-): Message {
+  ast: Fluent.Pattern
+): PatternMessage | SelectMessage {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
-    const msg: PatternMessage = {
+    return {
       type: 'message',
       declarations: [],
       pattern: { body: ast.elements.map(elementToPart) }
     };
-    if (comment) msg.comment = comment.content;
-    return msg;
   }
 
   // First determine the keys for all cases, with empty values
@@ -196,9 +199,8 @@ export function fluentToMessage(
   }));
 
   /**
-   * This reads `args` and modifies `cases`
+   * This reads `args` and modifies `variants`
    *
-   * @param pluralArg - Required by # octothorpes
    * @param filter - Selects which cases we're adding to
    */
   function addParts(
@@ -233,13 +235,10 @@ export function fluentToMessage(
   }
   addParts(ast, []);
 
-  const selectors = args.map(arg => expressionToPart(arg.selector));
-  const msg: SelectMessage = {
+  return {
     type: 'select',
     declarations: [],
-    selectors,
+    selectors: args.map(arg => expressionToPart(arg.selector)),
     variants
   };
-  if (comment) msg.comment = comment.content;
-  return msg;
 }

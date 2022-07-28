@@ -1,4 +1,4 @@
-import { parse } from '@fluent/syntax';
+import * as Fluent from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import { fluentToMessage } from './fluent-to-message';
 import { getFluentRuntime } from './runtime';
@@ -7,16 +7,19 @@ import { getFluentRuntime } from './runtime';
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
  * {@link messageformat#MessageFormat} instances.
  *
+ * @remarks
  * A runtime provided by {@link getFluentRuntime} is automatically used in these instances.
  *
  * @beta
- * @param source - A Fluent resource, either as the string contents of an FTL file,
- *   or in the shape output by {@link fluentToResourceData}.
+ * @param source - A Fluent resource,
+ *   as the string contents of an FTL file,
+ *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource},
+ *   or in the shape output by {@link fluentToResourceData} as `data`.
  * @param locales - The locale code or codes to use for all of the resource's messages.
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
  */
 export function fluentToResource(
-  source: string | Map<string, Message>,
+  source: string | Fluent.Resource | Map<string, Message>,
   locales?: string | string[],
   options?: MessageFormatOptions
 ): Map<string, MessageFormat> {
@@ -26,7 +29,9 @@ export function fluentToResource(
   const opt = { ...options, runtime };
 
   const data =
-    typeof source === 'string' ? fluentToResourceData(source).data : source;
+    typeof source === 'string' || source instanceof Fluent.Resource
+      ? fluentToResourceData(source).data
+      : source;
   for (const [id, msg] of data)
     res.set(id, new MessageFormat(msg, locales, opt));
 
@@ -38,15 +43,20 @@ export function fluentToResource(
  * {@link messageformat#Message} data objects.
  *
  * @beta
- * @param src - A Fluent resource, as the string contents of an FTL file.
+ * @param source - A Fluent resource,
+ *   as the string contents of an FTL file or
+ *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}
  * @returns An object containing the messages as `data` and any resource-level
  *   `comments` of the resource.
  */
-export function fluentToResourceData(src: string): {
+export function fluentToResourceData(source: string | Fluent.Resource): {
   data: Map<string, Message>;
   comments: string;
 } {
-  const ast = parse(src, { withSpans: false });
+  const ast =
+    typeof source === 'string'
+      ? Fluent.parse(source, { withSpans: false })
+      : source;
   const data = new Map<string, Message>();
   let groupComment = '';
   const resourceComments: string[] = [];
@@ -56,7 +66,8 @@ export function fluentToResourceData(src: string): {
       case 'Term': {
         const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
         if (msg.value) {
-          const entry = fluentToMessage(msg.value, msg.comment);
+          const entry = fluentToMessage(msg.value);
+          if (msg.comment) entry.comment = msg.comment.content;
           if (groupComment) {
             entry.comment = entry.comment
               ? `${groupComment}\n\n${entry.comment}`
@@ -65,7 +76,7 @@ export function fluentToResourceData(src: string): {
           data.set(id, entry);
         }
         for (const attr of msg.attributes)
-          data.set(`${id}.${attr.id.name}`, fluentToMessage(attr.value, null));
+          data.set(`${id}.${attr.id.name}`, fluentToMessage(attr.value));
         break;
       }
       case 'GroupComment':
