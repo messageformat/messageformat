@@ -37,6 +37,17 @@ const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
 
 const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
 
+/**
+ * Convert a {@link messageformat#Message} data object into a
+ * {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
+ * (i.e. the value of a Fluent message or an attribute).
+ *
+ * @beta
+ * @param defaultKey - The Fluent identifier or numeric literal to use for the
+ *   default/fallback variant, which is labelled as `*` in MessageFormat 2.
+ * @param functionMap - A mapping of MessageFormat 2 → Fluent function names.
+ *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
+ */
 export function messageToFluent(
   msg: Message,
   defaultKey = 'other',

@@ -8,6 +8,16 @@ import {
 
 type MessageGroup = Map<string | null, Message>;
 
+/**
+ * Convert a Map of {@link messageformat#Message} data objects into a
+ * {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}.
+ *
+ * @beta
+ * @param template - If set, defines the resource-level comments, message order,
+ *   and the default variant identifiers for messages.
+ * @param functionMap - A mapping of MessageFormat 2 → Fluent function names.
+ *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
+ */
 export function resourceToFluent(
   resource: Map<string, Message>,
   template?: Fluent.Resource,

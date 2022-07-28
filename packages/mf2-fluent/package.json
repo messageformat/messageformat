@@ -1,7 +1,7 @@
 {
   "name": "@messageformat/fluent",
   "version": "0.1.0",
-  "description": "Compile Fluent sources into MessageFormat 2 resources",
+  "description": "Conversion & compatibility tools for using Fluent with MessageFormat 2",
   "keywords": [
     "messageformat",
     "fluent",

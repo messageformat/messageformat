@@ -1,11 +1,16 @@
-# Compile Fluent sources into MessageFormat 2 resources
+# @messageformat/fluent
 
-This library provides compatibility for using [Fluent] sources with
-the [Unicode MessageFormat 2.0] -based [ECMA-402 Intl.MessageFormat proposal].
+This library provides conversion and compatibility tools for using [Fluent] resources
+with the [Unicode MessageFormat 2.0] -based [ECMA-402 Intl.MessageFormat proposal].
+
+The Fluent message representation relies on [`@fluent/syntax`],
+while the MessageFormat 2 representation uses [`messageformat@next`].
 
 [fluent]: https://projectfluent.org/
 [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat
 [unicode messageformat 2.0]: https://github.com/unicode-org/message-format-wg
+[`@fluent/syntax`]: https://www.npmjs.com/package/@fluent/syntax
+[`messageformat@next`]: https://www.npmjs.com/package/messageformat/v/next
 
 ## Usage
 
@@ -46,8 +51,10 @@ import {
   fluentToMessage,
   fluentToResource,
   fluentToResourceData,
-  getFluentRuntime
+  getFluentRuntime,
+  messageToFluent,
+  resourceToFluent
 } from '@messageformat/fluent';
 ```
 
-For more information, see the [API documentation site](https://messageformat.github.io/messageformat/api/).
+For more information, see the [API documentation site](http://messageformat.github.io/messageformat/api/fluent/).
