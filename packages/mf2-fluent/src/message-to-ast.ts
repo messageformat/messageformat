@@ -22,16 +22,18 @@ export const FluentMessageRef = Symbol.for('Fluent message ref');
 
 type MsgContext = {
   declarations: Declaration[];
-  functionMap: Record<string, string | symbol>;
+  functionMap: FunctionMap;
 };
 
-const defaultFunctionMap: MsgContext['functionMap'] = {
+export type FunctionMap = Record<string, string | symbol>;
+
+export const defaultFunctionMap: FunctionMap = {
   DATETIME: 'DATETIME',
   MESSAGE: FluentMessageRef,
   NUMBER: 'NUMBER'
 };
 
-const isIdentifier = (value: string) => /^[a-zA-Z][a-zA-Z_-]*$/.test(value);
+const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
 
 const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
 
@@ -172,9 +174,8 @@ function expressionToAst(
         `Fluent message and term references must have a literal message identifier`
       );
     }
-    const [msgId, ...msgAttr] = operand.value.split('.');
-    const attr =
-      msgAttr.length > 0 ? new Fluent.Identifier(msgAttr.join('.')) : null;
+    const { msgId, msgAttr } = valueToMessageRef(operand.value);
+    const attr = msgAttr ? new Fluent.Identifier(msgAttr) : null;
 
     if (msgId[0] === '-') {
       args.positional = [];
@@ -224,6 +225,15 @@ function valueToAst(
   val: Literal | VariableRef
 ): Fluent.InlineExpression {
   return isLiteral(val) ? literalToAst(val) : variableRefToAst(ctx, val);
+}
+
+export function valueToMessageRef(value: string): {
+  msgId: string;
+  msgAttr: string | null;
+} {
+  const match = value.match(/^(-?[a-zA-Z][\w-]*)(?:\.([a-zA-Z][\w-]*))?$/);
+  if (!match) throw new Error(`Invalid message identifier: ${value}`);
+  return { msgId: match[1], msgAttr: match[2] ?? null };
 }
 
 function variableRefToAst(

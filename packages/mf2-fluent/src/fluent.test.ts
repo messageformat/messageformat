@@ -27,7 +27,7 @@ import * as Fluent from '@fluent/syntax';
 import { source } from '@messageformat/test-utils';
 import { MessageFormat, validate } from 'messageformat';
 import { compileFluentResource, compileFluentResourceData } from './index';
-import { messageToAst } from './message-to-ast';
+import { resourceToAst } from './resource-to-ast';
 
 type TestCase = {
   locale?: string;
@@ -297,52 +297,28 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       });
     }
 
-    const fluentRes = Fluent.parse(src, { withSpans: false });
-    for (const [id, msg] of data) {
-      test(`${id} messageToAst`, () => {
-        const [name, ...attrParts] = id.split('.');
-        const attr = attrParts.join('.');
-        const fluentMsg = fluentRes.body.find(
-          entry =>
-            (entry.type === 'Message' && entry.id.name === name) ||
-            (entry.type === 'Term' && entry.id.name === name.substring(1))
-        ) as Fluent.Message | Fluent.Term | undefined;
-        const exp = attr
-          ? fluentMsg?.attributes.find(({ id }) => id.name === attr)?.value
-          : fluentMsg?.value;
-        if (!exp) throw new Error(`Fluent pattern not found for ${id}`);
+    test('resourceToAst', () => {
+      const template = Fluent.parse(src, { withSpans: false });
+      const res = resourceToAst(data, template);
 
-        let defaultKey = 'other';
-        class Visit extends Fluent.Transformer {
-          visitSelectExpression(node: Fluent.SelectExpression) {
-            // Fluent includes names for default variants
-            for (const variant of node.variants) {
-              if (variant.default) {
-                defaultKey =
-                  variant.key.type === 'NumberLiteral'
-                    ? variant.key.value
-                    : variant.key.name;
-              }
-            }
-
-            // MF2 uses first-match selection, so defaults will be last
-            node.variants.sort((a, b) => (a.default ? 1 : b.default ? -1 : 0));
-            return this.genericVisit(node);
-          }
-
-          visitCallArguments(node: Fluent.CallArguments) {
-            // Consider { -foo() } as { -foo }
-            return node.named.length === 0 && node.positional.length === 0
-              ? (null as unknown as undefined)
-              : this.genericVisit(node);
-          }
+      class FixExpected extends Fluent.Transformer {
+        // MF2 uses first-match selection, so default variants will be last
+        visitSelectExpression(node: Fluent.SelectExpression) {
+          node.variants.sort((a, b) => (a.default ? 1 : b.default ? -1 : 0));
+          return this.genericVisit(node);
         }
-        new Visit().visit(exp);
 
-        const res = messageToAst(msg, defaultKey);
-        expect(res.equals(exp)).toBe(true);
-      });
-    }
+        // Consider { -foo() } as { -foo }
+        visitCallArguments(node: Fluent.CallArguments) {
+          return node.named.length === 0 && node.positional.length === 0
+            ? (null as unknown as undefined)
+            : this.genericVisit(node);
+        }
+      }
+      new FixExpected().visit(template);
+
+      expect(res.equals(template)).toBe(true);
+    });
   });
 }
 
