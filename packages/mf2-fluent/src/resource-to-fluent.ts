@@ -1,10 +1,14 @@
 import * as Fluent from '@fluent/syntax';
 import { Message } from 'messageformat';
-import { FunctionMap, messageToAst, valueToMessageRef } from './message-to-ast';
+import {
+  FunctionMap,
+  messageToFluent,
+  valueToMessageRef
+} from './message-to-fluent';
 
 type MessageGroup = Map<string | null, Message>;
 
-export function resourceToAst(
+export function resourceToFluent(
   resource: Map<string, Message>,
   template?: Fluent.Resource,
   functionMap?: FunctionMap
@@ -29,7 +33,7 @@ export function resourceToAst(
           const msgId = (entry.type === 'Term' ? '-' : '') + entry.id.name;
           const group = grouped.get(msgId);
           if (group) {
-            body.push(messageGroupToAst(msgId, group, entry, functionMap));
+            body.push(messageGroupToFluent(msgId, group, entry, functionMap));
             grouped.set(msgId, null);
           }
           break;
@@ -43,7 +47,7 @@ export function resourceToAst(
   let prevId: string | undefined;
   for (const [msgId, group] of grouped) {
     if (group) {
-      const entry = messageGroupToAst(msgId, group, null, functionMap);
+      const entry = messageGroupToFluent(msgId, group, null, functionMap);
       const prevIndex = body.findIndex(
         entry =>
           (entry.type === 'Message' || entry.type === 'Term') &&
@@ -58,7 +62,7 @@ export function resourceToAst(
   return new Fluent.Resource(body);
 }
 
-function messageGroupToAst(
+function messageGroupToFluent(
   msgId: string,
   messages: MessageGroup,
   template: Fluent.Message | Fluent.Term | null,
@@ -69,7 +73,7 @@ function messageGroupToAst(
   const attributes: Fluent.Attribute[] = [];
   for (const [attrId, msg] of messages) {
     const defaultKey = findDefaultKey(template, attrId);
-    const pattern = messageToAst(msg, defaultKey, functionMap);
+    const pattern = messageToFluent(msg, defaultKey, functionMap);
     if (!attrId) {
       comment = msg.comment;
       value = pattern;

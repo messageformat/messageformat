@@ -37,7 +37,7 @@ const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
 
 const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
 
-export function messageToAst(
+export function messageToFluent(
   msg: Message,
   defaultKey = 'other',
   functionMap = defaultFunctionMap
@@ -47,18 +47,18 @@ export function messageToAst(
     functionMap
   };
   if (isPatternMessage(msg)) {
-    return patternToAst(ctx, msg.pattern);
+    return patternToFluent(ctx, msg.pattern);
   }
 
   if (isSelectMessage(msg)) {
     const defKey = findDefaultKey(msg.variants, defaultKey);
     const variants = msg.variants.map(({ keys, value }) => ({
       keys: keys.slice(), // will be modified
-      pattern: patternToAst(ctx, value)
+      pattern: patternToFluent(ctx, value)
     }));
     const k0 = variants[0].keys;
     while (k0.length > 0) {
-      const sel = placeholderToAst(ctx, msg.selectors[k0.length - 1]);
+      const sel = placeholderToFluent(ctx, msg.selectors[k0.length - 1]);
       let baseKeys: (Literal | CatchallKey)[] = [];
       let exp: Fluent.SelectExpression | undefined;
       for (let i = 0; i < variants.length; ++i) {
@@ -128,24 +128,24 @@ function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
   return true;
 }
 
-function patternToAst(ctx: MsgContext, pattern: Pattern) {
+function patternToFluent(ctx: MsgContext, pattern: Pattern) {
   const elements = pattern.body.map(el =>
     isText(el)
       ? new Fluent.TextElement(el.value)
-      : new Fluent.Placeable(placeholderToAst(ctx, el))
+      : new Fluent.Placeable(placeholderToFluent(ctx, el))
   );
   return new Fluent.Pattern(elements);
 }
 
-function expressionToAst(
+function expressionToFluent(
   ctx: MsgContext,
   { name, operand, options }: Expression
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
-  if (operand) args.positional[0] = valueToAst(ctx, operand);
+  if (operand) args.positional[0] = valueToFluent(ctx, operand);
   if (options) {
     args.named = options.map(opt => {
-      const va = valueToAst(ctx, opt.value);
+      const va = valueToFluent(ctx, opt.value);
       if (va instanceof Fluent.BaseLiteral) {
         const id = new Fluent.Identifier(opt.name);
         return new Fluent.NamedArgument(id, va);
@@ -195,24 +195,24 @@ function expressionToAst(
   throw new Error(`No Fluent equivalent found for "${name}" function`);
 }
 
-function literalToAst({ value }: Literal) {
+function literalToFluent({ value }: Literal) {
   return isNumberLiteral(value)
     ? new Fluent.NumberLiteral(value)
     : new Fluent.StringLiteral(value);
 }
 
-function placeholderToAst(
+function placeholderToFluent(
   ctx: MsgContext,
   ph: PatternElement
 ): Fluent.InlineExpression {
   const body = isPlaceholder(ph) ? ph.body : ph;
   switch (body.type) {
     case 'expression':
-      return expressionToAst(ctx, body);
+      return expressionToFluent(ctx, body);
     case 'literal':
       return new Fluent.StringLiteral(body.value);
     case 'variable':
-      return variableRefToAst(ctx, body);
+      return variableRefToFluent(ctx, body);
     default:
       throw new Error(
         `Conversion of "${body.type}" placeholder to Fluent is not supported`
@@ -220,11 +220,11 @@ function placeholderToAst(
   }
 }
 
-function valueToAst(
+function valueToFluent(
   ctx: MsgContext,
   val: Literal | VariableRef
 ): Fluent.InlineExpression {
-  return isLiteral(val) ? literalToAst(val) : variableRefToAst(ctx, val);
+  return isLiteral(val) ? literalToFluent(val) : variableRefToFluent(ctx, val);
 }
 
 export function valueToMessageRef(value: string): {
@@ -236,7 +236,7 @@ export function valueToMessageRef(value: string): {
   return { msgId: match[1], msgAttr: match[2] ?? null };
 }
 
-function variableRefToAst(
+function variableRefToFluent(
   ctx: MsgContext,
   { name }: VariableRef
 ): Fluent.InlineExpression {
@@ -244,6 +244,6 @@ function variableRefToAst(
     decl => isVariableRef(decl.target) && decl.target.name === name
   );
   return local
-    ? placeholderToAst(ctx, local.value)
+    ? placeholderToFluent(ctx, local.value)
     : new Fluent.VariableReference(new Fluent.Identifier(name));
 }

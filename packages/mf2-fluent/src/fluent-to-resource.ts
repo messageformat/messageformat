@@ -1,6 +1,6 @@
 import { parse } from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import { astToMessage } from './ast-to-message';
+import { fluentToMessage } from './fluent-to-message';
 import { getFluentRuntime } from './runtime';
 
 /**
@@ -56,7 +56,7 @@ export function compileFluentResourceData(src: string): {
       case 'Term': {
         const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
         if (msg.value) {
-          const entry = astToMessage(msg.value, msg.comment);
+          const entry = fluentToMessage(msg.value, msg.comment);
           if (groupComment) {
             entry.comment = entry.comment
               ? `${groupComment}\n\n${entry.comment}`
@@ -65,7 +65,7 @@ export function compileFluentResourceData(src: string): {
           data.set(id, entry);
         }
         for (const attr of msg.attributes)
-          data.set(`${id}.${attr.id.name}`, astToMessage(attr.value, null));
+          data.set(`${id}.${attr.id.name}`, fluentToMessage(attr.value, null));
         break;
       }
       case 'GroupComment':

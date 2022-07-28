@@ -157,7 +157,7 @@ function asFluentSelect(
   }
 }
 
-export function astToMessage(
+export function fluentToMessage(
   ast: Fluent.Pattern,
   comment: Fluent.Comment | null
 ): Message {

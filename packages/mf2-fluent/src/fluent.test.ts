@@ -27,7 +27,7 @@ import * as Fluent from '@fluent/syntax';
 import { source } from '@messageformat/test-utils';
 import { MessageFormat, validate } from 'messageformat';
 import { compileFluentResource, compileFluentResourceData } from './index';
-import { resourceToAst } from './resource-to-ast';
+import { resourceToFluent } from './resource-to-fluent';
 
 type TestCase = {
   locale?: string;
@@ -297,9 +297,9 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       });
     }
 
-    test('resourceToAst', () => {
+    test('resourceToFluent', () => {
       const template = Fluent.parse(src, { withSpans: false });
-      const res = resourceToAst(data, template);
+      const res = resourceToFluent(data, template);
 
       class FixExpected extends Fluent.Transformer {
         // MF2 uses first-match selection, so default variants will be last
