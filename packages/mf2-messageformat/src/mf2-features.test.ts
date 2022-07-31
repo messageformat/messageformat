@@ -1,7 +1,7 @@
 import { fluentToResource } from '@messageformat/fluent';
 import {
-  compileMF1Message,
-  compileMF1MessageData
+  mf1ToMessage,
+  mf1ToMessageData
 } from '@messageformat/icu-messageformat-1';
 import { source } from '@messageformat/test-utils';
 
@@ -126,11 +126,11 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       } and {golfCount, plural,
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
-    const msg = compileMF1MessageData(src, 'en') as SelectMessage;
+    const msg = mf1ToMessageData(src, 'en') as SelectMessage;
     expect(msg.selectors).toHaveLength(4);
     expect(msg.variants).toHaveLength(81);
 
-    const mf = compileMF1Message(msg, 'en');
+    const mf = mf1ToMessage(msg, 'en');
 
     const none = mf.resolveMessage({
       poolCount: 0,
@@ -174,7 +174,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {AREA, select, undefined{} other{in {AREA}}}
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
-    const msg = compileMF1MessageData(src, 'en') as SelectMessage;
+    const msg = mf1ToMessageData(src, 'en') as SelectMessage;
     expect(msg.selectors).toHaveLength(6);
     expect(msg.variants).toHaveLength(64);
 

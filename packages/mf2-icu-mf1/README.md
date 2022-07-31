@@ -13,12 +13,12 @@ npm install @messageformat/icu-messageformat-1
 ```
 
 ```js
-import { compileMF1Message } from '@messageformat/icu-messageformat-1';
+import { mf1ToMessage } from '@messageformat/icu-messageformat-1';
 
 const locale = 'en-US';
 const msg = 'Today is {today, date}';
 
-const mf = compileMF1Message(msg, locale);
+const mf = mf1ToMessage(msg, locale);
 
 mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
 // 'Today is Feb 2, 2022'
@@ -28,9 +28,9 @@ mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
 
 ```js
 import {
-  compileMF1Message,
-  compileMF1MessageData,
-  getMF1Runtime
+  getMF1Runtime,
+  mf1ToMessage,
+  mf1ToMessageData
 } from '@messageformat/icu-messageformat-1';
 ```
 

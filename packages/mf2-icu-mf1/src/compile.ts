@@ -36,14 +36,14 @@ export type MF1Options = {
  * @param locale - The locale code to use for the message.
  * @param options - See {@link MF1Options} and {@link messageformat#MessageFormatOptions}
  */
-export function compileMF1Message(
+export function mf1ToMessage(
   source: string | Message,
   locale: string,
   { strict, ...opt }: MF1Options & MessageFormatOptions = {}
 ): MessageFormat {
   const msg =
     typeof source === 'string'
-      ? compileMF1MessageData(source, locale, { strict })
+      ? mf1ToMessageData(source, locale, { strict })
       : source;
   opt.runtime = Object.assign(getMF1Runtime(), opt.runtime);
   return new MessageFormat(msg, [locale], opt);
@@ -57,7 +57,7 @@ export function compileMF1Message(
  * @param locale - The locale code to use for the message.
  * @param options - See {@link MF1Options}
  */
-export function compileMF1MessageData(
+export function mf1ToMessageData(
   src: string,
   locale: string,
   { strict }: MF1Options = {}

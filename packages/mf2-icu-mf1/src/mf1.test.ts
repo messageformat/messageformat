@@ -1,5 +1,5 @@
 import { validate } from 'messageformat';
-import { compileMF1Message, compileMF1MessageData } from './index';
+import { mf1ToMessage, mf1ToMessageData } from './index';
 
 export type TestCase = {
   locale?: string;
@@ -371,8 +371,8 @@ for (const [title, cases] of Object.entries(testCases)) {
           else strParam.push(String(param));
 
           test(strParam.join(', '), () => {
-            const data = compileMF1MessageData(src, locale);
-            const mf = compileMF1Message(data, locale);
+            const data = mf1ToMessageData(src, locale);
+            const mf = mf1ToMessage(data, locale);
             validate(data, mf.resolvedOptions().runtime);
             const msg = mf
               .resolveMessage(param as Record<string, string | number | Date>)
