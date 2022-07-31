@@ -1,13 +1,6 @@
-import { parse } from '@messageformat/parser';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import { astToMessage } from './ast-to-message';
+import { MF1Options, mf1ToMessageData } from './mf1-to-message-data';
 import { getMF1Runtime } from './runtime';
-
-/** @beta */
-export type MF1Options = {
-  /** See {@link @messageformat/parser#ParseOptions.strict} */
-  strict?: boolean;
-};
 
 /**
  * Compile an ICU MessageFormat 1 message into a {@link messageformat#MessageFormat} instance.
@@ -29,19 +22,4 @@ export function mf1ToMessage(
     typeof source === 'string' ? mf1ToMessageData(source, { strict }) : source;
   opt.runtime = Object.assign(getMF1Runtime(), opt.runtime);
   return new MessageFormat(msg, locales, opt);
-}
-
-/**
- * Compile an ICU MessageFormat 1 message into a {@link messageformat#Message} data object.
- *
- * @beta
- * @param src - A Fluent resource, as the string contents of an FTL file.
- * @param options - See {@link MF1Options}
- */
-export function mf1ToMessageData(
-  src: string,
-  { strict }: MF1Options = {}
-): Message {
-  const ast = parse(src, { strict });
-  return astToMessage(ast);
 }

@@ -1,3 +1,4 @@
+import { parse } from '@messageformat/parser';
 import type * as AST from '@messageformat/parser';
 import {
   Expression,
@@ -8,6 +9,12 @@ import {
   VariableRef,
   Variant
 } from 'messageformat';
+
+/** @beta */
+export type MF1Options = {
+  /** See {@link @messageformat/parser#ParseOptions.strict} */
+  strict?: boolean;
+};
 
 const isAstSelect = (token: AST.Token): token is AST.Select =>
   token.type === 'plural' ||
@@ -130,6 +137,21 @@ function argToPart({
 }
 
 /**
+ * Compile an ICU MessageFormat 1 message into a {@link messageformat#Message} data object.
+ *
+ * @beta
+ * @param src - A Fluent resource, as the string contents of an FTL file.
+ * @param options - See {@link MF1Options}
+ */
+export function mf1ToMessageData(
+  src: string,
+  { strict }: MF1Options = {}
+): Message {
+  const ast = parse(src, { strict });
+  return astToMessage(ast);
+}
+
+/**
  * Converts the `@messageformat/parser` AST representation of a
  * MessageFormat 1 message into the corresponding MessageFormat 2
  * data model.
@@ -149,7 +171,7 @@ function argToPart({
  * Only literal values are supported in formatter parameters. Any
  * such value will be passed in as an option `{ param: string }`.
  */
-export function astToMessage(ast: AST.Token[]): Message {
+function astToMessage(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {
