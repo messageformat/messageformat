@@ -1,3 +1,4 @@
+import { parse } from '@messageformat/parser';
 import { validate } from 'messageformat';
 import { mf1ToMessage, mf1ToMessageData } from './index';
 
@@ -371,7 +372,7 @@ for (const [title, cases] of Object.entries(testCases)) {
           else strParam.push(String(param));
 
           test(strParam.join(', '), () => {
-            const data = mf1ToMessageData(src, locale);
+            const data = mf1ToMessageData(parse(src));
             const mf = mf1ToMessage(data, locale);
             validate(data, mf.resolvedOptions().runtime);
             const msg = mf

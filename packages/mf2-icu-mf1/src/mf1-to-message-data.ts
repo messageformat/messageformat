@@ -1,4 +1,3 @@
-import { parse } from '@messageformat/parser';
 import type * as AST from '@messageformat/parser';
 import {
   Expression,
@@ -9,12 +8,6 @@ import {
   VariableRef,
   Variant
 } from 'messageformat';
-
-/** @beta */
-export type MF1Options = {
-  /** See {@link @messageformat/parser#ParseOptions.strict} */
-  strict?: boolean;
-};
 
 const isAstSelect = (token: AST.Token): token is AST.Select =>
   token.type === 'plural' ||
@@ -137,41 +130,19 @@ function argToPart({
 }
 
 /**
- * Compile an ICU MessageFormat 1 message into a {@link messageformat#Message} data object.
- *
- * @beta
- * @param src - A Fluent resource, as the string contents of an FTL file.
- * @param options - See {@link MF1Options}
- */
-export function mf1ToMessageData(
-  src: string,
-  { strict }: MF1Options = {}
-): Message {
-  const ast = parse(src, { strict });
-  return astToMessage(ast);
-}
-
-/**
- * Converts the `@messageformat/parser` AST representation of a
- * MessageFormat 1 message into the corresponding MessageFormat 2
- * data model.
+ * Convert an ICU MessageFormat 1 message into a {@link messageformat#Message} data object.
  *
  * If the source message contains any inner selectors, they will be
  * lifted into a single top-level selector.
  *
- * In addition to `number` and other default MF1 formatters, a
- * `plural` runtime function is expected, accepting these options:
- * ```ts
- * {
- *   pluralOffset?: number
- *   type: 'cardinal' | 'ordinal' = 'cardinal'
- * }
- * ```
- *
  * Only literal values are supported in formatter parameters. Any
  * such value will be passed in as an option `{ param: string }`.
+ *
+ * @beta
+ * @param ast - An ICU MessageFormat message as an array of `@messageformat/parser`
+ *   {@link @messageformat/parser#parse | AST tokens}.
  */
-function astToMessage(ast: AST.Token[]): Message {
+export function mf1ToMessageData(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
   if (args.length === 0)
     return {
