@@ -27,7 +27,6 @@
   ],
   "dependencies": {
     "@messageformat/parser": "^5.0.0",
-    "make-plural": "^7.1.0",
     "messageformat": "^4.0.0-0"
   },
   "scripts": {
