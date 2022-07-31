@@ -1,7 +1,7 @@
 const { defaults } = require('jest-config');
 
 module.exports = {
-  collectCoverage: true,
+  collectCoverage: false,
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/fixtures/',
