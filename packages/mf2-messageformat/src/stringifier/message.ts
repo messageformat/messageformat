@@ -6,6 +6,7 @@ import {
   Message,
   Pattern
 } from '../data-model';
+import { MessageFormat } from '../messageformat';
 import { isValidNmtoken } from '../parser/names';
 import {
   Expression,
@@ -27,7 +28,8 @@ import {
  *
  * @beta
  */
-export function stringifyMessage(msg: Message) {
+export function stringifyMessage(msg: Message | MessageFormat) {
+  if (msg instanceof MessageFormat) msg = msg.resolvedOptions().message;
   let res = '';
   for (const decl of msg.declarations) res += stringifyDeclaration(decl);
   if (isPatternMessage(msg)) {
