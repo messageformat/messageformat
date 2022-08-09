@@ -1,5 +1,9 @@
 import type { Context } from '../format-context';
-import { MessageMarkup, MessageFallback } from '../message-value';
+import {
+  MessageFallback,
+  MessageMarkupEnd,
+  MessageMarkupStart
+} from '../message-value';
 import type { Option } from './index';
 
 /**
@@ -57,12 +61,11 @@ export function resolveMarkupStart(
   ctx: Context,
   { name, options }: MarkupStart
 ) {
-  const source = `<${name}>`;
+  const source = `{+${name}}`;
   try {
-    return new MessageMarkup(ctx, name, {
+    return new MessageMarkupStart(ctx, name, {
       options: resolveOptions(ctx, options),
-      source,
-      tag: 'start'
+      source
     });
   } catch (error) {
     const fb = new MessageFallback(ctx, { source });
@@ -72,5 +75,5 @@ export function resolveMarkupStart(
 }
 
 export function resolveMarkupEnd(ctx: Context, { name }: MarkupEnd) {
-  return new MessageMarkup(ctx, name, { source: `</${name}>`, tag: 'end' });
+  return new MessageMarkupEnd(ctx, name, { source: `{-${name}}` });
 }

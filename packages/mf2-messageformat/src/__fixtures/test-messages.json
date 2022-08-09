@@ -173,13 +173,24 @@
     "exp": "{$bar}",
     "errors": [{ "type": "missing-char" }, { "type": "junk-element" }]
   },
-  { "src": "{{+tag}}", "exp": "<tag/>" },
-  { "src": "{{+tag}content{-tag}}", "exp": "<tag>content</tag>" },
-  { "src": "{{-tag}content}", "exp": "</tag>content" },
-  { "src": "{{+tag foo=bar}}", "exp": "<tag foo=\"bar\"/>" },
+  { "src": "{{+tag}}", "exp": "{+tag}" },
+  { "src": "{{+tag}content}", "exp": "{+tag}content" },
+  { "src": "{{+tag}content{-tag}}", "exp": "{+tag}content{-tag}" },
+  { "src": "{{-tag}content}", "exp": "{-tag}content" },
+  { "src": "{{+tag foo=bar}}", "exp": "{+tag foo=bar}" },
+  {
+    "src": "{{+tag foo=(foo) bar=$bar}}",
+    "params": { "bar": "b a r" },
+    "exp": "{+tag foo=foo bar=(b a r)}"
+  },
+  {
+    "src": "{bad {(foo) +markup}}",
+    "exp": "bad {+markup}",
+    "errors": [{ "type": "extra-content" }]
+  },
   {
     "src": "{{-tag foo=bar}}",
-    "exp": "</tag>",
+    "exp": "{-tag}",
     "errors": [{ "type": "extra-content" }]
   },
   {
@@ -263,11 +274,6 @@
       { "type": "extra-content" },
       { "type": "missing-var" }
     ]
-  },
-  {
-    "src": "{bad {(foo) +markup}}",
-    "exp": "bad <markup/>",
-    "errors": [{ "type": "extra-content" }]
   },
   {
     "src": "{no {$placeholder end}",
