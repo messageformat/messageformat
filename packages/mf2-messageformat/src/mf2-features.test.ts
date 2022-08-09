@@ -7,7 +7,6 @@ import { parse } from '@messageformat/parser';
 import { source } from '@messageformat/test-utils';
 
 import {
-  Message,
   MessageValue,
   MessageNumber,
   MessageFormat,
@@ -66,46 +65,14 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   };
 
   test('input as { start, end } object', () => {
-    const msg: Message = {
-      type: 'select',
-      declarations: [],
-      selectors: [
-        {
-          type: 'expression',
-          name: 'pluralRange',
-          operand: { type: 'variable', name: 'range' }
-        }
-      ],
-      variants: [
-        {
-          keys: [{ type: 'nmtoken', value: 'one' }],
-          value: {
-            body: [
-              {
-                type: 'expression',
-                name: 'formatRange',
-                operand: { type: 'variable', name: 'range' }
-              },
-              { type: 'literal', value: ' dag' }
-            ]
-          }
-        },
-        {
-          keys: [{ type: '*' }],
-          value: {
-            body: [
-              {
-                type: 'expression',
-                name: 'formatRange',
-                operand: { type: 'variable', name: 'range' }
-              },
-              { type: 'literal', value: ' dagen' }
-            ]
-          }
-        }
-      ]
-    };
-    const mf = new MessageFormat(msg, 'nl', { runtime });
+    const mf = new MessageFormat(
+      `match {$range :pluralRange}
+      when one {{$range :formatRange} dag}
+      when * {{$range :formatRange} dagen}
+    `,
+      'nl',
+      { runtime }
+    );
 
     const msg1 = mf.resolveMessage({ range: { start: 0, end: 1 } });
     expect(msg1?.toString()).toBe('0 - 1 dag');

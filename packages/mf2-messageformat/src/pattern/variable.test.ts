@@ -1,14 +1,9 @@
-import { fluentToResource } from '@messageformat/fluent';
-
 import { MessageFormat, MessageNumber, MessageValue } from '../index';
 
 describe('MessageValue variables', () => {
   let mf: MessageFormat;
   beforeEach(() => {
-    const src = `msg = { $val }`;
-    const res = fluentToResource(src, 'en');
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    mf = res.get('msg')!;
+    mf = new MessageFormat('{{$val}}');
   });
 
   test('number', () => {
@@ -64,14 +59,7 @@ describe('MessageValue variables', () => {
 describe('Variable paths', () => {
   let mf: MessageFormat;
   beforeEach(() => {
-    mf = new MessageFormat(
-      {
-        type: 'message',
-        declarations: [],
-        pattern: { body: [{ type: 'variable', name: 'user.name' }] }
-      },
-      'en'
-    );
+    mf = new MessageFormat('{{$user.name}}', 'en');
   });
 
   test('top-level match', () => {

@@ -1,27 +1,8 @@
-import {
-  Expression,
-  Literal,
-  MarkupEnd,
-  MarkupStart,
-  MessageFormat,
-  VariableRef
-} from '../index';
-
-type Part = Literal | VariableRef | Expression | MarkupStart | MarkupEnd;
-function getMF(body: Part[]) {
-  return new MessageFormat(
-    { type: 'message', declarations: [], pattern: { body } },
-    'en'
-  );
-}
+import { MessageFormat } from '../index';
 
 describe('Simple element', () => {
   test('no options, literal body', () => {
-    const mf = getMF([
-      { type: 'markup-start', name: 'b' },
-      { type: 'literal', value: 'foo' },
-      { type: 'markup-end', name: 'b' }
-    ]);
+    const mf = new MessageFormat('{{+b}foo{-b}}');
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
@@ -34,19 +15,7 @@ describe('Simple element', () => {
   });
 
   test('options, variables', () => {
-    const mf = getMF([
-      {
-        type: 'markup-start',
-        name: 'b',
-        options: [
-          { name: 'foo', value: { type: 'literal', value: '42' } },
-          { name: 'bar', value: { type: 'variable', name: 'foo' } }
-        ]
-      },
-      { type: 'literal', value: 'foo' },
-      { type: 'variable', name: 'foo' },
-      { type: 'markup-end', name: 'b' }
-    ]);
+    const mf = new MessageFormat('{{+b foo=42 bar=$foo}foo{$foo}{-b}}');
     const msg = mf.resolveMessage({ foo: 'foo bar' });
     expect(msg).toEqual({
       type: 'message',
@@ -67,77 +36,52 @@ describe('Simple element', () => {
 });
 
 describe('Multiple elements', () => {
-  // {+b}foo{-b}{+1}bar{-1}
   test('adjacent', () => {
-    const mf = getMF([
-      { type: 'markup-start', name: 'b' },
-      { type: 'literal', value: 'foo' },
-      { type: 'markup-end', name: 'b' },
-      { type: 'markup-start', name: '1' },
-      { type: 'literal', value: 'bar' },
-      { type: 'markup-end', name: '1' }
-    ]);
+    const mf = new MessageFormat('{{+b}foo{-b}{+a}bar{-a}}');
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
         { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
         { type: 'literal', value: 'foo' },
         { type: 'markup-end', source: '{-b}', value: 'b' },
-        { type: 'markup-start', options: {}, source: '{+1}', value: '1' },
+        { type: 'markup-start', options: {}, source: '{+a}', value: 'a' },
         { type: 'literal', value: 'bar' },
-        { type: 'markup-end', source: '{-1}', value: '1' }
+        { type: 'markup-end', source: '{-a}', value: 'a' }
       ]
     });
-    expect(mf.resolveMessage().toString()).toBe('{+b}foo{-b}{+1}bar{-1}');
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{-b}{+a}bar{-a}');
   });
 
   test('nested', () => {
-    // {+b}foo{+1}bar{-1}{-b}
-    const mf = getMF([
-      { type: 'markup-start', name: 'b' },
-      { type: 'literal', value: 'foo' },
-      { type: 'markup-start', name: '1' },
-      { type: 'literal', value: 'bar' },
-      { type: 'markup-end', name: '1' },
-      { type: 'markup-end', name: 'b' }
-    ]);
+    const mf = new MessageFormat('{{+b}foo{+a}bar{-a}{-b}}');
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
         { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
         { type: 'literal', value: 'foo' },
-        { type: 'markup-start', options: {}, source: '{+1}', value: '1' },
+        { type: 'markup-start', options: {}, source: '{+a}', value: 'a' },
         { type: 'literal', value: 'bar' },
-        { type: 'markup-end', source: '{-1}', value: '1' },
+        { type: 'markup-end', source: '{-a}', value: 'a' },
         { type: 'markup-end', source: '{-b}', value: 'b' }
       ]
     });
-    expect(mf.resolveMessage().toString()).toBe('{+b}foo{+1}bar{-1}{-b}');
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{+a}bar{-a}{-b}');
   });
 
   test('overlapping', () => {
-    // {+b}foo{+1}bar{-b}baz{-1}
-    const mf = getMF([
-      { type: 'markup-start', name: 'b' },
-      { type: 'literal', value: 'foo' },
-      { type: 'markup-start', name: '1' },
-      { type: 'literal', value: 'bar' },
-      { type: 'markup-end', name: 'b' },
-      { type: 'literal', value: 'baz' },
-      { type: 'markup-end', name: '1' }
-    ]);
+    const mf = new MessageFormat('{{+b}foo{+a}bar{-b}baz{-a}}');
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
         { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
         { type: 'literal', value: 'foo' },
-        { type: 'markup-start', options: {}, source: '{+1}', value: '1' },
+        { type: 'markup-start', options: {}, source: '{+a}', value: 'a' },
         { type: 'literal', value: 'bar' },
         { type: 'markup-end', source: '{-b}', value: 'b' },
         { type: 'literal', value: 'baz' },
-        { type: 'markup-end', source: '{-1}', value: '1' }
+        { type: 'markup-end', source: '{-a}', value: 'a' }
       ]
     });
-    expect(mf.resolveMessage().toString()).toBe('{+b}foo{+1}bar{-b}baz{-1}');
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{+a}bar{-b}baz{-a}');
   });
 });
