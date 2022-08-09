@@ -6,9 +6,9 @@ describe('Simple element', () => {
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
-        { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
         { type: 'literal', value: 'foo' },
-        { type: 'markup-end', source: '{-b}', value: 'b' }
+        { type: 'markup-end', source: '-b', value: 'b' }
       ]
     });
     expect(mf.resolveMessage().toString()).toBe('{+b}foo{-b}');
@@ -23,12 +23,12 @@ describe('Simple element', () => {
         {
           type: 'markup-start',
           options: { foo: '42', bar: 'foo bar' },
-          source: '{+b}',
+          source: '+b',
           value: 'b'
         },
         { type: 'literal', value: 'foo' },
         { type: 'value', source: '$foo', value: 'foo bar' },
-        { type: 'markup-end', source: '{-b}', value: 'b' }
+        { type: 'markup-end', source: '-b', value: 'b' }
       ]
     });
     expect(msg.toString()).toBe('{+b foo=42 bar=(foo bar)}foofoo bar{-b}');
@@ -41,12 +41,12 @@ describe('Multiple elements', () => {
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
-        { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
         { type: 'literal', value: 'foo' },
-        { type: 'markup-end', source: '{-b}', value: 'b' },
-        { type: 'markup-start', options: {}, source: '{+a}', value: 'a' },
+        { type: 'markup-end', source: '-b', value: 'b' },
+        { type: 'markup-start', options: {}, source: '+a', value: 'a' },
         { type: 'literal', value: 'bar' },
-        { type: 'markup-end', source: '{-a}', value: 'a' }
+        { type: 'markup-end', source: '-a', value: 'a' }
       ]
     });
     expect(mf.resolveMessage().toString()).toBe('{+b}foo{-b}{+a}bar{-a}');
@@ -57,12 +57,12 @@ describe('Multiple elements', () => {
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
-        { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
         { type: 'literal', value: 'foo' },
-        { type: 'markup-start', options: {}, source: '{+a}', value: 'a' },
+        { type: 'markup-start', options: {}, source: '+a', value: 'a' },
         { type: 'literal', value: 'bar' },
-        { type: 'markup-end', source: '{-a}', value: 'a' },
-        { type: 'markup-end', source: '{-b}', value: 'b' }
+        { type: 'markup-end', source: '-a', value: 'a' },
+        { type: 'markup-end', source: '-b', value: 'b' }
       ]
     });
     expect(mf.resolveMessage().toString()).toBe('{+b}foo{+a}bar{-a}{-b}');
@@ -73,13 +73,13 @@ describe('Multiple elements', () => {
     expect(mf.resolveMessage()).toEqual({
       type: 'message',
       value: [
-        { type: 'markup-start', options: {}, source: '{+b}', value: 'b' },
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
         { type: 'literal', value: 'foo' },
-        { type: 'markup-start', options: {}, source: '{+a}', value: 'a' },
+        { type: 'markup-start', options: {}, source: '+a', value: 'a' },
         { type: 'literal', value: 'bar' },
-        { type: 'markup-end', source: '{-b}', value: 'b' },
+        { type: 'markup-end', source: '-b', value: 'b' },
         { type: 'literal', value: 'baz' },
-        { type: 'markup-end', source: '{-a}', value: 'a' }
+        { type: 'markup-end', source: '-a', value: 'a' }
       ]
     });
     expect(mf.resolveMessage().toString()).toBe('{+b}foo{+a}bar{-b}baz{-a}');

@@ -61,7 +61,7 @@ export function resolveMarkupStart(
   ctx: Context,
   { name, options }: MarkupStart
 ) {
-  const source = `{+${name}}`;
+  const source = `+${name}`;
   try {
     return new MessageMarkupStart(ctx, name, {
       options: resolveOptions(ctx, options),
@@ -75,5 +75,5 @@ export function resolveMarkupStart(
 }
 
 export function resolveMarkupEnd(ctx: Context, { name }: MarkupEnd) {
-  return new MessageMarkupEnd(ctx, name, { source: `{-${name}}` });
+  return new MessageMarkupEnd(ctx, name, { source: `-${name}` });
 }
