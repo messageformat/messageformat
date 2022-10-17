@@ -82,9 +82,15 @@
     "errors": []
   },
   {
-    "src": "let $foo = {$bar} let $bar = {$baz} {bar {$foo}}",
+    "src": "let $foo = {$baz} let $bar = {$foo} {bar {$bar}}",
     "params": { "baz": "foo" },
     "exp": "bar foo"
+  },
+  {
+    "src": "let $foo = {$bar} let $bar = {$baz} {bar {$foo}}",
+    "params": { "baz": "foo" },
+    "exp": "bar foo",
+    "errors": [{ "type": "bad-local-var" }]
   },
   {
     "src": "match {$foo} when (1) {one} when * {other}",

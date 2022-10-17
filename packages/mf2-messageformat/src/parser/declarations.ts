@@ -25,6 +25,7 @@ export function parseDeclarations(
     pos = decl.end;
     pos += whitespaces(src, pos);
   }
+  checkLocalVarReferences(declarations, errors);
   return { declarations, end: pos };
 }
 
@@ -81,4 +82,37 @@ function parseDeclaration(
   }
 
   return { start, end: pos, target, value };
+}
+
+/** Local variable declarations can't refer to later ones */
+function checkLocalVarReferences(
+  declarations: DeclarationParsed[],
+  errors: ParseError[]
+) {
+  const check = (name: string, ref: VariableRefParsed) => {
+    if (ref.name === name)
+      errors.push({ type: 'bad-local-var', start: ref.start, end: ref.end });
+  };
+
+  for (let i = 1; i < declarations.length; ++i) {
+    const { name } = declarations[i].target;
+    if (!name) continue;
+    for (let j = 0; j < i; ++j) {
+      const ph = declarations[j].value;
+      if (ph.type === 'placeholder') {
+        const exp = ph.body;
+        switch (exp.type) {
+          case 'expression':
+            if (exp.operand?.type === 'variable') check(name, exp.operand);
+            for (const opt of exp.options) {
+              if (opt.value.type === 'variable') check(name, opt.value);
+            }
+            break;
+          case 'variable':
+            check(name, exp);
+            break;
+        }
+      }
+    }
+  }
 }

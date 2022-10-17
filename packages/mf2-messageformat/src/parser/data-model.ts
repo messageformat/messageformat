@@ -24,6 +24,7 @@ export type ParseError =
   | {
       type:
         | 'bad-escape'
+        | 'bad-local-var'
         | 'bad-selector'
         | 'extra-content'
         | 'key-mismatch'
