@@ -55,13 +55,13 @@ function getValue(scope: unknown, name: string): unknown {
 
 export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
   const source = '$' + name;
-  let value = getValue(ctx.scope, name);
-  if (value === undefined) {
-    const decl = ctx.declarations.find(decl => decl.target.name === name);
-    if (decl) {
-      value = ctx.resolve(decl.value);
-      ctx.scope[name] = value;
-    }
+  let value: unknown;
+  const decl = ctx.declarations.find(decl => decl.target.name === name);
+  if (decl) {
+    value = ctx.resolve(decl.value);
+    ctx.scope[name] = value;
+  } else {
+    value = getValue(ctx.scope, name);
   }
   if (value !== undefined) return asMessageValue(ctx, value, { source });
 

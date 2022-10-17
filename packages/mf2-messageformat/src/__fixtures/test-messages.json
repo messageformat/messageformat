@@ -52,7 +52,7 @@
   {
     "src": "let $foo = {(bar)} {bar {$foo}}",
     "params": { "foo": "foo" },
-    "exp": "bar foo"
+    "exp": "bar bar"
   },
   {
     "src": "let $foo = {$bar} {bar {$foo}}",
