@@ -84,9 +84,9 @@ export class MessageValue<T = unknown> {
   }
 
   toString(onError?: Context['onError']): string {
-    const value:
-      | { toLocaleString: (...args: unknown[]) => string }
-      | undefined = this.value;
+    const value = this.value as
+      | { toLocaleString?: (...args: unknown[]) => string }
+      | undefined;
     try {
       const lc = this.localeContext;
       if (lc && value && typeof value.toLocaleString === 'function') {
