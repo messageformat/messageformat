@@ -18,6 +18,10 @@ import {
   Variant
 } from 'messageformat';
 
+/**
+ * Symbol used to identify a custom function for Fluent message/term references.
+ * @beta
+ */
 export const FluentMessageRef = Symbol.for('Fluent message ref');
 
 type MsgContext = {
@@ -27,6 +31,10 @@ type MsgContext = {
 
 export type FunctionMap = Record<string, string | symbol>;
 
+/**
+ * Default value for the {@link messageToFluent} `functionMap` option.
+ * @beta
+ */
 export const defaultFunctionMap: FunctionMap = {
   DATETIME: 'DATETIME',
   MESSAGE: FluentMessageRef,
