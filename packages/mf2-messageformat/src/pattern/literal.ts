@@ -20,10 +20,10 @@ export interface Literal {
  *
  * @beta
  */
-export type Text = {
+export interface Text {
   type: 'text';
   value: string;
-};
+}
 
 /**
  * Type guard for {@link Literal} pattern elements

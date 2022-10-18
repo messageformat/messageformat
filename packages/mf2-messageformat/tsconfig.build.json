@@ -1,10 +1,9 @@
 {
-  "extends": "../../config/tsconfig.base.json",
+  "extends": "../../config/tsconfig.mf2-base.json",
   "compilerOptions": {
     "declaration": true,
     "module": "CommonJS",
-    "outDir": "lib",
-    "strict": true
+    "outDir": "lib"
   },
   "include": ["src/*"],
   "exclude": ["**/*.test.ts"]
