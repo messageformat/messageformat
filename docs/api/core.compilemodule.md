@@ -22,7 +22,7 @@ export default function compileModule(messageformat: MessageFormat<'string' | 'v
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  messageformat | MessageFormat&lt;'string' \| 'values'&gt; | A [MessageFormat](./core.messageformat.md) instance |
+|  messageformat | [MessageFormat](./core.messageformat.md)<!-- -->&lt;'string' \| 'values'&gt; | A [MessageFormat](./core.messageformat.md) instance |
 |  messages | [StringStructure](./core.stringstructure.md) | A hierarchical structure of ICU MessageFormat strings |
 
 <b>Returns:</b>

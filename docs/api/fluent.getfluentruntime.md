@@ -15,8 +15,6 @@ grand_parent: API Reference
 
 Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with Fluent messages.
 
-This builds on top of the default runtime, but uses all-caps names for the `DATETIME` and `NUMBER` message formatters. A custom function `MESSAGE` is also included to support Fluent term and message references.
-
 <b>Signature:</b>
 
 ```typescript
@@ -36,4 +34,8 @@ export declare function getFluentRuntime(res: Map<string, MessageFormat>): {
 <b>Returns:</b>
 
 { DATETIME: [RuntimeFunction](./messageformat.runtimefunction.md)<!-- -->&lt;import("messageformat").[MessageDateTime](./messageformat.messagedatetime.md)<!-- -->&gt;; MESSAGE: [RuntimeFunction](./messageformat.runtimefunction.md)<!-- -->&lt;[ResolvedMessage](./messageformat.resolvedmessage.md)<!-- -->&gt;; NUMBER: [RuntimeFunction](./messageformat.runtimefunction.md)<!-- -->&lt;import("messageformat").[MessageNumber](./messageformat.messagenumber.md)<!-- -->&gt;; }
+
+## Remarks
+
+This builds on top of the default runtime, but uses all-caps names for the `DATETIME` and `NUMBER` message formatters. A custom function `MESSAGE` is also included to support Fluent term and message references.
 

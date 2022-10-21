@@ -1,5 +1,5 @@
 ---
-title: "MessageMarkup / (constructor)"
+title: "MessageMarkupStart / (constructor)"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,18 +9,17 @@ nav_exclude: true
 
 
 
-# MessageMarkup.(constructor)
+# MessageMarkupStart.(constructor)
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-Constructs a new instance of the `MessageMarkup` class
+Constructs a new instance of the `MessageMarkupStart` class
 
 <b>Signature:</b>
 
 ```typescript
-constructor(locale: LocaleContextArg, name: string, { tag, meta, options, source }: {
-        tag?: 'empty' | 'start' | 'end';
+constructor(locale: LocaleContextArg, name: string, { meta, options, source }: {
         meta?: Readonly<Meta>;
         options?: Readonly<Record<string, unknown>>;
         source?: string;
@@ -33,5 +32,5 @@ constructor(locale: LocaleContextArg, name: string, { tag, meta, options, source
 |  --- | --- | --- |
 |  locale | LocaleContextArg |  |
 |  name | string |  |
-|  { tag, meta, options, source } | { tag?: 'empty' \| 'start' \| 'end'; meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; options?: Readonly&lt;Record&lt;string, unknown&gt;&gt;; source?: string; } |  |
+|  { meta, options, source } | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; options?: Readonly&lt;Record&lt;string, unknown&gt;&gt;; source?: string; } |  |
 

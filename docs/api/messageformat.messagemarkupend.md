@@ -1,5 +1,5 @@
 ---
-title: "MessageLiteral"
+title: "MessageMarkupEnd"
 parent: "messageformat"
 grand_parent: API Reference
 ---
@@ -8,17 +8,17 @@ grand_parent: API Reference
 
 
 
-# MessageLiteral class
+# MessageMarkupEnd class
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-A child class of [MessageValue](./messageformat.messagevalue.md) for values defined directly in the message data.
+A child class of [MessageValue](./messageformat.messagevalue.md) for ending markup elements.
 
 <b>Signature:</b>
 
 ```typescript
-export declare class MessageLiteral extends MessageValue<string> 
+export declare class MessageMarkupEnd extends MessageValue<string> 
 ```
 <b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
 
@@ -26,11 +26,12 @@ export declare class MessageLiteral extends MessageValue<string>
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(literal, fmt)](./messageformat.messageliteral._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageLiteral</code> class |
+|  [(constructor)(locale, name, options)](./messageformat.messagemarkupend._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageMarkupEnd</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [toString()](./messageformat.messageliteral.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [matchSelectKey()](./messageformat.messagemarkupend.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
+|  [toString()](./messageformat.messagemarkupend.tostring.md) |  | <b><i>(BETA)</i></b> |
 

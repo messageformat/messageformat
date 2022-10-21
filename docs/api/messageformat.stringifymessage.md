@@ -18,14 +18,14 @@ Stringify a message using its syntax representation.
 <b>Signature:</b>
 
 ```typescript
-export declare function stringifyMessage(msg: Message): string;
+export declare function stringifyMessage(msg: Message | MessageFormat): string;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  msg | [Message](./messageformat.message.md) |  |
+|  msg | [Message](./messageformat.message.md) \| [MessageFormat](./messageformat.messageformat.md) |  |
 
 <b>Returns:</b>
 

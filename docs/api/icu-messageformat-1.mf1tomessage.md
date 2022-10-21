@@ -1,5 +1,5 @@
 ---
-title: "compileMF1Message"
+title: "mf1ToMessage"
 parent: "@messageformat/icu-messageformat-1"
 grand_parent: API Reference
 ---
@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# compileMF1Message() function
+# mf1ToMessage() function
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -20,15 +20,15 @@ A runtime provided by [getMF1Runtime](./icu-messageformat-1.getmf1runtime.md) is
 <b>Signature:</b>
 
 ```typescript
-export declare function compileMF1Message(source: string | Message, locale: string, { strict, ...opt }?: MF1Options & MessageFormatOptions): MessageFormat;
+export declare function mf1ToMessage(source: string | Token[] | Message, locales?: string | string[], { strict, ...opt }?: MF1Options & MessageFormatOptions): MessageFormat;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  source | string \| [Message](./messageformat.message.md) | An ICU MessageFormat message, either as its string contents, or as a [Message](./messageformat.message.md) data structure. |
-|  locale | string | The locale code to use for the message. |
+|  source | string \| Token\[\] \| [Message](./messageformat.message.md) | An ICU MessageFormat message, either in its syntax representation, as an array of <code>@messageformat/parser</code> [AST tokens](./parser.parse.md)<!-- -->, or as a [Message](./messageformat.message.md) data structure. |
+|  locales | string \| string\[\] | <i>(Optional)</i> The locale to use for the message. |
 |  { strict, ...opt } | [MF1Options](./icu-messageformat-1.mf1options.md) &amp; [MessageFormatOptions](./messageformat.messageformatoptions.md) | <i>(Optional)</i> |
 
 <b>Returns:</b>

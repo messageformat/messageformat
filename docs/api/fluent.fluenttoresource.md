@@ -1,5 +1,5 @@
 ---
-title: "compileFluentResource"
+title: "fluentToResource"
 parent: "@messageformat/fluent"
 grand_parent: API Reference
 ---
@@ -8,30 +8,32 @@ grand_parent: API Reference
 
 
 
-# compileFluentResource() function
+# fluentToResource() function
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Compile a Fluent resource (i.e. an FTL file) into a Map of [MessageFormat](./messageformat.messageformat.md) instances.
 
-A runtime provided by [getFluentRuntime()](./fluent.getfluentruntime.md) is automatically used in these instances.
-
 <b>Signature:</b>
 
 ```typescript
-export declare function compileFluentResource(source: string | Map<string, Message>, locales?: string | string[], options?: MessageFormatOptions): Map<string, MessageFormat>;
+export declare function fluentToResource(source: string | Fluent.Resource | Map<string, Message>, locales?: string | string[], options?: MessageFormatOptions): Map<string, MessageFormat>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  source | string \| Map&lt;string, [Message](./messageformat.message.md)<!-- -->&gt; | A Fluent resource, either as the string contents of an FTL file, or in the shape output by [compileFluentResourceData()](./fluent.compilefluentresourcedata.md)<!-- -->. |
+|  source | string \| Fluent.Resource \| Map&lt;string, [Message](./messageformat.message.md)<!-- -->&gt; | A Fluent resource, as the string contents of an FTL file, as a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html)<!-- -->, or in the shape output by [fluentToResourceData()](./fluent.fluenttoresourcedata.md) as <code>data</code>. |
 |  locales | string \| string\[\] | <i>(Optional)</i> The locale code or codes to use for all of the resource's messages. |
 |  options | [MessageFormatOptions](./messageformat.messageformatoptions.md) | <i>(Optional)</i> The MessageFormat constructor options to use for all of the resource's messages. |
 
 <b>Returns:</b>
 
 Map&lt;string, [MessageFormat](./messageformat.messageformat.md)<!-- -->&gt;
+
+## Remarks
+
+A runtime provided by [getFluentRuntime()](./fluent.getfluentruntime.md) is automatically used in these instances.
 

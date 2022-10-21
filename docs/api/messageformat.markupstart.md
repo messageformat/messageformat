@@ -26,6 +26,6 @@ export interface MarkupStart
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [name](./messageformat.markupstart.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [options?](./messageformat.markupstart.options.md) |  | Option\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
+|  [options?](./messageformat.markupstart.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
 |  [type](./messageformat.markupstart.type.md) |  | 'markup-start' | <b><i>(BETA)</i></b> |
 

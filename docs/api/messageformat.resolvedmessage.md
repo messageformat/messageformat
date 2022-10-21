@@ -20,7 +20,7 @@ The result of resolving a [MessageFormat](./messageformat.messageformat.md) mess
 ```typescript
 export declare class ResolvedMessage extends MessageValue<MessageValue[]> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;[MessageValue](./messageformat.messagevalue.md)
+<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;[MessageValue](./messageformat.messagevalue.md)<!-- -->\[\]&gt;
 
 ## Constructors
 

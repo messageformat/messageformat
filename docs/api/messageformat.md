@@ -19,7 +19,8 @@ has_toc: false
 |  [MessageFallback](./messageformat.messagefallback.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values. |
 |  [MessageFormat](./messageformat.messageformat.md) | <b><i>(BETA)</i></b> Create a new message formatter. |
 |  [MessageLiteral](./messageformat.messageliteral.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for values defined directly in the message data. |
-|  [MessageMarkup](./messageformat.messagemarkup.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values. |
+|  [MessageMarkupEnd](./messageformat.messagemarkupend.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for ending markup elements. |
+|  [MessageMarkupStart](./messageformat.messagemarkupstart.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for starting markup elements. |
 |  [MessageNumber](./messageformat.messagenumber.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values. |
 |  [MessageValue](./messageformat.messagevalue.md) | <b><i>(BETA)</i></b> The base class of all message values. |
 |  [ResolvedMessage](./messageformat.resolvedmessage.md) | <b><i>(BETA)</i></b> The result of resolving a [MessageFormat](./messageformat.messageformat.md) message. |
@@ -58,6 +59,7 @@ has_toc: false
 |  [RuntimeFunction](./messageformat.runtimefunction.md) | <b><i>(BETA)</i></b> |
 |  [RuntimeOptions](./messageformat.runtimeoptions.md) | <b><i>(BETA)</i></b> The second argument of runtime function calls is an options bag, with possible keys as defined by the [RuntimeFunction](./messageformat.runtimefunction.md) <code>options</code>. The <code>localeMatcher</code> key is always present. |
 |  [SelectMessage](./messageformat.selectmessage.md) | <b><i>(BETA)</i></b> SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of placeholders. Selection iterates among the <code>variants</code> in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern. |
+|  [Text](./messageformat.text.md) | <b><i>(BETA)</i></b> Top-level literal content. |
 |  [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> The value of a VariableRef is defined by the current Scope. |
 |  [Variant](./messageformat.variant.md) | <b><i>(BETA)</i></b> |
 
@@ -66,6 +68,7 @@ has_toc: false
 |  Variable | Description |
 |  --- | --- |
 |  [defaultRuntime](./messageformat.defaultruntime.md) | <b><i>(BETA)</i></b> The default Runtime includes two functions, <code>datetime</code> and <code>number</code>. |
+|  [isCatchallKey](./messageformat.iscatchallkey.md) | <b><i>(BETA)</i></b> A type guard for [CatchallKey](./messageformat.catchallkey.md) values |
 |  [isExpression](./messageformat.isexpression.md) | <b><i>(BETA)</i></b> Type guard for [Expression](./messageformat.expression.md) pattern elements |
 |  [isJunk](./messageformat.isjunk.md) | <b><i>(BETA)</i></b> Type guard for [Junk](./messageformat.junk.md) pattern elements |
 |  [isLiteral](./messageformat.isliteral.md) | <b><i>(BETA)</i></b> Type guard for [Literal](./messageformat.literal.md) pattern elements |
@@ -75,6 +78,7 @@ has_toc: false
 |  [isPatternMessage](./messageformat.ispatternmessage.md) | <b><i>(BETA)</i></b> A type guard for [PatternMessage](./messageformat.patternmessage.md) values |
 |  [isPlaceholder](./messageformat.isplaceholder.md) | <b><i>(BETA)</i></b> Type guard for [Placeholder](./messageformat.placeholder.md) pattern elements |
 |  [isSelectMessage](./messageformat.isselectmessage.md) | <b><i>(BETA)</i></b> A type guard for [SelectMessage](./messageformat.selectmessage.md) values |
+|  [isText](./messageformat.istext.md) | <b><i>(BETA)</i></b> Type guard for [Text](./messageformat.text.md) pattern elements |
 |  [isVariableRef](./messageformat.isvariableref.md) | <b><i>(BETA)</i></b> Type guard for [VariableRef](./messageformat.variableref.md) pattern elements |
 
 ## Type Aliases
@@ -86,5 +90,4 @@ has_toc: false
 |  [ParseError](./messageformat.parseerror.md) | <b><i>(BETA)</i></b> |
 |  [PatternElement](./messageformat.patternelement.md) | <b><i>(BETA)</i></b> The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere. |
 |  [RuntimeType](./messageformat.runtimetype.md) | <b><i>(BETA)</i></b> Basic type checking is performed on option values. |
-|  [Text](./messageformat.text.md) | <b><i>(BETA)</i></b> Top-level literal content. |
 

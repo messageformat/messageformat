@@ -31,6 +31,6 @@ The `name` identifies a function that takes in the arguments `args`<!-- -->, the
 |  --- | --- | --- | --- |
 |  [name](./messageformat.expression.name.md) |  | string | <b><i>(BETA)</i></b> |
 |  [operand?](./messageformat.expression.operand.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [options?](./messageformat.expression.options.md) |  | Option\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
+|  [options?](./messageformat.expression.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
 |  [type](./messageformat.expression.type.md) |  | 'expression' | <b><i>(BETA)</i></b> |
 

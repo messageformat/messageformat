@@ -20,7 +20,7 @@ A child class of [MessageValue](./messageformat.messagevalue.md) for Date values
 ```typescript
 export declare class MessageDateTime extends MessageValue<Date> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;Date
+<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;Date&gt;
 
 ## Constructors
 

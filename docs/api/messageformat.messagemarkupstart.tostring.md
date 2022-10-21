@@ -1,5 +1,5 @@
 ---
-title: "MessageMarkup / name"
+title: "MessageMarkupStart / toString"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# MessageMarkup.name property
+# MessageMarkupStart.toString() method
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -17,5 +17,16 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-name: string;
+toString(onError?: Context['onError']): string;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  onError | Context\['onError'\] | <i>(Optional)</i> |
+
+<b>Returns:</b>
+
+string
+

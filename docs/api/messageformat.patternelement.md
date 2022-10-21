@@ -20,7 +20,7 @@ The contents of a message are a sequence of pattern elements, which may be immed
 ```typescript
 export declare type PatternElement = Expression | Junk | Literal | MarkupEnd | MarkupStart | Placeholder | Text | VariableRef;
 ```
-<b>References:</b> [Expression](./messageformat.expression.md)<!-- -->, [Junk](./messageformat.junk.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [MarkupEnd](./messageformat.markupend.md)<!-- -->, [MarkupStart](./messageformat.markupstart.md)<!-- -->, [Placeholder](./messageformat.placeholder.md)<!-- -->, [VariableRef](./messageformat.variableref.md)
+<b>References:</b> [Expression](./messageformat.expression.md)<!-- -->, [Junk](./messageformat.junk.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [MarkupEnd](./messageformat.markupend.md)<!-- -->, [MarkupStart](./messageformat.markupstart.md)<!-- -->, [Placeholder](./messageformat.placeholder.md)<!-- -->, [Text](./messageformat.text.md)<!-- -->, [VariableRef](./messageformat.variableref.md)
 
 ## Remarks
 

@@ -20,7 +20,7 @@ A child class of [MessageValue](./messageformat.messagevalue.md) for fallback va
 ```typescript
 export declare class MessageFallback extends MessageValue<undefined> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)
+<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;undefined&gt;
 
 ## Remarks
 

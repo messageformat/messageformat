@@ -17,7 +17,7 @@ Returned by [MessageFormat.resolvedOptions()](./core.messageformat.resolvedoptio
 ```typescript
 export interface ResolvedMessageFormatOptions<ReturnType extends 'string' | 'values'> extends Required<MessageFormatOptions<ReturnType>> 
 ```
-<b>Extends:</b> Required&lt;[MessageFormatOptions](./core.messageformatoptions.md)
+<b>Extends:</b> Required&lt;[MessageFormatOptions](./core.messageformatoptions.md)<!-- -->&lt;ReturnType&gt;&gt;
 
 ## Properties
 

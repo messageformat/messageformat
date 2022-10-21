@@ -22,7 +22,7 @@ export declare type ParseError = {
     start: number;
     end?: never;
 } | {
-    type: 'bad-escape' | 'bad-selector' | 'extra-content' | 'key-mismatch' | 'parse-error';
+    type: 'bad-escape' | 'bad-local-var' | 'bad-selector' | 'extra-content' | 'key-mismatch' | 'parse-error';
     start: number;
     end: number;
 } | {

@@ -15,8 +15,8 @@ has_toc: false
 
 |  Function | Description |
 |  --- | --- |
-|  [compileMF1Message(source, locale, { strict, ...opt })](./icu-messageformat-1.compilemf1message.md) | <p><b><i>(BETA)</i></b> Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.messageformat.md) instance.</p><p>A runtime provided by [getMF1Runtime](./icu-messageformat-1.getmf1runtime.md) is automatically used in these instances.</p> |
-|  [compileMF1MessageData(src, locale, { strict })](./icu-messageformat-1.compilemf1messagedata.md) | <b><i>(BETA)</i></b> Compile an ICU MessageFormat 1 message into a [Message](./messageformat.message.md) data object. |
+|  [mf1ToMessage(source, locales, { strict, ...opt })](./icu-messageformat-1.mf1tomessage.md) | <p><b><i>(BETA)</i></b> Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.messageformat.md) instance.</p><p>A runtime provided by [getMF1Runtime](./icu-messageformat-1.getmf1runtime.md) is automatically used in these instances.</p> |
+|  [mf1ToMessageData(ast)](./icu-messageformat-1.mf1tomessagedata.md) | <p><b><i>(BETA)</i></b> Convert an ICU MessageFormat 1 message into a [Message](./messageformat.message.md) data object.</p><p>If the source message contains any inner selectors, they will be lifted into a single top-level selector.</p><p>Only literal values are supported in formatter parameters. Any such value will be passed in as an option <code>{ param: string }</code>.</p> |
 
 ## Variables
 

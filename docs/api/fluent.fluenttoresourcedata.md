@@ -1,5 +1,5 @@
 ---
-title: "compileFluentResourceData"
+title: "fluentToResourceData"
 parent: "@messageformat/fluent"
 grand_parent: API Reference
 ---
@@ -8,17 +8,17 @@ grand_parent: API Reference
 
 
 
-# compileFluentResourceData() function
+# fluentToResourceData() function
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-Compile a Fluent resource (i.e. and FTL file) into a Map of [Message](./messageformat.message.md) data objects.
+Compile a Fluent resource (i.e. an FTL file) into a Map of [Message](./messageformat.message.md) data objects.
 
 <b>Signature:</b>
 
 ```typescript
-export declare function compileFluentResourceData(src: string): {
+export declare function fluentToResourceData(source: string | Fluent.Resource): {
     data: Map<string, Message>;
     comments: string;
 };
@@ -28,7 +28,7 @@ export declare function compileFluentResourceData(src: string): {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  src | string | A Fluent resource, as the string contents of an FTL file. |
+|  source | string \| Fluent.Resource | A Fluent resource, as the string contents of an FTL file or as a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html) |
 
 <b>Returns:</b>
 

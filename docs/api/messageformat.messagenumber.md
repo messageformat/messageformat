@@ -20,7 +20,7 @@ A child class of [MessageValue](./messageformat.messagevalue.md) for numerical v
 ```typescript
 export declare class MessageNumber extends MessageValue<number | bigint> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)
+<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;number \| bigint&gt;
 
 ## Constructors
 
