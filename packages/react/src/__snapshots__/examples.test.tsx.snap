@@ -50,7 +50,7 @@ exports[`README Example 1 1`] = `
 `;
 
 exports[`README Example 2 1`] = `
-Array [
+[
   "FÖÖ",
   "FOO",
   "BÄR",
@@ -61,7 +61,7 @@ Array [
 `;
 
 exports[`README Example 3 1`] = `
-Array [
+[
   <ul>
     <li>
       Viestisi on väärän pituinen (pitäisi olla 42 merkkiä)
