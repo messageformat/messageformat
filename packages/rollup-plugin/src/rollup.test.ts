@@ -9,7 +9,8 @@ test('YAML with default import', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'yaml-default.js'),
-    plugins: [plugin({ locales: ['en', 'fi'] })]
+    plugins: [plugin({ locales: ['en', 'fi'] })],
+    strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'yaml-default.js' }]);
@@ -20,7 +21,8 @@ test('YAML with named import', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'yaml-named.js'),
-    plugins: [plugin({ locales: ['en', 'fi'] })]
+    plugins: [plugin({ locales: ['en', 'fi'] })],
+    strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'yaml-named.js' }]);
@@ -31,7 +33,8 @@ test('.properties with Latin-1 encoding', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'properties.js'),
-    plugins: [plugin({ locales: ['en', 'fi'] })]
+    plugins: [plugin({ locales: ['en', 'fi'] })],
+    strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'properties.js' }]);
@@ -42,7 +45,8 @@ test('README sample', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'readme-sample.js'),
-    plugins: [plugin({ locales: ['en', 'fr'] })]
+    plugins: [plugin({ locales: ['en', 'fr'] })],
+    strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
   expect(output).toMatchObject([{ fileName: 'readme-sample.js' }]);

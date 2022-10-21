@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
@@ -40,7 +40,10 @@ const browserBundle = {
       downlevelIteration: true,
       target: 'ES5'
     }),
-    babel({ presets: [['@babel/preset-env', { targets: browserTargets }]] })
+    babel({
+      babelHelpers: 'bundled',
+      presets: [['@babel/preset-env', { targets: browserTargets }]]
+    })
   ]
 };
 
