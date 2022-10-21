@@ -3,6 +3,7 @@ coverage/
 dist/
 node_modules/
 /docs/_site/
+/docs/Gemfile.lock
 /examples/cli/*.mjs
 /examples/package-lock.json
 /packages/mf2-*/lib/
