@@ -7,46 +7,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  node-16:
+  node:
+    strategy:
+      matrix:
+        node-version: [14, 16, 18, latest]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with: { node-version: 16.x }
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - if: matrix.node-version == 14
+        run: npm install --global npm@7
       - run: npm ci
       - run: npm test
       - run: npm run build
-
-  node-14:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with: { node-version: 14.x }
-      - run: npm install --global npm@7
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
-
-  node-12:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with: { node-version: 12.x }
-      - run: npm install --global full-icu npm@7
-      - run: echo "NODE_ICU_DATA=`node-full-icu-path 2>/dev/null`" >> $GITHUB_ENV
-      - run: npm ci
-      - run: npx jest --testPathIgnorePatterns examples/ packages/rollup-plugin/
-      # https://github.com/actions/runner/issues/795
-      - run: echo "NODE_ICU_DATA=" >> $GITHUB_ENV
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with: { node-version: 16.x }
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
       - run: npm ci
       - run: npm run lint
       - run: npx prettier --check .
