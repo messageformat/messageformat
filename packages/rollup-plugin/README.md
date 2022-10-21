@@ -21,7 +21,7 @@ With this config:
 <!-- prettier-ignore -->
 ```js
 // rollup.config.js
-import messageformat from 'rollup-plugin-messageformat'
+import { messageformat } from 'rollup-plugin-messageformat'
 
 export default {
   entry: 'src/app.js',

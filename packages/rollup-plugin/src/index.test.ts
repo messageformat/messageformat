@@ -3,7 +3,7 @@ jest.mock('fs', () => require('memfs').fs);
 
 import { fs } from 'memfs';
 import { source } from '@messageformat/test-utils';
-import plugin from './index';
+import { messageformat } from './index';
 
 const jsonSrc = '{"key":{"inner":"value {foo}"}}';
 const code = `
@@ -15,24 +15,24 @@ export default {
 
 describe('filter', () => {
   test('skip foo.json', () => {
-    const res = plugin().transform(jsonSrc, 'foo.json');
+    const res = messageformat().transform(jsonSrc, 'foo.json');
     expect(res).toBeNull();
   });
 
   test('skip messages/fi.json', () => {
-    const res = plugin().transform(jsonSrc, 'messages/fi.json');
+    const res = messageformat().transform(jsonSrc, 'messages/fi.json');
     expect(res).toBeNull();
   });
 
   test('include: /\\.foo$/', () => {
-    const { transform } = plugin({ include: /\.foo$/ });
+    const { transform } = messageformat({ include: /\.foo$/ });
     const res = transform(jsonSrc, 'file.foo');
     expect(res).toMatchObject({ code });
   });
 
   describe('locales: "fi"', () => {
     test('hit messages/fi.json', () => {
-      const { transform } = plugin({ locales: 'fi' });
+      const { transform } = messageformat({ locales: 'fi' });
       const res = transform(jsonSrc, 'messages/fi.json');
       expect(res).toMatchObject({ code });
     });
@@ -40,25 +40,25 @@ describe('filter', () => {
 
   describe('locales: ["fi","en"]', () => {
     test('hit messages.json', () => {
-      const { transform } = plugin({ locales: ['fi', 'en'] });
+      const { transform } = messageformat({ locales: ['fi', 'en'] });
       const res = transform(jsonSrc, 'messages.json');
       expect(res).toMatchObject({ code });
     });
 
     test('hit messages/en.json', () => {
-      const { transform } = plugin({ locales: ['fi', 'en'] });
+      const { transform } = messageformat({ locales: ['fi', 'en'] });
       const res = transform(jsonSrc, 'messages/en.json');
       expect(res).toMatchObject({ code });
     });
 
     test('skip messages/sv.json', () => {
-      const { transform } = plugin({ locales: ['fi', 'en'] });
+      const { transform } = messageformat({ locales: ['fi', 'en'] });
       const res = transform(jsonSrc, 'messages/sv.json');
       expect(res).toBeNull();
     });
 
     test('include: /\\.foo$/', () => {
-      const { transform } = plugin({
+      const { transform } = messageformat({
         include: /\.foo$/,
         locales: ['fi', 'en']
       });
@@ -72,27 +72,27 @@ describe('load .properties', () => {
   test('utf8', async () => {
     const buffer = Buffer.from('kääk', 'utf8');
     fs.writeFileSync('/foo.properties', buffer);
-    const res = await plugin().load('/foo.properties');
+    const res = await messageformat().load('/foo.properties');
     expect(res).toMatchObject({ code: 'kääk' });
   });
 
   test('latin1', async () => {
     const buffer = Buffer.from('kääk', 'latin1');
     fs.writeFileSync('/foo.properties', buffer);
-    const res = await plugin().load('/foo.properties');
+    const res = await messageformat().load('/foo.properties');
     expect(res).toMatchObject({ code: 'kääk' });
   });
 
   test('skip .messages.json', async () => {
     const buffer = Buffer.from('kääk', 'utf8');
     fs.writeFileSync('/foo.messages.json', buffer);
-    const res = await plugin().load('/foo.messages.json');
+    const res = await messageformat().load('/foo.messages.json');
     expect(res).toBeNull();
   });
 
   test('throw on error', async () => {
     try {
-      await plugin().load('/nonesuch.properties');
+      await messageformat().load('/nonesuch.properties');
       throw new Error('Should not happen');
     } catch (error: any) {
       expect(error.code).toBe('ENOENT');
@@ -102,25 +102,25 @@ describe('load .properties', () => {
 
 describe('transform', () => {
   test('.messages.json', () => {
-    const res = plugin().transform(jsonSrc, 'foo.messages.json');
+    const res = messageformat().transform(jsonSrc, 'foo.messages.json');
     expect(res).toMatchObject({ code });
   });
 
   test('.messages.yaml', () => {
     const src = 'key:\n  inner: value {foo}\n';
-    const res = plugin().transform(src, 'foo.messages.yaml');
+    const res = messageformat().transform(src, 'foo.messages.yaml');
     expect(res).toMatchObject({ code });
   });
 
   test('.properties', () => {
     const src = 'key.inner: value {foo}\n';
-    const res = plugin().transform(src, 'foo.properties');
+    const res = messageformat().transform(src, 'foo.properties');
     expect(res).toMatchObject({ code });
   });
 
   test('select locale from filename', () => {
     const src = 'key: value {foo, plural, one{1} other{#}}\n';
-    const { transform } = plugin({ locales: ['en', 'fi'] });
+    const { transform } = messageformat({ locales: ['en', 'fi'] });
     const res = transform(src, 'fi.properties');
     expect(res).toMatchObject({
       code: source`

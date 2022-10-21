@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { rollup } from 'rollup';
-import plugin from './index';
+import { messageformat } from './index';
 
 const external = /^@messageformat\/runtime\b/;
 const fixtures = resolve(__dirname, '__fixtures__');
@@ -9,7 +9,7 @@ test('YAML with default import', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'yaml-default.js'),
-    plugins: [plugin({ locales: ['en', 'fi'] })],
+    plugins: [messageformat({ locales: ['en', 'fi'] })],
     strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
@@ -21,7 +21,7 @@ test('YAML with named import', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'yaml-named.js'),
-    plugins: [plugin({ locales: ['en', 'fi'] })],
+    plugins: [messageformat({ locales: ['en', 'fi'] })],
     strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
@@ -33,7 +33,7 @@ test('.properties with Latin-1 encoding', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'properties.js'),
-    plugins: [plugin({ locales: ['en', 'fi'] })],
+    plugins: [messageformat({ locales: ['en', 'fi'] })],
     strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
@@ -45,7 +45,7 @@ test('README sample', async () => {
   const bundle = await rollup({
     external,
     input: resolve(fixtures, 'readme-sample.js'),
-    plugins: [plugin({ locales: ['en', 'fr'] })],
+    plugins: [messageformat({ locales: ['en', 'fr'] })],
     strictDeprecations: true
   });
   const { output } = await bundle.generate({ format: 'es' });
