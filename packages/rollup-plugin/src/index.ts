@@ -48,7 +48,7 @@ interface PluginArgs extends MessageFormatOptions {
   propKeyPath?: boolean;
 }
 
-export default function mfPlugin({
+export function messageformat({
   exclude,
   include,
   locales,
