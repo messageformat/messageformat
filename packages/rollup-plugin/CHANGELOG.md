@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.0](https://github.com/messageformat/messageformat/compare/rollup-plugin-messageformat@2.0.0...rollup-plugin-messageformat@3.0.0) (2022-10-21)
+
+### ⚠ Breaking Changes
+
+* Users must use a named rather than default import of the plugin ([#382](https://github.com/messageformat/messageformat/issues/382)):
+  ```js
+  import { messageformat } from 'rollup-plugin-messageformat';
+  ```
+
 ## [2.0.0](https://github.com/messageformat/messageformat/compare/rollup-plugin-messageformat@1.0.0...rollup-plugin-messageformat@2.0.0) (2022-07-16)
 
 ### ⚠ Breaking Changes
