@@ -94,10 +94,10 @@ export default class Compiler {
     if (this.options.requireAllArguments && hasArgs) {
       this.setRuntimeFn('reqArgs');
       const reqArgs = JSON.stringify(this.arguments);
-      return `(d) => { reqArgs(${reqArgs}, d); return ${res}; }`;
+      return `function (d) { reqArgs(${reqArgs}, d); return ${res}; }`;
     }
 
-    return `(${hasArgs ? 'd' : ''}) => ${res}`;
+    return `function (${hasArgs ? 'd' : ''}) { return ${res}; }`;
   }
 
   cases(token: Select, pluralToken: Select | null) {
