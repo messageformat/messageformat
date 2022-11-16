@@ -35,7 +35,7 @@ export function dateSkeletonCases(): TestCase[] {
     GGGGGyyMMMMM: { exp: 'J 06 A' },
     GrMMMdd: { exp: 'Jan 02, 2006 AD' },
     GMMd: { exp: '01/2 AD' },
-    hamszzzz: { exp: /^3:0?4:0?5 PM [A-Z]/ },
+    hamszzzz: { exp: /^3:0?4:0?5\sPM [A-Z]/ },
     Mk: { exp: '1, 15' }
   };
   return Object.entries(cases).map(([fmt, { exp, skip }]) => ({

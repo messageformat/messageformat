@@ -27,7 +27,7 @@ const tests: {
   },
   Mk: { expected: '1, 15' },
   DEHhX: {
-    expected: 'Mon, 3 PM',
+    expected: /^Mon, 3\sPM$/,
     errors: [
       'Day of year is not supported',
       'Duplicate hour token',
@@ -41,13 +41,13 @@ const tests: {
     ]
   },
   eeeeKVZ: {
-    expected: /^Monday, 3 PM [A-Z]/,
+    expected: /^Monday, 3\sPM [A-Z]/,
     errors: [
       'Time Zone: ID is not supported with width 1',
       'Duplicate tz token'
     ]
   },
-  hamszzzz: { expected: /^3:04:05 PM [A-Z]/ },
+  hamszzzz: { expected: /^3:04:05\sPM [A-Z]/ },
   sSVVVV: {
     expected: /^5 [A-Z]/,
     errors: ['Fractional second is not supported']

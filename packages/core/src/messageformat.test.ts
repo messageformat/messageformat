@@ -169,7 +169,7 @@ for (const [title, cases] of Object.entries(
 )) {
   describe(title, () => {
     for (const { locale, options, src, exp, skip } of cases) {
-      let desc: Mocha.SuiteFunction | Mocha.PendingSuiteFunction = describe;
+      let desc = describe;
       if (skip) {
         if (isNode12 && skip.includes('node12')) desc = describe.skip;
         if (!isV2 && skip.includes('v1')) desc = describe.skip;

@@ -341,7 +341,7 @@ export const testCases: Record<string, TestCase[]> = {
   'Time formatter': [
     {
       src: 'The time is now {T, time}',
-      exp: [[{ T: 978384385000 }, /^The time is now \d\d?:\d\d:25 PM$/]]
+      exp: [[{ T: 978384385000 }, /^The time is now \d\d?:\d\d:25\sPM$/]]
     },
     {
       locale: 'fi',

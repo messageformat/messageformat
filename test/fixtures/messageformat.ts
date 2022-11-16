@@ -438,7 +438,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
         src: '{X, selectordinal, one{#} other{{Y, time, short}}}',
         exp: [
           [{ X: 1, Y: 5 }, '1'],
-          [{ X: 3, Y: 5 }, /^1?\d:[03]0 [AP]M$/]
+          [{ X: 3, Y: 5 }, /^1?\d:[03]0\s[AP]M$/]
         ]
       },
       {
@@ -543,7 +543,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
     'Time formatter': [
       {
         src: 'The time is now {T, time}',
-        exp: [[{ T: 978384385000 }, /^The time is now \d\d?:\d\d:25 PM$/]]
+        exp: [[{ T: 978384385000 }, /^The time is now \d\d?:\d\d:25\sPM$/]]
       },
       {
         locale: 'fi',
@@ -558,7 +558,7 @@ export const getTestCases = (escape: typeof MessageFormat['escape']) =>
           exp: [
             [
               { T: time },
-              /^The Eagle landed at \d\d?:\d\d:40 [AP]M( \S+)? on \w+day, July \d\d, 1969$/
+              /^The Eagle landed at \d\d?:\d\d:40\s[AP]M( \S+)? on \w+day, July \d\d, 1969$/
             ]
           ]
         };
