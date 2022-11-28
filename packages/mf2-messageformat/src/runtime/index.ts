@@ -29,16 +29,11 @@ export const defaultRuntime = { datetime, number };
  * @beta
  */
 export interface Runtime {
-  [key: string]: RuntimeFunction<unknown>;
-}
-
-/** @beta */
-export interface RuntimeFunction<T> {
-  call(
-    locales: readonly string[],
+  [key: string]: (
+    locales: string[],
     options: RuntimeOptions,
-    arg?: MessageValue
-  ): T;
+    arg?: MessageValue<any>
+  ) => unknown;
 }
 
 /**

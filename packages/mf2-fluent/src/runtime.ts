@@ -2,8 +2,6 @@ import {
   defaultRuntime,
   MessageFormat,
   MessageValue,
-  ResolvedMessage,
-  RuntimeFunction,
   RuntimeOptions
 } from 'messageformat';
 
@@ -21,20 +19,19 @@ import {
  *   This Map may be passed in as initially empty, and later filled out by the caller.
  */
 export function getFluentRuntime(res: Map<string, MessageFormat>) {
-  const MESSAGE: RuntimeFunction<ResolvedMessage> = {
-    call: function resolveMessageRef(
-      _locales: string[],
-      options: RuntimeOptions,
-      arg?: MessageValue
-    ) {
-      const msgId = arg?.toString() ?? '';
-      const mf = res.get(msgId);
-      if (!mf) throw new Error(`Message not available: ${msgId}`);
-      const msg = mf.resolveMessage(options);
-      msg.source = msgId;
-      return msg;
-    }
-  };
+  function MESSAGE(
+    _locales: string[],
+    options: RuntimeOptions,
+    arg?: MessageValue
+  ) {
+    const msgId = arg?.toString() ?? '';
+    const mf = res.get(msgId);
+    if (!mf) throw new Error(`Message not available: ${msgId}`);
+    const msg = mf.resolveMessage(options);
+    msg.source = msgId;
+    return msg;
+  }
+  Object.freeze(MESSAGE);
 
   return {
     DATETIME: defaultRuntime.datetime,

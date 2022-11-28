@@ -8,7 +8,6 @@ import { source } from '@messageformat/test-utils';
 
 import {
   MessageValue,
-  MessageNumber,
   MessageFormat,
   Runtime,
   RuntimeOptions,
@@ -17,46 +16,33 @@ import {
 import { ResolvedMessage } from './message-value';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
-  function parseRangeArgs(
-    start_: MessageNumber | MessageValue<{ start: number; end: number }>,
-    end_: MessageNumber | undefined
+  function parseRange(
+    arg: MessageValue<{ start: number; end: number }> | undefined
   ) {
-    const start = start_.value;
-    const end = end_?.value;
-    if (typeof end === 'number') {
-      if (typeof start !== 'number' && typeof start !== 'string')
-        throw new Error(`Invalid arguments (${start}, ${end})`);
-      return { start: Number(start), end: Number(end) };
-    } else {
-      if (!start || typeof start !== 'object')
-        throw new Error(`Invalid arguments (${start}, ${end})`);
-      return { start: start.start, end: start.end };
-    }
+    const range = arg?.value;
+    if (!range || typeof range !== 'object')
+      throw new Error(`Invalid range argument: ${range}`);
+    return { start: range.start, end: range.end };
   }
   function formatRange(
     _locales: string[],
     _options: RuntimeOptions,
-    start: MessageNumber | MessageValue<{ start: number; end: number }>,
-    end?: MessageNumber
+    range?: MessageValue<{ start: number; end: number }>
   ) {
-    const range = parseRangeArgs(start, end);
-    return `${range.start} - ${range.end}`;
+    const { start, end } = parseRange(range);
+    return `${start} - ${end}`;
   }
   function pluralRange(
     locales: string[],
     options: RuntimeOptions,
-    start: MessageNumber | MessageValue<{ start: number; end: number }>,
-    end?: MessageNumber
+    range?: MessageValue<{ start: number; end: number }>
   ) {
     if (locales[0] !== 'nl') throw new Error('Only Dutch supported');
-    const range = parseRangeArgs(start, end);
+    const { end } = parseRange(range);
     const pr = new Intl.PluralRules(locales, options);
-    return [pr.select(range.end)];
+    return [pr.select(end)];
   }
-  const runtime: Runtime = {
-    formatRange: { call: formatRange },
-    pluralRange: { call: pluralRange }
-  };
+  const runtime = { formatRange, pluralRange } satisfies Runtime;
 
   test('input as { start, end } object', () => {
     const mf = new MessageFormat(
@@ -230,9 +216,7 @@ maybe('List formatting', () => {
       and = { LIST($list, style: "short", type: "conjunction") }
       or = { LIST($list, style: "long", type: "disjunction") }
     `;
-    const res = fluentToResource(src, 'en', {
-      runtime: { LIST: { call: LIST } }
-    });
+    const res = fluentToResource(src, 'en', { runtime: { LIST } });
     const list = ['Motorcycle', 'Bus', 'Car'];
 
     const plainMsg = res.get('plain')?.resolveMessage({ list });
@@ -286,9 +270,7 @@ maybe('List formatting', () => {
         *[other] Le-am dat cadouri { LIST($list, each: "dative") }.
       }
     `;
-    const res = fluentToResource(src, 'ro', {
-      runtime: { LIST: { call: LIST } }
-    });
+    const res = fluentToResource(src, 'ro', { runtime: { LIST } });
 
     const list1 = ['Petre'];
     const msg1 = res.get('msg')?.resolveMessage({

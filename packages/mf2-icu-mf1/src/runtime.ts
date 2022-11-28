@@ -3,7 +3,6 @@ import {
   MessageDateTime,
   MessageNumber,
   MessageValue,
-  RuntimeFunction,
   RuntimeOptions
 } from 'messageformat';
 
@@ -17,33 +16,28 @@ function getParam(options: RuntimeOptions) {
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
-const date: RuntimeFunction<MessageDateTime> = {
-  call: function date(
-    locales: string[],
-    options: RuntimeOptions,
-    arg?: MessageValue
-  ) {
-    let date: Date | MessageDateTime;
-    if (!arg) date = new Date(NaN); // Invalid Date
-    else if (arg instanceof MessageDateTime) date = arg;
-    else if (typeof arg.value === 'number') date = new Date(arg.value);
-    else date = new Date(String(arg.value));
-    const size = getParam(options) as DateTimeSize;
-    const opt: Intl.DateTimeFormatOptions = {
-      localeMatcher: options.localeMatcher,
-      weekday: size === 'full' ? 'long' : undefined,
-      day: 'numeric',
-      month:
-        size === 'short'
-          ? 'numeric'
-          : size === 'full' || size === 'long'
-          ? 'long'
-          : 'short',
-      year: 'numeric'
-    };
-    return new MessageDateTime(locales, date, { options: opt });
-  }
-};
+function date(locales: string[], options: RuntimeOptions, arg?: MessageValue) {
+  let date: Date | MessageDateTime;
+  if (!arg) date = new Date(NaN); // Invalid Date
+  else if (arg instanceof MessageDateTime) date = arg;
+  else if (typeof arg.value === 'number') date = new Date(arg.value);
+  else date = new Date(String(arg.value));
+  const size = getParam(options) as DateTimeSize;
+  const opt: Intl.DateTimeFormatOptions = {
+    localeMatcher: options.localeMatcher,
+    weekday: size === 'full' ? 'long' : undefined,
+    day: 'numeric',
+    month:
+      size === 'short'
+        ? 'numeric'
+        : size === 'full' || size === 'long'
+        ? 'long'
+        : 'short',
+    year: 'numeric'
+  };
+  return new MessageDateTime(locales, date, { options: opt });
+}
+Object.freeze(date);
 
 /**
  * Represent a duration in seconds as a string
@@ -52,42 +46,37 @@ const date: RuntimeFunction<MessageDateTime> = {
  *   `hhhh:mm:ss`, possibly with a leading `-` for negative values and a
  *   trailing `.sss` part for non-integer input
  */
-const duration: RuntimeFunction<string> = {
-  call: function duration(
-    _locales: string[],
-    _options: unknown,
-    arg?: MessageValue
-  ) {
-    let value = Number(arg?.value);
-    if (!isFinite(value)) return String(value);
-    let sign = '';
-    if (value < 0) {
-      sign = '-';
-      value = Math.abs(value);
-    } else {
-      value = Number(value);
-    }
-    const sec = value % 60;
-    const parts = [Math.round(sec) === sec ? sec : sec.toFixed(3)];
-    if (value < 60) {
-      parts.unshift(0); // at least one : is required
-    } else {
-      value = Math.round((value - Number(parts[0])) / 60);
-      parts.unshift(value % 60); // minutes
-      if (value >= 60) {
-        value = Math.round((value - Number(parts[0])) / 60);
-        parts.unshift(value); // hours
-      }
-    }
-    const first = parts.shift();
-    return (
-      sign +
-      first +
-      ':' +
-      parts.map(n => (n < 10 ? '0' + String(n) : String(n))).join(':')
-    );
+function duration(_locales: string[], _options: unknown, arg?: MessageValue) {
+  let value = Number(arg?.value);
+  if (!isFinite(value)) return String(value);
+  let sign = '';
+  if (value < 0) {
+    sign = '-';
+    value = Math.abs(value);
+  } else {
+    value = Number(value);
   }
-};
+  const sec = value % 60;
+  const parts = [Math.round(sec) === sec ? sec : sec.toFixed(3)];
+  if (value < 60) {
+    parts.unshift(0); // at least one : is required
+  } else {
+    value = Math.round((value - Number(parts[0])) / 60);
+    parts.unshift(value % 60); // minutes
+    if (value >= 60) {
+      value = Math.round((value - Number(parts[0])) / 60);
+      parts.unshift(value); // hours
+    }
+  }
+  const first = parts.shift();
+  return (
+    sign +
+    first +
+    ':' +
+    parts.map(n => (n < 10 ? '0' + String(n) : String(n))).join(':')
+  );
+}
+Object.freeze(duration);
 
 function getMF1Offset(
   opt: (MessageNumber['options'] & { pluralOffset?: number }) | undefined
@@ -129,61 +118,55 @@ class MessageMF1Number extends MessageNumber {
   }
 }
 
-const number: RuntimeFunction<MessageNumber> = {
-  call: function number(
-    locales: string[],
-    options: RuntimeOptions,
-    arg?: MessageValue
-  ) {
-    const num = arg instanceof MessageNumber ? arg : Number(arg?.value);
-    const opt: Intl.NumberFormatOptions &
-      Intl.PluralRulesOptions & { pluralOffset?: number } = {};
-    switch (getParam(options)) {
-      case 'integer':
-        opt.maximumFractionDigits = 0;
-        break;
-      case 'percent':
-        opt.style = 'percent';
-        break;
-      case 'currency': {
-        opt.style = 'currency';
-        opt.currency = 'USD';
-        break;
-      }
+function number(
+  locales: string[],
+  options: RuntimeOptions,
+  arg?: MessageValue
+) {
+  const num = arg instanceof MessageNumber ? arg : Number(arg?.value);
+  const opt: Intl.NumberFormatOptions &
+    Intl.PluralRulesOptions & { pluralOffset?: number } = {};
+  switch (getParam(options)) {
+    case 'integer':
+      opt.maximumFractionDigits = 0;
+      break;
+    case 'percent':
+      opt.style = 'percent';
+      break;
+    case 'currency': {
+      opt.style = 'currency';
+      opt.currency = 'USD';
+      break;
     }
-    const offset = Number(options.pluralOffset);
-    if (Number.isInteger(offset)) opt.pluralOffset = offset;
-    if (options.type === 'ordinal') opt.type = 'ordinal';
-
-    return new MessageMF1Number(locales, num, {
-      options: opt,
-      source: arg?.source
-    });
   }
-};
+  const offset = Number(options.pluralOffset);
+  if (Number.isInteger(offset)) opt.pluralOffset = offset;
+  if (options.type === 'ordinal') opt.type = 'ordinal';
 
-const time: RuntimeFunction<MessageDateTime> = {
-  call: function time(
-    locales: string[],
-    options: RuntimeOptions,
-    arg?: MessageValue
-  ) {
-    let time: Date | MessageDateTime;
-    if (!arg) time = new Date(NaN); // Invalid Date
-    else if (arg instanceof MessageDateTime) time = arg;
-    else if (typeof arg.value === 'number') time = new Date(arg.value);
-    else time = new Date(String(arg.value));
-    const size = getParam(options) as DateTimeSize;
-    const opt: Intl.DateTimeFormatOptions = {
-      localeMatcher: options.localeMatcher,
-      second: size === 'short' ? undefined : 'numeric',
-      minute: 'numeric',
-      hour: 'numeric',
-      timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
-    };
-    return new MessageDateTime(locales, time, { options: opt });
-  }
-};
+  return new MessageMF1Number(locales, num, {
+    options: opt,
+    source: arg?.source
+  });
+}
+Object.freeze(number);
+
+function time(locales: string[], options: RuntimeOptions, arg?: MessageValue) {
+  let time: Date | MessageDateTime;
+  if (!arg) time = new Date(NaN); // Invalid Date
+  else if (arg instanceof MessageDateTime) time = arg;
+  else if (typeof arg.value === 'number') time = new Date(arg.value);
+  else time = new Date(String(arg.value));
+  const size = getParam(options) as DateTimeSize;
+  const opt: Intl.DateTimeFormatOptions = {
+    localeMatcher: options.localeMatcher,
+    second: size === 'short' ? undefined : 'numeric',
+    minute: 'numeric',
+    hour: 'numeric',
+    timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
+  };
+  return new MessageDateTime(locales, time, { options: opt });
+}
+Object.freeze(time);
 
 /**
  * Build a {@link messageformat#MessageFormat} runtime to use with ICU MessageFormat 1 messages.

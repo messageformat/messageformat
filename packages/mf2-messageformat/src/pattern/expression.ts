@@ -54,7 +54,7 @@ export function resolveExpression(
   let source: string | undefined;
   const rf = ctx.runtime[name];
   try {
-    let fnArgs: MessageValue[];
+    let fnArgs: [MessageValue] | [];
     if (operand) {
       const arg = ctx.resolve(operand);
       fnArgs = [arg];
@@ -76,7 +76,7 @@ export function resolveExpression(
         opt[name] = ctx.resolve(value).value;
       }
     }
-    const res = rf.call(ctx.locales, opt, ...fnArgs);
+    const res = rf(ctx.locales, opt, ...fnArgs);
     return asMessageValue(ctx, res, { source });
   } catch (error) {
     source ??= `${name}(${operand ? FALLBACK_SOURCE : ''})`;

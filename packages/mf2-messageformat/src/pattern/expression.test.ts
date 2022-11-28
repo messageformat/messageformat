@@ -8,9 +8,9 @@ import {
 
 describe('Function returns generic value', () => {
   test('string', () => {
-    const runtime: Runtime = {
-      stringify: { call: (_lc, _opt, arg) => String(arg) }
-    };
+    const runtime = {
+      stringify: (_lc, _opt, arg) => String(arg)
+    } satisfies Runtime;
     const mf = new MessageFormat('{{$var :stringify}}', 'en', { runtime });
     const msg = mf.resolveMessage({ var: 42 });
     expect(msg).toMatchObject({
@@ -21,9 +21,9 @@ describe('Function returns generic value', () => {
   });
 
   test('number', () => {
-    const runtime: Runtime = {
-      numeric: { call: (_lc, _opt, arg) => Number(arg) }
-    };
+    const runtime = {
+      numeric: (_lc, _opt, arg) => Number(arg)
+    } satisfies Runtime;
     const mf = new MessageFormat('{{$var :numeric}}', 'en', { runtime });
     const msg = mf.resolveMessage({ var: '42' });
     expect(msg).toEqual({
@@ -35,9 +35,7 @@ describe('Function returns generic value', () => {
 
   test('Date', () => {
     const date = new Date();
-    const runtime: Runtime = {
-      now: { call: () => date }
-    };
+    const runtime = { now: () => date } satisfies Runtime;
     const mf = new MessageFormat('{{:now}}', 'en', { runtime });
     const dtf = new Intl.DateTimeFormat('en');
     const msg = mf.resolveMessage();
@@ -54,14 +52,12 @@ describe('Function returns generic value', () => {
 describe('Function returns MessageValue', () => {
   test('with custom toString method', () => {
     let toString: (() => string) | undefined;
-    const runtime: Runtime = {
-      stringify: {
-        call: (lc, _opt, arg: MessageValue) => {
-          toString = () => `str:${arg}`;
-          return new MessageValue(null, lc, null, { toString });
-        }
+    const runtime = {
+      stringify(lc, _opt, arg?: MessageValue) {
+        toString = () => `str:${arg}`;
+        return new MessageValue(null, lc, null, { toString });
       }
-    };
+    } satisfies Runtime;
     const mf = new MessageFormat('{{$var :stringify}}', 'en', { runtime });
     expect(mf.resolveMessage({ var: 42 })).toEqual({
       type: 'message',
