@@ -67,10 +67,9 @@ export class MessageNumber extends MessageValue<number | bigint> {
    * so a key `zero` will never be matched for that locale.
    */
   matchSelectKey(key: string) {
-    return (
-      (/^[0-9]+$/.test(key) && key === String(this.value)) ||
-      key === this.getPluralCategory()
-    );
+    if (/^[0-9]+$/.test(key) && key === String(this.value)) return true;
+    if (key === this.getPluralCategory()) return { plural: key };
+    return false;
   }
 
   toParts(): Intl.NumberFormatPart[] {

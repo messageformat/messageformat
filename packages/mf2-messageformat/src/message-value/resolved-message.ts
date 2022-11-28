@@ -1,5 +1,4 @@
 import type { Message } from '../data-model';
-import { getFormattedSelectMeta } from '../extra/detect-grammar';
 import type { Context } from '../format-context';
 import type { PatternElement } from '../pattern';
 import { MessageValue, Meta } from './message-value';
@@ -18,15 +17,15 @@ function getPattern(
       const resSelectors = message.selectors.map(sel => context.resolve(sel));
 
       cases: for (const { keys, value } of message.variants) {
+        let meta: Meta | undefined = undefined;
         for (let i = 0; i < keys.length; ++i) {
           const key = keys[i];
           const rs = resSelectors[i];
-          if (key.type !== '*' && rs && !rs.matchSelectKey(key.value)) {
-            continue cases;
-          }
+          const match = key.type === '*' || rs?.matchSelectKey(key.value);
+          if (!match) continue cases;
+          if (typeof match === 'object')
+            meta = Object.assign(meta ?? {}, match);
         }
-
-        const meta = getFormattedSelectMeta(message, keys);
         return { pattern: value.body, meta };
       }
 

@@ -504,7 +504,6 @@ describe('getMessage', () => {
       const msg = res.get('case')?.resolveMessage({ case: 'genitive' });
       expect(msg).toEqual({
         type: 'message',
-        meta: { case: 'genitive' },
         value: [{ type: 'literal', value: 'GEN' }]
       });
     });
@@ -521,7 +520,6 @@ describe('getMessage', () => {
       const msg = res.get('gender')?.resolveMessage({ gender: 'feminine' });
       expect(msg).toEqual({
         type: 'message',
-        meta: { gender: 'feminine' },
         value: [{ type: 'literal', value: 'F' }]
       });
     });
