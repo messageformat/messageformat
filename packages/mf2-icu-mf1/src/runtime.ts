@@ -7,8 +7,13 @@ import {
   RuntimeOptions
 } from 'messageformat';
 
-const getParam = (options: RuntimeOptions) =>
-  (options.param && String(options.param).trim()) || undefined;
+function getParam(options: RuntimeOptions) {
+  if (options.param) {
+    const param = String(options.param).trim();
+    if (param) return param;
+  }
+  return undefined;
+}
 
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
@@ -37,9 +42,7 @@ const date: RuntimeFunction<MessageDateTime> = {
       year: 'numeric'
     };
     return new MessageDateTime(locales, date, { options: opt });
-  },
-
-  options: { param: 'string' }
+  }
 };
 
 /**
@@ -83,8 +86,7 @@ const duration: RuntimeFunction<string> = {
       ':' +
       parts.map(n => (n < 10 ? '0' + String(n) : String(n))).join(':')
     );
-  },
-  options: 'never'
+  }
 };
 
 function getMF1Offset(
@@ -136,7 +138,7 @@ const number: RuntimeFunction<MessageNumber> = {
     const num = arg instanceof MessageNumber ? arg : Number(arg?.value);
     const opt: Intl.NumberFormatOptions &
       Intl.PluralRulesOptions & { pluralOffset?: number } = {};
-    switch (String(options.param).trim()) {
+    switch (getParam(options)) {
       case 'integer':
         opt.maximumFractionDigits = 0;
         break;
@@ -150,19 +152,13 @@ const number: RuntimeFunction<MessageNumber> = {
       }
     }
     const offset = Number(options.pluralOffset);
-    if (Number.isFinite(offset)) opt.pluralOffset = offset;
+    if (Number.isInteger(offset)) opt.pluralOffset = offset;
     if (options.type === 'ordinal') opt.type = 'ordinal';
 
     return new MessageMF1Number(locales, num, {
       options: opt,
       source: arg?.source
     });
-  },
-
-  options: {
-    param: 'string',
-    pluralOffset: 'number',
-    type: ['cardinal', 'ordinal']
   }
 };
 
@@ -186,9 +182,7 @@ const time: RuntimeFunction<MessageDateTime> = {
       timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
     };
     return new MessageDateTime(locales, time, { options: opt });
-  },
-
-  options: { param: ['short', 'default', 'long', 'full'] }
+  }
 };
 
 /**

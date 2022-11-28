@@ -9,7 +9,7 @@ import {
 describe('Function returns generic value', () => {
   test('string', () => {
     const runtime: Runtime = {
-      stringify: { call: (_lc, _opt, arg) => String(arg), options: 'never' }
+      stringify: { call: (_lc, _opt, arg) => String(arg) }
     };
     const mf = new MessageFormat('{{$var :stringify}}', 'en', { runtime });
     const msg = mf.resolveMessage({ var: 42 });
@@ -22,7 +22,7 @@ describe('Function returns generic value', () => {
 
   test('number', () => {
     const runtime: Runtime = {
-      numeric: { call: (_lc, _opt, arg) => Number(arg), options: 'never' }
+      numeric: { call: (_lc, _opt, arg) => Number(arg) }
     };
     const mf = new MessageFormat('{{$var :numeric}}', 'en', { runtime });
     const msg = mf.resolveMessage({ var: '42' });
@@ -36,7 +36,7 @@ describe('Function returns generic value', () => {
   test('Date', () => {
     const date = new Date();
     const runtime: Runtime = {
-      now: { call: () => date, options: 'never' }
+      now: { call: () => date }
     };
     const mf = new MessageFormat('{{:now}}', 'en', { runtime });
     const dtf = new Intl.DateTimeFormat('en');
@@ -59,8 +59,7 @@ describe('Function returns MessageValue', () => {
         call: (lc, _opt, arg: MessageValue) => {
           toString = () => `str:${arg}`;
           return new MessageValue(null, lc, null, { toString });
-        },
-        options: 'never'
+        }
       }
     };
     const mf = new MessageFormat('{{$var :stringify}}', 'en', { runtime });
@@ -139,7 +138,7 @@ describe('Type casts based on runtime', () => {
     );
     expect(
       mf?.resolveMessage({ var: 1234, useGrouping: 'false' })?.toString()
-    ).toBe('1,234');
+    ).toBe('1234');
     expect(
       mf?.resolveMessage({ var: 1234, useGrouping: false })?.toString()
     ).toBe('1234');

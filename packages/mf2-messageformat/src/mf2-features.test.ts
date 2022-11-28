@@ -54,14 +54,8 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     return [pr.select(range.end)];
   }
   const runtime: Runtime = {
-    formatRange: {
-      call: formatRange,
-      options: { start: 'any', end: 'number' }
-    },
-    pluralRange: {
-      call: pluralRange,
-      options: { start: 'any', end: 'number' }
-    }
+    formatRange: { call: formatRange },
+    pluralRange: { call: pluralRange }
   };
 
   test('input as { start, end } object', () => {
@@ -237,7 +231,7 @@ maybe('List formatting', () => {
       or = { LIST($list, style: "long", type: "disjunction") }
     `;
     const res = fluentToResource(src, 'en', {
-      runtime: { LIST: { call: LIST, options: 'any' } }
+      runtime: { LIST: { call: LIST } }
     });
     const list = ['Motorcycle', 'Bus', 'Car'];
 
@@ -293,7 +287,7 @@ maybe('List formatting', () => {
       }
     `;
     const res = fluentToResource(src, 'ro', {
-      runtime: { LIST: { call: LIST, options: 'any' } }
+      runtime: { LIST: { call: LIST } }
     });
 
     const list1 = ['Petre'];

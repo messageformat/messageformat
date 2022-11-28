@@ -3,6 +3,8 @@
 import { MessageValue } from '../message-value';
 import { datetime, number } from './default';
 
+export { castAsBoolean, castAsInteger } from './cast';
+
 /**
  * The default Runtime includes two functions, `datetime` and `number`.
  *
@@ -37,35 +39,10 @@ export interface RuntimeFunction<T> {
     options: RuntimeOptions,
     arg?: MessageValue
   ): T;
-  options: RuntimeType | Record<string, RuntimeType>;
 }
 
 /**
- * Basic type checking is performed on option values.
- *
- * @remarks
- * - `'any'` - Value type is not checked
- * - `'never'` - No value is valid
- * - `'string'`, `'number'`, `'boolean'`, `'object'` - `typeof value` must match
- * - `string[]` - The value must be one of the enumerated string values
- *
- * For literal values, the strings `'true'` and `'false'` are valid for `'boolean'`,
- * and strings representing finite numbers in JavaScript are valid for `'number'`.
- *
- * @beta
- */
-export type RuntimeType =
-  | 'string'
-  | 'number'
-  | 'boolean'
-  | 'object'
-  | 'any'
-  | 'never'
-  | string[];
-
-/**
- * The second argument of runtime function calls is an options bag,
- * with possible keys as defined by the {@link RuntimeFunction} `options`.
+ * The second argument of runtime function calls is an options bag.
  * The `localeMatcher` key is always present.
  *
  * @beta

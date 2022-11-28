@@ -42,8 +42,7 @@
   {
     "src": "{hello {(4.2) :number minimumFractionDigits=$foo}}",
     "params": { "foo": "2" },
-    "exp": "hello 4.20",
-    "errors": [{ "type": "invalid-type" }]
+    "exp": "hello 4.20"
   },
   {
     "src": "let $foo = {(bar)} {bar {$foo}}",
@@ -72,8 +71,7 @@
   {
     "src": "let $foo = {$bar :number minimumFractionDigits=foo} {bar {$foo}}",
     "params": { "bar": 4.2 },
-    "exp": "bar 4.2",
-    "errors": [{ "type": "invalid-type" }]
+    "exp": "bar 4.2"
   },
   {
     "src": "let $foo = {$bar :number} {bar {$foo}}",

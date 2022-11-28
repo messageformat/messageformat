@@ -33,8 +33,7 @@ export function getFluentRuntime(res: Map<string, MessageFormat>) {
       const msg = mf.resolveMessage(options);
       msg.source = msgId;
       return msg;
-    },
-    options: 'any'
+    }
   };
 
   return {
