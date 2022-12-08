@@ -48,7 +48,7 @@ export class MessageNumber extends MessageValue<number | bigint> {
     return new Class(lc?.locales, opt);
   }
 
-  getPluralCategory() {
+  protected getPluralCategory() {
     if (!this.localeContext) return 'other';
     const pr = this.getIntl(Intl.PluralRules);
     // Intl.PluralRules really does need a number

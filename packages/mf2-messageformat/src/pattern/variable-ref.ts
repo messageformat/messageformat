@@ -32,20 +32,23 @@ export interface VariableRef {
 export const isVariableRef = (part: any): part is VariableRef =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
+const isScope = (scope: unknown): scope is Record<string, unknown> =>
+  scope instanceof Object && !(scope instanceof MessageValue);
+
 /**
  * Looks for the longest matching `.` delimited starting substring of name.
  * @returns `undefined` if value not found
  */
 function getValue(scope: unknown, name: string): unknown {
-  if (scope instanceof Object && !(scope instanceof MessageValue)) {
-    if (name in scope) return (scope as Record<string, unknown>)[name];
+  if (isScope(scope)) {
+    if (name in scope) return scope[name];
 
     const parts = name.split('.');
     for (let i = parts.length - 1; i > 0; --i) {
       const head = parts.slice(0, i).join('.');
       if (head in scope) {
         const tail = parts.slice(i).join('.');
-        return getValue((scope as Record<string, unknown>)[head], tail);
+        return getValue(scope[head], tail);
       }
     }
   }
