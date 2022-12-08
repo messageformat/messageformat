@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/fluent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Conversion & compatibility tools for using Fluent with MessageFormat 2",
   "keywords": [
     "messageformat",
@@ -28,7 +28,7 @@
   "dependencies": {
     "@fluent/syntax": "^0.18.0",
     "fast-deep-equal": "^3.1.3",
-    "messageformat": "^4.0.0-1"
+    "messageformat": "^4.0.0-2"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",

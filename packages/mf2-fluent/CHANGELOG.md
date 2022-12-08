@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.2.0...@messageformat/fluent@0.3.0) (2022-12-08)
+
+### Features
+
+* Do not flatten Fluent attributes into separate top-level messages ([ceece0d](https://github.com/messageformat/messageformat/commit/ceece0da929d6746169749326ce1ccd5f2c1bd62))
+
 ## [0.2.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.1.0...@messageformat/fluent@0.2.0) (2022-10-21)
 
 ### ⚠ Breaking Changes
