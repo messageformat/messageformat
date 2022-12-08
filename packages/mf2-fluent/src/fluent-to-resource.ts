@@ -1,5 +1,6 @@
 import * as Fluent from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
+import type { FluentMessageResource, FluentMessageResourceData } from '.';
 import { fluentToMessage } from './fluent-to-message';
 import { getFluentRuntime } from './runtime';
 
@@ -19,11 +20,11 @@ import { getFluentRuntime } from './runtime';
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
  */
 export function fluentToResource(
-  source: string | Fluent.Resource | Map<string, Message>,
+  source: string | Fluent.Resource | FluentMessageResourceData,
   locales?: string | string[],
   options?: MessageFormatOptions
-): Map<string, MessageFormat> {
-  const res: Map<string, MessageFormat> = new Map();
+): FluentMessageResource {
+  const res: FluentMessageResource = new Map();
 
   const runtime = Object.assign(getFluentRuntime(res), options?.runtime);
   const opt = { ...options, runtime };
@@ -32,8 +33,16 @@ export function fluentToResource(
     typeof source === 'string' || source instanceof Fluent.Resource
       ? fluentToResourceData(source).data
       : source;
-  for (const [id, msg] of data)
-    res.set(id, new MessageFormat(msg, locales, opt));
+  for (const [id, group] of data) {
+    let rg = res.get(id);
+    if (!rg) {
+      rg = new Map();
+      res.set(id, rg);
+    }
+    for (const [attr, msg] of group) {
+      rg.set(attr, new MessageFormat(msg, locales, opt));
+    }
+  }
 
   return res;
 }
@@ -50,14 +59,14 @@ export function fluentToResource(
  *   `comments` of the resource.
  */
 export function fluentToResourceData(source: string | Fluent.Resource): {
-  data: Map<string, Message>;
+  data: FluentMessageResourceData;
   comments: string;
 } {
   const ast =
     typeof source === 'string'
       ? Fluent.parse(source, { withSpans: false })
       : source;
-  const data = new Map<string, Message>();
+  const data: FluentMessageResourceData = new Map();
   let groupComment = '';
   const resourceComments: string[] = [];
   for (const msg of ast.body) {
@@ -65,6 +74,7 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
       case 'Message':
       case 'Term': {
         const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
+        const group: Map<string, Message> = new Map();
         if (msg.value) {
           const entry = fluentToMessage(msg.value);
           if (msg.comment) entry.comment = msg.comment.content;
@@ -73,10 +83,11 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
               ? `${groupComment}\n\n${entry.comment}`
               : groupComment;
           }
-          data.set(id, entry);
+          group.set('', entry);
         }
         for (const attr of msg.attributes)
-          data.set(`${id}.${attr.id.name}`, fluentToMessage(attr.value));
+          group.set(attr.id.name, fluentToMessage(attr.value));
+        data.set(id, group);
         break;
       }
       case 'GroupComment':

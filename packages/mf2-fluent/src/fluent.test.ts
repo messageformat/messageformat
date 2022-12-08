@@ -35,6 +35,7 @@ type TestCase = {
   src: string;
   tests: {
     msg: string;
+    attr?: string;
     scope?: Record<string, string | number>;
     exp: string | RegExp;
     only?: boolean;
@@ -65,13 +66,13 @@ const testCases: Record<string, TestCase> = {
       { msg: 'bar', exp: 'Foo Bar' },
       { msg: 'qux', exp: 'Foo Bar Qux' },
       { msg: 'ref-foo', exp: 'Foo Attribute' },
-      { msg: 'foo.attr', exp: 'Foo Attribute' },
+      { msg: 'foo', attr: 'attr', exp: 'Foo Attribute' },
       { msg: 'ref-bar', exp: 'Bar Attribute' },
-      { msg: 'bar.attr', exp: 'Bar Attribute' },
+      { msg: 'bar', attr: 'attr', exp: 'Bar Attribute' },
       { msg: 'ref-qux', exp: 'Foo Bar Qux Attribute' },
-      { msg: 'qux.attr', exp: 'Foo Bar Qux Attribute' },
+      { msg: 'qux', attr: 'attr', exp: 'Foo Bar Qux Attribute' },
       { msg: 'ref-zig', exp: 'A' },
-      { msg: 'zig.attr', exp: 'A' }
+      { msg: 'zig', attr: 'attr', exp: 'A' }
     ]
   },
 
@@ -246,7 +247,7 @@ const testCases: Record<string, TestCase> = {
     tests: [
       { msg: 'foo', scope: { num: 3 }, exp: 'Foo 3' },
       { msg: 'bar', scope: { num: 3 }, exp: 'Foo {$num}' },
-      { msg: 'baz.attr', scope: { num: 3 }, exp: 'Baz Attribute 3' },
+      { msg: 'baz', attr: 'attr', scope: { num: 3 }, exp: 'Baz Attribute 3' },
       { msg: 'qux', scope: { num: 3 }, exp: 'Baz Variant A 3' },
       { msg: 'zig', scope: { arg: 'Argument' }, exp: 'Argument' }
     ]
@@ -274,13 +275,16 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     const res = fluentToResource(data, locale);
 
     test('validate', () => {
-      for (const [id, mf] of res) {
-        const { runtime } = mf.resolvedOptions();
-        validate(data.get(id)!, runtime);
+      for (const [id, group] of res) {
+        for (const [attr, mf] of group) {
+          const { runtime } = mf.resolvedOptions();
+          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+          validate(data.get(id)?.get(attr ?? '')!, runtime);
+        }
       }
     });
 
-    for (const { msg, scope, exp, only } of tests) {
+    for (const { msg, attr, scope, exp, only } of tests) {
       let name = msg;
       if (scope) {
         const opt = Object.entries(scope).map(
@@ -291,7 +295,11 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const _test = only ? test.only : test;
       _test(name, () => {
-        const str = res.get(msg)?.resolveMessage(scope)?.toString();
+        const str = res
+          .get(msg)
+          ?.get(attr ?? '')
+          ?.resolveMessage(scope)
+          ?.toString();
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
       });
@@ -336,7 +344,7 @@ describe('getMessage', () => {
     const res = fluentToResource(src);
 
     test('defined formatted variable', () => {
-      const foo = res.get('foo')?.resolveMessage({ num: 42 });
+      const foo = res.get('foo')?.get('')?.resolveMessage({ num: 42 });
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -347,7 +355,7 @@ describe('getMessage', () => {
     });
 
     test('undefined formatted variable', () => {
-      const foo = res.get('foo')?.resolveMessage();
+      const foo = res.get('foo')?.get('')?.resolveMessage();
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -358,7 +366,7 @@ describe('getMessage', () => {
     });
 
     test('message reference', () => {
-      const bar = res.get('bar')?.resolveMessage({ num: 42 });
+      const bar = res.get('bar')?.get('')?.resolveMessage({ num: 42 });
       expect(bar).toEqual({
         type: 'message',
         value: [
@@ -375,7 +383,7 @@ describe('getMessage', () => {
     });
 
     test('defined selector', () => {
-      const sel = res.get('sel')?.resolveMessage({ selector: 'a' });
+      const sel = res.get('sel')?.get('')?.resolveMessage({ selector: 'a' });
       expect(sel).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'A' }]
@@ -383,7 +391,7 @@ describe('getMessage', () => {
     });
 
     test('undefined selector', () => {
-      const sel = res.get('sel')?.resolveMessage();
+      const sel = res.get('sel')?.get('')?.resolveMessage();
       expect(sel).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'B' }]
@@ -416,44 +424,61 @@ describe('getMessage', () => {
     test('Data model comments', () => {
       const { comments, data } = fluentToResourceData(src);
       expect(comments).toBe('Resource comment\n\nOther resource comment');
-      expect(Array.from(data.entries())).toEqual([
+      expect(
+        Array.from(data.entries()).map(([k, v]) => [k, Array.from(v.entries())])
+      ).toEqual([
         [
           'foo',
-          {
-            type: 'message',
-            comment: 'Group 1\n\nFirst message',
-            declarations: [],
-            pattern: {
-              body: [
-                { type: 'text', value: 'Foo ' },
-                { type: 'variable', name: 'num' }
-              ]
-            }
-          }
+          [
+            [
+              '',
+              {
+                type: 'message',
+                comment: 'Group 1\n\nFirst message',
+                declarations: [],
+                pattern: {
+                  body: [
+                    { type: 'text', value: 'Foo ' },
+                    { type: 'variable', name: 'num' }
+                  ]
+                }
+              }
+            ]
+          ]
         ],
         [
           'bar',
-          {
-            type: 'message',
-            comment: 'Group 1',
-            declarations: [],
-            pattern: { body: [{ type: 'text', value: 'Bar' }] }
-          }
+          [
+            [
+              '',
+              {
+                type: 'message',
+                comment: 'Group 1',
+                declarations: [],
+                pattern: { body: [{ type: 'text', value: 'Bar' }] }
+              }
+            ]
+          ]
         ],
         [
           'qux',
-          {
-            type: 'message',
-            comment: 'Group 2\n\nOther message',
-            declarations: [],
-            pattern: { body: [{ type: 'text', value: 'Qux' }] }
-          }
+          [
+            [
+              '',
+              {
+                type: 'message',
+                comment: 'Group 2\n\nOther message',
+                declarations: [],
+                pattern: { body: [{ type: 'text', value: 'Qux' }] }
+              }
+            ]
+          ]
         ]
       ]);
     });
 
     test('foo', () => {
-      const foo = res.get('foo')?.resolveMessage({ num: 42 });
+      const foo = res.get('foo')?.get('')?.resolveMessage({ num: 42 });
       expect(foo).toEqual({
         type: 'message',
         value: [
@@ -464,7 +489,7 @@ describe('getMessage', () => {
     });
 
     test('bar', () => {
-      const bar = res.get('bar')?.resolveMessage();
+      const bar = res.get('bar')?.get('')?.resolveMessage();
       expect(bar).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Bar' }]
@@ -472,7 +497,7 @@ describe('getMessage', () => {
     });
 
     test('qux', () => {
-      const qux = res.get('qux')?.resolveMessage();
+      const qux = res.get('qux')?.get('')?.resolveMessage();
       expect(qux).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Qux' }]
@@ -501,7 +526,10 @@ describe('getMessage', () => {
     const res = fluentToResource(src, 'en');
 
     test('case with match', () => {
-      const msg = res.get('case')?.resolveMessage({ case: 'genitive' });
+      const msg = res
+        .get('case')
+        ?.get('')
+        ?.resolveMessage({ case: 'genitive' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'GEN' }]
@@ -509,7 +537,7 @@ describe('getMessage', () => {
     });
 
     test('case with fallback', () => {
-      const msg = res.get('case')?.resolveMessage({ case: 'oblique' });
+      const msg = res.get('case')?.get('')?.resolveMessage({ case: 'oblique' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'NOM' }]
@@ -517,7 +545,10 @@ describe('getMessage', () => {
     });
 
     test('gender with match', () => {
-      const msg = res.get('gender')?.resolveMessage({ gender: 'feminine' });
+      const msg = res
+        .get('gender')
+        ?.get('')
+        ?.resolveMessage({ gender: 'feminine' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'F' }]
@@ -525,7 +556,7 @@ describe('getMessage', () => {
     });
 
     test('gender with fallback', () => {
-      const msg = res.get('gender')?.resolveMessage();
+      const msg = res.get('gender')?.get('')?.resolveMessage();
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'N' }]
@@ -533,7 +564,7 @@ describe('getMessage', () => {
     });
 
     test('plural with match', () => {
-      const msg = res.get('plural')?.resolveMessage({ num: 2 });
+      const msg = res.get('plural')?.get('')?.resolveMessage({ num: 2 });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]
@@ -541,7 +572,7 @@ describe('getMessage', () => {
     });
 
     test('plural with fallback', () => {
-      const msg = res.get('plural')?.resolveMessage({ num: 1 });
+      const msg = res.get('plural')?.get('')?.resolveMessage({ num: 1 });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]
@@ -549,7 +580,7 @@ describe('getMessage', () => {
     });
 
     test('plural with non-plural input', () => {
-      const msg = res.get('plural')?.resolveMessage({ num: 'NaN' });
+      const msg = res.get('plural')?.get('')?.resolveMessage({ num: 'NaN' });
       expect(msg).toEqual({
         type: 'message',
         value: [{ type: 'literal', value: 'Other' }]

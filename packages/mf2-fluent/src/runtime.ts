@@ -1,9 +1,6 @@
-import {
-  defaultRuntime,
-  MessageFormat,
-  MessageValue,
-  RuntimeOptions
-} from 'messageformat';
+import { defaultRuntime, MessageValue, RuntimeOptions } from 'messageformat';
+import type { FluentMessageResource } from '.';
+import { valueToMessageRef } from './message-to-fluent';
 
 /**
  * Build a {@link messageformat#MessageFormat} runtime to use with Fluent messages.
@@ -18,14 +15,14 @@ import {
  * @param res - A Map of MessageFormat instances, for use by `MESSAGE`.
  *   This Map may be passed in as initially empty, and later filled out by the caller.
  */
-export function getFluentRuntime(res: Map<string, MessageFormat>) {
+export function getFluentRuntime(res: FluentMessageResource) {
   function MESSAGE(
     _locales: string[],
     options: RuntimeOptions,
     arg?: MessageValue
   ) {
-    const msgId = arg?.toString() ?? '';
-    const mf = res.get(msgId);
+    const { msgId, msgAttr } = valueToMessageRef(arg?.toString() ?? '');
+    const mf = res.get(msgId)?.get(msgAttr ?? '');
     if (!mf) throw new Error(`Message not available: ${msgId}`);
     const msg = mf.resolveMessage(options);
     msg.source = msgId;

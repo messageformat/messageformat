@@ -171,22 +171,28 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     `;
     const res = fluentToResource(src, 'en');
 
-    const one = res.get('activity-needed-calculation-plural')?.resolveMessage({
-      totalHours: 1,
-      periodMonths: 1,
-      people: 1,
-      clipsPerDay: 1
-    });
+    const one = res
+      .get('activity-needed-calculation-plural')
+      ?.get('')
+      ?.resolveMessage({
+        totalHours: 1,
+        periodMonths: 1,
+        people: 1,
+        clipsPerDay: 1
+      });
     expect(one?.toString()).toBe(
       '1 hour is achievable in just over 1 month if 1 person record 1 clip a day.'
     );
 
-    const two = res.get('activity-needed-calculation-plural')?.resolveMessage({
-      totalHours: 2,
-      periodMonths: 2,
-      people: 2,
-      clipsPerDay: 2
-    });
+    const two = res
+      .get('activity-needed-calculation-plural')
+      ?.get('')
+      ?.resolveMessage({
+        totalHours: 2,
+        periodMonths: 2,
+        people: 2,
+        clipsPerDay: 2
+      });
     expect(two?.toString()).toBe(
       '2 hours is achievable in just over 2 months if 2 people record 2 clips a day.'
     );
@@ -219,13 +225,13 @@ maybe('List formatting', () => {
     const res = fluentToResource(src, 'en', { runtime: { LIST } });
     const list = ['Motorcycle', 'Bus', 'Car'];
 
-    const plainMsg = res.get('plain')?.resolveMessage({ list });
+    const plainMsg = res.get('plain')?.get('')?.resolveMessage({ list });
     expect(plainMsg?.toString()).toBe('Motorcycle, Bus, and Car');
 
-    const andMsg = res.get('and')?.resolveMessage({ list });
+    const andMsg = res.get('and')?.get('')?.resolveMessage({ list });
     expect(andMsg?.toString()).toBe('Motorcycle, Bus, & Car');
 
-    const orMsg = res.get('or')?.resolveMessage({ list });
+    const orMsg = res.get('or')?.get('')?.resolveMessage({ list });
     expect(orMsg?.toString()).toBe('Motorcycle, Bus, or Car');
   });
 
@@ -273,14 +279,14 @@ maybe('List formatting', () => {
     const res = fluentToResource(src, 'ro', { runtime: { LIST } });
 
     const list1 = ['Petre'];
-    const msg1 = res.get('msg')?.resolveMessage({
+    const msg1 = res.get('msg')?.get('')?.resolveMessage({
       count: list1.length,
       list: list1
     });
     expect(msg1?.toString()).toBe('I-am dat cadouri lui Petre.');
 
     const list3 = ['Maria', 'Ileana', 'Petre'];
-    const msg3 = res.get('msg')?.resolveMessage({
+    const msg3 = res.get('msg')?.get('')?.resolveMessage({
       count: list3.length,
       list: list3
     });
@@ -327,7 +333,10 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   const res = fluentToResource(src, 'en');
 
   test('Match, no change', () => {
-    const msg = res.get('foo')?.resolveMessage({ foo: 'foo', other: 'other' });
+    const msg = res
+      .get('foo')
+      ?.get('')
+      ?.resolveMessage({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -341,7 +350,10 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Match, changed', () => {
-    const msg = res.get('foo')?.resolveMessage({ foo: 'other', other: 'foo' });
+    const msg = res
+      .get('foo')
+      ?.get('')
+      ?.resolveMessage({ foo: 'other', other: 'foo' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -355,7 +367,10 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('No match, no change', () => {
-    const msg = res.get('bar')?.resolveMessage({ foo: 'foo', other: 'other' });
+    const msg = res
+      .get('bar')
+      ?.get('')
+      ?.resolveMessage({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',
@@ -369,7 +384,10 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Articles across non-wordy content', () => {
-    const msg = res.get('qux')?.resolveMessage({ foo: 'An', other: 'other' });
+    const msg = res
+      .get('qux')
+      ?.get('')
+      ?.resolveMessage({ foo: 'An', other: 'other' });
     hackyFixArticles(['en'], msg);
     expect(msg).toEqual({
       type: 'message',

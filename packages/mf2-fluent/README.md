@@ -24,9 +24,10 @@ import { fluentToResource } from '@messageformat/fluent';
 const locale = 'en-US';
 const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
 
-const res = fluentToResource(src, locale);
+const resource = fluentToResource(src, locale);
 
-const msg = res.get('msg').resolveMessage({ today: new Date('2022-02-02') });
+const msg = resource.get('msg').get('');
+const res = msg.resolveMessage({ today: new Date('2022-02-02') });
 // ResolvedMessage {
 //   type: 'message',
 //   value: [
@@ -40,7 +41,7 @@ const msg = res.get('msg').resolveMessage({ today: new Date('2022-02-02') });
 //   ]
 // }
 
-msg.toString();
+res.toString();
 // 'Today is Feb 2, 2022'
 ```
 
@@ -54,6 +55,11 @@ import {
   getFluentRuntime,
   messageToFluent,
   resourceToFluent
+} from '@messageformat/fluent';
+
+import type {
+  FluentMessageResource,
+  FluentMessageResourceData
 } from '@messageformat/fluent';
 ```
 

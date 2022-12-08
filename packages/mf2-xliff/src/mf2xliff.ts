@@ -50,7 +50,7 @@ export function mf2xliff(
 
 const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({
   id: `${pre}:${key.join('.').replace(/ +/g, '_')}`,
-  name: key[key.length - 1]
+  name: key[key.length - 1] || key[key.length - 2] || ''
 });
 
 // TODO Add <cp> escapes

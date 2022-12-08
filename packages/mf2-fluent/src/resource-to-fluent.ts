@@ -1,12 +1,7 @@
 import * as Fluent from '@fluent/syntax';
-import { Message } from 'messageformat';
-import {
-  FunctionMap,
-  messageToFluent,
-  valueToMessageRef
-} from './message-to-fluent';
-
-type MessageGroup = Map<string | null, Message>;
+import type { Message } from 'messageformat';
+import type { FluentMessageResourceData } from '.';
+import { FunctionMap, messageToFluent } from './message-to-fluent';
 
 /**
  * Convert a Map of {@link messageformat#Message} data objects into a
@@ -19,32 +14,23 @@ type MessageGroup = Map<string | null, Message>;
  *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
  */
 export function resourceToFluent(
-  resource: Map<string, Message>,
+  resource: FluentMessageResourceData,
   template?: Fluent.Resource,
   functionMap?: FunctionMap
 ): Fluent.Resource {
-  const grouped = new Map<string, MessageGroup | null>();
-  for (const [id, msg] of resource) {
-    const { msgId, msgAttr } = valueToMessageRef(id);
-    let group = grouped.get(msgId);
-    if (!group) {
-      group = new Map();
-      grouped.set(msgId, group);
-    }
-    group.set(msgAttr, msg);
-  }
-
   const body: Fluent.Entry[] = [];
+  let res: Map<string, Map<string, Message> | null>;
   if (template) {
+    res = new Map(resource); // Should not modify argument
     for (const entry of template.body) {
       switch (entry.type) {
         case 'Message':
         case 'Term': {
           const msgId = (entry.type === 'Term' ? '-' : '') + entry.id.name;
-          const group = grouped.get(msgId);
+          const group = res.get(msgId);
           if (group) {
             body.push(messageGroupToFluent(msgId, group, entry, functionMap));
-            grouped.set(msgId, null);
+            res.set(msgId, null);
           }
           break;
         }
@@ -52,10 +38,12 @@ export function resourceToFluent(
           body.push(entry.clone());
       }
     }
+  } else {
+    res = resource;
   }
 
   let prevId: string | undefined;
-  for (const [msgId, group] of grouped) {
+  for (const [msgId, group] of res) {
     if (group) {
       const entry = messageGroupToFluent(msgId, group, null, functionMap);
       const prevIndex = body.findIndex(
@@ -74,7 +62,7 @@ export function resourceToFluent(
 
 function messageGroupToFluent(
   msgId: string,
-  messages: MessageGroup,
+  messages: Map<string, Message>,
   template: Fluent.Message | Fluent.Term | null,
   functionMap: FunctionMap | undefined
 ): Fluent.Message | Fluent.Term {
