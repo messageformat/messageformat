@@ -19,7 +19,9 @@ In addition to matching exact values, numerical values will also match keys with
 <b>Signature:</b>
 
 ```typescript
-matchSelectKey(key: string): boolean;
+matchSelectKey(key: string): boolean | {
+        plural: Intl.LDMLPluralRule;
+    };
 ```
 
 ## Parameters
@@ -30,7 +32,7 @@ matchSelectKey(key: string): boolean;
 
 <b>Returns:</b>
 
-boolean
+boolean \| { plural: Intl.LDMLPluralRule; }
 
 ## Remarks
 

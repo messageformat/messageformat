@@ -18,10 +18,10 @@ Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with Fl
 <b>Signature:</b>
 
 ```typescript
-export declare function getFluentRuntime(res: Map<string, MessageFormat>): {
-    DATETIME: RuntimeFunction<import("messageformat").MessageDateTime>;
-    MESSAGE: RuntimeFunction<ResolvedMessage>;
-    NUMBER: RuntimeFunction<import("messageformat").MessageNumber>;
+export declare function getFluentRuntime(res: FluentMessageResource): {
+    DATETIME: typeof import("messageformat/lib/runtime/default").datetime;
+    MESSAGE: (_locales: string[], options: RuntimeOptions, arg?: MessageValue) => import("messageformat").ResolvedMessage;
+    NUMBER: typeof import("messageformat/lib/runtime/default").number;
 };
 ```
 
@@ -29,11 +29,11 @@ export declare function getFluentRuntime(res: Map<string, MessageFormat>): {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  res | Map&lt;string, [MessageFormat](./messageformat.messageformat.md)<!-- -->&gt; | A Map of MessageFormat instances, for use by <code>MESSAGE</code>. This Map may be passed in as initially empty, and later filled out by the caller. |
+|  res | [FluentMessageResource](./fluent.fluentmessageresource.md) | A Map of MessageFormat instances, for use by <code>MESSAGE</code>. This Map may be passed in as initially empty, and later filled out by the caller. |
 
 <b>Returns:</b>
 
-{ DATETIME: [RuntimeFunction](./messageformat.runtimefunction.md)<!-- -->&lt;import("messageformat").[MessageDateTime](./messageformat.messagedatetime.md)<!-- -->&gt;; MESSAGE: [RuntimeFunction](./messageformat.runtimefunction.md)<!-- -->&lt;[ResolvedMessage](./messageformat.resolvedmessage.md)<!-- -->&gt;; NUMBER: [RuntimeFunction](./messageformat.runtimefunction.md)<!-- -->&lt;import("messageformat").[MessageNumber](./messageformat.messagenumber.md)<!-- -->&gt;; }
+{ DATETIME: typeof import("messageformat/lib/runtime/default").datetime; MESSAGE: (\_locales: string\[\], options: [RuntimeOptions](./messageformat.runtimeoptions.md)<!-- -->, arg?: [MessageValue](./messageformat.messagevalue.md)<!-- -->) =&gt; import("messageformat").[ResolvedMessage](./messageformat.resolvedmessage.md)<!-- -->; NUMBER: typeof import("messageformat/lib/runtime/default").number; }
 
 ## Remarks
 

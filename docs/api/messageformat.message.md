@@ -18,7 +18,7 @@ The representation of a single message. The shape of the message is an implement
 <b>Signature:</b>
 
 ```typescript
-export declare type Message = PatternMessage | SelectMessage | JunkMessage;
+export type Message = PatternMessage | SelectMessage | JunkMessage;
 ```
 <b>References:</b> [PatternMessage](./messageformat.patternmessage.md)<!-- -->, [SelectMessage](./messageformat.selectmessage.md)<!-- -->, [JunkMessage](./messageformat.junkmessage.md)
 

@@ -19,8 +19,8 @@ The default Runtime includes two functions, `datetime` and `number`<!-- -->.
 
 ```typescript
 defaultRuntime: {
-    datetime: RuntimeFunction<import("../message-value").MessageDateTime>;
-    number: RuntimeFunction<import("../message-value").MessageNumber>;
+    datetime: typeof datetime;
+    number: typeof number;
 }
 ```
 

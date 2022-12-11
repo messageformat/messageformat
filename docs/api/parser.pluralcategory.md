@@ -15,5 +15,5 @@ One of the valid [Unicode CLDR](http://cldr.unicode.org/index/cldr-spec/plural-r
 <b>Signature:</b>
 
 ```typescript
-export declare type PluralCategory = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other';
+export type PluralCategory = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other';
 ```

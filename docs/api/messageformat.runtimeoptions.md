@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-The second argument of runtime function calls is an options bag, with possible keys as defined by the [RuntimeFunction](./messageformat.runtimefunction.md) `options`<!-- -->. The `localeMatcher` key is always present.
+The second argument of runtime function calls is an options bag. The `localeMatcher` key is always present.
 
 <b>Signature:</b>
 

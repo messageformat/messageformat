@@ -5,6 +5,7 @@ import { RuntimeOptions } from './index';
  * Cast resolved option values `'true'` and `'false'` to their Boolean equivalents.
  * Any other values are untouched.
  *
+ * @beta
  * @param options Options object, which may be modified.
  * @param names Names of options that should have boolean values.
  */
@@ -23,6 +24,7 @@ export function castAsBoolean(options: RuntimeOptions, ...names: string[]) {
  * Cast resolved option values with numerical string representations of integers
  * to their Number equivalents. Any other values are untouched.
  *
+ * @beta
  * @param options Options object, which may be modified.
  * @param names Names of options that should have integer values.
  */

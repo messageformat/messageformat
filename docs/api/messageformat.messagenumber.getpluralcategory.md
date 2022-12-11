@@ -17,7 +17,7 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-getPluralCategory(): Intl.LDMLPluralRule;
+protected getPluralCategory(): Intl.LDMLPluralRule;
 ```
 <b>Returns:</b>
 

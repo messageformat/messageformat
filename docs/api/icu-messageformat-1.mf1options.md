@@ -17,7 +17,7 @@ grand_parent: API Reference
 <b>Signature:</b>
 
 ```typescript
-export declare type MF1Options = {
+export type MF1Options = {
     strict?: boolean;
 };
 ```

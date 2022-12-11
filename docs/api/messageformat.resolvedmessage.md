@@ -33,5 +33,5 @@ export declare class ResolvedMessage extends MessageValue<MessageValue[]>
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [matchSelectKey(key)](./messageformat.resolvedmessage.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
-|  [toString(onError, noCache)](./messageformat.resolvedmessage.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [toString(onError)](./messageformat.resolvedmessage.tostring.md) |  | <b><i>(BETA)</i></b> |
 

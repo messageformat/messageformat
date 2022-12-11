@@ -19,7 +19,7 @@ Compile a Fluent resource (i.e. an FTL file) into a Map of [Message](./messagefo
 
 ```typescript
 export declare function fluentToResourceData(source: string | Fluent.Resource): {
-    data: Map<string, Message>;
+    data: FluentMessageResourceData;
     comments: string;
 };
 ```
@@ -32,7 +32,7 @@ export declare function fluentToResourceData(source: string | Fluent.Resource): 
 
 <b>Returns:</b>
 
-{ data: Map&lt;string, [Message](./messageformat.message.md)<!-- -->&gt;; comments: string; }
+{ data: [FluentMessageResourceData](./fluent.fluentmessageresourcedata.md)<!-- -->; comments: string; }
 
 An object containing the messages as `data` and any resource-level `comments` of the resource.
 

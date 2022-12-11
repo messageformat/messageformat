@@ -29,3 +29,10 @@ has_toc: false
 |  [defaultFunctionMap](./fluent.defaultfunctionmap.md) | <b><i>(BETA)</i></b> Default value for the [messageToFluent()](./fluent.messagetofluent.md) <code>functionMap</code> option. |
 |  [FluentMessageRef](./fluent.fluentmessageref.md) | <b><i>(BETA)</i></b> Symbol used to identify a custom function for Fluent message/term references. |
 
+## Type Aliases
+
+|  Type Alias | Description |
+|  --- | --- |
+|  [FluentMessageResource](./fluent.fluentmessageresource.md) | <b><i>(BETA)</i></b> A Map of [MessageFormat](./messageformat.messageformat.md) instances. |
+|  [FluentMessageResourceData](./fluent.fluentmessageresourcedata.md) | <b><i>(BETA)</i></b> A Map of [Message](./messageformat.message.md) data structures. |
+

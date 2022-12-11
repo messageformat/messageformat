@@ -17,7 +17,7 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-toString(onError?: Context['onError'], noCache?: boolean): string;
+toString(onError?: Context['onError']): string;
 ```
 
 ## Parameters
@@ -25,7 +25,6 @@ toString(onError?: Context['onError'], noCache?: boolean): string;
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  onError | Context\['onError'\] | <i>(Optional)</i> |
-|  noCache | boolean | <i>(Optional)</i> |
 
 <b>Returns:</b>
 

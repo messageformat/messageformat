@@ -17,7 +17,7 @@ grand_parent: API Reference
 <b>Signature:</b>
 
 ```typescript
-export declare type ParseError = {
+export type ParseError = {
     type: 'empty-token';
     start: number;
     end?: never;

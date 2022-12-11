@@ -15,5 +15,5 @@ A custom formatter function. See [Custom Formatters](https://messageformat.githu
 <b>Signature:</b>
 
 ```typescript
-export declare type CustomFormatter = (value: unknown, locale: string, arg: string | null) => unknown;
+export type CustomFormatter = (value: unknown, locale: string, arg: string | null) => unknown;
 ```

@@ -17,7 +17,7 @@ nav_exclude: true
 <b>Signature:</b>
 
 ```typescript
-matchSelectKey(key: string): boolean;
+matchSelectKey(key: string): boolean | Meta;
 ```
 
 ## Parameters
@@ -28,5 +28,5 @@ matchSelectKey(key: string): boolean;
 
 <b>Returns:</b>
 
-boolean
+boolean \| [Meta](./messageformat.meta.md)
 

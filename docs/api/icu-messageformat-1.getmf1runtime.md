@@ -21,9 +21,9 @@ The structure of this runtime and the options available for its formatters follo
 
 ```typescript
 getMF1Runtime: () => {
-    date: RuntimeFunction<MessageDateTime>;
-    duration: RuntimeFunction<string>;
-    number: RuntimeFunction<MessageNumber>;
-    time: RuntimeFunction<MessageDateTime>;
+    date: typeof date;
+    duration: typeof duration;
+    number: typeof number;
+    time: typeof time;
 }
 ```

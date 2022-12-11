@@ -15,7 +15,7 @@ An object representation of a parsed date skeleton token
 <b>Signature:</b>
 
 ```typescript
-export declare type DateToken = {
+export type DateToken = {
     char: string;
     error?: Error;
     field?: DateField;

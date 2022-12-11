@@ -18,14 +18,14 @@ Convert a Map of [Message](./messageformat.message.md) data objects into a [Flue
 <b>Signature:</b>
 
 ```typescript
-export declare function resourceToFluent(resource: Map<string, Message>, template?: Fluent.Resource, functionMap?: FunctionMap): Fluent.Resource;
+export declare function resourceToFluent(resource: FluentMessageResourceData, template?: Fluent.Resource, functionMap?: FunctionMap): Fluent.Resource;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  resource | Map&lt;string, [Message](./messageformat.message.md)<!-- -->&gt; |  |
+|  resource | [FluentMessageResourceData](./fluent.fluentmessageresourcedata.md) |  |
 |  template | Fluent.Resource | <i>(Optional)</i> If set, defines the resource-level comments, message order, and the default variant identifiers for messages. |
 |  functionMap | FunctionMap | <i>(Optional)</i> A mapping of MessageFormat 2 → Fluent function names. The special value [FluentMessageRef](./fluent.fluentmessageref.md) maps to Fluent message/term references. |
 

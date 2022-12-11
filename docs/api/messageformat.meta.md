@@ -18,5 +18,5 @@ Additional meta information may be attached to most nodes. In common use, this i
 <b>Signature:</b>
 
 ```typescript
-export declare type Meta = Record<string, string>;
+export type Meta = Record<string, string>;
 ```

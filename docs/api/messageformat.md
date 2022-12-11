@@ -32,6 +32,8 @@ has_toc: false
 |  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue.md) | <b><i>(BETA)</i></b> Convert any numerical value into a [MessageNumber](./messageformat.messagenumber.md)<!-- -->. |
 |  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_1.md) | <b><i>(BETA)</i></b> Convert any Date value into a [MessageDateTime](./messageformat.messagedatetime.md)<!-- -->. |
 |  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_2.md) | <b><i>(BETA)</i></b> Convert any value into a [MessageValue](./messageformat.messagevalue.md) or one of its child classes. |
+|  [castAsBoolean(options, names)](./messageformat.castasboolean.md) | <b><i>(BETA)</i></b> Utility function for custom functions. Cast resolved option values <code>'true'</code> and <code>'false'</code> to their Boolean equivalents. Any other values are untouched. |
+|  [castAsInteger(options, names)](./messageformat.castasinteger.md) | <b><i>(BETA)</i></b> Utility function for custom functions. Cast resolved option values with numerical string representations of integers to their Number equivalents. Any other values are untouched. |
 |  [extendLocaleContext(orig, lc)](./messageformat.extendlocalecontext.md) | <b><i>(BETA)</i></b> Create a new LocaleContext, using <code>orig</code> as a base. |
 |  [parseMessage(src)](./messageformat.parsemessage.md) | <b><i>(BETA)</i></b> Parse the string syntax representation of a message into its corresponding data model representation. |
 |  [stringifyMessage(msg)](./messageformat.stringifymessage.md) | <b><i>(BETA)</i></b> Stringify a message using its syntax representation. |
@@ -56,8 +58,7 @@ has_toc: false
 |  [PatternMessage](./messageformat.patternmessage.md) | <b><i>(BETA)</i></b> A single message with no variants. |
 |  [Placeholder](./messageformat.placeholder.md) | <b><i>(BETA)</i></b> Wrapper for non-literal content. |
 |  [Runtime](./messageformat.runtime.md) | <b><i>(BETA)</i></b> The runtime function registry available when resolving [Expression](./messageformat.expression.md) elements. |
-|  [RuntimeFunction](./messageformat.runtimefunction.md) | <b><i>(BETA)</i></b> |
-|  [RuntimeOptions](./messageformat.runtimeoptions.md) | <b><i>(BETA)</i></b> The second argument of runtime function calls is an options bag, with possible keys as defined by the [RuntimeFunction](./messageformat.runtimefunction.md) <code>options</code>. The <code>localeMatcher</code> key is always present. |
+|  [RuntimeOptions](./messageformat.runtimeoptions.md) | <b><i>(BETA)</i></b> The second argument of runtime function calls is an options bag. The <code>localeMatcher</code> key is always present. |
 |  [SelectMessage](./messageformat.selectmessage.md) | <b><i>(BETA)</i></b> SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of placeholders. Selection iterates among the <code>variants</code> in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern. |
 |  [Text](./messageformat.text.md) | <b><i>(BETA)</i></b> Top-level literal content. |
 |  [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> The value of a VariableRef is defined by the current Scope. |
@@ -89,5 +90,4 @@ has_toc: false
 |  [Meta](./messageformat.meta.md) | <b><i>(BETA)</i></b> Additional meta information may be attached to most nodes. In common use, this information is not required when formatting a message. |
 |  [ParseError](./messageformat.parseerror.md) | <b><i>(BETA)</i></b> |
 |  [PatternElement](./messageformat.patternelement.md) | <b><i>(BETA)</i></b> The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere. |
-|  [RuntimeType](./messageformat.runtimetype.md) | <b><i>(BETA)</i></b> Basic type checking is performed on option values. |
 
