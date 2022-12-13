@@ -589,7 +589,7 @@ describe('resolveMessage', () => {
   });
 });
 
-describe('Merging adjacent text elements', () => {
+describe('fluentToResourceData', () => {
   const src = source`
     single = One {$num ->
        [0] Zero
@@ -607,7 +607,7 @@ describe('Merging adjacent text elements', () => {
 
   const { data } = fluentToResourceData(src);
 
-  test('One selector', () => {
+  test('Merge adjacent text elements for one selector', () => {
     const msg = data.get('single')?.get('') as SelectMessage;
     expect(msg.variants.map(v => v.value.body)).toMatchObject([
       [{ type: 'text', value: 'One Zero selector.' }],
@@ -615,7 +615,7 @@ describe('Merging adjacent text elements', () => {
     ]);
   });
 
-  test('Multiple selectors', () => {
+  test('Merge adjacent text elements for multiple selectors', () => {
     const msg = data.get('multi')?.get('') as SelectMessage;
     expect(msg.variants.map(v => v.value.body)).toMatchObject([
       [{ type: 'text', value: 'Combine Zero multiple F selectors.' }],
@@ -625,5 +625,61 @@ describe('Merging adjacent text elements', () => {
       [{ type: 'text', value: 'Combine Other multiple M selectors.' }],
       [{ type: 'text', value: 'Combine Other multiple N selectors.' }]
     ]);
+  });
+
+  test('Select catchall keys', () => {
+    const msg = data.get('multi')?.get('') as SelectMessage;
+    expect(msg.variants.map(v => v.keys)).toMatchObject([
+      [
+        { type: 'nmtoken', value: '0' },
+        { type: 'nmtoken', value: 'feminine' }
+      ],
+      [
+        { type: 'nmtoken', value: '0' },
+        { type: 'nmtoken', value: 'masculine' }
+      ],
+      [
+        { type: 'nmtoken', value: '0' },
+        { type: '*', value: 'neuter' }
+      ],
+      [
+        { type: '*', value: 'other' },
+        { type: 'nmtoken', value: 'feminine' }
+      ],
+      [
+        { type: '*', value: 'other' },
+        { type: 'nmtoken', value: 'masculine' }
+      ],
+      [
+        { type: '*', value: 'other' },
+        { type: '*', value: 'neuter' }
+      ]
+    ]);
+  });
+
+  test('round-trip', () => {
+    const res = resourceToFluent(data);
+    expect(Fluent.serialize(res, {})).toBe(source`
+      single =
+          { $num ->
+              [0] One Zero selector.
+             *[other] One Other selector.
+          }
+      multi =
+          { $num ->
+              [0]
+                  { $gender ->
+                      [feminine] Combine Zero multiple F selectors.
+                      [masculine] Combine Zero multiple M selectors.
+                     *[neuter] Combine Zero multiple N selectors.
+                  }
+             *[other]
+                  { $gender ->
+                      [feminine] Combine Other multiple F selectors.
+                      [masculine] Combine Other multiple M selectors.
+                     *[neuter] Combine Other multiple N selectors.
+                  }
+          }
+    `);
   });
 });

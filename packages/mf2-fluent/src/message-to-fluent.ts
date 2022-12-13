@@ -52,7 +52,8 @@ const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
  *
  * @beta
  * @param defaultKey - The Fluent identifier or numeric literal to use for the
- *   default/fallback variant, which is labelled as `*` in MessageFormat 2.
+ *   default/fallback variant, which is labelled as `*` in MessageFormat 2,
+ *   when not explicitly defined in the data.
  * @param functionMap - A mapping of MessageFormat 2 → Fluent function names.
  *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
  */
@@ -127,7 +128,7 @@ function findDefaultKey(variants: Variant[], root: string) {
 }
 
 function keyToIdentifier(key: Literal | CatchallKey, defKey: string) {
-  const kv = isCatchallKey(key) ? defKey : key.value;
+  const kv = isCatchallKey(key) ? key.value || defKey : key.value;
   if (isNumberLiteral(kv)) return new Fluent.NumberLiteral(kv);
   if (isIdentifier(kv)) return new Fluent.Identifier(kv);
   throw new Error(`Invalid variant key for Fluent: ${kv}`);

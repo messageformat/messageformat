@@ -87,6 +87,7 @@ export interface Variant {
  */
 export interface CatchallKey {
   type: '*';
+  value?: string;
 }
 
 /**

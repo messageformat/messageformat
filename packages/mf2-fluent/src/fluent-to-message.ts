@@ -17,19 +17,22 @@ const CATCHALL = Symbol('catchall');
 
 interface SelectArg {
   selector: Fluent.InlineExpression;
-  keys: (string | number | symbol)[];
+  defaultName: string;
+  keys: (string | number | typeof CATCHALL)[];
 }
 
-const variantKey = (v: Fluent.Variant) =>
-  v.default
-    ? CATCHALL
-    : v.key.type === 'Identifier'
-    ? v.key.name
-    : v.key.parse().value;
-
 function asSelectArg(sel: Fluent.SelectExpression): SelectArg {
-  const keys = sel.variants.map(variantKey);
-  return { selector: sel.selector, keys };
+  let defaultName = '';
+  const keys = sel.variants.map(v => {
+    const name = v.key.type === 'Identifier' ? v.key.name : v.key.parse().value;
+    if (v.default) {
+      defaultName = String(name);
+      return CATCHALL;
+    } else {
+      return name;
+    }
+  });
+  return { selector: sel.selector, defaultName, keys };
 }
 
 function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
@@ -192,8 +195,10 @@ export function fluentToMessage(
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
   }
   const variants: Variant[] = keys.map(key => ({
-    keys: key.map(k =>
-      k === CATCHALL ? { type: '*' } : { type: 'nmtoken', value: String(k) }
+    keys: key.map((k, i) =>
+      k === CATCHALL
+        ? { type: '*', value: args[i].defaultName }
+        : { type: 'nmtoken', value: String(k) }
     ),
     value: { body: [] }
   }));
@@ -211,8 +216,14 @@ export function fluentToMessage(
       const sel = asFluentSelect(el);
       if (sel) {
         const idx = args.findIndex(a => deepEqual(a.selector, sel.selector));
-        for (const v of sel.variants)
-          addParts(v.value, [...filter, { idx, value: variantKey(v) }]);
+        for (const v of sel.variants) {
+          const value = v.default
+            ? CATCHALL
+            : v.key.type === 'Identifier'
+            ? v.key.name
+            : v.key.parse().value;
+          addParts(v.value, [...filter, { idx, value }]);
+        }
       } else {
         for (const v of variants) {
           const vp = v.value.body;
