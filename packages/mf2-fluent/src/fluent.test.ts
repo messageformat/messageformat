@@ -25,7 +25,7 @@
 
 import * as Fluent from '@fluent/syntax';
 import { source } from '@messageformat/test-utils';
-import { validate } from 'messageformat';
+import { SelectMessage, validate } from 'messageformat';
 import { fluentToResource, fluentToResourceData } from './index';
 import { resourceToFluent } from './resource-to-fluent';
 
@@ -330,7 +330,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   });
 }
 
-describe('getMessage', () => {
+describe('resolveMessage', () => {
   describe('parts', () => {
     const src = source`
       foo = Foo { $num }
@@ -586,5 +586,44 @@ describe('getMessage', () => {
         value: [{ type: 'literal', value: 'Other' }]
       });
     });
+  });
+});
+
+describe('Merging adjacent text elements', () => {
+  const src = source`
+    single = One {$num ->
+       [0] Zero
+      *[other] Other
+    } selector.
+    multi = Combine {$num ->
+       [0] Zero
+      *[other] Other
+    } multiple {$gender ->
+       [feminine] F
+       [masculine] M
+      *[neuter] N
+    } selectors.
+  `;
+
+  const { data } = fluentToResourceData(src);
+
+  test('One selector', () => {
+    const msg = data.get('single')?.get('') as SelectMessage;
+    expect(msg.variants.map(v => v.value.body)).toMatchObject([
+      [{ type: 'text', value: 'One Zero selector.' }],
+      [{ type: 'text', value: 'One Other selector.' }]
+    ]);
+  });
+
+  test('Multiple selectors', () => {
+    const msg = data.get('multi')?.get('') as SelectMessage;
+    expect(msg.variants.map(v => v.value.body)).toMatchObject([
+      [{ type: 'text', value: 'Combine Zero multiple F selectors.' }],
+      [{ type: 'text', value: 'Combine Zero multiple M selectors.' }],
+      [{ type: 'text', value: 'Combine Zero multiple N selectors.' }],
+      [{ type: 'text', value: 'Combine Other multiple F selectors.' }],
+      [{ type: 'text', value: 'Combine Other multiple M selectors.' }],
+      [{ type: 'text', value: 'Combine Other multiple N selectors.' }]
+    ]);
   });
 });

@@ -3,7 +3,7 @@ import deepEqual from 'fast-deep-equal';
 import {
   Expression,
   isExpression,
-  isLiteral,
+  isText,
   Literal,
   Option,
   PatternMessage,
@@ -226,7 +226,7 @@ export function fluentToMessage(
           ) {
             const last = vp[vp.length - 1];
             const part = elementToPart(el);
-            if (isLiteral(last) && isLiteral(part)) last.value += part.value;
+            if (isText(last) && isText(part)) last.value += part.value;
             else vp.push(part);
           }
         }
