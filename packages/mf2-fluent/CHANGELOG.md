@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.1](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.3.0...@messageformat/fluent@0.3.1) (2022-12-14)
+
+### Features
+
+* Retain names for catchall keys ([2d6fe76](https://github.com/messageformat/messageformat/commit/2d6fe767d11820456be997de7067470ab86fd9f1))
+
+### Bug Fixes
+
+* Merge adjacent text elements when uplifting selectors ([7a3da47](https://github.com/messageformat/messageformat/commit/7a3da47891d0d4a0478d516c1c427a902d0fbf16))
+
 ## [0.3.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.2.0...@messageformat/fluent@0.3.0) (2022-12-08)
 
 ### Features
