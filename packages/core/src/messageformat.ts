@@ -71,6 +71,26 @@ export interface MessageFormatOptions<
   };
 
   /**
+   * If defined, used by {@link compileModule} to identify and map keys to
+   * the locale identifiers used by plural rules.
+   *
+   * Default: `undefined`
+   *
+   * @example
+   * ```js
+   * // Support all recognised Unicode locale identifiers
+   * function pluralCodeFromKey(key) {
+   *   try {
+   *     return new Intl.Locale(key).language
+   *   } catch {
+   *     return null
+   *   }
+   * }
+   * ```
+   */
+  pluralCodeFromKey?: ((key: string) => string | null | undefined) | null;
+
+  /**
    * Require all message arguments to be set with a defined value
    *
    * Default: `false`
@@ -200,6 +220,7 @@ export default class MessageFormat<
         biDiSupport: false,
         currency: 'USD',
         customFormatters: {},
+        pluralCodeFromKey: null,
         requireAllArguments: false,
         returnType: 'string',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
