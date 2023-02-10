@@ -1,6 +1,6 @@
 import type tests from './test-messages.json';
 
-type Test = typeof tests[number];
+type Test = (typeof tests)[number];
 
 export function testName({ src, locale, params }: Test) {
   let name = src;

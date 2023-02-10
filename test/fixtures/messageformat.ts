@@ -17,7 +17,7 @@ export type TestCase = {
   >;
 };
 
-export const getTestCases = (escape: typeof MessageFormat['escape']) =>
+export const getTestCases = (escape: (typeof MessageFormat)['escape']) =>
   ({
     'Basic messages': [
       { src: 'This is a string.', exp: [[undefined, 'This is a string.']] },
