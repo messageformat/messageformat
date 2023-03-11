@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The result of parsing input that cannot be represented by a [PatternMessage](./messageformat.patternmessage.md) or a [SelectMessage](./messageformat.selectmessage.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface JunkMessage 
@@ -25,9 +25,9 @@ export interface JunkMessage
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [comment?](./messageformat.junkmessage.comment.md) |  | string | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [declarations](./messageformat.junkmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
-|  [errors?](./messageformat.junkmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [source](./messageformat.junkmessage.source.md) |  | string | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.junkmessage.type.md) |  | 'junk' | <b><i>(BETA)</i></b> |
+|  [comment?](./messageformat.junkmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
+|  [declarations](./messageformat.junkmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
+|  [errors?](./messageformat.junkmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [source](./messageformat.junkmessage.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.junkmessage.type.md) |  | 'junk' | **_(BETA)_** |
 

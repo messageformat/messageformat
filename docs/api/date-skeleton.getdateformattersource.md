@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Returns a string of JavaScript source that evaluates to a date formatter function with the same `(date: Date | number) => string` signature as the function returned by [getDateFormatter()](./date-skeleton.getdateformatter.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function getDateFormatterSource(locales: string | string[], tokens: string | DateToken[], onError?: (err: DateFormatError) => void): string;
@@ -24,9 +24,9 @@ export declare function getDateFormatterSource(locales: string | string[], token
 |  --- | --- | --- |
 |  locales | string \| string\[\] | One or more valid BCP 47 language tags, e.g. <code>fr</code> or <code>en-CA</code> |
 |  tokens | string \| [DateToken](./date-skeleton.datetoken.md)<!-- -->\[\] | An ICU DateFormat skeleton string, or an array or parsed <code>DateToken</code> tokens |
-|  onError | (err: [DateFormatError](./date-skeleton.dateformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> If defined, will be called separately for each encountered parsing error and unsupported feature. |
+|  onError | (err: [DateFormatError](./date-skeleton.dateformaterror.md)<!-- -->) =&gt; void | _(Optional)_ If defined, will be called separately for each encountered parsing error and unsupported feature. |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

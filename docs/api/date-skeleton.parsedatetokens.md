@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Parse an [ICU DateFormat skeleton](http://userguide.icu-project.org/formatparse/datetime) string into a [DateToken](./date-skeleton.datetoken.md) array.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function parseDateTokens(src: string): DateToken[];
@@ -24,7 +24,7 @@ export declare function parseDateTokens(src: string): DateToken[];
 |  --- | --- | --- |
 |  src | string | The skeleton string |
 
-<b>Returns:</b>
+**Returns:**
 
 [DateToken](./date-skeleton.datetoken.md)<!-- -->\[\]
 

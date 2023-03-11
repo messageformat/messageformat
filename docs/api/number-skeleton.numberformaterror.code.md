@@ -11,7 +11,7 @@ nav_exclude: true
 
 # NumberFormatError.code property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 code: string;

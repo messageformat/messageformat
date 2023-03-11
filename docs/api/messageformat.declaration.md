@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 A message may declare any number of local variables or aliases, each with a value defined by a placeholder. The order of the declarations is not relevant, but a valid message may not include a dependency loop amond them.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Declaration 
@@ -25,6 +25,6 @@ export interface Declaration
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [target](./messageformat.declaration.target.md) |  | [VariableRef](./messageformat.variableref.md) \| [Junk](./messageformat.junk.md) | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.declaration.value.md) |  | [Placeholder](./messageformat.placeholder.md) \| [Junk](./messageformat.junk.md) | <b><i>(BETA)</i></b> |
+|  [target](./messageformat.declaration.target.md) |  | [VariableRef](./messageformat.variableref.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
+|  [value](./messageformat.declaration.value.md) |  | [Placeholder](./messageformat.placeholder.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
 

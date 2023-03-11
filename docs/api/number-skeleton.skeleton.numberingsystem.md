@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.numberingSystem property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 numberingSystem?: 'arab' | 'arabext' | 'bali' | 'beng' | 'deva' | 'fullwide' | 'gujr' | 'guru' | 'hanidec' | 'khmr' | 'knda' | 'laoo' | 'latn' | 'limb' | 'mlym' | 'mong' | 'mymr' | 'orya' | 'tamldec' | 'telu' | 'thai' | 'tibt';

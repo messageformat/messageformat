@@ -15,23 +15,23 @@ grand_parent: API Reference
 
 The result of resolving a [MessageFormat](./messageformat.messageformat.md) message.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class ResolvedMessage extends MessageValue<MessageValue[]> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;[MessageValue](./messageformat.messagevalue.md)<!-- -->\[\]&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;[MessageValue](./messageformat.messagevalue.md)<!-- -->\[\]&gt;
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(context, message, source)](./messageformat.resolvedmessage._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>ResolvedMessage</code> class |
+|  [(constructor)(context, message, source)](./messageformat.resolvedmessage._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>ResolvedMessage</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey(key)](./messageformat.resolvedmessage.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
-|  [toString(onError)](./messageformat.resolvedmessage.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [matchSelectKey(key)](./messageformat.resolvedmessage.matchselectkey.md) |  | **_(BETA)_** |
+|  [toString(onError)](./messageformat.resolvedmessage.tostring.md) |  | **_(BETA)_** |
 

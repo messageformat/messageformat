@@ -13,7 +13,7 @@ nav_exclude: true
 
 Default fallback locale
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get defaultLocale(): string | null;

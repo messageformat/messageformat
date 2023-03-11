@@ -13,7 +13,7 @@ nav_exclude: true
 
 Token start index from the beginning of the input string
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 offset: number;

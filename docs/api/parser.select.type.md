@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Select.type property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 type: 'plural' | 'select' | 'selectordinal';

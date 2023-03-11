@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The default Runtime includes two functions, `datetime` and `number`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 defaultRuntime: {

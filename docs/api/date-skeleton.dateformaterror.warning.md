@@ -11,7 +11,7 @@ nav_exclude: true
 
 # DateFormatError.WARNING property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static WARNING: 'warning';

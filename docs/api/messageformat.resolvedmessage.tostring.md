@@ -14,7 +14,7 @@ nav_exclude: true
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 toString(onError?: Context['onError']): string;
@@ -24,9 +24,9 @@ toString(onError?: Context['onError']): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  onError | Context\['onError'\] | <i>(Optional)</i> |
+|  onError | Context\['onError'\] | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

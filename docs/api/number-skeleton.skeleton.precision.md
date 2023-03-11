@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.precision property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 precision?: {

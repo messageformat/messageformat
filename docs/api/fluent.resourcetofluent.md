@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Convert a Map of [Message](./messageformat.message.md) data objects into a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function resourceToFluent(resource: FluentMessageResourceData, template?: Fluent.Resource, functionMap?: FunctionMap): Fluent.Resource;
@@ -26,10 +26,10 @@ export declare function resourceToFluent(resource: FluentMessageResourceData, te
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  resource | [FluentMessageResourceData](./fluent.fluentmessageresourcedata.md) |  |
-|  template | Fluent.Resource | <i>(Optional)</i> If set, defines the resource-level comments, message order, and the default variant identifiers for messages. |
-|  functionMap | FunctionMap | <i>(Optional)</i> A mapping of MessageFormat 2 → Fluent function names. The special value [FluentMessageRef](./fluent.fluentmessageref.md) maps to Fluent message/term references. |
+|  template | Fluent.Resource | _(Optional)_ If set, defines the resource-level comments, message order, and the default variant identifiers for messages. |
+|  functionMap | FunctionMap | _(Optional)_ A mapping of MessageFormat 2 → Fluent function names. The special value [FluentMessageRef](./fluent.fluentmessageref.md) maps to Fluent message/term references. |
 
-<b>Returns:</b>
+**Returns:**
 
 Fluent.Resource
 

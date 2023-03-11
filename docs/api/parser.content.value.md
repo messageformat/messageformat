@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Content.value property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 value: string;

@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A hierarchical structure of ICU MessageFormat strings
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface StringStructure 

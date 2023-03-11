@@ -14,7 +14,7 @@ nav_exclude: true
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 resolveMessage(msgParams?: Record<string, unknown>, onError?: (error: unknown, value: MessageValue | undefined) => void): ResolvedMessage;
@@ -24,10 +24,10 @@ resolveMessage(msgParams?: Record<string, unknown>, onError?: (error: unknown, v
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  msgParams | Record&lt;string, unknown&gt; | <i>(Optional)</i> |
-|  onError | (error: unknown, value: [MessageValue](./messageformat.messagevalue.md) \| undefined) =&gt; void | <i>(Optional)</i> |
+|  msgParams | Record&lt;string, unknown&gt; | _(Optional)_ |
+|  onError | (error: unknown, value: [MessageValue](./messageformat.messagevalue.md) \| undefined) =&gt; void | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [ResolvedMessage](./messageformat.resolvedmessage.md)
 

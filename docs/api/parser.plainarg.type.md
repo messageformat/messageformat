@@ -11,7 +11,7 @@ nav_exclude: true
 
 # PlainArg.type property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 type: 'argument';

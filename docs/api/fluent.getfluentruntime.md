@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with Fluent messages.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function getFluentRuntime(res: FluentMessageResource): {
@@ -31,7 +31,7 @@ export declare function getFluentRuntime(res: FluentMessageResource): {
 |  --- | --- | --- |
 |  res | [FluentMessageResource](./fluent.fluentmessageresource.md) | A Map of MessageFormat instances, for use by <code>MESSAGE</code>. This Map may be passed in as initially empty, and later filled out by the caller. |
 
-<b>Returns:</b>
+**Returns:**
 
 { DATETIME: typeof import("messageformat/lib/runtime/default").datetime; MESSAGE: (\_locales: string\[\], options: [RuntimeOptions](./messageformat.runtimeoptions.md)<!-- -->, arg?: [MessageValue](./messageformat.messagevalue.md)<!-- -->) =&gt; import("messageformat").[ResolvedMessage](./messageformat.resolvedmessage.md)<!-- -->; NUMBER: typeof import("messageformat/lib/runtime/default").number; }
 

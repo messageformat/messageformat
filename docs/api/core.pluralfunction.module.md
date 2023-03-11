@@ -13,7 +13,7 @@ nav_exclude: true
 
 The name of the module from which this function may be imported
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 module?: string;

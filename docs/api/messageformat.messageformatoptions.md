@@ -14,7 +14,7 @@ grand_parent: API Reference
 > 
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface MessageFormatOptions 
@@ -24,6 +24,6 @@ export interface MessageFormatOptions
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [localeMatcher?](./messageformat.messageformatoptions.localematcher.md) |  | 'best fit' \| 'lookup' | <b><i>(BETA)</i></b> <i>(Optional)</i> If given multiple locales, determines which algorithm to use when selecting between them; the default for <code>Intl</code> formatters is <code>'best fit'</code>. |
-|  [runtime?](./messageformat.messageformatoptions.runtime.md) |  | [Runtime](./messageformat.runtime.md) | <b><i>(BETA)</i></b> <i>(Optional)</i> The set of functions available during message resolution. If not set, defaults to [defaultRuntime](./messageformat.defaultruntime.md)<!-- -->. |
+|  [localeMatcher?](./messageformat.messageformatoptions.localematcher.md) |  | 'best fit' \| 'lookup' | **_(BETA)_** _(Optional)_ If given multiple locales, determines which algorithm to use when selecting between them; the default for <code>Intl</code> formatters is <code>'best fit'</code>. |
+|  [runtime?](./messageformat.messageformatoptions.runtime.md) |  | [Runtime](./messageformat.runtime.md) | **_(BETA)_** _(Optional)_ The set of functions available during message resolution. If not set, defaults to [defaultRuntime](./messageformat.defaultruntime.md)<!-- -->. |
 

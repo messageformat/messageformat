@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.decimal property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 decimal?: 'decimal-auto' | 'decimal-always';

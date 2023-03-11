@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A simple placeholder
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface PlainArg 

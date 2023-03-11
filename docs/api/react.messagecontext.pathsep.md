@@ -11,7 +11,7 @@ nav_exclude: true
 
 # MessageContext.pathSep property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 pathSep: string | null;

@@ -13,7 +13,7 @@ nav_exclude: true
 
 Current locale
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get locale(): string | null;

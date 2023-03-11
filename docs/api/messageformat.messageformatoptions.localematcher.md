@@ -16,7 +16,7 @@ nav_exclude: true
 
 If given multiple locales, determines which algorithm to use when selecting between them; the default for `Intl` formatters is `'best fit'`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 localeMatcher?: 'best fit' | 'lookup';

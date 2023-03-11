@@ -12,12 +12,12 @@ grand_parent: API Reference
 
 Parent class for errors.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class DateFormatError extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 

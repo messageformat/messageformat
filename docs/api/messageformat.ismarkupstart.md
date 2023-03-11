@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [MarkupStart](./messageformat.markupstart.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isMarkupStart: (part: any) => part is MarkupStart

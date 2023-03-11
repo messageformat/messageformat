@@ -11,7 +11,7 @@ nav_exclude: true
 
 # MessageContext.messages property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 messages: MessageObject;

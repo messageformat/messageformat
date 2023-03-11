@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Top-level literal content.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Text 
@@ -25,6 +25,6 @@ export interface Text
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.text.type.md) |  | 'text' | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.text.value.md) |  | string | <b><i>(BETA)</i></b> |
+|  [type](./messageformat.text.type.md) |  | 'text' | **_(BETA)_** |
+|  [value](./messageformat.text.value.md) |  | string | **_(BETA)_** |
 

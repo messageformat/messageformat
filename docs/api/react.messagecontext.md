@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 The context object used internally by the library. Probably only useful with `Class.contextType` or for building custom hooks.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 MessageContext: Context<MessageContext>

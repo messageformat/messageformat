@@ -12,14 +12,14 @@ grand_parent: API Reference
 
 The type of the generated ES module, once executed
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type MessageModule<Shape, ReturnType extends 'string' | 'values' = 'string'> = Shape extends string ? MessageFunction<ReturnType> : {
     [P in keyof Shape]: MessageModule<Shape[P], ReturnType>;
 };
 ```
-<b>References:</b> [MessageFunction](./core.messagefunction.md)<!-- -->, [MessageModule](./core.messagemodule.md)
+**References:** [MessageFunction](./core.messagefunction.md)<!-- -->, [MessageModule](./core.messagemodule.md)
 
 ## Remarks
 

@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 One of the valid [Unicode CLDR](http://cldr.unicode.org/index/cldr-spec/plural-rules) plural category keys
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type PluralCategory = 'zero' | 'one' | 'two' | 'few' | 'many' | 'other';

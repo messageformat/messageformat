@@ -13,12 +13,12 @@ nav_exclude: true
 
 Returns a new object with properties reflecting the default locale, plurals, and other options computed during initialization.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 resolvedOptions(): ResolvedMessageFormatOptions<ReturnType>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 [ResolvedMessageFormatOptions](./core.resolvedmessageformatoptions.md)<!-- -->&lt;ReturnType&gt;
 

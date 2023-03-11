@@ -14,7 +14,7 @@ Given a `MessageContext` instance, returns a message getter function, which may 
 
 The returned function takes two parameters `(msgId, msgParams)`<!-- -->, which will extend any values set by the hook's arguments.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function getMessageGetter(context: MessageContext, rootId?: string | string[], { baseParams, locale }?: MessageGetterOptions): (id?: string | string[], params?: Record<string, unknown>) => any;
@@ -25,10 +25,10 @@ export declare function getMessageGetter(context: MessageContext, rootId?: strin
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  context | [MessageContext](./react.messagecontext.md) | The <code>MessageContext</code> instance |
-|  rootId | string \| string\[\] | <i>(Optional)</i> The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
-|  { baseParams, locale } | MessageGetterOptions | <i>(Optional)</i> |
+|  rootId | string \| string\[\] | _(Optional)_ The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
+|  { baseParams, locale } | MessageGetterOptions | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 (id?: string \| string\[\], params?: Record&lt;string, unknown&gt;) =&gt; any
 

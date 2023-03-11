@@ -13,7 +13,7 @@ nav_exclude: true
 
 Compile a message into a function
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 compile(message: string): MessageFunction<ReturnType>;
@@ -25,7 +25,7 @@ compile(message: string): MessageFunction<ReturnType>;
 |  --- | --- | --- |
 |  message | string | The input message to be compiled, in ICU MessageFormat |
 
-<b>Returns:</b>
+**Returns:**
 
 [MessageFunction](./core.messagefunction.md)<!-- -->&lt;ReturnType&gt;
 

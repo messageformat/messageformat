@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.scale property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 scale?: number;

@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.group property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 group?: 'group-off' | 'group-min2' | 'group-auto' | 'group-on-aligned' | 'group-thousands';

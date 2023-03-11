@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [VariableRef](./messageformat.variableref.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isVariableRef: (part: any) => part is VariableRef

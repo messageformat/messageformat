@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 A type guard for [Message](./messageformat.message.md) values
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isMessage: (msg: any) => msg is Message

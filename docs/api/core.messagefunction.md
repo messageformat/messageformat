@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A compiled message function, which may accept an object parameter
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type MessageFunction<ReturnType extends 'string' | 'values'> = (param?: Record<string, unknown> | unknown[]) => ReturnType extends 'string' ? string : unknown[];

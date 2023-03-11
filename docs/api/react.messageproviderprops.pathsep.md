@@ -13,7 +13,7 @@ nav_exclude: true
 
 By default, `.` in a `<Message id>` splits the path into parts, such that e.g. `'a.b'` is equivalent to `['a', 'b']`<!-- -->. Use this option to customize or disable this behaviour (by setting it to `null`<!-- -->).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 pathSep?: string | null;

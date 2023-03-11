@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Wrapper for non-literal content.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Placeholder 
@@ -25,6 +25,6 @@ export interface Placeholder
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.placeholder.body.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) \| [Expression](./messageformat.expression.md) \| [MarkupStart](./messageformat.markupstart.md) \| [MarkupEnd](./messageformat.markupend.md) \| [Junk](./messageformat.junk.md) | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.placeholder.type.md) |  | 'placeholder' | <b><i>(BETA)</i></b> |
+|  [body](./messageformat.placeholder.body.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) \| [Expression](./messageformat.expression.md) \| [MarkupStart](./messageformat.markupstart.md) \| [MarkupEnd](./messageformat.markupend.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
+|  [type](./messageformat.placeholder.type.md) |  | 'placeholder' | **_(BETA)_** |
 

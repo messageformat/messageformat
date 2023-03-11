@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageLiteral` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(literal: string, fmt?: {
@@ -29,5 +29,5 @@ constructor(literal: string, fmt?: {
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  literal | string |  |
-|  fmt | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; } | <i>(Optional)</i> |
+|  fmt | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; } | _(Optional)_ |
 

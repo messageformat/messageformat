@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Select.pluralOffset property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 pluralOffset?: number;

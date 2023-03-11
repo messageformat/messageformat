@@ -15,7 +15,7 @@ Follow the ICU MessageFormat spec more closely, but not allowing custom formatte
 
 Default: `false`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 strict?: boolean;

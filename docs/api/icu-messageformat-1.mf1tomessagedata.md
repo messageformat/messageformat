@@ -19,7 +19,7 @@ If the source message contains any inner selectors, they will be lifted into a s
 
 Only literal values are supported in formatter parameters. Any such value will be passed in as an option `{ param: string }`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function mf1ToMessageData(ast: AST.Token[]): Message;
@@ -31,7 +31,7 @@ export declare function mf1ToMessageData(ast: AST.Token[]): Message;
 |  --- | --- | --- |
 |  ast | AST.Token\[\] | An ICU MessageFormat message as an array of <code>@messageformat/parser</code> [AST tokens](./parser.parse.md)<!-- -->. |
 
-<b>Returns:</b>
+**Returns:**
 
 [Message](./messageformat.message.md)
 

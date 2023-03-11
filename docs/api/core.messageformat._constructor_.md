@@ -13,7 +13,7 @@ nav_exclude: true
 
 Create a new MessageFormat compiler
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(locale: string | PluralFunction | Array<string | PluralFunction> | null, options?: MessageFormatOptions<ReturnType>);
@@ -24,7 +24,7 @@ constructor(locale: string | PluralFunction | Array<string | PluralFunction> | n
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  locale | string \| [PluralFunction](./core.pluralfunction.md) \| Array&lt;string \| [PluralFunction](./core.pluralfunction.md)<!-- -->&gt; \| null | The locale or locales supported by this MessageFormat instance. |
-|  options | [MessageFormatOptions](./core.messageformatoptions.md)<!-- -->&lt;ReturnType&gt; | <i>(Optional)</i> Options for this instance |
+|  options | [MessageFormatOptions](./core.messageformatoptions.md)<!-- -->&lt;ReturnType&gt; | _(Optional)_ Options for this instance |
 
 ## Remarks
 

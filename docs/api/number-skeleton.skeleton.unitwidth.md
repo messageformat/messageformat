@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.unitWidth property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 unitWidth?: 'unit-width-narrow' | 'unit-width-short' | 'unit-width-full-name' | 'unit-width-iso-code' | 'unit-width-hidden';

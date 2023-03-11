@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Octothorpe.type property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 type: 'octothorpe';

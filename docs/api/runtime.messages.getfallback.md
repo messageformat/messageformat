@@ -13,7 +13,7 @@ nav_exclude: true
 
 Get the list of fallback locales
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getFallback(locale?: string | null): string[];
@@ -23,9 +23,9 @@ getFallback(locale?: string | null): string[];
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  locale | string \| null | <i>(Optional)</i> If empty or undefined, defaults to <code>this.locale</code> |
+|  locale | string \| null | _(Optional)_ If empty or undefined, defaults to <code>this.locale</code> |
 
-<b>Returns:</b>
+**Returns:**
 
 string\[\]
 

@@ -13,7 +13,7 @@ nav_exclude: true
 
 Map of custom formatting functions to include. See [Custom Formatters](https://messageformat.github.io/messageformat/custom-formatters/) for more details.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 customFormatters?: {

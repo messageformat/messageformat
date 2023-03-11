@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Parse the string syntax representation of a message into its corresponding data model representation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function parseMessage(src: string): MessageParsed;
@@ -27,7 +27,7 @@ export declare function parseMessage(src: string): MessageParsed;
 |  --- | --- | --- |
 |  src | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 MessageParsed
 

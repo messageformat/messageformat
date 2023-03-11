@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 To resolve an Expression, an externally defined function is called.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Expression 
@@ -29,8 +29,8 @@ The `name` identifies a function that takes in the arguments `args`<!-- -->, the
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.expression.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [operand?](./messageformat.expression.operand.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [options?](./messageformat.expression.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [type](./messageformat.expression.type.md) |  | 'expression' | <b><i>(BETA)</i></b> |
+|  [name](./messageformat.expression.name.md) |  | string | **_(BETA)_** |
+|  [operand?](./messageformat.expression.operand.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | **_(BETA)_** _(Optional)_ |
+|  [options?](./messageformat.expression.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [type](./messageformat.expression.type.md) |  | 'expression' | **_(BETA)_** |
 

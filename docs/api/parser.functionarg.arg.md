@@ -11,7 +11,7 @@ nav_exclude: true
 
 # FunctionArg.arg property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 arg: string;

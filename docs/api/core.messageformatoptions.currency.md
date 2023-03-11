@@ -15,7 +15,7 @@ The currency to use when formatting `{V, number, currency}`
 
 Default: `USD`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 currency?: string;

@@ -13,7 +13,7 @@ nav_exclude: true
 
 Parameters to pass to function messages as their first and only argument. `params` will override `msgParams`<!-- -->, to allow for data keys such as `key` and `locale`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 params?: unknown;

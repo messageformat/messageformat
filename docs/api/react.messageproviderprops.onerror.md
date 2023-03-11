@@ -21,7 +21,7 @@ What to do on errors; most often called if a message is not found.
 
 - `(error) => any`<!-- -->: A custom function that is called with an `Error` object with `code: string` and `path: string[]` fields set. The return falue is used as the replacement message.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 onError?: 'error' | 'silent' | 'warn' | ((error: MessageError) => unknown);

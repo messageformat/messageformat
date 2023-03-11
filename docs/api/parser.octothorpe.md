@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Represents the `#` character
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Octothorpe 

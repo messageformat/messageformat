@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageFormat` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(source: string | Message, locales?: string | string[], options?: MessageFormatOptions);
@@ -27,6 +27,6 @@ constructor(source: string | Message, locales?: string | string[], options?: Mes
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  source | string \| [Message](./messageformat.message.md) |  |
-|  locales | string \| string\[\] | <i>(Optional)</i> |
-|  options | [MessageFormatOptions](./messageformat.messageformatoptions.md) | <i>(Optional)</i> |
+|  locales | string \| string\[\] | _(Optional)_ |
+|  options | [MessageFormatOptions](./messageformat.messageformatoptions.md) | _(Optional)_ |
 

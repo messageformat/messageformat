@@ -13,7 +13,7 @@ nav_exclude: true
 
 Token start column, starting from 1
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 col: number;

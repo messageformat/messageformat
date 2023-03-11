@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Returns a number formatter function for the given locales and number skeleton
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function getNumberFormatter(locales: string | string[], skeleton: string | Skeleton, currency?: string | null, onError?: (err: NumberFormatError) => void): (value: number) => string;
@@ -24,10 +24,10 @@ export declare function getNumberFormatter(locales: string | string[], skeleton:
 |  --- | --- | --- |
 |  locales | string \| string\[\] | One or more valid BCP 47 language tags, e.g. <code>fr</code> or <code>en-CA</code> |
 |  skeleton | string \| [Skeleton](./number-skeleton.skeleton.md) | An ICU NumberFormatter pattern or <code>::</code>-prefixed skeleton string, or a parsed <code>Skeleton</code> structure |
-|  currency | string \| null | <i>(Optional)</i> If <code>skeleton</code> is a pattern string that includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
-|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> If defined, will be called separately for each encountered parsing error and unsupported feature. |
+|  currency | string \| null | _(Optional)_ If <code>skeleton</code> is a pattern string that includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
+|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | _(Optional)_ If defined, will be called separately for each encountered parsing error and unsupported feature. |
 
-<b>Returns:</b>
+**Returns:**
 
 (value: number) =&gt; string
 

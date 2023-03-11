@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 A type guard for [CatchallKey](./messageformat.catchallkey.md) values
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isCatchallKey: (key: any) => key is CatchallKey

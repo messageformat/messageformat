@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The base class of all message values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageValue<T = unknown> 
@@ -25,22 +25,22 @@ export declare class MessageValue<T = unknown>
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(type, locale, value, format)](./messageformat.messagevalue._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageValue</code> class |
+|  [(constructor)(type, locale, value, format)](./messageformat.messagevalue._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageValue</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [localeContext](./messageformat.messagevalue.localecontext.md) |  | [LocaleContext](./messageformat.localecontext.md) \| null | <b><i>(BETA)</i></b> |
-|  [meta?](./messageformat.messagevalue.meta.md) |  | [Meta](./messageformat.meta.md) | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [source?](./messageformat.messagevalue.source.md) |  | string | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [type](./messageformat.messagevalue.type.md) | <code>readonly</code> | string | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.messagevalue.value.md) |  | T | <b><i>(BETA)</i></b> |
+|  [localeContext](./messageformat.messagevalue.localecontext.md) |  | [LocaleContext](./messageformat.localecontext.md) \| null | **_(BETA)_** |
+|  [meta?](./messageformat.messagevalue.meta.md) |  | [Meta](./messageformat.meta.md) | **_(BETA)_** _(Optional)_ |
+|  [source?](./messageformat.messagevalue.source.md) |  | string | **_(BETA)_** _(Optional)_ |
+|  [type](./messageformat.messagevalue.type.md) | <code>readonly</code> | string | **_(BETA)_** |
+|  [value](./messageformat.messagevalue.value.md) |  | T | **_(BETA)_** |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey(key)](./messageformat.messagevalue.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
-|  [toString(onError)](./messageformat.messagevalue.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [matchSelectKey(key)](./messageformat.messagevalue.matchselectkey.md) |  | **_(BETA)_** |
+|  [toString(onError)](./messageformat.messagevalue.tostring.md) |  | **_(BETA)_** |
 

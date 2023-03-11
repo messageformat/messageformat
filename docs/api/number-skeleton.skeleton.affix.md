@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.affix property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 affix?: {

@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Content.type property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 type: 'content';

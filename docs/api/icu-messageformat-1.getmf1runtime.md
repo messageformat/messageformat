@@ -17,7 +17,7 @@ Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with IC
 
 The structure of this runtime and the options available for its formatters follow the MF1 specifications, rather than being based on the MF2 default runtime.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getMF1Runtime: () => {

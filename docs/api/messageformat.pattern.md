@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Pattern 
@@ -25,5 +25,5 @@ export interface Pattern
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.pattern.body.md) |  | [PatternElement](./messageformat.patternelement.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [body](./messageformat.pattern.body.md) |  | [PatternElement](./messageformat.patternelement.md)<!-- -->\[\] | **_(BETA)_** |
 

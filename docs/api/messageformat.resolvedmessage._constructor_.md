@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `ResolvedMessage` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(context: Context, message: Message, source?: string);
@@ -28,5 +28,5 @@ constructor(context: Context, message: Message, source?: string);
 |  --- | --- | --- |
 |  context | Context |  |
 |  message | [Message](./messageformat.message.md) |  |
-|  source | string | <i>(Optional)</i> |
+|  source | string | _(Optional)_ |
 

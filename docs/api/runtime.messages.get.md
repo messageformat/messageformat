@@ -13,7 +13,7 @@ nav_exclude: true
 
 Get the message or object corresponding to `key`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get(key: string | string[], props?: Record<string, unknown>, locale?: string): string | unknown[] | MessageData;
@@ -24,10 +24,10 @@ get(key: string | string[], props?: Record<string, unknown>, locale?: string): s
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  key | string \| string\[\] | The key or keypath being sought |
-|  props | Record&lt;string, unknown&gt; | <i>(Optional)</i> Optional properties passed to the function |
-|  locale | string | <i>(Optional)</i> |
+|  props | Record&lt;string, unknown&gt; | _(Optional)_ Optional properties passed to the function |
+|  locale | string | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 string \| unknown\[\] \| [MessageData](./runtime.messagedata.md)
 

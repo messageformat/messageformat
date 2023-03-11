@@ -13,7 +13,7 @@ nav_exclude: true
 
 Returns a subset of `locales` consisting of those for which MessageFormat has built-in plural category support.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static supportedLocalesOf(locales: string | string[]): string[];
@@ -25,7 +25,7 @@ static supportedLocalesOf(locales: string | string[]): string[];
 |  --- | --- | --- |
 |  locales | string \| string\[\] |  |
 
-<b>Returns:</b>
+**Returns:**
 
 string\[\]
 

@@ -15,7 +15,7 @@ Add Unicode control characters to all input parts to preserve the integrity of t
 
 Default: `false`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 biDiSupport?: boolean;

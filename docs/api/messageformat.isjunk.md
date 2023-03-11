@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [Junk](./messageformat.junk.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isJunk: (part: any) => part is Junk

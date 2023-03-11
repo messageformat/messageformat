@@ -15,22 +15,22 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for values defined directly in the message data.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageLiteral extends MessageValue<string> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(literal, fmt)](./messageformat.messageliteral._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageLiteral</code> class |
+|  [(constructor)(literal, fmt)](./messageformat.messageliteral._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageLiteral</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [toString()](./messageformat.messageliteral.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [toString()](./messageformat.messageliteral.tostring.md) |  | **_(BETA)_** |
 

@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.sign property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 sign?: 'sign-auto' | 'sign-always' | 'sign-never' | 'sign-accounting' | 'sign-accounting-always' | 'sign-except-zero' | 'sign-accounting-except-zero';

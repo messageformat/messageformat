@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [Expression](./messageformat.expression.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isExpression: (part: any) => part is Expression

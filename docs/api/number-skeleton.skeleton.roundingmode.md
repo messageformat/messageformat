@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.roundingMode property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 roundingMode?: 'rounding-mode-ceiling' | 'rounding-mode-floor' | 'rounding-mode-down' | 'rounding-mode-up' | 'rounding-mode-half-even' | 'rounding-mode-half-odd' | 'rounding-mode-half-ceiling' | 'rounding-mode-half-floor' | 'rounding-mode-half-down' | 'rounding-mode-half-up' | 'rounding-mode-unnecessary';

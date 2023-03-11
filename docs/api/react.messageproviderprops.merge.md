@@ -13,7 +13,7 @@ nav_exclude: true
 
 By default, top-level namespaces defined in a child `MessageProvider` overwrite those defined in a parent. Set this to [\_.merge](https://lodash.com/docs/#merge) or some other function with the same arguments as [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign) to allow for deep merges.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 merge?: MessageContext['merge'];

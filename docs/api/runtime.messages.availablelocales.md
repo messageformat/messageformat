@@ -13,7 +13,7 @@ nav_exclude: true
 
 Read-only list of available locales
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get availableLocales(): string[];

@@ -11,7 +11,7 @@ nav_exclude: true
 
 # DateFormatError.token property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 token: DateToken;

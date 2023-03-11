@@ -13,7 +13,7 @@ nav_exclude: true
 
 Which plurals may be returned if `ord` is falsy
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 cardinals?: Plurals.PluralCategory[];

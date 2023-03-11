@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 An object representation of a parsed date skeleton token
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type DateToken = {

@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 A type guard for [SelectMessage](./messageformat.selectmessage.md) values
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isSelectMessage: (msg: Message) => msg is SelectMessage

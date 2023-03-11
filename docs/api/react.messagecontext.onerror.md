@@ -13,7 +13,7 @@ nav_exclude: true
 
 Always defined in MessageProvider children
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 onError?: (path: string[], code: ErrorCode) => unknown;

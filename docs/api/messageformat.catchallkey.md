@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The catch-all key matches all values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface CatchallKey 
@@ -25,5 +25,6 @@ export interface CatchallKey
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.catchallkey.type.md) |  | '\*' | <b><i>(BETA)</i></b> |
+|  [type](./messageformat.catchallkey.type.md) |  | '\*' | **_(BETA)_** |
+|  [value?](./messageformat.catchallkey.value.md) |  | string | **_(BETA)_** _(Optional)_ |
 

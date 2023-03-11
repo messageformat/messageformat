@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [Literal](./messageformat.literal.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isLiteral: (part: any) => part is Literal

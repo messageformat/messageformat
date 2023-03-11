@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageValue` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(type: string | null, locale: LocaleContextArg, value: T, format?: {
@@ -33,5 +33,5 @@ constructor(type: string | null, locale: LocaleContextArg, value: T, format?: {
 |  type | string \| null |  |
 |  locale | LocaleContextArg |  |
 |  value | T |  |
-|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; toString?: [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;T&gt;\['toString'\]; } | <i>(Optional)</i> |
+|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; toString?: [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;T&gt;\['toString'\]; } | _(Optional)_ |
 

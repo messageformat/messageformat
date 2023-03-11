@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageNumber` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(locale: LocaleContextArg, number: number | bigint | Readonly<MessageNumber>, { meta, options, source }?: {
@@ -32,5 +32,5 @@ constructor(locale: LocaleContextArg, number: number | bigint | Readonly<Message
 |  --- | --- | --- |
 |  locale | LocaleContextArg |  |
 |  number | number \| bigint \| Readonly&lt;[MessageNumber](./messageformat.messagenumber.md)<!-- -->&gt; |  |
-|  { meta, options, source } | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; options?: Readonly&lt;Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions&gt;; source?: string; } | <i>(Optional)</i> |
+|  { meta, options, source } | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; options?: Readonly&lt;Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions&gt;; source?: string; } | _(Optional)_ |
 

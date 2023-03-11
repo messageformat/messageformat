@@ -13,7 +13,7 @@ nav_exclude: true
 
 The key or key path of the message.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 id?: string | string[];

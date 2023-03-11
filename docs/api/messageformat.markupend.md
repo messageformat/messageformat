@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 An element indicating the end of a span of elements, starting from the most recent [MarkupStart](./messageformat.markupstart.md) that has the same `name`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface MarkupEnd 
@@ -25,6 +25,6 @@ export interface MarkupEnd
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.markupend.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.markupend.type.md) |  | 'markup-end' | <b><i>(BETA)</i></b> |
+|  [name](./messageformat.markupend.name.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.markupend.type.md) |  | 'markup-end' | **_(BETA)_** |
 

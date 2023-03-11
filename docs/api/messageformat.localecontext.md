@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The minimum amount of information required to determine the locale to use when formatting a MessageValue.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface LocaleContext 
@@ -25,6 +25,6 @@ export interface LocaleContext
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [localeMatcher](./messageformat.localecontext.localematcher.md) |  | 'best fit' \| 'lookup' \| undefined | <b><i>(BETA)</i></b> |
-|  [locales](./messageformat.localecontext.locales.md) |  | string\[\] | <b><i>(BETA)</i></b> |
+|  [localeMatcher](./messageformat.localecontext.localematcher.md) |  | 'best fit' \| 'lookup' \| undefined | **_(BETA)_** |
+|  [locales](./messageformat.localecontext.locales.md) |  | string\[\] | **_(BETA)_** |
 

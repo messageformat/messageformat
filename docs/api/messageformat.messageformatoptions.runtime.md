@@ -16,7 +16,7 @@ nav_exclude: true
 
 The set of functions available during message resolution. If not set, defaults to [defaultRuntime](./messageformat.defaultruntime.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 runtime?: Runtime;

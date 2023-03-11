@@ -13,7 +13,7 @@ nav_exclude: true
 
 The raw input source for the token
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 text: string;

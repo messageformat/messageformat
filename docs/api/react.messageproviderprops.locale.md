@@ -13,7 +13,7 @@ nav_exclude: true
 
 A key for the locale of the given messages. If uset, will inherit the locale from the parent context, or ultimately use en empty string.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 locale?: string;

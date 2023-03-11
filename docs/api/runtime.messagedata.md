@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Hierarchical message object
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface MessageData 

@@ -13,7 +13,7 @@ nav_exclude: true
 
 Used by the constructor when no `locale` argument is given. Default: `'en'`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static defaultLocale: string;

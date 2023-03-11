@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A placeholder for a mapped argument
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface FunctionArg 
@@ -31,6 +31,6 @@ In strict mode, `param` (if defined) may only be an array containing one [Conten
 |  [arg](./parser.functionarg.arg.md) |  | string |  |
 |  [ctx](./parser.functionarg.ctx.md) |  | [Context](./parser.context.md) |  |
 |  [key](./parser.functionarg.key.md) |  | string |  |
-|  [param?](./parser.functionarg.param.md) |  | Array&lt;[Content](./parser.content.md) \| [PlainArg](./parser.plainarg.md) \| [FunctionArg](./parser.functionarg.md) \| [Select](./parser.select.md) \| [Octothorpe](./parser.octothorpe.md)<!-- -->&gt; | <i>(Optional)</i> |
+|  [param?](./parser.functionarg.param.md) |  | Array&lt;[Content](./parser.content.md) \| [PlainArg](./parser.plainarg.md) \| [FunctionArg](./parser.functionarg.md) \| [Select](./parser.select.md) \| [Octothorpe](./parser.octothorpe.md)<!-- -->&gt; | _(Optional)_ |
 |  [type](./parser.functionarg.type.md) |  | 'function' |  |
 

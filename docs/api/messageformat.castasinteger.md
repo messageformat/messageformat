@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Utility function for custom functions. Cast resolved option values with numerical string representations of integers to their Number equivalents. Any other values are untouched.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function castAsInteger(options: RuntimeOptions, ...names: string[]): void;
@@ -28,7 +28,7 @@ export declare function castAsInteger(options: RuntimeOptions, ...names: string[
 |  options | [RuntimeOptions](./messageformat.runtimeoptions.md) | Options object, which may be modified. |
 |  names | string\[\] | Names of options that should have integer values. |
 
-<b>Returns:</b>
+**Returns:**
 
 void
 

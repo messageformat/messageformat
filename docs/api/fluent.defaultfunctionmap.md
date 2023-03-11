@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Default value for the [messageToFluent()](./fluent.messagetofluent.md) `functionMap` option.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 defaultFunctionMap: FunctionMap

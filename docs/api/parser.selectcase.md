@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A case within a [Select](./parser.select.md)
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface SelectCase 

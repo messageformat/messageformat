@@ -15,23 +15,23 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for ending markup elements.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageMarkupEnd extends MessageValue<string> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(locale, name, options)](./messageformat.messagemarkupend._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageMarkupEnd</code> class |
+|  [(constructor)(locale, name, options)](./messageformat.messagemarkupend._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageMarkupEnd</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey()](./messageformat.messagemarkupend.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
-|  [toString()](./messageformat.messagemarkupend.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [matchSelectKey()](./messageformat.messagemarkupend.matchselectkey.md) |  | **_(BETA)_** |
+|  [toString()](./messageformat.messagemarkupend.tostring.md) |  | **_(BETA)_** |
 

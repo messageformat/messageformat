@@ -15,12 +15,12 @@ grand_parent: API Reference
 
 A Map of [MessageFormat](./messageformat.messageformat.md) instances.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type FluentMessageResource = Map<string, Map<string, MessageFormat>>;
 ```
-<b>References:</b> [MessageFormat](./messageformat.messageformat.md)
+**References:** [MessageFormat](./messageformat.messageformat.md)
 
 ## Remarks
 

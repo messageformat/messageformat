@@ -14,7 +14,7 @@ nav_exclude: true
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 resolvedOptions(): {
@@ -24,7 +24,7 @@ resolvedOptions(): {
         runtime: Readonly<Runtime>;
     };
 ```
-<b>Returns:</b>
+**Returns:**
 
 { localeMatcher: "best fit" \| "lookup"; locales: string\[\]; message: [Message](./messageformat.message.md)<!-- -->; runtime: Readonly&lt;[Runtime](./messageformat.runtime.md)<!-- -->&gt;; }
 

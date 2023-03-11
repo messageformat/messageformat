@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [Placeholder](./messageformat.placeholder.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isPlaceholder: (part: any) => part is Placeholder

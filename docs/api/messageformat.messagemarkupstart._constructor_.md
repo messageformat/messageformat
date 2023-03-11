@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageMarkupStart` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(locale: LocaleContextArg, name: string, { meta, options, source }: {

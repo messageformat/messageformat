@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The second argument of runtime function calls is an options bag. The `localeMatcher` key is always present.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface RuntimeOptions 
@@ -25,5 +25,5 @@ export interface RuntimeOptions
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [localeMatcher](./messageformat.runtimeoptions.localematcher.md) |  | 'best fit' \| 'lookup' | <b><i>(BETA)</i></b> |
+|  [localeMatcher](./messageformat.runtimeoptions.localematcher.md) |  | 'best fit' \| 'lookup' | **_(BETA)_** |
 

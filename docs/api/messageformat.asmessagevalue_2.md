@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Convert any value into a [MessageValue](./messageformat.messagevalue.md) or one of its child classes.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function asMessageValue(ctx: Context, value: unknown, format?: {
@@ -30,9 +30,9 @@ export declare function asMessageValue(ctx: Context, value: unknown, format?: {
 |  --- | --- | --- |
 |  ctx | Context |  |
 |  value | unknown |  |
-|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; } | <i>(Optional)</i> |
+|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; } | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [MessageValue](./messageformat.messagevalue.md)
 

@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Stringify a message using its syntax representation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function stringifyMessage(msg: Message | MessageFormat): string;
@@ -27,7 +27,7 @@ export declare function stringifyMessage(msg: Message | MessageFormat): string;
 |  --- | --- | --- |
 |  msg | [Message](./messageformat.message.md) \| [MessageFormat](./messageformat.messageformat.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Compile a [Fluent.Pattern](https://projectfluent.org/fluent.js/syntax/classes/pattern.html) (i.e. the value of a Fluent message or an attribute) into a [Message](./messageformat.message.md) data object.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function fluentToMessage(ast: Fluent.Pattern): PatternMessage | SelectMessage;
@@ -27,7 +27,7 @@ export declare function fluentToMessage(ast: Fluent.Pattern): PatternMessage | S
 |  --- | --- | --- |
 |  ast | Fluent.Pattern |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [PatternMessage](./messageformat.patternmessage.md) \| [SelectMessage](./messageformat.selectmessage.md)
 

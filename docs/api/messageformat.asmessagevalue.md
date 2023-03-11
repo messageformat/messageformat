@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Convert any numerical value into a [MessageNumber](./messageformat.messagenumber.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function asMessageValue(ctx: Context, value: number | bigint, format?: {
@@ -30,9 +30,9 @@ export declare function asMessageValue(ctx: Context, value: number | bigint, for
 |  --- | --- | --- |
 |  ctx | Context |  |
 |  value | number \| bigint |  |
-|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; } | <i>(Optional)</i> |
+|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; } | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [MessageNumber](./messageformat.messagenumber.md)
 

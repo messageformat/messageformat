@@ -13,7 +13,7 @@ nav_exclude: true
 
 Check if `key` is a message object for the locale
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 hasObject(key: string | string[], locale?: string, fallback?: boolean): boolean;
@@ -24,10 +24,10 @@ hasObject(key: string | string[], locale?: string, fallback?: boolean): boolean;
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  key | string \| string\[\] | The key or keypath being sought |
-|  locale | string | <i>(Optional)</i> If empty or undefined, defaults to <code>this.locale</code> |
-|  fallback | boolean | <i>(Optional)</i> If true, also checks fallback locales |
+|  locale | string | _(Optional)_ If empty or undefined, defaults to <code>this.locale</code> |
+|  fallback | boolean | _(Optional)_ If true, also checks fallback locales |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

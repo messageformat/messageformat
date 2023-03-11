@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Additional meta information may be attached to most nodes. In common use, this information is not required when formatting a message.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type Meta = Record<string, string>;

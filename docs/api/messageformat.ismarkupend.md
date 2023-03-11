@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [MarkupEnd](./messageformat.markupend.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isMarkupEnd: (part: any) => part is MarkupEnd

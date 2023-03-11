@@ -13,7 +13,7 @@ nav_exclude: true
 
 The number of line breaks consumed while parsing the token
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 lineBreaks: number;

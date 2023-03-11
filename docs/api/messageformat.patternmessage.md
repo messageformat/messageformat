@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 A single message with no variants.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface PatternMessage 
@@ -25,9 +25,9 @@ export interface PatternMessage
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [comment?](./messageformat.patternmessage.comment.md) |  | string | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [declarations](./messageformat.patternmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
-|  [errors?](./messageformat.patternmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [pattern](./messageformat.patternmessage.pattern.md) |  | [Pattern](./messageformat.pattern.md) | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.patternmessage.type.md) |  | 'message' | <b><i>(BETA)</i></b> |
+|  [comment?](./messageformat.patternmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
+|  [declarations](./messageformat.patternmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
+|  [errors?](./messageformat.patternmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [pattern](./messageformat.patternmessage.pattern.md) |  | [Pattern](./messageformat.pattern.md) | **_(BETA)_** |
+|  [type](./messageformat.patternmessage.type.md) |  | 'message' | **_(BETA)_** |
 

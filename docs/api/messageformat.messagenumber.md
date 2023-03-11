@@ -15,31 +15,31 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageNumber extends MessageValue<number | bigint> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;number \| bigint&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;number \| bigint&gt;
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(locale, number, { meta, options, source })](./messageformat.messagenumber._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageNumber</code> class |
+|  [(constructor)(locale, number, { meta, options, source })](./messageformat.messagenumber._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageNumber</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [options?](./messageformat.messagenumber.options.md) |  | Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions | <b><i>(BETA)</i></b> <i>(Optional)</i> |
+|  [options?](./messageformat.messagenumber.options.md) |  | Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions | **_(BETA)_** _(Optional)_ |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [getPluralCategory()](./messageformat.messagenumber.getpluralcategory.md) | <code>protected</code> | <b><i>(BETA)</i></b> |
-|  [matchSelectKey(key)](./messageformat.messagenumber.matchselectkey.md) |  | <b><i>(BETA)</i></b> In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
-|  [toParts()](./messageformat.messagenumber.toparts.md) |  | <b><i>(BETA)</i></b> |
-|  [toString(onError)](./messageformat.messagenumber.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [getPluralCategory()](./messageformat.messagenumber.getpluralcategory.md) | <code>protected</code> | **_(BETA)_** |
+|  [matchSelectKey(key)](./messageformat.messagenumber.matchselectkey.md) |  | **_(BETA)_** In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
+|  [toParts()](./messageformat.messagenumber.toparts.md) |  | **_(BETA)_** |
+|  [toString(onError)](./messageformat.messagenumber.tostring.md) |  | **_(BETA)_** |
 

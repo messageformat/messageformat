@@ -15,12 +15,12 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageFallback extends MessageValue<undefined> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;undefined&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;undefined&gt;
 
 ## Remarks
 
@@ -30,12 +30,12 @@ Used to represent parse errors as well as runtime/formatting errors.
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(locale, fmt)](./messageformat.messagefallback._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageFallback</code> class |
+|  [(constructor)(locale, fmt)](./messageformat.messagefallback._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageFallback</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey()](./messageformat.messagefallback.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
-|  [toString()](./messageformat.messagefallback.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [matchSelectKey()](./messageformat.messagefallback.matchselectkey.md) |  | **_(BETA)_** |
+|  [toString()](./messageformat.messagefallback.tostring.md) |  | **_(BETA)_** |
 

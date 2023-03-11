@@ -13,7 +13,7 @@ nav_exclude: true
 
 Resolve `lc` to the key of an available locale or `null`<!-- -->, allowing for partial matches.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 resolveLocale(locale: string | null): string | null;
@@ -25,7 +25,7 @@ resolveLocale(locale: string | null): string | null;
 |  --- | --- | --- |
 |  locale | string \| null |  |
 
-<b>Returns:</b>
+**Returns:**
 
 string \| null
 

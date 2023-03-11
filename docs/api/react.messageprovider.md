@@ -14,7 +14,7 @@ grand_parent: API Reference
 
 Makes the messages available for its descendants via a React Context. To support multiple locales and/or namespaces, MessageProviders may be used within each other, merging each provider's messages with those of its parents. The locale preference order is also set similarly, from nearest to furthest.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function MessageProvider(props: MessageProviderProps): FunctionComponentElement<ProviderProps<MessageContext>>;
@@ -26,7 +26,7 @@ export declare function MessageProvider(props: MessageProviderProps): FunctionCo
 |  --- | --- | --- |
 |  props | [MessageProviderProps](./react.messageproviderprops.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 FunctionComponentElement&lt;ProviderProps&lt;[MessageContext](./react.messagecontext.md)<!-- -->&gt;&gt;
 

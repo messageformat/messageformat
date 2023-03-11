@@ -13,7 +13,7 @@ nav_exclude: true
 
 All of the supported plurals
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 plurals: PluralObject[];

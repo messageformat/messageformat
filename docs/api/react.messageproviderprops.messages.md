@@ -13,7 +13,7 @@ nav_exclude: true
 
 A hierarchical object containing the messages as boolean, number, string or function values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 messages: MessageObject;

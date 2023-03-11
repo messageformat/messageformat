@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 The parsing context for a token
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Context 

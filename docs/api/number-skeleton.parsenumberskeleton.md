@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Parse an [ICU NumberFormatter skeleton](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md) string into a [Skeleton](./number-skeleton.skeleton.md) structure.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function parseNumberSkeleton(src: string, onError?: (err: NumberFormatError) => void): Skeleton;
@@ -23,9 +23,9 @@ export declare function parseNumberSkeleton(src: string, onError?: (err: NumberF
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  src | string | The skeleton string |
-|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it may not contain information for all tokens. If not defined, the error will be thrown instead. |
+|  onError | (err: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | _(Optional)_ Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it may not contain information for all tokens. If not defined, the error will be thrown instead. |
 
-<b>Returns:</b>
+**Returns:**
 
 [Skeleton](./number-skeleton.skeleton.md)
 

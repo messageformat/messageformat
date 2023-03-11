@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageDateTime` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(locale: LocaleContextArg, date: number | Date | Readonly<MessageDateTime>, { meta, options, source }?: {
@@ -32,5 +32,5 @@ constructor(locale: LocaleContextArg, date: number | Date | Readonly<MessageDate
 |  --- | --- | --- |
 |  locale | LocaleContextArg |  |
 |  date | number \| Date \| Readonly&lt;[MessageDateTime](./messageformat.messagedatetime.md)<!-- -->&gt; |  |
-|  { meta, options, source } | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; options?: Readonly&lt;Intl.DateTimeFormatOptions&gt;; source?: string; } | <i>(Optional)</i> |
+|  { meta, options, source } | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; options?: Readonly&lt;Intl.DateTimeFormatOptions&gt;; source?: string; } | _(Optional)_ |
 

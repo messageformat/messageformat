@@ -14,7 +14,7 @@ A custom \[React hook\] providing a message getter function, which may have a pr
 
 The returned function takes two parameters `(msgId, msgParams)`<!-- -->, which will extend any values set by the hook's arguments.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function useMessageGetter(rootId: string | string[], opt?: MessageGetterOptions): (id?: string | string[] | undefined, params?: Record<string, unknown> | undefined) => any;
@@ -25,9 +25,9 @@ export declare function useMessageGetter(rootId: string | string[], opt?: Messag
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  rootId | string \| string\[\] | The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
-|  opt | MessageGetterOptions | <i>(Optional)</i> |
+|  opt | MessageGetterOptions | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 (id?: string \| string\[\] \| undefined, params?: Record&lt;string, unknown&gt; \| undefined) =&gt; any
 

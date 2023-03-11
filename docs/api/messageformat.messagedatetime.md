@@ -15,29 +15,29 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for Date values.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageDateTime extends MessageValue<Date> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;Date&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;Date&gt;
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(locale, date, { meta, options, source })](./messageformat.messagedatetime._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageDateTime</code> class |
+|  [(constructor)(locale, date, { meta, options, source })](./messageformat.messagedatetime._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageDateTime</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [options?](./messageformat.messagedatetime.options.md) |  | Intl.DateTimeFormatOptions | <b><i>(BETA)</i></b> <i>(Optional)</i> |
+|  [options?](./messageformat.messagedatetime.options.md) |  | Intl.DateTimeFormatOptions | **_(BETA)_** _(Optional)_ |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [toParts()](./messageformat.messagedatetime.toparts.md) |  | <b><i>(BETA)</i></b> |
-|  [toString(onError)](./messageformat.messagedatetime.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [toParts()](./messageformat.messagedatetime.toparts.md) |  | **_(BETA)_** |
+|  [toString(onError)](./messageformat.messagedatetime.tostring.md) |  | **_(BETA)_** |
 

@@ -11,7 +11,7 @@ nav_exclude: true
 
 # MessageProviderProps.context property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 context?: MessageContext;

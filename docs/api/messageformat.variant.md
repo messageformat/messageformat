@@ -14,7 +14,7 @@ grand_parent: API Reference
 > 
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Variant 
@@ -24,6 +24,6 @@ export interface Variant
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [keys](./messageformat.variant.keys.md) |  | Array&lt;[Literal](./messageformat.literal.md) \| [CatchallKey](./messageformat.catchallkey.md)<!-- -->&gt; | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.variant.value.md) |  | [Pattern](./messageformat.pattern.md) | <b><i>(BETA)</i></b> |
+|  [keys](./messageformat.variant.keys.md) |  | Array&lt;[Literal](./messageformat.literal.md) \| [CatchallKey](./messageformat.catchallkey.md)<!-- -->&gt; | **_(BETA)_** |
+|  [value](./messageformat.variant.value.md) |  | [Pattern](./messageformat.pattern.md) | **_(BETA)_** |
 

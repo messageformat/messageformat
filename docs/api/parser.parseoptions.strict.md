@@ -13,7 +13,7 @@ nav_exclude: true
 
 By default, the parsing applies a few relaxations to the ICU MessageFormat spec. Setting `strict: true` will disable these relaxations.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 strict?: boolean;

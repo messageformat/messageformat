@@ -15,7 +15,7 @@ Return type of compiled functions; either a concatenated `'string'` or an array 
 
 Default: `'string'`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 returnType?: ReturnType;

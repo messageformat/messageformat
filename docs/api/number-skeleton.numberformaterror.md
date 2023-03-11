@@ -12,12 +12,12 @@ grand_parent: API Reference
 
 Base class for errors. In addition to a `code` and a human-friendly `message`<!-- -->, may also includes the token `stem` as well as other fields.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class NumberFormatError extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 

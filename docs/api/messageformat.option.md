@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 [Expression](./messageformat.expression.md) and [MarkupStart](./messageformat.markupstart.md) options are expressed as `key`<!-- -->/`value` pairs to allow their order to be maintained.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Option 
@@ -25,6 +25,6 @@ export interface Option
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.option.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.option.value.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> |
+|  [name](./messageformat.option.name.md) |  | string | **_(BETA)_** |
+|  [value](./messageformat.option.value.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | **_(BETA)_** |
 

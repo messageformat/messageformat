@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Function used to define the pluralisation for a locale
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface PluralFunction 
@@ -28,7 +28,7 @@ May be used as a [MessageFormat](./core.messageformat.md) constructor `locale` a
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [cardinals?](./core.pluralfunction.cardinals.md) |  | Plurals.PluralCategory\[\] | <i>(Optional)</i> Which plurals may be returned if <code>ord</code> is falsy |
-|  [module?](./core.pluralfunction.module.md) |  | string | <i>(Optional)</i> The name of the module from which this function may be imported |
-|  [ordinals?](./core.pluralfunction.ordinals.md) |  | Plurals.PluralCategory\[\] | <i>(Optional)</i> Which plurals may be returned if <code>ord</code> is true |
+|  [cardinals?](./core.pluralfunction.cardinals.md) |  | Plurals.PluralCategory\[\] | _(Optional)_ Which plurals may be returned if <code>ord</code> is falsy |
+|  [module?](./core.pluralfunction.module.md) |  | string | _(Optional)_ The name of the module from which this function may be imported |
+|  [ordinals?](./core.pluralfunction.ordinals.md) |  | Plurals.PluralCategory\[\] | _(Optional)_ Which plurals may be returned if <code>ord</code> is true |
 

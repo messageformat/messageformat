@@ -11,7 +11,7 @@ nav_exclude: true
 
 # MessageContext.merge property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 merge: (target: MessageObject, ...sources: MessageObject[]) => MessageObject;

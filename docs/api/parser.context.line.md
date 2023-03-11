@@ -13,7 +13,7 @@ nav_exclude: true
 
 Token start line number, starting from 1
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 line: number;

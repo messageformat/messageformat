@@ -11,7 +11,7 @@ nav_exclude: true
 
 # FunctionArg.ctx property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 ctx: Context;

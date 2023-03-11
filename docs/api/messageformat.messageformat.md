@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Create a new message formatter.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageFormat 
@@ -25,12 +25,12 @@ export declare class MessageFormat
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(source, locales, options)](./messageformat.messageformat._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageFormat</code> class |
+|  [(constructor)(source, locales, options)](./messageformat.messageformat._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageFormat</code> class |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [resolvedOptions()](./messageformat.messageformat.resolvedoptions.md) |  | <b><i>(BETA)</i></b> |
-|  [resolveMessage(msgParams, onError)](./messageformat.messageformat.resolvemessage.md) |  | <b><i>(BETA)</i></b> |
+|  [resolvedOptions()](./messageformat.messageformat.resolvedoptions.md) |  | **_(BETA)_** |
+|  [resolveMessage(msgParams, onError)](./messageformat.messageformat.resolvemessage.md) |  | **_(BETA)_** |
 

@@ -14,7 +14,7 @@ grand_parent: API Reference
 
 The value of a message. May also be used with a render prop: `<Message id={id}>{msg => {...}}</Message>`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function Message(props: MessageProps): any;
@@ -26,7 +26,7 @@ export declare function Message(props: MessageProps): any;
 |  --- | --- | --- |
 |  props | [MessageProps](./react.messageprops.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 any
 

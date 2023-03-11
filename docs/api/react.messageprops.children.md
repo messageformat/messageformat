@@ -13,7 +13,7 @@ nav_exclude: true
 
 If a function, will be called with the found message. In this case, `params` will be ignored and `id` is optional. If some other type of non-empty renderable node, it will be used as a fallback value if the message is not found.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 children?: unknown;

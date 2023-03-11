@@ -12,12 +12,12 @@ grand_parent: API Reference
 
 Returned by [MessageFormat.resolvedOptions()](./core.messageformat.resolvedoptions.md)
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface ResolvedMessageFormatOptions<ReturnType extends 'string' | 'values'> extends Required<MessageFormatOptions<ReturnType>> 
 ```
-<b>Extends:</b> Required&lt;[MessageFormatOptions](./core.messageformatoptions.md)<!-- -->&lt;ReturnType&gt;&gt;
+**Extends:** Required&lt;[MessageFormatOptions](./core.messageformatoptions.md)<!-- -->&lt;ReturnType&gt;&gt;
 
 ## Properties
 

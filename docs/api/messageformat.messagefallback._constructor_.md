@@ -16,7 +16,7 @@ nav_exclude: true
 
 Constructs a new instance of the `MessageFallback` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 constructor(locale: LocaleContextArg, fmt: {

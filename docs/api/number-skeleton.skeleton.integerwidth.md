@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.integerWidth property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 integerWidth?: {

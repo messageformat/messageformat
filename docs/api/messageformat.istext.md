@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Type guard for [Text](./messageformat.text.md) pattern elements
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isText: (part: any) => part is Text

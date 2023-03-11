@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A selector between multiple variants
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Select 
@@ -31,6 +31,6 @@ For `plural` and `selectordinal`<!-- -->, the value of `arg` is expected to be n
 |  [arg](./parser.select.arg.md) |  | string |  |
 |  [cases](./parser.select.cases.md) |  | [SelectCase](./parser.selectcase.md)<!-- -->\[\] |  |
 |  [ctx](./parser.select.ctx.md) |  | [Context](./parser.context.md) |  |
-|  [pluralOffset?](./parser.select.pluraloffset.md) |  | number | <i>(Optional)</i> |
+|  [pluralOffset?](./parser.select.pluraloffset.md) |  | number | _(Optional)_ |
 |  [type](./parser.select.type.md) |  | 'plural' \| 'select' \| 'selectordinal' |  |
 

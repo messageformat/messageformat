@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Utility function for custom functions. Cast resolved option values `'true'` and `'false'` to their Boolean equivalents. Any other values are untouched.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function castAsBoolean(options: RuntimeOptions, ...names: string[]): void;
@@ -28,7 +28,7 @@ export declare function castAsBoolean(options: RuntimeOptions, ...names: string[
 |  options | [RuntimeOptions](./messageformat.runtimeoptions.md) | Options object, which may be modified. |
 |  names | string\[\] | Names of options that should have boolean values. |
 
-<b>Returns:</b>
+**Returns:**
 
 void
 

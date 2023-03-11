@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Convert any Date value into a [MessageDateTime](./messageformat.messagedatetime.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function asMessageValue(ctx: Context, value: Date, format?: {
@@ -30,9 +30,9 @@ export declare function asMessageValue(ctx: Context, value: Date, format?: {
 |  --- | --- | --- |
 |  ctx | Context |  |
 |  value | Date |  |
-|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; } | <i>(Optional)</i> |
+|  format | { meta?: Readonly&lt;[Meta](./messageformat.meta.md)<!-- -->&gt;; source?: string; } | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [MessageDateTime](./messageformat.messagedatetime.md)
 

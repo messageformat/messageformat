@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Compile a collection of messages into an ES module
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export default function compileModule(messageformat: MessageFormat<'string' | 'values'>, messages: StringStructure): string;
@@ -25,7 +25,7 @@ export default function compileModule(messageformat: MessageFormat<'string' | 'v
 |  messageformat | [MessageFormat](./core.messageformat.md)<!-- -->&lt;'string' \| 'values'&gt; | A [MessageFormat](./core.messageformat.md) instance |
 |  messages | [StringStructure](./core.stringstructure.md) | A hierarchical structure of ICU MessageFormat strings |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

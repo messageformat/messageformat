@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 An object representation of a parsed string skeleton, with token values grouped by type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Skeleton 
@@ -22,17 +22,17 @@ export interface Skeleton
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [affix?](./number-skeleton.skeleton.affix.md) |  | { pos: \[string, string\]; neg?: \[string, string\]; } | <i>(Optional)</i> |
-|  [decimal?](./number-skeleton.skeleton.decimal.md) |  | 'decimal-auto' \| 'decimal-always' | <i>(Optional)</i> |
-|  [group?](./number-skeleton.skeleton.group.md) |  | 'group-off' \| 'group-min2' \| 'group-auto' \| 'group-on-aligned' \| 'group-thousands' | <i>(Optional)</i> |
-|  [integerWidth?](./number-skeleton.skeleton.integerwidth.md) |  | { min: number; max?: number; source?: string; } | <i>(Optional)</i> |
-|  [notation?](./number-skeleton.skeleton.notation.md) |  | { style: 'compact-short' \| 'compact-long' \| 'notation-simple'; } \| { style: 'scientific' \| 'engineering'; expDigits?: number; expSign?: [Skeleton](./number-skeleton.skeleton.md)<!-- -->\['sign'\]; source?: string; } | <i>(Optional)</i> |
-|  [numberingSystem?](./number-skeleton.skeleton.numberingsystem.md) |  | 'arab' \| 'arabext' \| 'bali' \| 'beng' \| 'deva' \| 'fullwide' \| 'gujr' \| 'guru' \| 'hanidec' \| 'khmr' \| 'knda' \| 'laoo' \| 'latn' \| 'limb' \| 'mlym' \| 'mong' \| 'mymr' \| 'orya' \| 'tamldec' \| 'telu' \| 'thai' \| 'tibt' | <i>(Optional)</i> |
-|  [precision?](./number-skeleton.skeleton.precision.md) |  | { style: 'precision-integer' \| 'precision-unlimited' \| 'precision-currency-standard' \| 'precision-currency-cash'; } \| { style: 'precision-increment'; increment: number; } \| { style: 'precision-fraction'; minFraction?: number; maxFraction?: number; minSignificant?: number; maxSignificant?: number; source?: string; } | <i>(Optional)</i> |
-|  [roundingMode?](./number-skeleton.skeleton.roundingmode.md) |  | 'rounding-mode-ceiling' \| 'rounding-mode-floor' \| 'rounding-mode-down' \| 'rounding-mode-up' \| 'rounding-mode-half-even' \| 'rounding-mode-half-odd' \| 'rounding-mode-half-ceiling' \| 'rounding-mode-half-floor' \| 'rounding-mode-half-down' \| 'rounding-mode-half-up' \| 'rounding-mode-unnecessary' | <i>(Optional)</i> |
-|  [scale?](./number-skeleton.skeleton.scale.md) |  | number | <i>(Optional)</i> |
-|  [sign?](./number-skeleton.skeleton.sign.md) |  | 'sign-auto' \| 'sign-always' \| 'sign-never' \| 'sign-accounting' \| 'sign-accounting-always' \| 'sign-except-zero' \| 'sign-accounting-except-zero' | <i>(Optional)</i> |
-|  [unit?](./number-skeleton.skeleton.unit.md) |  | { style: 'percent' \| 'permille' \| 'base-unit'; } \| { style: 'currency'; currency: string; } \| { style: 'measure-unit'; unit: [Unit](./number-skeleton.unit.md)<!-- -->; } | <i>(Optional)</i> |
-|  [unitPer?](./number-skeleton.skeleton.unitper.md) |  | [Unit](./number-skeleton.unit.md) | <i>(Optional)</i> |
-|  [unitWidth?](./number-skeleton.skeleton.unitwidth.md) |  | 'unit-width-narrow' \| 'unit-width-short' \| 'unit-width-full-name' \| 'unit-width-iso-code' \| 'unit-width-hidden' | <i>(Optional)</i> |
+|  [affix?](./number-skeleton.skeleton.affix.md) |  | { pos: \[string, string\]; neg?: \[string, string\]; } | _(Optional)_ |
+|  [decimal?](./number-skeleton.skeleton.decimal.md) |  | 'decimal-auto' \| 'decimal-always' | _(Optional)_ |
+|  [group?](./number-skeleton.skeleton.group.md) |  | 'group-off' \| 'group-min2' \| 'group-auto' \| 'group-on-aligned' \| 'group-thousands' | _(Optional)_ |
+|  [integerWidth?](./number-skeleton.skeleton.integerwidth.md) |  | { min: number; max?: number; source?: string; } | _(Optional)_ |
+|  [notation?](./number-skeleton.skeleton.notation.md) |  | { style: 'compact-short' \| 'compact-long' \| 'notation-simple'; } \| { style: 'scientific' \| 'engineering'; expDigits?: number; expSign?: [Skeleton](./number-skeleton.skeleton.md)<!-- -->\['sign'\]; source?: string; } | _(Optional)_ |
+|  [numberingSystem?](./number-skeleton.skeleton.numberingsystem.md) |  | 'arab' \| 'arabext' \| 'bali' \| 'beng' \| 'deva' \| 'fullwide' \| 'gujr' \| 'guru' \| 'hanidec' \| 'khmr' \| 'knda' \| 'laoo' \| 'latn' \| 'limb' \| 'mlym' \| 'mong' \| 'mymr' \| 'orya' \| 'tamldec' \| 'telu' \| 'thai' \| 'tibt' | _(Optional)_ |
+|  [precision?](./number-skeleton.skeleton.precision.md) |  | { style: 'precision-integer' \| 'precision-unlimited' \| 'precision-currency-standard' \| 'precision-currency-cash'; } \| { style: 'precision-increment'; increment: number; } \| { style: 'precision-fraction'; minFraction?: number; maxFraction?: number; minSignificant?: number; maxSignificant?: number; source?: string; } | _(Optional)_ |
+|  [roundingMode?](./number-skeleton.skeleton.roundingmode.md) |  | 'rounding-mode-ceiling' \| 'rounding-mode-floor' \| 'rounding-mode-down' \| 'rounding-mode-up' \| 'rounding-mode-half-even' \| 'rounding-mode-half-odd' \| 'rounding-mode-half-ceiling' \| 'rounding-mode-half-floor' \| 'rounding-mode-half-down' \| 'rounding-mode-half-up' \| 'rounding-mode-unnecessary' | _(Optional)_ |
+|  [scale?](./number-skeleton.skeleton.scale.md) |  | number | _(Optional)_ |
+|  [sign?](./number-skeleton.skeleton.sign.md) |  | 'sign-auto' \| 'sign-always' \| 'sign-never' \| 'sign-accounting' \| 'sign-accounting-always' \| 'sign-except-zero' \| 'sign-accounting-except-zero' | _(Optional)_ |
+|  [unit?](./number-skeleton.skeleton.unit.md) |  | { style: 'percent' \| 'permille' \| 'base-unit'; } \| { style: 'currency'; currency: string; } \| { style: 'measure-unit'; unit: [Unit](./number-skeleton.unit.md)<!-- -->; } | _(Optional)_ |
+|  [unitPer?](./number-skeleton.skeleton.unitper.md) |  | [Unit](./number-skeleton.unit.md) | _(Optional)_ |
+|  [unitWidth?](./number-skeleton.skeleton.unitwidth.md) |  | 'unit-width-narrow' \| 'unit-width-short' \| 'unit-width-full-name' \| 'unit-width-iso-code' \| 'unit-width-hidden' | _(Optional)_ |
 

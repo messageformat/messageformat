@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Select.cases property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 cases: SelectCase[];

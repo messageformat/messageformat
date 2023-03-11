@@ -15,7 +15,7 @@ Require all message arguments to be set with a defined value
 
 Default: `false`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 requireAllArguments?: boolean;

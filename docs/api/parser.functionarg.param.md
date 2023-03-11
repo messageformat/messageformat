@@ -11,7 +11,7 @@ nav_exclude: true
 
 # FunctionArg.param property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 param?: Array<Content | PlainArg | FunctionArg | Select | Octothorpe>;

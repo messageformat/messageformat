@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Create a new LocaleContext, using `orig` as a base.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function extendLocaleContext(orig: Readonly<LocaleContext> | null, lc: LocaleContextArg): LocaleContext | null;
@@ -28,7 +28,7 @@ export declare function extendLocaleContext(orig: Readonly<LocaleContext> | null
 |  orig | Readonly&lt;[LocaleContext](./messageformat.localecontext.md)<!-- -->&gt; \| null |  |
 |  lc | LocaleContextArg |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [LocaleContext](./messageformat.localecontext.md) \| null
 

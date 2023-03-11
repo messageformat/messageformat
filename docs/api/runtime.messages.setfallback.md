@@ -13,7 +13,7 @@ nav_exclude: true
 
 Set the fallback locale or locales for `lc`
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 setFallback(lc: string, fallback: string[] | null): this;
@@ -26,7 +26,7 @@ setFallback(lc: string, fallback: string[] | null): this;
 |  lc | string |  |
 |  fallback | string\[\] \| null |  |
 
-<b>Returns:</b>
+**Returns:**
 
 this
 

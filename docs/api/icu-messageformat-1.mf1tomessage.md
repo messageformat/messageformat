@@ -17,7 +17,7 @@ Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.me
 
 A runtime provided by [getMF1Runtime](./icu-messageformat-1.getmf1runtime.md) is automatically used in these instances.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function mf1ToMessage(source: string | Token[] | Message, locales?: string | string[], { strict, ...opt }?: MF1Options & MessageFormatOptions): MessageFormat;
@@ -28,10 +28,10 @@ export declare function mf1ToMessage(source: string | Token[] | Message, locales
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  source | string \| Token\[\] \| [Message](./messageformat.message.md) | An ICU MessageFormat message, either in its syntax representation, as an array of <code>@messageformat/parser</code> [AST tokens](./parser.parse.md)<!-- -->, or as a [Message](./messageformat.message.md) data structure. |
-|  locales | string \| string\[\] | <i>(Optional)</i> The locale to use for the message. |
-|  { strict, ...opt } | [MF1Options](./icu-messageformat-1.mf1options.md) &amp; [MessageFormatOptions](./messageformat.messageformatoptions.md) | <i>(Optional)</i> |
+|  locales | string \| string\[\] | _(Optional)_ The locale to use for the message. |
+|  { strict, ...opt } | [MF1Options](./icu-messageformat-1.mf1options.md) &amp; [MessageFormatOptions](./messageformat.messageformatoptions.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 [MessageFormat](./messageformat.messageformat.md)
 

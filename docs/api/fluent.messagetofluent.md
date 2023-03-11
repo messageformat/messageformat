@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Convert a [Message](./messageformat.message.md) data object into a [Fluent.Pattern](https://projectfluent.org/fluent.js/syntax/classes/pattern.html) (i.e. the value of a Fluent message or an attribute).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function messageToFluent(msg: Message, defaultKey?: string, functionMap?: FunctionMap): Fluent.Pattern;
@@ -26,10 +26,10 @@ export declare function messageToFluent(msg: Message, defaultKey?: string, funct
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  msg | [Message](./messageformat.message.md) |  |
-|  defaultKey | string | <i>(Optional)</i> The Fluent identifier or numeric literal to use for the default/fallback variant, which is labelled as <code>*</code> in MessageFormat 2. |
-|  functionMap | FunctionMap | <i>(Optional)</i> A mapping of MessageFormat 2 → Fluent function names. The special value [FluentMessageRef](./fluent.fluentmessageref.md) maps to Fluent message/term references. |
+|  defaultKey | string | _(Optional)_ The Fluent identifier or numeric literal to use for the default/fallback variant, which is labelled as <code>*</code> in MessageFormat 2, when not explicitly defined in the data. |
+|  functionMap | FunctionMap | _(Optional)_ A mapping of MessageFormat 2 → Fluent function names. The special value [FluentMessageRef](./fluent.fluentmessageref.md) maps to Fluent message/term references. |
 
-<b>Returns:</b>
+**Returns:**
 
 Fluent.Pattern
 

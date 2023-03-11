@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 An element indicating the start of a span of further elements that should have some markup applied to them.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface MarkupStart 
@@ -25,7 +25,7 @@ export interface MarkupStart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.markupstart.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [options?](./messageformat.markupstart.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [type](./messageformat.markupstart.type.md) |  | 'markup-start' | <b><i>(BETA)</i></b> |
+|  [name](./messageformat.markupstart.name.md) |  | string | **_(BETA)_** |
+|  [options?](./messageformat.markupstart.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [type](./messageformat.markupstart.type.md) |  | 'markup-start' | **_(BETA)_** |
 

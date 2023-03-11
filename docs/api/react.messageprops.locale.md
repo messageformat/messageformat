@@ -13,7 +13,7 @@ nav_exclude: true
 
 If set, overrides the `locale` of the nearest MessageProvider.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 locale?: string | string[];

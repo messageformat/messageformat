@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Symbol used to identify a custom function for Fluent message/term references.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 FluentMessageRef: unique symbol

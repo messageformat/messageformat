@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Parse an [ICU NumberFormatter pattern](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns) string into a [Skeleton](./number-skeleton.skeleton.md) structure.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function parseNumberPattern(src: string, currency?: string | null, onError?: (error: NumberFormatError) => void): Skeleton;
@@ -23,10 +23,10 @@ export declare function parseNumberPattern(src: string, currency?: string | null
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  src | string | The pattern string |
-|  currency | string \| null | <i>(Optional)</i> If the pattern includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
-|  onError | (error: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | <i>(Optional)</i> Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it will be incomplete and/or inaccurate. If not defined, the error will be thrown instead. |
+|  currency | string \| null | _(Optional)_ If the pattern includes ¤ tokens, their skeleton representation requires a three-letter currency code. |
+|  onError | (error: [NumberFormatError](./number-skeleton.numberformaterror.md)<!-- -->) =&gt; void | _(Optional)_ Called when the parser encounters a syntax error. The function will still return a [Skeleton](./number-skeleton.skeleton.md)<!-- -->, but it will be incomplete and/or inaccurate. If not defined, the error will be thrown instead. |
 
-<b>Returns:</b>
+**Returns:**
 
 [Skeleton](./number-skeleton.skeleton.md)
 

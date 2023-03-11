@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Text content of the message
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Content 

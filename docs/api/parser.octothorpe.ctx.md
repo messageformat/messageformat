@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Octothorpe.ctx property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 ctx: Context;

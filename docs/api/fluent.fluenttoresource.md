@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Compile a Fluent resource (i.e. an FTL file) into a Map of [MessageFormat](./messageformat.messageformat.md) instances.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function fluentToResource(source: string | Fluent.Resource | FluentMessageResourceData, locales?: string | string[], options?: MessageFormatOptions): FluentMessageResource;
@@ -26,10 +26,10 @@ export declare function fluentToResource(source: string | Fluent.Resource | Flue
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  source | string \| Fluent.Resource \| [FluentMessageResourceData](./fluent.fluentmessageresourcedata.md) | A Fluent resource, as the string contents of an FTL file, as a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html)<!-- -->, or in the shape output by [fluentToResourceData()](./fluent.fluenttoresourcedata.md) as <code>data</code>. |
-|  locales | string \| string\[\] | <i>(Optional)</i> The locale code or codes to use for all of the resource's messages. |
-|  options | [MessageFormatOptions](./messageformat.messageformatoptions.md) | <i>(Optional)</i> The MessageFormat constructor options to use for all of the resource's messages. |
+|  locales | string \| string\[\] | _(Optional)_ The locale code or codes to use for all of the resource's messages. |
+|  options | [MessageFormatOptions](./messageformat.messageformatoptions.md) | _(Optional)_ The MessageFormat constructor options to use for all of the resource's messages. |
 
-<b>Returns:</b>
+**Returns:**
 
 [FluentMessageResource](./fluent.fluentmessageresource.md)
 

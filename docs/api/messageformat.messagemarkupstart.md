@@ -15,29 +15,29 @@ grand_parent: API Reference
 
 A child class of [MessageValue](./messageformat.messagevalue.md) for starting markup elements.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class MessageMarkupStart extends MessageValue<string> 
 ```
-<b>Extends:</b> [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
 
 ## Constructors
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(locale, name, { meta, options, source })](./messageformat.messagemarkupstart._constructor_.md) |  | <b><i>(BETA)</i></b> Constructs a new instance of the <code>MessageMarkupStart</code> class |
+|  [(constructor)(locale, name, { meta, options, source })](./messageformat.messagemarkupstart._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageMarkupStart</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [options](./messageformat.messagemarkupstart.options.md) |  | Record&lt;string, unknown&gt; | <b><i>(BETA)</i></b> |
+|  [options](./messageformat.messagemarkupstart.options.md) |  | Record&lt;string, unknown&gt; | **_(BETA)_** |
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey()](./messageformat.messagemarkupstart.matchselectkey.md) |  | <b><i>(BETA)</i></b> |
-|  [toString(onError)](./messageformat.messagemarkupstart.tostring.md) |  | <b><i>(BETA)</i></b> |
+|  [matchSelectKey()](./messageformat.messagemarkupstart.matchselectkey.md) |  | **_(BETA)_** |
+|  [toString(onError)](./messageformat.messagemarkupstart.tostring.md) |  | **_(BETA)_** |
 

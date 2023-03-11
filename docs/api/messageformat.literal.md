@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 An immediately defined value.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Literal 
@@ -29,6 +29,6 @@ Always contains a string value. In Function arguments and options, the expeted t
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.literal.type.md) |  | 'literal' \| 'nmtoken' | <b><i>(BETA)</i></b> |
-|  [value](./messageformat.literal.value.md) |  | string | <b><i>(BETA)</i></b> |
+|  [type](./messageformat.literal.type.md) |  | 'literal' \| 'nmtoken' | **_(BETA)_** |
+|  [value](./messageformat.literal.value.md) |  | string | **_(BETA)_** |
 

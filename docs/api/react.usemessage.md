@@ -14,7 +14,7 @@ A custom React hook providing an entry from the messages object of the current o
 
 If the identified message value is a function, the returned value will be the result of calling it with a single argument `params`<!-- -->, or `{}` if empty. Otherwise the value set in the `MessageProvider` props will be returned directly.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function useMessage(id: string | string[], params?: unknown, locale?: string | string[]): any;
@@ -25,10 +25,10 @@ export declare function useMessage(id: string | string[], params?: unknown, loca
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  id | string \| string\[\] | The key or key path of the message or message object. If empty or <code>[]</code>, matches the root of the messages object |
-|  params | unknown | <i>(Optional)</i> Argument to use if the identified message is a function |
-|  locale | string \| string\[\] | <i>(Optional)</i> If set, overrides the current locale precedence as set by parent MessageProviders. |
+|  params | unknown | _(Optional)_ Argument to use if the identified message is a function |
+|  locale | string \| string\[\] | _(Optional)_ If set, overrides the current locale precedence as set by parent MessageProviders. |
 
-<b>Returns:</b>
+**Returns:**
 
 any
 

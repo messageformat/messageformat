@@ -14,7 +14,7 @@ grand_parent: API Reference
 > 
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type MF1Options = {

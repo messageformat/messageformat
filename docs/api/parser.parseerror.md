@@ -12,12 +12,12 @@ grand_parent: API Reference
 
 Thrown by [parse()](./parser.parse.md) on error
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class ParseError extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 

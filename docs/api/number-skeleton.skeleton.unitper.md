@@ -11,7 +11,7 @@ nav_exclude: true
 
 # Skeleton.unitPer property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 unitPer?: Unit;

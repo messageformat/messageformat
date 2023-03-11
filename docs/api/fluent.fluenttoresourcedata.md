@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Compile a Fluent resource (i.e. an FTL file) into a Map of [Message](./messageformat.message.md) data objects.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function fluentToResourceData(source: string | Fluent.Resource): {
@@ -30,7 +30,7 @@ export declare function fluentToResourceData(source: string | Fluent.Resource): 
 |  --- | --- | --- |
 |  source | string \| Fluent.Resource | A Fluent resource, as the string contents of an FTL file or as a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html) |
 
-<b>Returns:</b>
+**Returns:**
 
 { data: [FluentMessageResourceData](./fluent.fluentmessageresourcedata.md)<!-- -->; comments: string; }
 

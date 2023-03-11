@@ -11,7 +11,7 @@ nav_exclude: true
 
 # SelectCase.tokens property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 tokens: Array<Content | PlainArg | FunctionArg | Select | Octothorpe>;

@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 The core MessageFormat-to-JavaScript compiler
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export default class MessageFormat<ReturnType extends 'string' | 'values' = 'string'> 

@@ -16,7 +16,7 @@ nav_exclude: true
 > Use onError instead
 > 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 debug?: 'error' | 'warn' | ((msg: string) => unknown);

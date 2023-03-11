@@ -15,12 +15,12 @@ grand_parent: API Reference
 
 A Map of [Message](./messageformat.message.md) data structures.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type FluentMessageResourceData = Map<string, Map<string, Message>>;
 ```
-<b>References:</b> [Message](./messageformat.message.md)
+**References:** [Message](./messageformat.message.md)
 
 ## Remarks
 

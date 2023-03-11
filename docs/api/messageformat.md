@@ -15,79 +15,79 @@ has_toc: false
 
 |  Class | Description |
 |  --- | --- |
-|  [MessageDateTime](./messageformat.messagedatetime.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for Date values. |
-|  [MessageFallback](./messageformat.messagefallback.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values. |
-|  [MessageFormat](./messageformat.messageformat.md) | <b><i>(BETA)</i></b> Create a new message formatter. |
-|  [MessageLiteral](./messageformat.messageliteral.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for values defined directly in the message data. |
-|  [MessageMarkupEnd](./messageformat.messagemarkupend.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for ending markup elements. |
-|  [MessageMarkupStart](./messageformat.messagemarkupstart.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for starting markup elements. |
-|  [MessageNumber](./messageformat.messagenumber.md) | <b><i>(BETA)</i></b> A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values. |
-|  [MessageValue](./messageformat.messagevalue.md) | <b><i>(BETA)</i></b> The base class of all message values. |
-|  [ResolvedMessage](./messageformat.resolvedmessage.md) | <b><i>(BETA)</i></b> The result of resolving a [MessageFormat](./messageformat.messageformat.md) message. |
+|  [MessageDateTime](./messageformat.messagedatetime.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for Date values. |
+|  [MessageFallback](./messageformat.messagefallback.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values. |
+|  [MessageFormat](./messageformat.messageformat.md) | **_(BETA)_** Create a new message formatter. |
+|  [MessageLiteral](./messageformat.messageliteral.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for values defined directly in the message data. |
+|  [MessageMarkupEnd](./messageformat.messagemarkupend.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for ending markup elements. |
+|  [MessageMarkupStart](./messageformat.messagemarkupstart.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for starting markup elements. |
+|  [MessageNumber](./messageformat.messagenumber.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values. |
+|  [MessageValue](./messageformat.messagevalue.md) | **_(BETA)_** The base class of all message values. |
+|  [ResolvedMessage](./messageformat.resolvedmessage.md) | **_(BETA)_** The result of resolving a [MessageFormat](./messageformat.messageformat.md) message. |
 
 ## Functions
 
 |  Function | Description |
 |  --- | --- |
-|  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue.md) | <b><i>(BETA)</i></b> Convert any numerical value into a [MessageNumber](./messageformat.messagenumber.md)<!-- -->. |
-|  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_1.md) | <b><i>(BETA)</i></b> Convert any Date value into a [MessageDateTime](./messageformat.messagedatetime.md)<!-- -->. |
-|  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_2.md) | <b><i>(BETA)</i></b> Convert any value into a [MessageValue](./messageformat.messagevalue.md) or one of its child classes. |
-|  [castAsBoolean(options, names)](./messageformat.castasboolean.md) | <b><i>(BETA)</i></b> Utility function for custom functions. Cast resolved option values <code>'true'</code> and <code>'false'</code> to their Boolean equivalents. Any other values are untouched. |
-|  [castAsInteger(options, names)](./messageformat.castasinteger.md) | <b><i>(BETA)</i></b> Utility function for custom functions. Cast resolved option values with numerical string representations of integers to their Number equivalents. Any other values are untouched. |
-|  [extendLocaleContext(orig, lc)](./messageformat.extendlocalecontext.md) | <b><i>(BETA)</i></b> Create a new LocaleContext, using <code>orig</code> as a base. |
-|  [parseMessage(src)](./messageformat.parsemessage.md) | <b><i>(BETA)</i></b> Parse the string syntax representation of a message into its corresponding data model representation. |
-|  [stringifyMessage(msg)](./messageformat.stringifymessage.md) | <b><i>(BETA)</i></b> Stringify a message using its syntax representation. |
-|  [validate(msg, runtime)](./messageformat.validate.md) | <b><i>(BETA)</i></b> Validate a message. |
+|  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue.md) | **_(BETA)_** Convert any numerical value into a [MessageNumber](./messageformat.messagenumber.md)<!-- -->. |
+|  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_1.md) | **_(BETA)_** Convert any Date value into a [MessageDateTime](./messageformat.messagedatetime.md)<!-- -->. |
+|  [asMessageValue(ctx, value, format)](./messageformat.asmessagevalue_2.md) | **_(BETA)_** Convert any value into a [MessageValue](./messageformat.messagevalue.md) or one of its child classes. |
+|  [castAsBoolean(options, names)](./messageformat.castasboolean.md) | **_(BETA)_** Utility function for custom functions. Cast resolved option values <code>'true'</code> and <code>'false'</code> to their Boolean equivalents. Any other values are untouched. |
+|  [castAsInteger(options, names)](./messageformat.castasinteger.md) | **_(BETA)_** Utility function for custom functions. Cast resolved option values with numerical string representations of integers to their Number equivalents. Any other values are untouched. |
+|  [extendLocaleContext(orig, lc)](./messageformat.extendlocalecontext.md) | **_(BETA)_** Create a new LocaleContext, using <code>orig</code> as a base. |
+|  [parseMessage(src)](./messageformat.parsemessage.md) | **_(BETA)_** Parse the string syntax representation of a message into its corresponding data model representation. |
+|  [stringifyMessage(msg)](./messageformat.stringifymessage.md) | **_(BETA)_** Stringify a message using its syntax representation. |
+|  [validate(msg, runtime)](./messageformat.validate.md) | **_(BETA)_** Validate a message. |
 
 ## Interfaces
 
 |  Interface | Description |
 |  --- | --- |
-|  [CatchallKey](./messageformat.catchallkey.md) | <b><i>(BETA)</i></b> The catch-all key matches all values. |
-|  [Declaration](./messageformat.declaration.md) | <b><i>(BETA)</i></b> A message may declare any number of local variables or aliases, each with a value defined by a placeholder. The order of the declarations is not relevant, but a valid message may not include a dependency loop amond them. |
-|  [Expression](./messageformat.expression.md) | <b><i>(BETA)</i></b> To resolve an Expression, an externally defined function is called. |
-|  [Junk](./messageformat.junk.md) | <b><i>(BETA)</i></b> When the parser encounters an error, it may emit a Junk pattern element to represent it. |
-|  [JunkMessage](./messageformat.junkmessage.md) | <b><i>(BETA)</i></b> The result of parsing input that cannot be represented by a [PatternMessage](./messageformat.patternmessage.md) or a [SelectMessage](./messageformat.selectmessage.md)<!-- -->. |
-|  [Literal](./messageformat.literal.md) | <b><i>(BETA)</i></b> An immediately defined value. |
-|  [LocaleContext](./messageformat.localecontext.md) | <b><i>(BETA)</i></b> The minimum amount of information required to determine the locale to use when formatting a MessageValue. |
-|  [MarkupEnd](./messageformat.markupend.md) | <b><i>(BETA)</i></b> An element indicating the end of a span of elements, starting from the most recent [MarkupStart](./messageformat.markupstart.md) that has the same <code>name</code>. |
-|  [MarkupStart](./messageformat.markupstart.md) | <b><i>(BETA)</i></b> An element indicating the start of a span of further elements that should have some markup applied to them. |
-|  [MessageFormatOptions](./messageformat.messageformatoptions.md) | <b><i>(BETA)</i></b> |
-|  [Option](./messageformat.option.md) | <b><i>(BETA)</i></b> [Expression](./messageformat.expression.md) and [MarkupStart](./messageformat.markupstart.md) options are expressed as <code>key</code>/<code>value</code> pairs to allow their order to be maintained. |
-|  [Pattern](./messageformat.pattern.md) | <b><i>(BETA)</i></b> The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data. |
-|  [PatternMessage](./messageformat.patternmessage.md) | <b><i>(BETA)</i></b> A single message with no variants. |
-|  [Placeholder](./messageformat.placeholder.md) | <b><i>(BETA)</i></b> Wrapper for non-literal content. |
-|  [Runtime](./messageformat.runtime.md) | <b><i>(BETA)</i></b> The runtime function registry available when resolving [Expression](./messageformat.expression.md) elements. |
-|  [RuntimeOptions](./messageformat.runtimeoptions.md) | <b><i>(BETA)</i></b> The second argument of runtime function calls is an options bag. The <code>localeMatcher</code> key is always present. |
-|  [SelectMessage](./messageformat.selectmessage.md) | <b><i>(BETA)</i></b> SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of placeholders. Selection iterates among the <code>variants</code> in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern. |
-|  [Text](./messageformat.text.md) | <b><i>(BETA)</i></b> Top-level literal content. |
-|  [VariableRef](./messageformat.variableref.md) | <b><i>(BETA)</i></b> The value of a VariableRef is defined by the current Scope. |
-|  [Variant](./messageformat.variant.md) | <b><i>(BETA)</i></b> |
+|  [CatchallKey](./messageformat.catchallkey.md) | **_(BETA)_** The catch-all key matches all values. |
+|  [Declaration](./messageformat.declaration.md) | **_(BETA)_** A message may declare any number of local variables or aliases, each with a value defined by a placeholder. The order of the declarations is not relevant, but a valid message may not include a dependency loop amond them. |
+|  [Expression](./messageformat.expression.md) | **_(BETA)_** To resolve an Expression, an externally defined function is called. |
+|  [Junk](./messageformat.junk.md) | **_(BETA)_** When the parser encounters an error, it may emit a Junk pattern element to represent it. |
+|  [JunkMessage](./messageformat.junkmessage.md) | **_(BETA)_** The result of parsing input that cannot be represented by a [PatternMessage](./messageformat.patternmessage.md) or a [SelectMessage](./messageformat.selectmessage.md)<!-- -->. |
+|  [Literal](./messageformat.literal.md) | **_(BETA)_** An immediately defined value. |
+|  [LocaleContext](./messageformat.localecontext.md) | **_(BETA)_** The minimum amount of information required to determine the locale to use when formatting a MessageValue. |
+|  [MarkupEnd](./messageformat.markupend.md) | **_(BETA)_** An element indicating the end of a span of elements, starting from the most recent [MarkupStart](./messageformat.markupstart.md) that has the same <code>name</code>. |
+|  [MarkupStart](./messageformat.markupstart.md) | **_(BETA)_** An element indicating the start of a span of further elements that should have some markup applied to them. |
+|  [MessageFormatOptions](./messageformat.messageformatoptions.md) | **_(BETA)_** |
+|  [Option](./messageformat.option.md) | **_(BETA)_** [Expression](./messageformat.expression.md) and [MarkupStart](./messageformat.markupstart.md) options are expressed as <code>key</code>/<code>value</code> pairs to allow their order to be maintained. |
+|  [Pattern](./messageformat.pattern.md) | **_(BETA)_** The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data. |
+|  [PatternMessage](./messageformat.patternmessage.md) | **_(BETA)_** A single message with no variants. |
+|  [Placeholder](./messageformat.placeholder.md) | **_(BETA)_** Wrapper for non-literal content. |
+|  [Runtime](./messageformat.runtime.md) | **_(BETA)_** The runtime function registry available when resolving [Expression](./messageformat.expression.md) elements. |
+|  [RuntimeOptions](./messageformat.runtimeoptions.md) | **_(BETA)_** The second argument of runtime function calls is an options bag. The <code>localeMatcher</code> key is always present. |
+|  [SelectMessage](./messageformat.selectmessage.md) | **_(BETA)_** SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of placeholders. Selection iterates among the <code>variants</code> in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern. |
+|  [Text](./messageformat.text.md) | **_(BETA)_** Top-level literal content. |
+|  [VariableRef](./messageformat.variableref.md) | **_(BETA)_** The value of a VariableRef is defined by the current Scope. |
+|  [Variant](./messageformat.variant.md) | **_(BETA)_** |
 
 ## Variables
 
 |  Variable | Description |
 |  --- | --- |
-|  [defaultRuntime](./messageformat.defaultruntime.md) | <b><i>(BETA)</i></b> The default Runtime includes two functions, <code>datetime</code> and <code>number</code>. |
-|  [isCatchallKey](./messageformat.iscatchallkey.md) | <b><i>(BETA)</i></b> A type guard for [CatchallKey](./messageformat.catchallkey.md) values |
-|  [isExpression](./messageformat.isexpression.md) | <b><i>(BETA)</i></b> Type guard for [Expression](./messageformat.expression.md) pattern elements |
-|  [isJunk](./messageformat.isjunk.md) | <b><i>(BETA)</i></b> Type guard for [Junk](./messageformat.junk.md) pattern elements |
-|  [isLiteral](./messageformat.isliteral.md) | <b><i>(BETA)</i></b> Type guard for [Literal](./messageformat.literal.md) pattern elements |
-|  [isMarkupEnd](./messageformat.ismarkupend.md) | <b><i>(BETA)</i></b> Type guard for [MarkupEnd](./messageformat.markupend.md) pattern elements |
-|  [isMarkupStart](./messageformat.ismarkupstart.md) | <b><i>(BETA)</i></b> Type guard for [MarkupStart](./messageformat.markupstart.md) pattern elements |
-|  [isMessage](./messageformat.ismessage.md) | <b><i>(BETA)</i></b> A type guard for [Message](./messageformat.message.md) values |
-|  [isPatternMessage](./messageformat.ispatternmessage.md) | <b><i>(BETA)</i></b> A type guard for [PatternMessage](./messageformat.patternmessage.md) values |
-|  [isPlaceholder](./messageformat.isplaceholder.md) | <b><i>(BETA)</i></b> Type guard for [Placeholder](./messageformat.placeholder.md) pattern elements |
-|  [isSelectMessage](./messageformat.isselectmessage.md) | <b><i>(BETA)</i></b> A type guard for [SelectMessage](./messageformat.selectmessage.md) values |
-|  [isText](./messageformat.istext.md) | <b><i>(BETA)</i></b> Type guard for [Text](./messageformat.text.md) pattern elements |
-|  [isVariableRef](./messageformat.isvariableref.md) | <b><i>(BETA)</i></b> Type guard for [VariableRef](./messageformat.variableref.md) pattern elements |
+|  [defaultRuntime](./messageformat.defaultruntime.md) | **_(BETA)_** The default Runtime includes two functions, <code>datetime</code> and <code>number</code>. |
+|  [isCatchallKey](./messageformat.iscatchallkey.md) | **_(BETA)_** A type guard for [CatchallKey](./messageformat.catchallkey.md) values |
+|  [isExpression](./messageformat.isexpression.md) | **_(BETA)_** Type guard for [Expression](./messageformat.expression.md) pattern elements |
+|  [isJunk](./messageformat.isjunk.md) | **_(BETA)_** Type guard for [Junk](./messageformat.junk.md) pattern elements |
+|  [isLiteral](./messageformat.isliteral.md) | **_(BETA)_** Type guard for [Literal](./messageformat.literal.md) pattern elements |
+|  [isMarkupEnd](./messageformat.ismarkupend.md) | **_(BETA)_** Type guard for [MarkupEnd](./messageformat.markupend.md) pattern elements |
+|  [isMarkupStart](./messageformat.ismarkupstart.md) | **_(BETA)_** Type guard for [MarkupStart](./messageformat.markupstart.md) pattern elements |
+|  [isMessage](./messageformat.ismessage.md) | **_(BETA)_** A type guard for [Message](./messageformat.message.md) values |
+|  [isPatternMessage](./messageformat.ispatternmessage.md) | **_(BETA)_** A type guard for [PatternMessage](./messageformat.patternmessage.md) values |
+|  [isPlaceholder](./messageformat.isplaceholder.md) | **_(BETA)_** Type guard for [Placeholder](./messageformat.placeholder.md) pattern elements |
+|  [isSelectMessage](./messageformat.isselectmessage.md) | **_(BETA)_** A type guard for [SelectMessage](./messageformat.selectmessage.md) values |
+|  [isText](./messageformat.istext.md) | **_(BETA)_** Type guard for [Text](./messageformat.text.md) pattern elements |
+|  [isVariableRef](./messageformat.isvariableref.md) | **_(BETA)_** Type guard for [VariableRef](./messageformat.variableref.md) pattern elements |
 
 ## Type Aliases
 
 |  Type Alias | Description |
 |  --- | --- |
-|  [Message](./messageformat.message.md) | <b><i>(BETA)</i></b> The representation of a single message. The shape of the message is an implementation detail, and may vary for the same message in different languages. |
-|  [Meta](./messageformat.meta.md) | <b><i>(BETA)</i></b> Additional meta information may be attached to most nodes. In common use, this information is not required when formatting a message. |
-|  [ParseError](./messageformat.parseerror.md) | <b><i>(BETA)</i></b> |
-|  [PatternElement](./messageformat.patternelement.md) | <b><i>(BETA)</i></b> The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere. |
+|  [Message](./messageformat.message.md) | **_(BETA)_** The representation of a single message. The shape of the message is an implementation detail, and may vary for the same message in different languages. |
+|  [Meta](./messageformat.meta.md) | **_(BETA)_** Additional meta information may be attached to most nodes. In common use, this information is not required when formatting a message. |
+|  [ParseError](./messageformat.parseerror.md) | **_(BETA)_** |
+|  [PatternElement](./messageformat.patternelement.md) | **_(BETA)_** The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere. |
 

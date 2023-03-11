@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The value of a VariableRef is defined by the current Scope.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface VariableRef 
@@ -29,6 +29,6 @@ To refer to an inner property of an object value, use `.` as a separator; in cas
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.variableref.name.md) |  | string | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.variableref.type.md) |  | 'variable' | <b><i>(BETA)</i></b> |
+|  [name](./messageformat.variableref.name.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.variableref.type.md) |  | 'variable' | **_(BETA)_** |
 

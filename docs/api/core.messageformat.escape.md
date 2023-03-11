@@ -13,7 +13,7 @@ nav_exclude: true
 
 Escape characaters that may be considered as MessageFormat markup
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static escape(str: string, octothorpe?: boolean): string;
@@ -24,9 +24,9 @@ static escape(str: string, octothorpe?: boolean): string;
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  str | string | The input string |
-|  octothorpe | boolean | <i>(Optional)</i> Also escape <code>#</code> |
+|  octothorpe | boolean | _(Optional)_ Also escape <code>#</code> |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

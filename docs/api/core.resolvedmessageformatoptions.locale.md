@@ -13,7 +13,7 @@ nav_exclude: true
 
 The default locale
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 locale: string;

@@ -11,7 +11,7 @@ nav_exclude: true
 
 # DateFormatError.ERROR property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static ERROR: 'error';

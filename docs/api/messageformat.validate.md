@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Validate a message.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function validate(msg: Readonly<Message>, runtime: Runtime): void;
@@ -28,7 +28,7 @@ export declare function validate(msg: Readonly<Message>, runtime: Runtime): void
 |  msg | Readonly&lt;[Message](./messageformat.message.md)<!-- -->&gt; |  |
 |  runtime | [Runtime](./messageformat.runtime.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 void
 

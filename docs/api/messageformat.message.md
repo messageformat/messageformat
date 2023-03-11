@@ -15,10 +15,10 @@ grand_parent: API Reference
 
 The representation of a single message. The shape of the message is an implementation detail, and may vary for the same message in different languages.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type Message = PatternMessage | SelectMessage | JunkMessage;
 ```
-<b>References:</b> [PatternMessage](./messageformat.patternmessage.md)<!-- -->, [SelectMessage](./messageformat.selectmessage.md)<!-- -->, [JunkMessage](./messageformat.junkmessage.md)
+**References:** [PatternMessage](./messageformat.patternmessage.md)<!-- -->, [SelectMessage](./messageformat.selectmessage.md)<!-- -->, [JunkMessage](./messageformat.junkmessage.md)
 

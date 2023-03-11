@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 Parse an input string into an array of tokens
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare function parse(src: string, options?: ParseOptions): Array<Content | PlainArg | FunctionArg | Select>;
@@ -23,9 +23,9 @@ export declare function parse(src: string, options?: ParseOptions): Array<Conten
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  src | string |  |
-|  options | [ParseOptions](./parser.parseoptions.md) | <i>(Optional)</i> |
+|  options | [ParseOptions](./parser.parseoptions.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Array&lt;[Content](./parser.content.md) \| [PlainArg](./parser.plainarg.md) \| [FunctionArg](./parser.functionarg.md) \| [Select](./parser.select.md)<!-- -->&gt;
 

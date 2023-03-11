@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 The runtime function registry available when resolving [Expression](./messageformat.expression.md) elements.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Runtime 

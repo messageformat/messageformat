@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 When the parser encounters an error, it may emit a Junk pattern element to represent it.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface Junk 
@@ -29,7 +29,7 @@ Garbage in, garbage out: Resolving a message that includes junk will always reso
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name?](./messageformat.junk.name.md) |  | never | <b><i>(BETA)</i></b> <i>(Optional)</i> |
-|  [source](./messageformat.junk.source.md) |  | string | <b><i>(BETA)</i></b> |
-|  [type](./messageformat.junk.type.md) |  | 'junk' | <b><i>(BETA)</i></b> |
+|  [name?](./messageformat.junk.name.md) |  | never | **_(BETA)_** _(Optional)_ |
+|  [source](./messageformat.junk.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.junk.type.md) |  | 'junk' | **_(BETA)_** |
 

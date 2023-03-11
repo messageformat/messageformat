@@ -12,7 +12,7 @@ grand_parent: API Reference
 
 A custom formatter function. See [Custom Formatters](https://messageformat.github.io/messageformat/custom-formatters/) for more details.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export type CustomFormatter = (value: unknown, locale: string, arg: string | null) => unknown;

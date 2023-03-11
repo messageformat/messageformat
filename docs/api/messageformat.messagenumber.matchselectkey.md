@@ -16,7 +16,7 @@ nav_exclude: true
 
 In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of `zero`<!-- -->, `one`<!-- -->, `two`<!-- -->, `few`<!-- -->, `many`<!-- -->, and `other`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 matchSelectKey(key: string): boolean | {
@@ -30,7 +30,7 @@ matchSelectKey(key: string): boolean | {
 |  --- | --- | --- |
 |  key | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean \| { plural: Intl.LDMLPluralRule; }
 
