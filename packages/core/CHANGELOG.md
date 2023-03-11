@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.0.1...@messageformat/core@3.1.0) (2023-03-11)
+
+### Features
+
+* Add `localeCodeFromKey` constructor option ([#386](https://github.com/messageformat/messageformat/pull/386))
+
+
 ## [3.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.0.0...@messageformat/core@3.0.1) (2022-02-06)
 
 ### Bug Fixes

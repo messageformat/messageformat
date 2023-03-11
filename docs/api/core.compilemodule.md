@@ -35,7 +35,7 @@ Available as the default export of `'@messageformat/core/compile-module'`<!-- --
 
 With `messages` as a hierarchical structure of ICU MessageFormat strings, the output of `compileModule()` will be the source code of an ES module with a default export matching the input structure, with each string replaced by its corresponding JS function. If the input includes anything other than simple variable replacements, the output ES module will have a dependency on `'@messageformat/runtime'`<!-- -->.
 
-If the `messageformat` instance has been initialized with support for more than one locale, using a key that matches the locale's identifier at any depth of a `messages` object will set its child elements to use that locale.
+If the `messageformat` instance has been initialized with support for more than one locale, using a key that matches the locale's identifier at any depth of a `messages` object will set its child elements to use that locale. To customize this behaviour, see [MessageFormatOptions.localeCodeFromKey](./core.messageformatoptions.localecodefromkey.md)<!-- -->.
 
 ## Example
 
