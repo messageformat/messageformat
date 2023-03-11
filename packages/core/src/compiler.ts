@@ -71,13 +71,13 @@ export default class Compiler {
     plural: PluralObject,
     plurals?: { [key: string]: PluralObject }
   ) {
-    const { pluralCodeFromKey, requireAllArguments, strict } = this.options;
+    const { localeCodeFromKey, requireAllArguments, strict } = this.options;
 
     if (typeof src === 'object') {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
-        const pc = pluralCodeFromKey ? pluralCodeFromKey(key) : key;
-        const pl = (plurals && pc && plurals[pc]) || plural;
+        const lc = localeCodeFromKey ? localeCodeFromKey(key) : key;
+        const pl = (plurals && lc && plurals[lc]) || plural;
         result[key] = this.compile(src[key], pl, plurals);
       }
       return result;

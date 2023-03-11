@@ -98,11 +98,11 @@ describe('compileModule()', function () {
       expect(cf.ru({ count: 12 })).toBe('3');
     });
 
-    it('filters & transforms plural codes using pluralCodeFromKey', async () => {
-      const mf = new MessageFormat('*', {
+    it('filters & transforms plural codes using localeCodeFromKey', async () => {
+      const mf = new MessageFormat(['en', 'fr', 'es-MX'], {
         customFormatters: { lc: (v, lc) => lc },
-        pluralCodeFromKey: key =>
-          key === 'fr' ? 'fr' : key === 'es-MX' ? 'es' : null
+        localeCodeFromKey: key =>
+          key === 'fr' ? 'fr' : key === 'es-MX' ? 'es-MX' : null
       });
       const cf = await getModule(mf, {
         fr: 'Locale: {_, lc}',
@@ -111,7 +111,7 @@ describe('compileModule()', function () {
       });
       expect(cf.fr({})).toBe('Locale: fr');
       expect(cf.xx({})).toBe('Locale: en');
-      expect(cf['es-MX']({})).toBe('Locale: es');
+      expect(cf['es-MX']({})).toBe('Locale: es-MX');
     });
   });
 
