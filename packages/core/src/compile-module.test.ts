@@ -97,6 +97,22 @@ describe('compileModule()', function () {
       expect(cf.xx({})).toBe('Locale: en');
       expect(cf.ru({ count: 12 })).toBe('3');
     });
+
+    it('filters & transforms plural codes using localeCodeFromKey', async () => {
+      const mf = new MessageFormat(['en', 'fr', 'es-MX'], {
+        customFormatters: { lc: (v, lc) => lc },
+        localeCodeFromKey: key =>
+          key === 'fr' ? 'fr' : key === 'es-MX' ? 'es-MX' : null
+      });
+      const cf = await getModule(mf, {
+        fr: 'Locale: {_, lc}',
+        xx: 'Locale: {_, lc}',
+        'es-MX': 'Locale: {_, lc}'
+      });
+      expect(cf.fr({})).toBe('Locale: fr');
+      expect(cf.xx({})).toBe('Locale: en');
+      expect(cf['es-MX']({})).toBe('Locale: es-MX');
+    });
   });
 
   describe('custom plurals', () => {

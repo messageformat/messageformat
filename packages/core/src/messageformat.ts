@@ -71,6 +71,28 @@ export interface MessageFormatOptions<
   };
 
   /**
+   * If defined, used by {@link compileModule} to identify and map keys to
+   * the locale identifiers used by formatters and plural rules.
+   * The values returned by the function should match the `locale` argument.
+   *
+   * Default: `undefined`
+   *
+   * @example
+   * ```js
+   * // Support all recognised Unicode locale identifiers
+   * function localeCodeFromKey(key) {
+   *   try {
+   *     // Ignore all language subtags
+   *     return new Intl.Locale(key).language
+   *   } catch {
+   *     return null
+   *   }
+   * }
+   * ```
+   */
+  localeCodeFromKey?: ((key: string) => string | null | undefined) | null;
+
+  /**
    * Require all message arguments to be set with a defined value
    *
    * Default: `false`
@@ -200,6 +222,7 @@ export default class MessageFormat<
         biDiSupport: false,
         currency: 'USD',
         customFormatters: {},
+        localeCodeFromKey: null,
         requireAllArguments: false,
         returnType: 'string',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

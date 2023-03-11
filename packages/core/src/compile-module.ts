@@ -78,6 +78,7 @@ function stringifyObject(obj: string | StringStructure, level = 0): string {
  * If the `messageformat` instance has been initialized with support for more
  * than one locale, using a key that matches the locale's identifier at any
  * depth of a `messages` object will set its child elements to use that locale.
+ * To customize this behaviour, see {@link MessageFormatOptions.localeCodeFromKey}.
  *
  * @example
  * ```

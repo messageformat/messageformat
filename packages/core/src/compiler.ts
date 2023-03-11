@@ -71,10 +71,13 @@ export default class Compiler {
     plural: PluralObject,
     plurals?: { [key: string]: PluralObject }
   ) {
+    const { localeCodeFromKey, requireAllArguments, strict } = this.options;
+
     if (typeof src === 'object') {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
-        const pl = (plurals && plurals[key]) || plural;
+        const lc = localeCodeFromKey ? localeCodeFromKey(key) : key;
+        const pl = (plurals && lc && plurals[lc]) || plural;
         result[key] = this.compile(src[key], pl, plurals);
       }
       return result;
@@ -84,14 +87,14 @@ export default class Compiler {
     const parserOptions = {
       cardinal: plural.cardinals,
       ordinal: plural.ordinals,
-      strict: this.options.strict
+      strict
     };
     this.arguments = [];
     const r = parse(src, parserOptions).map(token => this.token(token, null));
     const hasArgs = this.arguments.length > 0;
     const res = this.concatenate(r, true);
 
-    if (this.options.requireAllArguments && hasArgs) {
+    if (requireAllArguments && hasArgs) {
       this.setRuntimeFn('reqArgs');
       const reqArgs = JSON.stringify(this.arguments);
       return `(d) => { reqArgs(${reqArgs}, d); return ${res}; }`;
