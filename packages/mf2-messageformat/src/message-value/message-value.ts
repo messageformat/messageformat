@@ -79,8 +79,12 @@ export class MessageValue<T = unknown> {
     this.#localeContext = locale;
   }
 
-  matchSelectKey(key: string): boolean | Meta {
-    return this.value != null && String(this.value) === key;
+  selectKey(keys: Set<string>): string | null {
+    if (this.value != null) {
+      const str = String(this.value);
+      if (keys.has(str)) return str;
+    }
+    return null;
   }
 
   toString(onError?: Context['onError']): string {

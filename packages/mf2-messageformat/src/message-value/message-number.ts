@@ -66,10 +66,11 @@ export class MessageNumber extends MessageValue<number | bigint> {
    * For example, cardinal English plurals only use `one` and `other`,
    * so a key `zero` will never be matched for that locale.
    */
-  matchSelectKey(key: string) {
-    if (/^[0-9]+$/.test(key) && key === String(this.value)) return true;
-    if (key === this.getPluralCategory()) return { plural: key };
-    return false;
+  selectKey(keys: Set<string>) {
+    const str = String(this.value);
+    if (keys.has(str)) return str;
+    const cat = this.getPluralCategory();
+    return keys.has(cat) ? cat : null;
   }
 
   toParts(): Intl.NumberFormatPart[] {
