@@ -1,7 +1,7 @@
 [
   { "src": "{hello}", "exp": "hello" },
-  { "src": "{hello {(world)}}", "exp": "hello world" },
-  { "src": "{hello {()}}", "exp": "hello " },
+  { "src": "{hello {|world|}}", "exp": "hello world" },
+  { "src": "{hello {||}}", "exp": "hello " },
   {
     "src": "{hello {$place}}",
     "params": { "place": "world" },
@@ -23,33 +23,33 @@
     "params": { "one": 1.3, "two": 4.2 },
     "exp": "1,3 et 4,2"
   },
-  { "src": "{hello {(4.2) :number}}", "exp": "hello 4.2" },
-  { "src": "{hello {(foo) :number}}", "exp": "hello NaN" },
+  { "src": "{hello {|4.2| :number}}", "exp": "hello 4.2" },
+  { "src": "{hello {|foo| :number}}", "exp": "hello NaN" },
   { "src": "{hello {:number}}", "exp": "hello NaN" },
   {
-    "src": "{hello {(4.2) :number minimumFractionDigits=2}}",
+    "src": "{hello {|4.2| :number minimumFractionDigits=2}}",
     "exp": "hello 4.20"
   },
   {
-    "src": "{hello {(4.2) :number minimumFractionDigits=(2)}}",
+    "src": "{hello {|4.2| :number minimumFractionDigits=|2|}}",
     "exp": "hello 4.20"
   },
   {
-    "src": "{hello {(4.2) :number minimumFractionDigits=$foo}}",
+    "src": "{hello {|4.2| :number minimumFractionDigits=$foo}}",
     "params": { "foo": 2 },
     "exp": "hello 4.20"
   },
   {
-    "src": "{hello {(4.2) :number minimumFractionDigits=$foo}}",
+    "src": "{hello {|4.2| :number minimumFractionDigits=$foo}}",
     "params": { "foo": "2" },
     "exp": "hello 4.20"
   },
   {
-    "src": "let $foo = {(bar)} {bar {$foo}}",
+    "src": "let $foo = {|bar|} {bar {$foo}}",
     "exp": "bar bar"
   },
   {
-    "src": "let $foo = {(bar)} {bar {$foo}}",
+    "src": "let $foo = {|bar|} {bar {$foo}}",
     "params": { "foo": "foo" },
     "exp": "bar bar"
   },
@@ -91,7 +91,7 @@
     "errors": [{ "type": "bad-local-var" }]
   },
   {
-    "src": "match {$foo} when (1) {one} when * {other}",
+    "src": "match {$foo} when |1| {one} when * {other}",
     "params": { "foo": "1" },
     "exp": "one"
   },
@@ -163,17 +163,17 @@
     "errors": [{ "type": "unresolved-var" }]
   },
   {
-    "src": "let bar = {(foo)} {{$bar}}",
+    "src": "let bar = {|foo|} {{$bar}}",
     "exp": "{$bar}",
     "errors": [{ "type": "missing-char" }, { "type": "unresolved-var" }]
   },
   {
-    "src": "let $bar {(foo)} {{$bar}}",
+    "src": "let $bar {|foo|} {{$bar}}",
     "exp": "foo",
     "errors": [{ "type": "missing-char" }]
   },
   {
-    "src": "let $bar = (foo) {{$bar}}",
+    "src": "let $bar = |foo| {{$bar}}",
     "exp": "{$bar}",
     "errors": [{ "type": "missing-char" }, { "type": "junk-element" }]
   },
@@ -183,12 +183,12 @@
   { "src": "{{-tag}content}", "exp": "{-tag}content" },
   { "src": "{{+tag foo=bar}}", "exp": "{+tag}" },
   {
-    "src": "{{+tag foo=(foo) bar=$bar}}",
+    "src": "{{+tag foo=|foo| bar=$bar}}",
     "params": { "bar": "b a r" },
     "exp": "{+tag}"
   },
   {
-    "src": "{bad {(foo) +markup}}",
+    "src": "{bad {|foo| +markup}}",
     "exp": "bad {+markup}",
     "errors": [{ "type": "extra-content" }]
   },
@@ -247,7 +247,7 @@
     ]
   },
   {
-    "src": "{no-equal {(42) :number minimumFractionDigits 2}}",
+    "src": "{no-equal {|42| :number minimumFractionDigits 2}}",
     "exp": "no-equal 42.00",
     "errors": [{ "type": "missing-char" }]
   },
@@ -299,7 +299,7 @@
     "errors": [{ "type": "bad-selector" }]
   },
   {
-    "src": "match {(foo)} when*{foo}",
+    "src": "match {|foo|} when*{foo}",
     "exp": "foo",
     "errors": [{ "type": "missing-char" }]
   },
@@ -309,17 +309,17 @@
     "errors": [{ "type": "empty-token" }]
   },
   {
-    "src": "match {(x)} when * foo",
+    "src": "match {|x|} when * foo",
     "exp": "",
     "errors": [{ "type": "key-mismatch" }, { "type": "missing-char" }]
   },
   {
-    "src": "match {(x)} when * {foo} extra",
+    "src": "match {|x|} when * {foo} extra",
     "exp": "foo",
     "errors": [{ "type": "extra-content" }]
   },
   {
-    "src": "match (x) when * {foo}",
+    "src": "match |x| when * {foo}",
     "exp": "",
     "errors": [{ "type": "empty-token" }, { "type": "extra-content" }]
   },

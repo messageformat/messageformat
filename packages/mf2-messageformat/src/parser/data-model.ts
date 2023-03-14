@@ -106,9 +106,9 @@ export interface JunkParsed extends Junk {
 
 export interface LiteralParsed extends Literal {
   type: 'literal';
-  /** position of the `(` */
+  /** position of the initial `|` */
   start: number;
-  /** position just past the `)` */
+  /** position just past the terminal `|` */
   end: number;
   value: string;
 }

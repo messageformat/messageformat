@@ -130,7 +130,7 @@ function parseVariant(
       case '*':
         key = { type: '*', start: pos, end: pos + 1 };
         break;
-      case '(':
+      case '|':
         key = parseLiteral(src, pos, errors);
         break;
       default:

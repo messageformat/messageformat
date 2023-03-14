@@ -43,8 +43,8 @@ export function parseText(
 
 // Literal ::= '(' (LiteralChar | LiteralEscape)* ')' /* ws: explicit */
 // Esc ::= '\'
-// LiteralChar ::= AnyChar - ('(' | ')' | Esc)
-// LiteralEscape ::= Esc Esc | Esc '(' | Esc ')'
+// LiteralChar ::= AnyChar - ('|' | Esc)
+// LiteralEscape ::= Esc Esc | Esc '|'
 export function parseLiteral(
   src: string,
   start: number,
@@ -56,7 +56,7 @@ export function parseLiteral(
     switch (src[i]) {
       case '\\': {
         const esc = src[i + 1];
-        if (esc !== '\\' && esc !== '(' && esc !== ')') {
+        if (esc !== '\\' && esc !== '|') {
           errors.push(new MessageSyntaxError('bad-escape', i, i + 2));
         } else {
           value += src.substring(pos, i);
@@ -65,16 +65,13 @@ export function parseLiteral(
         }
         break;
       }
-      case '(':
-        errors.push(new MissingCharError(i, '\\'));
-        break;
-      case ')':
+      case '|':
         value += src.substring(pos, i);
         return { type: 'literal', start, end: i + 1, value };
     }
   }
   value += src.substring(pos);
-  errors.push(new MissingCharError(src.length, ')'));
+  errors.push(new MissingCharError(src.length, '|'));
   return { type: 'literal', start, end: src.length, value };
 }
 

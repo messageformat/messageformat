@@ -83,11 +83,8 @@ function stringifyLiteral(lit: Literal) {
     return lit.value;
   }
 
-  const esc = lit.value
-    .replace(/\\/g, '\\\\')
-    .replace(/\(/g, '\\(')
-    .replace(/\)/g, '\\)');
-  return `(${esc})`;
+  const esc = lit.value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
+  return `|${esc}|`;
 }
 
 function stringifyMarkupEnd(end: MarkupEnd) {

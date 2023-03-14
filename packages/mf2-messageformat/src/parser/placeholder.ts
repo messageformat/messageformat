@@ -25,7 +25,7 @@ export function parsePlaceholder(
 
   let arg: LiteralParsed | VariableRefParsed | undefined;
   switch (src[pos]) {
-    case '(':
+    case '|':
       arg = parseLiteral(src, pos, errors);
       pos = arg.end;
       break;
@@ -152,7 +152,7 @@ function parseOption(
   pos += whitespaces(src, pos);
   let value: LiteralParsed | NmtokenParsed | VariableRefParsed;
   switch (src[pos]) {
-    case '(':
+    case '|':
       value = parseLiteral(src, pos, errors);
       break;
     case '$':
