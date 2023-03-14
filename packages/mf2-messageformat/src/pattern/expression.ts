@@ -59,9 +59,9 @@ export function resolveExpression(
     if (operand) {
       const arg = ctx.resolve(operand);
       fnArgs = [arg];
-      const argSrc =
-        arg.source || (arg.type === 'literal' && arg.value) || FALLBACK_SOURCE;
-      source = `${argSrc} :${name}`;
+      source =
+        arg.source ||
+        String((arg.type === 'literal' && arg.value) || FALLBACK_SOURCE);
     } else {
       fnArgs = [];
       source = `:${name}`;
@@ -79,7 +79,7 @@ export function resolveExpression(
     const res = rf(ctx.locales, opt, ...fnArgs);
     return asMessageValue(ctx, res, { source });
   } catch (error) {
-    source ??= `${name}(${operand ? FALLBACK_SOURCE : ''})`;
+    source ??= operand ? FALLBACK_SOURCE : `:${name}`;
     const fb = new MessageFallback(ctx, { source });
     ctx.onError(error, fb);
     return fb;

@@ -181,11 +181,11 @@
   { "src": "{{+tag}content}", "exp": "{+tag}content" },
   { "src": "{{+tag}content{-tag}}", "exp": "{+tag}content{-tag}" },
   { "src": "{{-tag}content}", "exp": "{-tag}content" },
-  { "src": "{{+tag foo=bar}}", "exp": "{+tag foo=bar}" },
+  { "src": "{{+tag foo=bar}}", "exp": "{+tag}" },
   {
     "src": "{{+tag foo=(foo) bar=$bar}}",
     "params": { "bar": "b a r" },
-    "exp": "{+tag foo=foo bar=(b a r)}"
+    "exp": "{+tag}"
   },
   {
     "src": "{bad {(foo) +markup}}",

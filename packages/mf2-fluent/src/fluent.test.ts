@@ -372,7 +372,7 @@ describe('resolveMessage', () => {
         value: [
           {
             type: 'message',
-            source: 'foo :MESSAGE',
+            source: 'foo',
             value: [
               { type: 'literal', value: 'Foo ' },
               { type: 'fallback', source: '$num', value: undefined }

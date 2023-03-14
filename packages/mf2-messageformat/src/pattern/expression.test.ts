@@ -15,7 +15,7 @@ describe('Function returns generic value', () => {
     const msg = mf.resolveMessage({ var: 42 });
     expect(msg).toMatchObject({
       type: 'message',
-      value: [{ source: '$var :stringify', type: 'value', value: '42' }]
+      value: [{ source: '$var', type: 'value', value: '42' }]
     });
     expect(msg.toString()).toBe('42');
   });
@@ -28,7 +28,7 @@ describe('Function returns generic value', () => {
     const msg = mf.resolveMessage({ var: '42' });
     expect(msg).toEqual({
       type: 'message',
-      value: [{ source: '$var :numeric', type: 'number', value: 42 }]
+      value: [{ source: '$var', type: 'number', value: 42 }]
     });
     expect(msg.toString()).toBe('42');
   });
@@ -61,9 +61,7 @@ describe('Function returns MessageValue', () => {
     const mf = new MessageFormat('{{$var :stringify}}', 'en', { runtime });
     expect(mf.resolveMessage({ var: 42 })).toEqual({
       type: 'message',
-      value: [
-        { type: 'value', source: '$var :stringify', toString, value: null }
-      ]
+      value: [{ type: 'value', source: '$var', toString, value: null }]
     });
   });
 });

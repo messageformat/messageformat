@@ -31,7 +31,7 @@ describe('Simple element', () => {
         { type: 'markup-end', source: '-b', value: 'b' }
       ]
     });
-    expect(msg.toString()).toBe('{+b foo=42 bar=(foo bar)}foofoo bar{-b}');
+    expect(msg.toString()).toBe('{+b}foofoo bar{-b}');
   });
 });
 

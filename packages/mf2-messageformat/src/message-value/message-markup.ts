@@ -1,4 +1,3 @@
-import { Context } from '../format-context';
 import type { LocaleContextArg } from './locale-context';
 import { MessageValue, Meta } from './message-value';
 
@@ -34,22 +33,8 @@ export class MessageMarkupStart extends MessageValue<string> {
     return false;
   }
 
-  toString(onError?: Context['onError']) {
-    let tag = this.value;
-    for (const [key, opt] of Object.entries(this.options)) {
-      try {
-        if (/^\w[\w-]*$/.test(key)) {
-          let strOpt = String(opt);
-          if (/[^\w-]/.test(strOpt)) {
-            strOpt = '(' + strOpt.replace(/[()\\]/g, '\\$&') + ')';
-          }
-          tag += ` ${key}=${strOpt}`;
-        }
-      } catch (error) {
-        if (onError) onError(error, this);
-      }
-    }
-    return `{+${tag}}`;
+  toString() {
+    return `{+${this.value}}`;
   }
 }
 

@@ -5,7 +5,7 @@ import {
   LocaleContextArg
 } from './locale-context';
 
-export const FALLBACK_SOURCE = '???';
+export const FALLBACK_SOURCE = '�';
 
 /**
  * Additional meta information may be attached to most nodes. In common use,
