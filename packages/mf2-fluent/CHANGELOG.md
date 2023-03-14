@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.4.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.3.1...@messageformat/fluent@0.4.0) (2023-03-14)
+
+* Align fallback values with updated spec ([c65fa45](https://github.com/messageformat/messageformat/commit/c65fa454ced3437482f96cf2e88e19364d95fe78))
+
 ## [0.3.1](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.3.0...@messageformat/fluent@0.3.1) (2022-12-14)
 
 ### Features

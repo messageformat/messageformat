@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.0-3](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-2...messageformat@4.0.0-3) (2023-03-14)
+
+* Use `|` rather than `()` as literal quotes ([15e1fcd](https://github.com/messageformat/messageformat/commit/15e1fcd65341a5ab536a06d4401b7f488b8cdfcc))
+* Retain names for catchall keys ([2d6fe76](https://github.com/messageformat/messageformat/commit/2d6fe767d11820456be997de7067470ab86fd9f1))
+* Replace ParseError with MessageSyntaxError ([6fe4a11](https://github.com/messageformat/messageformat/commit/6fe4a1179676c36efe2d0c8927dc72bf3d79696d))
+* Define & use MessageError where appropriate ([c87052d](https://github.com/messageformat/messageformat/commit/c87052d254fb9be7f3f7b6fc42e43bdee98f8760))
+* Align fallback values with updated spec ([c65fa45](https://github.com/messageformat/messageformat/commit/c65fa454ced3437482f96cf2e88e19364d95fe78))
+
 ## [4.0.0-2](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-1...messageformat@4.0.0-2) (2022-12-08)
 
 ### Features

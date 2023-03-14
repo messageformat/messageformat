@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.2.0...@messageformat/icu-messageformat-1@0.3.0) (2023-03-14)
+
+* Simply Runtime type, dropping intermediate object as now unnecessary ([43d8e40](https://github.com/messageformat/messageformat/commit/43d8e4077123692d7d82c48871e45892f75ed80b))
+
 ## [0.2.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.1.0...@messageformat/icu-messageformat-1@0.2.0) (2022-10-21)
 
 ### ⚠ Breaking Changes
