@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.0-3.cf](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-3...messageformat@4.0.0-3.cf) (2023-03-14)
+
+* Use column-first rather than first-match selection ([f5d1bba](https://github.com/messageformat/messageformat/commit/f5d1bba7b33b697eeb73bd9de1c01320f3d43bab))
+
 ## [4.0.0-3](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-2...messageformat@4.0.0-3) (2023-03-14)
 
 * Use `|` rather than `()` as literal quotes ([15e1fcd](https://github.com/messageformat/messageformat/commit/15e1fcd65341a5ab536a06d4401b7f488b8cdfcc))
