@@ -1,9 +1,18 @@
-export abstract class MessageError extends Error {
-  abstract type: string;
+export class MessageError extends Error {
+  type:
+    | 'junk-element'
+    | 'missing-func'
+    | 'unresolved-var'
+    | typeof MessageSyntaxError.prototype.type;
+
+  constructor(type: typeof MessageError.prototype.type, message: string) {
+    super(message);
+    this.type = type;
+  }
 }
 
 export class MessageSyntaxError extends MessageError {
-  type:
+  declare type:
     | 'empty-token'
     | 'bad-escape'
     | 'bad-local-var'
@@ -31,17 +40,17 @@ export class MessageSyntaxError extends MessageError {
       case 'bad-selector':
       case 'extra-content':
       case 'parse-error':
-        message = `Syntax parse error: ${type}`;
+        message = `Syntax parse error: ${type} at ${start}`;
         break;
       case 'missing-char':
-        message = `Syntax parse error: Missing character ${char}`;
+        message = `Syntax parse error: Missing character ${char} at ${start}`;
         break;
       case 'key-mismatch':
       case 'missing-fallback':
         message = `Data model error: ${type}`;
+        if (start >= 0) message += ` at ${start}`;
     }
-    super(message);
-    this.type = type;
+    super(type, message);
     this.start = start;
     this.end = end;
   }

@@ -1,3 +1,4 @@
+import { MessageError } from '../errors.js';
 import { Context } from '../format-context';
 import {
   asMessageValue,
@@ -69,7 +70,9 @@ export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
   if (value !== undefined) return asMessageValue(ctx, value, { source });
 
   const fb = new MessageFallback(ctx, { source });
-  const error = new Error(`Variable not available: ${source}`);
-  ctx.onError(Object.assign(error, { type: 'missing-var' }), fb);
+  ctx.onError(
+    new MessageError('unresolved-var', `Variable not available: ${source}`),
+    fb
+  );
   return fb;
 }

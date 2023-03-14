@@ -9,7 +9,7 @@
   },
   {
     "src": "{hello {$place}}",
-    "errors": [{ "type": "missing-var" }],
+    "errors": [{ "type": "unresolved-var" }],
     "exp": "hello {$place}"
   },
   {
@@ -108,7 +108,7 @@
   {
     "src": "match {$foo} when 1 {one} when * {other}",
     "exp": "other",
-    "errors": [{ "type": "missing-var" }]
+    "errors": [{ "type": "unresolved-var" }]
   },
   {
     "src": "match {$foo} when one {one} when * {other}",
@@ -160,12 +160,12 @@
     "src": "let $bar = {$none} match {$foo} when one {one} when * {{$bar}}",
     "params": { "foo": 2 },
     "exp": "{$bar}",
-    "errors": [{ "type": "missing-var" }]
+    "errors": [{ "type": "unresolved-var" }]
   },
   {
     "src": "let bar = {(foo)} {{$bar}}",
     "exp": "{$bar}",
-    "errors": [{ "type": "missing-char" }, { "type": "missing-var" }]
+    "errors": [{ "type": "missing-char" }, { "type": "unresolved-var" }]
   },
   {
     "src": "let $bar {(foo)} {{$bar}}",
@@ -219,7 +219,7 @@
     "errors": [
       { "type": "missing-char" },
       { "type": "missing-char" },
-      { "type": "missing-var" }
+      { "type": "unresolved-var" }
     ]
   },
   {
@@ -276,13 +276,13 @@
     "errors": [
       { "type": "extra-content" },
       { "type": "extra-content" },
-      { "type": "missing-var" }
+      { "type": "unresolved-var" }
     ]
   },
   {
     "src": "{no {$placeholder end}",
     "exp": "no {$placeholder}",
-    "errors": [{ "type": "extra-content" }, { "type": "missing-var" }]
+    "errors": [{ "type": "extra-content" }, { "type": "unresolved-var" }]
   },
   {
     "src": "match {} when * {foo}",
@@ -326,15 +326,15 @@
   {
     "src": "match {$foo} when * * {foo}",
     "exp": "foo",
-    "errors": [{ "type": "key-mismatch" }, { "type": "missing-var" }]
+    "errors": [{ "type": "key-mismatch" }, { "type": "unresolved-var" }]
   },
   {
     "src": "match {$foo} {$bar} when * {foo}",
     "exp": "foo",
     "errors": [
       { "type": "key-mismatch" },
-      { "type": "missing-var" },
-      { "type": "missing-var" }
+      { "type": "unresolved-var" },
+      { "type": "unresolved-var" }
     ]
   }
 ]

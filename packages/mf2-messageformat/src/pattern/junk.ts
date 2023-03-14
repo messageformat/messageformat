@@ -1,3 +1,4 @@
+import { MessageError } from '../errors.js';
 import type { Context } from '../format-context';
 import { MessageFallback } from '../message-value';
 
@@ -28,7 +29,9 @@ export const isJunk = (part: any): part is Junk =>
 
 export function resolveJunk(ctx: Context, { source }: Junk) {
   const fb = new MessageFallback(ctx, { source });
-  const error = new Error('Junk pattern element cannot be resolved');
-  ctx.onError(Object.assign(error, { type: 'junk-element' }), fb);
+  ctx.onError(
+    new MessageError('junk-element', 'Junk pattern element cannot be resolved'),
+    fb
+  );
   return fb;
 }

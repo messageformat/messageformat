@@ -1,3 +1,4 @@
+import { MessageError } from '../errors';
 import type { Context } from '../format-context';
 import {
   asMessageValue,
@@ -66,8 +67,7 @@ export function resolveExpression(
       source = `:${name}`;
     }
     if (!rf) {
-      const error = new ReferenceError(`Unknown formatter ${name}`);
-      throw Object.assign(error, { type: 'missing-func' });
+      throw new MessageError('missing-func', `Unknown function ${name}`);
     }
 
     const opt: RuntimeOptions = { localeMatcher: ctx.localeMatcher };
