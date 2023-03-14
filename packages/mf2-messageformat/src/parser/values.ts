@@ -1,7 +1,7 @@
+import { MessageSyntaxError, MissingCharError } from '../errors.js';
 import type {
   LiteralParsed,
   TextParsed,
-  ParseError,
   VariableRefParsed
 } from './data-model.js';
 import { parseNameValue } from './names.js';
@@ -14,7 +14,7 @@ import { parseNameValue } from './names.js';
 export function parseText(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): TextParsed {
   let value = '';
   let pos = start;
@@ -24,7 +24,7 @@ export function parseText(
       case '\\': {
         const esc = src[i + 1];
         if (esc !== '\\' && esc !== '{' && esc !== '}') {
-          errors.push({ type: 'bad-escape', start: i, end: i + 2 });
+          errors.push(new MessageSyntaxError('bad-escape', i, i + 2));
         } else {
           value += src.slice(pos, i);
           i += 1;
@@ -48,7 +48,7 @@ export function parseText(
 export function parseLiteral(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): LiteralParsed {
   let value = '';
   let pos = start + 1;
@@ -57,7 +57,7 @@ export function parseLiteral(
       case '\\': {
         const esc = src[i + 1];
         if (esc !== '\\' && esc !== '(' && esc !== ')') {
-          errors.push({ type: 'bad-escape', start: i, end: i + 2 });
+          errors.push(new MessageSyntaxError('bad-escape', i, i + 2));
         } else {
           value += src.substring(pos, i);
           i += 1;
@@ -66,7 +66,7 @@ export function parseLiteral(
         break;
       }
       case '(':
-        errors.push({ type: 'missing-char', char: '\\', start: i });
+        errors.push(new MissingCharError(i, '\\'));
         break;
       case ')':
         value += src.substring(pos, i);
@@ -74,7 +74,7 @@ export function parseLiteral(
     }
   }
   value += src.substring(pos);
-  errors.push({ type: 'missing-char', char: ')', start: src.length });
+  errors.push(new MissingCharError(src.length, ')'));
   return { type: 'literal', start, end: src.length, value };
 }
 
@@ -82,11 +82,11 @@ export function parseLiteral(
 export function parseVariable(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): VariableRefParsed {
   const pos = start + 1;
   const name = parseNameValue(src, pos);
   const end = pos + name.length;
-  if (!name) errors.push({ type: 'empty-token', start: pos });
+  if (!name) errors.push(new MessageSyntaxError('empty-token', pos, pos + 1));
   return { type: 'variable', start, end, name };
 }

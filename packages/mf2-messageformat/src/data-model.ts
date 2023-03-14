@@ -1,4 +1,4 @@
-import type { ParseError } from './parser/data-model';
+import type { MessageSyntaxError } from './errors';
 import type {
   Junk,
   Literal,
@@ -26,7 +26,7 @@ export interface PatternMessage {
   declarations: Declaration[];
   pattern: Pattern;
   comment?: string;
-  errors?: ParseError[];
+  errors?: MessageSyntaxError[];
 }
 
 /**
@@ -71,7 +71,7 @@ export interface SelectMessage {
   selectors: PatternElement[];
   variants: Variant[];
   comment?: string;
-  errors?: ParseError[];
+  errors?: MessageSyntaxError[];
 }
 
 /** @beta */
@@ -110,7 +110,7 @@ export interface JunkMessage {
   declarations: Declaration[];
   source: string;
   comment?: string;
-  errors?: ParseError[];
+  errors?: MessageSyntaxError[];
 }
 
 /**

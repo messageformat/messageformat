@@ -1,4 +1,5 @@
-import type { NmtokenParsed, ParseError } from './data-model.js';
+import { MessageSyntaxError } from '../errors.js';
+import type { NmtokenParsed } from './data-model.js';
 
 // NameStart ::= [a-zA-Z] | "_"
 //             | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF]
@@ -58,11 +59,13 @@ export function parseNameValue(src: string, start: number): string {
 export function parseNmtoken(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): NmtokenParsed {
   let pos = start;
   while (isNameCharCode(src.charCodeAt(pos))) pos += 1;
   const value = src.substring(start, pos);
-  if (!value) errors.push({ type: 'empty-token', start });
+  if (!value) {
+    errors.push(new MessageSyntaxError('empty-token', start, start + 1));
+  }
   return { type: 'nmtoken', start, end: pos, value };
 }

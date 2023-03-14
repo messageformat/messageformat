@@ -1,8 +1,8 @@
+import { MessageSyntaxError, MissingCharError } from '../errors.js';
 import type {
   DeclarationParsed,
   JunkParsed,
   PlaceholderParsed,
-  ParseError,
   VariableRefParsed
 } from './data-model.js';
 import { parsePlaceholder } from './placeholder.js';
@@ -12,7 +12,7 @@ import { parseVariable } from './values.js';
 // Declaration ::= 'let' WhiteSpace Variable '=' '{' Expression '}'
 export function parseDeclarations(
   src: string,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): {
   declarations: DeclarationParsed[];
   end: number;
@@ -32,13 +32,13 @@ export function parseDeclarations(
 function parseDeclaration(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): DeclarationParsed {
   let pos = start + 3; // 'let'
   const ws = whitespaces(src, pos);
   pos += ws;
 
-  if (ws === 0) errors.push({ type: 'missing-char', char: ' ', start: pos });
+  if (ws === 0) errors.push(new MissingCharError(pos, ' '));
 
   let target: VariableRefParsed | JunkParsed;
   if (src[pos] === '$') {
@@ -54,12 +54,12 @@ function parseDeclaration(
       end: pos,
       source: src.substring(junkStart, pos)
     };
-    errors.push({ type: 'missing-char', char: '$', start: junkStart });
+    errors.push(new MissingCharError(junkStart, '$'));
   }
 
   pos += whitespaces(src, pos);
   if (src[pos] === '=') pos += 1;
-  else errors.push({ type: 'missing-char', char: '=', start: pos });
+  else errors.push(new MissingCharError(pos, '='));
 
   let value: PlaceholderParsed | JunkParsed;
   pos += whitespaces(src, pos);
@@ -78,7 +78,7 @@ function parseDeclaration(
       end: pos,
       source: src.substring(junkStart, pos)
     };
-    errors.push({ type: 'missing-char', char: '{', start: junkStart });
+    errors.push(new MissingCharError(junkStart, '{'));
   }
 
   return { start, end: pos, target, value };
@@ -87,11 +87,12 @@ function parseDeclaration(
 /** Local variable declarations can't refer to later ones */
 function checkLocalVarReferences(
   declarations: DeclarationParsed[],
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ) {
   const check = (name: string, ref: VariableRefParsed) => {
-    if (ref.name === name)
-      errors.push({ type: 'bad-local-var', start: ref.start, end: ref.end });
+    if (ref.name === name) {
+      errors.push(new MessageSyntaxError('bad-local-var', ref.start, ref.end));
+    }
   };
 
   for (let i = 1; i < declarations.length; ++i) {

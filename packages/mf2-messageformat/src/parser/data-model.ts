@@ -7,6 +7,7 @@ import type {
   SelectMessage,
   Variant
 } from '../data-model';
+import type { MessageSyntaxError } from '../errors';
 import type {
   Expression,
   Junk,
@@ -18,22 +19,6 @@ import type {
   VariableRef
 } from '../pattern';
 
-/** @beta */
-export type ParseError =
-  | { type: 'empty-token'; start: number; end?: never }
-  | {
-      type:
-        | 'bad-escape'
-        | 'bad-local-var'
-        | 'bad-selector'
-        | 'extra-content'
-        | 'key-mismatch'
-        | 'parse-error';
-      start: number;
-      end: number;
-    }
-  | { type: 'missing-char'; char: string; start: number; end?: never };
-
 export type MessageParsed =
   | PatternMessageParsed
   | SelectMessageParsed
@@ -43,19 +28,19 @@ export interface PatternMessageParsed extends PatternMessage {
   type: 'message';
   declarations: DeclarationParsed[];
   pattern: PatternParsed;
-  errors: ParseError[];
+  errors: MessageSyntaxError[];
 }
 export interface SelectMessageParsed extends SelectMessage {
   type: 'select';
   declarations: DeclarationParsed[];
   selectors: PlaceholderParsed[];
   variants: VariantParsed[];
-  errors: ParseError[];
+  errors: MessageSyntaxError[];
 }
 export interface JunkMessageParsed extends JunkMessage {
   type: 'junk';
   declarations: DeclarationParsed[];
-  errors: ParseError[];
+  errors: MessageSyntaxError[];
   source: string;
 }
 

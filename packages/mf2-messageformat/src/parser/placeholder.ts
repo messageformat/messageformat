@@ -1,3 +1,4 @@
+import { MessageSyntaxError, MissingCharError } from '../errors.js';
 import type {
   ExpressionParsed,
   JunkParsed,
@@ -7,7 +8,6 @@ import type {
   NmtokenParsed,
   OptionParsed,
   PlaceholderParsed,
-  ParseError,
   VariableRefParsed
 } from './data-model.js';
 import { parseNameValue, parseNmtoken } from './names.js';
@@ -18,7 +18,7 @@ import { parseLiteral, parseVariable } from './values.js';
 export function parsePlaceholder(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): PlaceholderParsed {
   let pos = start + 1; // '{'
   pos += whitespaces(src, pos);
@@ -43,7 +43,7 @@ export function parsePlaceholder(
     | MarkupStartParsed
     | MarkupEndParsed
     | JunkParsed;
-  let junkError: ParseError | undefined;
+  let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(src, pos);
   switch (src[pos]) {
     case ':':
@@ -58,14 +58,14 @@ export function parsePlaceholder(
       } else {
         const source = src.substring(pos, pos + 1);
         body = { type: 'junk', start: pos, end: pos, source };
-        junkError = { type: 'parse-error', start: pos, end: pos };
+        junkError = new MessageSyntaxError('parse-error', pos, pos + 1);
         errors.push(junkError);
       }
   }
   pos += whitespaces(src, pos);
 
   if (pos >= src.length) {
-    errors.push({ type: 'missing-char', char: '}', start: pos });
+    errors.push(new MissingCharError(pos, '}'));
   } else if (src[pos] !== '}') {
     const errStart = pos;
     while (pos < src.length && src[pos] !== '}') pos += 1;
@@ -74,7 +74,7 @@ export function parsePlaceholder(
       body.source = src.substring(body.start, pos);
       if (junkError) junkError.end = pos;
     } else {
-      errors.push({ type: 'extra-content', start: errStart, end: pos });
+      errors.push(new MessageSyntaxError('extra-content', errStart, pos));
     }
   } else {
     pos += 1;
@@ -94,18 +94,18 @@ function parseExpressionOrMarkup(
   src: string,
   start: number,
   operand: LiteralParsed | VariableRefParsed | undefined,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): ExpressionParsed | MarkupStartParsed | MarkupEndParsed {
   const sigil = src[start];
   let pos = start + 1; // ':' | '+' | '-'
   const name = parseNameValue(src, pos);
-  if (!name) errors.push({ type: 'empty-token', start: pos });
+  if (!name) errors.push(new MessageSyntaxError('empty-token', pos, pos + 1));
   const options: OptionParsed[] = [];
   pos += name.length;
   while (pos < src.length) {
     const ws = whitespaces(src, pos);
     if (src[pos + ws] === '}') break;
-    if (ws === 0) errors.push({ type: 'missing-char', char: ' ', start: pos });
+    if (ws === 0) errors.push(new MissingCharError(pos, ' '));
     pos += ws;
     const opt = parseOption(src, pos, errors);
     if (opt.end === pos) break; // error
@@ -120,18 +120,20 @@ function parseExpressionOrMarkup(
 
   if (operand) {
     const { start, end } = operand;
-    errors.unshift({ type: 'extra-content', start, end });
+    errors.unshift(new MessageSyntaxError('extra-content', start, end));
   }
   if (sigil === '+') {
     return { type: 'markup-start', start, end, name, options };
   }
 
   if (options.length > 0) {
-    errors.push({
-      type: 'extra-content',
-      start: options[0].start,
-      end: options[options.length - 1].end
-    });
+    errors.push(
+      new MessageSyntaxError(
+        'extra-content',
+        options[0].start,
+        options[options.length - 1].end
+      )
+    );
   }
   return { type: 'markup-end', start, end, name };
 }
@@ -140,13 +142,13 @@ function parseExpressionOrMarkup(
 function parseOption(
   src: string,
   start: number,
-  errors: ParseError[]
+  errors: MessageSyntaxError[]
 ): OptionParsed {
   const name = parseNameValue(src, start);
   let pos = start + name.length;
   pos += whitespaces(src, pos);
   if (src[pos] === '=') pos += 1;
-  else errors.push({ type: 'missing-char', char: '=', start: pos });
+  else errors.push(new MissingCharError(pos, '='));
   pos += whitespaces(src, pos);
   let value: LiteralParsed | NmtokenParsed | VariableRefParsed;
   switch (src[pos]) {

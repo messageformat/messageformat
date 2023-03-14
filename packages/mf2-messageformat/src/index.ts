@@ -1,9 +1,13 @@
-export * from './data-model';
-export * from './message-value';
-export { MessageFormat, MessageFormatOptions } from './messageformat';
-export type { ParseError } from './parser/data-model.js';
+export * from './data-model.js';
+export {
+  MessageDataModelError,
+  MessageError,
+  MessageSyntaxError
+} from './errors.js';
+export * from './message-value/index.js';
+export { MessageFormat, MessageFormatOptions } from './messageformat.js';
 export { parseMessage } from './parser/message.js';
 export { stringifyMessage } from './stringifier/message.js';
-export * from './pattern';
-export * from './runtime';
-export { validate } from './extra/validate'; // must be after ./messageformat -- but why!?
+export * from './pattern/index.js';
+export * from './runtime/index.js';
+export { validate } from './extra/validate.js'; // must be after ./messageformat -- but why!?
