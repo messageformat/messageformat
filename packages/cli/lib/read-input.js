@@ -12,7 +12,10 @@ function listFiles(include, extensions) {
     if (!fs.existsSync(fn)) throw new Error(`Input file not found: ${fn}`);
     if (fs.statSync(fn).isDirectory()) {
       extensions.forEach(ext => {
-        ls.push.apply(ls, glob.sync(path.join(fn, '**/*' + ext)));
+        ls.push.apply(
+          ls,
+          glob.sync(path.join(fn, '**/*' + ext), { windowsPathsNoEscape: true })
+        );
       });
     } else if (extensions.includes(path.extname(fn))) {
       ls.push(fn);
