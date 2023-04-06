@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/cli@4.0.0...@messageformat/cli@4.0.1) (2023-04-06)
+
+### Bug Fixes
+
+* **cli:** Support Windows paths as directory path inputs ([#388](https://github.com/messageformat/messageformat/issues/388)) ([20ee706](https://github.com/messageformat/messageformat/commit/20ee7066e5d3761c1d7523bfa1eb7985895c2d4b))
+
 ## [4.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/cli@3.1.0...@messageformat/cli@4.0.0) (2022-07-16)
 
 ### ⚠ Breaking Changes
