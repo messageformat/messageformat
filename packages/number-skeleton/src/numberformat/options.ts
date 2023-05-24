@@ -2,6 +2,17 @@ import { UnsupportedError } from '../errors.js';
 import { Skeleton } from '../types/skeleton.js';
 
 /**
+ * Extends `Intl.NumberFormat` options to include some features brought by the
+ * {@link https://github.com/tc39/proposal-intl-numberformat-v3 | ECMA-402
+ * Proposal: Intl.NumberFormat V3}
+ *
+ * @internal
+ */
+export interface NumberFormatOptions extends Intl.NumberFormatOptions {
+  trailingZeroDisplay?: 'auto' | 'stripIfInteger';
+}
+
+/**
  * Given an input ICU NumberFormatter skeleton, does its best to construct a
  * corresponding `Intl.NumberFormat` options structure.
  *
@@ -67,7 +78,7 @@ export function getNumberFormatOptions(
     if (onUnsupported) onUnsupported(new UnsupportedError(stem, source));
   };
 
-  const opt: Intl.NumberFormatOptions = {};
+  const opt: NumberFormatOptions = {};
 
   if (unit) {
     switch (unit.style) {
@@ -154,7 +165,9 @@ export function getNumberFormatOptions(
         opt.maximumFractionDigits = 20;
         break;
       case 'precision-increment':
+        break;
       case 'precision-currency-standard':
+        opt.trailingZeroDisplay = precision.trailingZero;
         break;
       case 'precision-currency-cash':
         fail(precision.style);

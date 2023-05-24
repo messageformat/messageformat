@@ -24,7 +24,7 @@ const maxOptions = {
   'unit-width-hidden': 0,
   'precision-integer': 0,
   'precision-unlimited': 0,
-  'precision-currency-standard': 0,
+  'precision-currency-standard': 1,
   'precision-currency-cash': 0,
   'precision-increment': 1,
   'rounding-mode-ceiling': 0,

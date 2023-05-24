@@ -119,10 +119,17 @@ export class TokenParser {
       // precision
       case 'precision-integer':
       case 'precision-unlimited':
-      case 'precision-currency-standard':
       case 'precision-currency-cash':
         this.assertEmpty('precision');
         res.precision = { style: stem };
+        break;
+      case 'precision-currency-standard':
+        this.assertEmpty('precision');
+        if (option === 'w') {
+          res.precision = { style: stem, trailingZero: 'stripIfInteger' };
+        } else {
+          res.precision = { style: stem };
+        }
         break;
       case 'precision-increment': {
         const increment = Number(option);
