@@ -1,10 +1,10 @@
 import { UnsupportedError } from '../errors';
 import { Skeleton } from '../types/skeleton';
-import { getNumberFormatOptions } from './options';
+import { NumberFormatOptions, getNumberFormatOptions } from './options';
 
 interface TestCase {
   skeleton: Skeleton;
-  result?: Intl.NumberFormatOptions;
+  result?: NumberFormatOptions;
   unsupported?: string[][];
 }
 
@@ -154,6 +154,15 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     'precision-currency-standard': {
       skeleton: { precision: { style: 'precision-currency-standard' } },
       result: {}
+    },
+    'precision-currency-standard/w': {
+      skeleton: {
+        precision: {
+          style: 'precision-currency-standard',
+          trailingZero: 'stripIfInteger'
+        }
+      },
+      result: { trailingZeroDisplay: 'stripIfInteger' }
     },
     'precision-currency-cash': {
       skeleton: { precision: { style: 'precision-currency-cash' } },

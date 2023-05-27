@@ -152,6 +152,12 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
         maxSignificant: 3,
         source: '@@#'
       }
+    },
+    'precision-currency-standard/w': {
+      precision: {
+        style: 'precision-currency-standard',
+        trailingZero: 'stripIfInteger'
+      }
     }
   },
   'integer-width': {
