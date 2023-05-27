@@ -15,7 +15,10 @@ nav_exclude: true
 
 ```typescript
 precision?: {
-        style: 'precision-integer' | 'precision-unlimited' | 'precision-currency-standard' | 'precision-currency-cash';
+        style: 'precision-integer' | 'precision-unlimited' | 'precision-currency-cash';
+    } | {
+        style: 'precision-currency-standard';
+        trailingZero?: 'auto' | 'stripIfInteger' | undefined;
     } | {
         style: 'precision-increment';
         increment: number;

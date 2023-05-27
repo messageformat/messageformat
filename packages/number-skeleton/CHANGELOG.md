@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.1.0...@messageformat/number-skeleton@1.2.0) (2023-05-27)
+
+### Features
+
+* Add support for skeleton "precision-currency-standard/w" ([#394](https://github.com/messageformat/messageformat/issues/394))
+
 ## [1.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.0.0...@messageformat/number-skeleton@1.1.0) (2022-07-16)
 
 ### Features

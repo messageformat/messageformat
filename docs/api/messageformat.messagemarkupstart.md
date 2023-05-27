@@ -39,5 +39,5 @@ export declare class MessageMarkupStart extends MessageValue<string>
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [matchSelectKey()](./messageformat.messagemarkupstart.matchselectkey.md) |  | **_(BETA)_** |
-|  [toString(onError)](./messageformat.messagemarkupstart.tostring.md) |  | **_(BETA)_** |
+|  [toString()](./messageformat.messagemarkupstart.tostring.md) |  | **_(BETA)_** |
 

@@ -15,13 +15,16 @@ has_toc: false
 
 |  Class | Description |
 |  --- | --- |
+|  [MessageDataModelError](./messageformat.messagedatamodelerror.md) |  |
 |  [MessageDateTime](./messageformat.messagedatetime.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for Date values. |
+|  [MessageError](./messageformat.messageerror.md) |  |
 |  [MessageFallback](./messageformat.messagefallback.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values. |
 |  [MessageFormat](./messageformat.messageformat.md) | **_(BETA)_** Create a new message formatter. |
 |  [MessageLiteral](./messageformat.messageliteral.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for values defined directly in the message data. |
 |  [MessageMarkupEnd](./messageformat.messagemarkupend.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for ending markup elements. |
 |  [MessageMarkupStart](./messageformat.messagemarkupstart.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for starting markup elements. |
 |  [MessageNumber](./messageformat.messagenumber.md) | **_(BETA)_** A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values. |
+|  [MessageSyntaxError](./messageformat.messagesyntaxerror.md) |  |
 |  [MessageValue](./messageformat.messagevalue.md) | **_(BETA)_** The base class of all message values. |
 |  [ResolvedMessage](./messageformat.resolvedmessage.md) | **_(BETA)_** The result of resolving a [MessageFormat](./messageformat.messageformat.md) message. |
 
@@ -88,6 +91,5 @@ has_toc: false
 |  --- | --- |
 |  [Message](./messageformat.message.md) | **_(BETA)_** The representation of a single message. The shape of the message is an implementation detail, and may vary for the same message in different languages. |
 |  [Meta](./messageformat.meta.md) | **_(BETA)_** Additional meta information may be attached to most nodes. In common use, this information is not required when formatting a message. |
-|  [ParseError](./messageformat.parseerror.md) | **_(BETA)_** |
 |  [PatternElement](./messageformat.patternelement.md) | **_(BETA)_** The contents of a message are a sequence of pattern elements, which may be immediately defined literal values, a reference to a value that depends on another message, the value of some runtime variable, or some function defined elsewhere. |
 

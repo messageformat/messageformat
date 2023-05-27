@@ -27,7 +27,7 @@ export interface JunkMessage
 |  --- | --- | --- | --- |
 |  [comment?](./messageformat.junkmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [declarations](./messageformat.junkmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
-|  [errors?](./messageformat.junkmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [errors?](./messageformat.junkmessage.errors.md) |  | [MessageSyntaxError](./messageformat.messagesyntaxerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
 |  [source](./messageformat.junkmessage.source.md) |  | string | **_(BETA)_** |
 |  [type](./messageformat.junkmessage.type.md) |  | 'junk' | **_(BETA)_** |
 

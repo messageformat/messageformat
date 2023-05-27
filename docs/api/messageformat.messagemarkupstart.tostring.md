@@ -17,15 +17,8 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-toString(onError?: Context['onError']): string;
+toString(): string;
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  onError | Context\['onError'\] | _(Optional)_ |
-
 **Returns:**
 
 string

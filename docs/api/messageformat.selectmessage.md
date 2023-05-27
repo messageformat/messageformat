@@ -27,7 +27,7 @@ export interface SelectMessage
 |  --- | --- | --- | --- |
 |  [comment?](./messageformat.selectmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [declarations](./messageformat.selectmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
-|  [errors?](./messageformat.selectmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [errors?](./messageformat.selectmessage.errors.md) |  | [MessageSyntaxError](./messageformat.messagesyntaxerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
 |  [selectors](./messageformat.selectmessage.selectors.md) |  | [PatternElement](./messageformat.patternelement.md)<!-- -->\[\] | **_(BETA)_** |
 |  [type](./messageformat.selectmessage.type.md) |  | 'select' | **_(BETA)_** |
 |  [variants](./messageformat.selectmessage.variants.md) |  | [Variant](./messageformat.variant.md)<!-- -->\[\] | **_(BETA)_** |

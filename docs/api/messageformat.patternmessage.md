@@ -27,7 +27,7 @@ export interface PatternMessage
 |  --- | --- | --- | --- |
 |  [comment?](./messageformat.patternmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [declarations](./messageformat.patternmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
-|  [errors?](./messageformat.patternmessage.errors.md) |  | [ParseError](./messageformat.parseerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [errors?](./messageformat.patternmessage.errors.md) |  | [MessageSyntaxError](./messageformat.messagesyntaxerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
 |  [pattern](./messageformat.patternmessage.pattern.md) |  | [Pattern](./messageformat.pattern.md) | **_(BETA)_** |
 |  [type](./messageformat.patternmessage.type.md) |  | 'message' | **_(BETA)_** |
 
