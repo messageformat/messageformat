@@ -73,7 +73,7 @@ function duration(_locales: string[], _options: unknown, arg?: MessageValue) {
     sign +
     first +
     ':' +
-    parts.map(n => (n < 10 ? '0' + String(n) : String(n))).join(':')
+    parts.map(n => (Number(n) < 10 ? '0' + String(n) : String(n))).join(':')
   );
 }
 Object.freeze(duration);

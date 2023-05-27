@@ -44,6 +44,6 @@ export function duration(value: number | string) {
     sign +
     first +
     ':' +
-    parts.map(n => (n < 10 ? '0' + String(n) : String(n))).join(':')
+    parts.map(n => (Number(n) < 10 ? '0' + String(n) : String(n))).join(':')
   );
 }
