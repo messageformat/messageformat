@@ -1,0 +1,32 @@
+{
+  "name": "@messageformat/resource",
+  "version": "0.0.0",
+  "description": "Unicode MessageFormat 2 resource parser",
+  "keywords": [
+    "messageformat",
+    "unicode",
+    "resource",
+    "internationalization",
+    "i18n",
+    "localization",
+    "l10n"
+  ],
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "http://messageformat.github.io/messageformat/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/mf2-resource"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "extract-api": "api-extractor run --local --verbose"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../../config/tsconfig.mf2-base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["ES2022"],
+    "module": "CommonJS",
+    "outDir": "lib",
+    "target": "ES2022"
+  },
+  "include": ["src/*"],
+  "exclude": ["**/*.test.ts"]
+}
