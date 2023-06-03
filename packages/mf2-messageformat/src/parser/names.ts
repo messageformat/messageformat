@@ -1,5 +1,5 @@
-import { MessageSyntaxError } from '../errors.js';
 import type { NmtokenParsed } from './data-model.js';
+import type { ParseContext } from './message.js';
 
 // NameStart ::= [a-zA-Z] | "_"
 //             | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF]
@@ -56,16 +56,12 @@ export function parseNameValue(src: string, start: number): string {
 }
 
 // Nmtoken ::= NameChar+ /* ws: explicit */
-export function parseNmtoken(
-  src: string,
-  start: number,
-  errors: MessageSyntaxError[]
-): NmtokenParsed {
+export function parseNmtoken(ctx: ParseContext, start: number): NmtokenParsed {
   let pos = start;
-  while (isNameCharCode(src.charCodeAt(pos))) pos += 1;
-  const value = src.substring(start, pos);
+  while (isNameCharCode(ctx.source.charCodeAt(pos))) pos += 1;
+  const value = ctx.source.substring(start, pos);
   if (!value) {
-    errors.push(new MessageSyntaxError('empty-token', start, start + 1));
+    ctx.onError('empty-token', start, start + 1);
   }
   return { type: 'nmtoken', start, end: pos, value };
 }

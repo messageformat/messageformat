@@ -1,9 +1,9 @@
-import { MessageSyntaxError, MissingCharError } from '../errors.js';
 import type {
   LiteralParsed,
   TextParsed,
   VariableRefParsed
 } from './data-model.js';
+import type { ParseContext } from './message.js';
 import { parseNameValue } from './names.js';
 
 // Text ::= (TextChar | TextEscape)+
@@ -11,22 +11,18 @@ import { parseNameValue } from './names.js';
 // AnyChar ::= [#x0-#x10FFFF]
 // Esc ::= '\'
 // TextEscape ::= Esc Esc | Esc '{' | Esc '}'
-export function parseText(
-  src: string,
-  start: number,
-  errors: MessageSyntaxError[]
-): TextParsed {
+export function parseText(ctx: ParseContext, start: number): TextParsed {
   let value = '';
   let pos = start;
   let i = start;
-  loop: for (; i < src.length; ++i) {
-    switch (src[i]) {
+  loop: for (; i < ctx.source.length; ++i) {
+    switch (ctx.source[i]) {
       case '\\': {
-        const esc = src[i + 1];
+        const esc = ctx.source[i + 1];
         if (esc !== '\\' && esc !== '{' && esc !== '}') {
-          errors.push(new MessageSyntaxError('bad-escape', i, i + 2));
+          ctx.onError('bad-escape', i, i + 2);
         } else {
-          value += src.slice(pos, i);
+          value += ctx.source.slice(pos, i);
           i += 1;
           pos = i;
         }
@@ -37,7 +33,7 @@ export function parseText(
         break loop;
     }
   }
-  value += src.slice(pos, i);
+  value += ctx.source.slice(pos, i);
   return { type: 'text', start, end: i, value };
 }
 
@@ -45,45 +41,40 @@ export function parseText(
 // Esc ::= '\'
 // LiteralChar ::= AnyChar - ('|' | Esc)
 // LiteralEscape ::= Esc Esc | Esc '|'
-export function parseLiteral(
-  src: string,
-  start: number,
-  errors: MessageSyntaxError[]
-): LiteralParsed {
+export function parseLiteral(ctx: ParseContext, start: number): LiteralParsed {
   let value = '';
   let pos = start + 1;
-  for (let i = pos; i < src.length; ++i) {
-    switch (src[i]) {
+  for (let i = pos; i < ctx.source.length; ++i) {
+    switch (ctx.source[i]) {
       case '\\': {
-        const esc = src[i + 1];
+        const esc = ctx.source[i + 1];
         if (esc !== '\\' && esc !== '|') {
-          errors.push(new MessageSyntaxError('bad-escape', i, i + 2));
+          ctx.onError('bad-escape', i, i + 2);
         } else {
-          value += src.substring(pos, i);
+          value += ctx.source.substring(pos, i);
           i += 1;
           pos = i;
         }
         break;
       }
       case '|':
-        value += src.substring(pos, i);
+        value += ctx.source.substring(pos, i);
         return { type: 'literal', start, end: i + 1, value };
     }
   }
-  value += src.substring(pos);
-  errors.push(new MissingCharError(src.length, '|'));
-  return { type: 'literal', start, end: src.length, value };
+  value += ctx.source.substring(pos);
+  ctx.onError('missing-char', ctx.source.length, '|');
+  return { type: 'literal', start, end: ctx.source.length, value };
 }
 
 // Variable ::= '$' Name /* ws: explicit */
 export function parseVariable(
-  src: string,
-  start: number,
-  errors: MessageSyntaxError[]
+  ctx: ParseContext,
+  start: number
 ): VariableRefParsed {
   const pos = start + 1;
-  const name = parseNameValue(src, pos);
+  const name = parseNameValue(ctx.source, pos);
   const end = pos + name.length;
-  if (!name) errors.push(new MessageSyntaxError('empty-token', pos, pos + 1));
+  if (!name) ctx.onError('empty-token', pos, pos + 1);
   return { type: 'variable', start, end, name };
 }

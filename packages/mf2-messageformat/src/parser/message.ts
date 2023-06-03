@@ -22,6 +22,22 @@ import { parsePlaceholder } from './placeholder.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseText } from './values.js';
 
+export type ParseContext = {
+  onError(
+    type: Exclude<typeof MessageSyntaxError.prototype.type, 'missing-char'>,
+    start: number,
+    end: number
+  ): void;
+  onError(type: 'missing-char', start: number, char: string): void;
+  onError(
+    type: typeof MessageSyntaxError.prototype.type,
+    start: number,
+    end: number | string
+  ): void;
+  readonly errors: MessageSyntaxError[];
+  readonly source: string;
+};
+
 // Message ::= Declaration* ( Pattern | Selector Variant+ )
 // Selector ::= 'match' ( '{' Expression '}' )+
 /**
@@ -30,49 +46,66 @@ import { parseLiteral, parseText } from './values.js';
  *
  * @beta
  */
-export function parseMessage(src: string): MessageParsed {
-  const errors: MessageSyntaxError[] = [];
-  const { declarations, end: pos } = parseDeclarations(src, errors);
+export function parseMessage(source: string): MessageParsed {
+  const ctx: ParseContext = {
+    onError(type, start, end) {
+      let err: MessageSyntaxError;
+      switch (type) {
+        case 'key-mismatch':
+        case 'missing-fallback':
+          err = new MessageDataModelError(type, start, Number(end));
+          break;
+        case 'missing-char':
+          err = new MissingCharError(start, String(end));
+          break;
+        default:
+          err = new MessageSyntaxError(type, start, Number(end));
+      }
+      this.errors.push(err);
+    },
+    errors: [],
+    source
+  };
 
-  if (src.startsWith('match', pos)) {
-    return parseSelectMessage(src, pos, declarations, errors);
-  } else if (src[pos] === '{') {
-    return parsePatternMessage(src, pos, declarations, errors);
+  const { declarations, end: pos } = parseDeclarations(ctx);
+
+  if (source.startsWith('match', pos)) {
+    return parseSelectMessage(ctx, pos, declarations);
+  } else if (source[pos] === '{') {
+    return parsePatternMessage(ctx, pos, declarations);
   } else {
-    errors.push(new MessageSyntaxError('parse-error', pos, src.length));
-    return { type: 'junk', declarations, errors, source: src };
+    ctx.onError('parse-error', pos, source.length);
+    return { type: 'junk', declarations, errors: ctx.errors, source };
   }
 }
 
 function parsePatternMessage(
-  src: string,
+  ctx: ParseContext,
   start: number,
-  declarations: DeclarationParsed[],
-  errors: MessageSyntaxError[]
+  declarations: DeclarationParsed[]
 ): PatternMessageParsed {
-  const pattern = parsePattern(src, start, errors);
+  const pattern = parsePattern(ctx, start);
   let pos = pattern.end;
-  pos += whitespaces(src, pos);
+  pos += whitespaces(ctx.source, pos);
 
-  if (pos < src.length) {
-    errors.push(new MessageSyntaxError('extra-content', pos, src.length));
+  if (pos < ctx.source.length) {
+    ctx.onError('extra-content', pos, ctx.source.length);
   }
 
-  return { type: 'message', declarations, pattern, errors };
+  return { type: 'message', declarations, pattern, errors: ctx.errors };
 }
 
 function parseSelectMessage(
-  src: string,
+  ctx: ParseContext,
   start: number,
-  declarations: DeclarationParsed[],
-  errors: MessageSyntaxError[]
+  declarations: DeclarationParsed[]
 ): SelectMessageParsed {
   let pos = start + 5; // 'match'
-  pos += whitespaces(src, pos);
+  pos += whitespaces(ctx.source, pos);
 
   const selectors: PlaceholderParsed[] = [];
-  while (src[pos] === '{') {
-    const ph = parsePlaceholder(src, pos, errors);
+  while (ctx.source[pos] === '{') {
+    const ph = parsePlaceholder(ctx, pos);
     switch (ph.body.type) {
       case 'expression':
       case 'literal':
@@ -80,50 +113,55 @@ function parseSelectMessage(
         break;
       default: {
         const { start, end } = ph.body;
-        errors.push(new MessageSyntaxError('bad-selector', start, end));
+        ctx.onError('bad-selector', start, end);
       }
     }
     selectors.push(ph);
     pos = ph.end;
-    pos += whitespaces(src, pos);
+    pos += whitespaces(ctx.source, pos);
   }
   if (selectors.length === 0) {
-    errors.push(new MessageSyntaxError('empty-token', pos, pos + 1));
+    ctx.onError('empty-token', pos, pos + 1);
   }
 
   const variants: VariantParsed[] = [];
-  pos += whitespaces(src, pos);
-  while (src.startsWith('when', pos)) {
-    const variant = parseVariant(src, pos, selectors.length, errors);
+  pos += whitespaces(ctx.source, pos);
+  while (ctx.source.startsWith('when', pos)) {
+    const variant = parseVariant(ctx, pos, selectors.length);
     variants.push(variant);
     pos = variant.end;
-    pos += whitespaces(src, pos);
+    pos += whitespaces(ctx.source, pos);
   }
 
-  if (pos < src.length) {
-    errors.push(new MessageSyntaxError('extra-content', pos, src.length));
+  if (pos < ctx.source.length) {
+    ctx.onError('extra-content', pos, ctx.source.length);
   }
 
-  return { type: 'select', declarations, selectors, variants, errors };
+  return {
+    type: 'select',
+    declarations,
+    selectors,
+    variants,
+    errors: ctx.errors
+  };
 }
 
 // Variant ::= 'when' ( WhiteSpace VariantKey )+ Pattern
 // VariantKey ::= Literal | Nmtoken | '*'
 function parseVariant(
-  src: string,
+  ctx: ParseContext,
   start: number,
-  selCount: number,
-  errors: MessageSyntaxError[]
+  selCount: number
 ): VariantParsed {
   let pos = start + 4; // 'when'
   const keys: Array<LiteralParsed | NmtokenParsed | CatchallKeyParsed> = [];
-  while (pos < src.length) {
-    const ws = whitespaces(src, pos);
+  while (pos < ctx.source.length) {
+    const ws = whitespaces(ctx.source, pos);
     pos += ws;
-    const ch = src[pos];
+    const ch = ctx.source[pos];
     if (ch === '{') break;
 
-    if (ws === 0) errors.push(new MissingCharError(pos, ' '));
+    if (ws === 0) ctx.onError('missing-char', pos, ' ');
 
     let key: CatchallKeyParsed | LiteralParsed | NmtokenParsed;
     switch (ch) {
@@ -131,10 +169,10 @@ function parseVariant(
         key = { type: '*', start: pos, end: pos + 1 };
         break;
       case '|':
-        key = parseLiteral(src, pos, errors);
+        key = parseLiteral(ctx, pos);
         break;
       default:
-        key = parseNmtoken(src, pos, errors);
+        key = parseNmtoken(ctx, pos);
     }
     if (key.end === pos) break; // error; reported in pattern.errors
     keys.push(key);
@@ -143,30 +181,26 @@ function parseVariant(
 
   if (selCount > 0 && keys.length !== selCount) {
     const end = keys.length === 0 ? pos : keys[keys.length - 1].end;
-    errors.push(new MessageDataModelError('key-mismatch', start, end));
+    ctx.onError('key-mismatch', start, end);
   }
 
-  const value = parsePattern(src, pos, errors);
+  const value = parsePattern(ctx, pos);
   return { start, end: value.end, keys, value };
 }
 
 // Pattern ::= '{' (Text | Placeholder)* '}' /* ws: explicit */
-function parsePattern(
-  src: string,
-  start: number,
-  errors: MessageSyntaxError[]
-): PatternParsed {
-  if (src[start] !== '{') {
-    errors.push(new MissingCharError(start, '{'));
+function parsePattern(ctx: ParseContext, start: number): PatternParsed {
+  if (ctx.source[start] !== '{') {
+    ctx.onError('missing-char', start, '{');
     return { start, end: start, body: [] };
   }
 
   let pos = start + 1;
   const body: Array<TextParsed | PlaceholderParsed> = [];
-  loop: while (pos < src.length) {
-    switch (src[pos]) {
+  loop: while (pos < ctx.source.length) {
+    switch (ctx.source[pos]) {
       case '{': {
-        const ph = parsePlaceholder(src, pos, errors);
+        const ph = parsePlaceholder(ctx, pos);
         body.push(ph);
         pos = ph.end;
         break;
@@ -174,15 +208,15 @@ function parsePattern(
       case '}':
         break loop;
       default: {
-        const tx = parseText(src, pos, errors);
+        const tx = parseText(ctx, pos);
         body.push(tx);
         pos = tx.end;
       }
     }
   }
 
-  if (src[pos] === '}') pos += 1;
-  else errors.push(new MissingCharError(pos, '}'));
+  if (ctx.source[pos] === '}') pos += 1;
+  else ctx.onError('missing-char', pos, '}');
 
   return { start, end: pos, body };
 }
