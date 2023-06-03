@@ -18,22 +18,34 @@ export function parseText(ctx: ParseContext, start: number): TextParsed {
   loop: for (; i < ctx.source.length; ++i) {
     switch (ctx.source[i]) {
       case '\\': {
-        const esc = ctx.source[i + 1];
-        if (esc !== '\\' && esc !== '{' && esc !== '}') {
-          ctx.onError('bad-escape', i, i + 2);
-        } else {
-          value += ctx.source.slice(pos, i);
-          i += 1;
-          pos = i;
+        const esc = parseEscape(ctx, 'text', i);
+        if (esc) {
+          value += ctx.source.substring(pos, i) + esc.value;
+          i += esc.length;
+          pos = i + 1;
         }
         break;
       }
       case '{':
       case '}':
         break loop;
+      case '\n':
+        if (ctx.resource) {
+          const nl = i;
+          let next = ctx.source[i + 1];
+          while (next === ' ' || next === '\t') {
+            i += 1;
+            next = ctx.source[i + 1];
+          }
+          if (i > nl) {
+            value += ctx.source.substring(pos, nl + 1);
+            pos = i + 1;
+          }
+        }
+        break;
     }
   }
-  value += ctx.source.slice(pos, i);
+  value += ctx.source.substring(pos, i);
   return { type: 'text', start, end: i, value };
 }
 
@@ -47,19 +59,31 @@ export function parseLiteral(ctx: ParseContext, start: number): LiteralParsed {
   for (let i = pos; i < ctx.source.length; ++i) {
     switch (ctx.source[i]) {
       case '\\': {
-        const esc = ctx.source[i + 1];
-        if (esc !== '\\' && esc !== '|') {
-          ctx.onError('bad-escape', i, i + 2);
-        } else {
-          value += ctx.source.substring(pos, i);
-          i += 1;
-          pos = i;
+        const esc = parseEscape(ctx, 'literal', i);
+        if (esc) {
+          value += ctx.source.substring(pos, i) + esc.value;
+          i += esc.length;
+          pos = i + 1;
         }
         break;
       }
       case '|':
         value += ctx.source.substring(pos, i);
         return { type: 'literal', start, end: i + 1, value };
+      case '\n':
+        if (ctx.resource) {
+          const nl = i;
+          let next = ctx.source[i + 1];
+          while (next === ' ' || next === '\t') {
+            i += 1;
+            next = ctx.source[i + 1];
+          }
+          if (i > nl) {
+            value += ctx.source.substring(pos, nl + 1);
+            pos = i + 1;
+          }
+        }
+        break;
     }
   }
   value += ctx.source.substring(pos);
@@ -77,4 +101,59 @@ export function parseVariable(
   const end = pos + name.length;
   if (!name) ctx.onError('empty-token', pos, pos + 1);
   return { type: 'variable', start, end, name };
+}
+
+function parseEscape(
+  ctx: ParseContext,
+  scope: 'text' | 'literal',
+  start: number
+): { value: string; length: number } | null {
+  const raw = ctx.source[start + 1];
+  switch (raw) {
+    case '\\':
+      return { value: raw, length: 1 };
+    case '{':
+    case '}':
+      if (scope === 'text') return { value: raw, length: 1 };
+      break;
+    case '|':
+      if (scope === 'literal') return { value: raw, length: 1 };
+      break;
+    default:
+      if (ctx.resource) {
+        let hexLen = 0;
+        switch (raw) {
+          case '\t':
+          case ' ':
+            return { value: raw, length: 1 };
+          case 'n':
+            return { value: '\n', length: 1 };
+          case 'r':
+            return { value: '\r', length: 1 };
+          case 't':
+            return { value: '\t', length: 1 };
+          case 'u':
+            hexLen = 4;
+            break;
+          case 'U':
+            hexLen = 6;
+            break;
+          case 'x':
+            hexLen = 2;
+            break;
+        }
+        if (hexLen > 0) {
+          const h0 = start + 2;
+          const raw = ctx.source.substring(h0, h0 + hexLen);
+          if (raw.length === hexLen && /^[0-9A-Fa-f]+$/.test(raw)) {
+            return {
+              value: String.fromCharCode(parseInt(raw, 16)),
+              length: 1 + hexLen
+            };
+          }
+        }
+      }
+  }
+  ctx.onError('bad-escape', start, start + 2);
+  return null;
 }
