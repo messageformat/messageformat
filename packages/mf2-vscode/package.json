@@ -9,7 +9,36 @@
   "engines": {
     "vscode": "^1.78.0"
   },
+  "main": "./lib/extension.js",
+  "files": [
+    "*language-configuration.json",
+    "lib/",
+    "syntaxes/"
+  ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Example configuration",
+      "properties": {
+        "mf2.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        },
+        "mf2.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
     "languages": [
       {
         "id": "mf2",
@@ -66,6 +95,10 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "watch": "node --watch-path src/ scripts/build.mjs"
+  },
+  "dependencies": {
+    "@messageformat/languageserver": "^0.0.0",
+    "vscode-languageclient": "^8.1.0"
   },
   "prettier": {
     "singleQuote": true
