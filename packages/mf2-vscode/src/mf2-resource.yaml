@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
+
+name: MessageFormat 2
+scopeName: source.messageformat.resource
+patterns:
+  - name: comment.line.mf2
+    match: ^#.*
+  - name: meta.section.mf2
+    begin: ^\[
+    beginCaptures:
+      0: { name: punctuation.definition.section.open.mf2 }
+    end: (])\s*(.*)
+    endCaptures:
+      1: { name: punctuation.definition.section.close.mf2 }
+      2: { name: invalid.illegal.mf2 }
+    patterns:
+      - include: '#identifier'
+  - name: invalid.illegal.mf2
+    match: ^[\t ].*
+  - include: '#identifier'
+  - contentName: meta.embedded.block.message
+    begin: '='
+    beginCaptures:
+      0: { name: keyword.operator.assignment.mf2 }
+    end: ^(?=\S)
+    patterns: [include: source.messageformat.message]
+repository:
+  identifier:
+    name: meta.identifier.mf2
+    patterns:
+      - name: punctuation.separator.dot.mf2
+        match: \.
+      - name: meta.identifier.part.mf2
+        begin: (?=[^\t\n\r .=\[\]])
+        end: (?=[\t\n\r .=\[\]])
+        applyEndPatternLast: 1
+        patterns:
+          - name: constant.character.escape.mf2
+            match: \\[\t\\tnr \x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E\xA1-\xBF\xD7\xF7\u2010-\u2027\u2030-\u205E\u2190-\u2BFF]
+          - name: constant.character.escape.mf2
+            match: \\(x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6})
+          - name: invalid.illegal.mf2
+            match: \\(x[0-9a-fA-F]{0,1}|u[0-9a-fA-F]{0,3}|U[0-9a-fA-F]{0,5})(?![0-9a-fA-F])
+          - name: invalid.illegal.mf2
+            match: \\.
+          - name: support.type.property-name.mf2
+            match: '[-a-zA-Z0-9_\u00A1-\u1FFF\u200C-\u200D\u2030-\u205E\u2070-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\x{10000}-\x{EFFFF}]+'
+          - name: invalid.illegal.mf2
+            match: '[^\t\n\r .=\[\]]'
