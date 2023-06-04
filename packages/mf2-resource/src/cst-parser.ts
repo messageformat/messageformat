@@ -22,7 +22,7 @@ export namespace CST {
     id: Id;
     /** The position of the `=`, or -1 if not found. */
     equal: number;
-    value: ValueLine[];
+    value: Value;
     range: Range;
   };
 
@@ -30,7 +30,8 @@ export namespace CST {
   export type IdPart = Content | Escape | IdDot;
   export type IdDot = { type: 'dot'; range: Range };
 
-  export type ValueLine = Array<Content | Escape>;
+  export type Value = { raw: ValuePart[][]; value: string; range: Range };
+  export type ValuePart = Content | Escape;
   export type Content = { type: 'content'; value: string; range: Range };
   export type Escape = {
     type: 'escape';
@@ -161,21 +162,26 @@ function parseEntry(sectionId: string[]): CST.Entry {
   checkId(type, sectionId, id);
   const equal = parseChar('=');
 
+  let valueStart = -1;
+  let valueEnd = pos;
   let range: CST.Range | null = null;
-  const addContent = (line: CST.ValueLine) => {
+  const addContent = (line: CST.ValuePart[]) => {
     if (range) {
-      const value = source.substring(range[0], range[1]);
+      const [start, end] = range;
+      const value = source.substring(start, end);
       line.push({ type: 'content', value, range });
+      if (valueStart < 0) valueStart = start;
+      valueEnd = end;
       range = null;
     }
   };
 
-  const value: CST.ValueLine[] = [];
+  const raw: CST.ValuePart[][] = [];
   while (pos < source.length) {
     const ls = pos;
     parseWhitespace();
-    if (pos === ls && value.length > 0) break;
-    const line: CST.ValueLine = [];
+    if (pos === ls && raw.length > 0) break;
+    const line: CST.ValuePart[] = [];
     line: while (pos < source.length) {
       const ch = source[pos];
       switch (ch) {
@@ -184,7 +190,10 @@ function parseEntry(sectionId: string[]): CST.Entry {
           break line;
         case '\\': {
           addContent(line);
-          line.push(parseEscape('value'));
+          const esc = parseEscape('value');
+          line.push(esc);
+          if (valueStart < 0) valueStart = esc.range[0];
+          valueEnd = esc.range[1];
           break;
         }
         default: {
@@ -199,9 +208,16 @@ function parseEntry(sectionId: string[]): CST.Entry {
       }
     }
     addContent(line);
-    value.push(line);
+    raw.push(line);
     parseLineEnd(type);
   }
+
+  if (valueStart < 0) valueStart = valueEnd;
+  const value: CST.Value = {
+    raw,
+    value: source.substring(valueStart, valueEnd),
+    range: [valueStart, valueEnd]
+  };
   return { type, id, equal, value, range: [start, pos] };
 }
 

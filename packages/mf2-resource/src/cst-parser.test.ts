@@ -64,7 +64,11 @@ test('one-line entry', () => {
         range: [0, 3]
       },
       equal: 4,
-      value: [[{ type: 'content', value: '{bar}', range: [6, 11] }]],
+      value: {
+        raw: [[{ type: 'content', value: '{bar}', range: [6, 11] }]],
+        value: '{bar}',
+        range: [6, 11]
+      },
       range: [0, 11]
     }
   ]);
@@ -81,12 +85,16 @@ test('multi-line entry', () => {
         range: [0, 3]
       },
       equal: 4,
-      value: [
-        [],
-        [{ type: 'content', value: '{', range: [9, 10] }],
-        [{ type: 'content', value: 'bar', range: [15, 18] }],
-        [{ type: 'content', value: '}', range: [21, 22] }]
-      ],
+      value: {
+        raw: [
+          [],
+          [{ type: 'content', value: '{', range: [9, 10] }],
+          [{ type: 'content', value: 'bar', range: [15, 18] }],
+          [{ type: 'content', value: '}', range: [21, 22] }]
+        ],
+        value: '{\n    bar\n  }',
+        range: [9, 22]
+      },
       range: [0, 23]
     },
     {
@@ -97,7 +105,11 @@ test('multi-line entry', () => {
         range: [23, 27]
       },
       equal: 27,
-      value: [[{ type: 'content', value: '{value}', range: [28, 35] }]],
+      value: {
+        raw: [[{ type: 'content', value: '{value}', range: [28, 35] }]],
+        value: '{value}',
+        range: [28, 35]
+      },
       range: [23, 35]
     }
   ]);
@@ -114,12 +126,15 @@ test('multi-line entry with CRLF terminators', () => {
         range: [0, 3]
       },
       equal: 4,
-      value: [
-        [],
-        [{ type: 'content', value: '{', range: [10, 11] }],
-        [{ type: 'content', value: 'bar', range: [17, 20] }],
-        [{ type: 'content', value: '}', range: [24, 25] }]
-      ],
+      value: {
+        raw: [
+          [],
+          [{ type: 'content', value: '{', range: [10, 11] }],
+          [{ type: 'content', value: 'bar', range: [17, 20] }],
+          [{ type: 'content', value: '}', range: [24, 25] }]
+        ],
+        value: '{\r\n    bar\r\n  }'
+      },
       range: [0, 27]
     }
   ]);
@@ -181,16 +196,19 @@ test('escaped contents', () => {
         ],
         value: ['long\tkey']
       },
-      value: [
-        [
-          { type: 'content', value: '{' },
-          { type: 'escape', raw: '{' },
-          { type: 'content', value: 'msg' },
-          { type: 'escape', raw: '|' },
-          { type: 'escape', raw: 'n' },
-          { type: 'content', value: 'lines}' }
-        ]
-      ]
+      value: {
+        raw: [
+          [
+            { type: 'content', value: '{' },
+            { type: 'escape', raw: '{' },
+            { type: 'content', value: 'msg' },
+            { type: 'escape', raw: '|' },
+            { type: 'escape', raw: 'n' },
+            { type: 'content', value: 'lines}' }
+          ]
+        ],
+        value: '{\\{msg\\|\\nlines}'
+      }
     }
   ]);
 });
@@ -202,17 +220,17 @@ describe('duplicate identifiers', () => {
       {
         type: 'entry',
         id: { value: ['a'], range: [0, 1] },
-        value: [[{ type: 'content', value: '1' }]]
+        value: { raw: [[{ type: 'content', value: '1' }]] }
       },
       {
         type: 'entry',
         id: { value: ['a'], range: [4, 5] },
-        value: [[{ type: 'content', value: '2' }]]
+        value: { raw: [[{ type: 'content', value: '2' }]] }
       },
       {
         type: 'entry',
         id: { value: ['a'], range: [8, 9] },
-        value: [[{ type: 'content', value: '3' }]]
+        value: { raw: [[{ type: 'content', value: '3' }]] }
       }
     ]);
     expect(calls).toMatchObject([
@@ -228,18 +246,18 @@ describe('duplicate identifiers', () => {
       {
         type: 'entry',
         id: { value: ['a'] },
-        value: [[{ type: 'content', value: '1' }]]
+        value: { raw: [[{ type: 'content', value: '1' }]] }
       },
       {
         type: 'entry',
         id: { value: ['a', 'b'] },
-        value: [[{ type: 'content', value: '2' }]]
+        value: { raw: [[{ type: 'content', value: '2' }]] }
       },
       { type: 'section-head', id: { value: ['a', 'b'] } },
       {
         type: 'entry',
         id: { value: ['c'] },
-        value: [[{ type: 'content', value: '3' }]]
+        value: { raw: [[{ type: 'content', value: '3' }]] }
       }
     ]);
   });
@@ -250,17 +268,17 @@ describe('duplicate identifiers', () => {
       {
         type: 'entry',
         id: { value: ['a', 'b', 'c'] },
-        value: [[{ type: 'content', value: '1' }]]
+        value: { raw: [[{ type: 'content', value: '1' }]] }
       },
       {
         type: 'entry',
         id: { value: ['a', 'b'] },
-        value: [[{ type: 'content', value: '2' }]]
+        value: { raw: [[{ type: 'content', value: '2' }]] }
       },
       {
         type: 'entry',
         id: { value: ['a'] },
-        value: [[{ type: 'content', value: '3' }]]
+        value: { raw: [[{ type: 'content', value: '3' }]] }
       },
       { type: 'section-head', id: { value: ['a', 'b'] } }
     ]);
@@ -280,7 +298,7 @@ describe('errors', () => {
       {
         type: 'entry',
         id: { raw: [{ type: 'content', value: '\vkey' }], value: ['\vkey'] },
-        value: [[{ type: 'content', value: 'foo\u2028bar' }]]
+        value: { raw: [[{ type: 'content', value: 'foo\u2028bar' }]] }
       }
     ]);
     expect(calls).toMatchObject([
@@ -353,14 +371,16 @@ describe('errors', () => {
           ],
           value: ['\n!a']
         },
-        value: [
-          [
-            { type: 'escape', raw: '!', range: [7, 9] },
-            { type: 'escape', raw: 'x1', range: [9, 12] },
-            { type: 'escape', raw: 'u123', range: [12, 17] },
-            { type: 'escape', raw: 'U12345', range: [17, 24] }
+        value: {
+          raw: [
+            [
+              { type: 'escape', raw: '!', range: [7, 9] },
+              { type: 'escape', raw: 'x1', range: [9, 12] },
+              { type: 'escape', raw: 'u123', range: [12, 17] },
+              { type: 'escape', raw: 'U12345', range: [17, 24] }
+            ]
           ]
-        ]
+        }
       }
     ]);
     expect(calls).toMatchObject([
@@ -394,7 +414,7 @@ describe('errors', () => {
           value: ['b', 'c']
         },
         equal: -1,
-        value: [[{ type: 'content', value: '] d', range: [7, 10] }]]
+        value: { raw: [[{ type: 'content', value: '] d', range: [7, 10] }]] }
       }
     ]);
     expect(calls).toMatchObject([
