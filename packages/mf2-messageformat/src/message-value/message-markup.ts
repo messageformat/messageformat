@@ -29,8 +29,8 @@ export class MessageMarkupStart extends MessageValue<string> {
     this.options = { ...options };
   }
 
-  matchSelectKey() {
-    return false;
+  selectKey() {
+    return null;
   }
 
   toString() {
@@ -52,8 +52,8 @@ export class MessageMarkupEnd extends MessageValue<string> {
     super(MARKUP_END, locale, name, options);
   }
 
-  matchSelectKey() {
-    return false;
+  selectKey() {
+    return null;
   }
 
   toString() {

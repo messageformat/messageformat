@@ -19,8 +19,8 @@ export class MessageFallback extends MessageValue<undefined> {
     super(FALLBACK, locale, undefined, fmt);
   }
 
-  matchSelectKey() {
-    return false;
+  selectKey() {
+    return null;
   }
 
   toString() {
