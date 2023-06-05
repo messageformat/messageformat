@@ -288,8 +288,7 @@ describe('duplicate identifiers', () => {
     expect(calls).toMatchObject([
       [res[0].id.range, 'Shorter matching identifier must precede longer one'],
       [res[1].id.range, 'Shorter matching identifier must precede longer one'],
-      [res[2].id.range, 'Shorter matching identifier must precede longer one'],
-      [res[3].id.range, 'Shorter matching identifier must precede longer one']
+      [res[2].id.range, 'Shorter matching identifier must precede longer one']
     ]);
   });
 });

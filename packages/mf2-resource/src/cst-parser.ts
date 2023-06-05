@@ -139,10 +139,10 @@ function parseSectionHead(): CST.SectionHead {
   const start = pos;
   pos += 1; // '['
   const id = parseId();
-  checkId(type, [], id);
   const close = parseChar(']');
   parseWhitespace();
   parseLineEnd(type);
+  prevIdPaths.push({ path: id.value, error: false, range: id.range });
   return { type, id, close, range: [start, pos] };
 }
 
@@ -159,7 +159,7 @@ function parseEntry(sectionId: string[]): CST.Entry {
   const type = 'entry';
   const start = pos;
   const id = parseId();
-  checkId(type, sectionId, id);
+  checkId(sectionId, id);
   const equal = parseChar('=');
 
   let valueStart = -1;
@@ -318,11 +318,7 @@ function parseId(): CST.Id {
   return { raw, value, range: [start, Math.max(start, end)] };
 }
 
-function checkId(
-  context: 'entry' | 'section-head',
-  sectionId: string[],
-  { value, range }: CST.Id
-) {
+function checkId(sectionId: string[], { value, range }: CST.Id) {
   const path = sectionId.length ? [...sectionId, ...value] : value;
   let error = false;
   paths: for (const prev of prevIdPaths) {
@@ -334,7 +330,7 @@ function checkId(
     const msg =
       path.length < prevLen
         ? 'Shorter matching identifier must precede longer one'
-        : context === 'entry' && path.length === prevLen
+        : path.length === prevLen
         ? 'Duplicate identifier'
         : '';
     if (msg) {
