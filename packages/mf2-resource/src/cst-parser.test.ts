@@ -1,6 +1,9 @@
 //import { describe, expect, test, vi as jest } from 'vitest'
 import { CST, parseCST } from './cst-parser';
 
+const nodeVersion = process.versions?.node?.split('.');
+if (nodeVersion && Number(nodeVersion[0]) < 16) test = test.skip;
+
 type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? RecursivePartial<U>[]
