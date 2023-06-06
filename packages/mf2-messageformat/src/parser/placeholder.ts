@@ -1,6 +1,6 @@
 import { MessageSyntaxError } from '../errors.js';
 import type {
-  ExpressionParsed,
+  FunctionRefParsed,
   JunkParsed,
   LiteralParsed,
   MarkupStartParsed,
@@ -39,7 +39,7 @@ export function parsePlaceholder(
   let body:
     | LiteralParsed
     | VariableRefParsed
-    | ExpressionParsed
+    | FunctionRefParsed
     | MarkupStartParsed
     | MarkupEndParsed
     | JunkParsed;
@@ -49,7 +49,7 @@ export function parsePlaceholder(
     case ':':
     case '+':
     case '-':
-      body = parseExpressionOrMarkup(ctx, pos, arg);
+      body = parseFunctionRefOrMarkup(ctx, pos, arg);
       pos = body.end;
       break;
     default:
@@ -90,11 +90,11 @@ export function parsePlaceholder(
 // Markup ::= MarkupStart Option*
 // MarkupStart ::= '+' Name /* ws: explicit */
 // MarkupEnd ::= '-' Name /* ws: explicit */
-function parseExpressionOrMarkup(
+function parseFunctionRefOrMarkup(
   ctx: ParseContext,
   start: number,
   operand: LiteralParsed | VariableRefParsed | undefined
-): ExpressionParsed | MarkupStartParsed | MarkupEndParsed {
+): FunctionRefParsed | MarkupStartParsed | MarkupEndParsed {
   const sigil = ctx.source[start];
   let pos = start + 1; // ':' | '+' | '-'
   const name = parseNameValue(ctx.source, pos);
@@ -114,7 +114,7 @@ function parseExpressionOrMarkup(
 
   const end = pos;
   if (sigil === ':') {
-    return { type: 'expression', operand, start, end, name, options };
+    return { type: 'function', operand, start, end, name, options };
   }
 
   if (operand) {

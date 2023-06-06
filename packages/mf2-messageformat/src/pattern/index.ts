@@ -1,7 +1,7 @@
 import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 
-import { Expression, resolveExpression } from './expression';
+import { FunctionRef, resolveFunctionRef } from './function-ref';
 import { Junk, resolveJunk } from './junk';
 import { Literal, resolveLiteral, Text } from './literal';
 import {
@@ -12,7 +12,7 @@ import {
 } from './markup';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
-export { isExpression, Expression, Option } from './expression';
+export { isFunctionRef, FunctionRef, Option } from './function-ref';
 export { isJunk, Junk } from './junk';
 export { isLiteral, isText, Literal, Text } from './literal';
 export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
@@ -25,7 +25,7 @@ export { isVariableRef, VariableRef } from './variable-ref';
  */
 export interface Placeholder {
   type: 'placeholder';
-  body: Literal | VariableRef | Expression | MarkupStart | MarkupEnd | Junk;
+  body: Literal | VariableRef | FunctionRef | MarkupStart | MarkupEnd | Junk;
 }
 
 /**
@@ -49,7 +49,7 @@ export const isPlaceholder = (part: any): part is Placeholder =>
  * @beta
  */
 export type PatternElement =
-  | Expression
+  | FunctionRef
   | Junk
   | Literal
   | MarkupEnd
@@ -72,8 +72,8 @@ export function resolvePatternElement(
       return resolvePatternElement(ctx, elem.body);
     case 'variable':
       return resolveVariableRef(ctx, elem);
-    case 'expression':
-      return resolveExpression(ctx, elem);
+    case 'function':
+      return resolveFunctionRef(ctx, elem);
     case 'markup-start':
       return resolveMarkupStart(ctx, elem);
     case 'markup-end':

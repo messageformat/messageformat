@@ -9,7 +9,7 @@ import type {
 } from '../data-model';
 import type { MessageSyntaxError } from '../errors';
 import type {
-  Expression,
+  FunctionRef,
   Junk,
   Literal,
   MarkupEnd,
@@ -91,7 +91,7 @@ export interface PlaceholderParsed {
   body:
     | LiteralParsed
     | VariableRefParsed
-    | ExpressionParsed
+    | FunctionRefParsed
     | MarkupStartParsed
     | MarkupEndParsed
     | JunkParsed;
@@ -121,8 +121,8 @@ export interface VariableRefParsed extends VariableRef {
   name: string;
 }
 
-export interface ExpressionParsed extends Expression {
-  type: 'expression';
+export interface FunctionRefParsed extends FunctionRef {
+  type: 'function';
   operand: LiteralParsed | VariableRefParsed | undefined;
   /** position of the `:`, so `operand.start` may be earlier */
   start: number;

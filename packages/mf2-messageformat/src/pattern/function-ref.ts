@@ -10,7 +10,7 @@ import type { RuntimeOptions } from '../runtime';
 import type { Literal, VariableRef } from './index';
 
 /**
- * To resolve an Expression, an externally defined function is called.
+ * To resolve a FunctionRef, an externally defined function is called.
  *
  * @remarks
  * The `name` identifies a function that takes in the arguments `args`, the
@@ -21,15 +21,15 @@ import type { Literal, VariableRef } from './index';
  *
  * @beta
  */
-export interface Expression {
-  type: 'expression';
+export interface FunctionRef {
+  type: 'function';
   name: string;
   operand?: Literal | VariableRef;
   options?: Option[];
 }
 
 /**
- * {@link Expression} and {@link MarkupStart} options are expressed as
+ * {@link FunctionRef} options are expressed as
  * `key`/`value` pairs to allow their order to be maintained.
  *
  * @beta
@@ -40,17 +40,17 @@ export interface Option {
 }
 
 /**
- * Type guard for {@link Expression} pattern elements
+ * Type guard for {@link FunctionRef} pattern elements
  *
  * @beta
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isExpression = (part: any): part is Expression =>
-  !!part && typeof part === 'object' && part.type === 'expression';
+export const isFunctionRef = (part: any): part is FunctionRef =>
+  !!part && typeof part === 'object' && part.type === 'function';
 
-export function resolveExpression(
+export function resolveFunctionRef(
   ctx: Context,
-  { operand, name, options }: Expression
+  { operand, name, options }: FunctionRef
 ) {
   let source: string | undefined;
   const rf = ctx.runtime[name];

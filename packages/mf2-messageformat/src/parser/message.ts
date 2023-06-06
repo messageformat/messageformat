@@ -107,7 +107,7 @@ function parseSelectMessage(
   while (ctx.source[pos] === '{') {
     const ph = parsePlaceholder(ctx, pos);
     switch (ph.body.type) {
-      case 'expression':
+      case 'function':
       case 'literal':
       case 'variable':
         break;

@@ -9,7 +9,7 @@ import {
 import { MessageFormat } from '../messageformat';
 import { isValidNmtoken } from '../parser/names';
 import {
-  Expression,
+  FunctionRef,
   isLiteral,
   isPlaceholder,
   isText,
@@ -60,7 +60,7 @@ function stringifyDeclaration({ target, value }: Declaration) {
   return `let ${targetStr} = ${valueStr}\n`;
 }
 
-function stringifyExpression({ name, operand, options }: Expression) {
+function stringifyFunctionRef({ name, operand, options }: FunctionRef) {
   let res: string;
   if (isLiteral(operand)) {
     res = stringifyLiteral(operand) + ' ';
@@ -116,8 +116,8 @@ function stringifyPlaceholder(ph: PatternElement) {
   const body = isPlaceholder(ph) ? ph.body : ph;
   let res: string;
   switch (body.type) {
-    case 'expression':
-      res = stringifyExpression(body);
+    case 'function':
+      res = stringifyFunctionRef(body);
       break;
     case 'junk':
       res = stringifyJunk(body);

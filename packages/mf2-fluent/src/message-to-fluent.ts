@@ -2,7 +2,7 @@ import * as Fluent from '@fluent/syntax';
 import {
   CatchallKey,
   Declaration,
-  Expression,
+  FunctionRef,
   isCatchallKey,
   isLiteral,
   isPatternMessage,
@@ -157,9 +157,9 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
   return new Fluent.Pattern(elements);
 }
 
-function expressionToFluent(
+function functionRefToFluent(
   ctx: MsgContext,
-  { name, operand, options }: Expression
+  { name, operand, options }: FunctionRef
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (operand) args.positional[0] = valueToFluent(ctx, operand);
@@ -227,8 +227,8 @@ function placeholderToFluent(
 ): Fluent.InlineExpression {
   const body = isPlaceholder(ph) ? ph.body : ph;
   switch (body.type) {
-    case 'expression':
-      return expressionToFluent(ctx, body);
+    case 'function':
+      return functionRefToFluent(ctx, body);
     case 'literal':
       return new Fluent.StringLiteral(body.value);
     case 'variable':

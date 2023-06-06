@@ -1,6 +1,6 @@
 import type * as AST from '@messageformat/parser';
 import {
-  Expression,
+  FunctionRef,
   isLiteral,
   Literal,
   Message,
@@ -55,15 +55,15 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Literal | VariableRef | Expression {
+): Literal | VariableRef | FunctionRef {
   switch (token.type) {
     case 'content':
       return { type: 'literal', value: token.value };
     case 'argument':
       return { type: 'variable', name: token.arg };
     case 'function': {
-      const fn: Expression = {
-        type: 'expression',
+      const fn: FunctionRef = {
+        type: 'function',
         name: token.key,
         operand: { type: 'variable', name: token.arg }
       };
@@ -79,8 +79,8 @@ function tokenToPart(
     }
     case 'octothorpe': {
       if (!pluralArg) return { type: 'literal', value: '#' };
-      const fn: Expression = {
-        type: 'expression',
+      const fn: FunctionRef = {
+        type: 'function',
         name: 'number',
         operand: { type: 'variable', name: pluralArg }
       };
@@ -103,7 +103,7 @@ function argToPart({
   arg,
   pluralOffset,
   type
-}: SelectArg): VariableRef | Expression {
+}: SelectArg): VariableRef | FunctionRef {
   const argVar: VariableRef = { type: 'variable', name: arg };
   if (type === 'select') return argVar;
 
@@ -122,7 +122,7 @@ function argToPart({
   }
 
   return {
-    type: 'expression',
+    type: 'function',
     name: 'number',
     operand: argVar,
     options

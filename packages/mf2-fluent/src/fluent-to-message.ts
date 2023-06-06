@@ -1,8 +1,8 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
-  Expression,
-  isExpression,
+  FunctionRef,
+  isFunctionRef,
   isText,
   Literal,
   Option,
@@ -53,11 +53,11 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
 
 function expressionToPart(
   exp: Fluent.Expression
-): Literal | VariableRef | Expression {
+): Literal | VariableRef | FunctionRef {
   switch (exp.type) {
     case 'NumberLiteral':
       return {
-        type: 'expression',
+        type: 'function',
         name: 'NUMBER',
         operand: { type: 'literal', value: exp.value }
       };
@@ -70,7 +70,7 @@ function expressionToPart(
       const { positional, named } = exp.arguments;
       const args = positional.map(exp => {
         const part = expressionToPart(exp);
-        if (isExpression(part))
+        if (isFunctionRef(part))
           throw new Error(`A Fluent ${exp.type} is not supported here.`);
         return part;
       });
@@ -78,8 +78,7 @@ function expressionToPart(
         throw new Error(`More than one positional argument is not supported.`);
       }
       const operand = args[0];
-      if (named.length === 0)
-        return { type: 'expression', name: func, operand };
+      if (named.length === 0) return { type: 'function', name: func, operand };
       const options: Option[] = [];
       for (const { name, value } of named) {
         options.push({
@@ -91,14 +90,14 @@ function expressionToPart(
           }
         });
       }
-      return { type: 'expression', name: func, operand, options };
+      return { type: 'function', name: func, operand, options };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
       return {
-        type: 'expression',
+        type: 'function',
         name: 'MESSAGE',
         operand: { type: 'literal', value: msgId }
       };
@@ -108,8 +107,7 @@ function expressionToPart(
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
       const operand: Literal = { type: 'literal', value: msgId };
-      if (!exp.arguments)
-        return { type: 'expression', name: 'MESSAGE', operand };
+      if (!exp.arguments) return { type: 'function', name: 'MESSAGE', operand };
 
       const options: Option[] = [];
       for (const { name, value } of exp.arguments.named) {
@@ -122,7 +120,7 @@ function expressionToPart(
           }
         });
       }
-      return { type: 'expression', name: 'MESSAGE', operand, options };
+      return { type: 'function', name: 'MESSAGE', operand, options };
     }
 
     /* istanbul ignore next - never happens */
@@ -137,7 +135,7 @@ function expressionToPart(
 
 const elementToPart = (
   el: Fluent.PatternElement
-): Literal | VariableRef | Expression | Text =>
+): Literal | VariableRef | FunctionRef | Text =>
   el.type === 'TextElement'
     ? { type: 'text', value: el.value }
     : expressionToPart(el.expression);

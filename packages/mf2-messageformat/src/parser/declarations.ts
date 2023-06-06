@@ -96,7 +96,7 @@ function checkLocalVarReferences(
       if (ph.type === 'placeholder') {
         const exp = ph.body;
         switch (exp.type) {
-          case 'expression':
+          case 'function':
             if (exp.operand?.type === 'variable') check(name, exp.operand);
             for (const opt of exp.options) {
               if (opt.value.type === 'variable') check(name, opt.value);
