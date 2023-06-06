@@ -130,7 +130,9 @@ function resolveSelect(
         }
         variants.push({
           keys: idList(name).map(id =>
-            id === '*' ? { type: '*' } : { type: 'nmtoken', value: id }
+            id === '*'
+              ? { type: '*' }
+              : { type: 'literal', quoted: false, value: id }
           ),
           value: { body: resolveUnit(el, st) }
         });
@@ -211,11 +213,11 @@ function resolveInlineElement(
   switch (ie.type) {
     case 'text':
     case 'cdata':
-      return { type: 'literal', value: ie.text };
+      return { type: 'literal', quoted: true, value: ie.text };
     case 'element':
       switch (ie.name) {
         case 'cp':
-          return { type: 'literal', value: resolveCharCode(ie) };
+          return { type: 'literal', quoted: true, value: resolveCharCode(ie) };
         case 'ph':
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
@@ -309,7 +311,11 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef;
 function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
   switch (part.name) {
     case 'mf:literal':
-      return { type: 'literal', value: resolveText(part.elements) };
+      return {
+        type: 'literal',
+        quoted: true,
+        value: resolveText(part.elements)
+      };
 
     case 'mf:variable':
       return { type: 'variable', name: part.attributes.name };
@@ -327,7 +333,7 @@ function resolveOption(opt: X.MessageOption): MF.Literal | MF.VariableRef {
   const sv = opt.elements.map(resolveArgument);
   switch (sv.length) {
     case 0:
-      return { type: 'literal', value: '' };
+      return { type: 'literal', quoted: true, value: '' };
     case 1:
       return sv[0];
     default:

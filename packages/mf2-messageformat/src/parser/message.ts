@@ -8,7 +8,6 @@ import type {
   DeclarationParsed,
   LiteralParsed,
   MessageParsed,
-  NmtokenParsed,
   PatternParsed,
   PatternMessageParsed,
   ExpressionParsed,
@@ -17,7 +16,6 @@ import type {
   VariantParsed
 } from './data-model.js';
 import { parseDeclarations } from './declarations.js';
-import { parseNmtoken } from './names.js';
 import { parseExpression } from './expression.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseText } from './values.js';
@@ -147,15 +145,15 @@ function parseSelectMessage(
   };
 }
 
-// Variant ::= 'when' ( WhiteSpace VariantKey )+ Pattern
-// VariantKey ::= Literal | Nmtoken | '*'
+// variant = when 1*(s key) [s] pattern
+// key = literal / "*"
 function parseVariant(
   ctx: ParseContext,
   start: number,
   selCount: number
 ): VariantParsed {
   let pos = start + 4; // 'when'
-  const keys: Array<LiteralParsed | NmtokenParsed | CatchallKeyParsed> = [];
+  const keys: Array<LiteralParsed | CatchallKeyParsed> = [];
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
     pos += ws;
@@ -164,17 +162,10 @@ function parseVariant(
 
     if (ws === 0) ctx.onError('missing-char', pos, ' ');
 
-    let key: CatchallKeyParsed | LiteralParsed | NmtokenParsed;
-    switch (ch) {
-      case '*':
-        key = { type: '*', start: pos, end: pos + 1 };
-        break;
-      case '|':
-        key = parseLiteral(ctx, pos);
-        break;
-      default:
-        key = parseNmtoken(ctx, pos);
-    }
+    const key =
+      ch === '*'
+        ? ({ type: '*', start: pos, end: pos + 1 } satisfies CatchallKeyParsed)
+        : parseLiteral(ctx, pos, true);
     if (key.end === pos) break; // error; reported in pattern.errors
     keys.push(key);
     pos = key.end;

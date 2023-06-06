@@ -7,7 +7,7 @@ import {
   Pattern
 } from '../data-model';
 import { MessageFormat } from '../messageformat';
-import { isValidNmtoken } from '../parser/names';
+import { isValidUnquotedLiteral } from '../parser/names';
 import {
   FunctionRef,
   isLiteral,
@@ -77,12 +77,9 @@ function stringifyJunk(junk: Junk | JunkMessage) {
   return junk.source.trim();
 }
 
-function stringifyLiteral(lit: Literal) {
-  if (lit.type === 'nmtoken' && isValidNmtoken(lit.value)) {
-    return lit.value;
-  }
-
-  const esc = lit.value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
+function stringifyLiteral({ quoted, value }: Literal) {
+  if (!quoted && isValidUnquotedLiteral(value)) return value;
+  const esc = value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
   return `|${esc}|`;
 }
 

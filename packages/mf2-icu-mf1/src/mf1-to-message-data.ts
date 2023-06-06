@@ -58,7 +58,7 @@ function tokenToPart(
 ): Literal | VariableRef | FunctionRef {
   switch (token.type) {
     case 'content':
-      return { type: 'literal', value: token.value };
+      return { type: 'literal', quoted: false, value: token.value };
     case 'argument':
       return { type: 'variable', name: token.arg };
     case 'function': {
@@ -74,12 +74,14 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        fn.options = [{ name: 'param', value: { type: 'literal', value } }];
+        fn.options = [
+          { name: 'param', value: { type: 'literal', quoted: false, value } }
+        ];
       }
       return fn;
     }
     case 'octothorpe': {
-      if (!pluralArg) return { type: 'literal', value: '#' };
+      if (!pluralArg) return { type: 'literal', quoted: false, value: '#' };
       const fn: FunctionRef = {
         type: 'function',
         kind: 'value',
@@ -90,7 +92,11 @@ function tokenToPart(
         fn.options = [
           {
             name: 'pluralOffset',
-            value: { type: 'literal', value: String(pluralOffset) }
+            value: {
+              type: 'literal',
+              quoted: false,
+              value: String(pluralOffset)
+            }
           }
         ];
       return fn;
@@ -113,13 +119,13 @@ function argToPart({
   if (pluralOffset) {
     options.push({
       name: 'pluralOffset',
-      value: { type: 'literal', value: String(pluralOffset) }
+      value: { type: 'literal', quoted: false, value: String(pluralOffset) }
     });
   }
   if (type === 'selectordinal') {
     options.push({
       name: 'type',
-      value: { type: 'literal', value: 'ordinal' }
+      value: { type: 'literal', quoted: false, value: 'ordinal' }
     });
   }
 
@@ -170,7 +176,9 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
   }
   const variants: Variant[] = keys.map(key => ({
     keys: key.map(k =>
-      k === 'other' ? { type: '*' } : { type: 'nmtoken', value: String(k) }
+      k === 'other'
+        ? { type: '*' }
+        : { type: 'literal', quoted: false, value: String(k) }
     ),
     value: { body: [] }
   }));

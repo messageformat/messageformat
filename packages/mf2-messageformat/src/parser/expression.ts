@@ -4,15 +4,14 @@ import type {
   FunctionRefParsed,
   JunkParsed,
   LiteralParsed,
-  NmtokenParsed,
   OptionParsed,
   ReservedParsed,
   VariableRefParsed
 } from './data-model.js';
 import type { ParseContext } from './message.js';
-import { parseNameValue, parseNmtoken } from './names.js';
+import { parseNameValue } from './names.js';
 import { whitespaces } from './util.js';
-import { parseLiteral, parseVariable } from './values.js';
+import { parseLiteral, parseQuotedLiteral, parseVariable } from './values.js';
 
 // expression = "{" [s] (((literal / variable) [s annotation]) / annotation) [s] "}"
 export function parseExpression(
@@ -22,18 +21,11 @@ export function parseExpression(
   let pos = start + 1; // '{'
   pos += whitespaces(ctx.source, pos);
 
-  let arg: LiteralParsed | VariableRefParsed | undefined;
-  switch (ctx.source[pos]) {
-    case '|':
-      arg = parseLiteral(ctx, pos);
-      pos = arg.end;
-      break;
-    case '$': {
-      arg = parseVariable(ctx, pos);
-      pos = arg.end;
-      break;
-    }
-  }
+  const arg =
+    ctx.source[pos] === '$'
+      ? parseVariable(ctx, pos)
+      : parseLiteral(ctx, pos, false);
+  if (arg) pos = arg.end;
 
   let body:
     | LiteralParsed
@@ -122,7 +114,7 @@ function parseFunctionRef(
   return { type: 'function', kind, operand, start, end: pos, name, options };
 }
 
-// option = name [s] "=" [s] (literal / nmtoken / variable)
+// option = name [s] "=" [s] (literal / variable)
 function parseOption(ctx: ParseContext, start: number): OptionParsed {
   const name = parseNameValue(ctx.source, start);
   let pos = start + name.length;
@@ -130,17 +122,10 @@ function parseOption(ctx: ParseContext, start: number): OptionParsed {
   if (ctx.source[pos] === '=') pos += 1;
   else ctx.onError('missing-char', pos, '=');
   pos += whitespaces(ctx.source, pos);
-  let value: LiteralParsed | NmtokenParsed | VariableRefParsed;
-  switch (ctx.source[pos]) {
-    case '|':
-      value = parseLiteral(ctx, pos);
-      break;
-    case '$':
-      value = parseVariable(ctx, pos);
-      break;
-    default:
-      value = parseNmtoken(ctx, pos);
-  }
+  const value =
+    ctx.source[pos] === '$'
+      ? parseVariable(ctx, pos)
+      : parseLiteral(ctx, pos, true);
   return { start, end: value.end, name, value };
 }
 
@@ -178,7 +163,7 @@ function parseReserved(
         break;
       }
       case '|':
-        pos = parseLiteral(ctx, pos).end;
+        pos = parseQuotedLiteral(ctx, pos).end;
         break;
       case '}':
         break loop;

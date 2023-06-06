@@ -59,7 +59,6 @@ export function resolvePatternElement(
 ): MessageValue {
   switch (elem.type) {
     case 'literal':
-    case 'nmtoken':
     case 'text':
       return resolveLiteral(elem);
     case 'expression':

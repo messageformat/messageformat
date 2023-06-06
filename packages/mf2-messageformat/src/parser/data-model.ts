@@ -56,7 +56,7 @@ export interface VariantParsed extends Variant {
   /** position of the `w` in `when` */
   start: number;
   end: number;
-  keys: Array<LiteralParsed | NmtokenParsed | CatchallKeyParsed>;
+  keys: Array<LiteralParsed | LiteralParsed | CatchallKeyParsed>;
   value: PatternParsed;
 }
 
@@ -105,6 +105,7 @@ export interface JunkParsed extends Junk {
 
 export interface LiteralParsed extends Literal {
   type: 'literal';
+  quoted: boolean;
   /** position of the initial `|` */
   start: number;
   /** position just past the terminal `|` */
@@ -146,13 +147,5 @@ export interface OptionParsed extends Option {
   start: number;
   end: number;
   name: string;
-  value: LiteralParsed | NmtokenParsed | VariableRefParsed;
-}
-
-export interface NmtokenParsed extends Literal {
-  type: 'nmtoken';
-  /** position at the start of the value */
-  start: number;
-  end: number;
-  value: string;
+  value: LiteralParsed | LiteralParsed | VariableRefParsed;
 }

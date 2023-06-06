@@ -50,6 +50,10 @@
     "exp": "hello 4.20"
   },
   {
+    "src": "let $foo = {bar} {bar {$foo}}",
+    "exp": "bar bar"
+  },
+  {
     "src": "let $foo = {|bar|} {bar {$foo}}",
     "exp": "bar bar"
   },
@@ -241,8 +245,12 @@
     "errors": [{ "type": "empty-token" }, { "type": "missing-func" }]
   },
   {
-    "src": "{bad {placeholder}}",
-    "exp": "bad {placeholder}",
+    "src": "{unquoted {literal}}",
+    "exp": "unquoted literal"
+  },
+  {
+    "src": "{bad {\u0000placeholder}}",
+    "exp": "bad {\u0000placeholder}",
     "errors": [
       { "type": "parse-error" },
       { "type": "extra-content" },

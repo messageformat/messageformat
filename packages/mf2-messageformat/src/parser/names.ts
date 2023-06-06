@@ -1,4 +1,3 @@
-import type { NmtokenParsed } from './data-model.js';
 import type { ParseContext } from './message.js';
 
 // name-start = ALPHA / "_"
@@ -23,20 +22,25 @@ const isNameStartCode = (cc: number) =>
   (cc >= 0xfdf0 && cc <= 0xfffd) ||
   (cc >= 0x10000 && cc <= 0xeffff);
 
-// name-char  = name-start / DIGIT / "-" / "." / ":"
-//            / %xB7 / %x300-36F / %x203F-2040
-const isNameCharCode = (cc: number) =>
+// unquoted-start = name-start / DIGIT / "."
+//                / %xB7 / %x300-36F / %x203F-2040
+const isUnquotedStartCharCode = (cc: number) =>
   isNameStartCode(cc) ||
-  cc === 0x2d || // -
   cc === 0x2e || // .
-  (cc >= 0x30 && cc <= 0x3a) || // 0-9, :
+  (cc >= 0x30 && cc <= 0x39) || // 0-9
   cc === 0xb7 || // ·
   (cc >= 0x300 && cc <= 0x36f) ||
   cc === 0x203f || // ‿
   cc === 0x2040; // ⁀
 
-export function isValidNmtoken(str: string): boolean {
-  for (let i = 0; i < str.length; ++i) {
+// name-char = name-start / DIGIT / "-" / "." / ":"
+//           / %xB7 / %x300-36F / %x203F-2040
+const isNameCharCode = (cc: number) =>
+  isUnquotedStartCharCode(cc) || cc === 0x2d || cc === 0x3a; // - :
+
+export function isValidUnquotedLiteral(str: string): boolean {
+  if (!isUnquotedStartCharCode(str.charCodeAt(0))) return false;
+  for (let i = 1; i < str.length; ++i) {
     const cc = str.charCodeAt(i);
     if (!isNameCharCode(cc)) return false;
   }
@@ -51,13 +55,15 @@ export function parseNameValue(src: string, start: number): string {
   return src.substring(start, pos);
 }
 
-// Nmtoken ::= NameChar+ /* ws: explicit */
-export function parseNmtoken(ctx: ParseContext, start: number): NmtokenParsed {
+// unquoted = unquoted-start *name-char
+export function parseUnquotedLiteralValue(
+  ctx: ParseContext,
+  start: number
+): string {
   let pos = start;
-  while (isNameCharCode(ctx.source.charCodeAt(pos))) pos += 1;
-  const value = ctx.source.substring(start, pos);
-  if (!value) {
-    ctx.onError('empty-token', start, start + 1);
+  if (isUnquotedStartCharCode(ctx.source.charCodeAt(pos))) {
+    pos += 1;
+    while (isNameCharCode(ctx.source.charCodeAt(pos))) pos += 1;
   }
-  return { type: 'nmtoken', start, end: pos, value };
+  return ctx.source.substring(start, pos);
 }

@@ -631,24 +631,24 @@ describe('fluentToResourceData', () => {
     const msg = data.get('multi')?.get('') as SelectMessage;
     expect(msg.variants.map(v => v.keys)).toMatchObject([
       [
-        { type: 'nmtoken', value: '0' },
-        { type: 'nmtoken', value: 'feminine' }
+        { type: 'literal', quoted: false, value: '0' },
+        { type: 'literal', quoted: false, value: 'feminine' }
       ],
       [
-        { type: 'nmtoken', value: '0' },
-        { type: 'nmtoken', value: 'masculine' }
+        { type: 'literal', quoted: false, value: '0' },
+        { type: 'literal', quoted: false, value: 'masculine' }
       ],
       [
-        { type: 'nmtoken', value: '0' },
+        { type: 'literal', quoted: false, value: '0' },
         { type: '*', value: 'neuter' }
       ],
       [
         { type: '*', value: 'other' },
-        { type: 'nmtoken', value: 'feminine' }
+        { type: 'literal', quoted: false, value: 'feminine' }
       ],
       [
         { type: '*', value: 'other' },
-        { type: 'nmtoken', value: 'masculine' }
+        { type: 'literal', quoted: false, value: 'masculine' }
       ],
       [
         { type: '*', value: 'other' },

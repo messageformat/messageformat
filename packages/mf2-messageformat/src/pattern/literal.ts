@@ -11,7 +11,8 @@ import { MessageLiteral } from '../message-value';
  * @beta
  */
 export interface Literal {
-  type: 'literal' | 'nmtoken';
+  type: 'literal';
+  quoted: boolean;
   value: string;
 }
 
@@ -32,9 +33,7 @@ export interface Text {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isLiteral = (part: any): part is Literal =>
-  !!part &&
-  typeof part === 'object' &&
-  (part.type === 'literal' || part.type === 'nmtoken');
+  !!part && typeof part === 'object' && part.type === 'literal';
 
 /**
  * Type guard for {@link Text} pattern elements

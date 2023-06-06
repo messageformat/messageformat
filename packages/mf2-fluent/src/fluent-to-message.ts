@@ -60,10 +60,10 @@ function expressionToPart(
         type: 'function',
         kind: 'value',
         name: 'NUMBER',
-        operand: { type: 'literal', value: exp.value }
+        operand: { type: 'literal', quoted: false, value: exp.value }
       };
     case 'StringLiteral':
-      return { type: 'literal', value: exp.parse().value };
+      return { type: 'literal', quoted: true, value: exp.parse().value };
     case 'VariableReference':
       return { type: 'variable', name: exp.id.name };
     case 'FunctionReference': {
@@ -83,13 +83,11 @@ function expressionToPart(
         return { type: 'function', kind: 'value', name: func, operand };
       const options: Option[] = [];
       for (const { name, value } of named) {
+        const quoted = value.type !== 'NumberLiteral';
+        const litValue = quoted ? value.parse().value : value.value;
         options.push({
           name: name.name,
-          value: {
-            type: 'literal',
-            value:
-              value.type === 'NumberLiteral' ? value.value : value.parse().value
-          }
+          value: { type: 'literal', quoted, value: litValue }
         });
       }
       return { type: 'function', kind: 'value', name: func, operand, options };
@@ -102,26 +100,24 @@ function expressionToPart(
         type: 'function',
         kind: 'value',
         name: 'MESSAGE',
-        operand: { type: 'literal', value: msgId }
+        operand: { type: 'literal', quoted: false, value: msgId }
       };
     }
     case 'TermReference': {
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      const operand: Literal = { type: 'literal', value: msgId };
+      const operand: Literal = { type: 'literal', quoted: false, value: msgId };
       if (!exp.arguments)
         return { type: 'function', kind: 'value', name: 'MESSAGE', operand };
 
       const options: Option[] = [];
       for (const { name, value } of exp.arguments.named) {
+        const quoted = value.type !== 'NumberLiteral';
+        const litValue = quoted ? value.parse().value : value.value;
         options.push({
           name: name.name,
-          value: {
-            type: 'literal',
-            value:
-              value.type === 'NumberLiteral' ? value.value : value.parse().value
-          }
+          value: { type: 'literal', quoted, value: litValue }
         });
       }
       return {
@@ -206,7 +202,7 @@ export function fluentToMessage(
     keys: key.map((k, i) =>
       k === CATCHALL
         ? { type: '*', value: args[i].defaultName }
-        : { type: 'nmtoken', value: String(k) }
+        : { type: 'literal', quoted: false, value: String(k) }
     ),
     value: { body: [] }
   }));
