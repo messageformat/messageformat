@@ -1,11 +1,12 @@
 import { MessageSyntaxError } from '../errors.js';
 import type {
+  ExpressionParsed,
   FunctionRefParsed,
   JunkParsed,
   LiteralParsed,
   NmtokenParsed,
   OptionParsed,
-  ExpressionParsed,
+  ReservedParsed,
   VariableRefParsed
 } from './data-model.js';
 import type { ParseContext } from './message.js';
@@ -34,7 +35,12 @@ export function parseExpression(
     }
   }
 
-  let body: LiteralParsed | VariableRefParsed | FunctionRefParsed | JunkParsed;
+  let body:
+    | LiteralParsed
+    | VariableRefParsed
+    | FunctionRefParsed
+    | ReservedParsed
+    | JunkParsed;
   let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(ctx.source, pos);
   switch (ctx.source[pos]) {
@@ -42,6 +48,20 @@ export function parseExpression(
     case '+':
     case '-':
       body = parseFunctionRef(ctx, pos, arg);
+      pos = body.end;
+      break;
+    case '!':
+    case '@':
+    case '#':
+    case '%':
+    case '^':
+    case '&':
+    case '*':
+    case '<':
+    case '>':
+    case '?':
+    case '~':
+      body = parseReserved(ctx, pos, arg);
       pos = body.end;
       break;
     default:
@@ -75,7 +95,7 @@ export function parseExpression(
   return { type: 'expression', start, end: pos, body };
 }
 
-// annotation = function *(s option)
+// annotation = (function *(s option)) / reserved
 // function = (":" / "+" / "-") name
 function parseFunctionRef(
   ctx: ParseContext,
@@ -122,4 +142,61 @@ function parseOption(ctx: ParseContext, start: number): OptionParsed {
       value = parseNmtoken(ctx, pos);
   }
   return { start, end: value.end, name, value };
+}
+
+// reserved       = reserved-start reserved-body
+// reserved-start = "!" / "@" / "#" / "%" / "^" / "&" / "*" / "<" / ">" / "?" / "~"
+// reserved-body  = *( [s] 1*(reserved-char / reserved-escape / literal))
+// reserved-char  = %x00-08        ; omit HTAB and LF
+//                / %x0B-0C        ; omit CR
+//                / %x0E-19        ; omit SP
+//                / %x21-5B        ; omit \
+//                / %x5D-7A        ; omit { | }
+//                / %x7E-D7FF      ; omit surrogates
+//                / %xE000-10FFFF
+function parseReserved(
+  ctx: ParseContext,
+  start: number,
+  operand: LiteralParsed | VariableRefParsed | undefined
+): ReservedParsed {
+  const sigil = ctx.source[start] as ReservedParsed['sigil'];
+  let pos = start + 1; // sigil
+  loop: while (pos < ctx.source.length) {
+    const ch = ctx.source[pos];
+    switch (ch) {
+      case '\\': {
+        switch (ctx.source[pos + 1]) {
+          case '\\':
+          case '{':
+          case '|':
+          case '}':
+            break;
+          default:
+            ctx.onError('bad-escape', pos, pos + 2);
+        }
+        pos += 2;
+        break;
+      }
+      case '|':
+        pos = parseLiteral(ctx, pos).end;
+        break;
+      case '}':
+        break loop;
+      default: {
+        const cc = ch.charCodeAt(0);
+        if (cc >= 0xd800 && cc < 0xe000) {
+          // surrogates are invalid here
+          ctx.onError('parse-error', pos, pos + 1);
+        }
+        pos += 1;
+      }
+    }
+  }
+  let prev = ctx.source[pos - 1];
+  while (prev === '\r' || prev === '\n' || prev === '\t' || prev === ' ') {
+    pos -= 1;
+    prev = ctx.source[pos - 1];
+  }
+  const source = ctx.source.substring(start, pos);
+  return { type: 'reserved', operand, sigil, source, start, end: pos };
 }

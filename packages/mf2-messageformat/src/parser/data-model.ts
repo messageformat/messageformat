@@ -9,10 +9,12 @@ import type {
 } from '../data-model';
 import type { MessageSyntaxError } from '../errors';
 import type {
+  Expression,
   FunctionRef,
   Junk,
   Literal,
   Option,
+  Reserved,
   Text,
   VariableRef
 } from '../pattern';
@@ -80,13 +82,18 @@ export interface TextParsed extends Text {
   value: string;
 }
 
-export interface ExpressionParsed {
+export interface ExpressionParsed extends Expression {
   type: 'expression';
   /** position of the `{` */
   start: number;
   /** position just past the `}` */
   end: number;
-  body: LiteralParsed | VariableRefParsed | FunctionRefParsed | JunkParsed;
+  body:
+    | LiteralParsed
+    | VariableRefParsed
+    | FunctionRefParsed
+    | ReservedParsed
+    | JunkParsed;
 }
 
 export interface JunkParsed extends Junk {
@@ -122,6 +129,16 @@ export interface FunctionRefParsed extends FunctionRef {
   end: number;
   name: string;
   options: OptionParsed[];
+}
+
+export interface ReservedParsed extends Reserved {
+  type: 'reserved';
+  sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
+  operand: Literal | VariableRef | undefined;
+  source: string;
+  /** position of the sigil, so `operand.start` may be earlier */
+  start: number;
+  end: number;
 }
 
 export interface OptionParsed extends Option {
