@@ -8,6 +8,11 @@
     "exp": "hello world"
   },
   {
+    "src": "{hello {$place:-.}}",
+    "params": { "place:-.": "world" },
+    "exp": "hello world"
+  },
+  {
     "src": "{hello {$place}}",
     "errors": [{ "type": "unresolved-var" }],
     "exp": "hello {$place}"
