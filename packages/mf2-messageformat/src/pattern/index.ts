@@ -1,21 +1,16 @@
 import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 
-import { Expression, resolveExpression } from './expression';
+import { FunctionRef, resolveFunctionRef } from './function-ref';
 import { Junk, resolveJunk } from './junk';
 import { Literal, resolveLiteral, Text } from './literal';
-import {
-  MarkupEnd,
-  MarkupStart,
-  resolveMarkupEnd,
-  resolveMarkupStart
-} from './markup';
+import { Reserved, resolveReserved } from './reserved';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
-export { isExpression, Expression, Option } from './expression';
+export { isFunctionRef, FunctionRef, Option } from './function-ref';
 export { isJunk, Junk } from './junk';
 export { isLiteral, isText, Literal, Text } from './literal';
-export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
+export { isReserved, Reserved } from './reserved';
 export { isVariableRef, VariableRef } from './variable-ref';
 
 /**
@@ -23,19 +18,19 @@ export { isVariableRef, VariableRef } from './variable-ref';
  *
  * @beta
  */
-export interface Placeholder {
-  type: 'placeholder';
-  body: Literal | VariableRef | Expression | MarkupStart | MarkupEnd | Junk;
+export interface Expression {
+  type: 'expression';
+  body: Literal | VariableRef | FunctionRef | Reserved | Junk;
 }
 
 /**
- * Type guard for {@link Placeholder} pattern elements
+ * Type guard for {@link Expression} pattern elements
  *
  * @beta
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isPlaceholder = (part: any): part is Placeholder =>
-  !!part && typeof part === 'object' && part.type === 'placeholder';
+export const isExpression = (part: any): part is Expression =>
+  !!part && typeof part === 'object' && part.type === 'expression';
 
 /**
  * The contents of a message are a sequence of pattern elements, which may be
@@ -44,17 +39,16 @@ export const isPlaceholder = (part: any): part is Placeholder =>
  * defined elsewhere.
  *
  * @remarks
- * Depending on the syntax, pattern elements may be wrapped within a Placeholder.
+ * Depending on the syntax, pattern elements may be wrapped within an Expression.
  *
  * @beta
  */
 export type PatternElement =
   | Expression
+  | FunctionRef
   | Junk
   | Literal
-  | MarkupEnd
-  | MarkupStart
-  | Placeholder
+  | Reserved
   | Text
   | VariableRef;
 
@@ -65,19 +59,16 @@ export function resolvePatternElement(
 ): MessageValue {
   switch (elem.type) {
     case 'literal':
-    case 'nmtoken':
     case 'text':
       return resolveLiteral(elem);
-    case 'placeholder':
+    case 'expression':
       return resolvePatternElement(ctx, elem.body);
     case 'variable':
       return resolveVariableRef(ctx, elem);
-    case 'expression':
-      return resolveExpression(ctx, elem);
-    case 'markup-start':
-      return resolveMarkupStart(ctx, elem);
-    case 'markup-end':
-      return resolveMarkupEnd(ctx, elem);
+    case 'function':
+      return resolveFunctionRef(ctx, elem);
+    case 'reserved':
+      return resolveReserved(ctx, elem);
     case 'junk':
       return resolveJunk(ctx, elem);
     default:

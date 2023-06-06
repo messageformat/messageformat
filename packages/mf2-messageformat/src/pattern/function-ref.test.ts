@@ -138,3 +138,98 @@ describe('Type casts based on runtime', () => {
     ).toBe('1234');
   });
 });
+
+describe('Simple element', () => {
+  test('no options, literal body', () => {
+    const mf = new MessageFormat('{{+b}foo{-b}}');
+    expect(mf.resolveMessage()).toEqual({
+      type: 'message',
+      value: [
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
+        { type: 'literal', value: 'foo' },
+        { type: 'markup-end', options: {}, source: '-b', value: 'b' }
+      ]
+    });
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{-b}');
+  });
+
+  test('arguments, options, variables', () => {
+    const mf = new MessageFormat(
+      '{{|x| +b foo=42 bar=$foo}foo{$foo}{|y| -b foo=13}}'
+    );
+    const msg = mf.resolveMessage({ foo: 'foo bar' });
+    expect(msg).toEqual({
+      type: 'message',
+      value: [
+        {
+          type: 'markup-start',
+          operand: { type: 'literal', value: 'x' },
+          options: { foo: '42', bar: 'foo bar' },
+          source: 'x',
+          value: 'b'
+        },
+        { type: 'literal', value: 'foo' },
+        { type: 'value', source: '$foo', value: 'foo bar' },
+        {
+          type: 'markup-end',
+          operand: { type: 'literal', value: 'y' },
+          options: { foo: '13' },
+          source: 'y',
+          value: 'b'
+        }
+      ]
+    });
+    expect(msg.toString()).toBe('{+b}foofoo bar{-b}');
+  });
+});
+
+describe('Multiple elements', () => {
+  test('adjacent', () => {
+    const mf = new MessageFormat('{{+b}foo{-b}{+a}bar{-a}}');
+    expect(mf.resolveMessage()).toEqual({
+      type: 'message',
+      value: [
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
+        { type: 'literal', value: 'foo' },
+        { type: 'markup-end', options: {}, source: '-b', value: 'b' },
+        { type: 'markup-start', options: {}, source: '+a', value: 'a' },
+        { type: 'literal', value: 'bar' },
+        { type: 'markup-end', options: {}, source: '-a', value: 'a' }
+      ]
+    });
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{-b}{+a}bar{-a}');
+  });
+
+  test('nested', () => {
+    const mf = new MessageFormat('{{+b}foo{+a}bar{-a}{-b}}');
+    expect(mf.resolveMessage()).toEqual({
+      type: 'message',
+      value: [
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
+        { type: 'literal', value: 'foo' },
+        { type: 'markup-start', options: {}, source: '+a', value: 'a' },
+        { type: 'literal', value: 'bar' },
+        { type: 'markup-end', options: {}, source: '-a', value: 'a' },
+        { type: 'markup-end', options: {}, source: '-b', value: 'b' }
+      ]
+    });
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{+a}bar{-a}{-b}');
+  });
+
+  test('overlapping', () => {
+    const mf = new MessageFormat('{{+b}foo{+a}bar{-b}baz{-a}}');
+    expect(mf.resolveMessage()).toEqual({
+      type: 'message',
+      value: [
+        { type: 'markup-start', options: {}, source: '+b', value: 'b' },
+        { type: 'literal', value: 'foo' },
+        { type: 'markup-start', options: {}, source: '+a', value: 'a' },
+        { type: 'literal', value: 'bar' },
+        { type: 'markup-end', options: {}, source: '-b', value: 'b' },
+        { type: 'literal', value: 'baz' },
+        { type: 'markup-end', options: {}, source: '-a', value: 'a' }
+      ]
+    });
+    expect(mf.resolveMessage().toString()).toBe('{+b}foo{+a}bar{-b}baz{-a}');
+  });
+});

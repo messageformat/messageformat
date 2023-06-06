@@ -8,6 +8,11 @@
     "exp": "hello world"
   },
   {
+    "src": "{hello {$place:-.}}",
+    "params": { "place:-.": "world" },
+    "exp": "hello world"
+  },
+  {
     "src": "{hello {$place}}",
     "errors": [{ "type": "unresolved-var" }],
     "exp": "hello {$place}"
@@ -43,6 +48,10 @@
     "src": "{hello {|4.2| :number minimumFractionDigits=$foo}}",
     "params": { "foo": "2" },
     "exp": "hello 4.20"
+  },
+  {
+    "src": "let $foo = {bar} {bar {$foo}}",
+    "exp": "bar bar"
   },
   {
     "src": "let $foo = {|bar|} {bar {$foo}}",
@@ -188,14 +197,12 @@
     "exp": "{+tag}"
   },
   {
-    "src": "{bad {|foo| +markup}}",
-    "exp": "bad {+markup}",
-    "errors": [{ "type": "extra-content" }]
+    "src": "{{|foo| +markup}}",
+    "exp": "{+markup}"
   },
   {
     "src": "{{-tag foo=bar}}",
-    "exp": "{-tag}",
-    "errors": [{ "type": "extra-content" }]
+    "exp": "{-tag}"
   },
   {
     "src": "no braces",
@@ -238,8 +245,12 @@
     "errors": [{ "type": "empty-token" }, { "type": "missing-func" }]
   },
   {
-    "src": "{bad {placeholder}}",
-    "exp": "bad {placeholder}",
+    "src": "{unquoted {literal}}",
+    "exp": "unquoted literal"
+  },
+  {
+    "src": "{bad {\u0000placeholder}}",
+    "exp": "bad {\u0000placeholder}",
     "errors": [
       { "type": "parse-error" },
       { "type": "extra-content" },
@@ -295,8 +306,7 @@
   },
   {
     "src": "match {+foo} when * {foo}",
-    "exp": "foo",
-    "errors": [{ "type": "bad-selector" }]
+    "exp": "foo"
   },
   {
     "src": "match {|foo|} when*{foo}",

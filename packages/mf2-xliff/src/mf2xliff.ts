@@ -1,6 +1,6 @@
 import deepEqual from 'fast-deep-equal';
 import {
-  isExpression,
+  isFunctionRef,
   isLiteral,
   isMessage,
   isSelectMessage,
@@ -274,7 +274,7 @@ function resolvePart(
 ): X.MessagePart {
   if (isLiteral(part) || isVariableRef(part)) return resolveArgument(id, part);
 
-  if (isExpression(part)) {
+  if (isFunctionRef(part)) {
     const elements: X.MessageFunction['elements'] = [];
     if (part.options) {
       for (const { name, value } of part.options) {
