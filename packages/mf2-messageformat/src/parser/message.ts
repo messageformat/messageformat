@@ -20,7 +20,16 @@ import { parseExpression } from './expression.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseText } from './values.js';
 
-export type ParseContext = {
+export class ParseContext {
+  readonly errors: MessageSyntaxError[] = [];
+  readonly resource: boolean;
+  readonly source: string;
+
+  constructor(source: string, opt?: { resource?: boolean }) {
+    this.resource = opt?.resource ?? false;
+    this.source = source;
+  }
+
   onError(
     type: Exclude<typeof MessageSyntaxError.prototype.type, 'missing-char'>,
     start: number,
@@ -31,10 +40,22 @@ export type ParseContext = {
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
     end: number | string
-  ): void;
-  readonly errors: MessageSyntaxError[];
-  readonly source: string;
-};
+  ) {
+    let err: MessageSyntaxError;
+    switch (type) {
+      case 'key-mismatch':
+      case 'missing-fallback':
+        err = new MessageDataModelError(type, start, Number(end));
+        break;
+      case 'missing-char':
+        err = new MissingCharError(start, String(end));
+        break;
+      default:
+        err = new MessageSyntaxError(type, start, Number(end));
+    }
+    this.errors.push(err);
+  }
+}
 
 // message = [s] *(declaration [s]) body [s]
 // body = pattern / (selectors 1*([s] variant))
@@ -45,27 +66,11 @@ export type ParseContext = {
  *
  * @beta
  */
-export function parseMessage(source: string): MessageParsed {
-  const ctx: ParseContext = {
-    onError(type, start, end) {
-      let err: MessageSyntaxError;
-      switch (type) {
-        case 'key-mismatch':
-        case 'missing-fallback':
-          err = new MessageDataModelError(type, start, Number(end));
-          break;
-        case 'missing-char':
-          err = new MissingCharError(start, String(end));
-          break;
-        default:
-          err = new MessageSyntaxError(type, start, Number(end));
-      }
-      this.errors.push(err);
-    },
-    errors: [],
-    source
-  };
-
+export function parseMessage(
+  source: string,
+  opt?: { resource?: boolean }
+): MessageParsed {
+  const ctx = new ParseContext(source, opt);
   const { declarations, end: pos } = parseDeclarations(ctx);
 
   if (source.startsWith('match', pos)) {
