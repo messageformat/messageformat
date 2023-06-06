@@ -23,19 +23,19 @@ export { isVariableRef, VariableRef } from './variable-ref';
  *
  * @beta
  */
-export interface Placeholder {
-  type: 'placeholder';
+export interface Expression {
+  type: 'expression';
   body: Literal | VariableRef | FunctionRef | MarkupStart | MarkupEnd | Junk;
 }
 
 /**
- * Type guard for {@link Placeholder} pattern elements
+ * Type guard for {@link Expression} pattern elements
  *
  * @beta
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isPlaceholder = (part: any): part is Placeholder =>
-  !!part && typeof part === 'object' && part.type === 'placeholder';
+export const isExpression = (part: any): part is Expression =>
+  !!part && typeof part === 'object' && part.type === 'expression';
 
 /**
  * The contents of a message are a sequence of pattern elements, which may be
@@ -44,7 +44,7 @@ export const isPlaceholder = (part: any): part is Placeholder =>
  * defined elsewhere.
  *
  * @remarks
- * Depending on the syntax, pattern elements may be wrapped within a Placeholder.
+ * Depending on the syntax, pattern elements may be wrapped within an Expression.
  *
  * @beta
  */
@@ -54,7 +54,7 @@ export type PatternElement =
   | Literal
   | MarkupEnd
   | MarkupStart
-  | Placeholder
+  | Expression
   | Text
   | VariableRef;
 
@@ -68,7 +68,7 @@ export function resolvePatternElement(
     case 'nmtoken':
     case 'text':
       return resolveLiteral(elem);
-    case 'placeholder':
+    case 'expression':
       return resolvePatternElement(ctx, elem.body);
     case 'variable':
       return resolveVariableRef(ctx, elem);

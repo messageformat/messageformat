@@ -33,7 +33,7 @@ export interface PatternMessageParsed extends PatternMessage {
 export interface SelectMessageParsed extends SelectMessage {
   type: 'select';
   declarations: DeclarationParsed[];
-  selectors: PlaceholderParsed[];
+  selectors: ExpressionParsed[];
   variants: VariantParsed[];
   errors: MessageSyntaxError[];
 }
@@ -49,7 +49,7 @@ export interface DeclarationParsed extends Declaration {
   start: number;
   end: number;
   target: VariableRefParsed | JunkParsed;
-  value: PlaceholderParsed | JunkParsed;
+  value: ExpressionParsed | JunkParsed;
 }
 
 export interface VariantParsed extends Variant {
@@ -72,7 +72,7 @@ export interface PatternParsed extends Pattern {
   start: number;
   /** position of the `}` */
   end: number;
-  body: Array<TextParsed | PlaceholderParsed>;
+  body: Array<TextParsed | ExpressionParsed>;
 }
 
 export interface TextParsed extends Text {
@@ -82,8 +82,8 @@ export interface TextParsed extends Text {
   value: string;
 }
 
-export interface PlaceholderParsed {
-  type: 'placeholder';
+export interface ExpressionParsed {
+  type: 'expression';
   /** position of the `{` */
   start: number;
   /** position just past the `}` */

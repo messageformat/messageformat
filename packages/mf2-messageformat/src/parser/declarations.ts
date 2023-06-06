@@ -1,15 +1,14 @@
 import type {
   DeclarationParsed,
   JunkParsed,
-  PlaceholderParsed,
+  ExpressionParsed,
   VariableRefParsed
 } from './data-model.js';
 import type { ParseContext } from './message.js';
-import { parsePlaceholder } from './placeholder.js';
+import { parseExpression } from './expression.js';
 import { whitespaces } from './util.js';
 import { parseVariable } from './values.js';
 
-// Declaration ::= 'let' WhiteSpace Variable '=' '{' Expression '}'
 export function parseDeclarations(ctx: ParseContext): {
   declarations: DeclarationParsed[];
   end: number;
@@ -26,6 +25,8 @@ export function parseDeclarations(ctx: ParseContext): {
   return { declarations, end: pos };
 }
 
+// declaration = let s variable [s] "=" [s] expression
+// let = %x6C.65.74 ; "let"
 function parseDeclaration(ctx: ParseContext, start: number): DeclarationParsed {
   let pos = start + 3; // 'let'
   const ws = whitespaces(ctx.source, pos);
@@ -54,10 +55,10 @@ function parseDeclaration(ctx: ParseContext, start: number): DeclarationParsed {
   if (ctx.source[pos] === '=') pos += 1;
   else ctx.onError('missing-char', pos, '=');
 
-  let value: PlaceholderParsed | JunkParsed;
+  let value: ExpressionParsed | JunkParsed;
   pos += whitespaces(ctx.source, pos);
   if (ctx.source[pos] === '{') {
-    value = parsePlaceholder(ctx, pos);
+    value = parseExpression(ctx, pos);
     pos = value.end;
   } else {
     const junkStart = pos;
@@ -93,7 +94,7 @@ function checkLocalVarReferences(
     if (!name) continue;
     for (let j = 0; j < i; ++j) {
       const ph = declarations[j].value;
-      if (ph.type === 'placeholder') {
+      if (ph.type === 'expression') {
         const exp = ph.body;
         switch (exp.type) {
           case 'function':

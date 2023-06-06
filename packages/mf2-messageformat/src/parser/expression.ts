@@ -7,7 +7,7 @@ import type {
   MarkupEndParsed,
   NmtokenParsed,
   OptionParsed,
-  PlaceholderParsed,
+  ExpressionParsed,
   VariableRefParsed
 } from './data-model.js';
 import type { ParseContext } from './message.js';
@@ -16,10 +16,10 @@ import { whitespaces } from './util.js';
 import { parseLiteral, parseVariable } from './values.js';
 
 // Placeholder ::= '{' (Expression | Markup | MarkupEnd)? '}'
-export function parsePlaceholder(
+export function parseExpression(
   ctx: ParseContext,
   start: number
-): PlaceholderParsed {
+): ExpressionParsed {
   let pos = start + 1; // '{'
   pos += whitespaces(ctx.source, pos);
 
@@ -80,7 +80,7 @@ export function parsePlaceholder(
     pos += 1;
   }
 
-  return { type: 'placeholder', start, end: pos, body };
+  return { type: 'expression', start, end: pos, body };
 }
 
 // Expression ::= Operand Annotation? | Annotation

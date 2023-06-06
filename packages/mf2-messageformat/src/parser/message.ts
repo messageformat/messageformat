@@ -11,14 +11,14 @@ import type {
   NmtokenParsed,
   PatternParsed,
   PatternMessageParsed,
-  PlaceholderParsed,
+  ExpressionParsed,
   SelectMessageParsed,
   TextParsed,
   VariantParsed
 } from './data-model.js';
 import { parseDeclarations } from './declarations.js';
 import { parseNmtoken } from './names.js';
-import { parsePlaceholder } from './placeholder.js';
+import { parseExpression } from './expression.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseText } from './values.js';
 
@@ -38,8 +38,9 @@ export type ParseContext = {
   readonly source: string;
 };
 
-// Message ::= Declaration* ( Pattern | Selector Variant+ )
-// Selector ::= 'match' ( '{' Expression '}' )+
+// message = [s] *(declaration [s]) body [s]
+// body = pattern / (selectors 1*([s] variant))
+// selectors = match 1*([s] expression)
 /**
  * Parse the string syntax representation of a message into
  * its corresponding data model representation.
@@ -103,9 +104,9 @@ function parseSelectMessage(
   let pos = start + 5; // 'match'
   pos += whitespaces(ctx.source, pos);
 
-  const selectors: PlaceholderParsed[] = [];
+  const selectors: ExpressionParsed[] = [];
   while (ctx.source[pos] === '{') {
-    const ph = parsePlaceholder(ctx, pos);
+    const ph = parseExpression(ctx, pos);
     switch (ph.body.type) {
       case 'function':
       case 'literal':
@@ -188,7 +189,7 @@ function parseVariant(
   return { start, end: value.end, keys, value };
 }
 
-// Pattern ::= '{' (Text | Placeholder)* '}' /* ws: explicit */
+// pattern = "{" *(text / expression) "}"
 function parsePattern(ctx: ParseContext, start: number): PatternParsed {
   if (ctx.source[start] !== '{') {
     ctx.onError('missing-char', start, '{');
@@ -196,11 +197,11 @@ function parsePattern(ctx: ParseContext, start: number): PatternParsed {
   }
 
   let pos = start + 1;
-  const body: Array<TextParsed | PlaceholderParsed> = [];
+  const body: Array<TextParsed | ExpressionParsed> = [];
   loop: while (pos < ctx.source.length) {
     switch (ctx.source[pos]) {
       case '{': {
-        const ph = parsePlaceholder(ctx, pos);
+        const ph = parseExpression(ctx, pos);
         body.push(ph);
         pos = ph.end;
         break;

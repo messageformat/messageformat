@@ -11,7 +11,7 @@ import { isValidNmtoken } from '../parser/names';
 import {
   FunctionRef,
   isLiteral,
-  isPlaceholder,
+  isExpression,
   isText,
   isVariableRef,
   Junk,
@@ -36,7 +36,7 @@ export function stringifyMessage(msg: Message | MessageFormat) {
     res += stringifyPattern(msg.pattern);
   } else if (isSelectMessage(msg)) {
     res += 'match';
-    for (const sel of msg.selectors) res += ' ' + stringifyPlaceholder(sel);
+    for (const sel of msg.selectors) res += ' ' + stringifyExpression(sel);
     for (const { keys, value } of msg.variants) {
       res += '\nwhen ';
       for (const key of keys) {
@@ -54,8 +54,8 @@ function stringifyDeclaration({ target, value }: Declaration) {
   const targetStr = isVariableRef(target)
     ? stringifyVariableRef(target)
     : stringifyJunk(target);
-  const valueStr = isPlaceholder(value)
-    ? stringifyPlaceholder(value)
+  const valueStr = isExpression(value)
+    ? stringifyExpression(value)
     : stringifyJunk(value);
   return `let ${targetStr} = ${valueStr}\n`;
 }
@@ -107,13 +107,13 @@ function stringifyOption(opt: Option) {
 function stringifyPattern({ body }: Pattern) {
   let res = '';
   for (const el of body) {
-    res += isText(el) ? el.value : stringifyPlaceholder(el);
+    res += isText(el) ? el.value : stringifyExpression(el);
   }
   return `{${res}}`;
 }
 
-function stringifyPlaceholder(ph: PatternElement) {
-  const body = isPlaceholder(ph) ? ph.body : ph;
+function stringifyExpression(ph: PatternElement) {
+  const body = isExpression(ph) ? ph.body : ph;
   let res: string;
   switch (body.type) {
     case 'function':
@@ -135,7 +135,7 @@ function stringifyPlaceholder(ph: PatternElement) {
       res = stringifyVariableRef(body);
       break;
     default:
-      res = ''; // bad placeholder
+      res = ''; // bad expression
   }
   return `{${res}}`;
 }

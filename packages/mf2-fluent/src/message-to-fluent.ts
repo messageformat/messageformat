@@ -6,7 +6,7 @@ import {
   isCatchallKey,
   isLiteral,
   isPatternMessage,
-  isPlaceholder,
+  isExpression,
   isSelectMessage,
   isText,
   isVariableRef,
@@ -78,7 +78,7 @@ export function messageToFluent(
     }));
     const k0 = variants[0].keys;
     while (k0.length > 0) {
-      const sel = placeholderToFluent(ctx, msg.selectors[k0.length - 1]);
+      const sel = expressionToFluent(ctx, msg.selectors[k0.length - 1]);
       let baseKeys: (Literal | CatchallKey)[] = [];
       let exp: Fluent.SelectExpression | undefined;
       for (let i = 0; i < variants.length; ++i) {
@@ -152,7 +152,7 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
   const elements = pattern.body.map(el =>
     isText(el)
       ? new Fluent.TextElement(el.value)
-      : new Fluent.Placeable(placeholderToFluent(ctx, el))
+      : new Fluent.Placeable(expressionToFluent(ctx, el))
   );
   return new Fluent.Pattern(elements);
 }
@@ -221,11 +221,11 @@ function literalToFluent({ value }: Literal) {
     : new Fluent.StringLiteral(value);
 }
 
-function placeholderToFluent(
+function expressionToFluent(
   ctx: MsgContext,
   ph: PatternElement
 ): Fluent.InlineExpression {
-  const body = isPlaceholder(ph) ? ph.body : ph;
+  const body = isExpression(ph) ? ph.body : ph;
   switch (body.type) {
     case 'function':
       return functionRefToFluent(ctx, body);
@@ -235,7 +235,7 @@ function placeholderToFluent(
       return variableRefToFluent(ctx, body);
     default:
       throw new Error(
-        `Conversion of "${body.type}" placeholder to Fluent is not supported`
+        `Conversion of "${body.type}" expression to Fluent is not supported`
       );
   }
 }
@@ -264,6 +264,6 @@ function variableRefToFluent(
     decl => isVariableRef(decl.target) && decl.target.name === name
   );
   return local
-    ? placeholderToFluent(ctx, local.value)
+    ? expressionToFluent(ctx, local.value)
     : new Fluent.VariableReference(new Fluent.Identifier(name));
 }
