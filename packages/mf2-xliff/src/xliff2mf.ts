@@ -2,7 +2,7 @@ import type * as MF from 'messageformat';
 import type { MessageFormatInfo, MessageResourceData } from './index';
 import type * as X from './xliff-spec';
 
-import { isExpression, isLiteral } from 'messageformat';
+import { isFunctionRef, isLiteral } from 'messageformat';
 import { parse } from './xliff';
 
 // TODO: Support declarations
@@ -130,7 +130,9 @@ function resolveSelect(
         }
         variants.push({
           keys: idList(name).map(id =>
-            id === '*' ? { type: '*' } : { type: 'nmtoken', value: id }
+            id === '*'
+              ? { type: '*' }
+              : { type: 'literal', quoted: false, value: id }
           ),
           value: { body: resolveUnit(el, st) }
         });
@@ -191,7 +193,7 @@ function resolveContents(
   contents: (X.Text | X.InlineElement)[],
   mf: X.MessageFormat | null
 ) {
-  const res: (MF.Literal | MF.VariableRef | MF.Expression)[] = [];
+  const res: (MF.Literal | MF.VariableRef | MF.FunctionRef)[] = [];
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
@@ -207,20 +209,20 @@ const resolveCharCode = (cc: X.CharCode) =>
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.Expression {
+): MF.Literal | MF.VariableRef | MF.FunctionRef {
   switch (ie.type) {
     case 'text':
     case 'cdata':
-      return { type: 'literal', value: ie.text };
+      return { type: 'literal', quoted: true, value: ie.text };
     case 'element':
       switch (ie.name) {
         case 'cp':
-          return { type: 'literal', value: resolveCharCode(ie) };
+          return { type: 'literal', quoted: true, value: resolveCharCode(ie) };
         case 'ph':
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
           const part = resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-          if (!isExpression(part))
+          if (!isFunctionRef(part))
             throw new Error(`<pc mf:ref> is only valid for function values`);
           const arg = resolveContents(ie.elements, mf);
           if (arg.length > 1)
@@ -228,7 +230,7 @@ function resolveInlineElement(
               'Forming function arguments by concatenation is not supported'
             );
           const operand = arg[0];
-          if (isExpression(operand))
+          if (isFunctionRef(operand))
             throw new Error(`A ${operand.type} is not supported here`);
           part.operand = operand;
           return part;
@@ -245,7 +247,7 @@ function resolveRef(
   name: string,
   ref: string | undefined,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.Expression {
+): MF.Literal | MF.VariableRef | MF.FunctionRef {
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
@@ -264,14 +266,14 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 
 function resolvePart(
   part: X.MessagePart
-): MF.Literal | MF.VariableRef | MF.Expression {
+): MF.Literal | MF.VariableRef | MF.FunctionRef {
   switch (part.name) {
     case 'mf:literal':
     case 'mf:variable':
       return resolveArgument(part);
 
     case 'mf:function': {
-      let operand: MF.Expression['operand'] = undefined;
+      let operand: MF.FunctionRef['operand'] = undefined;
       const options: MF.Option[] = [];
       for (const el of part.elements) {
         if (el.name === 'mf:option') {
@@ -286,7 +288,8 @@ function resolvePart(
       }
 
       return {
-        type: 'expression',
+        type: 'function',
+        kind: 'value',
         name: part.attributes.name,
         operand,
         options
@@ -308,7 +311,11 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef;
 function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
   switch (part.name) {
     case 'mf:literal':
-      return { type: 'literal', value: resolveText(part.elements) };
+      return {
+        type: 'literal',
+        quoted: true,
+        value: resolveText(part.elements)
+      };
 
     case 'mf:variable':
       return { type: 'variable', name: part.attributes.name };
@@ -326,7 +333,7 @@ function resolveOption(opt: X.MessageOption): MF.Literal | MF.VariableRef {
   const sv = opt.elements.map(resolveArgument);
   switch (sv.length) {
     case 0:
-      return { type: 'literal', value: '' };
+      return { type: 'literal', quoted: true, value: '' };
     case 1:
       return sv[0];
     default:

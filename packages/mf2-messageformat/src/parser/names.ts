@@ -1,15 +1,10 @@
-import type { NmtokenParsed } from './data-model.js';
 import type { ParseContext } from './message.js';
 
-// NameStart ::= [a-zA-Z] | "_"
-//             | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF]
-//             | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D]
-//             | [#x2070-#x218F]
-//             | [#x2C00-#x2FEF]
-//             | [#x3001-#xD7FF]
-//             | [#xF900-#xFDCF]
-//             | [#xFDF0-#xFFFD]
-//             | [#x10000-#xEFFFF]
+// name-start = ALPHA / "_"
+//            / %xC0-D6 / %xD8-F6 / %xF8-2FF
+//            / %x370-37D / %x37F-1FFF / %x200C-200D
+//            / %x2070-218F / %x2C00-2FEF / %x3001-D7FF
+//            / %xF900-FDCF / %xFDF0-FFFD / %x10000-EFFFF
 const isNameStartCode = (cc: number) =>
   (cc >= 0x41 && cc <= 0x5a) || // A-Z
   cc === 0x5f || // _
@@ -27,11 +22,10 @@ const isNameStartCode = (cc: number) =>
   (cc >= 0xfdf0 && cc <= 0xfffd) ||
   (cc >= 0x10000 && cc <= 0xeffff);
 
-// NameChar ::= NameStart | [0-9] | "-" | "." | #xB7
-//            | [#x0300-#x036F] | [#x203F-#x2040]
-const isNameCharCode = (cc: number) =>
+// unquoted-start = name-start / DIGIT / "."
+//                / %xB7 / %x300-36F / %x203F-2040
+const isUnquotedStartCharCode = (cc: number) =>
   isNameStartCode(cc) ||
-  cc === 0x2d || // -
   cc === 0x2e || // .
   (cc >= 0x30 && cc <= 0x39) || // 0-9
   cc === 0xb7 || // ·
@@ -39,15 +33,21 @@ const isNameCharCode = (cc: number) =>
   cc === 0x203f || // ‿
   cc === 0x2040; // ⁀
 
-export function isValidNmtoken(str: string): boolean {
-  for (let i = 0; i < str.length; ++i) {
+// name-char = name-start / DIGIT / "-" / "." / ":"
+//           / %xB7 / %x300-36F / %x203F-2040
+const isNameCharCode = (cc: number) =>
+  isUnquotedStartCharCode(cc) || cc === 0x2d || cc === 0x3a; // - :
+
+export function isValidUnquotedLiteral(str: string): boolean {
+  if (!isUnquotedStartCharCode(str.charCodeAt(0))) return false;
+  for (let i = 1; i < str.length; ++i) {
     const cc = str.charCodeAt(i);
     if (!isNameCharCode(cc)) return false;
   }
   return str.length > 0;
 }
 
-// Name ::= NameStart NameChar* /* ws: explicit */
+// name = name-start *name-char
 export function parseNameValue(src: string, start: number): string {
   if (!isNameStartCode(src.charCodeAt(start))) return '';
   let pos = start + 1;
@@ -55,13 +55,15 @@ export function parseNameValue(src: string, start: number): string {
   return src.substring(start, pos);
 }
 
-// Nmtoken ::= NameChar+ /* ws: explicit */
-export function parseNmtoken(ctx: ParseContext, start: number): NmtokenParsed {
+// unquoted = unquoted-start *name-char
+export function parseUnquotedLiteralValue(
+  ctx: ParseContext,
+  start: number
+): string {
   let pos = start;
-  while (isNameCharCode(ctx.source.charCodeAt(pos))) pos += 1;
-  const value = ctx.source.substring(start, pos);
-  if (!value) {
-    ctx.onError('empty-token', start, start + 1);
+  if (isUnquotedStartCharCode(ctx.source.charCodeAt(pos))) {
+    pos += 1;
+    while (isNameCharCode(ctx.source.charCodeAt(pos))) pos += 1;
   }
-  return { type: 'nmtoken', start, end: pos, value };
+  return ctx.source.substring(start, pos);
 }

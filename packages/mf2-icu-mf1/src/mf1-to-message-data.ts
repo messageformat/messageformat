@@ -1,6 +1,6 @@
 import type * as AST from '@messageformat/parser';
 import {
-  Expression,
+  FunctionRef,
   isLiteral,
   Literal,
   Message,
@@ -55,15 +55,16 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Literal | VariableRef | Expression {
+): Literal | VariableRef | FunctionRef {
   switch (token.type) {
     case 'content':
-      return { type: 'literal', value: token.value };
+      return { type: 'literal', quoted: false, value: token.value };
     case 'argument':
       return { type: 'variable', name: token.arg };
     case 'function': {
-      const fn: Expression = {
-        type: 'expression',
+      const fn: FunctionRef = {
+        type: 'function',
+        kind: 'value',
         name: token.key,
         operand: { type: 'variable', name: token.arg }
       };
@@ -73,14 +74,17 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        fn.options = [{ name: 'param', value: { type: 'literal', value } }];
+        fn.options = [
+          { name: 'param', value: { type: 'literal', quoted: false, value } }
+        ];
       }
       return fn;
     }
     case 'octothorpe': {
-      if (!pluralArg) return { type: 'literal', value: '#' };
-      const fn: Expression = {
-        type: 'expression',
+      if (!pluralArg) return { type: 'literal', quoted: false, value: '#' };
+      const fn: FunctionRef = {
+        type: 'function',
+        kind: 'value',
         name: 'number',
         operand: { type: 'variable', name: pluralArg }
       };
@@ -88,7 +92,11 @@ function tokenToPart(
         fn.options = [
           {
             name: 'pluralOffset',
-            value: { type: 'literal', value: String(pluralOffset) }
+            value: {
+              type: 'literal',
+              quoted: false,
+              value: String(pluralOffset)
+            }
           }
         ];
       return fn;
@@ -103,7 +111,7 @@ function argToPart({
   arg,
   pluralOffset,
   type
-}: SelectArg): VariableRef | Expression {
+}: SelectArg): VariableRef | FunctionRef {
   const argVar: VariableRef = { type: 'variable', name: arg };
   if (type === 'select') return argVar;
 
@@ -111,18 +119,19 @@ function argToPart({
   if (pluralOffset) {
     options.push({
       name: 'pluralOffset',
-      value: { type: 'literal', value: String(pluralOffset) }
+      value: { type: 'literal', quoted: false, value: String(pluralOffset) }
     });
   }
   if (type === 'selectordinal') {
     options.push({
       name: 'type',
-      value: { type: 'literal', value: 'ordinal' }
+      value: { type: 'literal', quoted: false, value: 'ordinal' }
     });
   }
 
   return {
-    type: 'expression',
+    type: 'function',
+    kind: 'value',
     name: 'number',
     operand: argVar,
     options
@@ -167,7 +176,9 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
   }
   const variants: Variant[] = keys.map(key => ({
     keys: key.map(k =>
-      k === 'other' ? { type: '*' } : { type: 'nmtoken', value: String(k) }
+      k === 'other'
+        ? { type: '*' }
+        : { type: 'literal', quoted: false, value: String(k) }
     ),
     value: { body: [] }
   }));

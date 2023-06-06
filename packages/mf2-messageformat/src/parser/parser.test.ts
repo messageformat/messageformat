@@ -40,11 +40,12 @@ describe('messages in resources', () => {
         end: src.length,
         body: [
           {
-            type: 'placeholder',
+            type: 'expression',
             start: 1,
             end: src.length - 1,
             body: {
               type: 'literal',
+              quoted: true,
               start: 2,
               end: src.length - 2,
               value: '\t \n\r\t\x01\x02\x03'
@@ -77,7 +78,7 @@ describe('messages in resources', () => {
       pattern: {
         body: [
           {
-            type: 'placeholder',
+            type: 'expression',
             body: { type: 'literal', value: '1\n \t2 \n \\ 3\n\\t' }
           }
         ]
@@ -89,7 +90,7 @@ describe('messages in resources', () => {
       pattern: {
         body: [
           {
-            type: 'placeholder',
+            type: 'expression',
             body: { type: 'literal', value: '1\n2 \n 3\n\t' }
           }
         ]

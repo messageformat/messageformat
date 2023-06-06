@@ -4,7 +4,7 @@ import type {
   VariableRefParsed
 } from './data-model.js';
 import type { ParseContext } from './message.js';
-import { parseNameValue } from './names.js';
+import { parseNameValue, parseUnquotedLiteralValue } from './names.js';
 
 // Text ::= (TextChar | TextEscape)+
 // TextChar ::= AnyChar - ('{' | '}' | Esc)
@@ -49,11 +49,42 @@ export function parseText(ctx: ParseContext, start: number): TextParsed {
   return { type: 'text', start, end: i, value };
 }
 
-// Literal ::= '(' (LiteralChar | LiteralEscape)* ')' /* ws: explicit */
-// Esc ::= '\'
-// LiteralChar ::= AnyChar - ('|' | Esc)
-// LiteralEscape ::= Esc Esc | Esc '|'
-export function parseLiteral(ctx: ParseContext, start: number): LiteralParsed {
+export function parseLiteral(
+  ctx: ParseContext,
+  start: number,
+  required: true
+): LiteralParsed;
+export function parseLiteral(
+  ctx: ParseContext,
+  start: number,
+  required: boolean
+): LiteralParsed | undefined;
+export function parseLiteral(
+  ctx: ParseContext,
+  start: number,
+  required: boolean
+): LiteralParsed | undefined {
+  if (ctx.source[start] === '|') return parseQuotedLiteral(ctx, start);
+  const value = parseUnquotedLiteralValue(ctx, start);
+  if (!value) {
+    if (required) ctx.onError('empty-token', start, start);
+    else return undefined;
+  }
+  const end = start + value.length;
+  return { type: 'literal', quoted: false, start, end, value };
+}
+
+// quoted      = "|" *(quoted-char / quoted-escape) "|"
+// quoted-char = %x0-5B         ; omit \
+//             / %x5D-7B        ; omit |
+//             / %x7D-D7FF      ; omit surrogates
+//             / %xE000-10FFFF
+// quoted-escape   = backslash ( backslash / "|" )
+// backslash       = %x5C ; U+005C REVERSE SOLIDUS "\"
+export function parseQuotedLiteral(
+  ctx: ParseContext,
+  start: number
+): LiteralParsed {
   let value = '';
   let pos = start + 1;
   for (let i = pos; i < ctx.source.length; ++i) {
@@ -69,7 +100,7 @@ export function parseLiteral(ctx: ParseContext, start: number): LiteralParsed {
       }
       case '|':
         value += ctx.source.substring(pos, i);
-        return { type: 'literal', start, end: i + 1, value };
+        return { type: 'literal', quoted: true, start, end: i + 1, value };
       case '\n':
         if (ctx.resource) {
           const nl = i;
@@ -88,7 +119,13 @@ export function parseLiteral(ctx: ParseContext, start: number): LiteralParsed {
   }
   value += ctx.source.substring(pos);
   ctx.onError('missing-char', ctx.source.length, '|');
-  return { type: 'literal', start, end: ctx.source.length, value };
+  return {
+    type: 'literal',
+    quoted: true,
+    start,
+    end: ctx.source.length,
+    value
+  };
 }
 
 // Variable ::= '$' Name /* ws: explicit */

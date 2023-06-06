@@ -10,11 +10,11 @@ import type {
 import type { MessageSyntaxError } from '../errors';
 import type {
   Expression,
+  FunctionRef,
   Junk,
   Literal,
-  MarkupEnd,
-  MarkupStart,
   Option,
+  Reserved,
   Text,
   VariableRef
 } from '../pattern';
@@ -33,7 +33,7 @@ export interface PatternMessageParsed extends PatternMessage {
 export interface SelectMessageParsed extends SelectMessage {
   type: 'select';
   declarations: DeclarationParsed[];
-  selectors: PlaceholderParsed[];
+  selectors: ExpressionParsed[];
   variants: VariantParsed[];
   errors: MessageSyntaxError[];
 }
@@ -49,14 +49,14 @@ export interface DeclarationParsed extends Declaration {
   start: number;
   end: number;
   target: VariableRefParsed | JunkParsed;
-  value: PlaceholderParsed | JunkParsed;
+  value: ExpressionParsed | JunkParsed;
 }
 
 export interface VariantParsed extends Variant {
   /** position of the `w` in `when` */
   start: number;
   end: number;
-  keys: Array<LiteralParsed | NmtokenParsed | CatchallKeyParsed>;
+  keys: Array<LiteralParsed | LiteralParsed | CatchallKeyParsed>;
   value: PatternParsed;
 }
 
@@ -72,7 +72,7 @@ export interface PatternParsed extends Pattern {
   start: number;
   /** position of the `}` */
   end: number;
-  body: Array<TextParsed | PlaceholderParsed>;
+  body: Array<TextParsed | ExpressionParsed>;
 }
 
 export interface TextParsed extends Text {
@@ -82,8 +82,8 @@ export interface TextParsed extends Text {
   value: string;
 }
 
-export interface PlaceholderParsed {
-  type: 'placeholder';
+export interface ExpressionParsed extends Expression {
+  type: 'expression';
   /** position of the `{` */
   start: number;
   /** position just past the `}` */
@@ -91,9 +91,8 @@ export interface PlaceholderParsed {
   body:
     | LiteralParsed
     | VariableRefParsed
-    | ExpressionParsed
-    | MarkupStartParsed
-    | MarkupEndParsed
+    | FunctionRefParsed
+    | ReservedParsed
     | JunkParsed;
 }
 
@@ -106,6 +105,7 @@ export interface JunkParsed extends Junk {
 
 export interface LiteralParsed extends Literal {
   type: 'literal';
+  quoted: boolean;
   /** position of the initial `|` */
   start: number;
   /** position just past the terminal `|` */
@@ -121,31 +121,25 @@ export interface VariableRefParsed extends VariableRef {
   name: string;
 }
 
-export interface ExpressionParsed extends Expression {
-  type: 'expression';
+export interface FunctionRefParsed extends FunctionRef {
+  type: 'function';
+  kind: 'open' | 'close' | 'value';
   operand: LiteralParsed | VariableRefParsed | undefined;
-  /** position of the `:`, so `operand.start` may be earlier */
+  /** position of the `:`/`+`/`-`, so `operand.start` may be earlier */
   start: number;
   end: number;
   name: string;
   options: OptionParsed[];
 }
 
-export interface MarkupStartParsed extends MarkupStart {
-  type: 'markup-start';
-  /** position of the `+` */
+export interface ReservedParsed extends Reserved {
+  type: 'reserved';
+  sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
+  operand: Literal | VariableRef | undefined;
+  source: string;
+  /** position of the sigil, so `operand.start` may be earlier */
   start: number;
   end: number;
-  name: string;
-  options: OptionParsed[];
-}
-
-export interface MarkupEndParsed extends MarkupEnd {
-  type: 'markup-end';
-  /** position of the `-` */
-  start: number;
-  end: number;
-  name: string;
 }
 
 export interface OptionParsed extends Option {
@@ -153,13 +147,5 @@ export interface OptionParsed extends Option {
   start: number;
   end: number;
   name: string;
-  value: LiteralParsed | NmtokenParsed | VariableRefParsed;
-}
-
-export interface NmtokenParsed extends Literal {
-  type: 'nmtoken';
-  /** position at the start of the value */
-  start: number;
-  end: number;
-  value: string;
+  value: LiteralParsed | LiteralParsed | VariableRefParsed;
 }

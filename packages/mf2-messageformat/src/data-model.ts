@@ -3,7 +3,7 @@ import type {
   Junk,
   Literal,
   PatternElement,
-  Placeholder,
+  Expression,
   VariableRef
 } from './pattern';
 
@@ -31,7 +31,7 @@ export interface PatternMessage {
 
 /**
  * A message may declare any number of local variables or aliases,
- * each with a value defined by a placeholder.
+ * each with a value defined by an expression.
  * The order of the declarations is not relevant,
  * but a valid message may not include a dependency loop amond them.
  *
@@ -39,7 +39,7 @@ export interface PatternMessage {
  */
 export interface Declaration {
   target: VariableRef | Junk;
-  value: Placeholder | Junk;
+  value: Expression | Junk;
 }
 
 /**
@@ -58,7 +58,7 @@ export interface Pattern {
  * argument types of MessageFormat 1.
  * Each case is defined by a key of one or more string identifiers,
  * and selection between them is made according to
- * the values of a corresponding number of placeholders.
+ * the values of a corresponding number of expressions.
  * Selection iterates among the `variants` in order,
  * and terminates when all of the Variant keys match.
  * The result of the selection is always a single Pattern.

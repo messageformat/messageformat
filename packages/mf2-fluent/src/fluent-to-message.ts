@@ -1,8 +1,8 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
-  Expression,
-  isExpression,
+  FunctionRef,
+  isFunctionRef,
   isText,
   Literal,
   Option,
@@ -53,16 +53,17 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
 
 function expressionToPart(
   exp: Fluent.Expression
-): Literal | VariableRef | Expression {
+): Literal | VariableRef | FunctionRef {
   switch (exp.type) {
     case 'NumberLiteral':
       return {
-        type: 'expression',
+        type: 'function',
+        kind: 'value',
         name: 'NUMBER',
-        operand: { type: 'literal', value: exp.value }
+        operand: { type: 'literal', quoted: false, value: exp.value }
       };
     case 'StringLiteral':
-      return { type: 'literal', value: exp.parse().value };
+      return { type: 'literal', quoted: true, value: exp.parse().value };
     case 'VariableReference':
       return { type: 'variable', name: exp.id.name };
     case 'FunctionReference': {
@@ -70,7 +71,7 @@ function expressionToPart(
       const { positional, named } = exp.arguments;
       const args = positional.map(exp => {
         const part = expressionToPart(exp);
-        if (isExpression(part))
+        if (isFunctionRef(part))
           throw new Error(`A Fluent ${exp.type} is not supported here.`);
         return part;
       });
@@ -79,50 +80,53 @@ function expressionToPart(
       }
       const operand = args[0];
       if (named.length === 0)
-        return { type: 'expression', name: func, operand };
+        return { type: 'function', kind: 'value', name: func, operand };
       const options: Option[] = [];
       for (const { name, value } of named) {
+        const quoted = value.type !== 'NumberLiteral';
+        const litValue = quoted ? value.parse().value : value.value;
         options.push({
           name: name.name,
-          value: {
-            type: 'literal',
-            value:
-              value.type === 'NumberLiteral' ? value.value : value.parse().value
-          }
+          value: { type: 'literal', quoted, value: litValue }
         });
       }
-      return { type: 'expression', name: func, operand, options };
+      return { type: 'function', kind: 'value', name: func, operand, options };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
       return {
-        type: 'expression',
+        type: 'function',
+        kind: 'value',
         name: 'MESSAGE',
-        operand: { type: 'literal', value: msgId }
+        operand: { type: 'literal', quoted: false, value: msgId }
       };
     }
     case 'TermReference': {
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      const operand: Literal = { type: 'literal', value: msgId };
+      const operand: Literal = { type: 'literal', quoted: false, value: msgId };
       if (!exp.arguments)
-        return { type: 'expression', name: 'MESSAGE', operand };
+        return { type: 'function', kind: 'value', name: 'MESSAGE', operand };
 
       const options: Option[] = [];
       for (const { name, value } of exp.arguments.named) {
+        const quoted = value.type !== 'NumberLiteral';
+        const litValue = quoted ? value.parse().value : value.value;
         options.push({
           name: name.name,
-          value: {
-            type: 'literal',
-            value:
-              value.type === 'NumberLiteral' ? value.value : value.parse().value
-          }
+          value: { type: 'literal', quoted, value: litValue }
         });
       }
-      return { type: 'expression', name: 'MESSAGE', operand, options };
+      return {
+        type: 'function',
+        kind: 'value',
+        name: 'MESSAGE',
+        operand,
+        options
+      };
     }
 
     /* istanbul ignore next - never happens */
@@ -137,7 +141,7 @@ function expressionToPart(
 
 const elementToPart = (
   el: Fluent.PatternElement
-): Literal | VariableRef | Expression | Text =>
+): Literal | VariableRef | FunctionRef | Text =>
   el.type === 'TextElement'
     ? { type: 'text', value: el.value }
     : expressionToPart(el.expression);
@@ -198,7 +202,7 @@ export function fluentToMessage(
     keys: key.map((k, i) =>
       k === CATCHALL
         ? { type: '*', value: args[i].defaultName }
-        : { type: 'nmtoken', value: String(k) }
+        : { type: 'literal', quoted: false, value: String(k) }
     ),
     value: { body: [] }
   }));

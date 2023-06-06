@@ -1,8 +1,12 @@
-import type tests from './test-messages.json';
-
-type Test = (typeof tests)[number];
-
-export function testName({ src, locale, params }: Test) {
+export function testName({
+  src,
+  locale,
+  params
+}: {
+  src: string;
+  locale?: string;
+  params?: Record<string, unknown>;
+}) {
   let name = src;
   if (locale) name += ` [${locale}]`;
   if (params)

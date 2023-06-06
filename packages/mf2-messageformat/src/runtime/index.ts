@@ -24,7 +24,7 @@ export { castAsBoolean, castAsInteger } from './cast';
 export const defaultRuntime = { datetime, number };
 
 /**
- * The runtime function registry available when resolving {@link Expression} elements.
+ * The runtime function registry available when resolving {@link FunctionRef} elements.
  *
  * @beta
  */
