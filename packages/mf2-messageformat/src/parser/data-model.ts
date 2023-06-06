@@ -12,8 +12,6 @@ import type {
   FunctionRef,
   Junk,
   Literal,
-  MarkupEnd,
-  MarkupStart,
   Option,
   Text,
   VariableRef
@@ -88,13 +86,7 @@ export interface ExpressionParsed {
   start: number;
   /** position just past the `}` */
   end: number;
-  body:
-    | LiteralParsed
-    | VariableRefParsed
-    | FunctionRefParsed
-    | MarkupStartParsed
-    | MarkupEndParsed
-    | JunkParsed;
+  body: LiteralParsed | VariableRefParsed | FunctionRefParsed | JunkParsed;
 }
 
 export interface JunkParsed extends Junk {
@@ -123,29 +115,13 @@ export interface VariableRefParsed extends VariableRef {
 
 export interface FunctionRefParsed extends FunctionRef {
   type: 'function';
+  kind: 'open' | 'close' | 'value';
   operand: LiteralParsed | VariableRefParsed | undefined;
-  /** position of the `:`, so `operand.start` may be earlier */
+  /** position of the `:`/`+`/`-`, so `operand.start` may be earlier */
   start: number;
   end: number;
   name: string;
   options: OptionParsed[];
-}
-
-export interface MarkupStartParsed extends MarkupStart {
-  type: 'markup-start';
-  /** position of the `+` */
-  start: number;
-  end: number;
-  name: string;
-  options: OptionParsed[];
-}
-
-export interface MarkupEndParsed extends MarkupEnd {
-  type: 'markup-end';
-  /** position of the `-` */
-  start: number;
-  end: number;
-  name: string;
 }
 
 export interface OptionParsed extends Option {

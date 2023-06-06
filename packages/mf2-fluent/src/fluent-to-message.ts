@@ -58,6 +58,7 @@ function expressionToPart(
     case 'NumberLiteral':
       return {
         type: 'function',
+        kind: 'value',
         name: 'NUMBER',
         operand: { type: 'literal', value: exp.value }
       };
@@ -78,7 +79,8 @@ function expressionToPart(
         throw new Error(`More than one positional argument is not supported.`);
       }
       const operand = args[0];
-      if (named.length === 0) return { type: 'function', name: func, operand };
+      if (named.length === 0)
+        return { type: 'function', kind: 'value', name: func, operand };
       const options: Option[] = [];
       for (const { name, value } of named) {
         options.push({
@@ -90,7 +92,7 @@ function expressionToPart(
           }
         });
       }
-      return { type: 'function', name: func, operand, options };
+      return { type: 'function', kind: 'value', name: func, operand, options };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
@@ -98,6 +100,7 @@ function expressionToPart(
         : exp.id.name;
       return {
         type: 'function',
+        kind: 'value',
         name: 'MESSAGE',
         operand: { type: 'literal', value: msgId }
       };
@@ -107,7 +110,8 @@ function expressionToPart(
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
       const operand: Literal = { type: 'literal', value: msgId };
-      if (!exp.arguments) return { type: 'function', name: 'MESSAGE', operand };
+      if (!exp.arguments)
+        return { type: 'function', kind: 'value', name: 'MESSAGE', operand };
 
       const options: Option[] = [];
       for (const { name, value } of exp.arguments.named) {
@@ -120,7 +124,13 @@ function expressionToPart(
           }
         });
       }
-      return { type: 'function', name: 'MESSAGE', operand, options };
+      return {
+        type: 'function',
+        kind: 'value',
+        name: 'MESSAGE',
+        operand,
+        options
+      };
     }
 
     /* istanbul ignore next - never happens */

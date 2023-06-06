@@ -193,14 +193,12 @@
     "exp": "{+tag}"
   },
   {
-    "src": "{bad {|foo| +markup}}",
-    "exp": "bad {+markup}",
-    "errors": [{ "type": "extra-content" }]
+    "src": "{{|foo| +markup}}",
+    "exp": "{+markup}"
   },
   {
     "src": "{{-tag foo=bar}}",
-    "exp": "{-tag}",
-    "errors": [{ "type": "extra-content" }]
+    "exp": "{-tag}"
   },
   {
     "src": "no braces",
@@ -300,8 +298,7 @@
   },
   {
     "src": "match {+foo} when * {foo}",
-    "exp": "foo",
-    "errors": [{ "type": "bad-selector" }]
+    "exp": "foo"
   },
   {
     "src": "match {|foo|} when*{foo}",

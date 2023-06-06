@@ -4,7 +4,7 @@ import type { Runtime } from '../runtime';
 
 function validateParts(parts: PatternElement[], runtime: Runtime) {
   for (const part of parts) {
-    if (isFunctionRef(part)) {
+    if (isFunctionRef(part) && part.kind === 'value') {
       if (typeof runtime[part.name] !== 'function') {
         throw new ReferenceError(
           `Runtime function not available: ${part.name}`

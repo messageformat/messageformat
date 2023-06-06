@@ -287,6 +287,7 @@ function resolvePart(
 
       return {
         type: 'function',
+        kind: 'value',
         name: part.attributes.name,
         operand,
         options

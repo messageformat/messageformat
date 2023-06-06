@@ -64,6 +64,7 @@ function tokenToPart(
     case 'function': {
       const fn: FunctionRef = {
         type: 'function',
+        kind: 'value',
         name: token.key,
         operand: { type: 'variable', name: token.arg }
       };
@@ -81,6 +82,7 @@ function tokenToPart(
       if (!pluralArg) return { type: 'literal', value: '#' };
       const fn: FunctionRef = {
         type: 'function',
+        kind: 'value',
         name: 'number',
         operand: { type: 'variable', name: pluralArg }
       };
@@ -123,6 +125,7 @@ function argToPart({
 
   return {
     type: 'function',
+    kind: 'value',
     name: 'number',
     operand: argVar,
     options

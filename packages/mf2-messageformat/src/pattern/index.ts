@@ -4,18 +4,11 @@ import type { MessageValue } from '../message-value';
 import { FunctionRef, resolveFunctionRef } from './function-ref';
 import { Junk, resolveJunk } from './junk';
 import { Literal, resolveLiteral, Text } from './literal';
-import {
-  MarkupEnd,
-  MarkupStart,
-  resolveMarkupEnd,
-  resolveMarkupStart
-} from './markup';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isFunctionRef, FunctionRef, Option } from './function-ref';
 export { isJunk, Junk } from './junk';
 export { isLiteral, isText, Literal, Text } from './literal';
-export { isMarkupEnd, isMarkupStart, MarkupEnd, MarkupStart } from './markup';
 export { isVariableRef, VariableRef } from './variable-ref';
 
 /**
@@ -25,7 +18,7 @@ export { isVariableRef, VariableRef } from './variable-ref';
  */
 export interface Expression {
   type: 'expression';
-  body: Literal | VariableRef | FunctionRef | MarkupStart | MarkupEnd | Junk;
+  body: Literal | VariableRef | FunctionRef | Junk;
 }
 
 /**
@@ -52,8 +45,6 @@ export type PatternElement =
   | FunctionRef
   | Junk
   | Literal
-  | MarkupEnd
-  | MarkupStart
   | Expression
   | Text
   | VariableRef;
@@ -74,10 +65,6 @@ export function resolvePatternElement(
       return resolveVariableRef(ctx, elem);
     case 'function':
       return resolveFunctionRef(ctx, elem);
-    case 'markup-start':
-      return resolveMarkupStart(ctx, elem);
-    case 'markup-end':
-      return resolveMarkupEnd(ctx, elem);
     case 'junk':
       return resolveJunk(ctx, elem);
     default:

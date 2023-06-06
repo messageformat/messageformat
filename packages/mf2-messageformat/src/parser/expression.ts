@@ -3,8 +3,6 @@ import type {
   FunctionRefParsed,
   JunkParsed,
   LiteralParsed,
-  MarkupStartParsed,
-  MarkupEndParsed,
   NmtokenParsed,
   OptionParsed,
   ExpressionParsed,
@@ -15,7 +13,7 @@ import { parseNameValue, parseNmtoken } from './names.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseVariable } from './values.js';
 
-// Placeholder ::= '{' (Expression | Markup | MarkupEnd)? '}'
+// expression = "{" [s] (((literal / variable) [s annotation]) / annotation) [s] "}"
 export function parseExpression(
   ctx: ParseContext,
   start: number
@@ -36,20 +34,14 @@ export function parseExpression(
     }
   }
 
-  let body:
-    | LiteralParsed
-    | VariableRefParsed
-    | FunctionRefParsed
-    | MarkupStartParsed
-    | MarkupEndParsed
-    | JunkParsed;
+  let body: LiteralParsed | VariableRefParsed | FunctionRefParsed | JunkParsed;
   let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(ctx.source, pos);
   switch (ctx.source[pos]) {
     case ':':
     case '+':
     case '-':
-      body = parseFunctionRefOrMarkup(ctx, pos, arg);
+      body = parseFunctionRef(ctx, pos, arg);
       pos = body.end;
       break;
     default:
@@ -83,18 +75,13 @@ export function parseExpression(
   return { type: 'expression', start, end: pos, body };
 }
 
-// Expression ::= Operand Annotation? | Annotation
-// Operand ::= Literal | Variable
-// Annotation ::= Function Option*
-// Function ::= ':' Name /* ws: explicit */
-// Markup ::= MarkupStart Option*
-// MarkupStart ::= '+' Name /* ws: explicit */
-// MarkupEnd ::= '-' Name /* ws: explicit */
-function parseFunctionRefOrMarkup(
+// annotation = function *(s option)
+// function = (":" / "+" / "-") name
+function parseFunctionRef(
   ctx: ParseContext,
   start: number,
   operand: LiteralParsed | VariableRefParsed | undefined
-): FunctionRefParsed | MarkupStartParsed | MarkupEndParsed {
+): FunctionRefParsed {
   const sigil = ctx.source[start];
   let pos = start + 1; // ':' | '+' | '-'
   const name = parseNameValue(ctx.source, pos);
@@ -111,31 +98,11 @@ function parseFunctionRefOrMarkup(
     options.push(opt);
     pos = opt.end;
   }
-
-  const end = pos;
-  if (sigil === ':') {
-    return { type: 'function', operand, start, end, name, options };
-  }
-
-  if (operand) {
-    const { start, end } = operand;
-    ctx.errors.unshift(new MessageSyntaxError('extra-content', start, end));
-  }
-  if (sigil === '+') {
-    return { type: 'markup-start', start, end, name, options };
-  }
-
-  if (options.length > 0) {
-    ctx.onError(
-      'extra-content',
-      options[0].start,
-      options[options.length - 1].end
-    );
-  }
-  return { type: 'markup-end', start, end, name };
+  const kind = sigil === '+' ? 'open' : sigil === '-' ? 'close' : 'value';
+  return { type: 'function', kind, operand, start, end: pos, name, options };
 }
 
-// Option ::= Name '=' (Literal | Nmtoken | Variable)
+// option = name [s] "=" [s] (literal / nmtoken / variable)
 function parseOption(ctx: ParseContext, start: number): OptionParsed {
   const name = parseNameValue(ctx.source, start);
   let pos = start + name.length;

@@ -16,12 +16,11 @@ import {
   isVariableRef,
   Junk,
   Literal,
-  MarkupEnd,
-  MarkupStart,
   Option,
   PatternElement,
   VariableRef
 } from '../pattern';
+import { functionRefSourceName } from '../pattern/function-ref';
 
 /**
  * Stringify a message using its syntax representation.
@@ -60,7 +59,7 @@ function stringifyDeclaration({ target, value }: Declaration) {
   return `let ${targetStr} = ${valueStr}\n`;
 }
 
-function stringifyFunctionRef({ name, operand, options }: FunctionRef) {
+function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
   let res: string;
   if (isLiteral(operand)) {
     res = stringifyLiteral(operand) + ' ';
@@ -69,7 +68,7 @@ function stringifyFunctionRef({ name, operand, options }: FunctionRef) {
   } else {
     res = '';
   }
-  res += `:${name}`;
+  res += functionRefSourceName(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   return res;
 }
@@ -85,16 +84,6 @@ function stringifyLiteral(lit: Literal) {
 
   const esc = lit.value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
   return `|${esc}|`;
-}
-
-function stringifyMarkupEnd(end: MarkupEnd) {
-  return `-${end.name}`;
-}
-
-function stringifyMarkupStart({ name, options }: MarkupStart) {
-  let res = `+${name}`;
-  if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
-  return res;
 }
 
 function stringifyOption(opt: Option) {
@@ -124,12 +113,6 @@ function stringifyExpression(ph: PatternElement) {
       break;
     case 'literal':
       res = stringifyLiteral(body);
-      break;
-    case 'markup-end':
-      res = stringifyMarkupEnd(body);
-      break;
-    case 'markup-start':
-      res = stringifyMarkupStart(body);
       break;
     case 'variable':
       res = stringifyVariableRef(body);
