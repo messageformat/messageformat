@@ -607,7 +607,9 @@ describe('Errors', () => {
 
     it('should allow invalid keys for plurals if the `strictPluralKeys` option is set to false', function () {
       expect(function () {
-        parse('{NUM, plural, one { 1 } invalid { error } other { 2 }}', { strictPluralKeys: false });
+        parse('{NUM, plural, one { 1 } invalid { error } other { 2 }}', {
+          strictPluralKeys: false
+        });
       }).not.toThrow();
       expect(function () {
         parse('{NUM, plural, one { 1 } some { error } other { 2 }}', {
