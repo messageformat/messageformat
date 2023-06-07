@@ -251,12 +251,14 @@ class Parser {
   strict: boolean;
   cardinalKeys: string[];
   ordinalKeys: string[];
+  strictPluralKeys: boolean;
 
   constructor(src: string, opt: ParseOptions) {
     this.lexer = lexer.reset(src);
-    this.cardinalKeys = (opt && opt.cardinal) || defaultPluralKeys;
-    this.ordinalKeys = (opt && opt.ordinal) || defaultPluralKeys;
-    this.strict = (opt && opt.strict) || false;
+    this.cardinalKeys = opt?.cardinal ?? defaultPluralKeys;
+    this.ordinalKeys = opt?.ordinal ?? defaultPluralKeys;
+    this.strict = opt?.strict ?? false;
+    this.strictPluralKeys = opt?.strictPluralKeys ?? true;
   }
 
   parse() {
@@ -269,7 +271,7 @@ class Parser {
         throw new ParseError(lt, `The case ${key} is not valid with select`);
     } else if (type !== 'select') {
       const keys = type === 'plural' ? this.cardinalKeys : this.ordinalKeys;
-      if (keys.length > 0 && !keys.includes(key)) {
+      if (this.strictPluralKeys && keys.length > 0 && !keys.includes(key)) {
         const msg = `The ${type} case ${key} is not valid in this locale`;
         throw new ParseError(lt, msg);
       }
@@ -476,6 +478,14 @@ export interface ParseOptions {
    *   Outside those, `#` and `'#'` will be parsed as literal text.
    */
   strict?: boolean;
+
+  /**
+   * By default, the parser will reject any plural keys that are not valid
+   * {@link http://cldr.unicode.org/index/cldr-spec/plural-rules | Unicode CLDR}
+   * plural category keys.
+   * Setting `strictPluralKeys: false` will disable this check.
+   */
+  strictPluralKeys?: boolean;
 }
 
 /**

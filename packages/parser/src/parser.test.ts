@@ -593,15 +593,31 @@ describe('Errors', () => {
     }).toThrow();
   });
 
-  it('should not allow invalid keys for plurals', function () {
-    expect(function () {
-      parse('{NUM, plural, one { 1 } invalid { error } other { 2 }}');
-    }).toThrow();
-    expect(function () {
-      parse('{NUM, plural, one { 1 } some { error } other { 2 }}', {
-        cardinal: ['one', 'other']
-      });
-    }).toThrow();
+  describe('strictPluralKeys', () => {
+    it('should not allow invalid keys for plurals by default', function () {
+      expect(function () {
+        parse('{NUM, plural, one { 1 } invalid { error } other { 2 }}');
+      }).toThrow();
+      expect(function () {
+        parse('{NUM, plural, one { 1 } some { error } other { 2 }}', {
+          cardinal: ['one', 'other']
+        });
+      }).toThrow();
+    });
+
+    it('should allow invalid keys for plurals if the `strictPluralKeys` option is set to false', function () {
+      expect(function () {
+        parse('{NUM, plural, one { 1 } invalid { error } other { 2 }}', {
+          strictPluralKeys: false
+        });
+      }).not.toThrow();
+      expect(function () {
+        parse('{NUM, plural, one { 1 } some { error } other { 2 }}', {
+          cardinal: ['one', 'other'],
+          strictPluralKeys: false
+        });
+      }).not.toThrow();
+    });
   });
 
   it('should not allow invalid keys for selectordinals', function () {
