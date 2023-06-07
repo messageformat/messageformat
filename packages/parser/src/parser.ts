@@ -255,10 +255,10 @@ class Parser {
 
   constructor(src: string, opt: ParseOptions) {
     this.lexer = lexer.reset(src);
-    this.cardinalKeys = (opt && opt.cardinal) || defaultPluralKeys;
-    this.ordinalKeys = (opt && opt.ordinal) || defaultPluralKeys;
-    this.strict = (opt && opt.strict) || false;
-    this.strictPluralKeys = (opt && opt.strictPluralKeys) ?? true;
+    this.cardinalKeys = opt?.cardinal ?? defaultPluralKeys;
+    this.ordinalKeys = opt?.ordinal ?? defaultPluralKeys;
+    this.strict = opt?.strict ?? false;
+    this.strictPluralKeys = opt?.strictPluralKeys ?? true;
   }
 
   parse() {
