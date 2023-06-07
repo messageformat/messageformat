@@ -71,7 +71,8 @@ export default class Compiler {
     plural: PluralObject,
     plurals?: { [key: string]: PluralObject }
   ) {
-    const { localeCodeFromKey, requireAllArguments, strict } = this.options;
+    const { localeCodeFromKey, requireAllArguments, strict, strictPluralKeys } =
+      this.options;
 
     if (typeof src === 'object') {
       const result: StringStructure = {};
@@ -87,7 +88,8 @@ export default class Compiler {
     const parserOptions = {
       cardinal: plural.cardinals,
       ordinal: plural.ordinals,
-      strict
+      strict,
+      strictPluralKeys
     };
     this.arguments = [];
     const r = parse(src, parserOptions).map(token => this.token(token, null));
