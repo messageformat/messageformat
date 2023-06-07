@@ -480,7 +480,8 @@ export interface ParseOptions {
   strict?: boolean;
 
   /**
-   * By default, the parser will reject any plural keys that are not valid {@link http://cldr.unicode.org/index/cldr-spec/plural-rules | Unicode CLDR}
+   * By default, the parser will reject any plural keys that are not valid
+   * {@link http://cldr.unicode.org/index/cldr-spec/plural-rules | Unicode CLDR}
    * plural category keys.
    * Setting `strictPluralKeys: false` will disable this check.
    */
