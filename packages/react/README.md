@@ -116,7 +116,7 @@ export const Example = () => (
 [messageformat]: https://messageformat.github.io
 [react-message-context]: https://www.npmjs.com/package/react-message-context
 [api documentation]: http://messageformat.github.io/messageformat/api/react/
-[example]: https://github.com/messageformat/messageformat/tree/master/examples/react
+[example]: https://github.com/messageformat/messageformat/tree/main/examples/react
 [@messageformat/loader]: https://www.npmjs.com/package/@messageformat/loader
 
 ---
