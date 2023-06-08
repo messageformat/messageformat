@@ -81,11 +81,3 @@ See [CONTRIBUTING.md](https://github.com/messageformat/messageformat/blob/master
 
 - Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - [alexsexton.com](http://alexsexton.com/)
 - Eemeli Aro - [@eemeli_aro](http://twitter.com/eemeli_aro) - [github.com/eemeli](https://github.com/eemeli)
-
-## Credits
-
-Thanks to:
-
-- [Vincit](https://vincit.fi/en/) - Eemeli's current employer - for letting him do cool stuff like this.
-- [Bazaarvoice](https://github.com/Bazaarvoice) - Alex's previous employer - for letting him do cool stuff like this.
-- Norbert Lindenberg for showing Alex how good it can be.

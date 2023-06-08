@@ -104,7 +104,7 @@ This may be useful if you want your messages to be completely determined by your
 
 ---
 
-[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+[Messageformat](https://messageformat.github.io/) is an OpenJS Foundation project, and we follow its [Code of Conduct](https://code-of-conduct.openjsf.org/).
 
 <a href="https://openjsf.org">
 <img width=200 alt="OpenJS Foundation" src="https://messageformat.github.io/messageformat/logo/openjsf.svg" />

@@ -17,7 +17,7 @@ This package was previously named [messageformat](https://www.npmjs.com/package/
 
 ---
 
-Messageformat is an OpenJS Foundation project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+Messageformat is an OpenJS Foundation project, and we follow its [Code of Conduct](https://code-of-conduct.openjsf.org/).
 
 Copyright [OpenJS Foundation](https://openjsf.org) and messageformat contributors. All rights reserved.
 The [OpenJS Foundation](https://openjsf.org) has registered trademarks and uses trademarks.

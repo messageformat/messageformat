@@ -3,7 +3,7 @@
 We welcome all relevant issues and pull requests, and aim to provide a constructive environment.
 If something is not clear and you have looked at our [documentation site](https://messageformat.github.io/), then it probably counts as a bug of some sort.
 
-Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://github.com/openjs-foundation/cross-project-council/blob/master/CODE_OF_CONDUCT.md).
+Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://code-of-conduct.openjsf.org/).
 
 Our current governance is pretty straightforward; our core contributors [Alex Sexton](https://github.com/SlexAxton) and [Eemeli Aro](https://github.com/eemeli) are in charge. If you'd like to have a say too, active participation is a really good way forward.
 
