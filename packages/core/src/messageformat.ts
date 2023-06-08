@@ -117,6 +117,16 @@ export interface MessageFormatOptions<
    * Default: `false`
    */
   strict?: boolean;
+
+  /**
+   * Enable strict checks for plural keys according to
+   * {@link http://cldr.unicode.org/index/cldr-spec/plural-rules | Unicode CLDR}.
+   * When set to `false`, the compiler will also accept any invalid plural keys.
+   * Also see the corresponding {@link @messageformat/parser#ParseOptions | parser option}.
+   *
+   * Default: `true`
+   */
+  strictPluralKeys?: boolean;
 }
 
 /**
@@ -226,7 +236,8 @@ export default class MessageFormat<
         requireAllArguments: false,
         returnType: 'string',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        strict: (options && (options as any).strictNumberSign) || false
+        strict: (options && (options as any).strictNumberSign) || false,
+        strictPluralKeys: true
       },
       options
     );

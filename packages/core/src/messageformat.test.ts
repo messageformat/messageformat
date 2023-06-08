@@ -122,6 +122,12 @@ describe('compile() errors', () => {
     );
   });
 
+  test('Invalid plural key when strictPluralKeys option is set to `false`', () => {
+    const mf = new MessageFormat('en', { strictPluralKeys: false });
+    const src = '{X, plural, foo{a} other{b}}';
+    expect(() => mf.compile(src)).not.toThrow();
+  });
+
   test('Invalid selectordinal key', () => {
     const mf = new MessageFormat('en');
     const src = '{X, selectordinal, foo{a}}';
