@@ -75,7 +75,7 @@ You may use this software under the MIT License:
 
 We require all code contributions to be covered under the OpenJS Foundation's [Contributor License Agreement](https://js.foundation/CLA/). This can be done electronically and essentially ensures that you are making it clear that your contributions are your contributions and that you have the legal right to contribute them under our MIT license. If you've not previously signed the CLA, our bot will provide you with instructions for how to do so.
 
-See [CONTRIBUTING.md](https://github.com/messageformat/messageformat/blob/master/CONTRIBUTING.md) in the main repo for more details.
+See [CONTRIBUTING.md](https://github.com/messageformat/messageformat/blob/main/CONTRIBUTING.md) in the main repo for more details.
 
 ## Core Contributors
 
