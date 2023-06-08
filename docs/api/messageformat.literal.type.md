@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-type: 'literal' | 'nmtoken';
+type: 'literal';
 ```

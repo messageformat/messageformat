@@ -41,6 +41,6 @@ export declare class MessageValue<T = unknown>
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey(key)](./messageformat.messagevalue.matchselectkey.md) |  | **_(BETA)_** |
+|  [selectKey(keys)](./messageformat.messagevalue.selectkey.md) |  | **_(BETA)_** |
 |  [toString(onError)](./messageformat.messagevalue.tostring.md) |  | **_(BETA)_** |
 

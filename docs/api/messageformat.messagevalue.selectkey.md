@@ -1,5 +1,5 @@
 ---
-title: "Declaration / value"
+title: "MessageValue / selectKey"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# Declaration.value property
+# MessageValue.selectKey() method
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -17,5 +17,16 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-value: Expression | Junk;
+selectKey(keys: Set<string>): string | null;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  keys | Set&lt;string&gt; |  |
+
+**Returns:**
+
+string \| null
+

@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of placeholders. Selection iterates among the `variants` in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern.
+SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of expressions. Selection iterates among the `variants` in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern.
 
 **Signature:**
 

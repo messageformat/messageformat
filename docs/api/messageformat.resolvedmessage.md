@@ -32,6 +32,6 @@ export declare class ResolvedMessage extends MessageValue<MessageValue[]>
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey(key)](./messageformat.resolvedmessage.matchselectkey.md) |  | **_(BETA)_** |
+|  [selectKey(keys)](./messageformat.resolvedmessage.selectkey.md) |  | **_(BETA)_** |
 |  [toString(onError)](./messageformat.resolvedmessage.tostring.md) |  | **_(BETA)_** |
 

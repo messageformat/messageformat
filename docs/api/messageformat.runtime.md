@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-The runtime function registry available when resolving [Expression](./messageformat.expression.md) elements.
+The runtime function registry available when resolving [FunctionRef](./messageformat.functionref.md) elements.
 
 **Signature:**
 

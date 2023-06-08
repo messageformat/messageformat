@@ -18,14 +18,17 @@ Parse the string syntax representation of a message into its corresponding data 
 **Signature:**
 
 ```typescript
-export declare function parseMessage(src: string): MessageParsed;
+export declare function parseMessage(source: string, opt?: {
+    resource?: boolean;
+}): MessageParsed;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  src | string |  |
+|  source | string |  |
+|  opt | { resource?: boolean; } | _(Optional)_ |
 
 **Returns:**
 

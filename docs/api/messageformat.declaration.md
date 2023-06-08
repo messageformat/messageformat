@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-A message may declare any number of local variables or aliases, each with a value defined by a placeholder. The order of the declarations is not relevant, but a valid message may not include a dependency loop amond them.
+A message may declare any number of local variables or aliases, each with a value defined by an expression. The order of the declarations is not relevant, but a valid message may not include a dependency loop amond them.
 
 **Signature:**
 
@@ -26,5 +26,5 @@ export interface Declaration
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [target](./messageformat.declaration.target.md) |  | [VariableRef](./messageformat.variableref.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
-|  [value](./messageformat.declaration.value.md) |  | [Placeholder](./messageformat.placeholder.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
+|  [value](./messageformat.declaration.value.md) |  | [Expression](./messageformat.expression.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
 

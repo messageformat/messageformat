@@ -1,5 +1,5 @@
 ---
-title: "Declaration / value"
+title: "FunctionRef / options"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# Declaration.value property
+# FunctionRef.options property
 
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-value: Expression | Junk;
+options?: Option[];
 ```

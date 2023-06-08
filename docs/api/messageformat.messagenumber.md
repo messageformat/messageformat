@@ -39,7 +39,7 @@ export declare class MessageNumber extends MessageValue<number | bigint>
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [getPluralCategory()](./messageformat.messagenumber.getpluralcategory.md) | <code>protected</code> | **_(BETA)_** |
-|  [matchSelectKey(key)](./messageformat.messagenumber.matchselectkey.md) |  | **_(BETA)_** In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
+|  [selectKey(keys)](./messageformat.messagenumber.selectkey.md) |  | **_(BETA)_** In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
 |  [toParts()](./messageformat.messagenumber.toparts.md) |  | **_(BETA)_** |
 |  [toString(onError)](./messageformat.messagenumber.tostring.md) |  | **_(BETA)_** |
 

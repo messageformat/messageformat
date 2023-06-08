@@ -18,11 +18,11 @@ The contents of a message are a sequence of pattern elements, which may be immed
 **Signature:**
 
 ```typescript
-export type PatternElement = Expression | Junk | Literal | MarkupEnd | MarkupStart | Placeholder | Text | VariableRef;
+export type PatternElement = Expression | FunctionRef | Junk | Literal | Reserved | Text | VariableRef;
 ```
-**References:** [Expression](./messageformat.expression.md)<!-- -->, [Junk](./messageformat.junk.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [MarkupEnd](./messageformat.markupend.md)<!-- -->, [MarkupStart](./messageformat.markupstart.md)<!-- -->, [Placeholder](./messageformat.placeholder.md)<!-- -->, [Text](./messageformat.text.md)<!-- -->, [VariableRef](./messageformat.variableref.md)
+**References:** [Expression](./messageformat.expression.md)<!-- -->, [FunctionRef](./messageformat.functionref.md)<!-- -->, [Junk](./messageformat.junk.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [Reserved](./messageformat.reserved.md)<!-- -->, [Text](./messageformat.text.md)<!-- -->, [VariableRef](./messageformat.variableref.md)
 
 ## Remarks
 
-Depending on the syntax, pattern elements may be wrapped within a Placeholder.
+Depending on the syntax, pattern elements may be wrapped within an Expression.
 

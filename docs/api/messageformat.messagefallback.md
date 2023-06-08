@@ -36,6 +36,6 @@ Used to represent parse errors as well as runtime/formatting errors.
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [matchSelectKey()](./messageformat.messagefallback.matchselectkey.md) |  | **_(BETA)_** |
+|  [selectKey()](./messageformat.messagefallback.selectkey.md) |  | **_(BETA)_** |
 |  [toString()](./messageformat.messagefallback.tostring.md) |  | **_(BETA)_** |
 

@@ -29,6 +29,7 @@ Always contains a string value. In Function arguments and options, the expeted t
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.literal.type.md) |  | 'literal' \| 'nmtoken' | **_(BETA)_** |
+|  [quoted](./messageformat.literal.quoted.md) |  | boolean | **_(BETA)_** |
+|  [type](./messageformat.literal.type.md) |  | 'literal' | **_(BETA)_** |
 |  [value](./messageformat.literal.value.md) |  | string | **_(BETA)_** |
 

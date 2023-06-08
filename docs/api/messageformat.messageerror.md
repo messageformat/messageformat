@@ -27,5 +27,5 @@ export declare class MessageError extends Error
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.messageerror.type.md) |  | 'junk-element' \| 'missing-func' \| 'unresolved-var' \| typeof [MessageSyntaxError.prototype.type](./messageformat.messagesyntaxerror.type.md) |  |
+|  [type](./messageformat.messageerror.type.md) |  | 'junk-element' \| 'missing-func' \| 'reserved' \| 'unresolved-var' \| typeof [MessageSyntaxError.prototype.type](./messageformat.messagesyntaxerror.type.md) |  |
 

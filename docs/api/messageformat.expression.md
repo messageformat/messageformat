@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-To resolve an Expression, an externally defined function is called.
+Wrapper for non-literal content.
 
 **Signature:**
 
@@ -21,16 +21,10 @@ To resolve an Expression, an externally defined function is called.
 export interface Expression 
 ```
 
-## Remarks
-
-The `name` identifies a function that takes in the arguments `args`<!-- -->, the current locale, as well as any `options`<!-- -->, and returns some corresponding output. Likely functions available by default would include `'plural'` for determining the plural category of a numeric value, as well as `'number'` and `'date'` for formatting values.
-
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.expression.name.md) |  | string | **_(BETA)_** |
-|  [operand?](./messageformat.expression.operand.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | **_(BETA)_** _(Optional)_ |
-|  [options?](./messageformat.expression.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [body](./messageformat.expression.body.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) \| [FunctionRef](./messageformat.functionref.md) \| [Reserved](./messageformat.reserved.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
 |  [type](./messageformat.expression.type.md) |  | 'expression' | **_(BETA)_** |
 

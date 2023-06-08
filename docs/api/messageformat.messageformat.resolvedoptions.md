@@ -18,7 +18,7 @@ nav_exclude: true
 
 ```typescript
 resolvedOptions(): {
-        localeMatcher: "best fit" | "lookup";
+        localeMatcher: "lookup" | "best fit";
         locales: string[];
         message: Message;
         runtime: Readonly<Runtime>;
@@ -26,5 +26,5 @@ resolvedOptions(): {
 ```
 **Returns:**
 
-{ localeMatcher: "best fit" \| "lookup"; locales: string\[\]; message: [Message](./messageformat.message.md)<!-- -->; runtime: Readonly&lt;[Runtime](./messageformat.runtime.md)<!-- -->&gt;; }
+{ localeMatcher: "lookup" \| "best fit"; locales: string\[\]; message: [Message](./messageformat.message.md)<!-- -->; runtime: Readonly&lt;[Runtime](./messageformat.runtime.md)<!-- -->&gt;; }
 
