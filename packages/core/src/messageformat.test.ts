@@ -124,10 +124,8 @@ describe('compile() errors', () => {
 
   test('Invalid plural key when strictPluralKeys option is set to `false`', () => {
     const mf = new MessageFormat('en', { strictPluralKeys: false });
-    const src = '{X, plural, foo{a}}';
-    expect(() => mf.compile(src)).not.toThrow(
-      'The plural case foo is not valid in this locale'
-    );
+    const src = '{X, plural, foo{a} other{b}}';
+    expect(() => mf.compile(src)).not.toThrow();
   });
 
   test('Invalid selectordinal key', () => {
