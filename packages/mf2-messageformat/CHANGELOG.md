@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.0-4](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-3.cf...messageformat@4.0.0-4) (2023-06-08)
+
+### Features
+
+* Allow colon `:` in name-char ([unicode-org/message-format-wg#365](https://github.com/unicode-org/message-format-wg/issues/365)) ([a9b9854](https://github.com/messageformat/messageformat/commit/a9b9854cbfb242ddd26d8bd7bd2eceaec9266139))
+* Drop separate syntax constructs for markup ([unicode-org/message-format-wg#371](https://github.com/unicode-org/message-format-wg/issues/371)) ([6a2261b](https://github.com/messageformat/messageformat/commit/6a2261b237bd63ae9ffab3114568ea592e6e0045))
+* Support parsing reserved expressions ([unicode-org/message-format-wg#374](https://github.com/unicode-org/message-format-wg/issues/374)) ([68f4066](https://github.com/messageformat/messageformat/commit/68f406669de84b03b97de8e3924d935eb922cbb4))
+* Replace `nmtoken` with `unquoted` ([unicode-org/message-format-wg#364](https://github.com/unicode-org/message-format-wg/issues/364)) ([fd68779](https://github.com/messageformat/messageformat/commit/fd68779a22c2653a3d5fc86c4399bbb76bbc8bb0))
+* Add resource mode to `parseMessage()` ([#396](https://github.com/messageformat/messageformat/issues/396)) ([e7d2dff](https://github.com/messageformat/messageformat/commit/e7d2dffbefc8c1aadcef2bc60ffa24a92f1496e4))
+
 ## [4.0.0-3.cf](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-3...messageformat@4.0.0-3.cf) (2023-03-14)
 
 * Use column-first rather than first-match selection ([f5d1bba](https://github.com/messageformat/messageformat/commit/f5d1bba7b33b697eeb73bd9de1c01320f3d43bab))

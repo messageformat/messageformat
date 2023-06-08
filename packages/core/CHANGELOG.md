@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.0](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.1.0...@messageformat/core@3.2.0) (2023-06-08)
+
+### Features
+
+* Add `strictPluralKeys` option to disable strict plural key check ([#400](https://github.com/messageformat/messageformat/issues/400))
+
 ## [3.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/core@3.0.1...@messageformat/core@3.1.0) (2023-03-11)
 
 ### Features

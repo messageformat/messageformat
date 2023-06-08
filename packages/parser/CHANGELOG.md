@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/parser@5.0.0...@messageformat/parser@5.1.0) (2023-06-08)
+
+### Features
+
+* Introduce new ParseOption to disable strict plural key check ([#397](https://github.com/messageformat/messageformat/issues/397))
+
 # [5.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/parser@5.0.0-beta.1...@messageformat/parser@5.0.0) (2021-05-13)
 
 **Note:** Version bump only for package @messageformat/parser
