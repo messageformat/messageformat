@@ -121,8 +121,8 @@ export interface MessageFormatOptions<
   /**
    * Enable strict checks for plural keys according to
    * {@link http://cldr.unicode.org/index/cldr-spec/plural-rules | Unicode CLDR}.
-   * When set to `false`, the compiler will also accept any invalid plural keys. Also see the
-   * {@link http://messageformat.github.io/messageformat/api/parser.parseoptions.strictPluralKeys/ | parser option}.
+   * When set to `false`, the compiler will also accept any invalid plural keys.
+   * Also see the corresponding {@link @messageformat/parser#ParseOptions | parser option}.
    *
    * Default: `true`
    */
