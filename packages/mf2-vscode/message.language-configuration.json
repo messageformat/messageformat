@@ -1,0 +1,26 @@
+{
+  "comments": {},
+  "brackets": [
+    ["{", "}"],
+    ["|", "|"]
+  ],
+  "autoClosingPairs": [
+    ["{", "}"],
+    ["|", "|"]
+  ],
+  "surroundingPairs": [
+    ["{", "}"],
+    ["|", "|"]
+  ],
+  "onEnterRules": [
+    {
+      "beforeText": "^[^\\t ][^{}]*=.*",
+      "action": { "indent": "indent" }
+    },
+    {
+      "beforeText": "^[\\t ]",
+      "action": { "indent": "none" }
+    }
+  ],
+  "wordPattern": "(\\\\.|[^\\t\\n\\r .=*{|}])+"
+}

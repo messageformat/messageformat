@@ -1,0 +1,34 @@
+{
+  "name": "@messageformat/languageserver",
+  "version": "0.0.0",
+  "description": "Unicode MessageFormat 2 language server (LSP)",
+  "keywords": [
+    "messageformat",
+    "mf2",
+    "lsp",
+    "languageserver"
+  ],
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "http://messageformat.github.io/messageformat/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/mf2-languageserver"
+  },
+  "main": "lib/server.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json"
+  },
+  "dependencies": {
+    "@messageformat/resource": "^0.0.0",
+    "messageformat": "^4.0.0-3.cf",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-textdocument": "^1.0.8"
+  }
+}

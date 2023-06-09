@@ -1,0 +1,106 @@
+{
+  "name": "@messageformat/vscode",
+  "displayName": "MessageFormat 2",
+  "version": "0.0.1",
+  "description": "VS Code TextMate syntax highlighting for MessageFormat 2",
+  "categories": [
+    "Programming Languages"
+  ],
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "main": "./lib/extension.js",
+  "files": [
+    "*language-configuration.json",
+    "lib/",
+    "syntaxes/"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Example configuration",
+      "properties": {
+        "mf2.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        },
+        "mf2.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "mf2",
+        "aliases": [
+          "MessageFormat 2",
+          "Unicode MessageFormat 2"
+        ],
+        "extensions": [
+          ".mf",
+          ".mf2",
+          ".messages"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "mf2-message",
+        "aliases": [
+          "MessageFormat 2 Message",
+          "Unicode MessageFormat 2 Message"
+        ],
+        "configuration": "./message.language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mf2",
+        "path": "./syntaxes/mf2-resource.json",
+        "scopeName": "source.messageformat.resource",
+        "embeddedLanguages": {
+          "meta.embedded.block.message": "mf2-message"
+        }
+      },
+      {
+        "language": "mf2-message",
+        "path": "./syntaxes/mf2-message.json",
+        "scopeName": "source.messageformat.message"
+      },
+      {
+        "path": "./syntaxes/mf2-inject-body.json",
+        "scopeName": "source.messageformat.body.injection",
+        "injectTo": [
+          "source.messageformat.resource"
+        ]
+      },
+      {
+        "path": "./syntaxes/mf2-inject-quoted.json",
+        "scopeName": "source.messageformat.quoted.injection",
+        "injectTo": [
+          "source.messageformat.resource"
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node --watch-path src/ scripts/build.mjs"
+  },
+  "dependencies": {
+    "@messageformat/languageserver": "^0.0.0",
+    "vscode-languageclient": "^8.1.0"
+  },
+  "prettier": {
+    "singleQuote": true
+  }
+}

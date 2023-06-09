@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
+
+name: MessageFormat 2 Message
+scopeName: source.messageformat.message
+patterns:
+  - name: meta.let.mf2
+    begin: \blet\b
+    beginCaptures:
+      0: { name: keyword.control.let.mf2 }
+    end: '}'
+    endCaptures:
+      0: { name: punctuation.definition.block.mf2 }
+    patterns:
+      - name: punctuation.definition.block.mf2
+        match: '{'
+      - name: keyword.operator.assignment.mf2
+        match: =(?=\s*{)
+      - include: '#expression-body'
+  - name: meta.match.mf2
+    begin: \bmatch\b
+    beginCaptures:
+      0: { name: keyword.control.match.mf2 }
+    end: (?=\bwhen\b)
+    patterns: [include: '#expression']
+  - name: meta.when.mf2
+    begin: \bwhen\b
+    beginCaptures:
+      0: { name: keyword.control.when.mf2 }
+    end: (?={)
+    patterns:
+      - include: '#quoted-literal'
+      - name: constant.language.star.mf2
+        match: \B\*\B
+      - name: keyword.other.mf2
+        begin: (?=\S)
+        end: (?=[\s{])
+        patterns: [include: '#name']
+  - name: meta.body.mf2
+    begin: '{'
+    end: '}'
+    applyEndPatternLast: 1
+    patterns:
+      - name: constant.character.escape.mf2
+        match: \\[\\{}]
+      - name: invalid.illegal.mf2
+        match: \\.?
+      - include: '#expression'
+      - name: string.unquoted.mf2
+        match: '[^}]'
+repository:
+  expression:
+    patterns:
+      - name: meta.expression.mf2
+        begin: '{'
+        end: '}'
+        applyEndPatternLast: 1
+        captures:
+          0: { name: punctuation.definition.block.mf2 }
+        patterns: [include: '#expression-body']
+  expression-body:
+    patterns:
+      - include: '#quoted-literal'
+      - include: '#variable'
+      - include: '#function'
+      - name: invalid.reserved.mf2
+        begin: '[!@#%^&*<>?~]'
+        end: (?=})
+        patterns: [include: '#quoted-literal']
+      - name: meta.object-literal.key.mf2
+        match: '([^\s={}]+)\s*(=)'
+        captures:
+          1: { name: entity.other.attribute-name.mf2 }
+          2: { name: punctuation.separator.key-value.mf2 }
+  function:
+    patterns:
+      - name: entity.name.function.mf2
+        begin: \B[:+-]
+        end: (?=[\s}])
+        patterns: [include: '#name']
+  name:
+    patterns:
+      - match: >
+          (?x)
+          \G
+          [A-Za-z_\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\x{10000}-\x{EFFFF}]
+          [-0-9.:A-Za-z_\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037D\u037F-\u1FFF\u200C-\u200D\u203F-\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\x{10000}-\x{EFFFF}]*
+      - name: invalid.illegal.mf2
+        match: .
+  quoted-literal:
+    patterns:
+      - name: string.quoted.mf2
+        begin: \|
+        end: \|
+        applyEndPatternLast: 1
+        patterns:
+          - name: constant.character.escape.mf2
+            match: \\[\\|]
+          - name: invalid.illegal.mf2
+            match: \\.?
+  variable:
+    patterns:
+      - name: variable.other.mf2
+        begin: \B\$
+        end: (?=[\s=}])
+        patterns: [include: '#name']

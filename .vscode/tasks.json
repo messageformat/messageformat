@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "vscode watch",
+      "type": "npm",
+      "script": "watch",
+      "path": "packages/mf2-vscode",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "mf2",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*)\\((\\d+):(\\d+)\\):\\s+(warning|error)\\s+(\\w+:\\s+.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Restarting ",
+          "endsPattern": "^Completed running "
+        }
+      }
+    },
+    {
+      "label": "vscode stop",
+      "command": "echo ${input:terminate}",
+      "type": "shell"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "terminateAll"
+    }
+  ]
+}
