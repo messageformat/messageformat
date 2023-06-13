@@ -12,7 +12,7 @@ import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 import { MessageFormatOptions } from './messageformat';
-import { PluralObject } from './plurals';
+import { PluralObject, tryNormalize } from './plurals';
 
 const RUNTIME_MODULE = '@messageformat/runtime';
 const CARDINAL_MODULE = '@messageformat/runtime/lib/cardinals';
@@ -24,7 +24,7 @@ interface RuntimeEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any[]): unknown;
   id?: string | null;
-  module?: string | null;
+  module?: string | ((lc: string) => string) | null;
   toString?: () => string;
   type?: RuntimeType;
 }
@@ -48,6 +48,7 @@ export default class Compiler {
   options: Required<MessageFormatOptions>;
   declare plural: PluralObject; // Always set in compile()
   runtime: RuntimeMap = {};
+  currentLocaleCode: string | null = null;
 
   constructor(options: Required<MessageFormatOptions>) {
     this.options = options;
@@ -65,11 +66,13 @@ export default class Compiler {
    * @param src - The source for which the JS code should be generated
    * @param plural - The default locale
    * @param plurals - A map of pluralization keys for all available locales
+   * @param lc - The derived locale code for the string under compilation.
    */
   compile(
     src: string | StringStructure,
     plural: PluralObject,
-    plurals?: { [key: string]: PluralObject }
+    plurals?: { [key: string]: PluralObject },
+    localeCode?: string
   ) {
     const { localeCodeFromKey, requireAllArguments, strict, strictPluralKeys } =
       this.options;
@@ -78,8 +81,11 @@ export default class Compiler {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
         const lc = localeCodeFromKey ? localeCodeFromKey(key) : key;
-        const pl = (plurals && lc && plurals[lc]) || plural;
-        result[key] = this.compile(src[key], pl, plurals);
+        const lcMatchedPlural =
+          plurals && lc && plurals[tryNormalize(lc) || ''];
+        const pl = lcMatchedPlural || plural;
+        const nextLocaleCode = lcMatchedPlural ? lc : localeCode || pl.locale;
+        result[key] = this.compile(src[key], pl, plurals, nextLocaleCode);
       }
       return result;
     }
@@ -92,6 +98,7 @@ export default class Compiler {
       strictPluralKeys
     };
     this.arguments = [];
+    this.currentLocaleCode = localeCode || null;
     const r = parse(src, parserOptions).map(token => this.token(token, null));
     const hasArgs = this.arguments.length > 0;
     const res = this.concatenate(r, true);
@@ -138,7 +145,8 @@ export default class Compiler {
   token(token: Token, pluralToken: Select | null) {
     if (token.type === 'content') return JSON.stringify(token.value);
 
-    const { id, lc } = this.plural;
+    const lc = this.currentLocaleCode || this.plural.lc;
+    const { id } = this.plural;
     let args: (number | string)[], fn: string;
     if ('arg' in token) {
       this.arguments.push(token.arg);
@@ -171,7 +179,12 @@ export default class Compiler {
         this.setRuntimeFn('plural');
         break;
 
-      case 'function':
+      case 'function': {
+        const formatter = this.options.customFormatters?.[token.key];
+        const formattingModuleRequest =
+          formatter && 'module' in formatter ? formatter.module : null;
+        const isLocaleSpecificFormattingModule =
+          typeof formattingModuleRequest === 'function';
         if (!this.options.customFormatters[token.key]) {
           if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
@@ -182,16 +195,20 @@ export default class Compiler {
           }
         }
 
-        args.push(JSON.stringify(this.plural.locale));
+        if (!isLocaleSpecificFormattingModule) {
+          args.push(JSON.stringify(this.plural.locale));
+        }
         if (token.param) {
           if (pluralToken && this.options.strict) pluralToken = null;
           const arg = this.getFormatterArg(token, pluralToken);
           if (arg) args.push(arg);
         }
-        fn = token.key;
-        this.setFormatter(fn);
+        fn = isLocaleSpecificFormattingModule
+          ? `${token.key}__${this.currentLocaleCode?.replace(/[^a-zA-Z]/g, '')}`
+          : token.key;
+        this.setFormatter(fn, token.key);
         break;
-
+      }
       case 'octothorpe':
         /* istanbul ignore if: never happens */
         if (!pluralToken) return '"#"';
@@ -303,26 +320,50 @@ export default class Compiler {
     }
   }
 
-  setFormatter(key: string) {
-    if (this.runtimeIncludes(key, 'formatter')) return;
-    let cf = this.options.customFormatters[key];
+  setFormatter(runtimeFormatterKey: string, originalFormatterKey?: string) {
+    const baseFormatterKey = originalFormatterKey || runtimeFormatterKey;
+    if (this.runtimeIncludes(runtimeFormatterKey, 'formatter')) return;
+    const cf = this.options.customFormatters[baseFormatterKey];
     if (cf) {
-      if (typeof cf === 'function') cf = { formatter: cf };
-      this.runtime[key] = Object.assign(
-        cf.formatter,
+      const customFormatterObject =
+        typeof cf === 'function' ? { formatter: cf } : cf;
+      this.runtime[runtimeFormatterKey] = Object.assign(
+        /**
+         * @warn Provide the formatter implementation, but do not mutate the
+         * underlying function reference.
+         */
+        customFormatterObject.formatter.bind({}),
+        {
+          ...customFormatterObject.formatter.prototype,
+          toString: () => String(customFormatterObject.formatter)
+        },
         { type: 'formatter' } as const,
         'module' in cf && cf.module && cf.id
-          ? { id: identifier(cf.id), module: cf.module }
+          ? {
+              id: identifier(cf.id),
+              module:
+                typeof cf.module === 'function' && this.currentLocaleCode
+                  ? cf.module(this.currentLocaleCode)
+                  : cf.module
+            }
           : { id: null, module: null }
       );
-    } else if (isFormatterKey(key)) {
-      this.runtime[key] = Object.assign(
-        Formatters[key],
+    } else if (isFormatterKey(runtimeFormatterKey)) {
+      this.runtime[runtimeFormatterKey] = Object.assign(
+        /**
+         * @warn Provide the formatter implementation, but do not mutate the
+         * underlying function reference.
+         */
+        Formatters[runtimeFormatterKey].bind({}),
+        {
+          ...Formatters[runtimeFormatterKey].prototype,
+          toString: () => String(Formatters[runtimeFormatterKey])
+        },
         { type: 'formatter' } as const,
-        { id: key, module: FORMATTER_MODULE }
+        { id: runtimeFormatterKey, module: FORMATTER_MODULE }
       );
     } else {
-      throw new Error(`Formatting function not found: ${key}`);
+      throw new Error(`Formatting function not found: ${runtimeFormatterKey}`);
     }
   }
 

@@ -18,6 +18,17 @@ export type MessageFunction<ReturnType extends 'string' | 'values'> = (
   param?: Record<string, unknown> | unknown[]
 ) => ReturnType extends 'string' ? string : unknown[];
 
+export type DefaultCustomFormatter = (
+  value: unknown,
+  locale: string,
+  arg: string | null
+) => unknown;
+
+export type LocaleModuleCustomFormatter = (
+  value: unknown,
+  arg: string | null
+) => unknown;
+
 /**
  * A custom formatter function. See
  * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
@@ -25,11 +36,9 @@ export type MessageFunction<ReturnType extends 'string' | 'values'> = (
  *
  * @public
  */
-export type CustomFormatter = (
-  value: unknown,
-  locale: string,
-  arg: string | null
-) => unknown;
+export type CustomFormatter =
+  | DefaultCustomFormatter
+  | LocaleModuleCustomFormatter;
 
 /**
  * Options for the MessageFormat constructor
@@ -61,12 +70,18 @@ export interface MessageFormatOptions<
    */
   customFormatters?: {
     [key: string]:
-      | CustomFormatter
+      | DefaultCustomFormatter
       | {
-          formatter: CustomFormatter;
+          formatter: DefaultCustomFormatter;
           arg?: 'string' | 'raw' | 'options';
           id?: string;
           module?: string;
+        }
+      | {
+          formatter: LocaleModuleCustomFormatter;
+          arg?: 'string' | 'raw' | 'options';
+          id?: string;
+          module?: (locale: string) => string;
         };
   };
 
@@ -288,7 +303,14 @@ export default class MessageFormat<
    */
   compile(message: string) {
     const compiler = new Compiler(this.options);
-    const fnBody = 'return ' + compiler.compile(message, this.plurals[0]);
+    const fnBody =
+      'return ' +
+      compiler.compile(
+        message,
+        this.plurals[0],
+        undefined,
+        this.resolvedOptions().locale
+      );
     const nfArgs = [];
     const fnArgs = [];
     for (const [key, fmt] of Object.entries(compiler.runtime)) {
