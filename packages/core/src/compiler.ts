@@ -204,7 +204,7 @@ export default class Compiler {
           if (arg) args.push(arg);
         }
         fn = isLocaleSpecificFormattingModule
-          ? `${token.key}__${this.currentLocaleCode?.replace(/[^a-zA-Z]/g, '')}`
+          ? identifier(`${token.key}__${this.currentLocaleCode}`)
           : token.key;
         this.setFormatter(fn, token.key);
         break;

@@ -279,13 +279,13 @@ describe('compileModule()', function () {
       const msg = '{phoneNumber, phone}';
       const src = compileModule(mf, { 'es-MX': { msg }, 'en-US': { msg } });
       expect(src).toMatch(
-        /import { phone as phone__enUS } from "phone\/en-US"/
+        /import { phone as phone__en_US } from "phone\/en-US"/
       );
       expect(src).toMatch(
-        /import { phone as phone__esMX } from "phone\/es-MX"/
+        /import { phone as phone__es_MX } from "phone\/es-MX"/
       );
-      expect(src).toMatch(/phone__esMX\(d.phoneNumber\)/);
-      expect(src).toMatch(/phone__enUS\(d.phoneNumber\)/);
+      expect(src).toMatch(/phone__es_MX\(d.phoneNumber\)/);
+      expect(src).toMatch(/phone__en_US\(d.phoneNumber\)/);
     });
 
     it('import from module; id != key', async () => {
