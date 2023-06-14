@@ -1,5 +1,5 @@
 ---
-title: "CustomFormatter"
+title: "DefaultCustomFormatter"
 parent: "@messageformat/core"
 grand_parent: API Reference
 ---
@@ -8,14 +8,12 @@ grand_parent: API Reference
 
 
 
-# CustomFormatter type
+# DefaultCustomFormatter type
 
 A custom formatter function. See [Custom Formatters](https://messageformat.github.io/messageformat/custom-formatters/) for more details.
 
 **Signature:**
 
 ```typescript
-export type CustomFormatter = DefaultCustomFormatter | LocaleModuleCustomFormatter;
+export type DefaultCustomFormatter = (value: unknown, locale: string, arg: string | null) => unknown;
 ```
-**References:** [DefaultCustomFormatter](./core.defaultcustomformatter.md)<!-- -->, [LocaleModuleCustomFormatter](./core.localemodulecustomformatter.md)
-

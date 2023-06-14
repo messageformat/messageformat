@@ -18,12 +18,28 @@ export type MessageFunction<ReturnType extends 'string' | 'values'> = (
   param?: Record<string, unknown> | unknown[]
 ) => ReturnType extends 'string' ? string : unknown[];
 
+/**
+ * A custom formatter function. See
+ * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
+ * for more details.
+ *
+ * @public
+ */
 export type DefaultCustomFormatter = (
   value: unknown,
   locale: string,
   arg: string | null
 ) => unknown;
 
+/**
+ * A custom formatter function that is bound to specific locale formatting
+ * module. This formatting signature is used when you specify a `module`
+ * thunk, generating a module based on `localeCode`.
+ * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
+ * for more details.
+ *
+ * @public
+ */
 export type LocaleModuleCustomFormatter = (
   value: unknown,
   arg: string | null
@@ -81,7 +97,7 @@ export interface MessageFormatOptions<
           formatter: LocaleModuleCustomFormatter;
           arg?: 'string' | 'raw' | 'options';
           id?: string;
-          module?: (locale: string) => string;
+          module?: (localeCode: string) => string;
         };
   };
 

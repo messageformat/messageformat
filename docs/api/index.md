@@ -10,22 +10,18 @@ has_toc: false
 
 # API Reference
 
-## ICU MessageFormat 1 Packages
+## Packages
 
 |  Package | Description |
 |  --- | --- |
 |  [@messageformat/core](./core.md) | The core MessageFormat-to-JavaScript compiler |
 |  [@messageformat/date-skeleton](./date-skeleton.md) | Tools for working with [ICU DateFormat skeletons](http://userguide.icu-project.org/formatparse/datetime)<!-- -->. |
+|  [@messageformat/fluent](./fluent.md) |  |
+|  [@messageformat/icu-messageformat-1](./icu-messageformat-1.md) |  |
 |  [@messageformat/number-skeleton](./number-skeleton.md) | Tools for working with [ICU NumberFormat skeletons](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md) and [patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)<!-- -->. |
 |  [@messageformat/parser](./parser.md) | An AST parser for ICU MessageFormat strings |
 |  [@messageformat/react](./react.md) | An efficient React front-end for message formatting |
+|  [@messageformat/resource](./resource.md) |  |
 |  [@messageformat/runtime](./runtime.md) | A collection of runtime utility functions |
-
-## Unicode MessageFormat 2 Packages
-
-|  Package | Description |
-|  --- | --- |
-|  [messageformat](./messageformat.md) | **_(BETA)_** Intl.MessageFormat / Unicode MessageFormat 2 parser, runtime and polyfill |
-|  [@messageformat/fluent](./fluent.md) | **_(BETA)_** Conversion & compatibility tools for using Fluent with MessageFormat 2 |
-|  [@messageformat/icu-messageformat-1](./icu-messageformat-1.md) | **_(BETA)_** Compile ICU MessageFormat 1 sources into MessageFormat 2 formatters |
+|  [messageformat](./messageformat.md) |  |
 
