@@ -97,4 +97,27 @@ describe('messages in resources', () => {
       }
     });
   });
+
+  test('unquoted negative numbers', () => {
+    const src = '{{-1}{-a x=-0}{-.42e9}}';
+    const msg = parseMessage(src);
+    expect(msg).toMatchObject({
+      errors: [],
+      pattern: {
+        body: [
+          { type: 'expression', body: { type: 'literal', value: '-1' } },
+          {
+            type: 'expression',
+            body: {
+              type: 'function',
+              kind: 'close',
+              name: 'a',
+              options: [{ name: 'x', value: { type: 'literal', value: '-0' } }]
+            }
+          },
+          { type: 'expression', body: { type: 'literal', value: '-.42e9' } }
+        ]
+      }
+    });
+  });
 });

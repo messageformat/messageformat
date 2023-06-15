@@ -22,12 +22,15 @@ const isNameStartCode = (cc: number) =>
   (cc >= 0xfdf0 && cc <= 0xfffd) ||
   (cc >= 0x10000 && cc <= 0xeffff);
 
+//                                          '.'            '0'           '9'
+const isDigitOrDot = (cc: number) => cc === 0x2e || (cc >= 0x30 && cc <= 0x39);
+
 // unquoted-start = name-start / DIGIT / "."
 //                / %xB7 / %x300-36F / %x203F-2040
+//                / "-" ( DIGIT / "." )
 const isUnquotedStartCharCode = (cc: number) =>
   isNameStartCode(cc) ||
-  cc === 0x2e || // .
-  (cc >= 0x30 && cc <= 0x39) || // 0-9
+  isDigitOrDot(cc) ||
   cc === 0xb7 || // ·
   (cc >= 0x300 && cc <= 0x36f) ||
   cc === 0x203f || // ‿
@@ -61,7 +64,11 @@ export function parseUnquotedLiteralValue(
   start: number
 ): string {
   let pos = start;
-  if (isUnquotedStartCharCode(ctx.source.charCodeAt(pos))) {
+  const cc0 = ctx.source.charCodeAt(pos);
+  if (
+    isUnquotedStartCharCode(cc0) ||
+    (cc0 === 0x2d && isDigitOrDot(ctx.source.charCodeAt(pos + 1)))
+  ) {
     pos += 1;
     while (isNameCharCode(ctx.source.charCodeAt(pos))) pos += 1;
   }
