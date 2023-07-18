@@ -15,14 +15,6 @@ function normalize(locale: string) {
   return m ? m[0] : locale;
 }
 
-export function tryNormalize(locale: string) {
-  try {
-    return normalize(locale);
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Function used to define the pluralisation for a locale
  *

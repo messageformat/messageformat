@@ -97,7 +97,7 @@ export interface MessageFormatOptions<
           formatter: LocaleModuleCustomFormatter;
           arg?: 'string' | 'raw' | 'options';
           id?: string;
-          module?: (localeCode: string) => string;
+          module?: (_: { locale: string }) => string;
         };
   };
 
@@ -319,14 +319,7 @@ export default class MessageFormat<
    */
   compile(message: string) {
     const compiler = new Compiler(this.options);
-    const fnBody =
-      'return ' +
-      compiler.compile(
-        message,
-        this.plurals[0],
-        undefined,
-        this.resolvedOptions().locale
-      );
+    const fnBody = 'return ' + compiler.compile(message, this.plurals[0]);
     const nfArgs = [];
     const fnArgs = [];
     for (const [key, fmt] of Object.entries(compiler.runtime)) {

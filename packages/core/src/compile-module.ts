@@ -28,14 +28,14 @@ function stringifyRuntime(runtime: RuntimeMap) {
 
   for (const [name, fn] of Object.entries(runtime)) {
     if (fn.module) {
-      const moduleLiteral = fn.module;
+      const moduleName = fn.module;
       /* istanbul ignore next reason: impossible case */
-      if (typeof moduleLiteral !== 'string') {
-        throw new Error(`expected string module literal`);
+      if (typeof moduleName !== 'string') {
+        throw new Error(`expected string module name`);
       }
       const alias = fn.id && fn.id !== name ? `${fn.id} as ${name}` : name;
-      const prev = imports[moduleLiteral];
-      imports[moduleLiteral] = prev ? [...prev, alias] : [alias];
+      const prev = imports[moduleName];
+      imports[moduleName] = prev ? [...prev, alias] : [alias];
     } else {
       vars[name] = String(fn);
     }

@@ -12,7 +12,7 @@ import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
 import { MessageFormatOptions } from './messageformat';
-import { PluralObject, tryNormalize } from './plurals';
+import { PluralObject } from './plurals';
 
 const RUNTIME_MODULE = '@messageformat/runtime';
 const CARDINAL_MODULE = '@messageformat/runtime/lib/cardinals';
@@ -48,7 +48,6 @@ export default class Compiler {
   options: Required<MessageFormatOptions>;
   declare plural: PluralObject; // Always set in compile()
   runtime: RuntimeMap = {};
-  currentLocaleCode: string | null = null;
 
   constructor(options: Required<MessageFormatOptions>) {
     this.options = options;
@@ -66,13 +65,11 @@ export default class Compiler {
    * @param src - The source for which the JS code should be generated
    * @param plural - The default locale
    * @param plurals - A map of pluralization keys for all available locales
-   * @param lc - The derived locale code for the string under compilation.
    */
   compile(
     src: string | StringStructure,
     plural: PluralObject,
-    plurals?: { [key: string]: PluralObject },
-    localeCode?: string
+    plurals?: { [key: string]: PluralObject }
   ) {
     const { localeCodeFromKey, requireAllArguments, strict, strictPluralKeys } =
       this.options;
@@ -81,11 +78,8 @@ export default class Compiler {
       const result: StringStructure = {};
       for (const key of Object.keys(src)) {
         const lc = localeCodeFromKey ? localeCodeFromKey(key) : key;
-        const lcMatchedPlural =
-          plurals && lc && plurals[tryNormalize(lc) || ''];
-        const pl = lcMatchedPlural || plural;
-        const nextLocaleCode = lcMatchedPlural ? lc : localeCode || pl.locale;
-        result[key] = this.compile(src[key], pl, plurals, nextLocaleCode);
+        const pl = (plurals && lc && plurals[lc]) || plural;
+        result[key] = this.compile(src[key], pl, plurals);
       }
       return result;
     }
@@ -98,7 +92,6 @@ export default class Compiler {
       strictPluralKeys
     };
     this.arguments = [];
-    this.currentLocaleCode = localeCode || null;
     const r = parse(src, parserOptions).map(token => this.token(token, null));
     const hasArgs = this.arguments.length > 0;
     const res = this.concatenate(r, true);
@@ -145,8 +138,7 @@ export default class Compiler {
   token(token: Token, pluralToken: Select | null) {
     if (token.type === 'content') return JSON.stringify(token.value);
 
-    const lc = this.currentLocaleCode || this.plural.lc;
-    const { id } = this.plural;
+    const { id, lc } = this.plural;
     let args: (number | string)[], fn: string;
     if ('arg' in token) {
       this.arguments.push(token.arg);
@@ -204,7 +196,7 @@ export default class Compiler {
           if (arg) args.push(arg);
         }
         fn = isLocaleSpecificFormattingModule
-          ? identifier(`${token.key}__${this.currentLocaleCode}`)
+          ? identifier(`${token.key}__${this.plural.locale}`)
           : token.key;
         this.setFormatter(fn, token.key);
         break;
@@ -342,8 +334,8 @@ export default class Compiler {
           ? {
               id: identifier(cf.id),
               module:
-                typeof cf.module === 'function' && this.currentLocaleCode
-                  ? cf.module(this.currentLocaleCode)
+                typeof cf.module === 'function' && this.plural.locale
+                  ? cf.module({ locale: this.plural.locale })
                   : cf.module
             }
           : { id: null, module: null }

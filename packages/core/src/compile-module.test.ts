@@ -248,7 +248,7 @@ describe('compileModule()', function () {
       const phone = {
         formatter: () => '',
         id: 'phone',
-        module: (locale: string) => {
+        module: ({ locale }: { locale: string }) => {
           return `phone/${locale}`;
         }
       };
@@ -262,11 +262,11 @@ describe('compileModule()', function () {
       const phone = {
         formatter: (_: unknown) => '',
         id: 'phone',
-        module: (locale: string) => {
+        module: ({ locale }: { locale: string }) => {
           return `phone/${locale}`;
         }
       };
-      const mf = new MessageFormat('*', {
+      const mf = new MessageFormat(['en-US', 'fr-FR'], {
         customFormatters: { phone },
         localeCodeFromKey: key => {
           try {
@@ -277,14 +277,14 @@ describe('compileModule()', function () {
         }
       });
       const msg = '{phoneNumber, phone}';
-      const src = compileModule(mf, { 'es-MX': { msg }, 'en-US': { msg } });
+      const src = compileModule(mf, { 'fr-FR': { msg }, 'en-US': { msg } });
+      expect(src).toMatch(
+        /import { phone as phone__fr_FR } from "phone\/fr-FR"/
+      );
       expect(src).toMatch(
         /import { phone as phone__en_US } from "phone\/en-US"/
       );
-      expect(src).toMatch(
-        /import { phone as phone__es_MX } from "phone\/es-MX"/
-      );
-      expect(src).toMatch(/phone__es_MX\(d.phoneNumber\)/);
+      expect(src).toMatch(/phone__fr_FR\(d.phoneNumber\)/);
       expect(src).toMatch(/phone__en_US\(d.phoneNumber\)/);
     });
 
