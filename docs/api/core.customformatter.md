@@ -15,7 +15,5 @@ A custom formatter function. See [Custom Formatters](https://messageformat.githu
 **Signature:**
 
 ```typescript
-export type CustomFormatter = DefaultCustomFormatter | LocaleModuleCustomFormatter;
+export type CustomFormatter = (value: unknown, locale: string, arg: string | null) => unknown;
 ```
-**References:** [DefaultCustomFormatter](./core.defaultcustomformatter.md)<!-- -->, [LocaleModuleCustomFormatter](./core.localemodulecustomformatter.md)
-
