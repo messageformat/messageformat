@@ -24,7 +24,7 @@ interface RuntimeEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any[]): unknown;
   id?: string | null;
-  module?: string | ((lc: string) => string) | null;
+  module?: string | ((_: { locale: string }) => string) | null;
   toString?: () => string;
   type?: RuntimeType;
 }
