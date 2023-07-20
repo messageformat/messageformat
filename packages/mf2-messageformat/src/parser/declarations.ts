@@ -93,9 +93,10 @@ function checkLocalVarReferences(
     const { name } = declarations[i].target;
     if (!name) continue;
     for (let j = 0; j < i; ++j) {
-      const ph = declarations[j].value;
-      if (ph.type === 'expression') {
-        const exp = ph.body;
+      const { target, value } = declarations[j];
+      if (target.name === name) break;
+      if (value.type === 'expression') {
+        const exp = value.body;
         switch (exp.type) {
           case 'function':
             if (exp.operand?.type === 'variable') check(name, exp.operand);
