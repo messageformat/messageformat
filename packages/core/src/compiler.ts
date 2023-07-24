@@ -172,7 +172,7 @@ export default class Compiler {
         break;
 
       case 'function': {
-        const formatter = this.options.customFormatters?.[token.key];
+        const formatter = this.options.customFormatters.[token.key];
         const formattingModuleRequest =
           formatter && 'module' in formatter ? formatter.module : null;
         const isLocaleSpecificFormattingModule =
