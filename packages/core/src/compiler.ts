@@ -447,15 +447,8 @@ function isFormatterKey(key: string): key is keyof typeof Formatters {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function cloneFunction<T extends (...args: any[]) => any>(fn: T): T {
-  return Object.assign(
-    /**
-     * @warn Provide the formatter implementation, but do not mutate the
-     * underlying function reference.
-     */
-    fn.bind({}),
-    {
-      ...fn.prototype,
-      toString: () => String(fn)
-    }
-  );
+  return Object.assign(fn.bind({}), {
+    ...fn.prototype,
+    toString: () => String(fn)
+  });
 }
