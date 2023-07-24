@@ -316,15 +316,7 @@ export default class Compiler {
       const cfo = typeof cf === 'function' ? { formatter: cf } : cf;
 
       this.runtime[key] = Object.assign(
-        /**
-         * @warn Provide the formatter implementation, but do not mutate the
-         * underlying function reference.
-         */
-        cfo.formatter.bind({}),
-        {
-          ...cfo.formatter.prototype,
-          toString: () => String(cfo.formatter)
-        },
+        cloneFunction(cfo.formatter),
         { type: 'formatter' } as const,
         'module' in cf && cf.module && cf.id
           ? {
@@ -338,15 +330,7 @@ export default class Compiler {
       );
     } else if (isFormatterKey(key)) {
       this.runtime[key] = Object.assign(
-        /**
-         * @warn Provide the formatter implementation, but do not mutate the
-         * underlying function reference.
-         */
-        Formatters[key].bind({}),
-        {
-          ...Formatters[key].prototype,
-          toString: () => String(Formatters[key])
-        },
+        cloneFunction(Formatters[key]),
         { type: 'formatter' } as const,
         { id: key, module: FORMATTER_MODULE }
       );
@@ -459,4 +443,19 @@ export default class Compiler {
 
 function isFormatterKey(key: string): key is keyof typeof Formatters {
   return key in Formatters;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function cloneFunction<T extends (...args: any[]) => any>(fn: T): T {
+  return Object.assign(
+    /**
+     * @warn Provide the formatter implementation, but do not mutate the
+     * underlying function reference.
+     */
+    fn.bind({}),
+    {
+      ...fn.prototype,
+      toString: () => String(fn)
+    }
+  );
 }
