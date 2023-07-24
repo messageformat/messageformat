@@ -309,22 +309,21 @@ export default class Compiler {
     }
   }
 
-  setFormatter(runtimeFormatterKey: string, originalFormatterKey?: string) {
-    const baseFormatterKey = originalFormatterKey || runtimeFormatterKey;
-    if (this.runtimeIncludes(runtimeFormatterKey, 'formatter')) return;
-    const cf = this.options.customFormatters[baseFormatterKey];
+  setFormatter(key: string, parentKey?: string) {
+    if (this.runtimeIncludes(key, 'formatter')) return;
+    const cf = this.options.customFormatters[parentKey || key];
     if (cf) {
-      const customFormatterObject =
-        typeof cf === 'function' ? { formatter: cf } : cf;
-      this.runtime[runtimeFormatterKey] = Object.assign(
+      const cfo = typeof cf === 'function' ? { formatter: cf } : cf;
+
+      this.runtime[key] = Object.assign(
         /**
          * @warn Provide the formatter implementation, but do not mutate the
          * underlying function reference.
          */
-        customFormatterObject.formatter.bind({}),
+        cfo.formatter.bind({}),
         {
-          ...customFormatterObject.formatter.prototype,
-          toString: () => String(customFormatterObject.formatter)
+          ...cfo.formatter.prototype,
+          toString: () => String(cfo.formatter)
         },
         { type: 'formatter' } as const,
         'module' in cf && cf.module && cf.id
@@ -337,22 +336,22 @@ export default class Compiler {
             }
           : { id: null, module: null }
       );
-    } else if (isFormatterKey(runtimeFormatterKey)) {
-      this.runtime[runtimeFormatterKey] = Object.assign(
+    } else if (isFormatterKey(key)) {
+      this.runtime[key] = Object.assign(
         /**
          * @warn Provide the formatter implementation, but do not mutate the
          * underlying function reference.
          */
-        Formatters[runtimeFormatterKey].bind({}),
+        Formatters[key].bind({}),
         {
-          ...Formatters[runtimeFormatterKey].prototype,
-          toString: () => String(Formatters[runtimeFormatterKey])
+          ...Formatters[key].prototype,
+          toString: () => String(Formatters[key])
         },
         { type: 'formatter' } as const,
-        { id: runtimeFormatterKey, module: FORMATTER_MODULE }
+        { id: key, module: FORMATTER_MODULE }
       );
     } else {
-      throw new Error(`Formatting function not found: ${runtimeFormatterKey}`);
+      throw new Error(`Formatting function not found: ${key}`);
     }
   }
 

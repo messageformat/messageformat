@@ -262,9 +262,7 @@ describe('compileModule()', function () {
       const phone = {
         formatter: (_: unknown) => '',
         id: 'phone',
-        module: ({ locale }: { locale: string }) => {
-          return `phone/${locale}`;
-        }
+        module: ({ locale }: { locale: string }) => `phone/${locale}`
       };
       const mf = new MessageFormat(['en-US', 'fr-FR'], {
         customFormatters: { phone },
@@ -284,8 +282,8 @@ describe('compileModule()', function () {
       expect(src).toMatch(
         /import { phone as phone__en_US } from "phone\/en-US"/
       );
-      expect(src).toMatch(/phone__fr_FR\(d.phoneNumber\)/);
-      expect(src).toMatch(/phone__en_US\(d.phoneNumber\)/);
+      expect(src).toMatch(/phone__fr_FR\(d.phoneNumber, "fr-FR"\)/);
+      expect(src).toMatch(/phone__en_US\(d.phoneNumber, "en-US"\)/);
     });
 
     it('import from module; id != key', async () => {
