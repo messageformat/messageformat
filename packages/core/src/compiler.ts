@@ -175,8 +175,7 @@ export default class Compiler {
         const formatter = this.options.customFormatters.[token.key];
         const formattingModuleRequest =
           formatter && 'module' in formatter ? formatter.module : null;
-        const isLocaleSpecificFormattingModule =
-          typeof formattingModuleRequest === 'function';
+        const isModuleFn = typeof formattingModuleRequest === 'function';
         if (!this.options.customFormatters[token.key]) {
           if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
@@ -187,15 +186,13 @@ export default class Compiler {
           }
         }
 
-        if (!isLocaleSpecificFormattingModule) {
-          args.push(JSON.stringify(this.plural.locale));
-        }
+        args.push(JSON.stringify(this.plural.locale));
         if (token.param) {
           if (pluralToken && this.options.strict) pluralToken = null;
           const arg = this.getFormatterArg(token, pluralToken);
           if (arg) args.push(arg);
         }
-        fn = isLocaleSpecificFormattingModule
+        fn = isModuleFn
           ? identifier(`${token.key}__${this.plural.locale}`)
           : token.key;
         this.setFormatter(fn, token.key);
