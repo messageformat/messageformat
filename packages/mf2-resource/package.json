@@ -28,5 +28,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "extract-api": "api-extractor run --local --verbose"
+  },
+  "dependencies": {
+    "messageformat": "^4.0.0-4"
   }
 }
