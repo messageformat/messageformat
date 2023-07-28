@@ -1,0 +1,34 @@
+{
+  "name": "@messageformat/browser-extensions",
+  "version": "0.0.0",
+  "description": "MessageFormat 2 conversion tools for browser extensions",
+  "keywords": [
+    "messageformat",
+    "messages.json",
+    "internationalization",
+    "i18n",
+    "localization",
+    "l10n"
+  ],
+  "contributors": [
+    "Eemeli Aro <eemeli@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "http://messageformat.github.io/messageformat/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/messageformat/messageformat.git",
+    "directory": "packages/mf2-browser-extensions"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "extract-api": "api-extractor run --local --verbose"
+  },
+  "dependencies": {
+    "messageformat": "^4.0.0-4"
+  }
+}

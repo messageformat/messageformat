@@ -20,6 +20,7 @@
     "packages/mf2-fluent",
     "packages/mf2-icu-mf1",
     "packages/mf2-resource",
+    "packages/mf2-browser-extensions",
     "packages/mf2-xliff",
     "packages/react",
     "packages/runtime",
