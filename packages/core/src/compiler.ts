@@ -24,7 +24,7 @@ interface RuntimeEntry {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any[]): unknown;
   id?: string | null;
-  module?: string | ((_: { locale: string }) => string) | null;
+  module?: string | null;
   toString?: () => string;
   type?: RuntimeType;
 }
@@ -322,7 +322,7 @@ export default class Compiler {
           ? {
               id: identifier(cf.id),
               module:
-                typeof cf.module === 'function' && this.plural.locale
+                typeof cf.module === 'function'
                   ? cf.module({ locale: this.plural.locale })
                   : cf.module
             }
