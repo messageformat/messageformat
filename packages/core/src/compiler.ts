@@ -173,9 +173,10 @@ export default class Compiler {
 
       case 'function': {
         const formatter = this.options.customFormatters[token.key];
-        const formattingModuleRequest =
-          formatter && 'module' in formatter ? formatter.module : null;
-        const isModuleFn = typeof formattingModuleRequest === 'function';
+        const isModuleFn =
+          formatter &&
+          'module' in formatter &&
+          typeof formatter.module === 'function';
         if (!this.options.customFormatters[token.key]) {
           if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
