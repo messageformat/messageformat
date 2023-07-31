@@ -248,9 +248,7 @@ describe('compileModule()', function () {
       const phone = {
         formatter: () => '',
         id: 'phone',
-        module: ({ locale }: { locale: string }) => {
-          return `phone/${locale}`;
-        }
+        module: locale => `phone/${locale}`
       };
       const mf = new MessageFormat('en', { customFormatters: { phone } });
       const msg = '{foo, phone}';
@@ -262,7 +260,7 @@ describe('compileModule()', function () {
       const phone = {
         formatter: (_: unknown) => '',
         id: 'phone',
-        module: ({ locale }: { locale: string }) => `phone/${locale}`
+        module: locale => `phone/${locale}`
       };
       const mf = new MessageFormat(['en-US', 'fr-FR'], {
         customFormatters: { phone },

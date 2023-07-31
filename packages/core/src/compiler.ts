@@ -323,7 +323,7 @@ export default class Compiler {
               id: identifier(cf.id),
               module:
                 typeof cf.module === 'function'
-                  ? cf.module({ locale: this.plural.locale })
+                  ? cf.module(this.plural.locale)
                   : cf.module
             }
           : { id: null, module: null }

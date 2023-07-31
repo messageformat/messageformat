@@ -97,7 +97,7 @@ export interface MessageFormatOptions<
           formatter: LocaleModuleCustomFormatter;
           arg?: 'string' | 'raw' | 'options';
           id?: string;
-          module?: (_: { locale: string }) => string;
+          module?: (locale: string) => string;
         };
   };
 
