@@ -13,8 +13,7 @@
   ],
   "contributors": [
     "Alex Sexton <alexsexton@gmail.com>",
-    "Eemeli Aro <eemeli@gmail.com>",
-    "cdaringe<cdaringe@gmail.com>"
+    "Eemeli Aro <eemeli@gmail.com>"
   ],
   "license": "MIT",
   "homepage": "http://messageformat.github.io/messageformat/api/core/",
