@@ -177,7 +177,7 @@ export default class Compiler {
           formatter &&
           'module' in formatter &&
           typeof formatter.module === 'function';
-        if (!this.options.customFormatters[token.key]) {
+        if (!formatter) {
           if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
             break;
