@@ -96,3 +96,57 @@ export default {
   fin: d => 'This is ' + upcase(d.x, 'en', { locale: 'fi' }) + ' in Finnish'
 };
 ```
+
+In the prior example, the formatting module `upcase` had to handle every locale
+under compilation. Formatting modules may also be authored on a per-locale
+basis. This may be useful in various scenarios, for example when bundling or
+compiling code along the locale dimension.
+
+The following example implements a dummy `country` formatter that simply emits
+the country associated with the locale. The key observation is that the
+formatter for each locale is maintained in separate modules.
+
+```js
+export const country = {
+  formatter: () => '',
+  arg: 'options',
+  id: 'formatter',
+  // @info key observation: modules may be derived from locale
+  module: locale => `./formatters/country/${locale}.js`
+};
+
+// ./formatters/country/en-US.js
+export function formatter(value, locale, override) {
+  return 'US-of-A';
+}
+
+// ./formatters/country/en-CA.js
+export function formatter(value, locale, override) {
+  return 'Canada, the Great White North';
+}
+
+// demo-compilation.js
+const mf = new MessageFormat(['en-US', 'en-CA'], {
+  localeCodeFromKey: key => {
+    try {
+      return new Intl.Locale(key).baseName;
+    } catch {
+      return null;
+    }
+  },
+  customFormatters: { country }
+});
+const msgSet = {
+  'en-CA': { citizen: 'I live in {_, country}!' },
+  'en-US': { citizen: 'I live in {_, country}!' }
+};
+fs.writeFileSync('./messages.js', compileModule(mf, msgSet));
+
+// demo-runtime.js
+import messages from './messages';
+console.log(messages['en-US'].citizen({}));
+// I live in US-of-A!
+
+console.log(messages['en-CA'].citizen({}));
+// I live in Canada, the Great White North!
+```
