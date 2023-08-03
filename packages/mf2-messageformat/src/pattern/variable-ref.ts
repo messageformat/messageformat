@@ -1,10 +1,11 @@
 import { MessageError } from '../errors.js';
-import { Context } from '../format-context';
+import type { Context } from '../format-context';
 import {
   asMessageValue,
   MessageFallback,
   MessageValue
 } from '../message-value';
+import type { Expression, Junk } from './index.js';
 
 /**
  * The value of a VariableRef is defined by the current Scope.
@@ -22,6 +23,22 @@ import {
 export interface VariableRef {
   type: 'variable';
   name: string;
+}
+
+/**
+ * Declarations aren't resolved until they're requierd,
+ * and their resolution order matters for variable resolution.
+ * This internal class is used to store any required data,
+ * and to allow for `instanceof` detection.
+ * @private
+ */
+export class UnresolvedExpression {
+  expression: Expression | Junk;
+  scope: Context['scope'];
+  constructor(expression: Expression | Junk, scope: Context['scope']) {
+    this.expression = expression;
+    this.scope = scope;
+  }
 }
 
 /**
@@ -59,13 +76,10 @@ function getValue(scope: unknown, name: string): unknown {
 
 export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
   const source = '$' + name;
-  let value: unknown;
-  const decl = ctx.declarations.find(decl => decl.target.name === name);
-  if (decl) {
-    value = ctx.resolve(decl.value);
+  let value = getValue(ctx.scope, name);
+  if (value instanceof UnresolvedExpression) {
+    value = { ...ctx, scope: value.scope }.resolve(value.expression);
     ctx.scope[name] = value;
-  } else {
-    value = getValue(ctx.scope, name);
   }
   if (value !== undefined) return asMessageValue(ctx, value, { source });
 

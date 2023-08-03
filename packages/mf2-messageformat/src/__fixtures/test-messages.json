@@ -94,6 +94,33 @@
     "exp": "bar foo"
   },
   {
+    "src": "let $foo = {$foo} {bar {$foo}}",
+    "params": { "foo": "foo" },
+    "exp": "bar foo"
+  },
+  {
+    "src": "let $foo = {$foo} let $foo = {42} {bar {$foo}}",
+    "params": { "foo": "foo" },
+    "exp": "bar 42"
+  },
+  {
+    "src": "let $foo = {42} let $foo = {$foo} {bar {$foo}}",
+    "params": { "foo": "foo" },
+    "exp": "bar 42"
+  },
+  {
+    "src": "let $foo = {$foo} let $foo = {42} {bar {$foo}}",
+    "exp": "bar 42"
+  },
+  {
+    "src": "let $foo = {:unknown} let $foo = {42} {bar {$foo}}",
+    "exp": "bar 42"
+  },
+  {
+    "src": "let $x = {42} let $y = {$x} let $x = {13} {{$x} {$y}}",
+    "exp": "13 42"
+  },
+  {
     "src": "let $foo = {$bar} let $bar = {$baz} {bar {$foo}}",
     "params": { "baz": "foo" },
     "exp": "bar foo",

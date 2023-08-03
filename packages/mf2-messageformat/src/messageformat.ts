@@ -2,7 +2,7 @@ import { Message } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
 import { parseMessage } from './parser/message';
-import { resolvePatternElement } from './pattern';
+import { resolveExpression, UnresolvedExpression } from './pattern';
 import { defaultRuntime, Runtime } from './runtime';
 
 /** @beta */
@@ -72,21 +72,29 @@ export class MessageFormat {
   }
 
   private createContext(
-    scope: Context['scope'] = {},
+    msgParams?: Record<string, unknown>,
     onError: Context['onError'] = () => {
       // Ignore errors by default
     }
   ) {
-    const { declarations } = this.#message;
+    let scope = { ...msgParams };
+    for (const { target, value } of this.#message.declarations) {
+      if (target.type === 'variable') {
+        const { name } = target;
+        const ue = new UnresolvedExpression(value, scope);
+        if (name in scope) scope = { ...scope, [name]: ue };
+        else scope[name] = ue;
+      }
+    }
     const ctx: Context = {
       onError,
-      resolve: elem => resolvePatternElement(ctx, elem),
-      declarations,
+      resolve(elem) {
+        return resolveExpression(this, elem);
+      },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       runtime: this.#runtime,
-      // If declarations exist, scope may be modified during formatting
-      scope: declarations.length > 0 ? { ...scope } : scope
+      scope
     };
     return ctx;
   }

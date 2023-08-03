@@ -244,6 +244,46 @@ describe('compileModule()', function () {
       expect(src).toMatch(/import { upcase } from "upmod"/);
     });
 
+    it('import from locale-derived module, with direct locale input', async () => {
+      const phone = {
+        formatter: () => '',
+        id: 'phone',
+        module: locale => `phone/${locale}`
+      };
+      const mf = new MessageFormat('en', { customFormatters: { phone } });
+      const msg = '{foo, phone}';
+      const src = compileModule(mf, { msg });
+      expect(src).toMatch(/import { phone as phone__en } from "phone\/en"/);
+    });
+
+    it('import from locale-derived module, with nested locale input', async () => {
+      const phone = {
+        formatter: (_: unknown) => '',
+        id: 'phone',
+        module: locale => `phone/${locale}`
+      };
+      const mf = new MessageFormat(['en-US', 'fr-FR'], {
+        customFormatters: { phone },
+        localeCodeFromKey: key => {
+          try {
+            return new Intl.Locale(key).baseName;
+          } catch {
+            return null;
+          }
+        }
+      });
+      const msg = '{phoneNumber, phone}';
+      const src = compileModule(mf, { 'fr-FR': { msg }, 'en-US': { msg } });
+      expect(src).toMatch(
+        /import { phone as phone__fr_FR } from "phone\/fr-FR"/
+      );
+      expect(src).toMatch(
+        /import { phone as phone__en_US } from "phone\/en-US"/
+      );
+      expect(src).toMatch(/phone__fr_FR\(d.phoneNumber, "fr-FR"\)/);
+      expect(src).toMatch(/phone__en_US\(d.phoneNumber, "en-US"\)/);
+    });
+
     it('import from module; id != key', async () => {
       const upcase = {
         formatter: (v: unknown) => String(v).toUpperCase(),

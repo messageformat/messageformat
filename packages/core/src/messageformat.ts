@@ -66,7 +66,7 @@ export interface MessageFormatOptions<
           formatter: CustomFormatter;
           arg?: 'string' | 'raw' | 'options';
           id?: string;
-          module?: string;
+          module?: string | ((locale: string) => string);
         };
   };
 

@@ -11,7 +11,11 @@ export { isFunctionRef, FunctionRef, Option } from './function-ref';
 export { isJunk, Junk } from './junk';
 export { isLiteral, isText, Literal, Text } from './literal';
 export { isReserved, Reserved } from './reserved';
-export { isVariableRef, VariableRef } from './variable-ref';
+export {
+  isVariableRef,
+  UnresolvedExpression,
+  VariableRef
+} from './variable-ref';
 
 /**
  * Wrapper for non-literal content.
@@ -53,7 +57,7 @@ export type PatternElement =
   | VariableRef;
 
 /** @internal */
-export function resolvePatternElement(
+export function resolveExpression(
   ctx: Context,
   elem: PatternElement
 ): MessageValue {
@@ -62,7 +66,7 @@ export function resolvePatternElement(
     case 'text':
       return resolveLiteral(elem);
     case 'expression':
-      return resolvePatternElement(ctx, elem.body);
+      return resolveExpression(ctx, elem.body);
     case 'variable':
       return resolveVariableRef(ctx, elem);
     case 'function':
