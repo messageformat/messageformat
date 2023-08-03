@@ -171,8 +171,13 @@ export default class Compiler {
         this.setRuntimeFn('plural');
         break;
 
-      case 'function':
-        if (!this.options.customFormatters[token.key]) {
+      case 'function': {
+        const formatter = this.options.customFormatters[token.key];
+        const isModuleFn =
+          formatter &&
+          'module' in formatter &&
+          typeof formatter.module === 'function';
+        if (!formatter) {
           if (token.key === 'date') {
             fn = this.setDateFormatter(token, args, pluralToken);
             break;
@@ -188,10 +193,12 @@ export default class Compiler {
           const arg = this.getFormatterArg(token, pluralToken);
           if (arg) args.push(arg);
         }
-        fn = token.key;
-        this.setFormatter(fn);
+        fn = isModuleFn
+          ? identifier(`${token.key}__${this.plural.locale}`)
+          : token.key;
+        this.setFormatter(fn, token.key);
         break;
-
+      }
       case 'octothorpe':
         /* istanbul ignore if: never happens */
         if (!pluralToken) return '"#"';
@@ -303,16 +310,24 @@ export default class Compiler {
     }
   }
 
-  setFormatter(key: string) {
+  setFormatter(key: string, parentKey?: string) {
     if (this.runtimeIncludes(key, 'formatter')) return;
-    let cf = this.options.customFormatters[key];
+    const cf = this.options.customFormatters[parentKey || key];
     if (cf) {
-      if (typeof cf === 'function') cf = { formatter: cf };
+      const cfo = typeof cf === 'function' ? { formatter: cf } : cf;
+
       this.runtime[key] = Object.assign(
-        cf.formatter,
+        cfo.formatter.bind({}),
+        { ...cfo.formatter.prototype, toString: () => String(cfo.formatter) },
         { type: 'formatter' } as const,
         'module' in cf && cf.module && cf.id
-          ? { id: identifier(cf.id), module: cf.module }
+          ? {
+              id: identifier(cf.id),
+              module:
+                typeof cf.module === 'function'
+                  ? cf.module(this.plural.locale)
+                  : cf.module
+            }
           : { id: null, module: null }
       );
     } else if (isFormatterKey(key)) {
