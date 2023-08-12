@@ -1,8 +1,4 @@
-import type {
-  LiteralParsed,
-  TextParsed,
-  VariableRefParsed
-} from './data-model.js';
+import type * as CST from './cst-types.js';
 import type { ParseContext } from './message.js';
 import { parseNameValue, parseUnquotedLiteralValue } from './names.js';
 
@@ -11,7 +7,7 @@ import { parseNameValue, parseUnquotedLiteralValue } from './names.js';
 // AnyChar ::= [#x0-#x10FFFF]
 // Esc ::= '\'
 // TextEscape ::= Esc Esc | Esc '{' | Esc '}'
-export function parseText(ctx: ParseContext, start: number): TextParsed {
+export function parseText(ctx: ParseContext, start: number): CST.Text {
   let value = '';
   let pos = start;
   let i = start;
@@ -53,17 +49,17 @@ export function parseLiteral(
   ctx: ParseContext,
   start: number,
   required: true
-): LiteralParsed;
+): CST.Literal;
 export function parseLiteral(
   ctx: ParseContext,
   start: number,
   required: boolean
-): LiteralParsed | undefined;
+): CST.Literal | undefined;
 export function parseLiteral(
   ctx: ParseContext,
   start: number,
   required: boolean
-): LiteralParsed | undefined {
+): CST.Literal | undefined {
   if (ctx.source[start] === '|') return parseQuotedLiteral(ctx, start);
   const value = parseUnquotedLiteralValue(ctx, start);
   if (!value) {
@@ -84,7 +80,7 @@ export function parseLiteral(
 export function parseQuotedLiteral(
   ctx: ParseContext,
   start: number
-): LiteralParsed {
+): CST.Literal {
   let value = '';
   let pos = start + 1;
   for (let i = pos; i < ctx.source.length; ++i) {
@@ -132,7 +128,7 @@ export function parseQuotedLiteral(
 export function parseVariable(
   ctx: ParseContext,
   start: number
-): VariableRefParsed {
+): CST.VariableRef {
   const pos = start + 1;
   const name = parseNameValue(ctx.source, pos);
   const end = pos + name.length;

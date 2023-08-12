@@ -1,20 +1,15 @@
-import type {
-  DeclarationParsed,
-  JunkParsed,
-  ExpressionParsed,
-  VariableRefParsed
-} from './data-model.js';
+import type * as CST from './cst-types.js';
 import type { ParseContext } from './message.js';
 import { parseExpression } from './expression.js';
 import { whitespaces } from './util.js';
 import { parseVariable } from './values.js';
 
 export function parseDeclarations(ctx: ParseContext): {
-  declarations: DeclarationParsed[];
+  declarations: CST.Declaration[];
   end: number;
 } {
   let pos = whitespaces(ctx.source, 0);
-  const declarations: DeclarationParsed[] = [];
+  const declarations: CST.Declaration[] = [];
   while (ctx.source.startsWith('let', pos)) {
     const decl = parseDeclaration(ctx, pos);
     declarations.push(decl);
@@ -27,14 +22,14 @@ export function parseDeclarations(ctx: ParseContext): {
 
 // declaration = let s variable [s] "=" [s] expression
 // let = %x6C.65.74 ; "let"
-function parseDeclaration(ctx: ParseContext, start: number): DeclarationParsed {
+function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
   let pos = start + 3; // 'let'
   const ws = whitespaces(ctx.source, pos);
   pos += ws;
 
   if (ws === 0) ctx.onError('missing-char', pos, ' ');
 
-  let target: VariableRefParsed | JunkParsed;
+  let target: CST.VariableRef | CST.Junk;
   if (ctx.source[pos] === '$') {
     target = parseVariable(ctx, pos);
     pos = target.end;
@@ -55,7 +50,7 @@ function parseDeclaration(ctx: ParseContext, start: number): DeclarationParsed {
   if (ctx.source[pos] === '=') pos += 1;
   else ctx.onError('missing-char', pos, '=');
 
-  let value: ExpressionParsed | JunkParsed;
+  let value: CST.Expression | CST.Junk;
   pos += whitespaces(ctx.source, pos);
   if (ctx.source[pos] === '{') {
     value = parseExpression(ctx, pos);
@@ -81,9 +76,9 @@ function parseDeclaration(ctx: ParseContext, start: number): DeclarationParsed {
 /** Local variable declarations can't refer to later ones */
 function checkLocalVarReferences(
   ctx: ParseContext,
-  declarations: DeclarationParsed[]
+  declarations: CST.Declaration[]
 ) {
-  const check = (name: string, ref: VariableRefParsed) => {
+  const check = (name: string, ref: CST.VariableRef) => {
     if (ref.name === name) {
       ctx.onError('bad-local-var', ref.start, ref.end);
     }

@@ -1,3 +1,4 @@
+import { isValidUnquotedLiteral } from '../cst-parser/index.js';
 import {
   Declaration,
   isPatternMessage,
@@ -7,7 +8,6 @@ import {
   Pattern
 } from '../data-model';
 import { MessageFormat } from '../messageformat';
-import { isValidUnquotedLiteral } from '../parser/names';
 import {
   FunctionRef,
   isLiteral,

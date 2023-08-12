@@ -1,13 +1,5 @@
 import { MessageSyntaxError } from '../errors.js';
-import type {
-  ExpressionParsed,
-  FunctionRefParsed,
-  JunkParsed,
-  LiteralParsed,
-  OptionParsed,
-  ReservedParsed,
-  VariableRefParsed
-} from './data-model.js';
+import type * as CST from './cst-types.js';
 import type { ParseContext } from './message.js';
 import { parseNameValue } from './names.js';
 import { whitespaces } from './util.js';
@@ -17,7 +9,7 @@ import { parseLiteral, parseQuotedLiteral, parseVariable } from './values.js';
 export function parseExpression(
   ctx: ParseContext,
   start: number
-): ExpressionParsed {
+): CST.Expression {
   let pos = start + 1; // '{'
   pos += whitespaces(ctx.source, pos);
 
@@ -28,11 +20,11 @@ export function parseExpression(
   if (arg) pos = arg.end;
 
   let body:
-    | LiteralParsed
-    | VariableRefParsed
-    | FunctionRefParsed
-    | ReservedParsed
-    | JunkParsed;
+    | CST.Literal
+    | CST.VariableRef
+    | CST.FunctionRef
+    | CST.Reserved
+    | CST.Junk;
   let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(ctx.source, pos);
   switch (ctx.source[pos]) {
@@ -92,13 +84,13 @@ export function parseExpression(
 function parseFunctionRef(
   ctx: ParseContext,
   start: number,
-  operand: LiteralParsed | VariableRefParsed | undefined
-): FunctionRefParsed {
+  operand: CST.Literal | CST.VariableRef | undefined
+): CST.FunctionRef {
   const sigil = ctx.source[start];
   let pos = start + 1; // ':' | '+' | '-'
   const name = parseNameValue(ctx.source, pos);
   if (!name) ctx.onError('empty-token', pos, pos + 1);
-  const options: OptionParsed[] = [];
+  const options: CST.Option[] = [];
   pos += name.length;
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
@@ -115,7 +107,7 @@ function parseFunctionRef(
 }
 
 // option = name [s] "=" [s] (literal / variable)
-function parseOption(ctx: ParseContext, start: number): OptionParsed {
+function parseOption(ctx: ParseContext, start: number): CST.Option {
   const name = parseNameValue(ctx.source, start);
   let pos = start + name.length;
   pos += whitespaces(ctx.source, pos);
@@ -142,9 +134,9 @@ function parseOption(ctx: ParseContext, start: number): OptionParsed {
 function parseReserved(
   ctx: ParseContext,
   start: number,
-  operand: LiteralParsed | VariableRefParsed | undefined
-): ReservedParsed {
-  const sigil = ctx.source[start] as ReservedParsed['sigil'];
+  operand: CST.Literal | CST.VariableRef | undefined
+): CST.Reserved {
+  const sigil = ctx.source[start] as CST.Reserved['sigil'];
   let pos = start + 1; // sigil
   loop: while (pos < ctx.source.length) {
     const ch = ctx.source[pos];

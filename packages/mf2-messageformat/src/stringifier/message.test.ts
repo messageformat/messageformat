@@ -1,6 +1,6 @@
-import { parseMessage } from '../parser/message';
 import testMessages from '../__fixtures/test-messages.json';
 import { testName } from '../__fixtures/test-name';
+import { parseMessage } from '../cst-parser/index.js';
 import { stringifyMessage } from './message';
 
 describe('Stringify messages', () => {

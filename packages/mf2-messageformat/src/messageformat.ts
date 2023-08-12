@@ -1,7 +1,7 @@
+import { parseMessage } from './cst-parser/index.js';
 import { Message } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
-import { parseMessage } from './parser/message';
 import { resolveExpression, UnresolvedExpression } from './pattern';
 import { defaultRuntime, Runtime } from './runtime';
 

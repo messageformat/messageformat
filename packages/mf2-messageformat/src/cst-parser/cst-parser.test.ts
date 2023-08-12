@@ -1,5 +1,5 @@
-import { parseMessage } from '../index.js';
-import { MessageParsed } from './data-model.js';
+import type * as CST from './cst-types.js';
+import { parseMessage } from './index.js';
 
 describe('messages in resources', () => {
   test('text character escapes', () => {
@@ -7,7 +7,7 @@ describe('messages in resources', () => {
     const noRes = parseMessage(src, { resource: false });
     expect(noRes.errors).toHaveLength(8);
     const msg = parseMessage(src, { resource: true });
-    expect(msg).toMatchObject<MessageParsed>({
+    expect(msg).toMatchObject<CST.Message>({
       type: 'message',
       declarations: [],
       errors: [],
@@ -31,7 +31,7 @@ describe('messages in resources', () => {
     const noRes = parseMessage(src, { resource: false });
     expect(noRes.errors).toHaveLength(8);
     const msg = parseMessage(src, { resource: true });
-    expect(msg).toMatchObject<MessageParsed>({
+    expect(msg).toMatchObject<CST.Message>({
       type: 'message',
       declarations: [],
       errors: [],
