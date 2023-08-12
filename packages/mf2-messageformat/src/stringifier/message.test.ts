@@ -5,7 +5,7 @@ import { stringifyMessage } from './message';
 
 describe('Stringify messages', () => {
   for (const testMsg of testMessages) {
-    if (!testMsg.errors || testMsg.errors.length === 0) {
+    if (!testMsg.syntaxError && !testMsg.errors?.length) {
       test(testName(testMsg), () => {
         const msg = parseMessage(testMsg.src);
         const res = stringifyMessage(msg);

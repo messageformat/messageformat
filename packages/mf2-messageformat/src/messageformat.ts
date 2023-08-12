@@ -1,4 +1,4 @@
-import { parseMessage } from './cst-parser/index.js';
+import { asDataModel, parseMessage } from './cst-parser/index.js';
 import { Message } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
@@ -46,7 +46,8 @@ export class MessageFormat {
       : locales
       ? [locales]
       : [];
-    this.#message = typeof source === 'string' ? parseMessage(source) : source;
+    this.#message =
+      typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
     const rt = options?.runtime ?? defaultRuntime;
     this.#runtime = Object.freeze({ ...rt });
   }

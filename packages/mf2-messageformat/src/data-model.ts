@@ -1,11 +1,14 @@
 import type { MessageSyntaxError } from './errors';
 import type {
+  Expression,
   Junk,
   Literal,
   PatternElement,
-  Expression,
   VariableRef
 } from './pattern';
+
+export type { FunctionRef, Option, Reserved } from './pattern';
+export type { Expression, Junk, Literal, PatternElement, VariableRef };
 
 /**
  * The representation of a single message.

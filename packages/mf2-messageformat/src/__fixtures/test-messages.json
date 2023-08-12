@@ -85,8 +85,7 @@
   {
     "src": "let $foo = {$bar :number} {bar {$foo}}",
     "params": { "bar": "foo" },
-    "exp": "bar NaN",
-    "errors": []
+    "exp": "bar NaN"
   },
   {
     "src": "let $foo = {$baz} let $bar = {$foo} {bar {$bar}}",
@@ -119,12 +118,6 @@
   {
     "src": "let $x = {42} let $y = {$x} let $x = {13} {{$x} {$y}}",
     "exp": "13 42"
-  },
-  {
-    "src": "let $foo = {$bar} let $bar = {$baz} {bar {$foo}}",
-    "params": { "baz": "foo" },
-    "exp": "bar foo",
-    "errors": [{ "type": "bad-local-var" }]
   },
   {
     "src": "match {$foo} when |1| {one} when * {other}",
@@ -189,29 +182,13 @@
   {
     "src": "let $bar = {$none} match {$foo} when one {one} when * {{$bar}}",
     "params": { "foo": 1 },
-    "exp": "one",
-    "errors": []
+    "exp": "one"
   },
   {
     "src": "let $bar = {$none} match {$foo} when one {one} when * {{$bar}}",
     "params": { "foo": 2 },
     "exp": "{$bar}",
     "errors": [{ "type": "unresolved-var" }]
-  },
-  {
-    "src": "let bar = {|foo|} {{$bar}}",
-    "exp": "{$bar}",
-    "errors": [{ "type": "missing-char" }, { "type": "unresolved-var" }]
-  },
-  {
-    "src": "let $bar {|foo|} {{$bar}}",
-    "exp": "foo",
-    "errors": [{ "type": "missing-char" }]
-  },
-  {
-    "src": "let $bar = |foo| {{$bar}}",
-    "exp": "{$bar}",
-    "errors": [{ "type": "missing-char" }, { "type": "junk-element" }]
   },
   { "src": "{{+tag}}", "exp": "{+tag}" },
   { "src": "{{+tag}content}", "exp": "{+tag}content" },
@@ -232,146 +209,43 @@
     "exp": "{-tag}"
   },
   {
-    "src": "no braces",
-    "exp": "{no braces}",
-    "errors": [{ "type": "parse-error" }, { "type": "junk-element" }]
-  },
-  {
-    "src": "no braces {$foo}",
-    "exp": "{no braces {$foo}}",
-    "params": { "foo": 2 },
-    "errors": [{ "type": "parse-error" }, { "type": "junk-element" }]
-  },
-  {
-    "src": "{missing end brace",
-    "exp": "missing end brace",
-    "errors": [{ "type": "missing-char" }]
-  },
-  {
-    "src": "{missing end {$brace",
-    "exp": "missing end {$brace}",
-    "errors": [
-      { "type": "missing-char" },
-      { "type": "missing-char" },
-      { "type": "unresolved-var" }
-    ]
-  },
-  {
-    "src": "{extra} content",
-    "exp": "extra",
-    "errors": [{ "type": "extra-content" }]
-  },
-  {
-    "src": "{empty { }}",
-    "exp": "empty {}}",
-    "errors": [{ "type": "parse-error" }, { "type": "junk-element" }]
-  },
-  {
-    "src": "{bad {:}}",
-    "exp": "bad {:}",
-    "errors": [{ "type": "empty-token" }, { "type": "missing-func" }]
-  },
-  {
     "src": "{unquoted {literal}}",
     "exp": "unquoted literal"
-  },
-  {
-    "src": "{bad {\u0000placeholder}}",
-    "exp": "bad {\u0000placeholder}",
-    "errors": [
-      { "type": "parse-error" },
-      { "type": "extra-content" },
-      { "type": "junk-element" }
-    ]
-  },
-  {
-    "src": "{no-equal {|42| :number minimumFractionDigits 2}}",
-    "exp": "no-equal 42.00",
-    "errors": [{ "type": "missing-char" }]
-  },
-  {
-    "src": "{bad {:placeholder option=}}",
-    "exp": "bad {:placeholder}",
-    "errors": [{ "type": "empty-token" }, { "type": "missing-func" }]
-  },
-  {
-    "src": "{bad {:placeholder option value}}",
-    "exp": "bad {:placeholder}",
-    "errors": [{ "type": "missing-char" }, { "type": "missing-func" }]
-  },
-  {
-    "src": "{bad {:placeholder option}}",
-    "exp": "bad {:placeholder}",
-    "errors": [
-      { "type": "missing-char" },
-      { "type": "empty-token" },
-      { "type": "missing-func" }
-    ]
-  },
-  {
-    "src": "{bad {$placeholder option}}",
-    "exp": "bad {$placeholder}",
-    "errors": [
-      { "type": "extra-content" },
-      { "type": "extra-content" },
-      { "type": "unresolved-var" }
-    ]
-  },
-  {
-    "src": "{no {$placeholder end}",
-    "exp": "no {$placeholder}",
-    "errors": [{ "type": "extra-content" }, { "type": "unresolved-var" }]
-  },
-  {
-    "src": "match {} when * {foo}",
-    "exp": "foo",
-    "errors": [
-      { "type": "parse-error" },
-      { "type": "bad-selector" },
-      { "type": "junk-element" }
-    ]
   },
   {
     "src": "match {+foo} when * {foo}",
     "exp": "foo"
   },
+  { "src": "no braces", "syntaxError": true },
+  { "src": "no braces {$foo}", "syntaxError": true },
+  { "src": "{missing end brace", "syntaxError": true },
+  { "src": "{missing end {$brace", "syntaxError": true },
+  { "src": "{extra} content", "syntaxError": true },
+  { "src": "let bar = {|foo|} {{$bar}}", "syntaxError": true },
+  { "src": "let $bar {|foo|} {{$bar}}", "syntaxError": true },
+  { "src": "let $bar = |foo| {{$bar}}", "syntaxError": true },
   {
-    "src": "match {|foo|} when*{foo}",
-    "exp": "foo",
-    "errors": [{ "type": "missing-char" }]
+    "src": "let $foo = {$bar} let $bar = {$baz} {bar {$foo}}",
+    "syntaxError": true
   },
+  { "src": "{empty { }}", "syntaxError": true },
+  { "src": "{bad {:}}", "syntaxError": true },
+  { "src": "{bad {\u0000placeholder}}", "syntaxError": true },
   {
-    "src": "match when * {foo}",
-    "exp": "foo",
-    "errors": [{ "type": "empty-token" }]
+    "src": "{no-equal {|42| :number minimumFractionDigits 2}}",
+    "syntaxError": true
   },
-  {
-    "src": "match {|x|} when * foo",
-    "exp": "",
-    "errors": [{ "type": "key-mismatch" }, { "type": "missing-char" }]
-  },
-  {
-    "src": "match {|x|} when * {foo} extra",
-    "exp": "foo",
-    "errors": [{ "type": "extra-content" }]
-  },
-  {
-    "src": "match |x| when * {foo}",
-    "exp": "",
-    "errors": [{ "type": "empty-token" }, { "type": "extra-content" }]
-  },
-  {
-    "src": "match {$foo} when * * {foo}",
-    "exp": "foo",
-    "errors": [{ "type": "key-mismatch" }, { "type": "unresolved-var" }]
-  },
-  {
-    "src": "match {$foo} {$bar} when * {foo}",
-    "exp": "foo",
-    "errors": [
-      { "type": "key-mismatch" },
-      { "type": "unresolved-var" },
-      { "type": "unresolved-var" }
-    ]
-  }
+  { "src": "{bad {:placeholder option=}}", "syntaxError": true },
+  { "src": "{bad {:placeholder option value}}", "syntaxError": true },
+  { "src": "{bad {:placeholder option}}", "syntaxError": true },
+  { "src": "{bad {$placeholder option}}", "syntaxError": true },
+  { "src": "{no {$placeholder end}", "syntaxError": true },
+  { "src": "match {} when * {foo}", "syntaxError": true },
+  { "src": "match {|foo|} when*{foo}", "syntaxError": true },
+  { "src": "match when * {foo}", "syntaxError": true },
+  { "src": "match {|x|} when * foo", "syntaxError": true },
+  { "src": "match {|x|} when * {foo} extra", "syntaxError": true },
+  { "src": "match |x| when * {foo}", "syntaxError": true },
+  { "src": "match {$foo} when * * {foo}", "syntaxError": true },
+  { "src": "match {$foo} {$bar} when * {foo}", "syntaxError": true }
 ]

@@ -44,13 +44,8 @@ describe('Reserved syntax', () => {
   });
 
   test('surrogates', () => {
-    const msg = resolve('{{ %invalid \ud900 surrogate }}', {}, [
-      { type: 'parse-error' },
-      { type: 'reserved' }
-    ]);
-    expect(msg).toMatchObject({
-      type: 'message',
-      value: [{ type: 'fallback', source: '%invalid \ud900 surrogate' }]
-    });
+    expect(
+      () => new MessageFormat('{{ %invalid \ud900 surrogate }}')
+    ).toThrow();
   });
 });

@@ -1,4 +1,4 @@
-export { parseMessage } from './cst-parser/index.js';
+export { asDataModel, parseMessage, type CST } from './cst-parser/index.js';
 export * from './data-model.js';
 export {
   MessageDataModelError,
