@@ -24,6 +24,7 @@ export function parseDeclarations(ctx: ParseContext): {
 // let = %x6C.65.74 ; "let"
 function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
   let pos = start + 3; // 'let'
+  const let_: CST.Syntax<'let'> = { start, end: pos, value: 'let' };
   const ws = whitespaces(ctx.source, pos);
   pos += ws;
 
@@ -47,8 +48,14 @@ function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
   }
 
   pos += whitespaces(ctx.source, pos);
-  if (ctx.source[pos] === '=') pos += 1;
-  else ctx.onError('missing-char', pos, '=');
+  let equals: CST.Syntax<'=' | ''>;
+  if (ctx.source[pos] === '=') {
+    equals = { start: pos, end: pos + 1, value: '=' };
+    pos += 1;
+  } else {
+    equals = { start: pos, end: pos, value: '' };
+    ctx.onError('missing-char', pos, '=');
+  }
 
   let value: CST.Expression | CST.Junk;
   pos += whitespaces(ctx.source, pos);
@@ -70,7 +77,7 @@ function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
     ctx.onError('missing-char', junkStart, '{');
   }
 
-  return { start, end: pos, target, value };
+  return { start, end: pos, let: let_, target, equals, value };
 }
 
 /** Local variable declarations can't refer to later ones */

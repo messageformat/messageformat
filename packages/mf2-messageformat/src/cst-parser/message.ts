@@ -94,6 +94,7 @@ function parseSelectMessage(
   declarations: CST.Declaration[]
 ): CST.SelectMessage {
   let pos = start + 5; // 'match'
+  const match: CST.Syntax<'match'> = { start, end: pos, value: 'match' };
   pos += whitespaces(ctx.source, pos);
 
   const selectors: CST.Expression[] = [];
@@ -133,6 +134,7 @@ function parseSelectMessage(
   return {
     type: 'select',
     declarations,
+    match,
     selectors,
     variants,
     errors: ctx.errors
@@ -147,6 +149,7 @@ function parseVariant(
   selCount: number
 ): CST.Variant {
   let pos = start + 4; // 'when'
+  const when: CST.Syntax<'when'> = { start, end: pos, value: 'when' };
   const keys: Array<CST.Literal | CST.CatchallKey> = [];
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
@@ -171,7 +174,7 @@ function parseVariant(
   }
 
   const value = parsePattern(ctx, pos);
-  return { start, end: value.end, keys, value };
+  return { start, end: value.end, when, keys, value };
 }
 
 // pattern = "{" *(text / expression) "}"

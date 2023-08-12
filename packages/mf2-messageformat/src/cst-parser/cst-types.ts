@@ -11,6 +11,7 @@ export interface PatternMessage {
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
+  match: Syntax<'match'>;
   selectors: Expression[];
   variants: Variant[];
   errors: MessageSyntaxError[];
@@ -23,17 +24,18 @@ export interface JunkMessage {
 }
 
 export interface Declaration {
-  /** position of the `l` in `let` */
   start: number;
   end: number;
+  let: Syntax<'let'>;
   target: VariableRef | Junk;
+  equals: Syntax<'=' | ''>;
   value: Expression | Junk;
 }
 
 export interface Variant {
-  /** position of the `w` in `when` */
   start: number;
   end: number;
+  when: Syntax<'when'>;
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
 }
@@ -48,7 +50,7 @@ export interface CatchallKey {
 export interface Pattern {
   /** position of the `{` */
   start: number;
-  /** position of the `}` */
+  /** position one past the `}` */
   end: number;
   body: Array<Text | Expression>;
 }
@@ -64,7 +66,7 @@ export interface Expression {
   type: 'expression';
   /** position of the `{` */
   start: number;
-  /** position just past the `}` */
+  /** position one past the `}` */
   end: number;
   body: Literal | VariableRef | FunctionRef | Reserved | Junk;
 }
@@ -82,7 +84,7 @@ export interface Literal {
   quoted: boolean;
   /** position of the initial `|` */
   start: number;
-  /** position just past the terminal `|` */
+  /** position one past the terminal `|` */
   end: number;
   value: string;
 }
@@ -122,4 +124,10 @@ export interface Option {
   end: number;
   name: string;
   value: Literal | VariableRef;
+}
+
+export interface Syntax<T extends string> {
+  start: number;
+  end: number;
+  value: T;
 }
