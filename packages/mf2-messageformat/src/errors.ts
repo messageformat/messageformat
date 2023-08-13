@@ -1,6 +1,5 @@
 export class MessageError extends Error {
   type:
-    | 'junk-element'
     | 'missing-func'
     | 'reserved'
     | 'unresolved-var'

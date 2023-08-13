@@ -1,13 +1,17 @@
-import type { Message } from '../data-model';
-import { isFunctionRef, PatternElement } from '../pattern';
+import type { Message, Pattern } from '../data-model';
+import { isExpression, isFunctionRef } from '../pattern';
 import type { Runtime } from '../runtime';
 
-function validateParts(parts: PatternElement[], runtime: Runtime) {
+function validateParts(parts: Pattern['body'], runtime: Runtime) {
   for (const part of parts) {
-    if (isFunctionRef(part) && part.kind === 'value') {
-      if (typeof runtime[part.name] !== 'function') {
+    if (
+      isExpression(part) &&
+      isFunctionRef(part.body) &&
+      part.body.kind === 'value'
+    ) {
+      if (typeof runtime[part.body.name] !== 'function') {
         throw new ReferenceError(
-          `Runtime function not available: ${part.name}`
+          `Runtime function not available: ${part.body.name}`
         );
       }
       // TODO: Once runtime arg requirements are defined, test against them
@@ -19,9 +23,8 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
  * Validate a message.
  *
  * @remarks
- * Throws if `msg` is a {@link JunkMessage},
- * if it contains parse `errors`,
- * or of if references runtime functions that are not available in the `runtime`.
+ * Throws if `msg` is not a pattern or select message,
+ * or if it references runtime functions that are not available in the `runtime`.
  *
  * Formatting a message that passes validation may still fail,
  * as it may depend on parameters that are not passed in,
@@ -30,7 +33,6 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
  * @beta
  */
 export function validate(msg: Readonly<Message>, runtime: Runtime) {
-  if (msg.errors?.length) throw msg.errors[0];
   switch (msg.type) {
     case 'message':
       validateParts(msg.pattern.body, runtime);
@@ -40,6 +42,7 @@ export function validate(msg: Readonly<Message>, runtime: Runtime) {
       for (const { value } of msg.variants) validateParts(value.body, runtime);
       break;
     default:
+      // @ts-expect-error With TS, this condition should never be reached.
       throw new Error(`Invalid message type: ${msg.type}`);
   }
 }

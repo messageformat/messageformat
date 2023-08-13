@@ -3,18 +3,7 @@ import {
   MessageSyntaxError,
   MissingCharError
 } from '../errors.js';
-import type {
-  CatchallKeyParsed,
-  DeclarationParsed,
-  LiteralParsed,
-  MessageParsed,
-  PatternParsed,
-  PatternMessageParsed,
-  ExpressionParsed,
-  SelectMessageParsed,
-  TextParsed,
-  VariantParsed
-} from './data-model.js';
+import type * as CST from './cst-types.js';
 import { parseDeclarations } from './declarations.js';
 import { parseExpression } from './expression.js';
 import { whitespaces } from './util.js';
@@ -62,14 +51,14 @@ export class ParseContext {
 // selectors = match 1*([s] expression)
 /**
  * Parse the string syntax representation of a message into
- * its corresponding data model representation.
+ * its corresponding CST representation.
  *
  * @beta
  */
 export function parseMessage(
   source: string,
   opt?: { resource?: boolean }
-): MessageParsed {
+): CST.Message {
   const ctx = new ParseContext(source, opt);
   const { declarations, end: pos } = parseDeclarations(ctx);
 
@@ -86,8 +75,8 @@ export function parseMessage(
 function parsePatternMessage(
   ctx: ParseContext,
   start: number,
-  declarations: DeclarationParsed[]
-): PatternMessageParsed {
+  declarations: CST.Declaration[]
+): CST.PatternMessage {
   const pattern = parsePattern(ctx, start);
   let pos = pattern.end;
   pos += whitespaces(ctx.source, pos);
@@ -102,12 +91,13 @@ function parsePatternMessage(
 function parseSelectMessage(
   ctx: ParseContext,
   start: number,
-  declarations: DeclarationParsed[]
-): SelectMessageParsed {
+  declarations: CST.Declaration[]
+): CST.SelectMessage {
   let pos = start + 5; // 'match'
+  const match: CST.Syntax<'match'> = { start, end: pos, value: 'match' };
   pos += whitespaces(ctx.source, pos);
 
-  const selectors: ExpressionParsed[] = [];
+  const selectors: CST.Expression[] = [];
   while (ctx.source[pos] === '{') {
     const ph = parseExpression(ctx, pos);
     switch (ph.body.type) {
@@ -128,7 +118,7 @@ function parseSelectMessage(
     ctx.onError('empty-token', pos, pos + 1);
   }
 
-  const variants: VariantParsed[] = [];
+  const variants: CST.Variant[] = [];
   pos += whitespaces(ctx.source, pos);
   while (ctx.source.startsWith('when', pos)) {
     const variant = parseVariant(ctx, pos, selectors.length);
@@ -144,6 +134,7 @@ function parseSelectMessage(
   return {
     type: 'select',
     declarations,
+    match,
     selectors,
     variants,
     errors: ctx.errors
@@ -156,9 +147,10 @@ function parseVariant(
   ctx: ParseContext,
   start: number,
   selCount: number
-): VariantParsed {
+): CST.Variant {
   let pos = start + 4; // 'when'
-  const keys: Array<LiteralParsed | CatchallKeyParsed> = [];
+  const when: CST.Syntax<'when'> = { start, end: pos, value: 'when' };
+  const keys: Array<CST.Literal | CST.CatchallKey> = [];
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
     pos += ws;
@@ -169,7 +161,7 @@ function parseVariant(
 
     const key =
       ch === '*'
-        ? ({ type: '*', start: pos, end: pos + 1 } satisfies CatchallKeyParsed)
+        ? ({ type: '*', start: pos, end: pos + 1 } satisfies CST.CatchallKey)
         : parseLiteral(ctx, pos, true);
     if (key.end === pos) break; // error; reported in pattern.errors
     keys.push(key);
@@ -182,18 +174,18 @@ function parseVariant(
   }
 
   const value = parsePattern(ctx, pos);
-  return { start, end: value.end, keys, value };
+  return { start, end: value.end, when, keys, value };
 }
 
 // pattern = "{" *(text / expression) "}"
-function parsePattern(ctx: ParseContext, start: number): PatternParsed {
+function parsePattern(ctx: ParseContext, start: number): CST.Pattern {
   if (ctx.source[start] !== '{') {
     ctx.onError('missing-char', start, '{');
     return { start, end: start, body: [] };
   }
 
   let pos = start + 1;
-  const body: Array<TextParsed | ExpressionParsed> = [];
+  const body: Array<CST.Text | CST.Expression> = [];
   loop: while (pos < ctx.source.length) {
     switch (ctx.source[pos]) {
       case '{': {

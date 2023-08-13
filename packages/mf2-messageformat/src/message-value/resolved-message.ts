@@ -1,6 +1,5 @@
-import type { Message } from '../data-model';
+import type { Message, Pattern } from '../data-model';
 import type { Context } from '../format-context';
-import type { PatternElement } from '../pattern';
 import { MessageValue, Meta } from './message-value';
 
 const MESSAGE = 'message';
@@ -8,7 +7,7 @@ const MESSAGE = 'message';
 function getPattern(
   context: Context,
   message: Message
-): { pattern: PatternElement[]; meta?: Meta } {
+): { pattern: Pattern['body']; meta?: Meta } {
   switch (message.type) {
     case 'message':
       return { pattern: message.pattern.body };
@@ -63,7 +62,7 @@ function getPattern(
     }
 
     default:
-      return { pattern: [{ type: 'junk', source: message.source }] };
+      return { pattern: [] };
   }
 }
 

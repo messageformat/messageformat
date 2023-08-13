@@ -2,13 +2,11 @@ import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 
 import { FunctionRef, resolveFunctionRef } from './function-ref';
-import { Junk, resolveJunk } from './junk';
 import { Literal, resolveLiteral, Text } from './literal';
 import { Reserved, resolveReserved } from './reserved';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isFunctionRef, FunctionRef, Option } from './function-ref';
-export { isJunk, Junk } from './junk';
 export { isLiteral, isText, Literal, Text } from './literal';
 export { isReserved, Reserved } from './reserved';
 export {
@@ -18,13 +16,13 @@ export {
 } from './variable-ref';
 
 /**
- * Wrapper for non-literal content.
+ * Wrapper for selectors and placeholders.
  *
  * @beta
  */
 export interface Expression {
   type: 'expression';
-  body: Literal | VariableRef | FunctionRef | Reserved | Junk;
+  body: Literal | VariableRef | FunctionRef | Reserved;
 }
 
 /**
@@ -36,30 +34,10 @@ export interface Expression {
 export const isExpression = (part: any): part is Expression =>
   !!part && typeof part === 'object' && part.type === 'expression';
 
-/**
- * The contents of a message are a sequence of pattern elements, which may be
- * immediately defined literal values, a reference to a value that depends on
- * another message, the value of some runtime variable, or some function
- * defined elsewhere.
- *
- * @remarks
- * Depending on the syntax, pattern elements may be wrapped within an Expression.
- *
- * @beta
- */
-export type PatternElement =
-  | Expression
-  | FunctionRef
-  | Junk
-  | Literal
-  | Reserved
-  | Text
-  | VariableRef;
-
 /** @internal */
 export function resolveExpression(
   ctx: Context,
-  elem: PatternElement
+  elem: Expression | FunctionRef | Literal | Reserved | Text | VariableRef
 ): MessageValue {
   switch (elem.type) {
     case 'literal':
@@ -73,8 +51,6 @@ export function resolveExpression(
       return resolveFunctionRef(ctx, elem);
     case 'reserved':
       return resolveReserved(ctx, elem);
-    case 'junk':
-      return resolveJunk(ctx, elem);
     default:
       // @ts-expect-error - should never happen
       throw new Error(`Unsupported pattern element: ${elem.type}`);

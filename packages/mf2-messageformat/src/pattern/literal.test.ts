@@ -30,13 +30,7 @@ describe('quoted literals', () => {
   });
 
   test('invalid escapes', () => {
-    const res = resolve('{{|quoted \\}\\{iteral|}}', [
-      { type: 'bad-escape' },
-      { type: 'bad-escape' }
-    ]);
-    expect(res).toMatchObject({
-      type: 'message',
-      value: [{ type: 'literal', value: 'quoted \\}\\{iteral' }]
-    });
+    expect(() => new MessageFormat('{{|quoted \\}iteral|}}')).toThrow();
+    expect(() => new MessageFormat('{{|quoted \\{iteral|}}')).toThrow();
   });
 });

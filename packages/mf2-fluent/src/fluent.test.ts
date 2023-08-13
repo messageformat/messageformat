@@ -439,7 +439,10 @@ describe('resolveMessage', () => {
                 pattern: {
                   body: [
                     { type: 'text', value: 'Foo ' },
-                    { type: 'variable', name: 'num' }
+                    {
+                      type: 'expression',
+                      body: { type: 'variable', name: 'num' }
+                    }
                   ]
                 }
               }

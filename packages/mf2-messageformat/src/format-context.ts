@@ -1,10 +1,19 @@
 import type { MessageValue } from './message-value';
-import { PatternElement } from './pattern';
+import {
+  Expression,
+  FunctionRef,
+  Literal,
+  Reserved,
+  Text,
+  VariableRef
+} from './pattern';
 import { Runtime } from './runtime';
 
 export interface Context {
   onError(error: unknown, value: MessageValue): void;
-  resolve(elem: PatternElement): MessageValue;
+  resolve(
+    elem: Expression | FunctionRef | Literal | Reserved | Text | VariableRef
+  ): MessageValue;
   localeMatcher: 'best fit' | 'lookup';
   locales: string[];
   runtime: Runtime;

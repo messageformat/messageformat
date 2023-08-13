@@ -1,3 +1,4 @@
+export { asDataModel, parseMessage, type CST } from './cst-parser/index.js';
 export * from './data-model.js';
 export {
   MessageDataModelError,
@@ -6,7 +7,6 @@ export {
 } from './errors.js';
 export * from './message-value/index.js';
 export { MessageFormat, MessageFormatOptions } from './messageformat.js';
-export { parseMessage } from './parser/message.js';
 export { stringifyMessage } from './stringifier/message.js';
 export * from './pattern/index.js';
 export * from './runtime/index.js';

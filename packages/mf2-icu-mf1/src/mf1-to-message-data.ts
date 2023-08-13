@@ -1,10 +1,11 @@
 import type * as AST from '@messageformat/parser';
 import {
+  Expression,
   FunctionRef,
-  isLiteral,
-  Literal,
+  isText,
   Message,
   Option,
+  Text,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -55,14 +56,17 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Literal | VariableRef | FunctionRef {
+): Text | Expression {
   switch (token.type) {
     case 'content':
-      return { type: 'literal', quoted: false, value: token.value };
+      return { type: 'text', value: token.value };
     case 'argument':
-      return { type: 'variable', name: token.arg };
+      return {
+        type: 'expression',
+        body: { type: 'variable', name: token.arg }
+      };
     case 'function': {
-      const fn: FunctionRef = {
+      const body: FunctionRef = {
         type: 'function',
         kind: 'value',
         name: token.key,
@@ -74,22 +78,22 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        fn.options = [
+        body.options = [
           { name: 'param', value: { type: 'literal', quoted: false, value } }
         ];
       }
-      return fn;
+      return { type: 'expression', body };
     }
     case 'octothorpe': {
-      if (!pluralArg) return { type: 'literal', quoted: false, value: '#' };
-      const fn: FunctionRef = {
+      if (!pluralArg) return { type: 'text', value: '#' };
+      const body: FunctionRef = {
         type: 'function',
         kind: 'value',
         name: 'number',
         operand: { type: 'variable', name: pluralArg }
       };
       if (pluralOffset)
-        fn.options = [
+        body.options = [
           {
             name: 'pluralOffset',
             value: {
@@ -99,7 +103,7 @@ function tokenToPart(
             }
           }
         ];
-      return fn;
+      return { type: 'expression', body };
     }
     /* istanbul ignore next - never happens */
     default:
@@ -107,13 +111,9 @@ function tokenToPart(
   }
 }
 
-function argToPart({
-  arg,
-  pluralOffset,
-  type
-}: SelectArg): VariableRef | FunctionRef {
+function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
   const argVar: VariableRef = { type: 'variable', name: arg };
-  if (type === 'select') return argVar;
+  if (type === 'select') return { type: 'expression', body: argVar };
 
   const options: Option[] = [];
   if (pluralOffset) {
@@ -130,11 +130,14 @@ function argToPart({
   }
 
   return {
-    type: 'function',
-    kind: 'value',
-    name: 'number',
-    operand: argVar,
-    options
+    type: 'expression',
+    body: {
+      type: 'function',
+      kind: 'value',
+      name: 'number',
+      operand: argVar,
+      options
+    }
   };
 }
 
@@ -218,7 +221,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
           ) {
             const last = vp[vp.length - 1];
             const part = tokenToPart(token, pluralArg, pluralOffset);
-            if (isLiteral(last) && isLiteral(part)) {
+            if (isText(last) && isText(part)) {
               last.value += part.value;
             } else vp.push(part);
           }
@@ -231,7 +234,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
   return {
     type: 'select',
     declarations: [],
-    selectors: args.map(argToPart),
+    selectors: args.map(argToExpression),
     variants
   };
 }

@@ -2,18 +2,16 @@ import * as Fluent from '@fluent/syntax';
 import {
   CatchallKey,
   Declaration,
+  Expression,
   FunctionRef,
   isCatchallKey,
   isLiteral,
   isPatternMessage,
-  isExpression,
   isSelectMessage,
   isText,
-  isVariableRef,
   Literal,
   Message,
   Pattern,
-  PatternElement,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -110,7 +108,7 @@ export function messageToFluent(
     return variants[0].pattern;
   }
 
-  throw new Error('Cannot convert junk message to Fluent');
+  throw new Error('Unsupported message type');
 }
 
 function findDefaultKey(variants: Variant[], root: string) {
@@ -223,9 +221,8 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  ph: PatternElement
+  { body }: Expression
 ): Fluent.InlineExpression {
-  const body = isExpression(ph) ? ph.body : ph;
   switch (body.type) {
     case 'function':
       return functionRefToFluent(ctx, body);
@@ -260,9 +257,7 @@ function variableRefToFluent(
   ctx: MsgContext,
   { name }: VariableRef
 ): Fluent.InlineExpression {
-  const local = ctx.declarations.find(
-    decl => isVariableRef(decl.target) && decl.target.name === name
-  );
+  const local = ctx.declarations.find(decl => decl.name === name);
   return local
     ? expressionToFluent(ctx, local.value)
     : new Fluent.VariableReference(new Fluent.Identifier(name));

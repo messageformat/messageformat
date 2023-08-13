@@ -87,12 +87,12 @@ function resolveEntry(
       source.set(key, {
         type: 'message',
         declarations: [],
-        pattern: { body: resolveUnit(entry, 'source') }
+        pattern: resolvePattern(entry, 'source')
       });
       target.set(key, {
         type: 'message',
         declarations: [],
-        pattern: { body: resolveUnit(entry, 'target') }
+        pattern: resolvePattern(entry, 'target')
       });
       return;
     }
@@ -134,7 +134,7 @@ function resolveSelect(
               ? { type: '*' }
               : { type: 'literal', quoted: false, value: id }
           ),
-          value: { body: resolveUnit(el, st) }
+          value: resolvePattern(el, st)
         });
         break;
       }
@@ -155,18 +155,18 @@ function resolveSelect(
       const el = prettyElement('group', attributes.id);
       throw new Error(`Selector ${selId} not found in ${el}`);
     }
-    return resolvePart(part);
+    return { type: 'expression' as const, body: resolvePart(part) };
   });
   return { type: 'select', declarations: [], selectors, variants };
 }
 
-function resolveUnit(
+function resolvePattern(
   { attributes, elements }: X.Unit,
   st: 'source' | 'target'
-): MF.PatternElement[] {
-  if (!elements) return [];
+): MF.Pattern {
+  if (!elements) return { body: [] };
   let mf: X.MessageFormat | null = null;
-  let pattern: MF.PatternElement[] = [];
+  const body: MF.Pattern['body'] = [];
   for (const el of elements) {
     switch (el.name) {
       case 'mf:messageformat':
@@ -181,12 +181,20 @@ function resolveUnit(
             `Expected to find a <${st}> inside <${el.name}> of ${pe}`
           );
         }
-        if (stel) pattern = pattern.concat(resolveContents(stel.elements, mf));
+        if (stel) {
+          for (const part of resolveContents(stel.elements, mf)) {
+            body.push(
+              part.type === 'literal'
+                ? { type: 'text', value: part.value }
+                : { type: 'expression', body: part }
+            );
+          }
+        }
         break;
       }
     }
   }
-  return pattern;
+  return { body };
 }
 
 function resolveContents(

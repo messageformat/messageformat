@@ -1,23 +1,20 @@
+import { isValidUnquotedLiteral } from '../cst-parser/index.js';
 import {
   Declaration,
   isPatternMessage,
   isSelectMessage,
-  JunkMessage,
   Message,
   Pattern
 } from '../data-model';
 import { MessageFormat } from '../messageformat';
-import { isValidUnquotedLiteral } from '../parser/names';
 import {
+  Expression,
   FunctionRef,
   isLiteral,
-  isExpression,
   isText,
   isVariableRef,
-  Junk,
   Literal,
   Option,
-  PatternElement,
   VariableRef
 } from '../pattern';
 import { functionRefSourceName } from '../pattern/function-ref';
@@ -43,38 +40,29 @@ export function stringifyMessage(msg: Message | MessageFormat) {
       }
       res += stringifyPattern(value);
     }
-  } else {
-    res += msg.source.trim();
   }
   return res;
 }
 
-function stringifyDeclaration({ target, value }: Declaration) {
-  const targetStr = isVariableRef(target)
-    ? stringifyVariableRef(target)
-    : stringifyJunk(target);
-  const valueStr = isExpression(value)
-    ? stringifyExpression(value)
-    : stringifyJunk(value);
-  return `let ${targetStr} = ${valueStr}\n`;
+function stringifyDeclaration({ name, value }: Declaration) {
+  return `let $${name} = ${stringifyExpression(value)}\n`;
 }
 
 function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
   let res: string;
-  if (isLiteral(operand)) {
-    res = stringifyLiteral(operand) + ' ';
-  } else if (isVariableRef(operand)) {
-    res = stringifyVariableRef(operand) + ' ';
-  } else {
-    res = '';
+  switch (operand?.type) {
+    case 'literal':
+      res = stringifyLiteral(operand) + ' ';
+      break;
+    case 'variable':
+      res = stringifyVariableRef(operand) + ' ';
+      break;
+    default:
+      res = '';
   }
   res += functionRefSourceName(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   return res;
-}
-
-function stringifyJunk(junk: Junk | JunkMessage) {
-  return junk.source.trim();
 }
 
 function stringifyLiteral({ quoted, value }: Literal) {
@@ -83,11 +71,11 @@ function stringifyLiteral({ quoted, value }: Literal) {
   return `|${esc}|`;
 }
 
-function stringifyOption(opt: Option) {
-  const valueStr = isVariableRef(opt.value)
-    ? stringifyVariableRef(opt.value)
-    : stringifyLiteral(opt.value);
-  return `${opt.name}=${valueStr}`;
+function stringifyOption({ name, value }: Option) {
+  const valueStr = isVariableRef(value)
+    ? stringifyVariableRef(value)
+    : stringifyLiteral(value);
+  return `${name}=${valueStr}`;
 }
 
 function stringifyPattern({ body }: Pattern) {
@@ -98,15 +86,11 @@ function stringifyPattern({ body }: Pattern) {
   return `{${res}}`;
 }
 
-function stringifyExpression(ph: PatternElement) {
-  const body = isExpression(ph) ? ph.body : ph;
+function stringifyExpression({ body }: Expression) {
   let res: string;
   switch (body.type) {
     case 'function':
       res = stringifyFunctionRef(body);
-      break;
-    case 'junk':
-      res = stringifyJunk(body);
       break;
     case 'literal':
       res = stringifyLiteral(body);

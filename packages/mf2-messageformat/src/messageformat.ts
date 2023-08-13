@@ -1,7 +1,7 @@
+import { asDataModel, parseMessage } from './cst-parser/index.js';
 import { Message } from './data-model';
 import type { Context } from './format-context';
 import { MessageValue, ResolvedMessage } from './message-value';
-import { parseMessage } from './parser/message';
 import { resolveExpression, UnresolvedExpression } from './pattern';
 import { defaultRuntime, Runtime } from './runtime';
 
@@ -46,7 +46,8 @@ export class MessageFormat {
       : locales
       ? [locales]
       : [];
-    this.#message = typeof source === 'string' ? parseMessage(source) : source;
+    this.#message =
+      typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
     const rt = options?.runtime ?? defaultRuntime;
     this.#runtime = Object.freeze({ ...rt });
   }
@@ -55,9 +56,6 @@ export class MessageFormat {
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown, value: MessageValue | undefined) => void
   ): ResolvedMessage {
-    if (onError && this.#message.errors) {
-      for (const error of this.#message.errors) onError(error, undefined);
-    }
     const ctx = this.createContext(msgParams, onError);
     return new ResolvedMessage(ctx, this.#message);
   }
@@ -78,13 +76,10 @@ export class MessageFormat {
     }
   ) {
     let scope = { ...msgParams };
-    for (const { target, value } of this.#message.declarations) {
-      if (target.type === 'variable') {
-        const { name } = target;
-        const ue = new UnresolvedExpression(value, scope);
-        if (name in scope) scope = { ...scope, [name]: ue };
-        else scope[name] = ue;
-      }
+    for (const { name, value } of this.#message.declarations) {
+      const ue = new UnresolvedExpression(value, scope);
+      if (name in scope) scope = { ...scope, [name]: ue };
+      else scope[name] = ue;
     }
     const ctx: Context = {
       onError,

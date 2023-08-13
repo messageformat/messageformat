@@ -5,7 +5,7 @@ import {
   MessageFallback,
   MessageValue
 } from '../message-value';
-import type { Expression, Junk } from './index.js';
+import type { Expression } from './index.js';
 
 /**
  * The value of a VariableRef is defined by the current Scope.
@@ -33,9 +33,9 @@ export interface VariableRef {
  * @private
  */
 export class UnresolvedExpression {
-  expression: Expression | Junk;
+  expression: Expression;
   scope: Context['scope'];
-  constructor(expression: Expression | Junk, scope: Context['scope']) {
+  constructor(expression: Expression, scope: Context['scope']) {
     this.expression = expression;
     this.scope = scope;
   }

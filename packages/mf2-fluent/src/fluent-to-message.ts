@@ -1,6 +1,7 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
+  Expression,
   FunctionRef,
   isFunctionRef,
   isText,
@@ -139,12 +140,10 @@ function expressionToPart(
   }
 }
 
-const elementToPart = (
-  el: Fluent.PatternElement
-): Literal | VariableRef | FunctionRef | Text =>
+const elementToPart = (el: Fluent.PatternElement): Expression | Text =>
   el.type === 'TextElement'
     ? { type: 'text', value: el.value }
-    : expressionToPart(el.expression);
+    : { type: 'expression', body: expressionToPart(el.expression) };
 
 function asFluentSelect(
   el: Fluent.PatternElement
@@ -253,7 +252,10 @@ export function fluentToMessage(
   return {
     type: 'select',
     declarations: [],
-    selectors: args.map(arg => expressionToPart(arg.selector)),
+    selectors: args.map(arg => ({
+      type: 'expression',
+      body: expressionToPart(arg.selector)
+    })),
     variants
   };
 }
