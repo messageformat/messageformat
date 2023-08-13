@@ -5,7 +5,6 @@ import {
   Expression,
   FunctionRef,
   isCatchallKey,
-  isExpression,
   isLiteral,
   isPatternMessage,
   isSelectMessage,
@@ -222,9 +221,8 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  exp: Expression
+  { body }: Expression
 ): Fluent.InlineExpression {
-  const body = isExpression(exp) ? exp.body : exp;
   switch (body.type) {
     case 'function':
       return functionRefToFluent(ctx, body);

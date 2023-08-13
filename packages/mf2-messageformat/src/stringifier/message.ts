@@ -50,12 +50,15 @@ function stringifyDeclaration({ name, value }: Declaration) {
 
 function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
   let res: string;
-  if (isLiteral(operand)) {
-    res = stringifyLiteral(operand) + ' ';
-  } else if (isVariableRef(operand)) {
-    res = stringifyVariableRef(operand) + ' ';
-  } else {
-    res = '';
+  switch (operand?.type) {
+    case 'literal':
+      res = stringifyLiteral(operand) + ' ';
+      break;
+    case 'variable':
+      res = stringifyVariableRef(operand) + ' ';
+      break;
+    default:
+      res = '';
   }
   res += functionRefSourceName(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
@@ -68,11 +71,11 @@ function stringifyLiteral({ quoted, value }: Literal) {
   return `|${esc}|`;
 }
 
-function stringifyOption(opt: Option) {
-  const valueStr = isVariableRef(opt.value)
-    ? stringifyVariableRef(opt.value)
-    : stringifyLiteral(opt.value);
-  return `${opt.name}=${valueStr}`;
+function stringifyOption({ name, value }: Option) {
+  const valueStr = isVariableRef(value)
+    ? stringifyVariableRef(value)
+    : stringifyLiteral(value);
+  return `${name}=${valueStr}`;
 }
 
 function stringifyPattern({ body }: Pattern) {

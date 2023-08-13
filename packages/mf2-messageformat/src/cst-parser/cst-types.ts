@@ -1,13 +1,17 @@
 import type { MessageSyntaxError } from '../errors';
 
+/** @beta */
 export type Message = PatternMessage | SelectMessage | JunkMessage;
 
+/** @beta */
 export interface PatternMessage {
   type: 'message';
   declarations: Declaration[];
   pattern: Pattern;
   errors: MessageSyntaxError[];
 }
+
+/** @beta */
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
@@ -16,6 +20,8 @@ export interface SelectMessage {
   variants: Variant[];
   errors: MessageSyntaxError[];
 }
+
+/** @beta */
 export interface JunkMessage {
   type: 'junk';
   declarations: Declaration[];
@@ -23,6 +29,7 @@ export interface JunkMessage {
   source: string;
 }
 
+/** @beta */
 export interface Declaration {
   start: number;
   end: number;
@@ -32,6 +39,7 @@ export interface Declaration {
   value: Expression | Junk;
 }
 
+/** @beta */
 export interface Variant {
   start: number;
   end: number;
@@ -40,6 +48,7 @@ export interface Variant {
   value: Pattern;
 }
 
+/** @beta */
 export interface CatchallKey {
   type: '*';
   /** position of the `*` */
@@ -47,6 +56,7 @@ export interface CatchallKey {
   end: number;
 }
 
+/** @beta */
 export interface Pattern {
   /** position of the `{` */
   start: number;
@@ -55,6 +65,7 @@ export interface Pattern {
   body: Array<Text | Expression>;
 }
 
+/** @beta */
 export interface Text {
   type: 'text';
   start: number;
@@ -62,6 +73,7 @@ export interface Text {
   value: string;
 }
 
+/** @beta */
 export interface Expression {
   type: 'expression';
   /** position of the `{` */
@@ -71,6 +83,7 @@ export interface Expression {
   body: Literal | VariableRef | FunctionRef | Reserved | Junk;
 }
 
+/** @beta */
 export interface Junk {
   type: 'junk';
   start: number;
@@ -79,6 +92,7 @@ export interface Junk {
   name?: never;
 }
 
+/** @beta */
 export interface Literal {
   type: 'literal';
   quoted: boolean;
@@ -89,6 +103,7 @@ export interface Literal {
   value: string;
 }
 
+/** @beta */
 export interface VariableRef {
   type: 'variable';
   /** position of the `$` */
@@ -97,6 +112,7 @@ export interface VariableRef {
   name: string;
 }
 
+/** @beta */
 export interface FunctionRef {
   type: 'function';
   kind: 'open' | 'close' | 'value';
@@ -108,6 +124,7 @@ export interface FunctionRef {
   options: Option[];
 }
 
+/** @beta */
 export interface Reserved {
   type: 'reserved';
   sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
@@ -118,6 +135,7 @@ export interface Reserved {
   end: number;
 }
 
+/** @beta */
 export interface Option {
   /** position at the start of the name */
   start: number;
@@ -126,6 +144,7 @@ export interface Option {
   value: Literal | VariableRef;
 }
 
+/** @beta */
 export interface Syntax<T extends string> {
   start: number;
   end: number;

@@ -2,6 +2,11 @@ import type * as Model from '../data-model.js';
 import { MessageSyntaxError } from '../errors.js';
 import type * as CST from './cst-types.js';
 
+/**
+ * Convert a CST message structure into its data model representation.
+ *
+ * @beta
+ */
 export function asDataModel(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
   const declarations: Model.Declaration[] = msg.declarations.map(decl => ({
