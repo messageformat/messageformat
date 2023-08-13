@@ -44,10 +44,8 @@ export function stringifyMessage(msg: Message | MessageFormat) {
   return res;
 }
 
-function stringifyDeclaration({ target, value }: Declaration) {
-  const targetStr = stringifyVariableRef(target);
-  const valueStr = stringifyExpression(value);
-  return `let ${targetStr} = ${valueStr}\n`;
+function stringifyDeclaration({ name, value }: Declaration) {
+  return `let $${name} = ${stringifyExpression(value)}\n`;
 }
 
 function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {

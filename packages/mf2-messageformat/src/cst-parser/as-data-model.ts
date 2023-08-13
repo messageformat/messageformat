@@ -5,7 +5,7 @@ import type * as CST from './cst-types.js';
 export function asDataModel(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
   const declarations: Model.Declaration[] = msg.declarations.map(decl => ({
-    target: asValue(decl.target),
+    name: asValue(decl.target).name,
     value: asExpression(decl.value)
   }));
   switch (msg.type) {

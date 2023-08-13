@@ -10,7 +10,6 @@ import {
   isPatternMessage,
   isSelectMessage,
   isText,
-  isVariableRef,
   Literal,
   Message,
   Pattern,
@@ -260,9 +259,7 @@ function variableRefToFluent(
   ctx: MsgContext,
   { name }: VariableRef
 ): Fluent.InlineExpression {
-  const local = ctx.declarations.find(
-    decl => isVariableRef(decl.target) && decl.target.name === name
-  );
+  const local = ctx.declarations.find(decl => decl.name === name);
   return local
     ? expressionToFluent(ctx, local.value)
     : new Fluent.VariableReference(new Fluent.Identifier(name));

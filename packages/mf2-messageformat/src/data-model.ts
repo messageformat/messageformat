@@ -35,7 +35,7 @@ export interface PatternMessage {
  * @beta
  */
 export interface Declaration {
-  target: VariableRef;
+  name: string;
   value: Expression;
 }
 

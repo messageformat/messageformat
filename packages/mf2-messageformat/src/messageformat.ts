@@ -79,13 +79,10 @@ export class MessageFormat {
     }
   ) {
     let scope = { ...msgParams };
-    for (const { target, value } of this.#message.declarations) {
-      if (target.type === 'variable') {
-        const { name } = target;
-        const ue = new UnresolvedExpression(value, scope);
-        if (name in scope) scope = { ...scope, [name]: ue };
-        else scope[name] = ue;
-      }
+    for (const { name, value } of this.#message.declarations) {
+      const ue = new UnresolvedExpression(value, scope);
+      if (name in scope) scope = { ...scope, [name]: ue };
+      else scope[name] = ue;
     }
     const ctx: Context = {
       onError,
