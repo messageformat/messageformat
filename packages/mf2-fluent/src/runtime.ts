@@ -17,16 +17,18 @@ import { valueToMessageRef } from './message-to-fluent';
  */
 export function getFluentRuntime(res: FluentMessageResource) {
   function MESSAGE(
-    _locales: string[],
+    locales: string[],
     options: RuntimeOptions,
     arg?: MessageValue
   ) {
     const { msgId, msgAttr } = valueToMessageRef(arg?.toString() ?? '');
     const mf = res.get(msgId)?.get(msgAttr ?? '');
     if (!mf) throw new Error(`Message not available: ${msgId}`);
-    const msg = mf.resolveMessage(options);
-    msg.source = msgId;
-    return msg;
+    const parts = mf.formatToParts(options);
+    return new MessageValue('message', locales, parts, {
+      source: msgId,
+      toString: () => mf.format(options)
+    });
   }
   Object.freeze(MESSAGE);
 

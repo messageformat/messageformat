@@ -43,7 +43,7 @@ const msg = '{Today is {$today :datetime dateStyle=medium}}';
 
 const mf = new Intl.MessageFormat(msg, locale);
 
-mf.resolveMessage({ today: new Date('2022-02-02') }).toString();
+mf.format({ today: new Date('2022-02-02') });
 // 'Today is Feb 2, 2022'
 ```
 

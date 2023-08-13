@@ -24,8 +24,8 @@ describe('Format messages', () => {
       (only ? test.only : test)(testName(testMsg), () => {
         const errors: any[] = [];
         const mf = new MessageFormat(src, locale ?? 'en');
-        const msg = mf.resolveMessage(params, err => errors.push(err));
-        expect(String(msg)).toBe(exp);
+        const msg = mf.format(params, err => errors.push(err));
+        expect(msg).toBe(exp);
         expect(errors).toMatchObject(expErrors ?? []);
       });
     }

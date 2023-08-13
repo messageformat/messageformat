@@ -27,22 +27,20 @@ const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
 const resource = fluentToResource(src, locale);
 
 const msg = resource.get('msg').get('');
-const res = msg.resolveMessage({ today: new Date('2022-02-02') });
-// ResolvedMessage {
-//   type: 'message',
-//   value: [
-//     MessageLiteral { type: 'literal', value: 'Today is ' },
-//     MessageDateTime {
-//       type: 'datetime',
-//       value: 2022-02-02T00:00:00.000Z,
-//       options: { localeMatcher: 'best fit', dateStyle: 'medium' },
-//       source: '$today :DATETIME'
-//     }
-//   ]
-// }
 
-res.toString();
+msg.format({ today: new Date('2022-02-02') });
 // 'Today is Feb 2, 2022'
+
+msg.formatToParts({ today: new Date('2022-02-02') });
+// [
+//   MessageLiteral { type: 'literal', value: 'Today is ' },
+//   MessageDateTime {
+//     type: 'datetime',
+//     value: 2022-02-02T00:00:00.000Z,
+//     options: { localeMatcher: 'best fit', dateStyle: 'medium' },
+//     source: '$today :DATETIME'
+//   }
+// ]
 ```
 
 ## API

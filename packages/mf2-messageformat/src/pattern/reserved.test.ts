@@ -7,7 +7,7 @@ function resolve(
 ) {
   const mf = new MessageFormat(source);
   const onError = jest.fn();
-  const res = mf.resolveMessage(params, onError);
+  const res = mf.formatToParts(params, onError);
   expect(onError).toHaveBeenCalledTimes(errors.length);
   for (let i = 0; i < errors.length; ++i) {
     const err = onError.mock.calls[i][0];
@@ -19,28 +19,21 @@ function resolve(
 describe('Reserved syntax', () => {
   test('empty', () => {
     const msg = resolve('{{!}}', {}, [{ type: 'reserved' }]);
-    expect(msg).toMatchObject({
-      type: 'message',
-      value: [{ type: 'fallback', source: '!' }]
-    });
+    expect(msg).toMatchObject([{ type: 'fallback', source: '!' }]);
   });
 
   test('argument', () => {
     const msg = resolve('{{$foo @bar}}', { foo: 42 }, [{ type: 'reserved' }]);
-    expect(msg).toMatchObject({
-      type: 'message',
-      value: [{ type: 'fallback', source: '$foo' }]
-    });
+    expect(msg).toMatchObject([{ type: 'fallback', source: '$foo' }]);
   });
 
   test('whitespace', () => {
     const msg = resolve('{{ # one\ntwo\rthree four }}', {}, [
       { type: 'reserved' }
     ]);
-    expect(msg).toMatchObject({
-      type: 'message',
-      value: [{ type: 'fallback', source: '# one\ntwo\rthree four' }]
-    });
+    expect(msg).toMatchObject([
+      { type: 'fallback', source: '# one\ntwo\rthree four' }
+    ]);
   });
 
   test('surrogates', () => {

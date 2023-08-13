@@ -52,12 +52,20 @@ export class MessageFormat {
     this.#runtime = Object.freeze({ ...rt });
   }
 
-  resolveMessage(
+  format(
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown, value: MessageValue | undefined) => void
-  ): ResolvedMessage {
+  ): string {
     const ctx = this.createContext(msgParams, onError);
-    return new ResolvedMessage(ctx, this.#message);
+    return new ResolvedMessage(ctx, this.#message).toString();
+  }
+
+  formatToParts(
+    msgParams?: Record<string, unknown>,
+    onError?: (error: unknown, value: MessageValue | undefined) => void
+  ): MessageValue[] {
+    const ctx = this.createContext(msgParams, onError);
+    return new ResolvedMessage(ctx, this.#message).value;
   }
 
   resolvedOptions() {

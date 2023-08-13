@@ -298,8 +298,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
         const str = res
           .get(msg)
           ?.get(attr ?? '')
-          ?.resolveMessage(scope)
-          ?.toString();
+          ?.format(scope);
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
       });
@@ -330,7 +329,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
   });
 }
 
-describe('resolveMessage', () => {
+describe('formatToParts', () => {
   describe('parts', () => {
     const src = source`
       foo = Foo { $num }
@@ -344,58 +343,43 @@ describe('resolveMessage', () => {
     const res = fluentToResource(src);
 
     test('defined formatted variable', () => {
-      const foo = res.get('foo')?.get('')?.resolveMessage({ num: 42 });
-      expect(foo).toEqual({
-        type: 'message',
-        value: [
-          { type: 'literal', value: 'Foo ' },
-          { source: '$num', type: 'number', value: 42 }
-        ]
-      });
+      const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
+      expect(foo).toEqual([
+        { type: 'literal', value: 'Foo ' },
+        { source: '$num', type: 'number', value: 42 }
+      ]);
     });
 
     test('undefined formatted variable', () => {
-      const foo = res.get('foo')?.get('')?.resolveMessage();
-      expect(foo).toEqual({
-        type: 'message',
-        value: [
-          { type: 'literal', value: 'Foo ' },
-          { type: 'fallback', source: '$num', value: undefined }
-        ]
-      });
+      const foo = res.get('foo')?.get('')?.formatToParts();
+      expect(foo).toEqual([
+        { type: 'literal', value: 'Foo ' },
+        { type: 'fallback', source: '$num', value: undefined }
+      ]);
     });
 
     test('message reference', () => {
-      const bar = res.get('bar')?.get('')?.resolveMessage({ num: 42 });
-      expect(bar).toEqual({
-        type: 'message',
-        value: [
-          {
-            type: 'message',
-            source: 'foo',
-            value: [
-              { type: 'literal', value: 'Foo ' },
-              { type: 'fallback', source: '$num', value: undefined }
-            ]
-          }
-        ]
-      });
+      const bar = res.get('bar')?.get('')?.formatToParts({ num: 42 });
+      expect(bar).toMatchObject([
+        {
+          type: 'message',
+          source: 'foo',
+          value: [
+            { type: 'literal', value: 'Foo ' },
+            { type: 'fallback', source: '$num', value: undefined }
+          ]
+        }
+      ]);
     });
 
     test('defined selector', () => {
-      const sel = res.get('sel')?.get('')?.resolveMessage({ selector: 'a' });
-      expect(sel).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'A' }]
-      });
+      const sel = res.get('sel')?.get('')?.formatToParts({ selector: 'a' });
+      expect(sel).toEqual([{ type: 'literal', value: 'A' }]);
     });
 
     test('undefined selector', () => {
-      const sel = res.get('sel')?.get('')?.resolveMessage();
-      expect(sel).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'B' }]
-      });
+      const sel = res.get('sel')?.get('')?.formatToParts();
+      expect(sel).toEqual([{ type: 'literal', value: 'B' }]);
     });
   });
 
@@ -481,30 +465,21 @@ describe('resolveMessage', () => {
     });
 
     test('foo', () => {
-      const foo = res.get('foo')?.get('')?.resolveMessage({ num: 42 });
-      expect(foo).toEqual({
-        type: 'message',
-        value: [
-          { type: 'literal', value: 'Foo ' },
-          { type: 'number', source: '$num', value: 42 }
-        ]
-      });
+      const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
+      expect(foo).toEqual([
+        { type: 'literal', value: 'Foo ' },
+        { type: 'number', source: '$num', value: 42 }
+      ]);
     });
 
     test('bar', () => {
-      const bar = res.get('bar')?.get('')?.resolveMessage();
-      expect(bar).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'Bar' }]
-      });
+      const bar = res.get('bar')?.get('')?.formatToParts();
+      expect(bar).toEqual([{ type: 'literal', value: 'Bar' }]);
     });
 
     test('qux', () => {
-      const qux = res.get('qux')?.get('')?.resolveMessage();
-      expect(qux).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'Qux' }]
-      });
+      const qux = res.get('qux')?.get('')?.formatToParts();
+      expect(qux).toEqual([{ type: 'literal', value: 'Qux' }]);
     });
   });
 
@@ -529,65 +504,41 @@ describe('resolveMessage', () => {
     const res = fluentToResource(src, 'en');
 
     test('case with match', () => {
-      const msg = res
-        .get('case')
-        ?.get('')
-        ?.resolveMessage({ case: 'genitive' });
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'GEN' }]
-      });
+      const msg = res.get('case')?.get('')?.formatToParts({ case: 'genitive' });
+      expect(msg).toEqual([{ type: 'literal', value: 'GEN' }]);
     });
 
     test('case with fallback', () => {
-      const msg = res.get('case')?.get('')?.resolveMessage({ case: 'oblique' });
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'NOM' }]
-      });
+      const msg = res.get('case')?.get('')?.formatToParts({ case: 'oblique' });
+      expect(msg).toEqual([{ type: 'literal', value: 'NOM' }]);
     });
 
     test('gender with match', () => {
       const msg = res
         .get('gender')
         ?.get('')
-        ?.resolveMessage({ gender: 'feminine' });
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'F' }]
-      });
+        ?.formatToParts({ gender: 'feminine' });
+      expect(msg).toEqual([{ type: 'literal', value: 'F' }]);
     });
 
     test('gender with fallback', () => {
-      const msg = res.get('gender')?.get('')?.resolveMessage();
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'N' }]
-      });
+      const msg = res.get('gender')?.get('')?.formatToParts();
+      expect(msg).toEqual([{ type: 'literal', value: 'N' }]);
     });
 
     test('plural with match', () => {
-      const msg = res.get('plural')?.get('')?.resolveMessage({ num: 2 });
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'Other' }]
-      });
+      const msg = res.get('plural')?.get('')?.formatToParts({ num: 2 });
+      expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
     });
 
     test('plural with fallback', () => {
-      const msg = res.get('plural')?.get('')?.resolveMessage({ num: 1 });
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'Other' }]
-      });
+      const msg = res.get('plural')?.get('')?.formatToParts({ num: 1 });
+      expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
     });
 
     test('plural with non-plural input', () => {
-      const msg = res.get('plural')?.get('')?.resolveMessage({ num: 'NaN' });
-      expect(msg).toEqual({
-        type: 'message',
-        value: [{ type: 'literal', value: 'Other' }]
-      });
+      const msg = res.get('plural')?.get('')?.formatToParts({ num: 'NaN' });
+      expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
     });
   });
 });
