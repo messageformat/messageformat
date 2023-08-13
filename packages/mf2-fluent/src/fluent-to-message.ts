@@ -61,10 +61,10 @@ function expressionToPart(
         type: 'function',
         kind: 'value',
         name: 'NUMBER',
-        operand: { type: 'literal', quoted: false, value: exp.value }
+        operand: { type: 'literal', value: exp.value }
       };
     case 'StringLiteral':
-      return { type: 'literal', quoted: true, value: exp.parse().value };
+      return { type: 'literal', value: exp.parse().value };
     case 'VariableReference':
       return { type: 'variable', name: exp.id.name };
     case 'FunctionReference': {
@@ -88,7 +88,7 @@ function expressionToPart(
         const litValue = quoted ? value.parse().value : value.value;
         options.push({
           name: name.name,
-          value: { type: 'literal', quoted, value: litValue }
+          value: { type: 'literal', value: litValue }
         });
       }
       return { type: 'function', kind: 'value', name: func, operand, options };
@@ -101,14 +101,14 @@ function expressionToPart(
         type: 'function',
         kind: 'value',
         name: 'MESSAGE',
-        operand: { type: 'literal', quoted: false, value: msgId }
+        operand: { type: 'literal', value: msgId }
       };
     }
     case 'TermReference': {
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      const operand: Literal = { type: 'literal', quoted: false, value: msgId };
+      const operand: Literal = { type: 'literal', value: msgId };
       if (!exp.arguments)
         return { type: 'function', kind: 'value', name: 'MESSAGE', operand };
 
@@ -118,7 +118,7 @@ function expressionToPart(
         const litValue = quoted ? value.parse().value : value.value;
         options.push({
           name: name.name,
-          value: { type: 'literal', quoted, value: litValue }
+          value: { type: 'literal', value: litValue }
         });
       }
       return {

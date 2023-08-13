@@ -12,7 +12,6 @@ import { MessageLiteral } from '../message-value';
  */
 export interface Literal {
   type: 'literal';
-  quoted: boolean;
   value: string;
 }
 

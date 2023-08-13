@@ -65,8 +65,8 @@ function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
   return res;
 }
 
-function stringifyLiteral({ quoted, value }: Literal) {
-  if (!quoted && isValidUnquotedLiteral(value)) return value;
+function stringifyLiteral({ value }: Literal) {
+  if (isValidUnquotedLiteral(value)) return value;
   const esc = value.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
   return `|${esc}|`;
 }

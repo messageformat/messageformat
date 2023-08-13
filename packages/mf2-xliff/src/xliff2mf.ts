@@ -221,11 +221,11 @@ function resolveInlineElement(
   switch (ie.type) {
     case 'text':
     case 'cdata':
-      return { type: 'literal', quoted: true, value: ie.text };
+      return { type: 'literal', value: ie.text };
     case 'element':
       switch (ie.name) {
         case 'cp':
-          return { type: 'literal', quoted: true, value: resolveCharCode(ie) };
+          return { type: 'literal', value: resolveCharCode(ie) };
         case 'ph':
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
@@ -321,7 +321,6 @@ function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
     case 'mf:literal':
       return {
         type: 'literal',
-        quoted: true,
         value: resolveText(part.elements)
       };
 
@@ -341,7 +340,7 @@ function resolveOption(opt: X.MessageOption): MF.Literal | MF.VariableRef {
   const sv = opt.elements.map(resolveArgument);
   switch (sv.length) {
     case 0:
-      return { type: 'literal', quoted: true, value: '' };
+      return { type: 'literal', value: '' };
     case 1:
       return sv[0];
     default:

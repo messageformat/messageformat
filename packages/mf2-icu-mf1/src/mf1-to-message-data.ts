@@ -78,9 +78,7 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        body.options = [
-          { name: 'param', value: { type: 'literal', quoted: false, value } }
-        ];
+        body.options = [{ name: 'param', value: { type: 'literal', value } }];
       }
       return { type: 'expression', body };
     }
@@ -96,11 +94,7 @@ function tokenToPart(
         body.options = [
           {
             name: 'pluralOffset',
-            value: {
-              type: 'literal',
-              quoted: false,
-              value: String(pluralOffset)
-            }
+            value: { type: 'literal', value: String(pluralOffset) }
           }
         ];
       return { type: 'expression', body };
@@ -119,13 +113,13 @@ function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
   if (pluralOffset) {
     options.push({
       name: 'pluralOffset',
-      value: { type: 'literal', quoted: false, value: String(pluralOffset) }
+      value: { type: 'literal', value: String(pluralOffset) }
     });
   }
   if (type === 'selectordinal') {
     options.push({
       name: 'type',
-      value: { type: 'literal', quoted: false, value: 'ordinal' }
+      value: { type: 'literal', value: 'ordinal' }
     });
   }
 

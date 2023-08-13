@@ -7,9 +7,10 @@ describe('Stringify messages', () => {
   for (const testMsg of testMessages) {
     if (!testMsg.syntaxError && !testMsg.errors?.length) {
       test(testName(testMsg), () => {
-        const msg = asDataModel(parseMessage(testMsg.src));
-        const res = stringifyMessage(msg);
-        expect(res.replace(/\n/g, ' ')).toBe(testMsg.src);
+        const msg0 = asDataModel(parseMessage(testMsg.src));
+        const src1 = stringifyMessage(msg0);
+        const msg1 = asDataModel(parseMessage(src1));
+        expect(msg1).toEqual(msg0);
       });
     }
   }

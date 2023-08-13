@@ -106,7 +106,7 @@ function asValue(
 ): Model.Literal | Model.VariableRef {
   switch (cst.type) {
     case 'literal':
-      return { type: 'literal', quoted: cst.quoted, value: cst.value };
+      return { type: 'literal', value: cst.value };
     case 'variable':
       return { type: 'variable', name: cst.name };
     default:
