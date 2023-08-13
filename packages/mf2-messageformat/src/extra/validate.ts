@@ -33,7 +33,6 @@ function validateParts(parts: Pattern['body'], runtime: Runtime) {
  * @beta
  */
 export function validate(msg: Readonly<Message>, runtime: Runtime) {
-  if (msg.errors?.length) throw msg.errors[0];
   switch (msg.type) {
     case 'message':
       validateParts(msg.pattern.body, runtime);

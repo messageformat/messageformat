@@ -56,9 +56,6 @@ export class MessageFormat {
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown, value: MessageValue | undefined) => void
   ): ResolvedMessage {
-    if (onError && this.#message.errors) {
-      for (const error of this.#message.errors) onError(error, undefined);
-    }
     const ctx = this.createContext(msgParams, onError);
     return new ResolvedMessage(ctx, this.#message);
   }

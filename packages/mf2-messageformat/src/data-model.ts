@@ -1,4 +1,3 @@
-import type { MessageSyntaxError } from './errors';
 import type { Expression, Literal, Text, VariableRef } from './pattern';
 
 export type { FunctionRef, Option, Reserved } from './pattern';
@@ -23,7 +22,6 @@ export interface PatternMessage {
   declarations: Declaration[];
   pattern: Pattern;
   comment?: string;
-  errors?: MessageSyntaxError[];
 }
 
 /**
@@ -68,7 +66,6 @@ export interface SelectMessage {
   selectors: Expression[];
   variants: Variant[];
   comment?: string;
-  errors?: MessageSyntaxError[];
 }
 
 /** @beta */
