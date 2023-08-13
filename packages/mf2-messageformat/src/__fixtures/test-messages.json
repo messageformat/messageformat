@@ -80,7 +80,8 @@
   {
     "src": "let $foo = {$bar :number minimumFractionDigits=foo} {bar {$foo}}",
     "params": { "bar": 4.2 },
-    "exp": "bar 4.2"
+    "exp": "bar 4.2",
+    "errors": [{ "name": "RangeError" }]
   },
   {
     "src": "let $foo = {$bar :number} {bar {$foo}}",

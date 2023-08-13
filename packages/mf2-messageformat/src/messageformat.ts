@@ -1,7 +1,8 @@
 import { asDataModel, parseMessage } from './cst-parser/index.js';
 import { Message } from './data-model';
 import type { Context } from './format-context';
-import { MessageValue, ResolvedMessage } from './message-value';
+import { selectPattern } from './select-pattern.js';
+import { MessageValue } from './message-value';
 import { resolveExpression, UnresolvedExpression } from './pattern';
 import { defaultRuntime, Runtime } from './runtime';
 
@@ -57,7 +58,12 @@ export class MessageFormat {
     onError?: (error: unknown, value: MessageValue | undefined) => void
   ): string {
     const ctx = this.createContext(msgParams, onError);
-    return new ResolvedMessage(ctx, this.#message).toString();
+    const { pattern } = selectPattern(ctx, this.#message);
+    let res = '';
+    for (const elem of pattern) {
+      res += ctx.resolve(elem).toString(onError);
+    }
+    return res;
   }
 
   formatToParts(
@@ -65,7 +71,8 @@ export class MessageFormat {
     onError?: (error: unknown, value: MessageValue | undefined) => void
   ): MessageValue[] {
     const ctx = this.createContext(msgParams, onError);
-    return new ResolvedMessage(ctx, this.#message).value;
+    const { pattern } = selectPattern(ctx, this.#message);
+    return pattern.map(elem => ctx.resolve(elem));
   }
 
   resolvedOptions() {

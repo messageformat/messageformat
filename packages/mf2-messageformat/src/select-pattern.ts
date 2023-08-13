@@ -1,10 +1,8 @@
-import type { Message, Pattern } from '../data-model';
-import type { Context } from '../format-context';
-import { MessageValue, Meta } from './message-value';
+import type { Message, Pattern } from './data-model';
+import type { Context } from './format-context';
+import { Meta } from './message-value/message-value';
 
-const MESSAGE = 'message';
-
-function getPattern(
+export function selectPattern(
   context: Context,
   message: Message
 ): { pattern: Pattern['body']; meta?: Meta } {
@@ -63,35 +61,5 @@ function getPattern(
 
     default:
       return { pattern: [] };
-  }
-}
-
-/**
- * The result of resolving a {@link MessageFormat} message.
- *
- * @beta
- */
-export class ResolvedMessage extends MessageValue<MessageValue[]> {
-  // Cache for string value
-  #str: string | undefined;
-
-  constructor(context: Context, message: Message, source?: string) {
-    const { meta, pattern } = getPattern(context, message);
-    const resMsg = pattern.map(elem => context.resolve(elem));
-    super(MESSAGE, context, resMsg, { meta, source });
-  }
-
-  selectKey(keys: Set<string>) {
-    let hasError = false;
-    const str = this.toString(() => (hasError = true));
-    return !hasError && keys.has(str) ? str : null;
-  }
-
-  toString(onError?: Context['onError']) {
-    if (typeof this.#str !== 'string') {
-      this.#str = '';
-      for (const mv of this.value) this.#str += mv.toString(onError);
-    }
-    return this.#str;
   }
 }
