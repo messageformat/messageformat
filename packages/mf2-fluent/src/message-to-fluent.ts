@@ -110,7 +110,7 @@ export function messageToFluent(
     return variants[0].pattern;
   }
 
-  throw new Error('Cannot convert junk message to Fluent');
+  throw new Error('Unsupported message type');
 }
 
 function findDefaultKey(variants: Variant[], root: string) {

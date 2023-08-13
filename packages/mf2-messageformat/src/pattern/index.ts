@@ -2,13 +2,11 @@ import type { Context } from '../format-context';
 import type { MessageValue } from '../message-value';
 
 import { FunctionRef, resolveFunctionRef } from './function-ref';
-import { Junk, resolveJunk } from './junk';
 import { Literal, resolveLiteral, Text } from './literal';
 import { Reserved, resolveReserved } from './reserved';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isFunctionRef, FunctionRef, Option } from './function-ref';
-export { isJunk, Junk } from './junk';
 export { isLiteral, isText, Literal, Text } from './literal';
 export { isReserved, Reserved } from './reserved';
 export {
@@ -24,7 +22,7 @@ export {
  */
 export interface Expression {
   type: 'expression';
-  body: Literal | VariableRef | FunctionRef | Reserved | Junk;
+  body: Literal | VariableRef | FunctionRef | Reserved;
 }
 
 /**
@@ -50,7 +48,6 @@ export const isExpression = (part: any): part is Expression =>
 export type PatternElement =
   | Expression
   | FunctionRef
-  | Junk
   | Literal
   | Reserved
   | Text
@@ -73,8 +70,6 @@ export function resolveExpression(
       return resolveFunctionRef(ctx, elem);
     case 'reserved':
       return resolveReserved(ctx, elem);
-    case 'junk':
-      return resolveJunk(ctx, elem);
     default:
       // @ts-expect-error - should never happen
       throw new Error(`Unsupported pattern element: ${elem.type}`);

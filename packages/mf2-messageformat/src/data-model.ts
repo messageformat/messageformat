@@ -1,14 +1,13 @@
 import type { MessageSyntaxError } from './errors';
 import type {
   Expression,
-  Junk,
   Literal,
   PatternElement,
   VariableRef
 } from './pattern';
 
 export type { FunctionRef, Option, Reserved } from './pattern';
-export type { Expression, Junk, Literal, PatternElement, VariableRef };
+export type { Expression, Literal, PatternElement, VariableRef };
 
 /**
  * The representation of a single message.
@@ -17,7 +16,7 @@ export type { Expression, Junk, Literal, PatternElement, VariableRef };
  *
  * @beta
  */
-export type Message = PatternMessage | SelectMessage | JunkMessage;
+export type Message = PatternMessage | SelectMessage;
 
 /**
  * A single message with no variants.
@@ -41,8 +40,8 @@ export interface PatternMessage {
  * @beta
  */
 export interface Declaration {
-  target: VariableRef | Junk;
-  value: Expression | Junk;
+  target: VariableRef;
+  value: Expression;
 }
 
 /**
@@ -103,20 +102,6 @@ export const isCatchallKey = (key: any): key is CatchallKey =>
   !!key && typeof key === 'object' && key.type === '*';
 
 /**
- * The result of parsing input that cannot be represented by
- * a {@link PatternMessage} or a {@link SelectMessage}.
- *
- * @beta
- */
-export interface JunkMessage {
-  type: 'junk';
-  declarations: Declaration[];
-  source: string;
-  comment?: string;
-  errors?: MessageSyntaxError[];
-}
-
-/**
  * A type guard for {@link Message} values
  *
  * @beta
@@ -125,9 +110,7 @@ export interface JunkMessage {
 export const isMessage = (msg: any): msg is Message =>
   !!msg &&
   typeof msg === 'object' &&
-  (msg.type === 'message' ||
-    msg.type === 'select' ||
-    (msg.type === 'junk' && msg.declarations));
+  (msg.type === 'message' || msg.type === 'select');
 
 /**
  * A type guard for {@link PatternMessage} values

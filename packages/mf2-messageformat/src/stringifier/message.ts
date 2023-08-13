@@ -3,7 +3,6 @@ import {
   Declaration,
   isPatternMessage,
   isSelectMessage,
-  JunkMessage,
   Message,
   Pattern
 } from '../data-model';
@@ -14,7 +13,6 @@ import {
   isExpression,
   isText,
   isVariableRef,
-  Junk,
   Literal,
   Option,
   PatternElement,
@@ -43,19 +41,13 @@ export function stringifyMessage(msg: Message | MessageFormat) {
       }
       res += stringifyPattern(value);
     }
-  } else {
-    res += msg.source.trim();
   }
   return res;
 }
 
 function stringifyDeclaration({ target, value }: Declaration) {
-  const targetStr = isVariableRef(target)
-    ? stringifyVariableRef(target)
-    : stringifyJunk(target);
-  const valueStr = isExpression(value)
-    ? stringifyExpression(value)
-    : stringifyJunk(value);
+  const targetStr = stringifyVariableRef(target);
+  const valueStr = stringifyExpression(value);
   return `let ${targetStr} = ${valueStr}\n`;
 }
 
@@ -71,10 +63,6 @@ function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
   res += functionRefSourceName(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   return res;
-}
-
-function stringifyJunk(junk: Junk | JunkMessage) {
-  return junk.source.trim();
 }
 
 function stringifyLiteral({ quoted, value }: Literal) {
@@ -104,9 +92,6 @@ function stringifyExpression(ph: PatternElement) {
   switch (body.type) {
     case 'function':
       res = stringifyFunctionRef(body);
-      break;
-    case 'junk':
-      res = stringifyJunk(body);
       break;
     case 'literal':
       res = stringifyLiteral(body);

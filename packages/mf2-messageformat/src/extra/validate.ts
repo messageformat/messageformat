@@ -19,9 +19,8 @@ function validateParts(parts: PatternElement[], runtime: Runtime) {
  * Validate a message.
  *
  * @remarks
- * Throws if `msg` is a {@link JunkMessage},
- * if it contains parse `errors`,
- * or of if references runtime functions that are not available in the `runtime`.
+ * Throws if `msg` is not a pattern or select message,
+ * or if it references runtime functions that are not available in the `runtime`.
  *
  * Formatting a message that passes validation may still fail,
  * as it may depend on parameters that are not passed in,
@@ -40,6 +39,7 @@ export function validate(msg: Readonly<Message>, runtime: Runtime) {
       for (const { value } of msg.variants) validateParts(value.body, runtime);
       break;
     default:
+      // @ts-expect-error With TS, this condition should never be reached.
       throw new Error(`Invalid message type: ${msg.type}`);
   }
 }

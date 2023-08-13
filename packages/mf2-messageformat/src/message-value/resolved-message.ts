@@ -63,7 +63,7 @@ function getPattern(
     }
 
     default:
-      return { pattern: [{ type: 'junk', source: message.source }] };
+      return { pattern: [] };
   }
 }
 
