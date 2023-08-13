@@ -2,18 +2,18 @@ import * as Fluent from '@fluent/syntax';
 import {
   CatchallKey,
   Declaration,
+  Expression,
   FunctionRef,
   isCatchallKey,
+  isExpression,
   isLiteral,
   isPatternMessage,
-  isExpression,
   isSelectMessage,
   isText,
   isVariableRef,
   Literal,
   Message,
   Pattern,
-  PatternElement,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -223,9 +223,9 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  ph: PatternElement
+  exp: Expression
 ): Fluent.InlineExpression {
-  const body = isExpression(ph) ? ph.body : ph;
+  const body = isExpression(exp) ? exp.body : exp;
   switch (body.type) {
     case 'function':
       return functionRefToFluent(ctx, body);

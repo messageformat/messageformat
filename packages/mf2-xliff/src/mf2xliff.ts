@@ -123,7 +123,7 @@ function resolveSelect(
   const parts: X.MessagePart[] = srcSel.selectors.map(sel => {
     const id = nextId();
     select.push({ id, keys: [] });
-    return resolvePart(id, sel);
+    return resolveExpression(id, sel);
   });
 
   const elements: (X.MessageFormat | X.Unit)[] = [
@@ -148,7 +148,7 @@ function resolveSelect(
         const id = nextId();
         select.push({ id, keys: [] });
         trgSelMap.push(select.length - 1);
-        parts.push(resolvePart(id, sel));
+        parts.push(resolveExpression(id, sel));
       }
     }
 
@@ -231,10 +231,10 @@ function resolvePattern(
   trgPattern: MF.Pattern | undefined
 ): X.Unit {
   const parts: X.MessagePart[] = [];
-  const handlePart = (p: MF.PatternElement): X.Text | X.InlineElement => {
+  const handlePart = (p: MF.Text | MF.Expression): X.Text | X.InlineElement => {
     if (isText(p)) return asText(p);
     const id = nextId();
-    const part = resolvePart(id, p);
+    const part = resolveExpression(id, p);
     parts.push(part);
     const attributes = { id: id.substring(1), 'mf:ref': id };
     return { type: 'element', name: 'ph', attributes };
@@ -260,16 +260,16 @@ function resolvePattern(
   return { type: 'element', name: 'unit', attributes, elements };
 }
 
-function resolvePart(
+function resolveExpression(
   id: string | null,
-  part: MF.PatternElement
+  { body }: MF.Expression
 ): X.MessagePart {
-  if (isLiteral(part) || isVariableRef(part)) return resolveArgument(id, part);
+  if (isLiteral(body) || isVariableRef(body)) return resolveArgument(id, body);
 
-  if (isFunctionRef(part)) {
+  if (isFunctionRef(body)) {
     const elements: X.MessageFunction['elements'] = [];
-    if (part.options) {
-      for (const { name, value } of part.options) {
+    if (body.options) {
+      for (const { name, value } of body.options) {
         elements.push({
           type: 'element',
           name: 'mf:option',
@@ -278,13 +278,13 @@ function resolvePart(
         });
       }
     }
-    if (part.operand) elements.push(resolveArgument(null, part.operand));
-    const attributes = { id: id ?? undefined, name: part.name };
+    if (body.operand) elements.push(resolveArgument(null, body.operand));
+    const attributes = { id: id ?? undefined, name: body.name };
     return { type: 'element', name: 'mf:function', attributes, elements };
   }
 
   /* istanbul ignore next - never happens */
-  throw new Error(`Unsupported part: ${JSON.stringify(part)}`);
+  throw new Error(`Unsupported part: ${JSON.stringify(body)}`);
 }
 
 function resolveArgument(

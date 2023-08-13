@@ -1,13 +1,17 @@
-import type { Message } from '../data-model';
-import { isFunctionRef, PatternElement } from '../pattern';
+import type { Message, Pattern } from '../data-model';
+import { isExpression, isFunctionRef } from '../pattern';
 import type { Runtime } from '../runtime';
 
-function validateParts(parts: PatternElement[], runtime: Runtime) {
+function validateParts(parts: Pattern['body'], runtime: Runtime) {
   for (const part of parts) {
-    if (isFunctionRef(part) && part.kind === 'value') {
-      if (typeof runtime[part.name] !== 'function') {
+    if (
+      isExpression(part) &&
+      isFunctionRef(part.body) &&
+      part.body.kind === 'value'
+    ) {
+      if (typeof runtime[part.body.name] !== 'function') {
         throw new ReferenceError(
-          `Runtime function not available: ${part.name}`
+          `Runtime function not available: ${part.body.name}`
         );
       }
       // TODO: Once runtime arg requirements are defined, test against them

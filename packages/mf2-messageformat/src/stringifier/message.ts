@@ -8,14 +8,13 @@ import {
 } from '../data-model';
 import { MessageFormat } from '../messageformat';
 import {
+  Expression,
   FunctionRef,
   isLiteral,
-  isExpression,
   isText,
   isVariableRef,
   Literal,
   Option,
-  PatternElement,
   VariableRef
 } from '../pattern';
 import { functionRefSourceName } from '../pattern/function-ref';
@@ -86,8 +85,7 @@ function stringifyPattern({ body }: Pattern) {
   return `{${res}}`;
 }
 
-function stringifyExpression(ph: PatternElement) {
-  const body = isExpression(ph) ? ph.body : ph;
+function stringifyExpression({ body }: Expression) {
   let res: string;
   switch (body.type) {
     case 'function':

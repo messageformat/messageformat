@@ -1,13 +1,8 @@
 import type { MessageSyntaxError } from './errors';
-import type {
-  Expression,
-  Literal,
-  PatternElement,
-  VariableRef
-} from './pattern';
+import type { Expression, Literal, Text, VariableRef } from './pattern';
 
 export type { FunctionRef, Option, Reserved } from './pattern';
-export type { Expression, Literal, PatternElement, VariableRef };
+export type { Expression, Literal, Text, VariableRef };
 
 /**
  * The representation of a single message.
@@ -52,7 +47,7 @@ export interface Declaration {
  * @beta
  */
 export interface Pattern {
-  body: PatternElement[];
+  body: Array<Text | Expression>;
 }
 
 /**
@@ -70,7 +65,7 @@ export interface Pattern {
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
-  selectors: PatternElement[];
+  selectors: Expression[];
   variants: Variant[];
   comment?: string;
   errors?: MessageSyntaxError[];
