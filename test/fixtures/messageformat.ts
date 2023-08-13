@@ -569,4 +569,4 @@ export const getTestCases = (escape: (typeof MessageFormat)['escape']) =>
     'Date skeletons': dateSkeletonCases(),
     'Number patterns': numberPatternCases(),
     'Number skeletons': numberSkeletonCases()
-  } as { [title: string]: TestCase[] });
+  }) as { [title: string]: TestCase[] };
