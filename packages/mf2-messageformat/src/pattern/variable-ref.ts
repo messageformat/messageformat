@@ -1,10 +1,6 @@
-import { MessageError } from '../errors.js';
-import type { Context } from '../format-context';
-import {
-  asMessageValue,
-  MessageFallback,
-  MessageValue
-} from '../message-value';
+import { MessageResolutionError } from '../errors.js';
+import type { Context } from '../format-context.js';
+import { MessageValue, fallback, unknown } from '../runtime/index.js';
 import type { Expression } from './index.js';
 
 /**
@@ -51,7 +47,7 @@ export const isVariableRef = (part: any): part is VariableRef =>
   !!part && typeof part === 'object' && part.type === 'variable';
 
 const isScope = (scope: unknown): scope is Record<string, unknown> =>
-  scope instanceof Object && !(scope instanceof MessageValue);
+  scope instanceof Object;
 
 /**
  * Looks for the longest matching `.` delimited starting substring of name.
@@ -74,19 +70,52 @@ function getValue(scope: unknown, name: string): unknown {
   return undefined;
 }
 
-export function resolveVariableRef(ctx: Context, { name }: VariableRef) {
-  const source = '$' + name;
-  let value = getValue(ctx.scope, name);
+export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
+  const value = getValue(ctx.scope, name);
   if (value instanceof UnresolvedExpression) {
-    value = { ...ctx, scope: value.scope }.resolve(value.expression);
-    ctx.scope[name] = value;
+    const local = { ...ctx, scope: value.scope }.resolveExpression(
+      value.expression
+    );
+    ctx.scope[name] = local;
+    ctx.localVars.add(local);
+    return local;
   }
-  if (value !== undefined) return asMessageValue(ctx, value, { source });
+  return value;
+}
 
-  const fb = new MessageFallback(ctx, { source });
-  ctx.onError(
-    new MessageError('unresolved-var', `Variable not available: ${source}`),
-    fb
-  );
-  return fb;
+export function getMessageValue(
+  ctx: Context,
+  source: string,
+  value: unknown
+): MessageValue | undefined {
+  let type = typeof value;
+  if (type === 'object') {
+    const mv = value as MessageValue;
+    if (ctx.localVars.has(mv)) return mv;
+    if (value instanceof Number) type = 'number';
+    else if (value instanceof String) type = 'string';
+  }
+  switch (type) {
+    case 'bigint':
+    case 'number': {
+      const opt = { localeMatcher: ctx.localeMatcher };
+      return ctx.runtime.number(source, ctx.locales, opt, value);
+    }
+    case 'string': {
+      const opt = { localeMatcher: ctx.localeMatcher };
+      return ctx.runtime.string(source, ctx.locales, opt, value);
+    }
+    default:
+      return value === undefined ? undefined : unknown(source, value);
+  }
+}
+
+export function resolveVariableRef(ctx: Context, ref: VariableRef) {
+  const source = '$' + ref.name;
+  const value = lookupVariableRef(ctx, ref);
+  const mv = getMessageValue(ctx, source, value);
+  if (value !== undefined) return mv;
+  const msg = `Variable not available: ${source}`;
+  ctx.onError(new MessageResolutionError('unresolved-var', msg, source));
+  return fallback(source);
 }

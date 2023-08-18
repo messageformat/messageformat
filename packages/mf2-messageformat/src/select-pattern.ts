@@ -1,21 +1,31 @@
 import type { Message, Pattern } from './data-model';
+import { MessageSelectionError } from './errors';
 import type { Context } from './format-context';
-import { Meta } from './message-value/message-value';
 
 export function selectPattern(
   context: Context,
   message: Message
-): { pattern: Pattern['body']; meta?: Meta } {
+): Pattern['body'] {
   switch (message.type) {
     case 'message':
-      return { pattern: message.pattern.body };
+      return message.pattern.body;
 
     case 'select': {
-      const ctx = message.selectors.map(sel => ({
-        selector: context.resolve(sel),
-        best: null as string | null,
-        keys: null as Set<string> | null
-      }));
+      const ctx = message.selectors.map(sel => {
+        const selector = context.resolveExpression(sel);
+        let selectKey;
+        if (typeof selector.selectKey === 'function') {
+          selectKey = selector.selectKey.bind(selector);
+        } else {
+          context.onError(new MessageSelectionError('not-selectable'));
+          selectKey = () => null;
+        }
+        return {
+          selectKey,
+          best: null as string | null,
+          keys: null as Set<string> | null
+        };
+      });
 
       let candidates = message.variants;
       loop: for (let i = 0; i < ctx.length; ++i) {
@@ -28,7 +38,7 @@ export function selectPattern(
             if (key.type !== '*') sc.keys.add(key.value);
           }
         }
-        sc.best = sc.keys.size ? sc.selector.selectKey(sc.keys) : null;
+        sc.best = sc.keys.size ? sc.selectKey(sc.keys) : null;
 
         // Leave out all candidate variants that aren't the best,
         // or only the catchall ones, if nothing else matches.
@@ -54,12 +64,15 @@ export function selectPattern(
       }
 
       const res = candidates[0];
-      return res
-        ? { pattern: res.value.body }
-        : { pattern: [], meta: { selectResult: 'no-match' } };
+      if (!res) {
+        context.onError(new MessageSelectionError('no-match'));
+        return [];
+      }
+      return res.value.body;
     }
 
     default:
-      return { pattern: [] };
+      context.onError(new MessageSelectionError('not-selectable'));
+      return [];
   }
 }

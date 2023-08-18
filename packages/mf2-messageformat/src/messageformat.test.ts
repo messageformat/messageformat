@@ -6,11 +6,12 @@ import { MessageFormat } from './messageformat';
 export type TestMessage =
   | {
       src: string;
-      exp: string;
       only?: boolean;
-      params?: Record<string, string | number | null | undefined>;
-      errors?: Array<{ type: string }>;
       locale?: string;
+      params?: Record<string, string | number | null | undefined>;
+      exp: string;
+      parts?: Array<object>;
+      errors?: Array<{ type: string }>;
       syntaxError?: never;
     }
   | { src: string; syntaxError: true };
@@ -20,13 +21,27 @@ describe('Format messages', () => {
     if (testMsg.syntaxError) {
       expect(() => new MessageFormat(testMsg.src)).toThrow(MessageSyntaxError);
     } else {
-      const { src, exp, locale, params, errors: expErrors, only } = testMsg;
+      const {
+        src,
+        exp,
+        parts,
+        locale,
+        params,
+        errors: expErrors,
+        only
+      } = testMsg;
       (only ? test.only : test)(testName(testMsg), () => {
-        const errors: any[] = [];
+        let errors: any[] = [];
         const mf = new MessageFormat(src, locale ?? 'en');
         const msg = mf.format(params, err => errors.push(err));
         expect(msg).toBe(exp);
         expect(errors).toMatchObject(expErrors ?? []);
+        if (parts) {
+          errors = [];
+          const mp = mf.formatToParts(params, err => errors.push(err));
+          expect(mp).toMatchObject(parts);
+          expect(errors).toMatchObject(expErrors ?? []);
+        }
       });
     }
   }

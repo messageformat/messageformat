@@ -1,8 +1,8 @@
 import type { Context } from '../format-context';
-import type { MessageValue } from '../message-value';
+import type { MessageValue } from '../runtime';
 
 import { FunctionRef, resolveFunctionRef } from './function-ref';
-import { Literal, resolveLiteral, Text } from './literal';
+import { Literal, resolveLiteral } from './literal';
 import { Reserved, resolveReserved } from './reserved';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
@@ -10,6 +10,7 @@ export { isFunctionRef, FunctionRef, Option } from './function-ref';
 export { isLiteral, isText, Literal, Text } from './literal';
 export { isReserved, Reserved } from './reserved';
 export {
+  getMessageValue,
   isVariableRef,
   UnresolvedExpression,
   VariableRef
@@ -37,22 +38,19 @@ export const isExpression = (part: any): part is Expression =>
 /** @internal */
 export function resolveExpression(
   ctx: Context,
-  elem: Expression | FunctionRef | Literal | Reserved | Text | VariableRef
+  { body }: Expression
 ): MessageValue {
-  switch (elem.type) {
+  switch (body.type) {
     case 'literal':
-    case 'text':
-      return resolveLiteral(elem);
-    case 'expression':
-      return resolveExpression(ctx, elem.body);
+      return resolveLiteral(ctx, body);
     case 'variable':
-      return resolveVariableRef(ctx, elem);
+      return resolveVariableRef(ctx, body);
     case 'function':
-      return resolveFunctionRef(ctx, elem);
+      return resolveFunctionRef(ctx, body);
     case 'reserved':
-      return resolveReserved(ctx, elem);
+      return resolveReserved(ctx, body);
     default:
       // @ts-expect-error - should never happen
-      throw new Error(`Unsupported pattern element: ${elem.type}`);
+      throw new Error(`Unsupported expression: ${body.type}`);
   }
 }

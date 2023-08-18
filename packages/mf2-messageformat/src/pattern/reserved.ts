@@ -1,8 +1,8 @@
-import { MessageError } from '../errors.js';
+import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import { MessageFallback } from '../message-value/index.js';
-import { FALLBACK_SOURCE } from '../message-value/message-value';
+import { fallback } from '../runtime/index.js';
 import type { Literal } from './literal.js';
+import { getValueSource } from './value.js';
 import type { VariableRef } from './variable-ref.js';
 
 /**
@@ -36,19 +36,7 @@ export function resolveReserved(
   ctx: Context,
   { operand, sigil, source }: Reserved
 ) {
-  if (operand) {
-    const arg = ctx.resolve(operand);
-    source =
-      arg.source ||
-      String((arg.type === 'literal' && arg.value) || FALLBACK_SOURCE);
-  }
-  const fb = new MessageFallback(ctx, { source });
-  ctx.onError(
-    new MessageError(
-      'reserved',
-      `Reserved ${sigil} expression is not supported`
-    ),
-    fb
-  );
-  return fb;
+  const msg = `Reserved ${sigil} expression is not supported`;
+  ctx.onError(new MessageResolutionError('reserved', msg, source));
+  return fallback(getValueSource(operand) ?? source);
 }

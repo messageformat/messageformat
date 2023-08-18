@@ -1,8 +1,9 @@
 export class MessageError extends Error {
   type:
     | 'missing-func'
-    | 'reserved'
-    | 'unresolved-var'
+    | 'not-formattable'
+    | typeof MessageResolutionError.prototype.type
+    | typeof MessageSelectionError.prototype.type
     | typeof MessageSyntaxError.prototype.type;
 
   constructor(type: typeof MessageError.prototype.type, message: string) {
@@ -67,4 +68,24 @@ export class MissingCharError extends MessageSyntaxError {
 
 export class MessageDataModelError extends MessageSyntaxError {
   declare type: 'key-mismatch' | 'missing-fallback';
+}
+
+export class MessageResolutionError extends MessageError {
+  declare type: 'bad-input' | 'bad-option' | 'reserved' | 'unresolved-var';
+  source: string;
+  constructor(
+    type: typeof MessageResolutionError.prototype.type,
+    message: string,
+    source: string
+  ) {
+    super(type, message);
+    this.source = source;
+  }
+}
+
+export class MessageSelectionError extends MessageError {
+  declare type: 'no-match' | 'not-selectable';
+  constructor(type: typeof MessageSelectionError.prototype.type) {
+    super(type, `Selection error: ${type}`);
+  }
 }

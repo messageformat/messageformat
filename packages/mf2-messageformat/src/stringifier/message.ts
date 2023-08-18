@@ -17,7 +17,7 @@ import {
   Option,
   VariableRef
 } from '../pattern';
-import { functionRefSourceName } from '../pattern/function-ref';
+import { functionRefSource } from '../pattern/function-ref';
 
 /**
  * Stringify a message using its syntax representation.
@@ -60,7 +60,7 @@ function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
     default:
       res = '';
   }
-  res += functionRefSourceName(kind, name);
+  res += functionRefSource(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   return res;
 }
