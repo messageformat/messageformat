@@ -60,7 +60,7 @@ function expressionToPart(
       return {
         type: 'function',
         kind: 'value',
-        name: 'NUMBER',
+        name: 'number',
         operand: { type: 'literal', value: exp.value }
       };
     case 'StringLiteral':
@@ -68,7 +68,7 @@ function expressionToPart(
     case 'VariableReference':
       return { type: 'variable', name: exp.id.name };
     case 'FunctionReference': {
-      const func = exp.id.name;
+      const func = exp.id.name.toLowerCase();
       const { positional, named } = exp.arguments;
       const args = positional.map(exp => {
         const part = expressionToPart(exp);
@@ -100,7 +100,7 @@ function expressionToPart(
       return {
         type: 'function',
         kind: 'value',
-        name: 'MESSAGE',
+        name: 'message',
         operand: { type: 'literal', value: msgId }
       };
     }
@@ -110,7 +110,7 @@ function expressionToPart(
         : `-${exp.id.name}`;
       const operand: Literal = { type: 'literal', value: msgId };
       if (!exp.arguments)
-        return { type: 'function', kind: 'value', name: 'MESSAGE', operand };
+        return { type: 'function', kind: 'value', name: 'message', operand };
 
       const options: Option[] = [];
       for (const { name, value } of exp.arguments.named) {
@@ -124,7 +124,7 @@ function expressionToPart(
       return {
         type: 'function',
         kind: 'value',
-        name: 'MESSAGE',
+        name: 'message',
         operand,
         options
       };

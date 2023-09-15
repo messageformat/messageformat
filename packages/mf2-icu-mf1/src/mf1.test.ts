@@ -374,7 +374,7 @@ for (const [title, cases] of Object.entries(testCases)) {
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));
             const mf = mf1ToMessage(data, locale);
-            validate(data, mf.resolvedOptions().runtime);
+            validate(data, mf.resolvedOptions().functions);
             const msg = mf.format(
               param as Record<string, string | number | Date>
             );

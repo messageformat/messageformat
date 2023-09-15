@@ -1,8 +1,8 @@
 import { MessageResolutionError } from '../errors.js';
 import type {
   MessageExpressionPart,
-  MessageValue,
-  RuntimeOptions
+  MessageFunctionContext,
+  MessageValue
 } from './index.js';
 import {
   asBoolean,
@@ -37,13 +37,12 @@ export interface MessageDateTimePart extends MessageExpressionPart {
  * @beta
  */
 export function datetime(
-  source: string,
-  locales: string[],
-  options: RuntimeOptions,
+  { localeMatcher, locales, source }: MessageFunctionContext,
+  options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime {
   const lc = mergeLocales(locales, input, options);
-  const opt: Intl.DateTimeFormatOptions = {};
+  const opt: Intl.DateTimeFormatOptions = { localeMatcher };
   if (input && typeof input === 'object') {
     if (input && 'options' in input) Object.assign(opt, input.options);
     if (!(input instanceof Date) && typeof input.valueOf === 'function') {

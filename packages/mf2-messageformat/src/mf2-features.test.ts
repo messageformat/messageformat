@@ -9,17 +9,15 @@ import { source } from '@messageformat/test-utils';
 import {
   MessageValue,
   MessageFormat,
-  Runtime,
-  RuntimeOptions,
+  MessageFunctionContext,
   SelectMessage,
   MessagePart
 } from './index';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function range(
-    source: string,
-    [locale]: string[],
-    options: RuntimeOptions,
+    { source, locales: [locale] }: MessageFunctionContext,
+    options: Record<string, unknown>,
     input: unknown
   ): MessageValue {
     const { start, end } = input as { start: number; end: number };
@@ -38,7 +36,6 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       toString: () => value
     };
   }
-  const runtime = { range } satisfies Runtime;
 
   test('input as { start, end } object', () => {
     const mf = new MessageFormat(
@@ -49,22 +46,22 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
         when * {{$range} dagen}
       `,
       'nl',
-      { runtime }
+      { functions: { range } }
     );
 
     const msg1 = mf.format({ range: { start: 0, end: 1 } });
     expect(msg1).toBe('0 - 1 dag');
     const parts1 = mf.formatToParts({ range: { start: 0, end: 1 } });
-    expect(parts1).toBe([
-      { type: 'range', value: '0 - 1' },
+    expect(parts1).toEqual([
+      { type: 'range', source: '$range', value: '0 - 1' },
       { type: 'literal', value: ' dag' }
     ]);
 
     const msg2 = mf.format({ range: { start: 1, end: 2 } });
     expect(msg2).toBe('1 - 2 dagen');
     const parts2 = mf.formatToParts({ range: { start: 1, end: 2 } });
-    expect(parts2).toBe([
-      { type: 'range', value: '1 - 2' },
+    expect(parts2).toEqual([
+      { type: 'range', source: '$range', value: '1 - 2' },
       { type: 'literal', value: ' dagen' }
     ]);
   });
@@ -141,6 +138,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       LIVE: String(undefined),
       TAG: 'foo',
       DAY: String(undefined),
+      TIME: String(undefined),
       AREA: String(undefined),
       Q: String(undefined)
     });
@@ -151,6 +149,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       LIVE: true,
       TAG: 'foo',
       DAY: String(undefined),
+      TIME: String(undefined),
       AREA: 'there',
       Q: '"bar"'
     });
@@ -204,9 +203,8 @@ maybe('List formatting', () => {
   const listFn =
     (each_?: Record<string, (locales: string[], value: string) => string>) =>
     (
-      source: string,
-      locales: string[],
-      options: RuntimeOptions,
+      { locales, source }: MessageFunctionContext,
+      options: Record<string, unknown>,
       input?: unknown
     ): MessageValue => {
       let list = Array.isArray(input)
@@ -225,7 +223,7 @@ maybe('List formatting', () => {
       return {
         type: 'list',
         source,
-        locale: lf.supportedOptions().locale,
+        locale: lf.resolvedOptions().locale,
         toParts: () => lf.formatToParts(list),
         toString: () => lf.format(list)
       };
@@ -233,7 +231,7 @@ maybe('List formatting', () => {
 
   test('Intl.ListFormat, combine/flatten inputs (unicode-org/message-format-wg#36)', () => {
     const list = ['Motorcycle', 'Bus', 'Car'];
-    const opt = { runtime: { list: listFn() } };
+    const opt = { functions: { list: listFn() } };
 
     const mf1 = new MessageFormat('{{$list :list}}', 'en', opt);
     expect(mf1.format({ list })).toBe('Motorcycle, Bus, and Car');
@@ -271,7 +269,7 @@ maybe('List formatting', () => {
         when * {Le-am dat cadouri {$list :list each=dative}.}
       `,
       'ro',
-      { runtime: { list: listFn({ dative }) } }
+      { functions: { list: listFn({ dative }) } }
     );
 
     const msg1 = mf.format({ count: 1, list: ['Petre'] });
@@ -316,9 +314,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'A ' },
-      { type: 'value', source: '$foo', value: 'foo' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
       { type: 'literal', value: ' and an ' },
-      { type: 'value', source: '$other', value: 'other' }
+      { type: 'string', locale: 'en', source: '$other', value: 'other' }
     ]);
   });
 
@@ -328,9 +326,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'An ' },
-      { type: 'value', source: '$foo', value: 'other' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'other' },
       { type: 'literal', value: ' and a ' },
-      { type: 'value', source: '$other', value: 'foo' }
+      { type: 'string', locale: 'en', source: '$other', value: 'foo' }
     ]);
   });
 
@@ -340,9 +338,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'The ' },
-      { type: 'value', source: '$foo', value: 'foo' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
       { type: 'literal', value: ' and lotsa ' },
-      { type: 'value', source: '$other', value: 'other' }
+      { type: 'string', locale: 'en', source: '$other', value: 'other' }
     ]);
   });
 
@@ -351,11 +349,11 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     const parts = mf.formatToParts({ foo: 'An', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
-      { type: 'value', source: '$foo', value: 'A' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'A' },
       { type: 'literal', value: ' foo and an ' },
-      { type: 'literal', value: '...' },
+      { type: 'string', locale: 'en', source: '|...|', value: '...' },
       { type: 'literal', value: ' ' },
-      { type: 'value', source: '$other', value: 'other' }
+      { type: 'string', locale: 'en', source: '$other', value: 'other' }
     ]);
   });
 });

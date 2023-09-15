@@ -1,7 +1,7 @@
 import type {
   MessageExpressionPart,
-  MessageValue,
-  RuntimeOptions
+  MessageFunctionContext,
+  MessageValue
 } from './index.js';
 import { mergeLocales } from './utils.js';
 
@@ -23,9 +23,8 @@ export interface MessageStringPart extends MessageExpressionPart {
 }
 
 export function string(
-  source: string,
-  locales: string[],
-  options: RuntimeOptions,
+  { locales, source }: Pick<MessageFunctionContext, 'locales' | 'source'>,
+  options: Record<string, unknown>,
   input?: unknown
 ): MessageString {
   const str = input === undefined ? '' : String(input);

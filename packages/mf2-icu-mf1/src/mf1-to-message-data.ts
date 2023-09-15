@@ -107,7 +107,11 @@ function tokenToPart(
 
 function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
   const argVar: VariableRef = { type: 'variable', name: arg };
-  if (type === 'select') return { type: 'expression', body: argVar };
+  if (type === 'select')
+    return {
+      type: 'expression',
+      body: { type: 'function', kind: 'value', name: 'string', operand: argVar }
+    };
 
   const options: Option[] = [];
   if (pluralOffset) {

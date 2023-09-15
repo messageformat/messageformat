@@ -50,7 +50,7 @@ import {
   fluentToMessage,
   fluentToResource,
   fluentToResourceData,
-  getFluentRuntime,
+  getFluentFunctions,
   messageToFluent,
   resourceToFluent
 } from '@messageformat/fluent';

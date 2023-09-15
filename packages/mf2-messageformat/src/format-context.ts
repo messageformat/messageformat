@@ -1,7 +1,8 @@
 import type { Expression, Literal, VariableRef } from './pattern';
-import type { MessageValue, Runtime } from './runtime';
+import type { MessageFunctions, MessageValue } from './runtime';
 
 export interface Context {
+  functions: MessageFunctions;
   onError(error: unknown): void;
   resolveExpression(expr: Expression): MessageValue;
   resolveValue(value: Literal | VariableRef): unknown;
@@ -9,7 +10,6 @@ export interface Context {
   locales: string[];
   /** Cache for local variables */
   localVars: WeakSet<MessageValue>;
-  runtime: Runtime;
   /**
    * A representation of the parameters/arguments passed to a message formatter,
    * and extended by declarations.

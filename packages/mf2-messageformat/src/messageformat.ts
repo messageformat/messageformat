@@ -4,7 +4,12 @@ import type { Context } from './format-context';
 import { selectPattern } from './select-pattern.js';
 import { resolveExpression, UnresolvedExpression } from './pattern';
 import { resolveValue } from './pattern/value.js';
-import { defaultRuntime, MessagePart, MessageValue, Runtime } from './runtime';
+import {
+  defaultFunctions,
+  MessageFunctions,
+  MessagePart,
+  MessageValue
+} from './runtime';
 import { MessageError } from './errors.js';
 
 /** @beta */
@@ -20,10 +25,10 @@ export interface MessageFormatOptions {
   localeMatcher?: 'best fit' | 'lookup';
 
   /**
-   * The set of functions available during message resolution.
-   * If not set, defaults to {@link defaultRuntime}.
+   * The set of custom functions available during message resolution.
+   * Extends {@link defaultFunctions}.
    */
-  runtime?: Runtime;
+  functions?: MessageFunctions;
 }
 
 /**
@@ -35,7 +40,7 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
   readonly #message: Message;
-  readonly #runtime: Readonly<Runtime>;
+  readonly #functions: Readonly<MessageFunctions>;
 
   constructor(
     source: string | Message,
@@ -50,8 +55,9 @@ export class MessageFormat {
       : [];
     this.#message =
       typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
-    const rt = options?.runtime ?? defaultRuntime;
-    this.#runtime = Object.freeze({ ...rt });
+    this.#functions = options?.functions
+      ? { ...defaultFunctions, ...options.functions }
+      : defaultFunctions;
   }
 
   format(
@@ -112,10 +118,10 @@ export class MessageFormat {
 
   resolvedOptions() {
     return {
+      functions: Object.freeze(this.#functions),
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
-      message: this.#message,
-      runtime: this.#runtime
+      message: Object.freeze(this.#message)
     };
   }
 
@@ -147,7 +153,7 @@ export class MessageFormat {
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       localVars: new WeakSet(),
-      runtime: this.#runtime,
+      functions: this.#functions,
       scope
     };
     return ctx;

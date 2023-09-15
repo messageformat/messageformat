@@ -1,5 +1,3 @@
-import type { RuntimeOptions } from './index.js';
-
 /**
  * Utility function for custom functions.
  * Cast a value as a Boolean,
@@ -64,7 +62,7 @@ export function asString(value: unknown): string {
 export function mergeLocales(
   locales: string[],
   input: unknown,
-  options: RuntimeOptions | null
+  options: Record<string, unknown> | null
 ): string[] {
   // Message locales are always included, but have the lowest precedence
   let lc = locales;

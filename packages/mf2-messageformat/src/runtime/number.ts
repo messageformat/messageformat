@@ -7,8 +7,8 @@ import {
 } from './utils.js';
 import type {
   MessageExpressionPart,
-  MessageValue,
-  RuntimeOptions
+  MessageFunctionContext,
+  MessageValue
 } from './index.js';
 
 export interface MessageNumber extends MessageValue {
@@ -51,13 +51,14 @@ export interface MessageNumberPart extends MessageExpressionPart {
  * @beta
  */
 export function number(
-  source: string,
-  locales: string[],
-  options: RuntimeOptions,
+  { localeMatcher, locales, source }: MessageFunctionContext,
+  options: Record<string, unknown>,
   input?: unknown
 ): MessageNumber {
   let value: unknown;
-  let opt: (Intl.NumberFormatOptions & Intl.PluralRulesOptions) | undefined;
+  const opt: Intl.NumberFormatOptions & Intl.PluralRulesOptions = {
+    localeMatcher
+  };
   switch (typeof input) {
     case 'bigint':
     case 'number':
@@ -66,7 +67,7 @@ export function number(
     case 'object':
       if (typeof input?.valueOf === 'function') {
         value = input.valueOf();
-        if ('options' in input) opt = Object.assign({}, input.options);
+        if ('options' in input) Object.assign(opt, input.options);
       }
       break;
     case 'string':
@@ -82,7 +83,6 @@ export function number(
   }
 
   if (options) {
-    opt ??= {};
     for (const [name, value] of Object.entries(options)) {
       try {
         switch (name) {

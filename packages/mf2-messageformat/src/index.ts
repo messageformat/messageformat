@@ -3,6 +3,7 @@ export * from './data-model.js';
 export {
   MessageDataModelError,
   MessageError,
+  MessageResolutionError,
   MessageSyntaxError
 } from './errors.js';
 export { MessageFormat, MessageFormatOptions } from './messageformat.js';

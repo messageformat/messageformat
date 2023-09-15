@@ -1,15 +1,15 @@
 import type { Message, Pattern } from '../data-model';
 import { isExpression, isFunctionRef } from '../pattern';
-import type { Runtime } from '../runtime';
+import type { MessageFunctions } from '../runtime';
 
-function validateParts(parts: Pattern['body'], runtime: Runtime) {
+function validateParts(parts: Pattern['body'], functions: MessageFunctions) {
   for (const part of parts) {
     if (
       isExpression(part) &&
       isFunctionRef(part.body) &&
       part.body.kind === 'value'
     ) {
-      if (typeof runtime[part.body.name] !== 'function') {
+      if (typeof functions[part.body.name] !== 'function') {
         throw new ReferenceError(
           `Runtime function not available: ${part.body.name}`
         );
@@ -24,7 +24,7 @@ function validateParts(parts: Pattern['body'], runtime: Runtime) {
  *
  * @remarks
  * Throws if `msg` is not a pattern or select message,
- * or if it references runtime functions that are not available in the `runtime`.
+ * or if it references runtime functions that are not available in the `functions`.
  *
  * Formatting a message that passes validation may still fail,
  * as it may depend on parameters that are not passed in,
@@ -32,14 +32,16 @@ function validateParts(parts: Pattern['body'], runtime: Runtime) {
  *
  * @beta
  */
-export function validate(msg: Readonly<Message>, runtime: Runtime) {
+export function validate(msg: Readonly<Message>, functions: MessageFunctions) {
   switch (msg.type) {
     case 'message':
-      validateParts(msg.pattern.body, runtime);
+      validateParts(msg.pattern.body, functions);
       break;
     case 'select':
-      validateParts(msg.selectors, runtime);
-      for (const { value } of msg.variants) validateParts(value.body, runtime);
+      validateParts(msg.selectors, functions);
+      for (const { value } of msg.variants) {
+        validateParts(value.body, functions);
+      }
       break;
     default:
       // @ts-expect-error With TS, this condition should never be reached.

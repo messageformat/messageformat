@@ -1,4 +1,5 @@
 import type { Context } from '../format-context.js';
+import { buildFunctionContext } from '../runtime/index.js';
 
 /**
  * An immediately defined value.
@@ -44,7 +45,6 @@ export const isText = (part: any): part is Text =>
   !!part && typeof part === 'object' && part.type === 'text';
 
 export function resolveLiteral(ctx: Context, lit: Literal) {
-  const opt = { localeMatcher: ctx.localeMatcher };
-  const source = `|${lit.value}|`;
-  return ctx.runtime.string(source, ctx.locales, opt, lit.value);
+  const msgCtx = buildFunctionContext(ctx, `|${lit.value}|`);
+  return ctx.functions.string(msgCtx, {}, lit.value);
 }

@@ -38,6 +38,7 @@ type TestCase = {
     attr?: string;
     scope?: Record<string, string | number>;
     exp: string | RegExp;
+    errors?: Array<string | RegExp>;
     only?: boolean;
   }[];
 };
@@ -88,7 +89,12 @@ const testCases: Record<string, TestCase> = {
     tests: [
       { msg: 'num-bare', scope: { arg: 1234 }, exp: '1,234' },
       { msg: 'num-fraction-valid', scope: { arg: 1234 }, exp: '1,234.0' },
-      { msg: 'num-fraction-bad', scope: { arg: 1234 }, exp: '1234' },
+      {
+        msg: 'num-fraction-bad',
+        scope: { arg: 1234 },
+        exp: '{$arg}',
+        errors: ['oops']
+      },
       { msg: 'num-style', scope: { arg: 1234 }, exp: '123,400%' },
       { msg: 'num-currency', scope: { arg: 1234 }, exp: '€1,234.00' },
       { msg: 'num-unknown', scope: { arg: 1234 }, exp: '1,234' }
@@ -156,21 +162,40 @@ const testCases: Record<string, TestCase> = {
       }
     `,
     tests: [
-      { msg: 'ref-attr', exp: 'It' },
-      { msg: 'ref-attr', scope: { style: 'chicago' }, exp: 'It' },
-      { msg: 'call-attr-no-args', exp: 'It' },
-      { msg: 'call-attr-no-args', scope: { style: 'chicago' }, exp: 'It' },
+      { msg: 'ref-attr', exp: 'It', errors: ['$style', 'not-selectable'] },
+      {
+        msg: 'ref-attr',
+        scope: { style: 'chicago' },
+        exp: 'It',
+        errors: ['$style', 'not-selectable']
+      },
+      {
+        msg: 'call-attr-no-args',
+        exp: 'It',
+        errors: ['$style', 'not-selectable']
+      },
+      {
+        msg: 'call-attr-no-args',
+        scope: { style: 'chicago' },
+        exp: 'It',
+        errors: ['$style', 'not-selectable']
+      },
       { msg: 'call-attr-with-expected-arg', exp: 'She' },
       {
         msg: 'call-attr-with-expected-arg',
         scope: { style: 'chicago' },
         exp: 'She'
       },
-      { msg: 'call-attr-with-other-arg', exp: 'It' },
+      {
+        msg: 'call-attr-with-other-arg',
+        exp: 'It',
+        errors: ['$style', 'not-selectable']
+      },
       {
         msg: 'call-attr-with-other-arg',
         scope: { style: 'chicago' },
-        exp: 'It'
+        exp: 'It',
+        errors: ['$style', 'not-selectable']
       }
     ]
   },
@@ -185,12 +210,22 @@ const testCases: Record<string, TestCase> = {
     `,
     tests: [
       { msg: '-foo', scope: { arg: 3 }, exp: 'Foo 3' }, // Fluent: 'Foo {$arg}'
-      { msg: '-foo', scope: {}, exp: 'Foo {$arg}' },
-      { msg: 'ref-foo', exp: 'Foo {$arg}' },
-      { msg: 'call-foo-no-args', scope: { arg: 3 }, exp: 'Foo {$arg}' },
+      { msg: '-foo', scope: {}, exp: 'Foo {$arg}', errors: ['$arg'] },
+      { msg: 'ref-foo', exp: 'Foo {$arg}', errors: ['$arg'] },
+      {
+        msg: 'call-foo-no-args',
+        scope: { arg: 3 },
+        exp: 'Foo {$arg}',
+        errors: ['$arg']
+      },
       { msg: 'call-foo-with-expected-arg', scope: { arg: 3 }, exp: 'Foo 1' },
-      { msg: 'call-foo-with-other-arg', exp: 'Foo {$arg}' },
-      { msg: 'call-foo-with-other-arg', scope: { arg: 3 }, exp: 'Foo {$arg}' }
+      { msg: 'call-foo-with-other-arg', exp: 'Foo {$arg}', errors: ['$arg'] },
+      {
+        msg: 'call-foo-with-other-arg',
+        scope: { arg: 3 },
+        exp: 'Foo {$arg}',
+        errors: ['$arg']
+      }
     ]
   },
 
@@ -214,19 +249,39 @@ const testCases: Record<string, TestCase> = {
         }
     `,
     tests: [
-      { msg: 'select', scope: {}, exp: 'B' },
+      {
+        msg: 'select',
+        scope: {},
+        exp: 'B',
+        errors: ['$selector', 'not-selectable']
+      },
       { msg: 'select', scope: { selector: 'a' }, exp: 'A' },
       { msg: 'select', scope: { selector: 'b' }, exp: 'B' },
       { msg: 'select', scope: { selector: 'c' }, exp: 'B' },
-      { msg: 'number', scope: {}, exp: 'B' },
+      {
+        msg: 'number',
+        scope: {},
+        exp: 'B',
+        errors: ['$selector', 'not-selectable']
+      },
       { msg: 'number', scope: { selector: 0 }, exp: 'A' },
       { msg: 'number', scope: { selector: 1 }, exp: 'B' },
       { msg: 'number', scope: { selector: 2 }, exp: 'B' },
-      { msg: 'plural', scope: {}, exp: 'B' },
+      {
+        msg: 'plural',
+        scope: {},
+        exp: 'B',
+        errors: ['$selector', 'not-selectable']
+      },
       { msg: 'plural', scope: { selector: 1 }, exp: 'A' },
       { msg: 'plural', scope: { selector: 2 }, exp: 'B' },
       { msg: 'plural', scope: { selector: 'one' }, exp: 'A' },
-      { msg: 'default', scope: {}, exp: 'D' },
+      {
+        msg: 'default',
+        scope: {},
+        exp: 'D',
+        errors: ['$selector', 'not-selectable']
+      },
       { msg: 'default', scope: { selector: 1 }, exp: 'A' },
       { msg: 'default', scope: { selector: 2 }, exp: 'D' },
       { msg: 'default', scope: { selector: 'one' }, exp: 'A' }
@@ -246,7 +301,7 @@ const testCases: Record<string, TestCase> = {
     `,
     tests: [
       { msg: 'foo', scope: { num: 3 }, exp: 'Foo 3' },
-      { msg: 'bar', scope: { num: 3 }, exp: 'Foo {$num}' },
+      { msg: 'bar', scope: { num: 3 }, exp: 'Foo {$num}', errors: ['$num'] },
       { msg: 'baz', attr: 'attr', scope: { num: 3 }, exp: 'Baz Attribute 3' },
       { msg: 'qux', scope: { num: 3 }, exp: 'Baz Variant A 3' },
       { msg: 'zig', scope: { arg: 'Argument' }, exp: 'Argument' }
@@ -277,14 +332,14 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     test('validate', () => {
       for (const [id, group] of res) {
         for (const [attr, mf] of group) {
-          const { runtime } = mf.resolvedOptions();
+          const { functions } = mf.resolvedOptions();
           // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-          validate(data.get(id)?.get(attr ?? '')!, runtime);
+          validate(data.get(id)?.get(attr ?? '')!, functions);
         }
       }
     });
 
-    for (const { msg, attr, scope, exp, only } of tests) {
+    for (const { msg, attr, scope, exp, errors, only } of tests) {
       let name = msg;
       if (scope) {
         const opt = Object.entries(scope).map(
@@ -293,14 +348,24 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
         name = `[${opt.join(', ')}] ${msg}`;
       }
 
-      const _test = only ? test.only : test;
-      _test(name, () => {
+      const test_ = only ? test.only : test;
+      test_(name, () => {
+        const onError = jest.fn();
         const str = res
           .get(msg)
           ?.get(attr ?? '')
-          ?.format(scope);
+          ?.format(scope, onError);
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
+        if (errors?.length) {
+          expect(onError).toHaveBeenCalledTimes(errors.length);
+          for (let i = 0; i < errors.length; ++i) {
+            const [err] = onError.mock.calls[i];
+            expect(err.message).toMatch(errors[i]);
+          }
+        } else {
+          expect(onError).not.toHaveBeenCalled();
+        }
       });
     }
 
@@ -346,30 +411,39 @@ describe('formatToParts', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { source: '$num', type: 'number', value: 42 }
+        {
+          type: 'number',
+          source: '$num',
+          locale: 'en-US',
+          parts: [{ type: 'integer', value: '42' }]
+        }
       ]);
     });
 
     test('undefined formatted variable', () => {
-      const foo = res.get('foo')?.get('')?.formatToParts();
+      const onError = jest.fn();
+      const foo = res.get('foo')?.get('')?.formatToParts(undefined, onError);
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { type: 'fallback', source: '$num', value: undefined }
+        { type: 'fallback', source: '$num' }
       ]);
+      expect(onError).toHaveBeenCalledTimes(1);
     });
 
     test('message reference', () => {
-      const bar = res.get('bar')?.get('')?.formatToParts({ num: 42 });
+      const onError = jest.fn();
+      const bar = res.get('bar')?.get('')?.formatToParts({ num: 42 }, onError);
       expect(bar).toMatchObject([
         {
-          type: 'message',
-          source: 'foo',
-          value: [
+          type: 'fluent-message',
+          source: '|foo|',
+          parts: [
             { type: 'literal', value: 'Foo ' },
-            { type: 'fallback', source: '$num', value: undefined }
+            { type: 'fallback', source: '$num' }
           ]
         }
       ]);
+      expect(onError).toHaveBeenCalledTimes(1);
     });
 
     test('defined selector', () => {
@@ -378,8 +452,10 @@ describe('formatToParts', () => {
     });
 
     test('undefined selector', () => {
-      const sel = res.get('sel')?.get('')?.formatToParts();
+      const onError = jest.fn();
+      const sel = res.get('sel')?.get('')?.formatToParts(undefined, onError);
       expect(sel).toEqual([{ type: 'literal', value: 'B' }]);
+      expect(onError).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -468,7 +544,12 @@ describe('formatToParts', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { type: 'number', source: '$num', value: 42 }
+        {
+          type: 'number',
+          source: '$num',
+          locale: 'en',
+          parts: [{ type: 'integer', value: '42' }]
+        }
       ]);
     });
 
@@ -509,8 +590,13 @@ describe('formatToParts', () => {
     });
 
     test('case with fallback', () => {
-      const msg = res.get('case')?.get('')?.formatToParts({ case: 'oblique' });
+      const onError = jest.fn();
+      const msg = res
+        .get('case')
+        ?.get('')
+        ?.formatToParts({ case: 'oblique' }, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'NOM' }]);
+      expect(onError).not.toHaveBeenCalled();
     });
 
     test('gender with match', () => {
@@ -522,8 +608,10 @@ describe('formatToParts', () => {
     });
 
     test('gender with fallback', () => {
-      const msg = res.get('gender')?.get('')?.formatToParts();
+      const onError = jest.fn();
+      const msg = res.get('gender')?.get('')?.formatToParts(undefined, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'N' }]);
+      expect(onError).toHaveBeenCalledTimes(2);
     });
 
     test('plural with match', () => {
@@ -532,8 +620,13 @@ describe('formatToParts', () => {
     });
 
     test('plural with fallback', () => {
-      const msg = res.get('plural')?.get('')?.formatToParts({ num: 1 });
+      const onError = jest.fn();
+      const msg = res
+        .get('plural')
+        ?.get('')
+        ?.formatToParts({ num: 1 }, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
+      expect(onError).not.toHaveBeenCalled();
     });
 
     test('plural with non-plural input', () => {

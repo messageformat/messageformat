@@ -30,4 +30,4 @@ export {
   messageToFluent
 } from './message-to-fluent';
 export { resourceToFluent } from './resource-to-fluent';
-export { getFluentRuntime } from './runtime';
+export { getFluentFunctions } from './functions';

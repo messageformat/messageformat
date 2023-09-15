@@ -1,6 +1,11 @@
 import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import { MessageValue, fallback, unknown } from '../runtime/index.js';
+import {
+  MessageValue,
+  buildFunctionContext,
+  fallback,
+  unknown
+} from '../runtime/index.js';
 import type { Expression } from './index.js';
 
 /**
@@ -98,12 +103,12 @@ export function getMessageValue(
   switch (type) {
     case 'bigint':
     case 'number': {
-      const opt = { localeMatcher: ctx.localeMatcher };
-      return ctx.runtime.number(source, ctx.locales, opt, value);
+      const msgCtx = buildFunctionContext(ctx, source);
+      return ctx.functions.number(msgCtx, {}, value);
     }
     case 'string': {
-      const opt = { localeMatcher: ctx.localeMatcher };
-      return ctx.runtime.string(source, ctx.locales, opt, value);
+      const msgCtx = buildFunctionContext(ctx, source);
+      return ctx.functions.string(msgCtx, {}, value);
     }
     default:
       return value === undefined ? undefined : unknown(source, value);
@@ -114,7 +119,7 @@ export function resolveVariableRef(ctx: Context, ref: VariableRef) {
   const source = '$' + ref.name;
   const value = lookupVariableRef(ctx, ref);
   const mv = getMessageValue(ctx, source, value);
-  if (value !== undefined) return mv;
+  if (mv !== undefined) return mv;
   const msg = `Variable not available: ${source}`;
   ctx.onError(new MessageResolutionError('unresolved-var', msg, source));
   return fallback(source);

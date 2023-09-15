@@ -2,14 +2,14 @@ import * as Fluent from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import type { FluentMessageResource, FluentMessageResourceData } from '.';
 import { fluentToMessage } from './fluent-to-message';
-import { getFluentRuntime } from './runtime';
+import { getFluentFunctions } from './functions';
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
  * {@link messageformat#MessageFormat} instances.
  *
  * @remarks
- * A runtime provided by {@link getFluentRuntime} is automatically used in these instances.
+ * A runtime provided by {@link getFluentFunctions} is automatically used in these instances.
  *
  * @beta
  * @param source - A Fluent resource,
@@ -26,8 +26,8 @@ export function fluentToResource(
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();
 
-  const runtime = Object.assign(getFluentRuntime(res), options?.runtime);
-  const opt = { ...options, runtime };
+  const functions = Object.assign(getFluentFunctions(res), options?.functions);
+  const opt = { ...options, functions };
 
   const data =
     typeof source === 'string' || source instanceof Fluent.Resource

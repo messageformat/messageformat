@@ -1,8 +1,8 @@
-import { MessageFormat, MessageNumberPart, Runtime } from '../index';
+import { MessageFormat, MessageFunctions, MessageNumberPart } from '../index';
 
 test('Custom function', () => {
-  const runtime = {
-    custom: (source, [locale], _opt, input) => ({
+  const functions = {
+    custom: ({ source, locales: [locale] }, _opt, input) => ({
       type: 'custom',
       source,
       locale,
@@ -11,8 +11,8 @@ test('Custom function', () => {
       ],
       toString: () => `str:${input}`
     })
-  } satisfies Runtime;
-  const mf = new MessageFormat('{{$var :custom}}', 'en', { runtime });
+  } satisfies MessageFunctions;
+  const mf = new MessageFormat('{{$var :custom}}', 'en', { functions });
   expect(mf.format({ var: 42 })).toEqual('str:42');
   expect(mf.formatToParts({ var: 42 })).toEqual([
     { type: 'custom', source: '$var', locale: 'en', value: 'part:42' }

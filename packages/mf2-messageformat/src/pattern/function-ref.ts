@@ -1,6 +1,6 @@
 import { MessageError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import { fallback, markup } from '../runtime/index.js';
+import { buildFunctionContext, fallback, markup } from '../runtime/index.js';
 import type { Literal } from './literal.js';
 import { getValueSource, resolveValue } from './value.js';
 import type { VariableRef } from './variable-ref.js';
@@ -74,19 +74,17 @@ export function resolveFunctionRef(
     switch (kind) {
       case 'open':
       case 'close': {
-        const opt = resolveOptions(ctx, options);
+        const opt = options?.length ? resolveOptions(ctx, options) : undefined;
         return markup(source, kind, name, opt, fnInput[0]);
       }
       default: {
-        const rf = ctx.runtime[name];
+        const rf = ctx.functions[name];
         if (!rf) {
           throw new MessageError('missing-func', `Unknown function ${name}`);
         }
-        const opt = Object.assign(
-          { localeMatcher: ctx.localeMatcher },
-          resolveOptions(ctx, options)
-        );
-        return rf(source, ctx.locales, opt, ...fnInput);
+        const msgCtx = buildFunctionContext(ctx, source);
+        const opt = resolveOptions(ctx, options);
+        return rf(msgCtx, opt, ...fnInput);
       }
     }
   } catch (error) {
@@ -97,10 +95,11 @@ export function resolveFunctionRef(
 }
 
 function resolveOptions(ctx: Context, options: Option[] | undefined) {
-  if (!options?.length) return undefined;
-  const opt: Record<string, unknown> = {};
-  for (const { name, value } of options) {
-    opt[name] = resolveValue(ctx, value);
+  const opt: Record<string, unknown> = Object.create(null);
+  if (options) {
+    for (const { name, value } of options) {
+      opt[name] = resolveValue(ctx, value);
+    }
   }
   return opt;
 }

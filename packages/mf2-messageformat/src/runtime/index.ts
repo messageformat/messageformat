@@ -1,3 +1,4 @@
+import { Context } from '../format-context.js';
 import { datetime } from './datetime.js';
 import { number } from './number.js';
 import { string } from './string.js';
@@ -30,7 +31,7 @@ export interface MessageExpressionPart {
   type: string;
   source: string;
   locale?: string;
-  parts?: Array<{ type: string; value: unknown }>;
+  parts?: Array<{ type: string; source?: string; value?: unknown }>;
   value?: unknown;
 }
 
@@ -46,29 +47,34 @@ export type MessagePart = MessageExpressionPart | MessageLiteralPart;
  *
  * @beta
  */
-export const defaultRuntime = { datetime, number, string };
+export const defaultFunctions = { datetime, number, string };
+
+export type MessageFunctionContext = Readonly<{
+  localeMatcher: 'best fit' | 'lookup';
+  locales: string[];
+  onError(error: unknown): void;
+  source: string;
+}>;
+
+export const buildFunctionContext = (
+  ctx: Context,
+  source: string
+): MessageFunctionContext => ({
+  localeMatcher: ctx.localeMatcher,
+  locales: ctx.locales.slice(),
+  onError: ctx.onError,
+  source
+});
 
 /**
  * The runtime function registry available when resolving {@link FunctionRef} elements.
  *
  * @beta
  */
-export interface Runtime {
+export interface MessageFunctions {
   [key: string]: (
-    source: string,
-    locales: string[],
-    options: RuntimeOptions,
+    context: MessageFunctionContext,
+    options: Record<string, unknown>,
     input?: unknown
   ) => MessageValue;
-}
-
-/**
- * The second argument of runtime function calls is an options bag.
- * The `localeMatcher` key is always present.
- *
- * @beta
- */
-export interface RuntimeOptions {
-  localeMatcher: 'best fit' | 'lookup';
-  [key: string]: unknown;
 }
