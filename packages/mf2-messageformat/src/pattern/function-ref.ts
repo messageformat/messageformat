@@ -1,6 +1,6 @@
 import { MessageError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import { buildFunctionContext, fallback, markup } from '../runtime/index.js';
+import { MessageFunctionContext, fallback, markup } from '../runtime/index.js';
 import type { Literal } from './literal.js';
 import { getValueSource, resolveValue } from './value.js';
 import type { VariableRef } from './variable-ref.js';
@@ -82,7 +82,7 @@ export function resolveFunctionRef(
         if (!rf) {
           throw new MessageError('missing-func', `Unknown function ${name}`);
         }
-        const msgCtx = buildFunctionContext(ctx, source);
+        const msgCtx = new MessageFunctionContext(ctx, source);
         const opt = resolveOptions(ctx, options);
         return rf(msgCtx, opt, ...fnInput);
       }

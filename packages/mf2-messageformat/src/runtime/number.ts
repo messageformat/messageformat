@@ -84,6 +84,7 @@ export function number(
 
   if (options) {
     for (const [name, value] of Object.entries(options)) {
+      if (value === undefined) continue;
       try {
         switch (name) {
           case 'locale':

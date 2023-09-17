@@ -49,22 +49,23 @@ export type MessagePart = MessageExpressionPart | MessageLiteralPart;
  */
 export const defaultFunctions = { datetime, number, string };
 
-export type MessageFunctionContext = Readonly<{
-  localeMatcher: 'best fit' | 'lookup';
-  locales: string[];
-  onError(error: unknown): void;
-  source: string;
-}>;
-
-export const buildFunctionContext = (
-  ctx: Context,
-  source: string
-): MessageFunctionContext => ({
-  localeMatcher: ctx.localeMatcher,
-  locales: ctx.locales.slice(),
-  onError: ctx.onError,
-  source
-});
+export class MessageFunctionContext {
+  #ctx: Context;
+  readonly source: string;
+  constructor(ctx: Context, source: string) {
+    this.#ctx = ctx;
+    this.source = source;
+  }
+  get localeMatcher() {
+    return this.#ctx.localeMatcher;
+  }
+  get locales() {
+    return this.#ctx.locales.slice();
+  }
+  get onError() {
+    return this.#ctx.onError;
+  }
+}
 
 /**
  * The runtime function registry available when resolving {@link FunctionRef} elements.

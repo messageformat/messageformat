@@ -1,8 +1,8 @@
 import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
 import {
+  MessageFunctionContext,
   MessageValue,
-  buildFunctionContext,
   fallback,
   unknown
 } from '../runtime/index.js';
@@ -103,11 +103,11 @@ export function getMessageValue(
   switch (type) {
     case 'bigint':
     case 'number': {
-      const msgCtx = buildFunctionContext(ctx, source);
+      const msgCtx = new MessageFunctionContext(ctx, source);
       return ctx.functions.number(msgCtx, {}, value);
     }
     case 'string': {
-      const msgCtx = buildFunctionContext(ctx, source);
+      const msgCtx = new MessageFunctionContext(ctx, source);
       return ctx.functions.string(msgCtx, {}, value);
     }
     default:

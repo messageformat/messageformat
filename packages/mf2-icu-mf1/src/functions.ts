@@ -1,8 +1,9 @@
 import {
-  MessageDateTime,
-  MessageFunctionContext,
-  MessageNumber,
-  MessageValue
+  datetime,
+  type MessageDateTime,
+  type MessageFunctionContext,
+  type MessageNumber,
+  type MessageValue
 } from 'messageformat';
 
 function getParam(options: Record<string, unknown>) {
@@ -16,14 +17,12 @@ function getParam(options: Record<string, unknown>) {
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
 function date(
-  { localeMatcher, locales, source }: MessageFunctionContext,
+  msgCtx: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime {
-  const date = input instanceof Date ? input : new Date(input as string);
   const size = getParam(options) as DateTimeSize;
-  const opt: Intl.DateTimeFormatOptions = {
-    localeMatcher,
+  const opt = {
     weekday: size === 'full' ? 'long' : undefined,
     day: 'numeric',
     month:
@@ -34,35 +33,22 @@ function date(
         : 'short',
     year: 'numeric'
   };
+  return datetime(msgCtx, opt, input);
+}
 
-  let locale: string | undefined;
-  let dtf: Intl.DateTimeFormat | undefined;
-  let str: string | undefined;
-  return {
-    type: 'datetime',
-    source,
-    get locale() {
-      return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(
-        locales,
-        opt
-      )[0]);
-    },
-    get options() {
-      return { ...opt };
-    },
-    toParts() {
-      dtf ??= new Intl.DateTimeFormat(locales, opt);
-      const parts = dtf.formatToParts(date);
-      locale ??= dtf.resolvedOptions().locale;
-      return [{ type: 'datetime', source, locale, parts }];
-    },
-    toString() {
-      dtf ??= new Intl.DateTimeFormat(locales, opt);
-      str ??= dtf.format(date);
-      return str;
-    },
-    valueOf: () => date
+function time(
+  msgCtx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+): MessageDateTime {
+  const size = getParam(options) as DateTimeSize;
+  const opt = {
+    second: size === 'short' ? undefined : 'numeric',
+    minute: 'numeric',
+    hour: 'numeric',
+    timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
   };
+  return datetime(msgCtx, opt, input);
 }
 
 /**
@@ -183,51 +169,6 @@ function number(
       return str;
     },
     valueOf: () => num
-  };
-}
-
-function time(
-  { localeMatcher, locales, source }: MessageFunctionContext,
-  options: Record<string, unknown>,
-  input?: unknown
-): MessageDateTime {
-  const time = input instanceof Date ? input : new Date(input as string);
-  const size = getParam(options) as DateTimeSize;
-  const opt: Intl.DateTimeFormatOptions = {
-    localeMatcher,
-    second: size === 'short' ? undefined : 'numeric',
-    minute: 'numeric',
-    hour: 'numeric',
-    timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
-  };
-
-  let locale: string | undefined;
-  let dtf: Intl.DateTimeFormat | undefined;
-  let str: string | undefined;
-  return {
-    type: 'datetime',
-    source,
-    get locale() {
-      return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(
-        locales,
-        opt
-      )[0]);
-    },
-    get options() {
-      return { ...opt };
-    },
-    toParts() {
-      dtf ??= new Intl.DateTimeFormat(locales, opt);
-      const parts = dtf.formatToParts(time);
-      locale ??= dtf.resolvedOptions().locale;
-      return [{ type: 'datetime', source, locale, parts }];
-    },
-    toString() {
-      dtf ??= new Intl.DateTimeFormat(locales, opt);
-      str ??= dtf.format(time);
-      return str;
-    },
-    valueOf: () => time
   };
 }
 

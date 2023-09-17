@@ -69,6 +69,7 @@ export function datetime(
   }
 
   for (const [name, value] of Object.entries(options)) {
+    if (value === undefined) continue;
     try {
       switch (name) {
         case 'locale':
