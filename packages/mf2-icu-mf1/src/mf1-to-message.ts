@@ -1,7 +1,7 @@
 import { parse, Token } from '@messageformat/parser';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import { mf1ToMessageData } from './mf1-to-message-data';
-import { getMF1Runtime } from './runtime';
+import { getMF1Functions } from './functions';
 
 /** @beta */
 export type MF1Options = {
@@ -12,7 +12,7 @@ export type MF1Options = {
 /**
  * Compile an ICU MessageFormat 1 message into a {@link messageformat#MessageFormat} instance.
  *
- * A runtime provided by {@link getMF1Runtime} is automatically used in these instances.
+ * A runtime provided by {@link getMF1Functions} is automatically used in these instances.
  *
  * @beta
  * @param source - An ICU MessageFormat message, either in its syntax representation,
@@ -35,6 +35,6 @@ export function mf1ToMessage(
   } else {
     msg = source;
   }
-  opt.runtime = Object.assign(getMF1Runtime(), opt.runtime);
+  opt.functions = Object.assign(getMF1Functions(), opt.functions);
   return new MessageFormat(msg, locales, opt);
 }

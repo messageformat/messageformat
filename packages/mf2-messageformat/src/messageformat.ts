@@ -1,9 +1,16 @@
 import { asDataModel, parseMessage } from './cst-parser/index.js';
 import { Message } from './data-model';
 import type { Context } from './format-context';
-import { MessageValue, ResolvedMessage } from './message-value';
+import { selectPattern } from './select-pattern.js';
 import { resolveExpression, UnresolvedExpression } from './pattern';
-import { defaultRuntime, Runtime } from './runtime';
+import { resolveValue } from './pattern/value.js';
+import {
+  defaultFunctions,
+  MessageFunctions,
+  MessagePart,
+  MessageValue
+} from './runtime';
+import { MessageError } from './errors.js';
 
 /** @beta */
 export interface MessageFormatOptions {
@@ -18,10 +25,10 @@ export interface MessageFormatOptions {
   localeMatcher?: 'best fit' | 'lookup';
 
   /**
-   * The set of functions available during message resolution.
-   * If not set, defaults to {@link defaultRuntime}.
+   * The set of custom functions available during message resolution.
+   * Extends {@link defaultFunctions}.
    */
-  runtime?: Runtime;
+  functions?: MessageFunctions;
 }
 
 /**
@@ -33,7 +40,7 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: string[];
   readonly #message: Message;
-  readonly #runtime: Readonly<Runtime>;
+  readonly #functions: Readonly<MessageFunctions>;
 
   constructor(
     source: string | Message,
@@ -48,31 +55,85 @@ export class MessageFormat {
       : [];
     this.#message =
       typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
-    const rt = options?.runtime ?? defaultRuntime;
-    this.#runtime = Object.freeze({ ...rt });
+    this.#functions = options?.functions
+      ? { ...defaultFunctions, ...options.functions }
+      : defaultFunctions;
   }
 
-  resolveMessage(
+  format(
     msgParams?: Record<string, unknown>,
-    onError?: (error: unknown, value: MessageValue | undefined) => void
-  ): ResolvedMessage {
+    onError?: (error: unknown) => void
+  ): string {
     const ctx = this.createContext(msgParams, onError);
-    return new ResolvedMessage(ctx, this.#message);
+    let res = '';
+    for (const elem of selectPattern(ctx, this.#message)) {
+      if (elem.type === 'text') {
+        res += elem.value;
+      } else {
+        let mv: MessageValue | undefined;
+        try {
+          mv = ctx.resolveExpression(elem);
+          if (typeof mv.toString === 'function') {
+            res += mv.toString();
+          } else {
+            const msg = 'Message part is not formattable';
+            throw new MessageError('not-formattable', msg);
+          }
+        } catch (error) {
+          ctx.onError(error);
+          res += `{${mv?.source ?? '�'}}`;
+        }
+      }
+    }
+    return res;
+  }
+
+  formatToParts(
+    msgParams?: Record<string, unknown>,
+    onError?: (error: unknown) => void
+  ): MessagePart[] {
+    const ctx = this.createContext(msgParams, onError);
+    const parts: MessagePart[] = [];
+    for (const elem of selectPattern(ctx, this.#message)) {
+      if (elem.type === 'text') {
+        parts.push({ type: 'literal', value: elem.value });
+      } else {
+        let mv: MessageValue | undefined;
+        try {
+          mv = ctx.resolveExpression(elem);
+          if (typeof mv.toParts === 'function') {
+            parts.push(...mv.toParts());
+          } else {
+            const msg = 'Message part is not formattable';
+            throw new MessageError('not-formattable', msg);
+          }
+        } catch (error) {
+          ctx.onError(error);
+          parts.push({ type: 'fallback', source: mv?.source ?? '�' });
+        }
+      }
+    }
+    return parts;
   }
 
   resolvedOptions() {
     return {
+      functions: Object.freeze(this.#functions),
       localeMatcher: this.#localeMatcher,
       locales: this.#locales.slice(),
-      message: this.#message,
-      runtime: this.#runtime
+      message: Object.freeze(this.#message)
     };
   }
 
   private createContext(
     msgParams?: Record<string, unknown>,
-    onError: Context['onError'] = () => {
-      // Ignore errors by default
+    onError: Context['onError'] = (error: Error) => {
+      // Emit warning for errors by default
+      try {
+        process.emitWarning(error);
+      } catch {
+        console.warn(error);
+      }
     }
   ) {
     let scope = { ...msgParams };
@@ -83,12 +144,16 @@ export class MessageFormat {
     }
     const ctx: Context = {
       onError,
-      resolve(elem) {
+      resolveExpression(elem) {
         return resolveExpression(this, elem);
+      },
+      resolveValue(value) {
+        return resolveValue(this, value);
       },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
-      runtime: this.#runtime,
+      localVars: new WeakSet(),
+      functions: this.#functions,
       scope
     };
     return ctx;

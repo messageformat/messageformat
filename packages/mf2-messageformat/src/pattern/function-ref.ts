@@ -1,13 +1,9 @@
-import { MessageError } from '../errors';
-import type { Context } from '../format-context';
-import {
-  asMessageValue,
-  MessageFallback,
-  MessageMarkup,
-  MessageValue
-} from '../message-value';
-import { FALLBACK_SOURCE } from '../message-value/message-value';
-import type { Literal, VariableRef } from './index';
+import { MessageError } from '../errors.js';
+import type { Context } from '../format-context.js';
+import { MessageFunctionContext, fallback, markup } from '../runtime/index.js';
+import type { Literal } from './literal.js';
+import { getValueSource, resolveValue } from './value.js';
+import type { VariableRef } from './variable-ref.js';
 
 /**
  * To resolve a FunctionRef, an externally defined function is called.
@@ -49,7 +45,7 @@ export interface Option {
 export const isFunctionRef = (part: any): part is FunctionRef =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function functionRefSourceName(kind: FunctionRef['kind'], name: string) {
+export function functionRefSource(kind: FunctionRef['kind'], name: string) {
   switch (kind) {
     case 'open':
       return `+${name}`;
@@ -66,55 +62,44 @@ export function resolveFunctionRef(
 ) {
   let source: string | undefined;
   try {
-    let fnArgs: [MessageValue] | [];
+    let fnInput: [unknown] | [];
     if (operand) {
-      const arg = ctx.resolve(operand);
-      fnArgs = [arg];
-      source =
-        arg.source ||
-        String((arg.type === 'literal' && arg.value) || FALLBACK_SOURCE);
+      fnInput = [resolveValue(ctx, operand)];
+      source = getValueSource(operand);
     } else {
-      fnArgs = [];
-      source = functionRefSourceName(kind, name);
+      fnInput = [];
     }
+    source ??= functionRefSource(kind, name);
 
     switch (kind) {
       case 'open':
       case 'close': {
-        const opt = resolveOptions(ctx, options);
-        return new MessageMarkup(ctx, name, {
-          kind,
-          operand: fnArgs[0],
-          options: opt,
-          source
-        });
+        const opt = options?.length ? resolveOptions(ctx, options) : undefined;
+        return markup(source, kind, name, opt, fnInput[0]);
       }
       default: {
-        const rf = ctx.runtime[name];
+        const rf = ctx.functions[name];
         if (!rf) {
           throw new MessageError('missing-func', `Unknown function ${name}`);
         }
-        const opt = Object.assign(
-          { localeMatcher: ctx.localeMatcher },
-          resolveOptions(ctx, options)
-        );
-        const res = rf(ctx.locales, opt, ...fnArgs);
-        return asMessageValue(ctx, res, { source });
+        const msgCtx = new MessageFunctionContext(ctx, source);
+        const opt = resolveOptions(ctx, options);
+        return rf(msgCtx, opt, ...fnInput);
       }
     }
   } catch (error) {
-    source ??= operand ? FALLBACK_SOURCE : `:${name}`;
-    const fb = new MessageFallback(ctx, { source });
-    ctx.onError(error, fb);
-    return fb;
+    ctx.onError(error);
+    source ??= getValueSource(operand) ?? functionRefSource(kind, name);
+    return fallback(source);
   }
 }
 
 function resolveOptions(ctx: Context, options: Option[] | undefined) {
-  if (!options?.length) return undefined;
-  const opt: Record<string, unknown> = {};
-  for (const { name, value } of options) {
-    opt[name] = ctx.resolve(value).value;
+  const opt: Record<string, unknown> = Object.create(null);
+  if (options) {
+    for (const { name, value } of options) {
+      opt[name] = resolveValue(ctx, value);
+    }
   }
   return opt;
 }

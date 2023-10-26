@@ -39,7 +39,7 @@ test('source only', () => {
         <group id="g:ref" name="ref">
           <unit id="u:ref." name="ref">
             <mf:messageformat>
-              <mf:function id="m2" name="MESSAGE">
+              <mf:function id="m2" name="message">
                 <mf:literal>msg</mf:literal>
               </mf:function>
             </mf:messageformat>

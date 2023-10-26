@@ -34,9 +34,9 @@ export type FunctionMap = Record<string, string | symbol>;
  * @beta
  */
 export const defaultFunctionMap: FunctionMap = {
-  DATETIME: 'DATETIME',
-  MESSAGE: FluentMessageRef,
-  NUMBER: 'NUMBER'
+  datetime: 'DATETIME',
+  message: FluentMessageRef,
+  number: 'NUMBER'
 };
 
 const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);

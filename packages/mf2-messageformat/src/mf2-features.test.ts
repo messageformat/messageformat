@@ -9,56 +9,61 @@ import { source } from '@messageformat/test-utils';
 import {
   MessageValue,
   MessageFormat,
-  Runtime,
-  RuntimeOptions,
-  SelectMessage
+  MessageFunctionContext,
+  SelectMessage,
+  MessagePart
 } from './index';
-import { ResolvedMessage } from './message-value';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
-  function parseRange(
-    arg: MessageValue<{ start: number; end: number }> | undefined
-  ) {
-    const range = arg?.value;
-    if (!range || typeof range !== 'object')
-      throw new Error(`Invalid range argument: ${range}`);
-    return { start: range.start, end: range.end };
+  function range(
+    { source, locales: [locale] }: MessageFunctionContext,
+    options: Record<string, unknown>,
+    input: unknown
+  ): MessageValue {
+    const { start, end } = input as { start: number; end: number };
+    const value = `${start} - ${end}`;
+    return {
+      type: 'range',
+      locale,
+      source,
+      selectKey(keys) {
+        if (locale !== 'nl') throw new Error('Only Dutch supported');
+        const pr = new Intl.PluralRules(locale, options);
+        const rc = pr.select(end);
+        return keys.has(rc) ? rc : null;
+      },
+      toParts: () => [{ type: 'range', source, value }],
+      toString: () => value
+    };
   }
-  function formatRange(
-    _locales: string[],
-    _options: RuntimeOptions,
-    range?: MessageValue<{ start: number; end: number }>
-  ) {
-    const { start, end } = parseRange(range);
-    return `${start} - ${end}`;
-  }
-  function pluralRange(
-    locales: string[],
-    options: RuntimeOptions,
-    range?: MessageValue<{ start: number; end: number }>
-  ) {
-    if (locales[0] !== 'nl') throw new Error('Only Dutch supported');
-    const { end } = parseRange(range);
-    const pr = new Intl.PluralRules(locales, options);
-    return [pr.select(end)];
-  }
-  const runtime = { formatRange, pluralRange } satisfies Runtime;
 
   test('input as { start, end } object', () => {
     const mf = new MessageFormat(
-      `match {$range :pluralRange}
-      when one {{$range :formatRange} dag}
-      when * {{$range :formatRange} dagen}
-    `,
+      source`
+        let $range = {$range :range}
+        match {$range}
+        when one {{$range} dag}
+        when * {{$range} dagen}
+      `,
       'nl',
-      { runtime }
+      { functions: { range } }
     );
 
-    const msg1 = mf.resolveMessage({ range: { start: 0, end: 1 } });
-    expect(msg1?.toString()).toBe('0 - 1 dag');
+    const msg1 = mf.format({ range: { start: 0, end: 1 } });
+    expect(msg1).toBe('0 - 1 dag');
+    const parts1 = mf.formatToParts({ range: { start: 0, end: 1 } });
+    expect(parts1).toEqual([
+      { type: 'range', source: '$range', value: '0 - 1' },
+      { type: 'literal', value: ' dag' }
+    ]);
 
-    const msg2 = mf.resolveMessage({ range: { start: 1, end: 2 } });
-    expect(msg2?.toString()).toBe('1 - 2 dagen');
+    const msg2 = mf.format({ range: { start: 1, end: 2 } });
+    expect(msg2).toBe('1 - 2 dagen');
+    const parts2 = mf.formatToParts({ range: { start: 1, end: 2 } });
+    expect(parts2).toEqual([
+      { type: 'range', source: '$range', value: '1 - 2' },
+      { type: 'literal', value: ' dagen' }
+    ]);
   });
 });
 
@@ -80,33 +85,33 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
     const mf = mf1ToMessage(msg, 'en');
 
-    const none = mf.resolveMessage({
+    const none = mf.format({
       poolCount: 0,
       restaurantCount: 0,
       beachCount: 0,
       golfCount: 0
     });
-    expect(none?.toString()).toBe(
+    expect(none).toBe(
       'This all-inclusive resort includes no pools, no restaurants, no beaches and no golf courses.'
     );
 
-    const one = mf.resolveMessage({
+    const one = mf.format({
       poolCount: 1,
       restaurantCount: 1,
       beachCount: 1,
       golfCount: 1
     });
-    expect(one?.toString()).toBe(
+    expect(one).toBe(
       'This all-inclusive resort includes 1 pool, 1 restaurant, 1 beach and 1 golf course.'
     );
 
-    const two = mf.resolveMessage({
+    const two = mf.format({
       poolCount: 2,
       restaurantCount: 2,
       beachCount: 2,
       golfCount: 2
     });
-    expect(two?.toString()).toBe(
+    expect(two).toBe(
       'This all-inclusive resort includes 2 pools, 2 restaurants, 2 beaches and 2 golf courses.'
     );
   });
@@ -128,27 +133,27 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
     const mf = new MessageFormat(msg, 'en');
 
-    const one = mf.resolveMessage({
+    const one = mf.format({
       N: 1,
       LIVE: String(undefined),
       TAG: 'foo',
       DAY: String(undefined),
+      TIME: String(undefined),
       AREA: String(undefined),
       Q: String(undefined)
     });
-    expect(one?.toString().replace(/\s+/g, ' ').trim()).toBe(
-      'Listing one foo item'
-    );
+    expect(one.replace(/\s+/g, ' ').trim()).toBe('Listing one foo item');
 
-    const two = mf.resolveMessage({
+    const two = mf.format({
       N: 2,
       LIVE: true,
       TAG: 'foo',
       DAY: String(undefined),
+      TIME: String(undefined),
       AREA: 'there',
       Q: '"bar"'
     });
-    expect(two?.toString().replace(/\s+/g, ' ').trim()).toBe(
+    expect(two.replace(/\s+/g, ' ').trim()).toBe(
       'Listing 2 current and future foo items in there matching the query "bar"'
     );
   });
@@ -171,29 +176,23 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     `;
     const res = fluentToResource(src, 'en');
 
-    const one = res
-      .get('activity-needed-calculation-plural')
-      ?.get('')
-      ?.resolveMessage({
-        totalHours: 1,
-        periodMonths: 1,
-        people: 1,
-        clipsPerDay: 1
-      });
-    expect(one?.toString()).toBe(
+    const one = res.get('activity-needed-calculation-plural')?.get('')?.format({
+      totalHours: 1,
+      periodMonths: 1,
+      people: 1,
+      clipsPerDay: 1
+    });
+    expect(one).toBe(
       '1 hour is achievable in just over 1 month if 1 person record 1 clip a day.'
     );
 
-    const two = res
-      .get('activity-needed-calculation-plural')
-      ?.get('')
-      ?.resolveMessage({
-        totalHours: 2,
-        periodMonths: 2,
-        people: 2,
-        clipsPerDay: 2
-      });
-    expect(two?.toString()).toBe(
+    const two = res.get('activity-needed-calculation-plural')?.get('')?.format({
+      totalHours: 2,
+      periodMonths: 2,
+      people: 2,
+      clipsPerDay: 2
+    });
+    expect(two).toBe(
       '2 hours is achievable in just over 2 months if 2 people record 2 clips a day.'
     );
   });
@@ -201,112 +200,96 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
 
 const maybe = process.version > 'v14' ? describe : describe.skip;
 maybe('List formatting', () => {
-  test('Intl.ListFormat, combine/flatten inputs (unicode-org/message-format-wg#36)', () => {
-    function LIST(
-      locales: string[],
-      options: RuntimeOptions,
-      arg?: MessageValue<string | string[]>
-    ) {
-      const list = arg
-        ? Array.isArray(arg.value)
-          ? arg.value
-          : [arg.value]
-        : [];
-      // @ts-ignore
+  const listFn =
+    (each_?: Record<string, (locales: string[], value: string) => string>) =>
+    (
+      { locales, source }: MessageFunctionContext,
+      options: Record<string, unknown>,
+      input?: unknown
+    ): MessageValue => {
+      let list = Array.isArray(input)
+        ? input.map(String)
+        : input === undefined
+        ? []
+        : [String(input)];
+
+      if (typeof options.each === 'string' && each_ && options.each in each_) {
+        const each = each_[options.each];
+        list = list.map(value => each(locales, value));
+      }
+
+      // @ts-expect-error TS2020 doesn't know about ListFormat
       const lf = new Intl.ListFormat(locales, options);
-      return lf.format(list);
-    }
+      return {
+        type: 'list',
+        source,
+        locale: lf.resolvedOptions().locale,
+        toParts: () => lf.formatToParts(list),
+        toString: () => lf.format(list)
+      };
+    };
 
-    const src = source`
-      plain = { LIST($list) }
-      and = { LIST($list, style: "short", type: "conjunction") }
-      or = { LIST($list, style: "long", type: "disjunction") }
-    `;
-    const res = fluentToResource(src, 'en', { runtime: { LIST } });
+  test('Intl.ListFormat, combine/flatten inputs (unicode-org/message-format-wg#36)', () => {
     const list = ['Motorcycle', 'Bus', 'Car'];
+    const opt = { functions: { list: listFn() } };
 
-    const plainMsg = res.get('plain')?.get('')?.resolveMessage({ list });
-    expect(plainMsg?.toString()).toBe('Motorcycle, Bus, and Car');
+    const mf1 = new MessageFormat('{{$list :list}}', 'en', opt);
+    expect(mf1.format({ list })).toBe('Motorcycle, Bus, and Car');
 
-    const andMsg = res.get('and')?.get('')?.resolveMessage({ list });
-    expect(andMsg?.toString()).toBe('Motorcycle, Bus, & Car');
+    const mf2 = new MessageFormat(
+      '{{$list :list style=short type=conjunction}}',
+      'en',
+      opt
+    );
+    expect(mf2.format({ list })).toBe('Motorcycle, Bus, & Car');
 
-    const orMsg = res.get('or')?.get('')?.resolveMessage({ list });
-    expect(orMsg?.toString()).toBe('Motorcycle, Bus, or Car');
+    const mf3 = new MessageFormat(
+      '{{$list :list style=long type=disjunction}}',
+      'en',
+      opt
+    );
+    expect(mf3.format({ list })).toBe('Motorcycle, Bus, or Car');
   });
 
   test('List formatting with grammatical inflection on each list item (unicode-org/message-format-wg#3)', () => {
-    function dative(locales: string[], arg: MessageValue<string>) {
+    function dative(locales: string[], value: string) {
       if (locales[0] !== 'ro') throw new Error('Only Romanian supported');
       const data: Record<string, string> = {
         Maria: 'Mariei',
         Ileana: 'Ilenei',
         Petre: 'lui Petre'
       };
-      return data[arg.value] || arg.value;
+      return data[value] || value;
     }
 
-    const listFormatters: Record<string, typeof dative> = { dative };
-    function LIST(
-      locales: string[],
-      options: RuntimeOptions,
-      arg?: MessageValue<string | string[]>
-    ) {
-      let list = arg
-        ? Array.isArray(arg.value)
-          ? arg.value
-          : [arg.value]
-        : [];
-      if (typeof options.each === 'string') {
-        const fn = listFormatters[options.each];
-        if (typeof fn !== 'function')
-          throw new Error(`list each function not found: ${options.each}`);
-        list = list.map(li =>
-          String(fn(locales, new MessageValue(null, null, li)))
-        );
-      }
-      // @ts-ignore
-      const lf = new Intl.ListFormat(locales, options);
-      return lf.format(list);
-    }
-
-    const src = source`
-      msg = { $count ->
-         [one] I-am dat cadouri { LIST($list, each: "dative") }.
-        *[other] Le-am dat cadouri { LIST($list, each: "dative") }.
-      }
-    `;
-    const res = fluentToResource(src, 'ro', { runtime: { LIST } });
-
-    const list1 = ['Petre'];
-    const msg1 = res.get('msg')?.get('')?.resolveMessage({
-      count: list1.length,
-      list: list1
-    });
-    expect(msg1?.toString()).toBe('I-am dat cadouri lui Petre.');
-
-    const list3 = ['Maria', 'Ileana', 'Petre'];
-    const msg3 = res.get('msg')?.get('')?.resolveMessage({
-      count: list3.length,
-      list: list3
-    });
-    expect(msg3?.toString()).toBe(
-      'Le-am dat cadouri Mariei, Ilenei și lui Petre.'
+    const mf = new MessageFormat(
+      source`
+        match {$count :number}
+        when one {I-am dat cadouri {$list :list each=dative}.}
+        when * {Le-am dat cadouri {$list :list each=dative}.}
+      `,
+      'ro',
+      { functions: { list: listFn({ dative }) } }
     );
+
+    const msg1 = mf.format({ count: 1, list: ['Petre'] });
+    expect(msg1).toBe('I-am dat cadouri lui Petre.');
+
+    const msg3 = mf.format({ count: 3, list: ['Maria', 'Ileana', 'Petre'] });
+    expect(msg3).toBe('Le-am dat cadouri Mariei, Ilenei și lui Petre.');
   });
 });
 
 describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
-  function hackyFixArticles(
-    locales: string[],
-    msg: ResolvedMessage | undefined
-  ) {
+  function hackyFixArticles(locales: string[], parts: MessagePart[]) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
-    if (!msg) return;
+    if (!parts) return;
     const articly = /(^|\s)(a|an|A|An)(\W*$)/;
     const vowely =
       /^\W*(?:11|18|8|a|e(?![uw])|heir|herb|hon|hour|i|o(?!n[ce])|u[bcdfgklmprstvxz](?![aeiou])|un(?!i))/i;
-    const wordy = msg.value.filter(part => /\w/.test(String(part.value)));
+    const wordy = parts.filter(
+      part => typeof part.value === 'string' && /\w/.test(part.value)
+    );
     for (let i = 0; i < wordy.length - 1; ++i) {
       let fixed = false;
       const part = wordy[i];
@@ -325,79 +308,52 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     }
   }
 
-  const src = source`
-    foo = A { $foo } and an { $other }
-    bar = The { $foo } and lotsa { $other }
-    qux = { $foo } foo and a {"..."} { $other }
-  `;
-  const res = fluentToResource(src, 'en');
-
   test('Match, no change', () => {
-    const msg = res
-      .get('foo')
-      ?.get('')
-      ?.resolveMessage({ foo: 'foo', other: 'other' });
-    hackyFixArticles(['en'], msg);
-    expect(msg).toEqual({
-      type: 'message',
-      value: [
-        { type: 'literal', value: 'A ' },
-        { type: 'value', source: '$foo', value: 'foo' },
-        { type: 'literal', value: ' and an ' },
-        { type: 'value', source: '$other', value: 'other' }
-      ]
-    });
+    const mf = new MessageFormat('{A {$foo} and an {$other}}', 'en');
+    const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'literal', value: 'A ' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
+      { type: 'literal', value: ' and an ' },
+      { type: 'string', locale: 'en', source: '$other', value: 'other' }
+    ]);
   });
 
   test('Match, changed', () => {
-    const msg = res
-      .get('foo')
-      ?.get('')
-      ?.resolveMessage({ foo: 'other', other: 'foo' });
-    hackyFixArticles(['en'], msg);
-    expect(msg).toEqual({
-      type: 'message',
-      value: [
-        { type: 'literal', value: 'An ' },
-        { type: 'value', source: '$foo', value: 'other' },
-        { type: 'literal', value: ' and a ' },
-        { type: 'value', source: '$other', value: 'foo' }
-      ]
-    });
+    const mf = new MessageFormat('{A {$foo} and an {$other}}', 'en');
+    const parts = mf.formatToParts({ foo: 'other', other: 'foo' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'literal', value: 'An ' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'other' },
+      { type: 'literal', value: ' and a ' },
+      { type: 'string', locale: 'en', source: '$other', value: 'foo' }
+    ]);
   });
 
   test('No match, no change', () => {
-    const msg = res
-      .get('bar')
-      ?.get('')
-      ?.resolveMessage({ foo: 'foo', other: 'other' });
-    hackyFixArticles(['en'], msg);
-    expect(msg).toEqual({
-      type: 'message',
-      value: [
-        { type: 'literal', value: 'The ' },
-        { type: 'value', source: '$foo', value: 'foo' },
-        { type: 'literal', value: ' and lotsa ' },
-        { type: 'value', source: '$other', value: 'other' }
-      ]
-    });
+    const mf = new MessageFormat('{The {$foo} and lotsa {$other}}', 'en');
+    const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'literal', value: 'The ' },
+      { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
+      { type: 'literal', value: ' and lotsa ' },
+      { type: 'string', locale: 'en', source: '$other', value: 'other' }
+    ]);
   });
 
   test('Articles across non-wordy content', () => {
-    const msg = res
-      .get('qux')
-      ?.get('')
-      ?.resolveMessage({ foo: 'An', other: 'other' });
-    hackyFixArticles(['en'], msg);
-    expect(msg).toEqual({
-      type: 'message',
-      value: [
-        { type: 'value', source: '$foo', value: 'A' },
-        { type: 'literal', value: ' foo and an ' },
-        { type: 'literal', value: '...' },
-        { type: 'literal', value: ' ' },
-        { type: 'value', source: '$other', value: 'other' }
-      ]
-    });
+    const mf = new MessageFormat('{{$foo} foo and a {|...|} {$other}}', 'en');
+    const parts = mf.formatToParts({ foo: 'An', other: 'other' });
+    hackyFixArticles(['en'], parts);
+    expect(parts).toEqual([
+      { type: 'string', locale: 'en', source: '$foo', value: 'A' },
+      { type: 'literal', value: ' foo and an ' },
+      { type: 'string', locale: 'en', source: '|...|', value: '...' },
+      { type: 'literal', value: ' ' },
+      { type: 'string', locale: 'en', source: '$other', value: 'other' }
+    ]);
   });
 });

@@ -1,4 +1,5 @@
-import { MessageLiteral } from '../message-value';
+import type { Context } from '../format-context.js';
+import { MessageFunctionContext } from '../runtime/index.js';
 
 /**
  * An immediately defined value.
@@ -43,6 +44,7 @@ export const isLiteral = (part: any): part is Literal =>
 export const isText = (part: any): part is Text =>
   !!part && typeof part === 'object' && part.type === 'text';
 
-export function resolveLiteral(lit: Literal | Text) {
-  return new MessageLiteral(lit.value);
+export function resolveLiteral(ctx: Context, lit: Literal) {
+  const msgCtx = new MessageFunctionContext(ctx, `|${lit.value}|`);
+  return ctx.functions.string(msgCtx, {}, lit.value);
 }

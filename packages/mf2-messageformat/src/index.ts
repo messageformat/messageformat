@@ -3,9 +3,9 @@ export * from './data-model.js';
 export {
   MessageDataModelError,
   MessageError,
+  MessageResolutionError,
   MessageSyntaxError
 } from './errors.js';
-export * from './message-value/index.js';
 export { MessageFormat, MessageFormatOptions } from './messageformat.js';
 export { stringifyMessage } from './stringifier/message.js';
 export * from './pattern/index.js';

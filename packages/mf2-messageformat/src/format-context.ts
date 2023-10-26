@@ -1,22 +1,15 @@
-import type { MessageValue } from './message-value';
-import {
-  Expression,
-  FunctionRef,
-  Literal,
-  Reserved,
-  Text,
-  VariableRef
-} from './pattern';
-import { Runtime } from './runtime';
+import type { Expression, Literal, VariableRef } from './pattern';
+import type { MessageFunctions, MessageValue } from './runtime';
 
 export interface Context {
-  onError(error: unknown, value: MessageValue): void;
-  resolve(
-    elem: Expression | FunctionRef | Literal | Reserved | Text | VariableRef
-  ): MessageValue;
+  functions: MessageFunctions;
+  onError(error: unknown): void;
+  resolveExpression(expr: Expression): MessageValue;
+  resolveValue(value: Literal | VariableRef): unknown;
   localeMatcher: 'best fit' | 'lookup';
   locales: string[];
-  runtime: Runtime;
+  /** Cache for local variables */
+  localVars: WeakSet<MessageValue>;
   /**
    * A representation of the parameters/arguments passed to a message formatter,
    * and extended by declarations.

@@ -29,8 +29,16 @@
     "exp": "1,3 et 4,2"
   },
   { "src": "{hello {|4.2| :number}}", "exp": "hello 4.2" },
-  { "src": "{hello {|foo| :number}}", "exp": "hello NaN" },
-  { "src": "{hello {:number}}", "exp": "hello NaN" },
+  {
+    "src": "{hello {foo :number}}",
+    "exp": "hello {|foo|}",
+    "errors": [{ "type": "bad-input" }]
+  },
+  {
+    "src": "{hello {:number}}",
+    "exp": "hello {:number}",
+    "errors": [{ "type": "bad-input" }]
+  },
   {
     "src": "{hello {|4.2| :number minimumFractionDigits=2}}",
     "exp": "hello 4.20"
@@ -80,12 +88,14 @@
   {
     "src": "let $foo = {$bar :number minimumFractionDigits=foo} {bar {$foo}}",
     "params": { "bar": 4.2 },
-    "exp": "bar 4.2"
+    "exp": "bar {$bar}",
+    "errors": [{ "type": "bad-option" }]
   },
   {
     "src": "let $foo = {$bar :number} {bar {$foo}}",
     "params": { "bar": "foo" },
-    "exp": "bar NaN"
+    "exp": "bar {$bar}",
+    "errors": [{ "type": "bad-input" }]
   },
   {
     "src": "let $foo = {$baz} let $bar = {$foo} {bar {$bar}}",
@@ -132,12 +142,13 @@
   {
     "src": "match {$foo} when 1 {one} when * {other}",
     "params": { "foo": null },
-    "exp": "other"
+    "exp": "other",
+    "errors": [{ "type": "not-selectable" }]
   },
   {
     "src": "match {$foo} when 1 {one} when * {other}",
     "exp": "other",
-    "errors": [{ "type": "unresolved-var" }]
+    "errors": [{ "type": "unresolved-var" }, { "type": "not-selectable" }]
   },
   {
     "src": "match {$foo} when one {one} when * {other}",
@@ -170,6 +181,26 @@
     "exp": "other"
   },
   {
+    "src": "let $foo = {$bar :number} match {$foo} when one {one} when * {other}",
+    "params": { "bar": 1 },
+    "exp": "one"
+  },
+  {
+    "src": "let $foo = {$bar :number} match {$foo} when one {one} when * {other}",
+    "params": { "bar": 2 },
+    "exp": "other"
+  },
+  {
+    "src": "let $foo = {$bar} match {$foo :number} when one {one} when * {other}",
+    "params": { "bar": 1 },
+    "exp": "one"
+  },
+  {
+    "src": "let $foo = {$bar} match {$foo :number} when one {one} when * {other}",
+    "params": { "bar": 2 },
+    "exp": "other"
+  },
+  {
     "src": "let $foo = {$bar} match {$foo} when one {one} when * {other}",
     "params": { "bar": 1 },
     "exp": "one"
@@ -187,26 +218,65 @@
   {
     "src": "let $bar = {$none} match {$foo} when one {one} when * {{$bar}}",
     "params": { "foo": 2 },
-    "exp": "{$bar}",
+    "exp": "{$none}",
     "errors": [{ "type": "unresolved-var" }]
   },
-  { "src": "{{+tag}}", "exp": "{+tag}" },
-  { "src": "{{+tag}content}", "exp": "{+tag}content" },
-  { "src": "{{+tag}content{-tag}}", "exp": "{+tag}content{-tag}" },
-  { "src": "{{-tag}content}", "exp": "{-tag}content" },
-  { "src": "{{+tag foo=bar}}", "exp": "{+tag}" },
+  {
+    "src": "{{+tag}}",
+    "exp": "",
+    "parts": [{ "type": "open", "name": "tag" }]
+  },
+  {
+    "src": "{{+tag}content}",
+    "exp": "content",
+    "parts": [
+      { "type": "open", "name": "tag" },
+      { "type": "literal", "value": "content" }
+    ]
+  },
+  {
+    "src": "{{+tag}content{-tag}}",
+    "exp": "content",
+    "parts": [
+      { "type": "open", "name": "tag" },
+      { "type": "literal", "value": "content" },
+      { "type": "close", "name": "tag" }
+    ]
+  },
+  {
+    "src": "{{-tag}content}",
+    "exp": "content",
+    "parts": [
+      { "type": "close", "name": "tag" },
+      { "type": "literal", "value": "content" }
+    ]
+  },
+  {
+    "src": "{{+tag foo=bar}}",
+    "exp": "",
+    "parts": [{ "type": "open", "name": "tag", "options": { "foo": "bar" } }]
+  },
   {
     "src": "{{+tag foo=|foo| bar=$bar}}",
     "params": { "bar": "b a r" },
-    "exp": "{+tag}"
+    "exp": "",
+    "parts": [
+      {
+        "type": "open",
+        "name": "tag",
+        "options": { "foo": "foo", "bar": "b a r" }
+      }
+    ]
   },
   {
     "src": "{{|foo| +markup}}",
-    "exp": "{+markup}"
+    "exp": "",
+    "parts": [{ "type": "open", "name": "markup", "value": "foo" }]
   },
   {
     "src": "{{-tag foo=bar}}",
-    "exp": "{-tag}"
+    "exp": "",
+    "parts": [{ "type": "close", "name": "tag", "options": { "foo": "bar" } }]
   },
   {
     "src": "{unquoted {literal}}",
@@ -214,7 +284,8 @@
   },
   {
     "src": "match {+foo} when * {foo}",
-    "exp": "foo"
+    "exp": "foo",
+    "errors": [{ "type": "not-selectable" }]
   },
   { "src": "no braces", "syntaxError": true },
   { "src": "no braces {$foo}", "syntaxError": true },

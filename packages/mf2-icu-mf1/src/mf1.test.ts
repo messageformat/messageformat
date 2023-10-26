@@ -374,10 +374,10 @@ for (const [title, cases] of Object.entries(testCases)) {
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));
             const mf = mf1ToMessage(data, locale);
-            validate(data, mf.resolvedOptions().runtime);
-            const msg = mf
-              .resolveMessage(param as Record<string, string | number | Date>)
-              .toString();
+            validate(data, mf.resolvedOptions().functions);
+            const msg = mf.format(
+              param as Record<string, string | number | Date>
+            );
             if (res instanceof RegExp) expect(msg).toMatch(res);
             else expect(msg).toBe(res);
           });
