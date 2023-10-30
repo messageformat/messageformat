@@ -10,15 +10,13 @@ jobs:
   node:
     strategy:
       matrix:
-        node-version: [14, 16, 18, latest]
+        node-version: [18, 20, latest]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - if: matrix.node-version == 14
-        run: npm install --global npm@7
       - run: npm ci
       - run: npm test
       - run: npm run build
@@ -26,7 +24,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
       - run: npm ci
       - run: npm run lint
@@ -35,7 +33,7 @@ jobs:
   examples:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
       - run: npm ci
       - run: npm run build
