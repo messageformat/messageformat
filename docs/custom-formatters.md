@@ -43,9 +43,13 @@ For compiled modules (e.g. when using with the [Webpack loader](webpack.md) or [
 formatters may also be defined as an object with the following properties:
 
 - `formatter: CustomFormatter` – The formatter function, for live use
-- `id: string` and `module: string` should both be defined if either is, to provide for importing the formatter as `id` from `module` in the compiled module.
+- `id: string` and `module` should both be defined if either is,
+  to provide for importing the formatter as `id` from `module` in the compiled code.
   This is intended to allow for third-party formatters to be more easily used,
-  and to work around the limitations of stringified functions needing to be completely independent of their surrounding context.
+  and to work around the limitations of stringified functions
+  needing to be completely independent of their surrounding context.
+  `module` may either be a `string`,
+  or a function `(locale: string) => string` if the import path has a locale dependency.
 - `arg` defines shape in which any argument object will get passed to the formatter, using one of the following values:
   - `'string'` (default) will pass any argument as a trimmed `string`.
   - `'raw'` provides an `Array` of values, which will be `string` for literals, but may include e.g. runtime variable values.
@@ -101,52 +105,3 @@ In the prior example, the formatting module `upcase` had to handle every locale
 under compilation. Formatting modules may also be authored on a per-locale
 basis. This may be useful in various scenarios, for example when bundling or
 compiling code along the locale dimension.
-
-The following example implements a dummy `country` formatter that simply emits
-the country associated with the locale. The key observation is that the
-formatter for each locale is maintained in separate modules.
-
-```js
-export const country = {
-  formatter: () => '',
-  arg: 'options',
-  id: 'formatter',
-  // @info key observation: modules may be derived from locale
-  module: locale => `./formatters/country/${locale}.js`
-};
-
-// ./formatters/country/en-US.js
-export function formatter(value, locale, override) {
-  return 'US-of-A';
-}
-
-// ./formatters/country/en-CA.js
-export function formatter(value, locale, override) {
-  return 'Canada, the Great White North';
-}
-
-// demo-compilation.js
-const mf = new MessageFormat(['en-US', 'en-CA'], {
-  localeCodeFromKey: key => {
-    try {
-      return new Intl.Locale(key).baseName;
-    } catch {
-      return null;
-    }
-  },
-  customFormatters: { country }
-});
-const msgSet = {
-  'en-CA': { citizen: 'I live in {_, country}!' },
-  'en-US': { citizen: 'I live in {_, country}!' }
-};
-fs.writeFileSync('./messages.js', compileModule(mf, msgSet));
-
-// demo-runtime.js
-import messages from './messages';
-console.log(messages['en-US'].citizen({}));
-// I live in US-of-A!
-
-console.log(messages['en-CA'].citizen({}));
-// I live in Canada, the Great White North!
-```
