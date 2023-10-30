@@ -43,9 +43,13 @@ For compiled modules (e.g. when using with the [Webpack loader](webpack.md) or [
 formatters may also be defined as an object with the following properties:
 
 - `formatter: CustomFormatter` – The formatter function, for live use
-- `id: string` and `module: string` should both be defined if either is, to provide for importing the formatter as `id` from `module` in the compiled module.
+- `id: string` and `module` should both be defined if either is,
+  to provide for importing the formatter as `id` from `module` in the compiled code.
   This is intended to allow for third-party formatters to be more easily used,
-  and to work around the limitations of stringified functions needing to be completely independent of their surrounding context.
+  and to work around the limitations of stringified functions
+  needing to be completely independent of their surrounding context.
+  `module` may either be a `string`,
+  or a function `(locale: string) => string` if the import path has a locale dependency.
 - `arg` defines shape in which any argument object will get passed to the formatter, using one of the following values:
   - `'string'` (default) will pass any argument as a trimmed `string`.
   - `'raw'` provides an `Array` of values, which will be `string` for literals, but may include e.g. runtime variable values.
@@ -96,3 +100,8 @@ export default {
   fin: d => 'This is ' + upcase(d.x, 'en', { locale: 'fi' }) + ' in Finnish'
 };
 ```
+
+In the prior example, the formatting module `upcase` had to handle every locale
+under compilation. Formatting modules may also be authored on a per-locale
+basis. This may be useful in various scenarios, for example when bundling or
+compiling code along the locale dimension.
