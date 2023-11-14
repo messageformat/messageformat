@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.0.0-5](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-4...messageformat@4.0.0-5) (2023-11-14)
+
+### ⚠ Breaking Changes
+
+* API changes, including MessageFunctionContext definition
+
+### Features
+
+* Include syntax (let/=/match/when) in CST ([024b256](https://github.com/messageformat/messageformat/commit/024b256ee11c3e182ce40c774bf8134d605b4906))
+* Add & use asDataModel(msg: CST.Message): Message ([1d9ea9e](https://github.com/messageformat/messageformat/commit/1d9ea9eed7b6c79b9fca95ea909d4c1fd9502af0))
+* Drop junk from data model ([48b42eb](https://github.com/messageformat/messageformat/commit/48b42eb1b3ba58ad47f94ac4e4454bebe73880f6))
+* Make data model stricter, dropping PatternElement ([b7f43b7](https://github.com/messageformat/messageformat/commit/b7f43b76a356848cd7eabe95f972bbb2fa4822a9))
+* Match spec-defined Declaration data model ([33642a9](https://github.com/messageformat/messageformat/commit/33642a900e867239c06e5b464e647b9addcce9fe))
+* Drop errors from data model messages ([cc468d4](https://github.com/messageformat/messageformat/commit/cc468d41f7c39998f842af9ee4e7954f9bb99056))
+* Drop quoted from Literal, as per [unicode-org/message-format-wg#443](https://github.com/unicode-org/message-format-wg/issues/443) ([ffd6b0a](https://github.com/messageformat/messageformat/commit/ffd6b0a507e4f7374a0444beee3faa297ce51c4b))
+* Split resolveMessage() into format() and formatToParts() ([7701871](https://github.com/messageformat/messageformat/commit/770187150e6b7dbf0645b1e56fc13fda00f81ce6))
+* Apply remaining API changes to core library ([5cd2787](https://github.com/messageformat/messageformat/commit/5cd27872a39bc97d6e85a448adf005f48f2bc79b))
+* Finish up API changes, including MessageFunctionContext definition and non-core packages ([2d7344a](https://github.com/messageformat/messageformat/commit/2d7344a3da762b98e924437c879301855471c0d1))
+
+### Bug Fixes
+
+* Use correct scope when resolving variables ([6656c95](https://github.com/messageformat/messageformat/commit/6656c95d66414da29a332a6f5bbb225371f2b9a3))
+* Satisfy api-extractor, other small fixes ([78839a9](https://github.com/messageformat/messageformat/commit/78839a9d4373b5bbb853e665c3914aa796cfc145))
+* Optimizations and fixes; DRY ([793cbb3](https://github.com/messageformat/messageformat/commit/793cbb35d94db365ee9017e677d4f4a1539cbbf7))
+
 ## [4.0.0-4](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-3.cf...messageformat@4.0.0-4) (2023-06-08)
 
 ### Features
