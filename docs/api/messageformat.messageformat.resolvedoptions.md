@@ -11,20 +11,20 @@ nav_exclude: true
 
 # MessageFormat.resolvedOptions() method
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 **Signature:**
 
 ```typescript
 resolvedOptions(): {
+        functions: Readonly<Readonly<MessageFunctions>>;
         localeMatcher: "lookup" | "best fit";
         locales: string[];
-        message: Message;
-        runtime: Readonly<Runtime>;
+        message: Readonly<Message>;
     };
 ```
 **Returns:**
 
-{ localeMatcher: "lookup" \| "best fit"; locales: string\[\]; message: [Message](./messageformat.message.md)<!-- -->; runtime: Readonly&lt;[Runtime](./messageformat.runtime.md)<!-- -->&gt;; }
+{ functions: Readonly&lt;Readonly&lt;[MessageFunctions](./messageformat.messagefunctions.md)<!-- -->&gt;&gt;; localeMatcher: "lookup" \| "best fit"; locales: string\[\]; message: Readonly&lt;[Message](./messageformat.message.md)<!-- -->&gt;; }
 

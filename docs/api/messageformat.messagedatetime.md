@@ -8,36 +8,29 @@ grand_parent: API Reference
 
 
 
-# MessageDateTime class
-
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
-
-A child class of [MessageValue](./messageformat.messagevalue.md) for Date values.
+# MessageDateTime interface
 
 **Signature:**
 
 ```typescript
-export declare class MessageDateTime extends MessageValue<Date> 
+export interface MessageDateTime extends MessageValue 
 ```
-**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;Date&gt;
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(locale, date, { meta, options, source })](./messageformat.messagedatetime._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageDateTime</code> class |
+**Extends:** [MessageValue](./messageformat.messagevalue.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [options?](./messageformat.messagedatetime.options.md) |  | Intl.DateTimeFormatOptions | **_(BETA)_** _(Optional)_ |
+|  [locale](./messageformat.messagedatetime.locale.md) | <code>readonly</code> | string |  |
+|  [options](./messageformat.messagedatetime.options.md) | <code>readonly</code> | Readonly&lt;Intl.DateTimeFormatOptions&gt; |  |
+|  [source](./messageformat.messagedatetime.source.md) | <code>readonly</code> | string |  |
+|  [type](./messageformat.messagedatetime.type.md) | <code>readonly</code> | 'datetime' |  |
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [toParts()](./messageformat.messagedatetime.toparts.md) |  | **_(BETA)_** |
-|  [toString(onError)](./messageformat.messagedatetime.tostring.md) |  | **_(BETA)_** |
+|  Method | Description |
+|  --- | --- |
+|  [toParts()](./messageformat.messagedatetime.toparts.md) |  |
+|  [toString()](./messageformat.messagedatetime.tostring.md) |  |
+|  [valueOf()](./messageformat.messagedatetime.valueof.md) |  |
 

@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # validate() function
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Validate a message.
@@ -18,7 +18,7 @@ Validate a message.
 **Signature:**
 
 ```typescript
-export declare function validate(msg: Readonly<Message>, runtime: Runtime): void;
+export declare function validate(msg: Readonly<Message>, functions: MessageFunctions): void;
 ```
 
 ## Parameters
@@ -26,7 +26,7 @@ export declare function validate(msg: Readonly<Message>, runtime: Runtime): void
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  msg | Readonly&lt;[Message](./messageformat.message.md)<!-- -->&gt; |  |
-|  runtime | [Runtime](./messageformat.runtime.md) |  |
+|  functions | [MessageFunctions](./messageformat.messagefunctions.md) |  |
 
 **Returns:**
 
@@ -34,7 +34,7 @@ void
 
 ## Remarks
 
-Throws if `msg` is a [JunkMessage](./messageformat.junkmessage.md)<!-- -->, if it contains parse `errors`<!-- -->, or of if references runtime functions that are not available in the `runtime`<!-- -->.
+Throws if `msg` is not a pattern or select message, or if it references runtime functions that are not available in the `functions`<!-- -->.
 
 Formatting a message that passes validation may still fail, as it may depend on parameters that are not passed in, or its runtime function calls may fail.
 

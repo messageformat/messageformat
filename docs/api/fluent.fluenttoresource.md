@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # fluentToResource() function
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Compile a Fluent resource (i.e. an FTL file) into a Map of [MessageFormat](./messageformat.messageformat.md) instances.
@@ -35,5 +35,5 @@ export declare function fluentToResource(source: string | Fluent.Resource | Flue
 
 ## Remarks
 
-A runtime provided by [getFluentRuntime()](./fluent.getfluentruntime.md) is automatically used in these instances.
+A runtime provided by [getFluentFunctions()](./fluent.getfluentfunctions.md) is automatically used in these instances.
 

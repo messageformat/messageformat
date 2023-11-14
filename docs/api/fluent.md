@@ -18,7 +18,7 @@ has_toc: false
 |  [fluentToMessage(ast)](./fluent.fluenttomessage.md) | **_(BETA)_** Compile a [Fluent.Pattern](https://projectfluent.org/fluent.js/syntax/classes/pattern.html) (i.e. the value of a Fluent message or an attribute) into a [Message](./messageformat.message.md) data object. |
 |  [fluentToResource(source, locales, options)](./fluent.fluenttoresource.md) | **_(BETA)_** Compile a Fluent resource (i.e. an FTL file) into a Map of [MessageFormat](./messageformat.messageformat.md) instances. |
 |  [fluentToResourceData(source)](./fluent.fluenttoresourcedata.md) | **_(BETA)_** Compile a Fluent resource (i.e. an FTL file) into a Map of [Message](./messageformat.message.md) data objects. |
-|  [getFluentRuntime(res)](./fluent.getfluentruntime.md) | **_(BETA)_** Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with Fluent messages. |
+|  [getFluentFunctions(res)](./fluent.getfluentfunctions.md) | **_(BETA)_** Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with Fluent messages. |
 |  [messageToFluent(msg, defaultKey, functionMap)](./fluent.messagetofluent.md) | **_(BETA)_** Convert a [Message](./messageformat.message.md) data object into a [Fluent.Pattern](https://projectfluent.org/fluent.js/syntax/classes/pattern.html) (i.e. the value of a Fluent message or an attribute). |
 |  [resourceToFluent(resource, template, functionMap)](./fluent.resourcetofluent.md) | **_(BETA)_** Convert a Map of [Message](./messageformat.message.md) data objects into a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html)<!-- -->. |
 

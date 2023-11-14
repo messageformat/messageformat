@@ -8,38 +8,30 @@ grand_parent: API Reference
 
 
 
-# MessageNumber class
-
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
-
-A child class of [MessageValue](./messageformat.messagevalue.md) for numerical values.
+# MessageNumber interface
 
 **Signature:**
 
 ```typescript
-export declare class MessageNumber extends MessageValue<number | bigint> 
+export interface MessageNumber extends MessageValue 
 ```
-**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;number \| bigint&gt;
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(locale, number, { meta, options, source })](./messageformat.messagenumber._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageNumber</code> class |
+**Extends:** [MessageValue](./messageformat.messagevalue.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [options?](./messageformat.messagenumber.options.md) |  | Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions | **_(BETA)_** _(Optional)_ |
+|  [locale](./messageformat.messagenumber.locale.md) | <code>readonly</code> | string |  |
+|  [options](./messageformat.messagenumber.options.md) | <code>readonly</code> | Readonly&lt;Intl.NumberFormatOptions &amp; Intl.PluralRulesOptions&gt; |  |
+|  [source](./messageformat.messagenumber.source.md) | <code>readonly</code> | string |  |
+|  [type](./messageformat.messagenumber.type.md) | <code>readonly</code> | 'number' |  |
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [getPluralCategory()](./messageformat.messagenumber.getpluralcategory.md) | <code>protected</code> | **_(BETA)_** |
-|  [selectKey(keys)](./messageformat.messagenumber.selectkey.md) |  | **_(BETA)_** In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
-|  [toParts()](./messageformat.messagenumber.toparts.md) |  | **_(BETA)_** |
-|  [toString(onError)](./messageformat.messagenumber.tostring.md) |  | **_(BETA)_** |
+|  Method | Description |
+|  --- | --- |
+|  [selectKey(keys)](./messageformat.messagenumber.selectkey.md) | In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of <code>zero</code>, <code>one</code>, <code>two</code>, <code>few</code>, <code>many</code>, and <code>other</code>. |
+|  [toParts()](./messageformat.messagenumber.toparts.md) |  |
+|  [toString()](./messageformat.messagenumber.tostring.md) |  |
+|  [valueOf()](./messageformat.messagenumber.valueof.md) |  |
 

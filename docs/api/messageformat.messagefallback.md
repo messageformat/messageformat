@@ -8,34 +8,32 @@ grand_parent: API Reference
 
 
 
-# MessageFallback class
+# MessageFallback interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-A child class of [MessageValue](./messageformat.messagevalue.md) for fallback values.
+Used to represent runtime/formatting errors.
 
 **Signature:**
 
 ```typescript
-export declare class MessageFallback extends MessageValue<undefined> 
+export interface MessageFallback extends MessageValue 
 ```
-**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;undefined&gt;
+**Extends:** [MessageValue](./messageformat.messagevalue.md)
 
-## Remarks
+## Properties
 
-Used to represent parse errors as well as runtime/formatting errors.
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(locale, fmt)](./messageformat.messagefallback._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageFallback</code> class |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [locale](./messageformat.messagefallback.locale.md) | <code>readonly</code> | 'und' | **_(BETA)_** |
+|  [source](./messageformat.messagefallback.source.md) | <code>readonly</code> | string | **_(BETA)_** |
+|  [type](./messageformat.messagefallback.type.md) | <code>readonly</code> | 'fallback' | **_(BETA)_** |
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [selectKey()](./messageformat.messagefallback.selectkey.md) |  | **_(BETA)_** |
-|  [toString()](./messageformat.messagefallback.tostring.md) |  | **_(BETA)_** |
+|  Method | Description |
+|  --- | --- |
+|  [toParts()](./messageformat.messagefallback.toparts.md) | **_(BETA)_** |
+|  [toString()](./messageformat.messagefallback.tostring.md) | **_(BETA)_** |
 

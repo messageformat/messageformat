@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # Reserved interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 When the parser encounters an expression with syntax reserved for later use, it emits a Reserved pattern element to represent it.

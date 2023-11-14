@@ -10,12 +10,12 @@ grand_parent: API Reference
 
 # mf1ToMessage() function
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.messageformat.md) instance.
 
-A runtime provided by [getMF1Runtime](./icu-messageformat-1.getmf1runtime.md) is automatically used in these instances.
+A runtime provided by [getMF1Functions](./icu-messageformat-1.getmf1functions.md) is automatically used in these instances.
 
 **Signature:**
 

@@ -9,24 +9,10 @@ nav_exclude: true
 
 
 
-# MessageValue.toString() method
-
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
+# MessageValue.toString property
 
 **Signature:**
 
 ```typescript
-toString(onError?: Context['onError']): string;
+toString?: () => string;
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  onError | Context\['onError'\] | _(Optional)_ |
-
-**Returns:**
-
-string
-

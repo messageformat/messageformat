@@ -11,7 +11,7 @@ nav_exclude: true
 
 # MessageFormatOptions.localeMatcher property
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 If given multiple locales, determines which algorithm to use when selecting between them; the default for `Intl` formatters is `'best fit'`<!-- -->.

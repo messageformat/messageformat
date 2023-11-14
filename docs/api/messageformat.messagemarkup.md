@@ -8,37 +8,30 @@ grand_parent: API Reference
 
 
 
-# MessageMarkup class
-
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
-
-A child class of [MessageValue](./messageformat.messagevalue.md) for starting markup elements.
+# MessageMarkup interface
 
 **Signature:**
 
 ```typescript
-export declare class MessageMarkup extends MessageValue<string> 
+export interface MessageMarkup extends MessageValue 
 ```
-**Extends:** [MessageValue](./messageformat.messagevalue.md)<!-- -->&lt;string&gt;
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(locale, name, { kind, meta, operand, options, source })](./messageformat.messagemarkup._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageMarkup</code> class |
+**Extends:** [MessageValue](./messageformat.messagevalue.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [operand?](./messageformat.messagemarkup.operand.md) |  | [MessageValue](./messageformat.messagevalue.md) | **_(BETA)_** _(Optional)_ |
-|  [options](./messageformat.messagemarkup.options.md) |  | Record&lt;string, unknown&gt; | **_(BETA)_** |
+|  [locale](./messageformat.messagemarkup.locale.md) | <code>readonly</code> | 'und' |  |
+|  [name](./messageformat.messagemarkup.name.md) | <code>readonly</code> | string |  |
+|  [options](./messageformat.messagemarkup.options.md) | <code>readonly</code> | Record&lt;string, unknown&gt; |  |
+|  [source](./messageformat.messagemarkup.source.md) | <code>readonly</code> | string |  |
+|  [type](./messageformat.messagemarkup.type.md) | <code>readonly</code> | 'open' \| 'close' |  |
+|  [valueOf?](./messageformat.messagemarkup.valueof.md) |  | () =&gt; unknown | _(Optional)_ |
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [selectKey()](./messageformat.messagemarkup.selectkey.md) |  | **_(BETA)_** |
-|  [toString()](./messageformat.messagemarkup.tostring.md) |  | **_(BETA)_** |
+|  Method | Description |
+|  --- | --- |
+|  [toParts()](./messageformat.messagemarkup.toparts.md) |  |
+|  [toString()](./messageformat.messagemarkup.tostring.md) |  |
 

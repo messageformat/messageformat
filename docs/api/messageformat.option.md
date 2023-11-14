@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # Option interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 [FunctionRef](./messageformat.functionref.md) options are expressed as `key`<!-- -->/`value` pairs to allow their order to be maintained.

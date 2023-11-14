@@ -14,5 +14,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-type: 'junk-element' | 'missing-func' | 'reserved' | 'unresolved-var' | typeof MessageSyntaxError.prototype.type;
+type: 'missing-func' | 'not-formattable' | typeof MessageResolutionError.prototype.type | typeof MessageSelectionError.prototype.type | typeof MessageSyntaxError.prototype.type;
 ```

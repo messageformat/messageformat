@@ -10,17 +10,17 @@ grand_parent: API Reference
 
 # parseMessage() function
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-Parse the string syntax representation of a message into its corresponding data model representation.
+Parse the string syntax representation of a message into its corresponding CST representation.
 
 **Signature:**
 
 ```typescript
 export declare function parseMessage(source: string, opt?: {
     resource?: boolean;
-}): MessageParsed;
+}): CST.Message;
 ```
 
 ## Parameters
@@ -32,5 +32,5 @@ export declare function parseMessage(source: string, opt?: {
 
 **Returns:**
 
-MessageParsed
+CST.Message
 

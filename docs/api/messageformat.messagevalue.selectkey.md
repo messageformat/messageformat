@@ -9,24 +9,10 @@ nav_exclude: true
 
 
 
-# MessageValue.selectKey() method
-
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
+# MessageValue.selectKey property
 
 **Signature:**
 
 ```typescript
-selectKey(keys: Set<string>): string | null;
+selectKey?: (keys: Set<string>) => string | null;
 ```
-
-## Parameters
-
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  keys | Set&lt;string&gt; |  |
-
-**Returns:**
-
-string \| null
-

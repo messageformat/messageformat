@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # Pattern interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data.
@@ -25,5 +25,5 @@ export interface Pattern
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.pattern.body.md) |  | [PatternElement](./messageformat.patternelement.md)<!-- -->\[\] | **_(BETA)_** |
+|  [body](./messageformat.pattern.body.md) |  | Array&lt;[Text](./messageformat.text.md) \| [Expression](./messageformat.expression.md)<!-- -->&gt; | **_(BETA)_** |
 

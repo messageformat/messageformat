@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # Literal interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 An immediately defined value.
@@ -29,7 +29,6 @@ Always contains a string value. In Function arguments and options, the expeted t
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [quoted](./messageformat.literal.quoted.md) |  | boolean | **_(BETA)_** |
 |  [type](./messageformat.literal.type.md) |  | 'literal' | **_(BETA)_** |
 |  [value](./messageformat.literal.value.md) |  | string | **_(BETA)_** |
 

@@ -8,39 +8,24 @@ grand_parent: API Reference
 
 
 
-# MessageValue class
-
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
-
-The base class of all message values.
+# MessageValue interface
 
 **Signature:**
 
 ```typescript
-export declare class MessageValue<T = unknown> 
+export interface MessageValue 
 ```
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(type, locale, value, format)](./messageformat.messagevalue._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageValue</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [localeContext](./messageformat.messagevalue.localecontext.md) |  | [LocaleContext](./messageformat.localecontext.md) \| null | **_(BETA)_** |
-|  [meta?](./messageformat.messagevalue.meta.md) |  | [Meta](./messageformat.meta.md) | **_(BETA)_** _(Optional)_ |
-|  [source?](./messageformat.messagevalue.source.md) |  | string | **_(BETA)_** _(Optional)_ |
-|  [type](./messageformat.messagevalue.type.md) | <code>readonly</code> | string | **_(BETA)_** |
-|  [value](./messageformat.messagevalue.value.md) |  | T | **_(BETA)_** |
-
-## Methods
-
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [selectKey(keys)](./messageformat.messagevalue.selectkey.md) |  | **_(BETA)_** |
-|  [toString(onError)](./messageformat.messagevalue.tostring.md) |  | **_(BETA)_** |
+|  [locale](./messageformat.messagevalue.locale.md) | <code>readonly</code> | string |  |
+|  [options?](./messageformat.messagevalue.options.md) | <code>readonly</code> | Readonly&lt;object&gt; | _(Optional)_ |
+|  [selectKey?](./messageformat.messagevalue.selectkey.md) |  | (keys: Set&lt;string&gt;) =&gt; string \| null | _(Optional)_ |
+|  [source](./messageformat.messagevalue.source.md) | <code>readonly</code> | string |  |
+|  [toParts?](./messageformat.messagevalue.toparts.md) |  | () =&gt; [MessageExpressionPart](./messageformat.messageexpressionpart.md)<!-- -->\[\] | _(Optional)_ |
+|  [toString?](./messageformat.messagevalue.tostring.md) |  | () =&gt; string | _(Optional)_ |
+|  [type](./messageformat.messagevalue.type.md) | <code>readonly</code> | string |  |
+|  [valueOf?](./messageformat.messagevalue.valueof.md) |  | () =&gt; unknown | _(Optional)_ |
 

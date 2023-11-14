@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # PatternMessage interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 A single message with no variants.
@@ -27,7 +27,6 @@ export interface PatternMessage
 |  --- | --- | --- | --- |
 |  [comment?](./messageformat.patternmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [declarations](./messageformat.patternmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
-|  [errors?](./messageformat.patternmessage.errors.md) |  | [MessageSyntaxError](./messageformat.messagesyntaxerror.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
 |  [pattern](./messageformat.patternmessage.pattern.md) |  | [Pattern](./messageformat.pattern.md) | **_(BETA)_** |
 |  [type](./messageformat.patternmessage.type.md) |  | 'message' | **_(BETA)_** |
 

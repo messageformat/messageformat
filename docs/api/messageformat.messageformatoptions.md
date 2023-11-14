@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # MessageFormatOptions interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 
@@ -24,6 +24,6 @@ export interface MessageFormatOptions
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [functions?](./messageformat.messageformatoptions.functions.md) |  | [MessageFunctions](./messageformat.messagefunctions.md) | **_(BETA)_** _(Optional)_ The set of custom functions available during message resolution. Extends [defaultFunctions](./messageformat.defaultfunctions.md)<!-- -->. |
 |  [localeMatcher?](./messageformat.messageformatoptions.localematcher.md) |  | 'best fit' \| 'lookup' | **_(BETA)_** _(Optional)_ If given multiple locales, determines which algorithm to use when selecting between them; the default for <code>Intl</code> formatters is <code>'best fit'</code>. |
-|  [runtime?](./messageformat.messageformatoptions.runtime.md) |  | [Runtime](./messageformat.runtime.md) | **_(BETA)_** _(Optional)_ The set of functions available during message resolution. If not set, defaults to [defaultRuntime](./messageformat.defaultruntime.md)<!-- -->. |
 

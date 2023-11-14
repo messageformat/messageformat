@@ -10,10 +10,10 @@ grand_parent: API Reference
 
 # Expression interface
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-Wrapper for non-literal content.
+Wrapper for selectors and placeholders.
 
 **Signature:**
 
@@ -25,6 +25,6 @@ export interface Expression
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.expression.body.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) \| [FunctionRef](./messageformat.functionref.md) \| [Reserved](./messageformat.reserved.md) \| [Junk](./messageformat.junk.md) | **_(BETA)_** |
+|  [body](./messageformat.expression.body.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) \| [FunctionRef](./messageformat.functionref.md) \| [Reserved](./messageformat.reserved.md) | **_(BETA)_** |
 |  [type](./messageformat.expression.type.md) |  | 'expression' | **_(BETA)_** |
 

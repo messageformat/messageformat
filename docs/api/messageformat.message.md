@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # Message type
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 The representation of a single message. The shape of the message is an implementation detail, and may vary for the same message in different languages.
@@ -18,7 +18,7 @@ The representation of a single message. The shape of the message is an implement
 **Signature:**
 
 ```typescript
-export type Message = PatternMessage | SelectMessage | JunkMessage;
+export type Message = PatternMessage | SelectMessage;
 ```
-**References:** [PatternMessage](./messageformat.patternmessage.md)<!-- -->, [SelectMessage](./messageformat.selectmessage.md)<!-- -->, [JunkMessage](./messageformat.junkmessage.md)
+**References:** [PatternMessage](./messageformat.patternmessage.md)<!-- -->, [SelectMessage](./messageformat.selectmessage.md)
 

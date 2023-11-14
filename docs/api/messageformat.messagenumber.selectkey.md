@@ -11,9 +11,6 @@ nav_exclude: true
 
 # MessageNumber.selectKey() method
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
-
 In addition to matching exact values, numerical values will also match keys with the same plural rule category, i.e. one of `zero`<!-- -->, `one`<!-- -->, `two`<!-- -->, `few`<!-- -->, `many`<!-- -->, and `other`<!-- -->.
 
 **Signature:**

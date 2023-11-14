@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # MessageFormat class
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Create a new message formatter.
@@ -31,6 +31,7 @@ export declare class MessageFormat
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
+|  [format(msgParams, onError)](./messageformat.messageformat.format.md) |  | **_(BETA)_** |
+|  [formatToParts(msgParams, onError)](./messageformat.messageformat.formattoparts.md) |  | **_(BETA)_** |
 |  [resolvedOptions()](./messageformat.messageformat.resolvedoptions.md) |  | **_(BETA)_** |
-|  [resolveMessage(msgParams, onError)](./messageformat.messageformat.resolvemessage.md) |  | **_(BETA)_** |
 

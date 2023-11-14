@@ -11,15 +11,12 @@ nav_exclude: true
 
 # MessageNumber.toParts() method
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
-> 
-
 **Signature:**
 
 ```typescript
-toParts(): Intl.NumberFormatPart[];
+toParts(): [MessageNumberPart];
 ```
 **Returns:**
 
-Intl.NumberFormatPart\[\]
+\[[MessageNumberPart](./messageformat.messagenumberpart.md)<!-- -->\]
 

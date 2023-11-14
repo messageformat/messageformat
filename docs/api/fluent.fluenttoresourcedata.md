@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # fluentToResourceData() function
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Compile a Fluent resource (i.e. an FTL file) into a Map of [Message](./messageformat.message.md) data objects.

@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # fluentToMessage() function
 
-> This API is provided as a preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
 Compile a [Fluent.Pattern](https://projectfluent.org/fluent.js/syntax/classes/pattern.html) (i.e. the value of a Fluent message or an attribute) into a [Message](./messageformat.message.md) data object.
