@@ -210,8 +210,8 @@ maybe('List formatting', () => {
       let list = Array.isArray(input)
         ? input.map(String)
         : input === undefined
-        ? []
-        : [String(input)];
+          ? []
+          : [String(input)];
 
       if (typeof options.each === 'string' && each_ && options.each in each_) {
         const each = each_[options.each];

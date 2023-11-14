@@ -67,8 +67,8 @@ const assertExpected = (res: string, exp: string | string[] | RegExp) =>
   Array.isArray(exp)
     ? expect(exp).toContain(res)
     : exp instanceof RegExp
-    ? expect(res).toMatch(exp)
-    : expect(res).toEqual(exp);
+      ? expect(res).toMatch(exp)
+      : expect(res).toEqual(exp);
 
 describe('Examples', () => {
   for (const [src, { expected, errors }] of Object.entries(tests)) {
