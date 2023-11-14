@@ -69,10 +69,10 @@ export class TokenParser {
           expDigits && expSign
             ? { style: stem, source, expDigits, expSign }
             : expDigits
-            ? { style: stem, source, expDigits }
-            : expSign
-            ? { style: stem, source, expSign }
-            : { style: stem, source };
+              ? { style: stem, source, expDigits }
+              : expSign
+                ? { style: stem, source, expSign }
+                : { style: stem, source };
         break;
       }
 

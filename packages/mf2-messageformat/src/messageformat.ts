@@ -51,8 +51,8 @@ export class MessageFormat {
     this.#locales = Array.isArray(locales)
       ? locales.slice()
       : locales
-      ? [locales]
-      : [];
+        ? [locales]
+        : [];
     this.#message =
       typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
     this.#functions = options?.functions

@@ -331,8 +331,8 @@ function checkId(sectionId: string[], { value, range }: CST.Id) {
       path.length < prevLen
         ? 'Shorter matching identifier must precede longer one'
         : path.length === prevLen
-        ? 'Duplicate identifier'
-        : '';
+          ? 'Duplicate identifier'
+          : '';
     if (msg) {
       if (!prev.error) {
         onError(prev.range, msg);

@@ -223,8 +223,8 @@ export function fluentToMessage(
           const value = v.default
             ? CATCHALL
             : v.key.type === 'Identifier'
-            ? v.key.name
-            : v.key.parse().value;
+              ? v.key.name
+              : v.key.parse().value;
           addParts(v.value, [...filter, { idx, value }]);
         }
       } else {

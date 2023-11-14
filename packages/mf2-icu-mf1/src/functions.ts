@@ -29,8 +29,8 @@ function date(
       size === 'short'
         ? 'numeric'
         : size === 'full' || size === 'long'
-        ? 'long'
-        : 'short',
+          ? 'long'
+          : 'short',
     year: 'numeric'
   };
   return datetime(msgCtx, opt, input);
