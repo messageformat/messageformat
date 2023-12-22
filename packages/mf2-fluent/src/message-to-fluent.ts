@@ -8,7 +8,6 @@ import {
   isLiteral,
   isPatternMessage,
   isSelectMessage,
-  isText,
   Literal,
   Message,
   Pattern,
@@ -148,8 +147,8 @@ function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
 
 function patternToFluent(ctx: MsgContext, pattern: Pattern) {
   const elements = pattern.body.map(el =>
-    isText(el)
-      ? new Fluent.TextElement(el.value)
+    typeof el === 'string'
+      ? new Fluent.TextElement(el)
       : new Fluent.Placeable(expressionToFluent(ctx, el))
   );
   return new Fluent.Pattern(elements);

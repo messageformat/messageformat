@@ -67,8 +67,8 @@ export class MessageFormat {
     const ctx = this.createContext(msgParams, onError);
     let res = '';
     for (const elem of selectPattern(ctx, this.#message)) {
-      if (elem.type === 'text') {
-        res += elem.value;
+      if (typeof elem === 'string') {
+        res += elem;
       } else {
         let mv: MessageValue | undefined;
         try {
@@ -95,8 +95,8 @@ export class MessageFormat {
     const ctx = this.createContext(msgParams, onError);
     const parts: MessagePart[] = [];
     for (const elem of selectPattern(ctx, this.#message)) {
-      if (elem.type === 'text') {
-        parts.push({ type: 'literal', value: elem.value });
+      if (typeof elem === 'string') {
+        parts.push({ type: 'literal', value: elem });
       } else {
         let mv: MessageValue | undefined;
         try {

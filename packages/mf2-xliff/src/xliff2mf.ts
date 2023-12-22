@@ -185,7 +185,7 @@ function resolvePattern(
           for (const part of resolveContents(stel.elements, mf)) {
             body.push(
               part.type === 'literal'
-                ? { type: 'text', value: part.value }
+                ? part.value
                 : { type: 'expression', body: part }
             );
           }

@@ -2,10 +2,8 @@ import type * as AST from '@messageformat/parser';
 import {
   Expression,
   FunctionRef,
-  isText,
   Message,
   Option,
-  Text,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -56,10 +54,10 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Text | Expression {
+): string | Expression {
   switch (token.type) {
     case 'content':
-      return { type: 'text', value: token.value };
+      return token.value;
     case 'argument':
       return {
         type: 'expression',
@@ -83,7 +81,7 @@ function tokenToPart(
       return { type: 'expression', body };
     }
     case 'octothorpe': {
-      if (!pluralArg) return { type: 'text', value: '#' };
+      if (!pluralArg) return '#';
       const body: FunctionRef = {
         type: 'function',
         kind: 'value',
@@ -217,10 +215,10 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
                 : String(value) === vi.value;
             })
           ) {
-            const last = vp[vp.length - 1];
+            const i = vp.length - 1;
             const part = tokenToPart(token, pluralArg, pluralOffset);
-            if (isText(last) && isText(part)) {
-              last.value += part.value;
+            if (typeof vp[i] === 'string' && typeof part === 'string') {
+              vp[i] += part;
             } else vp.push(part);
           }
         }

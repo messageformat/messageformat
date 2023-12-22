@@ -7,7 +7,7 @@ import { Reserved, resolveReserved } from './reserved';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isFunctionRef, FunctionRef, Option } from './function-ref';
-export { isLiteral, isText, Literal, Text } from './literal';
+export { isLiteral, Literal } from './literal';
 export { isReserved, Reserved } from './reserved';
 export {
   getMessageValue,

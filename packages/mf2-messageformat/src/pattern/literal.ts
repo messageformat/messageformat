@@ -17,16 +17,6 @@ export interface Literal {
 }
 
 /**
- * Top-level literal content.
- *
- * @beta
- */
-export interface Text {
-  type: 'text';
-  value: string;
-}
-
-/**
  * Type guard for {@link Literal} pattern elements
  *
  * @beta
@@ -34,15 +24,6 @@ export interface Text {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isLiteral = (part: any): part is Literal =>
   !!part && typeof part === 'object' && part.type === 'literal';
-
-/**
- * Type guard for {@link Text} pattern elements
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isText = (part: any): part is Text =>
-  !!part && typeof part === 'object' && part.type === 'text';
 
 export function resolveLiteral(ctx: Context, lit: Literal) {
   const msgCtx = new MessageFunctionContext(ctx, `|${lit.value}|`);

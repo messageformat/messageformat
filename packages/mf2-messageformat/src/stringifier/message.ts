@@ -11,7 +11,6 @@ import {
   Expression,
   FunctionRef,
   isLiteral,
-  isText,
   isVariableRef,
   Literal,
   Option,
@@ -81,7 +80,7 @@ function stringifyOption({ name, value }: Option) {
 function stringifyPattern({ body }: Pattern) {
   let res = '';
   for (const el of body) {
-    res += isText(el) ? el.value : stringifyExpression(el);
+    res += typeof el === 'string' ? el : stringifyExpression(el);
   }
   return `{${res}}`;
 }

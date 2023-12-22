@@ -499,7 +499,7 @@ describe('formatToParts', () => {
                 declarations: [],
                 pattern: {
                   body: [
-                    { type: 'text', value: 'Foo ' },
+                    'Foo ',
                     {
                       type: 'expression',
                       body: { type: 'variable', name: 'num' }
@@ -519,7 +519,7 @@ describe('formatToParts', () => {
                 type: 'message',
                 comment: 'Group 1',
                 declarations: [],
-                pattern: { body: [{ type: 'text', value: 'Bar' }] }
+                pattern: { body: ['Bar'] }
               }
             ]
           ]
@@ -533,7 +533,7 @@ describe('formatToParts', () => {
                 type: 'message',
                 comment: 'Group 2\n\nOther message',
                 declarations: [],
-                pattern: { body: [{ type: 'text', value: 'Qux' }] }
+                pattern: { body: ['Qux'] }
               }
             ]
           ]
@@ -658,20 +658,20 @@ describe('fluentToResourceData', () => {
   test('Merge adjacent text elements for one selector', () => {
     const msg = data.get('single')?.get('') as SelectMessage;
     expect(msg.variants.map(v => v.value.body)).toMatchObject([
-      [{ type: 'text', value: 'One Zero selector.' }],
-      [{ type: 'text', value: 'One Other selector.' }]
+      ['One Zero selector.'],
+      ['One Other selector.']
     ]);
   });
 
   test('Merge adjacent text elements for multiple selectors', () => {
     const msg = data.get('multi')?.get('') as SelectMessage;
     expect(msg.variants.map(v => v.value.body)).toMatchObject([
-      [{ type: 'text', value: 'Combine Zero multiple F selectors.' }],
-      [{ type: 'text', value: 'Combine Zero multiple M selectors.' }],
-      [{ type: 'text', value: 'Combine Zero multiple N selectors.' }],
-      [{ type: 'text', value: 'Combine Other multiple F selectors.' }],
-      [{ type: 'text', value: 'Combine Other multiple M selectors.' }],
-      [{ type: 'text', value: 'Combine Other multiple N selectors.' }]
+      ['Combine Zero multiple F selectors.'],
+      ['Combine Zero multiple M selectors.'],
+      ['Combine Zero multiple N selectors.'],
+      ['Combine Other multiple F selectors.'],
+      ['Combine Other multiple M selectors.'],
+      ['Combine Other multiple N selectors.']
     ]);
   });
 
@@ -756,7 +756,7 @@ describe('messagetoFluent', () => {
       variants: [
         {
           keys: [{ type: '*' }],
-          value: { body: [{ type: 'text', value: 'X' }] }
+          value: { body: ['X'] }
         }
       ]
     };

@@ -39,7 +39,7 @@ export function asDataModel(msg: CST.Message): Model.Message {
 
 function asPattern(cst: CST.Pattern): Model.Pattern {
   const body: Model.Pattern['body'] = cst.body.map(el =>
-    el.type === 'text' ? { type: 'text', value: el.value } : asExpression(el)
+    el.type === 'text' ? el.value : asExpression(el)
   );
   return { body };
 }

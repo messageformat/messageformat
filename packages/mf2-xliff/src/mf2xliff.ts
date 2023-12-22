@@ -4,7 +4,6 @@ import {
   isLiteral,
   isMessage,
   isSelectMessage,
-  isText,
   isVariableRef,
   MessageFormat
 } from 'messageformat';
@@ -56,7 +55,7 @@ const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({
 // TODO Add <cp> escapes
 const asText = (value: unknown): X.Text => ({
   type: 'text',
-  text: String(isText(value) || isLiteral(value) ? value.value : value)
+  text: String(isLiteral(value) ? value.value : value)
 });
 
 const mismatch = (key: string[]) =>
@@ -231,8 +230,8 @@ function resolvePattern(
   trgPattern: MF.Pattern | undefined
 ): X.Unit {
   const parts: X.MessagePart[] = [];
-  const handlePart = (p: MF.Text | MF.Expression): X.Text | X.InlineElement => {
-    if (isText(p)) return asText(p);
+  const handlePart = (p: string | MF.Expression): X.Text | X.InlineElement => {
+    if (typeof p === 'string') return asText(p);
     const id = nextId();
     const part = resolveExpression(id, p);
     parts.push(part);

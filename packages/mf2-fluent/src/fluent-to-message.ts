@@ -4,12 +4,10 @@ import {
   Expression,
   FunctionRef,
   isFunctionRef,
-  isText,
   Literal,
   Option,
   PatternMessage,
   SelectMessage,
-  Text,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -140,9 +138,9 @@ function expressionToPart(
   }
 }
 
-const elementToPart = (el: Fluent.PatternElement): Expression | Text =>
+const elementToPart = (el: Fluent.PatternElement): string | Expression =>
   el.type === 'TextElement'
-    ? { type: 'text', value: el.value }
+    ? el.value
     : { type: 'expression', body: expressionToPart(el.expression) };
 
 function asFluentSelect(
@@ -238,10 +236,11 @@ export function fluentToMessage(
                 : String(value) === vi.value;
             })
           ) {
-            const last = vp[vp.length - 1];
+            const i = vp.length - 1;
             const part = elementToPart(el);
-            if (isText(last) && isText(part)) last.value += part.value;
-            else vp.push(part);
+            if (typeof vp[i] === 'string' && typeof part === 'string') {
+              vp[i] += part;
+            } else vp.push(part);
           }
         }
       }

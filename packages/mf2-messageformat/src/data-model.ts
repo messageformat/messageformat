@@ -1,7 +1,7 @@
-import type { Expression, Literal, Text, VariableRef } from './pattern';
+import type { Expression, Literal, VariableRef } from './pattern';
 
 export type { FunctionRef, Option, Reserved } from './pattern';
-export type { Expression, Literal, Text, VariableRef };
+export type { Expression, Literal, VariableRef };
 
 /**
  * The representation of a single message.
@@ -45,7 +45,7 @@ export interface Declaration {
  * @beta
  */
 export interface Pattern {
-  body: Array<Text | Expression>;
+  body: Array<string | Expression>;
 }
 
 /**
