@@ -25,8 +25,9 @@
 
 import * as Fluent from '@fluent/syntax';
 import { source } from '@messageformat/test-utils';
-import { SelectMessage, validate } from 'messageformat';
+import { PatternMessage, SelectMessage, validate } from 'messageformat';
 import { fluentToResource, fluentToResourceData } from './index';
+import { messageToFluent } from './message-to-fluent';
 import { resourceToFluent } from './resource-to-fluent';
 
 type TestCase = {
@@ -728,5 +729,156 @@ describe('fluentToResourceData', () => {
                   }
           }
     `);
+  });
+});
+
+describe('messagetoFluent', () => {
+  test('SelectMessage with one variant & local var selector', () => {
+    const msg: SelectMessage = {
+      type: 'select',
+      declarations: [
+        {
+          name: 'local',
+          value: {
+            type: 'expression',
+            body: {
+              type: 'function',
+              name: 'number',
+              kind: 'value',
+              operand: { type: 'variable', name: 'num' }
+            }
+          }
+        }
+      ],
+      selectors: [
+        { type: 'expression', body: { type: 'variable', name: 'local' } }
+      ],
+      variants: [
+        {
+          keys: [{ type: '*' }],
+          value: { body: [{ type: 'text', value: 'X' }] }
+        }
+      ]
+    };
+    const fm = messageToFluent(msg);
+    expect(fm).toEqual({
+      type: 'Pattern',
+      elements: [
+        {
+          type: 'Placeable',
+          expression: {
+            type: 'SelectExpression',
+            selector: {
+              type: 'FunctionReference',
+              id: { type: 'Identifier', name: 'NUMBER' },
+              arguments: {
+                type: 'CallArguments',
+                positional: [
+                  {
+                    type: 'VariableReference',
+                    id: { type: 'Identifier', name: 'num' }
+                  }
+                ],
+                named: []
+              }
+            },
+            variants: [
+              {
+                type: 'Variant',
+                key: { type: 'Identifier', name: 'other' },
+                value: {
+                  type: 'Pattern',
+                  elements: [{ type: 'TextElement', value: 'X' }]
+                },
+                default: true
+              }
+            ]
+          }
+        }
+      ]
+    });
+  });
+
+  test('Message & term references with local var operand', () => {
+    const msg: PatternMessage = {
+      type: 'message',
+      declarations: [
+        {
+          name: 'local',
+          value: {
+            type: 'expression',
+            body: { type: 'literal', value: '-term' }
+          }
+        }
+      ],
+      pattern: {
+        body: [
+          {
+            type: 'expression',
+            body: {
+              type: 'function',
+              name: 'message',
+              kind: 'value',
+              operand: { type: 'literal', value: 'msg' }
+            }
+          },
+          {
+            type: 'expression',
+            body: {
+              type: 'function',
+              name: 'message',
+              kind: 'value',
+              operand: { type: 'variable', name: 'local' }
+            }
+          }
+        ]
+      }
+    };
+    const fm = messageToFluent(msg);
+    expect(fm).toEqual({
+      type: 'Pattern',
+      elements: [
+        {
+          type: 'Placeable',
+          expression: {
+            type: 'MessageReference',
+            id: { type: 'Identifier', name: 'msg' },
+            attribute: null
+          }
+        },
+        {
+          type: 'Placeable',
+          expression: {
+            type: 'TermReference',
+            id: { type: 'Identifier', name: 'term' },
+            attribute: null,
+            arguments: null
+          }
+        }
+      ]
+    });
+  });
+
+  test('Message references with input var operand', () => {
+    const msg: PatternMessage = {
+      type: 'message',
+      declarations: [],
+      pattern: {
+        body: [
+          {
+            type: 'expression',
+            body: {
+              type: 'function',
+              name: 'message',
+              kind: 'value',
+              operand: { type: 'variable', name: 'input' }
+            }
+          }
+        ]
+      }
+    };
+    expect(() => messageToFluent(msg)).toThrow(
+      'Fluent message and term references must have a literal message identifier'
+    );
   });
 });

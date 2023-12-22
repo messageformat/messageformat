@@ -187,12 +187,13 @@ function functionRefToFluent(
   }
 
   if (id === FluentMessageRef) {
-    if (!isLiteral(operand)) {
+    const lit = args.positional[0];
+    if (!(lit instanceof Fluent.BaseLiteral)) {
       throw new Error(
         `Fluent message and term references must have a literal message identifier`
       );
     }
-    const { msgId, msgAttr } = valueToMessageRef(operand.value);
+    const { msgId, msgAttr } = valueToMessageRef(lit.value);
     const attr = msgAttr ? new Fluent.Identifier(msgAttr) : null;
 
     if (msgId[0] === '-') {
