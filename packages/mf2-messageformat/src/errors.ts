@@ -71,7 +71,11 @@ export class MessageDataModelError extends MessageSyntaxError {
 }
 
 export class MessageResolutionError extends MessageError {
-  declare type: 'bad-input' | 'bad-option' | 'reserved' | 'unresolved-var';
+  declare type:
+    | 'bad-input'
+    | 'bad-option'
+    | 'unresolved-var'
+    | 'unsupported-annotation';
   source: string;
   constructor(
     type: typeof MessageResolutionError.prototype.type,

@@ -18,18 +18,20 @@ function resolve(
 
 describe('Reserved syntax', () => {
   test('empty', () => {
-    const msg = resolve('{{!}}', {}, [{ type: 'reserved' }]);
+    const msg = resolve('{{!}}', {}, [{ type: 'unsupported-annotation' }]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '!' }]);
   });
 
   test('argument', () => {
-    const msg = resolve('{{$foo @bar}}', { foo: 42 }, [{ type: 'reserved' }]);
+    const msg = resolve('{{$foo @bar}}', { foo: 42 }, [
+      { type: 'unsupported-annotation' }
+    ]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '$foo' }]);
   });
 
   test('whitespace', () => {
     const msg = resolve('{{ # one\ntwo\rthree four }}', {}, [
-      { type: 'reserved' }
+      { type: 'unsupported-annotation' }
     ]);
     expect(msg).toMatchObject([
       { type: 'fallback', source: '# one\ntwo\rthree four' }

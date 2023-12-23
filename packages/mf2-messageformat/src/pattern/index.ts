@@ -3,12 +3,18 @@ import type { MessageValue } from '../runtime';
 
 import { FunctionRef, resolveFunctionRef } from './function-ref';
 import { Literal, resolveLiteral } from './literal';
-import { Reserved, resolveReserved } from './reserved';
+import {
+  resolveunsupportedAnnotation,
+  UnsupportedAnnotation
+} from './unsupported-annotation';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export { isFunctionRef, FunctionRef, Option } from './function-ref';
 export { isLiteral, Literal } from './literal';
-export { isReserved, Reserved } from './reserved';
+export {
+  isUnsupportedAnnotation,
+  UnsupportedAnnotation
+} from './unsupported-annotation';
 export {
   getMessageValue,
   isVariableRef,
@@ -23,7 +29,7 @@ export {
  */
 export interface Expression {
   type: 'expression';
-  body: Literal | VariableRef | FunctionRef | Reserved;
+  body: Literal | VariableRef | FunctionRef | UnsupportedAnnotation;
 }
 
 /**
@@ -47,8 +53,8 @@ export function resolveExpression(
       return resolveVariableRef(ctx, body);
     case 'function':
       return resolveFunctionRef(ctx, body);
-    case 'reserved':
-      return resolveReserved(ctx, body);
+    case 'unsupported-annotation':
+      return resolveunsupportedAnnotation(ctx, body);
     default:
       // @ts-expect-error - should never happen
       throw new Error(`Unsupported expression: ${body.type}`);

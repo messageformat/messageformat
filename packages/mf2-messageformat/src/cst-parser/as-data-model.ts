@@ -52,7 +52,7 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
     | Model.Literal
     | Model.VariableRef
     | Model.FunctionRef
-    | Model.Reserved;
+    | Model.UnsupportedAnnotation;
   switch (cst.body.type) {
     case 'literal':
     case 'variable':
@@ -62,7 +62,7 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
       body = asFunctionRef(cst.body);
       break;
     case 'reserved':
-      body = asReserved(cst.body);
+      body = asUnsupportedAnnotation(cst.body);
       break;
     default:
       throw new MessageSyntaxError('parse-error', cst.start, cst.end);
@@ -86,9 +86,11 @@ function asFunctionRef(cst: CST.FunctionRef): Model.FunctionRef {
   return fn;
 }
 
-function asReserved(cst: CST.Reserved): Model.Reserved {
-  const res: Model.Reserved = {
-    type: 'reserved',
+function asUnsupportedAnnotation(
+  cst: CST.Reserved
+): Model.UnsupportedAnnotation {
+  const res: Model.UnsupportedAnnotation = {
+    type: 'unsupported-annotation',
     sigil: cst.sigil,
     source: cst.source
   };
