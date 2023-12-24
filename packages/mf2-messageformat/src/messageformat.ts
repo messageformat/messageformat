@@ -2,8 +2,11 @@ import { asDataModel, parseMessage } from './cst-parser/index.js';
 import { Message } from './data-model';
 import type { Context } from './format-context';
 import { selectPattern } from './select-pattern.js';
-import { resolveExpression, UnresolvedExpression } from './pattern';
-import { resolveValue } from './pattern/value.js';
+import {
+  resolveExpression,
+  resolveValue,
+  UnresolvedExpression
+} from './expression/index.js';
 import {
   defaultFunctions,
   MessageFunctions,

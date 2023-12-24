@@ -1,4 +1,4 @@
-import type { Expression, Literal, VariableRef } from './pattern';
+import type { Expression, Literal, VariableRef } from './expression';
 import type { MessageFunctions, MessageValue } from './runtime';
 
 export interface Context {

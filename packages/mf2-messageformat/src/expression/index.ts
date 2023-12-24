@@ -13,6 +13,7 @@ import {
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export {
+  functionAnnotationSource,
   isFunctionAnnotation,
   FunctionAnnotation,
   Option
@@ -22,6 +23,7 @@ export {
   isUnsupportedAnnotation,
   UnsupportedAnnotation
 } from './unsupported-annotation';
+export { resolveValue } from './value.js';
 export {
   getMessageValue,
   isVariableRef,

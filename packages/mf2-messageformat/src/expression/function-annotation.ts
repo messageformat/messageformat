@@ -45,7 +45,7 @@ export interface Option {
 export const isFunctionAnnotation = (part: any): part is FunctionAnnotation =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function functionRefSource(
+export function functionAnnotationSource(
   kind: FunctionAnnotation['kind'],
   name: string
 ) {
@@ -72,7 +72,7 @@ export function resolveFunctionAnnotation(
     } else {
       fnInput = [];
     }
-    source ??= functionRefSource(kind, name);
+    source ??= functionAnnotationSource(kind, name);
 
     switch (kind) {
       case 'open':
@@ -92,7 +92,7 @@ export function resolveFunctionAnnotation(
     }
   } catch (error) {
     ctx.onError(error);
-    source ??= getValueSource(operand) ?? functionRefSource(kind, name);
+    source ??= getValueSource(operand) ?? functionAnnotationSource(kind, name);
     return fallback(source);
   }
 }

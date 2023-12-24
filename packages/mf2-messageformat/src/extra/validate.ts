@@ -1,5 +1,5 @@
 import type { Message, Pattern } from '../data-model';
-import { isExpression, isFunctionAnnotation } from '../pattern';
+import { isExpression, isFunctionAnnotation } from '../expression/index.js';
 import type { MessageFunctions } from '../runtime';
 
 function validateParts(parts: Pattern['body'], functions: MessageFunctions) {

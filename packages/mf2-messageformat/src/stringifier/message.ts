@@ -6,17 +6,17 @@ import {
   Message,
   Pattern
 } from '../data-model';
-import { MessageFormat } from '../messageformat';
 import {
   Expression,
   FunctionAnnotation,
+  functionAnnotationSource,
   isLiteral,
   isVariableRef,
   Literal,
   Option,
   VariableRef
-} from '../pattern';
-import { functionRefSource } from '../pattern/function-annotation.js';
+} from '../expression/index.js';
+import { MessageFormat } from '../messageformat.js';
 
 /**
  * Stringify a message using its syntax representation.
@@ -64,7 +64,7 @@ function stringifyFunctionAnnotation({
     default:
       res = '';
   }
-  res += functionRefSource(kind, name);
+  res += functionAnnotationSource(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   return res;
 }

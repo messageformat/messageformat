@@ -1,10 +1,10 @@
-import type { Expression, Literal, VariableRef } from './pattern';
+import type { Expression, Literal, VariableRef } from './expression/index.js';
 
 export type {
   FunctionAnnotation,
   Option,
   UnsupportedAnnotation
-} from './pattern';
+} from './expression';
 export type { Expression, Literal, VariableRef };
 
 /**
