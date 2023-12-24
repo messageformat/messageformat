@@ -1,7 +1,10 @@
 import type { Context } from '../format-context';
 import type { MessageValue } from '../runtime';
 
-import { FunctionRef, resolveFunctionRef } from './function-ref';
+import {
+  resolveFunctionAnnotation,
+  FunctionAnnotation
+} from './function-annotation';
 import { Literal, resolveLiteral } from './literal';
 import {
   resolveunsupportedAnnotation,
@@ -9,7 +12,11 @@ import {
 } from './unsupported-annotation';
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
-export { isFunctionRef, FunctionRef, Option } from './function-ref';
+export {
+  isFunctionAnnotation,
+  FunctionAnnotation,
+  Option
+} from './function-annotation';
 export { isLiteral, Literal } from './literal';
 export {
   isUnsupportedAnnotation,
@@ -27,10 +34,10 @@ export {
  *
  * @beta
  */
-export interface Expression {
+export type Expression = {
   type: 'expression';
-  body: Literal | VariableRef | FunctionRef | UnsupportedAnnotation;
-}
+  body: Literal | VariableRef | FunctionAnnotation | UnsupportedAnnotation;
+};
 
 /**
  * Type guard for {@link Expression} pattern elements
@@ -52,7 +59,7 @@ export function resolveExpression(
     case 'variable':
       return resolveVariableRef(ctx, body);
     case 'function':
-      return resolveFunctionRef(ctx, body);
+      return resolveFunctionAnnotation(ctx, body);
     case 'unsupported-annotation':
       return resolveunsupportedAnnotation(ctx, body);
     default:

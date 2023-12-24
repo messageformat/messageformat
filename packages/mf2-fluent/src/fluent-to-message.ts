@@ -2,8 +2,8 @@ import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
   Expression,
-  FunctionRef,
-  isFunctionRef,
+  FunctionAnnotation,
+  isFunctionAnnotation,
   Literal,
   Option,
   PatternMessage,
@@ -52,7 +52,7 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
 
 function expressionToPart(
   exp: Fluent.Expression
-): Literal | VariableRef | FunctionRef {
+): Literal | VariableRef | FunctionAnnotation {
   switch (exp.type) {
     case 'NumberLiteral':
       return {
@@ -70,7 +70,7 @@ function expressionToPart(
       const { positional, named } = exp.arguments;
       const args = positional.map(exp => {
         const part = expressionToPart(exp);
-        if (isFunctionRef(part))
+        if (isFunctionAnnotation(part))
           throw new Error(`A Fluent ${exp.type} is not supported here.`);
         return part;
       });

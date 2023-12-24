@@ -6,7 +6,7 @@ import { getValueSource, resolveValue } from './value.js';
 import type { VariableRef } from './variable-ref.js';
 
 /**
- * To resolve a FunctionRef, an externally defined function is called.
+ * To resolve a FunctionAnnotation, an externally defined function is called.
  *
  * @remarks
  * The `name` identifies a function that takes in the arguments `args`, the
@@ -17,7 +17,7 @@ import type { VariableRef } from './variable-ref.js';
  *
  * @beta
  */
-export interface FunctionRef {
+export interface FunctionAnnotation {
   type: 'function';
   kind: 'open' | 'close' | 'value';
   name: string;
@@ -26,7 +26,7 @@ export interface FunctionRef {
 }
 
 /**
- * {@link FunctionRef} options are expressed as
+ * {@link FunctionAnnotation} options are expressed as
  * `key`/`value` pairs to allow their order to be maintained.
  *
  * @beta
@@ -37,15 +37,18 @@ export interface Option {
 }
 
 /**
- * Type guard for {@link FunctionRef} pattern elements
+ * Type guard for {@link FunctionAnnotation} pattern elements
  *
  * @beta
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isFunctionRef = (part: any): part is FunctionRef =>
+export const isFunctionAnnotation = (part: any): part is FunctionAnnotation =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function functionRefSource(kind: FunctionRef['kind'], name: string) {
+export function functionRefSource(
+  kind: FunctionAnnotation['kind'],
+  name: string
+) {
   switch (kind) {
     case 'open':
       return `+${name}`;
@@ -56,9 +59,9 @@ export function functionRefSource(kind: FunctionRef['kind'], name: string) {
   }
 }
 
-export function resolveFunctionRef(
+export function resolveFunctionAnnotation(
   ctx: Context,
-  { kind, operand, name, options }: FunctionRef
+  { kind, operand, name, options }: FunctionAnnotation
 ) {
   let source: string | undefined;
   try {

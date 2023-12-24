@@ -1,12 +1,12 @@
 import type { Message, Pattern } from '../data-model';
-import { isExpression, isFunctionRef } from '../pattern';
+import { isExpression, isFunctionAnnotation } from '../pattern';
 import type { MessageFunctions } from '../runtime';
 
 function validateParts(parts: Pattern['body'], functions: MessageFunctions) {
   for (const part of parts) {
     if (
       isExpression(part) &&
-      isFunctionRef(part.body) &&
+      isFunctionAnnotation(part.body) &&
       part.body.kind === 'value'
     ) {
       if (typeof functions[part.body.name] !== 'function') {

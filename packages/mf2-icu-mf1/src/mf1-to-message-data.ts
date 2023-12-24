@@ -1,7 +1,7 @@
 import type * as AST from '@messageformat/parser';
 import {
   Expression,
-  FunctionRef,
+  FunctionAnnotation,
   Message,
   Option,
   VariableRef,
@@ -64,7 +64,7 @@ function tokenToPart(
         body: { type: 'variable', name: token.arg }
       };
     case 'function': {
-      const body: FunctionRef = {
+      const body: FunctionAnnotation = {
         type: 'function',
         kind: 'value',
         name: token.key,
@@ -82,7 +82,7 @@ function tokenToPart(
     }
     case 'octothorpe': {
       if (!pluralArg) return '#';
-      const body: FunctionRef = {
+      const body: FunctionAnnotation = {
         type: 'function',
         kind: 'value',
         name: 'number',

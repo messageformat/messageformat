@@ -3,7 +3,7 @@ import {
   CatchallKey,
   Declaration,
   Expression,
-  FunctionRef,
+  FunctionAnnotation,
   isCatchallKey,
   isLiteral,
   isPatternMessage,
@@ -156,7 +156,7 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
 
 function functionRefToFluent(
   ctx: MsgContext,
-  { name, operand, options }: FunctionRef
+  { name, operand, options }: FunctionAnnotation
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (operand) args.positional[0] = valueToFluent(ctx, operand);

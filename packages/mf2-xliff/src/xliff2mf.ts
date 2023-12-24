@@ -2,7 +2,7 @@ import type * as MF from 'messageformat';
 import type { MessageFormatInfo, MessageResourceData } from './index';
 import type * as X from './xliff-spec';
 
-import { isFunctionRef, isLiteral } from 'messageformat';
+import { isFunctionAnnotation, isLiteral } from 'messageformat';
 import { parse } from './xliff';
 
 // TODO: Support declarations
@@ -201,7 +201,7 @@ function resolveContents(
   contents: (X.Text | X.InlineElement)[],
   mf: X.MessageFormat | null
 ) {
-  const res: (MF.Literal | MF.VariableRef | MF.FunctionRef)[] = [];
+  const res: (MF.Literal | MF.VariableRef | MF.FunctionAnnotation)[] = [];
   for (const ie of contents) {
     const last = res[res.length - 1];
     const part = resolveInlineElement(ie, mf);
@@ -217,7 +217,7 @@ const resolveCharCode = (cc: X.CharCode) =>
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.FunctionRef {
+): MF.Literal | MF.VariableRef | MF.FunctionAnnotation {
   switch (ie.type) {
     case 'text':
     case 'cdata':
@@ -230,7 +230,7 @@ function resolveInlineElement(
           return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
         case 'pc': {
           const part = resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-          if (!isFunctionRef(part))
+          if (!isFunctionAnnotation(part))
             throw new Error(`<pc mf:ref> is only valid for function values`);
           const arg = resolveContents(ie.elements, mf);
           if (arg.length > 1)
@@ -238,7 +238,7 @@ function resolveInlineElement(
               'Forming function arguments by concatenation is not supported'
             );
           const operand = arg[0];
-          if (isFunctionRef(operand))
+          if (isFunctionAnnotation(operand))
             throw new Error(`A ${operand.type} is not supported here`);
           part.operand = operand;
           return part;
@@ -255,7 +255,7 @@ function resolveRef(
   name: string,
   ref: string | undefined,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.FunctionRef {
+): MF.Literal | MF.VariableRef | MF.FunctionAnnotation {
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
@@ -274,14 +274,14 @@ const resolveText = (text: (X.Text | X.CharCode)[]) =>
 
 function resolvePart(
   part: X.MessagePart
-): MF.Literal | MF.VariableRef | MF.FunctionRef {
+): MF.Literal | MF.VariableRef | MF.FunctionAnnotation {
   switch (part.name) {
     case 'mf:literal':
     case 'mf:variable':
       return resolveArgument(part);
 
     case 'mf:function': {
-      let operand: MF.FunctionRef['operand'] = undefined;
+      let operand: MF.FunctionAnnotation['operand'] = undefined;
       const options: MF.Option[] = [];
       for (const el of part.elements) {
         if (el.name === 'mf:option') {

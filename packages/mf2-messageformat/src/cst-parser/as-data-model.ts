@@ -51,7 +51,7 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
   let body:
     | Model.Literal
     | Model.VariableRef
-    | Model.FunctionRef
+    | Model.FunctionAnnotation
     | Model.UnsupportedAnnotation;
   switch (cst.body.type) {
     case 'literal':
@@ -59,7 +59,7 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
       body = asValue(cst.body);
       break;
     case 'function':
-      body = asFunctionRef(cst.body);
+      body = asFunctionAnnotation(cst.body);
       break;
     case 'reserved':
       body = asUnsupportedAnnotation(cst.body);
@@ -70,8 +70,8 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
   return { type: 'expression', body };
 }
 
-function asFunctionRef(cst: CST.FunctionRef): Model.FunctionRef {
-  const fn: Model.FunctionRef = {
+function asFunctionAnnotation(cst: CST.FunctionRef): Model.FunctionAnnotation {
+  const fn: Model.FunctionAnnotation = {
     type: 'function',
     kind: cst.kind,
     name: cst.name

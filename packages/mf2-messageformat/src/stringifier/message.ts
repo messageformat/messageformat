@@ -9,14 +9,14 @@ import {
 import { MessageFormat } from '../messageformat';
 import {
   Expression,
-  FunctionRef,
+  FunctionAnnotation,
   isLiteral,
   isVariableRef,
   Literal,
   Option,
   VariableRef
 } from '../pattern';
-import { functionRefSource } from '../pattern/function-ref';
+import { functionRefSource } from '../pattern/function-annotation.js';
 
 /**
  * Stringify a message using its syntax representation.
@@ -47,7 +47,12 @@ function stringifyDeclaration({ name, value }: Declaration) {
   return `let $${name} = ${stringifyExpression(value)}\n`;
 }
 
-function stringifyFunctionRef({ kind, name, operand, options }: FunctionRef) {
+function stringifyFunctionAnnotation({
+  kind,
+  name,
+  operand,
+  options
+}: FunctionAnnotation) {
   let res: string;
   switch (operand?.type) {
     case 'literal':
@@ -89,7 +94,7 @@ function stringifyExpression({ body }: Expression) {
   let res: string;
   switch (body.type) {
     case 'function':
-      res = stringifyFunctionRef(body);
+      res = stringifyFunctionAnnotation(body);
       break;
     case 'literal':
       res = stringifyLiteral(body);

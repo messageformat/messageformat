@@ -68,7 +68,7 @@ export class MessageFunctionContext {
 }
 
 /**
- * The runtime function registry available when resolving {@link FunctionRef} elements.
+ * The runtime function registry available when resolving {@link FunctionAnnotation} elements.
  *
  * @beta
  */

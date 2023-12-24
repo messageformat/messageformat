@@ -1,6 +1,10 @@
 import type { Expression, Literal, VariableRef } from './pattern';
 
-export type { FunctionRef, Option, UnsupportedAnnotation } from './pattern';
+export type {
+  FunctionAnnotation,
+  Option,
+  UnsupportedAnnotation
+} from './pattern';
 export type { Expression, Literal, VariableRef };
 
 /**
