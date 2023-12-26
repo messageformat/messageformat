@@ -14,6 +14,7 @@ import {
   isVariableRef,
   Literal,
   Option,
+  UnsupportedAnnotation,
   VariableRef
 } from '../expression/index.js';
 import { MessageFormat } from '../messageformat.js';
@@ -50,21 +51,9 @@ function stringifyDeclaration({ name, value }: Declaration) {
 function stringifyFunctionAnnotation({
   kind,
   name,
-  operand,
   options
 }: FunctionAnnotation) {
-  let res: string;
-  switch (operand?.type) {
-    case 'literal':
-      res = stringifyLiteral(operand) + ' ';
-      break;
-    case 'variable':
-      res = stringifyVariableRef(operand) + ' ';
-      break;
-    default:
-      res = '';
-  }
-  res += functionAnnotationSource(kind, name);
+  let res = functionAnnotationSource(kind, name);
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   return res;
 }
@@ -90,22 +79,33 @@ function stringifyPattern({ body }: Pattern) {
   return `{${res}}`;
 }
 
-function stringifyExpression({ body }: Expression) {
+function stringifyExpression({ arg, annotation }: Expression) {
   let res: string;
-  switch (body.type) {
-    case 'function':
-      res = stringifyFunctionAnnotation(body);
-      break;
+  switch (arg?.type) {
     case 'literal':
-      res = stringifyLiteral(body);
+      res = stringifyLiteral(arg);
       break;
     case 'variable':
-      res = stringifyVariableRef(body);
+      res = stringifyVariableRef(arg);
       break;
     default:
-      res = ''; // bad expression
+      res = '';
+  }
+  if (annotation) {
+    if (res) res += ' ';
+    res +=
+      annotation.type === 'function'
+        ? stringifyFunctionAnnotation(annotation)
+        : stringifyUnsupportedAnnotation(annotation);
   }
   return `{${res}}`;
+}
+
+function stringifyUnsupportedAnnotation({
+  sigil,
+  source = '�'
+}: UnsupportedAnnotation) {
+  return (sigil ?? '�') + source;
 }
 
 function stringifyVariableRef(ref: VariableRef) {

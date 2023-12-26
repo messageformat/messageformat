@@ -61,14 +61,13 @@ function tokenToPart(
     case 'argument':
       return {
         type: 'expression',
-        body: { type: 'variable', name: token.arg }
+        arg: { type: 'variable', name: token.arg }
       };
     case 'function': {
-      const body: FunctionAnnotation = {
+      const annotation: FunctionAnnotation = {
         type: 'function',
         kind: 'value',
-        name: token.key,
-        operand: { type: 'variable', name: token.arg }
+        name: token.key
       };
       if (token.param && token.param.length > 0) {
         let value = '';
@@ -76,26 +75,35 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        body.options = [{ name: 'param', value: { type: 'literal', value } }];
+        annotation.options = [
+          { name: 'param', value: { type: 'literal', value } }
+        ];
       }
-      return { type: 'expression', body };
+      return {
+        type: 'expression',
+        arg: { type: 'variable', name: token.arg },
+        annotation
+      };
     }
     case 'octothorpe': {
       if (!pluralArg) return '#';
-      const body: FunctionAnnotation = {
+      const annotation: FunctionAnnotation = {
         type: 'function',
         kind: 'value',
-        name: 'number',
-        operand: { type: 'variable', name: pluralArg }
+        name: 'number'
       };
       if (pluralOffset)
-        body.options = [
+        annotation.options = [
           {
             name: 'pluralOffset',
             value: { type: 'literal', value: String(pluralOffset) }
           }
         ];
-      return { type: 'expression', body };
+      return {
+        type: 'expression',
+        arg: { type: 'variable', name: pluralArg },
+        annotation
+      };
     }
     /* istanbul ignore next - never happens */
     default:
@@ -103,12 +111,17 @@ function tokenToPart(
   }
 }
 
-function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
-  const argVar: VariableRef = { type: 'variable', name: arg };
+function argToExpression({
+  arg: selName,
+  pluralOffset,
+  type
+}: SelectArg): Expression {
+  const arg: VariableRef = { type: 'variable', name: selName };
   if (type === 'select')
     return {
       type: 'expression',
-      body: { type: 'function', kind: 'value', name: 'string', operand: argVar }
+      arg,
+      annotation: { type: 'function', kind: 'value', name: 'string' }
     };
 
   const options: Option[] = [];
@@ -125,16 +138,14 @@ function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
     });
   }
 
-  return {
-    type: 'expression',
-    body: {
-      type: 'function',
-      kind: 'value',
-      name: 'number',
-      operand: argVar,
-      options
-    }
+  const annotation: FunctionAnnotation = {
+    type: 'function',
+    kind: 'value',
+    name: 'number'
   };
+  if (options.length) annotation.options = options;
+
+  return { type: 'expression', arg, annotation };
 }
 
 /**

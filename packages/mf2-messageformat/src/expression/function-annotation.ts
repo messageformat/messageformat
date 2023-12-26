@@ -21,7 +21,6 @@ export interface FunctionAnnotation {
   type: 'function';
   kind: 'open' | 'close' | 'value';
   name: string;
-  operand?: Literal | VariableRef;
   options?: Option[];
 }
 
@@ -61,7 +60,8 @@ export function functionAnnotationSource(
 
 export function resolveFunctionAnnotation(
   ctx: Context,
-  { kind, operand, name, options }: FunctionAnnotation
+  operand: Literal | VariableRef | undefined,
+  { kind, name, options }: FunctionAnnotation
 ) {
   let source: string | undefined;
   try {

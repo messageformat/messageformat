@@ -7,7 +7,7 @@ import {
 } from './function-annotation';
 import { Literal, resolveLiteral } from './literal';
 import {
-  resolveunsupportedAnnotation,
+  resolveUnsupportedAnnotation,
   UnsupportedAnnotation
 } from './unsupported-annotation';
 import { resolveVariableRef, VariableRef } from './variable-ref';
@@ -36,10 +36,17 @@ export {
  *
  * @beta
  */
-export type Expression = {
-  type: 'expression';
-  body: Literal | VariableRef | FunctionAnnotation | UnsupportedAnnotation;
-};
+export type Expression =
+  | {
+      type: 'expression';
+      arg: Literal | VariableRef;
+      annotation?: FunctionAnnotation | UnsupportedAnnotation;
+    }
+  | {
+      type: 'expression';
+      arg?: never;
+      annotation: FunctionAnnotation | UnsupportedAnnotation;
+    };
 
 /**
  * Type guard for {@link Expression} pattern elements
@@ -53,19 +60,20 @@ export const isExpression = (part: any): part is Expression =>
 /** @internal */
 export function resolveExpression(
   ctx: Context,
-  { body }: Expression
+  { arg, annotation }: Expression
 ): MessageValue {
-  switch (body.type) {
+  if (annotation) {
+    return annotation.type === 'function'
+      ? resolveFunctionAnnotation(ctx, arg, annotation)
+      : resolveUnsupportedAnnotation(ctx, arg, annotation);
+  }
+  switch (arg?.type) {
     case 'literal':
-      return resolveLiteral(ctx, body);
+      return resolveLiteral(ctx, arg);
     case 'variable':
-      return resolveVariableRef(ctx, body);
-    case 'function':
-      return resolveFunctionAnnotation(ctx, body);
-    case 'unsupported-annotation':
-      return resolveunsupportedAnnotation(ctx, body);
+      return resolveVariableRef(ctx, arg);
     default:
       // @ts-expect-error - should never happen
-      throw new Error(`Unsupported expression: ${body.type}`);
+      throw new Error(`Unsupported expression: ${arg?.type}`);
   }
 }

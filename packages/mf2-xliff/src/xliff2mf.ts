@@ -2,7 +2,6 @@ import type * as MF from 'messageformat';
 import type { MessageFormatInfo, MessageResourceData } from './index';
 import type * as X from './xliff-spec';
 
-import { isFunctionAnnotation, isLiteral } from 'messageformat';
 import { parse } from './xliff';
 
 // TODO: Support declarations
@@ -150,12 +149,12 @@ function resolveSelect(
     throw new Error(`<mf:messageformat> not found in ${el}`);
   }
   const selectors = idList(attributes['mf:select']).map(selId => {
-    const part = mf?.elements.find(part => part.attributes?.id === selId);
-    if (!part) {
+    const exp = mf?.elements.find(exp => exp.attributes?.id === selId);
+    if (!exp) {
       const el = prettyElement('group', attributes.id);
       throw new Error(`Selector ${selId} not found in ${el}`);
     }
-    return { type: 'expression' as const, body: resolvePart(part) };
+    return resolveExpression(exp);
   });
   return { type: 'select', declarations: [], selectors, variants };
 }
@@ -182,12 +181,14 @@ function resolvePattern(
           );
         }
         if (stel) {
-          for (const part of resolveContents(stel.elements, mf)) {
-            body.push(
-              part.type === 'literal'
-                ? part.value
-                : { type: 'expression', body: part }
-            );
+          for (const ie of stel.elements) {
+            const last = body[body.length - 1];
+            const next = resolveInlineElement(ie, mf);
+            if (typeof last === 'string' && typeof next === 'string') {
+              body[body.length - 1] += next;
+            } else {
+              body.push(next);
+            }
           }
         }
         break;
@@ -197,52 +198,24 @@ function resolvePattern(
   return { body };
 }
 
-function resolveContents(
-  contents: (X.Text | X.InlineElement)[],
-  mf: X.MessageFormat | null
-) {
-  const res: (MF.Literal | MF.VariableRef | MF.FunctionAnnotation)[] = [];
-  for (const ie of contents) {
-    const last = res[res.length - 1];
-    const part = resolveInlineElement(ie, mf);
-    if (isLiteral(last) && isLiteral(part)) last.value += part;
-    else res.push(part);
-  }
-  return res;
-}
-
 const resolveCharCode = (cc: X.CharCode) =>
   String.fromCodePoint(Number(cc.attributes.hex));
 
 function resolveInlineElement(
   ie: X.Text | X.InlineElement,
   mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.FunctionAnnotation {
+): string | MF.Expression {
   switch (ie.type) {
     case 'text':
     case 'cdata':
-      return { type: 'literal', value: ie.text };
+      return ie.text;
     case 'element':
       switch (ie.name) {
         case 'cp':
-          return { type: 'literal', value: resolveCharCode(ie) };
+          return resolveCharCode(ie);
         case 'ph':
-          return resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-        case 'pc': {
-          const part = resolveRef(ie.name, ie.attributes['mf:ref'], mf);
-          if (!isFunctionAnnotation(part))
-            throw new Error(`<pc mf:ref> is only valid for function values`);
-          const arg = resolveContents(ie.elements, mf);
-          if (arg.length > 1)
-            throw new Error(
-              'Forming function arguments by concatenation is not supported'
-            );
-          const operand = arg[0];
-          if (isFunctionAnnotation(operand))
-            throw new Error(`A ${operand.type} is not supported here`);
-          part.operand = operand;
-          return part;
-        }
+          return resolveRef(mf, ie.attributes['mf:ref']);
+        case 'pc':
         case 'sc':
         case 'ec':
         // TODO
@@ -252,98 +225,76 @@ function resolveInlineElement(
 }
 
 function resolveRef(
-  name: string,
-  ref: string | undefined,
-  mf: X.MessageFormat | null
-): MF.Literal | MF.VariableRef | MF.FunctionAnnotation {
-  if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
+  mf: X.MessageFormat | null,
+  ref: string | undefined
+): MF.Expression {
+  if (!ref) throw new Error('Unsupported <ph> without mf:ref attribute');
   if (!mf)
     throw new Error(
-      `Inline <${name}> requires a preceding <mf:messageformat> in the same <unit>`
+      'Inline <ph> requires a preceding <mf:messageformat> in the same <unit>'
     );
   const res = mf.elements.find(el => el.attributes?.id === ref);
   if (!res)
-    throw new Error(
-      `MessageFormat value not found for <${name} mf:ref="${ref}">`
-    );
-  return resolvePart(res);
+    throw new Error(`MessageFormat value not found for <ph mf:ref="${ref}">`);
+  return resolveExpression(res);
 }
 
 const resolveText = (text: (X.Text | X.CharCode)[]) =>
   text.map(t => (t.type === 'element' ? resolveCharCode(t) : t.text)).join('');
 
-function resolvePart(
-  part: X.MessagePart
-): MF.Literal | MF.VariableRef | MF.FunctionAnnotation {
-  switch (part.name) {
+function resolveExpression(part: X.MessageExpression): MF.Expression {
+  const xArg = part.elements[0];
+  let xFunc;
+  let arg: MF.Literal | MF.VariableRef | undefined;
+  switch (xArg.name) {
     case 'mf:literal':
     case 'mf:variable':
-      return resolveArgument(part);
-
-    case 'mf:function': {
-      let operand: MF.FunctionAnnotation['operand'] = undefined;
-      const options: MF.Option[] = [];
-      for (const el of part.elements) {
-        if (el.name === 'mf:option') {
-          options.push({ name: el.attributes.name, value: resolveOption(el) });
-        } else if (operand) {
-          throw new Error(
-            `More than one positional argument is not supported.`
-          );
-        } else {
-          operand = resolveArgument(el);
-        }
-      }
-
-      return {
-        type: 'function',
-        kind: 'value',
-        name: part.attributes.name,
-        operand,
-        options
-      };
-    }
+      arg = resolveValue(xArg);
+      xFunc = part.elements[1];
+      if (!xFunc) return { type: 'expression', arg };
+      break;
+    default:
+      xFunc = xArg;
+      if (!xFunc) throw new Error('Invalid empty expression');
   }
 
-  /* istanbul ignore next - never happens */
-  throw new Error(
-    `Unsupported part ${(part as X.MessagePart).type} <${
-      (part as X.MessagePart).name
-    }>`
-  );
+  let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
+  if (xFunc.name === 'mf:function') {
+    annotation = {
+      type: 'function',
+      kind: 'value',
+      name: xFunc.attributes.name
+    };
+    if (xFunc.elements.length) {
+      annotation.options = xFunc.elements.map(el => ({
+        name: el.attributes.name,
+        value: resolveValue(el.elements[0])
+      }));
+    }
+  } else {
+    annotation = {
+      type: 'unsupported-annotation',
+      sigil: xFunc.attributes.sigil ?? '�',
+      source: resolveText(xFunc.elements)
+    };
+  }
+
+  return arg
+    ? { type: 'expression', arg, annotation }
+    : { type: 'expression', annotation };
 }
 
-function resolveArgument(part: X.MessageLiteral): MF.Literal;
-function resolveArgument(part: X.MessageVariable): MF.VariableRef;
-function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef;
-function resolveArgument(part: X.MessagePart): MF.Literal | MF.VariableRef {
+function resolveValue(
+  part: X.MessageLiteral | X.MessageVariable
+): MF.Literal | MF.VariableRef {
   switch (part.name) {
     case 'mf:literal':
-      return {
-        type: 'literal',
-        value: resolveText(part.elements)
-      };
-
+      return { type: 'literal', value: resolveText(part.elements) };
     case 'mf:variable':
       return { type: 'variable', name: part.attributes.name };
   }
 
   /* istanbul ignore next - never happens */
-  throw new Error(
-    `Unsupported argument ${(part as X.MessagePart).type} <${
-      (part as X.MessagePart).name
-    }>`
-  );
-}
-
-function resolveOption(opt: X.MessageOption): MF.Literal | MF.VariableRef {
-  const sv = opt.elements.map(resolveArgument);
-  switch (sv.length) {
-    case 0:
-      return { type: 'literal', value: '' };
-    case 1:
-      return sv[0];
-    default:
-      throw new Error('Options may only have one value');
-  }
+  // @ts-expect-error - Guard against unexpected <mf:option> contents
+  throw new Error(`Unsupported value <${part.name}>`);
 }

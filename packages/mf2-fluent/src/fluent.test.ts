@@ -502,7 +502,7 @@ describe('formatToParts', () => {
                     'Foo ',
                     {
                       type: 'expression',
-                      body: { type: 'variable', name: 'num' }
+                      arg: { type: 'variable', name: 'num' }
                     }
                   ]
                 }
@@ -741,17 +741,17 @@ describe('messagetoFluent', () => {
           name: 'local',
           value: {
             type: 'expression',
-            body: {
+            arg: { type: 'variable', name: 'num' },
+            annotation: {
               type: 'function',
               name: 'number',
-              kind: 'value',
-              operand: { type: 'variable', name: 'num' }
+              kind: 'value'
             }
           }
         }
       ],
       selectors: [
-        { type: 'expression', body: { type: 'variable', name: 'local' } }
+        { type: 'expression', arg: { type: 'variable', name: 'local' } }
       ],
       variants: [
         {
@@ -807,7 +807,7 @@ describe('messagetoFluent', () => {
           name: 'local',
           value: {
             type: 'expression',
-            body: { type: 'literal', value: '-term' }
+            arg: { type: 'literal', value: '-term' }
           }
         }
       ],
@@ -815,20 +815,20 @@ describe('messagetoFluent', () => {
         body: [
           {
             type: 'expression',
-            body: {
+            arg: { type: 'literal', value: 'msg' },
+            annotation: {
               type: 'function',
               name: 'message',
-              kind: 'value',
-              operand: { type: 'literal', value: 'msg' }
+              kind: 'value'
             }
           },
           {
             type: 'expression',
-            body: {
+            arg: { type: 'variable', name: 'local' },
+            annotation: {
               type: 'function',
               name: 'message',
-              kind: 'value',
-              operand: { type: 'variable', name: 'local' }
+              kind: 'value'
             }
           }
         ]
@@ -867,11 +867,11 @@ describe('messagetoFluent', () => {
         body: [
           {
             type: 'expression',
-            body: {
+            arg: { type: 'variable', name: 'input' },
+            annotation: {
               type: 'function',
               name: 'message',
-              kind: 'value',
-              operand: { type: 'variable', name: 'input' }
+              kind: 'value'
             }
           }
         ]

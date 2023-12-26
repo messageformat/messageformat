@@ -17,10 +17,9 @@ import type { VariableRef } from './variable-ref.js';
  */
 export interface UnsupportedAnnotation {
   type: 'unsupported-annotation';
-  sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
+  sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~' | '�';
   source: string;
   name?: never;
-  operand?: Literal | VariableRef;
 }
 
 /**
@@ -34,11 +33,12 @@ export const isUnsupportedAnnotation = (
 ): part is UnsupportedAnnotation =>
   !!part && typeof part === 'object' && part.type === 'unsupported-annotation';
 
-export function resolveunsupportedAnnotation(
+export function resolveUnsupportedAnnotation(
   ctx: Context,
-  { operand, sigil, source }: UnsupportedAnnotation
+  operand: Literal | VariableRef | undefined,
+  { sigil, source = '�' }: UnsupportedAnnotation
 ) {
-  const msg = `Reserved ${sigil} annotation is not supported`;
+  const msg = `Reserved ${sigil ?? '�'} annotation is not supported`;
   ctx.onError(
     new MessageResolutionError('unsupported-annotation', msg, source)
   );

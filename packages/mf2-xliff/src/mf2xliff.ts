@@ -119,14 +119,14 @@ function resolveSelect(
   }
 
   const select: { id: string; keys: string[] }[] = [];
-  const parts: X.MessagePart[] = srcSel.selectors.map(sel => {
+  const expressions: X.MessageExpression[] = srcSel.selectors.map(sel => {
     const id = nextId();
     select.push({ id, keys: [] });
     return resolveExpression(id, sel);
   });
 
   const elements: (X.MessageFormat | X.Unit)[] = [
-    { type: 'element', name: 'mf:messageformat', elements: parts }
+    { type: 'element', name: 'mf:messageformat', elements: expressions }
   ];
 
   if (!trgSel) {
@@ -147,7 +147,7 @@ function resolveSelect(
         const id = nextId();
         select.push({ id, keys: [] });
         trgSelMap.push(select.length - 1);
-        parts.push(resolveExpression(id, sel));
+        expressions.push(resolveExpression(id, sel));
       }
     }
 
@@ -229,12 +229,12 @@ function resolvePattern(
   srcPattern: MF.Pattern,
   trgPattern: MF.Pattern | undefined
 ): X.Unit {
-  const parts: X.MessagePart[] = [];
+  const expressions: X.MessageExpression[] = [];
   const handlePart = (p: string | MF.Expression): X.Text | X.InlineElement => {
     if (typeof p === 'string') return asText(p);
     const id = nextId();
-    const part = resolveExpression(id, p);
-    parts.push(part);
+    const exp = resolveExpression(id, p);
+    expressions.push(exp);
     const attributes = { id: id.substring(1), 'mf:ref': id };
     return { type: 'element', name: 'ph', attributes };
   };
@@ -251,62 +251,73 @@ function resolvePattern(
 
   const attributes = msgAttributes('u', key);
   let elements: X.Unit['elements'];
-  if (parts.length > 0) {
+  if (expressions.length > 0) {
     const name = 'mf:messageformat';
-    const mf: X.MessageFormat = { type: 'element', name, elements: parts };
+    const mf: X.MessageFormat = {
+      type: 'element',
+      name,
+      elements: expressions
+    };
     elements = [mf, segment];
   } else elements = [segment];
   return { type: 'element', name: 'unit', attributes, elements };
 }
 
 function resolveExpression(
-  id: string | null,
-  { body }: MF.Expression
-): X.MessagePart {
-  if (isLiteral(body) || isVariableRef(body)) return resolveArgument(id, body);
-
-  if (isFunctionAnnotation(body)) {
-    const elements: X.MessageFunction['elements'] = [];
-    if (body.options) {
-      for (const { name, value } of body.options) {
-        elements.push({
-          type: 'element',
-          name: 'mf:option',
-          attributes: { name },
-          elements: [resolveArgument(null, value)]
-        });
+  id: string,
+  { arg, annotation }: MF.Expression
+): X.MessageExpression {
+  let resFunc: X.MessageFunction | X.MessageUnsupported | undefined;
+  if (annotation) {
+    if (isFunctionAnnotation(annotation)) {
+      const elements: X.MessageFunction['elements'] = [];
+      if (annotation.options) {
+        for (const { name, value } of annotation.options) {
+          elements.push({
+            type: 'element',
+            name: 'mf:option',
+            attributes: { name },
+            elements: [resolveArgument(value)]
+          });
+        }
       }
+      const attributes = { name: annotation.name };
+      resFunc = { type: 'element', name: 'mf:function', attributes, elements };
+    } else {
+      resFunc = {
+        type: 'element',
+        name: 'mf:unsupported',
+        attributes: { sigil: annotation.sigil ?? '�' },
+        elements: [asText(annotation.source ?? '�')]
+      };
     }
-    if (body.operand) elements.push(resolveArgument(null, body.operand));
-    const attributes = { id: id ?? undefined, name: body.name };
-    return { type: 'element', name: 'mf:function', attributes, elements };
   }
 
-  /* istanbul ignore next - never happens */
-  throw new Error(`Unsupported part: ${JSON.stringify(body)}`);
+  let elements: X.MessageExpression['elements'];
+  if (arg) {
+    const resArg = resolveArgument(arg);
+    elements = resFunc ? [resArg, resFunc] : [resArg];
+  } else if (resFunc) {
+    elements = [resFunc];
+  } else {
+    throw new Error('Invalid empty expression');
+  }
+
+  return {
+    type: 'element',
+    name: 'mf:expression',
+    attributes: { id },
+    elements
+  };
 }
 
 function resolveArgument(
-  id: string | null,
-  part: MF.Literal | string | number | boolean
-): X.MessageLiteral;
-function resolveArgument(
-  id: string | null,
-  part: MF.VariableRef
-): X.MessageVariable;
-function resolveArgument(
-  id: string | null,
-  part: MF.Literal | MF.VariableRef | string | number | boolean
-): X.MessageLiteral | X.MessageVariable;
-function resolveArgument(
-  id: string | null,
-  part: MF.Literal | MF.VariableRef | string | number | boolean
+  part: MF.Literal | MF.VariableRef
 ): X.MessageLiteral | X.MessageVariable {
-  if (isLiteral(part) || typeof part !== 'object') {
+  if (isLiteral(part)) {
     return {
       type: 'element',
       name: 'mf:literal',
-      attributes: { id: id ?? undefined },
       elements: [asText(part)]
     };
   }
@@ -315,7 +326,7 @@ function resolveArgument(
     return {
       type: 'element',
       name: 'mf:variable',
-      attributes: { id: id ?? undefined, name: part.name }
+      attributes: { name: part.name }
     };
   }
 

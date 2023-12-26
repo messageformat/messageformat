@@ -156,10 +156,11 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
 
 function functionRefToFluent(
   ctx: MsgContext,
-  { name, operand, options }: FunctionAnnotation
+  arg: Fluent.InlineExpression | null,
+  { name, options }: FunctionAnnotation
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
-  if (operand) args.positional[0] = valueToFluent(ctx, operand);
+  if (arg) args.positional[0] = arg;
   if (options) {
     args.named = options.map(opt => {
       const va = valueToFluent(ctx, opt.value);
@@ -221,20 +222,20 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  { body }: Expression
+  { arg, annotation }: Expression
 ): Fluent.InlineExpression {
-  switch (body.type) {
-    case 'function':
-      return functionRefToFluent(ctx, body);
-    case 'literal':
-      return new Fluent.StringLiteral(body.value);
-    case 'variable':
-      return variableRefToFluent(ctx, body);
-    default:
+  const fluentArg = arg ? valueToFluent(ctx, arg) : null;
+  if (annotation) {
+    if (annotation.type === 'function') {
+      return functionRefToFluent(ctx, fluentArg, annotation);
+    } else {
       throw new Error(
-        `Conversion of "${body.type}" expression to Fluent is not supported`
+        `Conversion of "${annotation.type}" expression to Fluent is not supported`
       );
+    }
   }
+  if (fluentArg) return fluentArg;
+  throw new Error('Invalid empty expression');
 }
 
 function valueToFluent(

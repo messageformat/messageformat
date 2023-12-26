@@ -48,54 +48,45 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
   if (cst.type !== 'expression') {
     throw new MessageSyntaxError('parse-error', cst.start, cst.end);
   }
-  let body:
-    | Model.Literal
-    | Model.VariableRef
-    | Model.FunctionAnnotation
-    | Model.UnsupportedAnnotation;
   switch (cst.body.type) {
     case 'literal':
     case 'variable':
-      body = asValue(cst.body);
-      break;
+      return { type: 'expression', arg: asValue(cst.body) };
     case 'function':
-      body = asFunctionAnnotation(cst.body);
-      break;
+      return asFunctionExpression(cst.body);
     case 'reserved':
-      body = asUnsupportedAnnotation(cst.body);
-      break;
+      return asUnsupportedExpression(cst.body);
     default:
       throw new MessageSyntaxError('parse-error', cst.start, cst.end);
   }
-  return { type: 'expression', body };
 }
 
-function asFunctionAnnotation(cst: CST.FunctionRef): Model.FunctionAnnotation {
-  const fn: Model.FunctionAnnotation = {
+function asFunctionExpression(cst: CST.FunctionRef): Model.Expression {
+  const annotation: Model.FunctionAnnotation = {
     type: 'function',
     kind: cst.kind,
     name: cst.name
   };
-  if (cst.operand) fn.operand = asValue(cst.operand);
   if (cst.options && cst.options.length > 0) {
-    fn.options = cst.options.map(opt => ({
+    annotation.options = cst.options.map(opt => ({
       name: opt.name,
       value: asValue(opt.value)
     }));
   }
-  return fn;
+  return cst.operand
+    ? { type: 'expression', arg: asValue(cst.operand), annotation }
+    : { type: 'expression', annotation };
 }
 
-function asUnsupportedAnnotation(
-  cst: CST.Reserved
-): Model.UnsupportedAnnotation {
-  const res: Model.UnsupportedAnnotation = {
+function asUnsupportedExpression(cst: CST.Reserved): Model.Expression {
+  const annotation: Model.UnsupportedAnnotation = {
     type: 'unsupported-annotation',
     sigil: cst.sigil,
     source: cst.source
   };
-  if (cst.operand) res.operand = asValue(cst.operand);
-  return res;
+  return cst.operand
+    ? { type: 'expression', arg: asValue(cst.operand), annotation }
+    : { type: 'expression', annotation };
 }
 
 function asValue(cst: CST.Literal | CST.Junk): Model.Literal;

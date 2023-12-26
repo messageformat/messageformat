@@ -3,9 +3,7 @@ import deepEqual from 'fast-deep-equal';
 import {
   Expression,
   FunctionAnnotation,
-  isFunctionAnnotation,
   Literal,
-  Option,
   PatternMessage,
   SelectMessage,
   VariableRef,
@@ -50,87 +48,96 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
   return args;
 }
 
-function expressionToPart(
-  exp: Fluent.Expression
-): Literal | VariableRef | FunctionAnnotation {
+function asValue(exp: Fluent.InlineExpression): Literal | VariableRef {
   switch (exp.type) {
     case 'NumberLiteral':
-      return {
-        type: 'function',
-        kind: 'value',
-        name: 'number',
-        operand: { type: 'literal', value: exp.value }
-      };
+      return { type: 'literal', value: exp.value };
     case 'StringLiteral':
       return { type: 'literal', value: exp.parse().value };
     case 'VariableReference':
       return { type: 'variable', name: exp.id.name };
+    default:
+      throw new Error(`A Fluent ${exp.type} is not supported here.`);
+  }
+}
+
+function asExpression(exp: Fluent.Expression): Expression {
+  switch (exp.type) {
+    case 'NumberLiteral':
+      return {
+        type: 'expression',
+        arg: asValue(exp),
+        annotation: { type: 'function', kind: 'value', name: 'number' }
+      };
+    case 'StringLiteral':
+    case 'VariableReference':
+      return { type: 'expression', arg: asValue(exp) };
     case 'FunctionReference': {
-      const func = exp.id.name.toLowerCase();
+      const annotation: FunctionAnnotation = {
+        type: 'function',
+        kind: 'value',
+        name: exp.id.name.toLowerCase()
+      };
       const { positional, named } = exp.arguments;
-      const args = positional.map(exp => {
-        const part = expressionToPart(exp);
-        if (isFunctionAnnotation(part))
-          throw new Error(`A Fluent ${exp.type} is not supported here.`);
-        return part;
-      });
+      const args = positional.map(asValue);
       if (args.length > 1) {
         throw new Error(`More than one positional argument is not supported.`);
       }
-      const operand = args[0];
-      if (named.length === 0)
-        return { type: 'function', kind: 'value', name: func, operand };
-      const options: Option[] = [];
-      for (const { name, value } of named) {
-        const quoted = value.type !== 'NumberLiteral';
-        const litValue = quoted ? value.parse().value : value.value;
-        options.push({
-          name: name.name,
-          value: { type: 'literal', value: litValue }
-        });
+      if (named.length > 0) {
+        annotation.options = [];
+        for (const { name, value } of named) {
+          const quoted = value.type !== 'NumberLiteral';
+          const litValue = quoted ? value.parse().value : value.value;
+          annotation.options.push({
+            name: name.name,
+            value: { type: 'literal', value: litValue }
+          });
+        }
       }
-      return { type: 'function', kind: 'value', name: func, operand, options };
+      return args.length > 0
+        ? { type: 'expression', arg: args[0], annotation }
+        : { type: 'expression', annotation };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
       return {
-        type: 'function',
-        kind: 'value',
-        name: 'message',
-        operand: { type: 'literal', value: msgId }
+        type: 'expression',
+        arg: { type: 'literal', value: msgId },
+        annotation: { type: 'function', kind: 'value', name: 'message' }
       };
     }
     case 'TermReference': {
+      const annotation: FunctionAnnotation = {
+        type: 'function',
+        kind: 'value',
+        name: 'message'
+      };
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      const operand: Literal = { type: 'literal', value: msgId };
-      if (!exp.arguments)
-        return { type: 'function', kind: 'value', name: 'message', operand };
-
-      const options: Option[] = [];
-      for (const { name, value } of exp.arguments.named) {
-        const quoted = value.type !== 'NumberLiteral';
-        const litValue = quoted ? value.parse().value : value.value;
-        options.push({
-          name: name.name,
-          value: { type: 'literal', value: litValue }
-        });
+      if (exp.arguments?.named.length) {
+        annotation.options = [];
+        for (const { name, value } of exp.arguments.named) {
+          const quoted = value.type !== 'NumberLiteral';
+          const litValue = quoted ? value.parse().value : value.value;
+          annotation.options.push({
+            name: name.name,
+            value: { type: 'literal', value: litValue }
+          });
+        }
       }
       return {
-        type: 'function',
-        kind: 'value',
-        name: 'message',
-        operand,
-        options
+        type: 'expression',
+        arg: { type: 'literal', value: msgId },
+        annotation
       };
     }
 
     /* istanbul ignore next - never happens */
     case 'Placeable':
-      return expressionToPart(exp.expression);
+      return asExpression(exp.expression);
 
     /* istanbul ignore next - never happens */
     default:
@@ -139,9 +146,7 @@ function expressionToPart(
 }
 
 const elementToPart = (el: Fluent.PatternElement): string | Expression =>
-  el.type === 'TextElement'
-    ? el.value
-    : { type: 'expression', body: expressionToPart(el.expression) };
+  el.type === 'TextElement' ? el.value : asExpression(el.expression);
 
 function asFluentSelect(
   el: Fluent.PatternElement
@@ -251,10 +256,7 @@ export function fluentToMessage(
   return {
     type: 'select',
     declarations: [],
-    selectors: args.map(arg => ({
-      type: 'expression',
-      body: expressionToPart(arg.selector)
-    })),
+    selectors: args.map(arg => asExpression(arg.selector)),
     variants
   };
 }
