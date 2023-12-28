@@ -9,31 +9,30 @@ import type * as CST from './cst-types.js';
  */
 export function asDataModel(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
-  const declarations: Model.Declaration[] = msg.declarations.map(decl => ({
-    name: asValue(decl.target).name,
-    value: asExpression(decl.value)
-  }));
-  switch (msg.type) {
-    case 'message':
-      return {
-        type: 'message',
-        declarations,
-        pattern: asPattern(msg.pattern)
-      };
-    case 'select':
-      return {
-        type: 'select',
-        declarations,
-        selectors: msg.selectors.map(asExpression),
-        variants: msg.variants.map(cst => ({
-          keys: cst.keys.map(key =>
-            key.type === '*' ? { type: '*' } : asValue(key)
-          ),
-          value: asPattern(cst.value)
-        }))
-      };
-    default:
-      throw new MessageSyntaxError('parse-error', 0, msg.source?.length ?? 0);
+  const declarations: Model.Declaration[] = (msg.declarations ?? []).map(
+    decl => ({
+      name: asValue(decl.target).name,
+      value: asExpression(decl.value)
+    })
+  );
+  if (msg.type === 'select') {
+    return {
+      type: 'select',
+      declarations,
+      selectors: msg.selectors.map(asExpression),
+      variants: msg.variants.map(cst => ({
+        keys: cst.keys.map(key =>
+          key.type === '*' ? { type: '*' } : asValue(key)
+        ),
+        value: asPattern(cst.value)
+      }))
+    };
+  } else {
+    return {
+      type: 'message',
+      declarations,
+      pattern: asPattern(msg.pattern)
+    };
   }
 }
 

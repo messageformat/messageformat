@@ -3,13 +3,12 @@ import { parseMessage } from './index.js';
 
 describe('messages in resources', () => {
   test('text character escapes', () => {
-    const src = '{\\\t\\ \\n\\r\\t\\x01\\u0002\\U000003}';
+    const src = '\\\t\\ \\n\\r\\t\\x01\\u0002\\U000003';
     const noRes = parseMessage(src, { resource: false });
     expect(noRes.errors).toHaveLength(8);
     const msg = parseMessage(src, { resource: true });
     expect(msg).toMatchObject<CST.Message>({
-      type: 'message',
-      declarations: [],
+      type: 'simple',
       errors: [],
       pattern: {
         start: 0,
@@ -17,8 +16,8 @@ describe('messages in resources', () => {
         body: [
           {
             type: 'text',
-            start: 1,
-            end: src.length - 1,
+            start: 0,
+            end: src.length,
             value: '\t \n\r\t\x01\x02\x03'
           }
         ]
@@ -27,13 +26,12 @@ describe('messages in resources', () => {
   });
 
   test('quoted literal character escapes', () => {
-    const src = '{{|\\\t\\ \\n\\r\\t\\x01\\u0002\\U000003|}}';
+    const src = '{|\\\t\\ \\n\\r\\t\\x01\\u0002\\U000003|}';
     const noRes = parseMessage(src, { resource: false });
     expect(noRes.errors).toHaveLength(8);
     const msg = parseMessage(src, { resource: true });
     expect(msg).toMatchObject<CST.Message>({
-      type: 'message',
-      declarations: [],
+      type: 'simple',
       errors: [],
       pattern: {
         start: 0,
@@ -41,13 +39,13 @@ describe('messages in resources', () => {
         body: [
           {
             type: 'expression',
-            start: 1,
-            end: src.length - 1,
+            start: 0,
+            end: src.length,
             body: {
               type: 'literal',
               quoted: true,
-              start: 2,
-              end: src.length - 2,
+              start: 1,
+              end: src.length - 1,
               value: '\t \n\r\t\x01\x02\x03'
             }
           }
@@ -56,24 +54,46 @@ describe('messages in resources', () => {
     });
   });
 
+  test('complex pattern with leading .', () => {
+    const src = '{{.let}}';
+    const msg = parseMessage(src, { resource: false });
+    expect(msg).toMatchObject<CST.Message>({
+      type: 'complex',
+      errors: [],
+      declarations: [],
+      pattern: {
+        quotes: [
+          { start: 0, end: 2, value: '{{' },
+          { start: 6, end: 8, value: '}}' }
+        ],
+        start: 0,
+        end: src.length,
+        body: [{ type: 'text', start: 2, end: src.length - 2, value: '.let' }]
+      }
+    });
+  });
+
   test('newlines in text', () => {
-    const src = '{1\n \t2 \n \\ 3\n\\t}';
+    const src = '1\n \t2 \n \\ 3\n\\t';
     const noRes = parseMessage(src, { resource: false });
     expect(noRes).toMatchObject({
+      type: 'simple',
       errors: [{ type: 'bad-escape' }, { type: 'bad-escape' }],
       pattern: { body: [{ type: 'text', value: '1\n \t2 \n \\ 3\n\\t' }] }
     });
     const msg = parseMessage(src, { resource: true });
     expect(msg).toMatchObject({
+      type: 'simple',
       errors: [],
       pattern: { body: [{ type: 'text', value: '1\n2 \n 3\n\t' }] }
     });
   });
 
   test('newlines in quoted literal', () => {
-    const src = '{{|1\n \t2 \n \\ 3\n\\t|}}';
+    const src = '{|1\n \t2 \n \\ 3\n\\t|}';
     const noRes = parseMessage(src, { resource: false });
     expect(noRes).toMatchObject({
+      type: 'simple',
       errors: [{ type: 'bad-escape' }, { type: 'bad-escape' }],
       pattern: {
         body: [
@@ -86,6 +106,7 @@ describe('messages in resources', () => {
     });
     const msg = parseMessage(src, { resource: true });
     expect(msg).toMatchObject({
+      type: 'simple',
       errors: [],
       pattern: {
         body: [

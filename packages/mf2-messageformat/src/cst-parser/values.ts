@@ -114,7 +114,7 @@ export function parseQuotedLiteral(
     }
   }
   value += ctx.source.substring(pos);
-  ctx.onError('missing-char', ctx.source.length, '|');
+  ctx.onError('missing-syntax', ctx.source.length, '|');
   return {
     type: 'literal',
     quoted: true,

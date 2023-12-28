@@ -18,19 +18,19 @@ function resolve(
 
 describe('Reserved syntax', () => {
   test('empty', () => {
-    const msg = resolve('{{!}}', {}, [{ type: 'unsupported-annotation' }]);
+    const msg = resolve('{!}', {}, [{ type: 'unsupported-annotation' }]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '!' }]);
   });
 
   test('argument', () => {
-    const msg = resolve('{{$foo @bar}}', { foo: 42 }, [
+    const msg = resolve('{$foo @bar}', { foo: 42 }, [
       { type: 'unsupported-annotation' }
     ]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '$foo' }]);
   });
 
   test('whitespace', () => {
-    const msg = resolve('{{ # one\ntwo\rthree four }}', {}, [
+    const msg = resolve('{ # one\ntwo\rthree four }', {}, [
       { type: 'unsupported-annotation' }
     ]);
     expect(msg).toMatchObject([
@@ -39,8 +39,6 @@ describe('Reserved syntax', () => {
   });
 
   test('surrogates', () => {
-    expect(
-      () => new MessageFormat('{{ %invalid \ud900 surrogate }}')
-    ).toThrow();
+    expect(() => new MessageFormat('{ %invalid \ud900 surrogate }')).toThrow();
   });
 });

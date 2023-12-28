@@ -21,17 +21,17 @@ export class MessageSyntaxError extends MessageError {
     | 'extra-content'
     | 'key-mismatch'
     | 'parse-error'
-    | 'missing-char'
-    | 'missing-fallback';
+    | 'missing-fallback'
+    | 'missing-syntax';
   start: number;
   end: number;
-  char?: string;
+  expected?: string;
 
   constructor(
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
     end: number,
-    char?: string
+    expected?: string
   ) {
     let message: string;
     switch (type) {
@@ -43,8 +43,8 @@ export class MessageSyntaxError extends MessageError {
       case 'parse-error':
         message = `Syntax parse error: ${type} at ${start}`;
         break;
-      case 'missing-char':
-        message = `Syntax parse error: Missing character ${char} at ${start}`;
+      case 'missing-syntax':
+        message = `Syntax parse error: Missing ${expected} at ${start}`;
         break;
       case 'key-mismatch':
       case 'missing-fallback':
@@ -57,12 +57,12 @@ export class MessageSyntaxError extends MessageError {
   }
 }
 
-export class MissingCharError extends MessageSyntaxError {
-  char: string;
+export class MissingSyntaxError extends MessageSyntaxError {
+  expected: string;
 
-  constructor(pos: number, char: string) {
-    super('missing-char', pos, pos + 1, char);
-    this.char = char;
+  constructor(pos: number, expected: string) {
+    super('missing-syntax', pos, pos + expected.length, expected);
+    this.expected = expected;
   }
 }
 

@@ -6,13 +6,12 @@ function validateParts(parts: Pattern['body'], functions: MessageFunctions) {
   for (const part of parts) {
     if (
       isExpression(part) &&
-      isFunctionAnnotation(part.body) &&
-      part.body.kind === 'value'
+      isFunctionAnnotation(part.annotation) &&
+      part.annotation.kind === 'value'
     ) {
-      if (typeof functions[part.body.name] !== 'function') {
-        throw new ReferenceError(
-          `Runtime function not available: ${part.body.name}`
-        );
+      const { name } = part.annotation;
+      if (typeof functions[name] !== 'function') {
+        throw new ReferenceError(`Runtime function not available: ${name}`);
       }
       // TODO: Once runtime arg requirements are defined, test against them
     }

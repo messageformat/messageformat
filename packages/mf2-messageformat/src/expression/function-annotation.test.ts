@@ -12,7 +12,7 @@ test('Custom function', () => {
       toString: () => `str:${input}`
     })
   } satisfies MessageFunctions;
-  const mf = new MessageFormat('{{$var :custom}}', 'en', { functions });
+  const mf = new MessageFormat('{$var :custom}', 'en', { functions });
   expect(mf.format({ var: 42 })).toEqual('str:42');
   expect(mf.formatToParts({ var: 42 })).toEqual([
     { type: 'custom', source: '$var', locale: 'en', value: 'part:42' }
@@ -22,8 +22,8 @@ test('Custom function', () => {
 describe('inputs with options', () => {
   test('local variable with :number expression', () => {
     const mf = new MessageFormat(
-      `let $val = {12345678 :number useGrouping=false}
-      {{$val :number minimumFractionDigits=2}}`,
+      `.let $val = {12345678 :number useGrouping=false}
+      {{{$val :number minimumFractionDigits=2}}}`,
       'en'
     );
     //const val = new MessageNumber(null, BigInt(12345678), { options: { useGrouping: false } });
@@ -39,7 +39,7 @@ describe('inputs with options', () => {
 
   test('value with options', () => {
     const mf = new MessageFormat(
-      '{{$val :number minimumFractionDigits=2}}',
+      '{$val :number minimumFractionDigits=2}',
       'en'
     );
     const val = Object.assign(new Number(12345678), {
@@ -57,7 +57,7 @@ describe('inputs with options', () => {
 
   test('MessageValue locales take precedence', () => {
     const mf = new MessageFormat(
-      '{{$val :number minimumFractionDigits=2}}',
+      '{$val :number minimumFractionDigits=2}',
       'en'
     );
     const val = Object.assign(new Number(12345), { locale: 'fi' });
@@ -71,18 +71,15 @@ describe('inputs with options', () => {
 
 describe('Type casts based on runtime', () => {
   test('boolean function option with literal value', () => {
-    const mfTrue = new MessageFormat('{{$var :number useGrouping=true}}', 'en');
+    const mfTrue = new MessageFormat('{$var :number useGrouping=true}', 'en');
     expect(mfTrue.format({ var: 1234 })).toBe('1,234');
-    const mfFalse = new MessageFormat(
-      '{{$var :number useGrouping=false}}',
-      'en'
-    );
+    const mfFalse = new MessageFormat('{$var :number useGrouping=false}', 'en');
     expect(mfFalse.format({ var: 1234 })).toBe('1234');
   });
 
   test('boolean function option with variable value', () => {
     const mf = new MessageFormat(
-      '{{$var :number useGrouping=$useGrouping}}',
+      '{$var :number useGrouping=$useGrouping}',
       'en'
     );
     expect(mf.format({ var: 1234, useGrouping: 'false' })).toBe('1234');
@@ -92,7 +89,7 @@ describe('Type casts based on runtime', () => {
 
 describe('Simple open/close', () => {
   test('no options, literal body', () => {
-    const mf = new MessageFormat('{{+b}foo{-b}}');
+    const mf = new MessageFormat('{+b}foo{-b}');
     expect(mf.formatToParts()).toEqual([
       { type: 'open', source: '+b', name: 'b' },
       { type: 'literal', value: 'foo' },
@@ -103,7 +100,7 @@ describe('Simple open/close', () => {
 
   test('arguments, options, variables', () => {
     const mf = new MessageFormat(
-      '{{|x| +b foo=42 bar=$foo}foo{$foo}{|y| -b foo=13}}',
+      '{|x| +b foo=42 bar=$foo}foo{$foo}{|y| -b foo=13}',
       'en'
     );
     const msg = mf.formatToParts({ foo: 'foo bar' });
@@ -131,7 +128,7 @@ describe('Simple open/close', () => {
 
 describe('Multiple open/close', () => {
   test('adjacent', () => {
-    const mf = new MessageFormat('{{+b}foo{-b}{+a}bar{-a}}');
+    const mf = new MessageFormat('{+b}foo{-b}{+a}bar{-a}');
     expect(mf.formatToParts()).toEqual([
       { type: 'open', source: '+b', name: 'b' },
       { type: 'literal', value: 'foo' },
@@ -144,7 +141,7 @@ describe('Multiple open/close', () => {
   });
 
   test('nested', () => {
-    const mf = new MessageFormat('{{+b}foo{+a}bar{-a}{-b}}');
+    const mf = new MessageFormat('{+b}foo{+a}bar{-a}{-b}');
     expect(mf.formatToParts()).toEqual([
       { type: 'open', source: '+b', name: 'b' },
       { type: 'literal', value: 'foo' },
@@ -157,7 +154,7 @@ describe('Multiple open/close', () => {
   });
 
   test('overlapping', () => {
-    const mf = new MessageFormat('{{+b}foo{+a}bar{-b}baz{-a}}');
+    const mf = new MessageFormat('{+b}foo{+a}bar{-b}baz{-a}');
     expect(mf.formatToParts()).toEqual([
       { type: 'open', source: '+b', name: 'b' },
       { type: 'literal', value: 'foo' },

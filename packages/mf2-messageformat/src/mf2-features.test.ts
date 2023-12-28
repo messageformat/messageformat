@@ -40,10 +40,10 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   test('input as { start, end } object', () => {
     const mf = new MessageFormat(
       source`
-        let $range = {$range :range}
-        match {$range}
-        when one {{$range} dag}
-        when * {{$range} dagen}
+        .let $range = {$range :range}
+        .match {$range}
+        one {{{$range} dag}}
+        * {{{$range} dagen}}
       `,
       'nl',
       { functions: { range } }
@@ -158,7 +158,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     );
   });
 
-  test('Mozilla activity (@stasm)', () => {
+  test('Mozilla Common Voice activity (@stasm)', () => {
     const src = source`
       activity-needed-calculation-plural = { NUMBER($totalHours) ->
           [one] {$totalHours} hour
@@ -233,18 +233,18 @@ maybe('List formatting', () => {
     const list = ['Motorcycle', 'Bus', 'Car'];
     const opt = { functions: { list: listFn() } };
 
-    const mf1 = new MessageFormat('{{$list :list}}', 'en', opt);
+    const mf1 = new MessageFormat('{$list :list}', 'en', opt);
     expect(mf1.format({ list })).toBe('Motorcycle, Bus, and Car');
 
     const mf2 = new MessageFormat(
-      '{{$list :list style=short type=conjunction}}',
+      '{$list :list style=short type=conjunction}',
       'en',
       opt
     );
     expect(mf2.format({ list })).toBe('Motorcycle, Bus, & Car');
 
     const mf3 = new MessageFormat(
-      '{{$list :list style=long type=disjunction}}',
+      '{$list :list style=long type=disjunction}',
       'en',
       opt
     );
@@ -264,9 +264,9 @@ maybe('List formatting', () => {
 
     const mf = new MessageFormat(
       source`
-        match {$count :number}
-        when one {I-am dat cadouri {$list :list each=dative}.}
-        when * {Le-am dat cadouri {$list :list each=dative}.}
+        .match {$count :number}
+        one {{I-am dat cadouri {$list :list each=dative}.}}
+        * {{Le-am dat cadouri {$list :list each=dative}.}}
       `,
       'ro',
       { functions: { list: listFn({ dative }) } }
@@ -309,7 +309,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   }
 
   test('Match, no change', () => {
-    const mf = new MessageFormat('{A {$foo} and an {$other}}', 'en');
+    const mf = new MessageFormat('A {$foo} and an {$other}', 'en');
     const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
@@ -321,7 +321,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Match, changed', () => {
-    const mf = new MessageFormat('{A {$foo} and an {$other}}', 'en');
+    const mf = new MessageFormat('A {$foo} and an {$other}', 'en');
     const parts = mf.formatToParts({ foo: 'other', other: 'foo' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
@@ -333,7 +333,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('No match, no change', () => {
-    const mf = new MessageFormat('{The {$foo} and lotsa {$other}}', 'en');
+    const mf = new MessageFormat('The {$foo} and lotsa {$other}', 'en');
     const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
@@ -345,7 +345,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Articles across non-wordy content', () => {
-    const mf = new MessageFormat('{{$foo} foo and a {|...|} {$other}}', 'en');
+    const mf = new MessageFormat('{$foo} foo and a {|...|} {$other}', 'en');
     const parts = mf.formatToParts({ foo: 'An', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([

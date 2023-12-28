@@ -10,7 +10,7 @@ export function parseDeclarations(ctx: ParseContext): {
 } {
   let pos = whitespaces(ctx.source, 0);
   const declarations: CST.Declaration[] = [];
-  while (ctx.source.startsWith('let', pos)) {
+  while (ctx.source.startsWith('.let', pos)) {
     const decl = parseDeclaration(ctx, pos);
     declarations.push(decl);
     pos = decl.end;
@@ -20,15 +20,13 @@ export function parseDeclarations(ctx: ParseContext): {
   return { declarations, end: pos };
 }
 
-// declaration = let s variable [s] "=" [s] expression
-// let = %x6C.65.74 ; "let"
 function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
-  let pos = start + 3; // 'let'
-  const let_: CST.Syntax<'let'> = { start, end: pos, value: 'let' };
+  let pos = start + 4; // '.let'
+  const let_: CST.Syntax<'.let'> = { start, end: pos, value: '.let' };
   const ws = whitespaces(ctx.source, pos);
   pos += ws;
 
-  if (ws === 0) ctx.onError('missing-char', pos, ' ');
+  if (ws === 0) ctx.onError('missing-syntax', pos, ' ');
 
   let target: CST.VariableRef | CST.Junk;
   if (ctx.source[pos] === '$') {
@@ -44,7 +42,7 @@ function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
       end: pos,
       source: ctx.source.substring(junkStart, pos)
     };
-    ctx.onError('missing-char', junkStart, '$');
+    ctx.onError('missing-syntax', junkStart, '$');
   }
 
   pos += whitespaces(ctx.source, pos);
@@ -54,7 +52,7 @@ function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
     pos += 1;
   } else {
     equals = { start: pos, end: pos, value: '' };
-    ctx.onError('missing-char', pos, '=');
+    ctx.onError('missing-syntax', pos, '=');
   }
 
   let value: CST.Expression | CST.Junk;
@@ -74,7 +72,7 @@ function parseDeclaration(ctx: ParseContext, start: number): CST.Declaration {
       end: pos,
       source: ctx.source.substring(junkStart, pos)
     };
-    ctx.onError('missing-char', junkStart, '{');
+    ctx.onError('missing-syntax', junkStart, '{');
   }
 
   return { start, end: pos, let: let_, target, equals, value };

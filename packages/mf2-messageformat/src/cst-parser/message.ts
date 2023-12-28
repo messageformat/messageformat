@@ -1,7 +1,7 @@
 import {
   MessageDataModelError,
   MessageSyntaxError,
-  MissingCharError
+  MissingSyntaxError
 } from '../errors.js';
 import type * as CST from './cst-types.js';
 import { parseDeclarations } from './declarations.js';
@@ -20,11 +20,11 @@ export class ParseContext {
   }
 
   onError(
-    type: Exclude<typeof MessageSyntaxError.prototype.type, 'missing-char'>,
+    type: Exclude<typeof MessageSyntaxError.prototype.type, 'missing-syntax'>,
     start: number,
     end: number
   ): void;
-  onError(type: 'missing-char', start: number, char: string): void;
+  onError(type: 'missing-syntax', start: number, char: string): void;
   onError(
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
@@ -36,8 +36,8 @@ export class ParseContext {
       case 'missing-fallback':
         err = new MessageDataModelError(type, start, Number(end));
         break;
-      case 'missing-char':
-        err = new MissingCharError(start, String(end));
+      case 'missing-syntax':
+        err = new MissingSyntaxError(start, String(end));
         break;
       default:
         err = new MessageSyntaxError(type, start, Number(end));
@@ -46,9 +46,6 @@ export class ParseContext {
   }
 }
 
-// message = [s] *(declaration [s]) body [s]
-// body = pattern / (selectors 1*([s] variant))
-// selectors = match 1*([s] expression)
 /**
  * Parse the string syntax representation of a message into
  * its corresponding CST representation.
@@ -60,24 +57,24 @@ export function parseMessage(
   opt?: { resource?: boolean }
 ): CST.Message {
   const ctx = new ParseContext(source, opt);
-  const { declarations, end: pos } = parseDeclarations(ctx);
 
-  if (source.startsWith('match', pos)) {
-    return parseSelectMessage(ctx, pos, declarations);
-  } else if (source[pos] === '{') {
-    return parsePatternMessage(ctx, pos, declarations);
+  if (source.startsWith('.')) {
+    const { declarations, end: pos } = parseDeclarations(ctx);
+    return source.startsWith('.match', pos)
+      ? parseSelectMessage(ctx, pos, declarations)
+      : parsePatternMessage(ctx, pos, declarations, true);
   } else {
-    ctx.onError('parse-error', pos, source.length);
-    return { type: 'junk', declarations, errors: ctx.errors, source };
+    return parsePatternMessage(ctx, 0, [], source.startsWith('{{'));
   }
 }
 
 function parsePatternMessage(
   ctx: ParseContext,
   start: number,
-  declarations: CST.Declaration[]
-): CST.PatternMessage {
-  const pattern = parsePattern(ctx, start);
+  declarations: CST.Declaration[],
+  complex: boolean
+): CST.SimpleMessage | CST.ComplexMessage {
+  const pattern = parsePattern(ctx, start, complex);
   let pos = pattern.end;
   pos += whitespaces(ctx.source, pos);
 
@@ -85,7 +82,9 @@ function parsePatternMessage(
     ctx.onError('extra-content', pos, ctx.source.length);
   }
 
-  return { type: 'message', declarations, pattern, errors: ctx.errors };
+  return complex
+    ? { type: 'complex', declarations, pattern, errors: ctx.errors }
+    : { type: 'simple', pattern, errors: ctx.errors };
 }
 
 function parseSelectMessage(
@@ -93,8 +92,8 @@ function parseSelectMessage(
   start: number,
   declarations: CST.Declaration[]
 ): CST.SelectMessage {
-  let pos = start + 5; // 'match'
-  const match: CST.Syntax<'match'> = { start, end: pos, value: 'match' };
+  let pos = start + 6; // '.match'
+  const match: CST.Syntax<'.match'> = { start, end: pos, value: '.match' };
   pos += whitespaces(ctx.source, pos);
 
   const selectors: CST.Expression[] = [];
@@ -120,7 +119,7 @@ function parseSelectMessage(
 
   const variants: CST.Variant[] = [];
   pos += whitespaces(ctx.source, pos);
-  while (ctx.source.startsWith('when', pos)) {
+  while (pos < ctx.source.length) {
     const variant = parseVariant(ctx, pos, selectors.length);
     variants.push(variant);
     pos = variant.end;
@@ -141,15 +140,12 @@ function parseSelectMessage(
   };
 }
 
-// variant = when 1*(s key) [s] pattern
-// key = literal / "*"
 function parseVariant(
   ctx: ParseContext,
   start: number,
   selCount: number
 ): CST.Variant {
-  let pos = start + 4; // 'when'
-  const when: CST.Syntax<'when'> = { start, end: pos, value: 'when' };
+  let pos = start;
   const keys: Array<CST.Literal | CST.CatchallKey> = [];
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
@@ -157,7 +153,7 @@ function parseVariant(
     const ch = ctx.source[pos];
     if (ch === '{') break;
 
-    if (ws === 0) ctx.onError('missing-char', pos, ' ');
+    if (pos > start && ws === 0) ctx.onError('missing-syntax', pos, "' '");
 
     const key =
       ch === '*'
@@ -173,18 +169,25 @@ function parseVariant(
     ctx.onError('key-mismatch', start, end);
   }
 
-  const value = parsePattern(ctx, pos);
-  return { start, end: value.end, when, keys, value };
+  const value = parsePattern(ctx, pos, true);
+  return { start, end: value.end, keys, value };
 }
 
-// pattern = "{" *(text / expression) "}"
-function parsePattern(ctx: ParseContext, start: number): CST.Pattern {
-  if (ctx.source[start] !== '{') {
-    ctx.onError('missing-char', start, '{');
-    return { start, end: start, body: [] };
+function parsePattern(
+  ctx: ParseContext,
+  start: number,
+  quoted: boolean
+): CST.Pattern {
+  let pos = start;
+  if (quoted) {
+    if (ctx.source.startsWith('{{', pos)) {
+      pos += 2;
+    } else {
+      ctx.onError('missing-syntax', start, '{{');
+      return { start, end: start, body: [] };
+    }
   }
 
-  let pos = start + 1;
   const body: Array<CST.Text | CST.Expression> = [];
   loop: while (pos < ctx.source.length) {
     switch (ctx.source[pos]) {
@@ -204,8 +207,18 @@ function parsePattern(ctx: ParseContext, start: number): CST.Pattern {
     }
   }
 
-  if (ctx.source[pos] === '}') pos += 1;
-  else ctx.onError('missing-char', pos, '}');
+  if (quoted) {
+    const q0: CST.Syntax<'{{'> = { start, end: start + 2, value: '{{' };
+    let quotes: CST.Pattern['quotes'];
+    if (ctx.source.startsWith('}}', pos)) {
+      quotes = [q0, { start: pos, end: pos + 2, value: '}}' }];
+      pos += 2;
+    } else {
+      quotes = [q0];
+      ctx.onError('missing-syntax', pos, '}}');
+    }
+    return { quotes, start, end: pos, body };
+  }
 
   return { start, end: pos, body };
 }

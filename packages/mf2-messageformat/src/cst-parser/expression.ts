@@ -61,7 +61,7 @@ export function parseExpression(
   pos += whitespaces(ctx.source, pos);
 
   if (pos >= ctx.source.length) {
-    ctx.onError('missing-char', pos, '}');
+    ctx.onError('missing-syntax', pos, '}');
   } else if (ctx.source[pos] !== '}') {
     const errStart = pos;
     while (pos < ctx.source.length && ctx.source[pos] !== '}') pos += 1;
@@ -95,7 +95,7 @@ function parseFunctionRef(
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
     if (ctx.source[pos + ws] === '}') break;
-    if (ws === 0) ctx.onError('missing-char', pos, ' ');
+    if (ws === 0) ctx.onError('missing-syntax', pos, ' ');
     pos += ws;
     const opt = parseOption(ctx, pos);
     if (opt.end === pos) break; // error
@@ -112,7 +112,7 @@ function parseOption(ctx: ParseContext, start: number): CST.Option {
   let pos = start + name.length;
   pos += whitespaces(ctx.source, pos);
   if (ctx.source[pos] === '=') pos += 1;
-  else ctx.onError('missing-char', pos, '=');
+  else ctx.onError('missing-syntax', pos, '=');
   pos += whitespaces(ctx.source, pos);
   const value =
     ctx.source[pos] === '$'

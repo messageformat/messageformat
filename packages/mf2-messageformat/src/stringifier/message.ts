@@ -29,23 +29,23 @@ export function stringifyMessage(msg: Message | MessageFormat) {
   let res = '';
   for (const decl of msg.declarations) res += stringifyDeclaration(decl);
   if (isPatternMessage(msg)) {
-    res += stringifyPattern(msg.pattern);
+    res += stringifyPattern(msg.pattern, !!res);
   } else if (isSelectMessage(msg)) {
-    res += 'match';
+    res += '.match';
     for (const sel of msg.selectors) res += ' ' + stringifyExpression(sel);
     for (const { keys, value } of msg.variants) {
-      res += '\nwhen ';
+      res += '\n';
       for (const key of keys) {
         res += (isLiteral(key) ? stringifyLiteral(key) : '*') + ' ';
       }
-      res += stringifyPattern(value);
+      res += stringifyPattern(value, true);
     }
   }
   return res;
 }
 
 function stringifyDeclaration({ name, value }: Declaration) {
-  return `let $${name} = ${stringifyExpression(value)}\n`;
+  return `.let $${name} = ${stringifyExpression(value)}\n`;
 }
 
 function stringifyFunctionAnnotation({
@@ -71,12 +71,15 @@ function stringifyOption({ name, value }: Option) {
   return `${name}=${valueStr}`;
 }
 
-function stringifyPattern({ body }: Pattern) {
+function stringifyPattern({ body }: Pattern, quoted: boolean) {
   let res = '';
+  if (!quoted && typeof body[0] === 'string' && body[0][0] === '.') {
+    quoted = true;
+  }
   for (const el of body) {
     res += typeof el === 'string' ? el : stringifyExpression(el);
   }
-  return `{${res}}`;
+  return quoted ? `{{${res}}}` : res;
 }
 
 function stringifyExpression({ arg, annotation }: Expression) {

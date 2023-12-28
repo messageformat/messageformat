@@ -14,19 +14,19 @@ function resolve(source: string, errors: any[] = []) {
 
 describe('quoted literals', () => {
   test('simple', () => {
-    const res = resolve('{{|quoted literal|}}');
+    const res = resolve('{|quoted literal|}');
     expect(res).toMatchObject([{ type: 'string', value: 'quoted literal' }]);
   });
 
   test('spaces, newlines and escapes', () => {
-    const res = resolve('{{| quoted \n \\\\\\|literal\\\\\\||}}');
+    const res = resolve('{| quoted \n \\\\\\|literal\\\\\\||}');
     expect(res).toMatchObject([
       { type: 'string', value: ' quoted \n \\|literal\\|' }
     ]);
   });
 
   test('invalid escapes', () => {
-    expect(() => new MessageFormat('{{|quoted \\}iteral|}}')).toThrow();
-    expect(() => new MessageFormat('{{|quoted \\{iteral|}}')).toThrow();
+    expect(() => new MessageFormat('{|quoted \\}iteral|}')).toThrow();
+    expect(() => new MessageFormat('{|quoted \\{iteral|}')).toThrow();
   });
 });

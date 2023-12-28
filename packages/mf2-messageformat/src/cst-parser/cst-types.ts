@@ -1,11 +1,19 @@
 import type { MessageSyntaxError } from '../errors';
 
 /** @beta */
-export type Message = PatternMessage | SelectMessage | JunkMessage;
+export type Message = SimpleMessage | ComplexMessage | SelectMessage;
 
 /** @beta */
-export interface PatternMessage {
-  type: 'message';
+export interface SimpleMessage {
+  type: 'simple';
+  declarations?: never;
+  pattern: Pattern;
+  errors: MessageSyntaxError[];
+}
+
+/** @beta */
+export interface ComplexMessage {
+  type: 'complex';
   declarations: Declaration[];
   pattern: Pattern;
   errors: MessageSyntaxError[];
@@ -15,25 +23,17 @@ export interface PatternMessage {
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
-  match: Syntax<'match'>;
+  match: Syntax<'.match'>;
   selectors: Expression[];
   variants: Variant[];
   errors: MessageSyntaxError[];
 }
 
 /** @beta */
-export interface JunkMessage {
-  type: 'junk';
-  declarations: Declaration[];
-  errors: MessageSyntaxError[];
-  source: string;
-}
-
-/** @beta */
 export interface Declaration {
   start: number;
   end: number;
-  let: Syntax<'let'>;
+  let: Syntax<'.let'>;
   target: VariableRef | Junk;
   equals: Syntax<'=' | ''>;
   value: Expression | Junk;
@@ -43,7 +43,6 @@ export interface Declaration {
 export interface Variant {
   start: number;
   end: number;
-  when: Syntax<'when'>;
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
 }
@@ -58,11 +57,10 @@ export interface CatchallKey {
 
 /** @beta */
 export interface Pattern {
-  /** position of the `{` */
   start: number;
-  /** position one past the `}` */
   end: number;
   body: Array<Text | Expression>;
+  quotes?: [Syntax<'{{'>] | [Syntax<'{{'>, Syntax<'}}'>];
 }
 
 /** @beta */
