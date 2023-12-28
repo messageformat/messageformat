@@ -10,10 +10,29 @@ import type * as CST from './cst-types.js';
 export function asDataModel(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
   const declarations: Model.Declaration[] = (msg.declarations ?? []).map(
-    decl => ({
-      name: asValue(decl.target).name,
-      value: asExpression(decl.value)
-    })
+    decl => {
+      switch (decl.type) {
+        case 'input': {
+          const value = asExpression(decl.value);
+          if (value.arg?.type === 'variable') {
+            return {
+              type: 'input',
+              name: value.arg.name,
+              value: value as Model.Expression<Model.VariableRef>
+            };
+          }
+          break;
+        }
+        case 'local':
+          return {
+            type: 'local',
+            name: asValue(decl.target).name,
+            value: asExpression(decl.value)
+          };
+      }
+      const { start, end } = decl.value;
+      throw new MessageSyntaxError('parse-error', start, end);
+    }
   );
   if (msg.type === 'select') {
     return {

@@ -58,76 +58,102 @@
     "exp": "hello 4.20"
   },
   {
-    "src": ".let $foo = {bar} {{bar {$foo}}}",
+    "src": ".local $foo = {bar} {{bar {$foo}}}",
     "exp": "bar bar"
   },
   {
-    "src": ".let $foo = {|bar|} {{bar {$foo}}}",
+    "src": ".local $foo = {|bar|} {{bar {$foo}}}",
     "exp": "bar bar"
   },
   {
-    "src": ".let $foo = {|bar|} {{bar {$foo}}}",
+    "src": ".local $foo = {|bar|} {{bar {$foo}}}",
     "params": { "foo": "foo" },
     "exp": "bar bar"
   },
   {
-    "src": ".let $foo = {$bar} {{bar {$foo}}}",
+    "src": ".local $foo = {$bar} {{bar {$foo}}}",
     "params": { "bar": "foo" },
     "exp": "bar foo"
   },
   {
-    "src": ".let $foo = {$bar :number} {{bar {$foo}}}",
+    "src": ".local $foo = {$bar :number} {{bar {$foo}}}",
     "params": { "bar": 4.2 },
     "exp": "bar 4.2"
   },
   {
-    "src": ".let $foo = {$bar :number minimumFractionDigits=2} {{bar {$foo}}}",
+    "src": ".local $foo = {$bar :number minimumFractionDigits=2} {{bar {$foo}}}",
     "params": { "bar": 4.2 },
     "exp": "bar 4.20"
   },
   {
-    "src": ".let $foo = {$bar :number minimumFractionDigits=foo} {{bar {$foo}}}",
+    "src": ".local $foo = {$bar :number minimumFractionDigits=foo} {{bar {$foo}}}",
     "params": { "bar": 4.2 },
     "exp": "bar {$bar}",
     "errors": [{ "type": "bad-option" }]
   },
   {
-    "src": ".let $foo = {$bar :number} {{bar {$foo}}}",
+    "src": ".local $foo = {$bar :number} {{bar {$foo}}}",
     "params": { "bar": "foo" },
     "exp": "bar {$bar}",
     "errors": [{ "type": "bad-input" }]
   },
   {
-    "src": ".let $foo = {$baz} .let $bar = {$foo} {{bar {$bar}}}",
+    "src": ".local $foo = {$baz} .local $bar = {$foo} {{bar {$bar}}}",
     "params": { "baz": "foo" },
     "exp": "bar foo"
   },
   {
-    "src": ".let $foo = {$foo} {{bar {$foo}}}",
+    "src": ".input {$foo} {{bar {$foo}}}",
     "params": { "foo": "foo" },
     "exp": "bar foo"
   },
   {
-    "src": ".let $foo = {$foo} .let $foo = {42} {{bar {$foo}}}",
+    "src": ".input {$foo :number} {{bar {$foo}}}",
+    "params": { "foo": 4.2 },
+    "exp": "bar 4.2"
+  },
+  {
+    "src": ".input {$foo :number minimumFractionDigits=2} {{bar {$foo}}}",
+    "params": { "foo": 4.2 },
+    "exp": "bar 4.20"
+  },
+  {
+    "src": ".input {$foo :number minimumFractionDigits=foo} {{bar {$foo}}}",
+    "params": { "foo": 4.2 },
+    "exp": "bar {$foo}",
+    "errors": [{ "type": "bad-option" }]
+  },
+  {
+    "src": ".input {$foo :number} {{bar {$foo}}}",
     "params": { "foo": "foo" },
-    "exp": "bar 42"
+    "exp": "bar {$foo}",
+    "errors": [{ "type": "bad-input" }]
   },
   {
-    "src": ".let $foo = {42} .let $foo = {$foo} {{bar {$foo}}}",
+    "src": ".input {$foo} .local $bar = {$foo} {{bar {$bar}}}",
     "params": { "foo": "foo" },
-    "exp": "bar 42"
+    "exp": "bar foo"
   },
   {
-    "src": ".let $foo = {$foo} .let $foo = {42} {{bar {$foo}}}",
-    "exp": "bar 42"
+    "src": ".local $foo = {$baz} .local $bar = {$foo} {{bar {$bar}}}",
+    "params": { "baz": "foo" },
+    "exp": "bar foo"
   },
   {
-    "src": ".let $foo = {:unknown} .let $foo = {42} {{bar {$foo}}}",
-    "exp": "bar 42"
+    "src": ".input {$foo} .local $foo = {42} {{bar {$foo}}}",
+    "syntaxError": true
   },
   {
-    "src": ".let $x = {42} .let $y = {$x} .let $x = {13} {{{$x} {$y}}}",
-    "exp": "13 42"
+    "src": ".local $foo = {42} .input {$foo} {{bar {$foo}}}",
+    "syntaxError": true
+  },
+  {
+    "src": ".local $foo = {:unknown} .local $foo = {42} {{bar {$foo}}}",
+    "syntaxError": true
+  },
+  {
+    "src": ".local $x = {42} .local $y = {$x} {{{$x} {$y}}}",
+    "exp": "42 42"
   },
   {
     "src": ".match {$foo} |1| {{one}} * {{other}}",
@@ -181,42 +207,42 @@
     "exp": "other"
   },
   {
-    "src": ".let $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
+    "src": ".local $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
     "params": { "bar": 1 },
     "exp": "one"
   },
   {
-    "src": ".let $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
+    "src": ".local $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
     "params": { "bar": 2 },
     "exp": "other"
   },
   {
-    "src": ".let $foo = {$bar} .match {$foo :number} one {{one}} * {{other}}",
+    "src": ".local $foo = {$bar} .match {$foo :number} one {{one}} * {{other}}",
     "params": { "bar": 1 },
     "exp": "one"
   },
   {
-    "src": ".let $foo = {$bar} .match {$foo :number} one {{one}} * {{other}}",
+    "src": ".local $foo = {$bar} .match {$foo :number} one {{one}} * {{other}}",
     "params": { "bar": 2 },
     "exp": "other"
   },
   {
-    "src": ".let $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
+    "src": ".local $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
     "params": { "bar": 1 },
     "exp": "one"
   },
   {
-    "src": ".let $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
+    "src": ".local $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
     "params": { "bar": 2 },
     "exp": "other"
   },
   {
-    "src": ".let $bar = {$none} .match {$foo} one {{one}} * {{{$bar}}}",
+    "src": ".local $bar = {$none} .match {$foo} one {{one}} * {{{$bar}}}",
     "params": { "foo": 1 },
     "exp": "one"
   },
   {
-    "src": ".let $bar = {$none} .match {$foo} one {{one}} * {{{$bar}}}",
+    "src": ".local $bar = {$none} .match {$foo} one {{one}} * {{{$bar}}}",
     "params": { "foo": 2 },
     "exp": "{$none}",
     "errors": [{ "type": "unresolved-var" }]
@@ -291,11 +317,15 @@
   { "src": "{{missing end braces", "syntaxError": true },
   { "src": "{{missing end {$braces", "syntaxError": true },
   { "src": "{{extra}} content", "syntaxError": true },
-  { "src": ".let bar = {|foo|} {{{$bar}}}", "syntaxError": true },
-  { "src": ".let $bar {|foo|} {{{$bar}}}", "syntaxError": true },
-  { "src": ".let $bar = |foo| {{{$bar}}}", "syntaxError": true },
+  { "src": ".local bar = {|foo|} {{{$bar}}}", "syntaxError": true },
+  { "src": ".local $bar {|foo|} {{{$bar}}}", "syntaxError": true },
+  { "src": ".local $bar = |foo| {{{$bar}}}", "syntaxError": true },
   {
-    "src": ".let $foo = {$bar} .let $bar = {$baz} {{bar {$foo}}}",
+    "src": ".local $foo = {$bar} .local $bar = {$baz} {{bar {$foo}}}",
+    "syntaxError": true
+  },
+  {
+    "src": ".local $foo = {$bar :func} .local $bar = {$baz} {{bar {$foo}}}",
     "syntaxError": true
   },
   { "src": "empty { }", "syntaxError": true },

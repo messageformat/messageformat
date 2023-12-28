@@ -44,8 +44,14 @@ export function stringifyMessage(msg: Message | MessageFormat) {
   return res;
 }
 
-function stringifyDeclaration({ name, value }: Declaration) {
-  return `.let $${name} = ${stringifyExpression(value)}\n`;
+function stringifyDeclaration({ type, name, value }: Declaration) {
+  switch (type) {
+    case 'input':
+      return `.input ${stringifyExpression(value)}\n`;
+    case 'local':
+      return `.local $${name} = ${stringifyExpression(value)}\n`;
+  }
+  throw new Error(`Unsupported ${type} declaration`);
 }
 
 function stringifyFunctionAnnotation({

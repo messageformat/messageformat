@@ -55,7 +55,7 @@ describe('messages in resources', () => {
   });
 
   test('complex pattern with leading .', () => {
-    const src = '{{.let}}';
+    const src = '{{.local}}';
     const msg = parseMessage(src, { resource: false });
     expect(msg).toMatchObject<CST.Message>({
       type: 'complex',
@@ -64,11 +64,11 @@ describe('messages in resources', () => {
       pattern: {
         quotes: [
           { start: 0, end: 2, value: '{{' },
-          { start: 6, end: 8, value: '}}' }
+          { start: 8, end: 10, value: '}}' }
         ],
         start: 0,
         end: src.length,
-        body: [{ type: 'text', start: 2, end: src.length - 2, value: '.let' }]
+        body: [{ type: 'text', start: 2, end: src.length - 2, value: '.local' }]
       }
     });
   });

@@ -36,13 +36,18 @@ export {
  *
  * @beta
  */
-export type Expression =
-  | {
+export type Expression<
+  A extends Literal | VariableRef | undefined =
+    | Literal
+    | VariableRef
+    | undefined
+> = A extends Literal | VariableRef
+  ? {
       type: 'expression';
-      arg: Literal | VariableRef;
+      arg: A;
       annotation?: FunctionAnnotation | UnsupportedAnnotation;
     }
-  | {
+  : {
       type: 'expression';
       arg?: never;
       annotation: FunctionAnnotation | UnsupportedAnnotation;

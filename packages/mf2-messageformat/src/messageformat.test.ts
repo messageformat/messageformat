@@ -19,7 +19,11 @@ export type TestMessage =
 describe('Format messages', () => {
   for (const testMsg of testMessages as TestMessage[]) {
     if (testMsg.syntaxError) {
-      expect(() => new MessageFormat(testMsg.src)).toThrow(MessageSyntaxError);
+      test(testName(testMsg), () => {
+        expect(() => new MessageFormat(testMsg.src)).toThrow(
+          MessageSyntaxError
+        );
+      });
     } else {
       const {
         src,

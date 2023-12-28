@@ -32,6 +32,8 @@ export class ParseContext {
   ) {
     let err: MessageSyntaxError;
     switch (type) {
+      case 'duplicate-declaration':
+      case 'forward-reference':
       case 'key-mismatch':
       case 'missing-fallback':
         err = new MessageDataModelError(type, start, Number(end));

@@ -29,14 +29,22 @@ export interface PatternMessage {
 }
 
 /**
- * A message may declare any number of local variables or aliases,
+ * A message may declare any number of input and local variables,
  * each with a value defined by an expression.
- * The order of the declarations is not relevant,
- * but a valid message may not include a dependency loop amond them.
+ * The variable name for each declaration must be unique.
  *
  * @beta
  */
-export interface Declaration {
+export type Declaration = InputDeclaration | LocalDeclaration;
+
+export interface InputDeclaration {
+  type: 'input';
+  name: string;
+  value: Expression<VariableRef>;
+}
+
+export interface LocalDeclaration {
+  type: 'local';
   name: string;
   value: Expression;
 }

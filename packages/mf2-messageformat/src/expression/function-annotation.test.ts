@@ -22,7 +22,7 @@ test('Custom function', () => {
 describe('inputs with options', () => {
   test('local variable with :number expression', () => {
     const mf = new MessageFormat(
-      `.let $val = {12345678 :number useGrouping=false}
+      `.local $val = {12345678 :number useGrouping=false}
       {{{$val :number minimumFractionDigits=2}}}`,
       'en'
     );

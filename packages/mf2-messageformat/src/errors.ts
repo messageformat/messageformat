@@ -16,9 +16,11 @@ export class MessageSyntaxError extends MessageError {
   declare type:
     | 'empty-token'
     | 'bad-escape'
-    | 'bad-local-var'
+    | 'bad-input-expression'
     | 'bad-selector'
+    | 'duplicate-declaration'
     | 'extra-content'
+    | 'forward-reference'
     | 'key-mismatch'
     | 'parse-error'
     | 'missing-fallback'
@@ -37,7 +39,7 @@ export class MessageSyntaxError extends MessageError {
     switch (type) {
       case 'empty-token':
       case 'bad-escape':
-      case 'bad-local-var':
+      case 'bad-input-expression':
       case 'bad-selector':
       case 'extra-content':
       case 'parse-error':
@@ -46,6 +48,8 @@ export class MessageSyntaxError extends MessageError {
       case 'missing-syntax':
         message = `Syntax parse error: Missing ${expected} at ${start}`;
         break;
+      case 'duplicate-declaration':
+      case 'forward-reference':
       case 'key-mismatch':
       case 'missing-fallback':
         message = `Data model error: ${type}`;
@@ -67,7 +71,11 @@ export class MissingSyntaxError extends MessageSyntaxError {
 }
 
 export class MessageDataModelError extends MessageSyntaxError {
-  declare type: 'key-mismatch' | 'missing-fallback';
+  declare type:
+    | 'duplicate-declaration'
+    | 'forward-reference'
+    | 'key-mismatch'
+    | 'missing-fallback';
 }
 
 export class MessageResolutionError extends MessageError {

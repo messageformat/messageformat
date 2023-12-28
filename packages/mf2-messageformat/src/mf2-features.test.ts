@@ -40,7 +40,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
   test('input as { start, end } object', () => {
     const mf = new MessageFormat(
       source`
-        .let $range = {$range :range}
+        .input {$range :range}
         .match {$range}
         one {{{$range} dag}}
         * {{{$range} dagen}}

@@ -30,10 +30,23 @@ export interface SelectMessage {
 }
 
 /** @beta */
-export interface Declaration {
+export type Declaration = InputDeclaration | LocalDeclaration;
+
+/** @beta */
+export interface InputDeclaration {
+  type: 'input';
   start: number;
   end: number;
-  let: Syntax<'.let'>;
+  keyword: Syntax<'.input'>;
+  value: Expression | Junk;
+}
+
+/** @beta */
+export interface LocalDeclaration {
+  type: 'local';
+  start: number;
+  end: number;
+  keyword: Syntax<'.local'>;
   target: VariableRef | Junk;
   equals: Syntax<'=' | ''>;
   value: Expression | Junk;
