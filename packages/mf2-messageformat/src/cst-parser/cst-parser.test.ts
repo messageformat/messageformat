@@ -41,13 +41,18 @@ describe('messages in resources', () => {
             type: 'expression',
             start: 0,
             end: src.length,
-            body: {
+            braces: [
+              { start: 0, end: 1, value: '{' },
+              { start: src.length - 1, end: src.length, value: '}' }
+            ],
+            arg: {
               type: 'literal',
               quoted: true,
               start: 1,
               end: src.length - 1,
               value: '\t \n\r\t\x01\x02\x03'
-            }
+            },
+            annotation: undefined
           }
         ]
       }
@@ -62,7 +67,7 @@ describe('messages in resources', () => {
       errors: [],
       declarations: [],
       pattern: {
-        quotes: [
+        braces: [
           { start: 0, end: 2, value: '{{' },
           { start: 8, end: 10, value: '}}' }
         ],
@@ -99,7 +104,7 @@ describe('messages in resources', () => {
         body: [
           {
             type: 'expression',
-            body: { type: 'literal', value: '1\n \t2 \n \\ 3\n\\t' }
+            arg: { type: 'literal', value: '1\n \t2 \n \\ 3\n\\t' }
           }
         ]
       }
@@ -112,7 +117,7 @@ describe('messages in resources', () => {
         body: [
           {
             type: 'expression',
-            body: { type: 'literal', value: '1\n2 \n 3\n\t' }
+            arg: { type: 'literal', value: '1\n2 \n 3\n\t' }
           }
         ]
       }

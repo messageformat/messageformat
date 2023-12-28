@@ -47,13 +47,7 @@ function parseInputDeclaration(
 
   const value = parseDeclarationValue(ctx, pos);
   if (value.type === 'expression') {
-    const { body } = value;
-    if (
-      !(
-        body.type === 'variable' ||
-        (body.type === 'function' && body.operand?.type === 'variable')
-      )
-    ) {
+    if (value.arg?.type !== 'variable') {
       ctx.onError('bad-input-expression', value.start, value.end);
     }
   }
@@ -173,18 +167,13 @@ function checkDeclarations(ctx: ParseContext, declarations: CST.Declaration[]) {
   loop: for (const decl of declarations) {
     let target: CST.VariableRef | undefined;
     switch (decl.type) {
-      case 'input':
-        if (decl.value.type === 'expression') {
-          const db = decl.value.body;
-          switch (db.type) {
-            case 'variable':
-              target = db;
-              break;
-            case 'function':
-              if (db.operand?.type === 'variable') target = db.operand;
-          }
+      case 'input': {
+        const dv = decl.value;
+        if (dv.type === 'expression' && dv.arg?.type === 'variable') {
+          target = dv.arg;
         }
         break;
+      }
       case 'local':
         if (decl.target.type === 'variable') target = decl.target;
         break;
@@ -203,15 +192,10 @@ function checkDeclarations(ctx: ParseContext, declarations: CST.Declaration[]) {
     }
 
     if (decl.value.type === 'expression') {
-      const { body } = decl.value;
-      switch (body.type) {
-        case 'variable':
-          if (decl.type !== 'input') addRef(body);
-          break;
-        case 'function':
-          if (decl.type !== 'input') addRef(body.operand);
-          for (const opt of body.options) addRef(opt.value);
-          break;
+      const { arg, annotation } = decl.value;
+      if (arg?.type === 'variable') addRef(arg);
+      if (annotation?.type === 'function') {
+        for (const opt of annotation.options) addRef(opt.value);
       }
     }
   }

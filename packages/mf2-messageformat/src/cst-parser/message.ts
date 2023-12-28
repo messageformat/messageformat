@@ -100,19 +100,13 @@ function parseSelectMessage(
 
   const selectors: CST.Expression[] = [];
   while (ctx.source[pos] === '{') {
-    const ph = parseExpression(ctx, pos);
-    switch (ph.body.type) {
-      case 'function':
-      case 'literal':
-      case 'variable':
-        break;
-      default: {
-        const { start, end } = ph.body;
-        ctx.onError('bad-selector', start, end);
-      }
+    const sel = parseExpression(ctx, pos);
+    if (sel.annotation && sel.annotation.type !== 'function') {
+      const { start, end } = sel.annotation;
+      ctx.onError('bad-selector', start, end);
     }
-    selectors.push(ph);
-    pos = ph.end;
+    selectors.push(sel);
+    pos = sel.end;
     pos += whitespaces(ctx.source, pos);
   }
   if (selectors.length === 0) {
@@ -211,15 +205,15 @@ function parsePattern(
 
   if (quoted) {
     const q0: CST.Syntax<'{{'> = { start, end: start + 2, value: '{{' };
-    let quotes: CST.Pattern['quotes'];
+    let braces: CST.Pattern['braces'];
     if (ctx.source.startsWith('}}', pos)) {
-      quotes = [q0, { start: pos, end: pos + 2, value: '}}' }];
+      braces = [q0, { start: pos, end: pos + 2, value: '}}' }];
       pos += 2;
     } else {
-      quotes = [q0];
+      braces = [q0];
       ctx.onError('missing-syntax', pos, '}}');
     }
-    return { quotes, start, end: pos, body };
+    return { braces, start, end: pos, body };
   }
 
   return { start, end: pos, body };

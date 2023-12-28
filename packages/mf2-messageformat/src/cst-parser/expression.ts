@@ -19,20 +19,19 @@ export function parseExpression(
       : parseLiteral(ctx, pos, false);
   if (arg) pos = arg.end;
 
-  let body:
-    | CST.Literal
-    | CST.VariableRef
+  let annotation:
     | CST.FunctionRef
     | CST.ReservedAnnotation
-    | CST.Junk;
+    | CST.Junk
+    | undefined;
   let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(ctx.source, pos);
   switch (ctx.source[pos]) {
     case ':':
     case '+':
     case '-':
-      body = parseFunctionRef(ctx, pos, arg);
-      pos = body.end;
+      annotation = parseFunctionRef(ctx, pos);
+      pos = annotation.end;
       break;
     case '!':
     case '@':
@@ -45,47 +44,54 @@ export function parseExpression(
     case '>':
     case '?':
     case '~':
-      body = parseReservedAnnotation(ctx, pos, arg);
-      pos = body.end;
+      annotation = parseReservedAnnotation(ctx, pos);
+      pos = annotation.end;
       break;
     default:
-      if (arg) {
-        body = arg;
-      } else {
+      if (!arg) {
         const source = ctx.source.substring(pos, pos + 1);
-        body = { type: 'junk', start: pos, end: pos, source };
+        annotation = { type: 'junk', start: pos, end: pos, source };
         junkError = new MessageSyntaxError('parse-error', pos, pos + 1);
         ctx.errors.push(junkError);
       }
   }
   pos += whitespaces(ctx.source, pos);
 
+  const open: CST.Syntax<'{'> = { start, end: start + 1, value: '{' };
+  let close: CST.Syntax<'}'> | undefined;
   if (pos >= ctx.source.length) {
     ctx.onError('missing-syntax', pos, '}');
-  } else if (ctx.source[pos] !== '}') {
-    const errStart = pos;
-    while (pos < ctx.source.length && ctx.source[pos] !== '}') pos += 1;
-    if (body.type === 'junk') {
-      body.end = pos;
-      body.source = ctx.source.substring(body.start, pos);
-      if (junkError) junkError.end = pos;
-    } else {
-      ctx.onError('extra-content', errStart, pos);
-    }
   } else {
-    pos += 1;
+    if (ctx.source[pos] !== '}') {
+      const errStart = pos;
+      while (pos < ctx.source.length && ctx.source[pos] !== '}') pos += 1;
+      if (annotation?.type === 'junk') {
+        annotation.end = pos;
+        annotation.source = ctx.source.substring(annotation.start, pos);
+        if (junkError) junkError.end = pos;
+      } else {
+        ctx.onError('extra-content', errStart, pos);
+      }
+    }
+    if (ctx.source[pos] === '}') {
+      close = { start: pos, end: pos + 1, value: '}' };
+      pos += 1;
+    }
   }
 
-  return { type: 'expression', start, end: pos, body };
+  return {
+    type: 'expression',
+    start,
+    end: pos,
+    braces: close ? [open, close] : [open],
+    arg,
+    annotation
+  };
 }
 
 // annotation = (function *(s option)) / reserved
 // function = (":" / "+" / "-") name
-function parseFunctionRef(
-  ctx: ParseContext,
-  start: number,
-  operand: CST.Literal | CST.VariableRef | undefined
-): CST.FunctionRef {
+function parseFunctionRef(ctx: ParseContext, start: number): CST.FunctionRef {
   const sigil = ctx.source[start];
   let pos = start + 1; // ':' | '+' | '-'
   const name = parseNameValue(ctx.source, pos);
@@ -103,7 +109,7 @@ function parseFunctionRef(
     pos = opt.end;
   }
   const kind = sigil === '+' ? 'open' : sigil === '-' ? 'close' : 'value';
-  return { type: 'function', kind, operand, start, end: pos, name, options };
+  return { type: 'function', kind, start, end: pos, name, options };
 }
 
 // option = name [s] "=" [s] (literal / variable)
@@ -133,8 +139,7 @@ function parseOption(ctx: ParseContext, start: number): CST.Option {
 //                / %xE000-10FFFF
 function parseReservedAnnotation(
   ctx: ParseContext,
-  start: number,
-  operand: CST.Literal | CST.VariableRef | undefined
+  start: number
 ): CST.ReservedAnnotation {
   const sigil = ctx.source[start] as CST.ReservedAnnotation['sigil'];
   const source = parseReservedBody(ctx, start + 1); // skip sigil
@@ -142,7 +147,6 @@ function parseReservedAnnotation(
     type: 'reserved-annotation',
     start,
     end: source.end,
-    operand,
     sigil,
     source
   };

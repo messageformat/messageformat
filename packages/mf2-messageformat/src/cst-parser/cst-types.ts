@@ -86,7 +86,7 @@ export interface Pattern {
   start: number;
   end: number;
   body: Array<Text | Expression>;
-  quotes?: [Syntax<'{{'>] | [Syntax<'{{'>, Syntax<'}}'>];
+  braces?: [Syntax<'{{'>] | [Syntax<'{{'>, Syntax<'}}'>];
 }
 
 /** @beta */
@@ -100,11 +100,11 @@ export interface Text {
 /** @beta */
 export interface Expression {
   type: 'expression';
-  /** position of the `{` */
   start: number;
-  /** position one past the `}` */
   end: number;
-  body: Literal | VariableRef | FunctionRef | ReservedAnnotation | Junk;
+  braces: [Syntax<'{'>] | [Syntax<'{'>, Syntax<'}'>];
+  arg: Literal | VariableRef | undefined;
+  annotation: FunctionRef | ReservedAnnotation | Junk | undefined;
 }
 
 /** @beta */
@@ -140,8 +140,7 @@ export interface VariableRef {
 export interface FunctionRef {
   type: 'function';
   kind: 'open' | 'close' | 'value';
-  operand: Literal | VariableRef | undefined;
-  /** position of the `:`/`+`/`-`, so `operand.start` may be earlier */
+  /** position of the `:`/`+`/`-` */
   start: number;
   end: number;
   name: string;
@@ -152,9 +151,8 @@ export interface FunctionRef {
 export interface ReservedAnnotation {
   type: 'reserved-annotation';
   sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
-  operand: Literal | VariableRef | undefined;
   source: Syntax<string>;
-  /** position of the sigil, so `operand.start` may be earlier */
+  /** position of the sigil */
   start: number;
   end: number;
 }

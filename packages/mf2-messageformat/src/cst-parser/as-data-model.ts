@@ -71,50 +71,44 @@ function asPattern(cst: CST.Pattern): Model.Pattern {
 }
 
 function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
-  if (cst.type !== 'expression') {
-    throw new MessageSyntaxError('parse-error', cst.start, cst.end);
+  if (cst.type === 'expression') {
+    const arg = cst.arg ? asValue(cst.arg) : undefined;
+    let annotation:
+      | Model.FunctionAnnotation
+      | Model.UnsupportedAnnotation
+      | undefined;
+    const ca = cst.annotation;
+    if (ca) {
+      switch (ca.type) {
+        case 'function':
+          annotation = { type: 'function', kind: ca.kind, name: ca.name };
+          if (ca.options && ca.options.length > 0) {
+            annotation.options = ca.options.map(opt => ({
+              name: opt.name,
+              value: asValue(opt.value)
+            }));
+          }
+          break;
+        case 'reserved-annotation':
+          annotation = {
+            type: 'unsupported-annotation',
+            sigil: ca.sigil,
+            source: ca.source.value
+          };
+          break;
+        default:
+          throw new MessageSyntaxError('parse-error', cst.start, cst.end);
+      }
+    }
+    if (arg) {
+      return annotation
+        ? { type: 'expression', arg, annotation }
+        : { type: 'expression', arg };
+    } else if (annotation) {
+      return { type: 'expression', annotation };
+    }
   }
-  switch (cst.body.type) {
-    case 'literal':
-    case 'variable':
-      return { type: 'expression', arg: asValue(cst.body) };
-    case 'function':
-      return asFunctionExpression(cst.body);
-    case 'reserved-annotation':
-      return asUnsupportedExpression(cst.body);
-    default:
-      throw new MessageSyntaxError('parse-error', cst.start, cst.end);
-  }
-}
-
-function asFunctionExpression(cst: CST.FunctionRef): Model.Expression {
-  const annotation: Model.FunctionAnnotation = {
-    type: 'function',
-    kind: cst.kind,
-    name: cst.name
-  };
-  if (cst.options && cst.options.length > 0) {
-    annotation.options = cst.options.map(opt => ({
-      name: opt.name,
-      value: asValue(opt.value)
-    }));
-  }
-  return cst.operand
-    ? { type: 'expression', arg: asValue(cst.operand), annotation }
-    : { type: 'expression', annotation };
-}
-
-function asUnsupportedExpression(
-  cst: CST.ReservedAnnotation
-): Model.Expression {
-  const annotation: Model.UnsupportedAnnotation = {
-    type: 'unsupported-annotation',
-    sigil: cst.sigil,
-    source: cst.source.value
-  };
-  return cst.operand
-    ? { type: 'expression', arg: asValue(cst.operand), annotation }
-    : { type: 'expression', annotation };
+  throw new MessageSyntaxError('parse-error', cst.start, cst.end);
 }
 
 function asValue(cst: CST.Literal | CST.Junk): Model.Literal;
