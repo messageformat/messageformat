@@ -30,7 +30,10 @@ export interface SelectMessage {
 }
 
 /** @beta */
-export type Declaration = InputDeclaration | LocalDeclaration;
+export type Declaration =
+  | InputDeclaration
+  | LocalDeclaration
+  | ReservedStatement;
 
 /** @beta */
 export interface InputDeclaration {
@@ -50,6 +53,16 @@ export interface LocalDeclaration {
   target: VariableRef | Junk;
   equals: Syntax<'=' | ''>;
   value: Expression | Junk;
+}
+
+/** @beta */
+export interface ReservedStatement {
+  type: 'reserved-statement';
+  start: number;
+  end: number;
+  keyword: Syntax<string>;
+  body: Syntax<string>;
+  values: Expression[];
 }
 
 /** @beta */
@@ -91,7 +104,7 @@ export interface Expression {
   start: number;
   /** position one past the `}` */
   end: number;
-  body: Literal | VariableRef | FunctionRef | Reserved | Junk;
+  body: Literal | VariableRef | FunctionRef | ReservedAnnotation | Junk;
 }
 
 /** @beta */
@@ -136,11 +149,11 @@ export interface FunctionRef {
 }
 
 /** @beta */
-export interface Reserved {
-  type: 'reserved';
+export interface ReservedAnnotation {
+  type: 'reserved-annotation';
   sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
   operand: Literal | VariableRef | undefined;
-  source: string;
+  source: Syntax<string>;
   /** position of the sigil, so `operand.start` may be earlier */
   start: number;
   end: number;

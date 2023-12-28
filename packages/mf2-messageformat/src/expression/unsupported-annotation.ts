@@ -36,11 +36,9 @@ export const isUnsupportedAnnotation = (
 export function resolveUnsupportedAnnotation(
   ctx: Context,
   operand: Literal | VariableRef | undefined,
-  { sigil, source = '�' }: UnsupportedAnnotation
+  { sigil = '�' }: UnsupportedAnnotation
 ) {
-  const msg = `Reserved ${sigil ?? '�'} annotation is not supported`;
-  ctx.onError(
-    new MessageResolutionError('unsupported-annotation', msg, source)
-  );
-  return fallback(getValueSource(operand) ?? source);
+  const msg = `Reserved ${sigil} annotation is not supported`;
+  ctx.onError(new MessageResolutionError('unsupported-annotation', msg, sigil));
+  return fallback(getValueSource(operand) ?? sigil);
 }

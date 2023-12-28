@@ -1,8 +1,9 @@
 import type * as CST from './cst-types.js';
 import type { ParseContext } from './message.js';
-import { parseExpression } from './expression.js';
+import { parseExpression, parseReservedBody } from './expression.js';
 import { whitespaces } from './util.js';
 import { parseVariable } from './values.js';
+import { parseNameValue } from './names.js';
 
 export function parseDeclarations(ctx: ParseContext): {
   declarations: CST.Declaration[];
@@ -11,13 +12,22 @@ export function parseDeclarations(ctx: ParseContext): {
   const { source } = ctx;
   let pos = whitespaces(source, 0);
   const declarations: CST.Declaration[] = [];
-  while (pos < source.length) {
-    const decl = source.startsWith('.input', pos)
-      ? parseInputDeclaration(ctx, pos)
-      : source.startsWith('.local', pos)
-        ? parseLocalDeclaration(ctx, pos)
-        : null;
-    if (!decl) break;
+  loop: while (source[pos] === '.') {
+    const keyword = parseNameValue(source, pos + 1);
+    let decl;
+    switch (keyword) {
+      case '':
+      case 'match':
+        break loop;
+      case 'input':
+        decl = parseInputDeclaration(ctx, pos);
+        break;
+      case 'local':
+        decl = parseLocalDeclaration(ctx, pos);
+        break;
+      default:
+        decl = parseReservedStatement(ctx, pos, '.' + keyword);
+    }
     declarations.push(decl);
     pos = decl.end;
     pos += whitespaces(source, pos);
@@ -29,7 +39,7 @@ export function parseDeclarations(ctx: ParseContext): {
 function parseInputDeclaration(
   ctx: ParseContext,
   start: number
-): CST.Declaration {
+): CST.InputDeclaration {
   //
   let pos = start + 6; // '.input'
   const keyword: CST.Syntax<'.input'> = { start, end: pos, value: '.input' };
@@ -105,6 +115,36 @@ function parseLocalDeclaration(
   };
 }
 
+function parseReservedStatement(
+  ctx: ParseContext,
+  start: number,
+  keyword: string
+): CST.ReservedStatement {
+  let pos = start + keyword.length;
+  pos += whitespaces(ctx.source, pos);
+
+  const body = parseReservedBody(ctx, pos);
+  let end = body.end;
+  pos = end + whitespaces(ctx.source, end);
+
+  const values: CST.Expression[] = [];
+  while (ctx.source[pos] === '{') {
+    const value = parseExpression(ctx, pos);
+    end = value.end;
+    pos = end + whitespaces(ctx.source, end);
+  }
+  if (values.length === 0) ctx.onError('missing-syntax', end, '{');
+
+  return {
+    type: 'reserved-statement',
+    start,
+    end,
+    keyword: { start, end: keyword.length, value: keyword },
+    body,
+    values
+  };
+}
+
 function parseDeclarationValue(
   ctx: ParseContext,
   start: number
@@ -130,7 +170,7 @@ function checkDeclarations(ctx: ParseContext, declarations: CST.Declaration[]) {
     }
   };
 
-  for (const decl of declarations) {
+  loop: for (const decl of declarations) {
     let target: CST.VariableRef | undefined;
     switch (decl.type) {
       case 'input':
@@ -148,6 +188,8 @@ function checkDeclarations(ctx: ParseContext, declarations: CST.Declaration[]) {
       case 'local':
         if (decl.target.type === 'variable') target = decl.target;
         break;
+      default:
+        continue loop;
     }
     if (target) {
       if (targets.has(target.name)) {

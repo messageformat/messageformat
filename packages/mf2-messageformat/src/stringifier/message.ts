@@ -44,14 +44,21 @@ export function stringifyMessage(msg: Message | MessageFormat) {
   return res;
 }
 
-function stringifyDeclaration({ type, name, value }: Declaration) {
-  switch (type) {
+function stringifyDeclaration(decl: Declaration) {
+  switch (decl.type) {
     case 'input':
-      return `.input ${stringifyExpression(value)}\n`;
+      return `.input ${stringifyExpression(decl.value)}\n`;
     case 'local':
-      return `.local $${name} = ${stringifyExpression(value)}\n`;
+      return `.local $${decl.name} = ${stringifyExpression(decl.value)}\n`;
+    case 'unsupported-statement': {
+      const parts = [`.${decl.keyword}`];
+      if (decl.body) parts.push(decl.body);
+      for (const exp of decl.expressions) parts.push(stringifyExpression(exp));
+      return parts.join(' ');
+    }
   }
-  throw new Error(`Unsupported ${type} declaration`);
+  // @ts-expect-error Guard against non-TS users with bad data
+  throw new Error(`Unsupported ${decl.type} declaration`);
 }
 
 function stringifyFunctionAnnotation({

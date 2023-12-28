@@ -83,7 +83,8 @@ export class MessageResolutionError extends MessageError {
     | 'bad-input'
     | 'bad-option'
     | 'unresolved-var'
-    | 'unsupported-annotation';
+    | 'unsupported-annotation'
+    | 'unsupported-statement';
   source: string;
   constructor(
     type: typeof MessageResolutionError.prototype.type,

@@ -35,7 +35,10 @@ export interface PatternMessage {
  *
  * @beta
  */
-export type Declaration = InputDeclaration | LocalDeclaration;
+export type Declaration =
+  | InputDeclaration
+  | LocalDeclaration
+  | UnsupportedStatement;
 
 export interface InputDeclaration {
   type: 'input';
@@ -47,6 +50,15 @@ export interface LocalDeclaration {
   type: 'local';
   name: string;
   value: Expression;
+}
+
+export interface UnsupportedStatement {
+  type: 'unsupported-statement';
+  keyword: string;
+  name?: never;
+  value?: never;
+  body?: string;
+  expressions: Expression[];
 }
 
 /**

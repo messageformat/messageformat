@@ -9,31 +9,9 @@ import type * as CST from './cst-types.js';
  */
 export function asDataModel(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
-  const declarations: Model.Declaration[] = (msg.declarations ?? []).map(
-    decl => {
-      switch (decl.type) {
-        case 'input': {
-          const value = asExpression(decl.value);
-          if (value.arg?.type === 'variable') {
-            return {
-              type: 'input',
-              name: value.arg.name,
-              value: value as Model.Expression<Model.VariableRef>
-            };
-          }
-          break;
-        }
-        case 'local':
-          return {
-            type: 'local',
-            name: asValue(decl.target).name,
-            value: asExpression(decl.value)
-          };
-      }
-      const { start, end } = decl.value;
-      throw new MessageSyntaxError('parse-error', start, end);
-    }
-  );
+  const declarations: Model.Declaration[] = msg.declarations
+    ? msg.declarations.map(asDeclaration)
+    : [];
   if (msg.type === 'select') {
     return {
       type: 'select',
@@ -55,6 +33,36 @@ export function asDataModel(msg: CST.Message): Model.Message {
   }
 }
 
+function asDeclaration(decl: CST.Declaration): Model.Declaration {
+  switch (decl.type) {
+    case 'input': {
+      const value = asExpression(decl.value);
+      if (value.arg?.type !== 'variable') {
+        const { start, end } = decl.value;
+        throw new MessageSyntaxError('parse-error', start, end);
+      }
+      return {
+        type: 'input',
+        name: value.arg.name,
+        value: value as Model.Expression<Model.VariableRef>
+      };
+    }
+    case 'local':
+      return {
+        type: 'local',
+        name: asValue(decl.target).name,
+        value: asExpression(decl.value)
+      };
+    default:
+      return {
+        type: 'unsupported-statement',
+        keyword: (decl.keyword?.value ?? '').substring(1),
+        body: decl.body?.value || undefined,
+        expressions: decl.values?.map(asExpression) ?? []
+      };
+  }
+}
+
 function asPattern(cst: CST.Pattern): Model.Pattern {
   const body: Model.Pattern['body'] = cst.body.map(el =>
     el.type === 'text' ? el.value : asExpression(el)
@@ -72,7 +80,7 @@ function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
       return { type: 'expression', arg: asValue(cst.body) };
     case 'function':
       return asFunctionExpression(cst.body);
-    case 'reserved':
+    case 'reserved-annotation':
       return asUnsupportedExpression(cst.body);
     default:
       throw new MessageSyntaxError('parse-error', cst.start, cst.end);
@@ -96,11 +104,13 @@ function asFunctionExpression(cst: CST.FunctionRef): Model.Expression {
     : { type: 'expression', annotation };
 }
 
-function asUnsupportedExpression(cst: CST.Reserved): Model.Expression {
+function asUnsupportedExpression(
+  cst: CST.ReservedAnnotation
+): Model.Expression {
   const annotation: Model.UnsupportedAnnotation = {
     type: 'unsupported-annotation',
     sigil: cst.sigil,
-    source: cst.source
+    source: cst.source.value
   };
   return cst.operand
     ? { type: 'expression', arg: asValue(cst.operand), annotation }

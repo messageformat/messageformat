@@ -23,7 +23,7 @@ export function parseExpression(
     | CST.Literal
     | CST.VariableRef
     | CST.FunctionRef
-    | CST.Reserved
+    | CST.ReservedAnnotation
     | CST.Junk;
   let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(ctx.source, pos);
@@ -45,7 +45,7 @@ export function parseExpression(
     case '>':
     case '?':
     case '~':
-      body = parseReserved(ctx, pos, arg);
+      body = parseReservedAnnotation(ctx, pos, arg);
       pos = body.end;
       break;
     default:
@@ -131,13 +131,28 @@ function parseOption(ctx: ParseContext, start: number): CST.Option {
 //                / %x5D-7A        ; omit { | }
 //                / %x7E-D7FF      ; omit surrogates
 //                / %xE000-10FFFF
-function parseReserved(
+function parseReservedAnnotation(
   ctx: ParseContext,
   start: number,
   operand: CST.Literal | CST.VariableRef | undefined
-): CST.Reserved {
-  const sigil = ctx.source[start] as CST.Reserved['sigil'];
-  let pos = start + 1; // sigil
+): CST.ReservedAnnotation {
+  const sigil = ctx.source[start] as CST.ReservedAnnotation['sigil'];
+  const source = parseReservedBody(ctx, start + 1); // skip sigil
+  return {
+    type: 'reserved-annotation',
+    start,
+    end: source.end,
+    operand,
+    sigil,
+    source
+  };
+}
+
+export function parseReservedBody(
+  ctx: ParseContext,
+  start: number
+): CST.Syntax<string> {
+  let pos = start;
   loop: while (pos < ctx.source.length) {
     const ch = ctx.source[pos];
     switch (ch) {
@@ -174,6 +189,5 @@ function parseReserved(
     pos -= 1;
     prev = ctx.source[pos - 1];
   }
-  const source = ctx.source.substring(start, pos);
-  return { type: 'reserved', operand, sigil, source, start, end: pos };
+  return { start, end: pos, value: ctx.source.substring(start, pos) };
 }

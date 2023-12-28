@@ -33,9 +33,7 @@ describe('Reserved syntax', () => {
     const msg = resolve('{ # one\ntwo\rthree four }', {}, [
       { type: 'unsupported-annotation' }
     ]);
-    expect(msg).toMatchObject([
-      { type: 'fallback', source: '# one\ntwo\rthree four' }
-    ]);
+    expect(msg).toMatchObject([{ type: 'fallback', source: '#' }]);
   });
 
   test('surrogates', () => {

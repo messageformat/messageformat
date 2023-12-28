@@ -259,7 +259,7 @@ function variableRefToFluent(
   { name }: VariableRef
 ): Fluent.InlineExpression {
   const local = ctx.declarations.find(decl => decl.name === name);
-  return local
+  return local?.value
     ? expressionToFluent(ctx, local.value)
     : new Fluent.VariableReference(new Fluent.Identifier(name));
 }

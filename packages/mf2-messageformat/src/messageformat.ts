@@ -13,7 +13,7 @@ import {
   MessagePart,
   MessageValue
 } from './runtime';
-import { MessageError } from './errors.js';
+import { MessageError, MessageResolutionError } from './errors.js';
 
 /** @beta */
 export interface MessageFormatOptions {
@@ -140,10 +140,19 @@ export class MessageFormat {
     }
   ) {
     let scope = { ...msgParams };
-    for (const { name, value } of this.#message.declarations) {
-      const ue = new UnresolvedExpression(value, scope);
-      if (name in scope) scope = { ...scope, [name]: ue };
-      else scope[name] = ue;
+    for (const decl of this.#message.declarations) {
+      if (decl.type === 'unsupported-statement') {
+        const source = decl.keyword ?? '�';
+        const msg = `Reserved ${source} annotation is not supported`;
+        onError(
+          new MessageResolutionError('unsupported-statement', msg, source)
+        );
+      } else {
+        const { name, value } = decl;
+        const ue = new UnresolvedExpression(value, scope);
+        if (name in scope) scope = { ...scope, [name]: ue };
+        else scope[name] = ue;
+      }
     }
     const ctx: Context = {
       onError,
