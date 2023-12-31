@@ -61,6 +61,17 @@ function stringifyObject(obj: string | StringStructure, level = 0): string {
 }
 
 /**
+ * Extract the available locals from messageformat
+ */
+function getAvailableLocals(messageformat: MessageFormat<'string' | 'values'>) {
+  const { plurals } = messageformat;
+  const cp: { [key: string]: PluralObject } = {};
+  if (plurals.length > 1)
+    for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
+  return cp;
+}
+
+/**
  * Compile a collection of messages into an ES module
  *
  * @public
@@ -111,12 +122,18 @@ export default function compileModule(
   messages: StringStructure
 ) {
   const { plurals } = messageformat;
-  const cp: { [key: string]: PluralObject } = {};
-  if (plurals.length > 1)
-    for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
   const compiler = new Compiler(messageformat.options);
-  const msgObj = compiler.compile(messages, plurals[0], cp);
+  const msgObj = compiler.compile(
+    messages,
+    plurals[0],
+    getAvailableLocals(messageformat)
+  );
   const msgStr = stringifyObject(msgObj);
   const rtStr = stringifyRuntime(compiler.runtime);
   return `${rtStr}\nexport default ${msgStr}`;
 }
+
+// Export Compiler, stringifyRuntime and getAvailableLocals
+compileModule.Compiler = Compiler;
+compileModule.stringifyRuntime = stringifyRuntime;
+compileModule.getAvailableLocals = getAvailableLocals;
