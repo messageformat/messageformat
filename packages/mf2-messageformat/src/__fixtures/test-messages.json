@@ -264,12 +264,12 @@
     ]
   },
   {
-    "src": "{#tag}content{/tag}",
+    "src": "{#ns:tag}content{/ns:tag}",
     "exp": "content",
     "parts": [
-      { "type": "markup", "kind": "open", "name": "tag" },
+      { "type": "markup", "kind": "open", "name": "ns:tag" },
       { "type": "literal", "value": "content" },
-      { "type": "markup", "kind": "close", "name": "tag" }
+      { "type": "markup", "kind": "close", "name": "ns:tag" }
     ]
   },
   {
@@ -293,7 +293,7 @@
     ]
   },
   {
-    "src": "{#tag foo=|foo| bar=$bar}",
+    "src": "{#tag a:foo=|foo| b:bar=$bar}",
     "params": { "bar": "b a r" },
     "exp": "",
     "parts": [
@@ -301,7 +301,7 @@
         "type": "markup",
         "kind": "open",
         "name": "tag",
-        "options": { "foo": "foo", "bar": "b a r" }
+        "options": { "a:foo": "foo", "b:bar": "b a r" }
       }
     ]
   },
@@ -332,7 +332,14 @@
   },
   { "src": "bad {:placeholder option=}", "syntaxError": true },
   { "src": "bad {:placeholder option value}", "syntaxError": true },
+  { "src": "bad {:placeholder option:value}", "syntaxError": true },
   { "src": "bad {:placeholder option}", "syntaxError": true },
+  { "src": "bad {:placeholder:}", "syntaxError": true },
+  { "src": "bad {::placeholder}", "syntaxError": true },
+  { "src": "bad {:placeholder::foo}", "syntaxError": true },
+  { "src": "bad {:placeholder option:=x}", "syntaxError": true },
+  { "src": "bad {:placeholder :option=x}", "syntaxError": true },
+  { "src": "bad {:placeholder option::x=y}", "syntaxError": true },
   { "src": "bad {$placeholder option}", "syntaxError": true },
   { "src": "no {$placeholder end", "syntaxError": true },
   { "src": ".match {} * {{foo}}", "syntaxError": true },

@@ -107,20 +107,19 @@ function parseFunctionRefOrMarkup(
   start: number,
   type: 'function' | 'markup'
 ): CST.FunctionRef | CST.Markup {
-  let pos = start + 1; // ':' | '#'
-  const name = parseNameValue(ctx.source, pos);
-  if (!name) ctx.onError('empty-token', pos, pos + 1);
+  const { source } = ctx;
+  const id = parseIdentifier(ctx, start + 1);
+  let pos = id.end;
   const options: CST.Option[] = [];
-  pos += name.length;
   let close: CST.Syntax<'/'> | undefined;
-  while (pos < ctx.source.length) {
-    let ws = whitespaces(ctx.source, pos);
-    const next = ctx.source[pos + ws];
+  while (pos < source.length) {
+    let ws = whitespaces(source, pos);
+    const next = source[pos + ws];
     if (next === '}') break;
     if (type === 'markup' && next === '/') {
       pos += ws + 1;
       close = { start: pos - 1, end: pos, value: '/' };
-      ws = whitespaces(ctx.source, pos);
+      ws = whitespaces(source, pos);
       if (ws > 0) ctx.onError('extra-content', pos, pos + ws);
       break;
     }
@@ -132,22 +131,18 @@ function parseFunctionRefOrMarkup(
     pos = opt.end;
   }
   return type === 'function'
-    ? { type, start, end: pos, name, options }
-    : { type, start, end: pos, name, options, close };
+    ? { type, start, end: pos, name: id.parts, options }
+    : { type, start, end: pos, name: id.parts, options, close };
 }
 
 function parseMarkupClose(ctx: ParseContext, start: number): CST.MarkupClose {
-  let pos = start + 1; // '/'
-  const name = parseNameValue(ctx.source, pos);
-  if (name) pos += name.length;
-  else ctx.onError('empty-token', pos, pos + 1);
-  return { type: 'markup-close', start, end: pos, name };
+  const id = parseIdentifier(ctx, start + 1);
+  return { type: 'markup-close', start, end: id.end, name: id.parts };
 }
 
-// option = name [s] "=" [s] (literal / variable)
 function parseOption(ctx: ParseContext, start: number): CST.Option {
-  const name = parseNameValue(ctx.source, start);
-  let pos = start + name.length;
+  const id = parseIdentifier(ctx, start);
+  let pos = id.end;
   pos += whitespaces(ctx.source, pos);
   if (ctx.source[pos] === '=') pos += 1;
   else ctx.onError('missing-syntax', pos, '=');
@@ -156,19 +151,37 @@ function parseOption(ctx: ParseContext, start: number): CST.Option {
     ctx.source[pos] === '$'
       ? parseVariable(ctx, pos)
       : parseLiteral(ctx, pos, true);
-  return { start, end: value.end, name, value };
+  return { start, end: value.end, name: id.parts, value };
 }
 
-// reserved       = reserved-start reserved-body
-// reserved-start = "!" / "@" / "#" / "%" / "^" / "&" / "*" / "<" / ">" / "?" / "~"
-// reserved-body  = *( [s] 1*(reserved-char / reserved-escape / literal))
-// reserved-char  = %x00-08        ; omit HTAB and LF
-//                / %x0B-0C        ; omit CR
-//                / %x0E-19        ; omit SP
-//                / %x21-5B        ; omit \
-//                / %x5D-7A        ; omit { | }
-//                / %x7E-D7FF      ; omit surrogates
-//                / %xE000-10FFFF
+function parseIdentifier(
+  ctx: ParseContext,
+  start: number
+): { parts: CST.Identifier; end: number } {
+  const { source } = ctx;
+  const str0 = parseNameValue(source, start);
+  if (!str0) {
+    ctx.onError('empty-token', start, start + 1);
+    return { parts: [{ start, end: start, value: '' }], end: start };
+  }
+  let pos = start + str0.length;
+  const id0 = { start, end: pos, value: str0 };
+  if (source[pos] !== ':') return { parts: [id0], end: pos };
+
+  const sep = { start: pos, end: pos + 1, value: ':' as const };
+  pos += 1;
+
+  const str1 = parseNameValue(source, pos);
+  if (str1) {
+    const end = pos + str1.length;
+    const id1 = { start: pos, end, value: str1 };
+    return { parts: [id0, sep, id1], end };
+  } else {
+    ctx.onError('empty-token', pos, pos + 1);
+    return { parts: [id0, sep], end: pos };
+  }
+}
+
 function parseReservedAnnotation(
   ctx: ParseContext,
   start: number

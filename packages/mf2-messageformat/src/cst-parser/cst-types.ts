@@ -142,7 +142,7 @@ export interface FunctionRef {
   type: 'function';
   start: number;
   end: number;
-  name: string;
+  name: Identifier;
   options: Option[];
 }
 
@@ -162,9 +162,9 @@ export interface Markup {
   /** position of the sigil */
   start: number;
   end: number;
-  close: Syntax<'/'> | undefined;
-  name: string;
+  name: Identifier;
   options: Option[];
+  close: Syntax<'/'> | undefined;
 }
 
 /** @beta */
@@ -173,7 +173,7 @@ export interface MarkupClose {
   /** position of the sigil */
   start: number;
   end: number;
-  name: string;
+  name: Identifier;
 }
 
 /** @beta */
@@ -181,9 +181,15 @@ export interface Option {
   /** position at the start of the name */
   start: number;
   end: number;
-  name: string;
+  name: Identifier;
   value: Literal | VariableRef;
 }
+
+/** @beta */
+export type Identifier =
+  | [name: Syntax<string>]
+  | [namespace: Syntax<string>, separator: Syntax<':'>]
+  | [namespace: Syntax<string>, separator: Syntax<':'>, name: Syntax<string>];
 
 /** @beta */
 export interface Syntax<T extends string> {

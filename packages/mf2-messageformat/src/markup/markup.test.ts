@@ -37,7 +37,12 @@ describe('Simple open/close', () => {
       type: 'simple',
       errors: [{ type: 'extra-content' }],
       pattern: {
-        body: [{ type: 'expression', markup: { type: 'markup', name: 'b' } }]
+        body: [
+          {
+            type: 'expression',
+            markup: { type: 'markup', name: [{ value: 'b' }] }
+          }
+        ]
       }
     });
   });
@@ -51,7 +56,10 @@ describe('Simple open/close', () => {
       errors: [{ type: 'extra-content' }],
       pattern: {
         body: [
-          { type: 'expression', markup: { type: 'markup-close', name: 'b' } }
+          {
+            type: 'expression',
+            markup: { type: 'markup-close', name: [{ value: 'b' }] }
+          }
         ]
       }
     });

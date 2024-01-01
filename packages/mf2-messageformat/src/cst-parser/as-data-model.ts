@@ -85,20 +85,16 @@ function asExpression(
   if (cst.type === 'expression') {
     if (allowMarkup && cst.markup) {
       const cm = cst.markup;
+      const name = asName(cm.name);
       if (cm.type === 'markup-close') {
-        return { type: 'markup', kind: 'close', name: cm.name };
+        return { type: 'markup', kind: 'close', name };
       }
       const markup: Model.MarkupOpen | Model.MarkupStandalone = {
         type: 'markup',
         kind: cm.close ? 'standalone' : 'open',
-        name: cm.name
+        name
       };
-      if (cm.options.length > 0) {
-        markup.options = cm.options.map(opt => ({
-          name: opt.name,
-          value: asValue(opt.value)
-        }));
-      }
+      if (cm.options.length > 0) markup.options = cm.options.map(asOption);
       return markup;
     }
 
@@ -112,12 +108,9 @@ function asExpression(
     if (ca) {
       switch (ca.type) {
         case 'function':
-          annotation = { type: 'function', name: ca.name };
+          annotation = { type: 'function', name: asName(ca.name) };
           if (ca.options.length > 0) {
-            annotation.options = ca.options.map(opt => ({
-              name: opt.name,
-              value: asValue(opt.value)
-            }));
+            annotation.options = ca.options.map(asOption);
           }
           break;
         case 'reserved-annotation':
@@ -140,6 +133,26 @@ function asExpression(
     }
   }
   throw new MessageSyntaxError('parse-error', cst.start, cst.end);
+}
+
+const asOption = (cst: CST.Option): Model.Option => ({
+  name: asName(cst.name),
+  value: asValue(cst.value)
+});
+
+function asName(cst: CST.Identifier): string {
+  switch (cst.length) {
+    case 1:
+      return cst[0].value;
+    case 3:
+      return `${cst[0].value}:${cst[2].value}`;
+    default:
+      throw new MessageSyntaxError(
+        'parse-error',
+        cst[0]?.start ?? -1,
+        cst.at(-1)?.end ?? -1
+      );
+  }
 }
 
 function asValue(cst: CST.Literal | CST.Junk): Model.Literal;
