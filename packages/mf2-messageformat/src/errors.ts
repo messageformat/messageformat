@@ -19,6 +19,7 @@ export class MessageSyntaxError extends MessageError {
     | 'bad-input-expression'
     | 'bad-selector'
     | 'duplicate-declaration'
+    | 'duplicate-option'
     | 'extra-content'
     | 'forward-reference'
     | 'key-mismatch'
@@ -49,6 +50,7 @@ export class MessageSyntaxError extends MessageError {
         message = `Syntax parse error: Missing ${expected} at ${start}`;
         break;
       case 'duplicate-declaration':
+      case 'duplicate-option':
       case 'forward-reference':
       case 'key-mismatch':
       case 'missing-fallback':
@@ -73,6 +75,7 @@ export class MissingSyntaxError extends MessageSyntaxError {
 export class MessageDataModelError extends MessageSyntaxError {
   declare type:
     | 'duplicate-declaration'
+    | 'duplicate-option'
     | 'forward-reference'
     | 'key-mismatch'
     | 'missing-fallback';
