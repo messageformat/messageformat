@@ -70,13 +70,6 @@ export function parseLiteral(
   return { type: 'literal', quoted: false, start, end, value };
 }
 
-// quoted      = "|" *(quoted-char / quoted-escape) "|"
-// quoted-char = %x0-5B         ; omit \
-//             / %x5D-7B        ; omit |
-//             / %x7D-D7FF      ; omit surrogates
-//             / %xE000-10FFFF
-// quoted-escape   = backslash ( backslash / "|" )
-// backslash       = %x5C ; U+005C REVERSE SOLIDUS "\"
 export function parseQuotedLiteral(
   ctx: ParseContext,
   start: number

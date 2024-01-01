@@ -1,4 +1,4 @@
-import { isValidUnquotedLiteral } from '../cst-parser/index.js';
+import { isValidUnquotedLiteral } from '../cst-parser/names.js';
 import {
   Declaration,
   Expression,

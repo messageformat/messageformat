@@ -30,3 +30,21 @@ describe('quoted literals', () => {
     expect(() => new MessageFormat('{|quoted \\{iteral|}')).toThrow();
   });
 });
+
+describe('unquoted numbers', () => {
+  for (const value of [
+    '0',
+    '42',
+    '2.5',
+    '-1',
+    '-0.999',
+    '1e3',
+    '0.4E+5',
+    '11.1e-1'
+  ]) {
+    test(value, () => {
+      const res = resolve(`{${value}}`);
+      expect(res).toMatchObject([{ type: 'string', value }]);
+    });
+  }
+});

@@ -9,8 +9,8 @@
     "exp": "hello world"
   },
   {
-    "src": "hello {$place:-.}",
-    "params": { "place:-.": "world" },
+    "src": "hello {$place-.}",
+    "params": { "place-.": "world" },
     "exp": "hello world"
   },
   {
@@ -29,7 +29,9 @@
     "params": { "one": 1.3, "two": 4.2 },
     "exp": "1,3 et 4,2"
   },
-  { "src": "hello {|4.2| :number}", "exp": "hello 4.2" },
+  { "src": "hello {4.2 :number}", "exp": "hello 4.2" },
+  { "src": "hello {-4.20 :number}", "exp": "hello -4.2" },
+  { "src": "hello {0.42e+1 :number}", "exp": "hello 4.2" },
   {
     "src": "hello {foo :number}",
     "exp": "hello {|foo|}",
@@ -41,7 +43,7 @@
     "errors": [{ "type": "bad-input" }]
   },
   {
-    "src": "hello {|4.2| :number minimumFractionDigits=2}",
+    "src": "hello {4.2 :number minimumFractionDigits=2}",
     "exp": "hello 4.20"
   },
   {
@@ -49,7 +51,7 @@
     "exp": "hello 4.20"
   },
   {
-    "src": "hello {|4.2| :number minimumFractionDigits=$foo}",
+    "src": "hello {4.2 :number minimumFractionDigits=$foo}",
     "params": { "foo": 2 },
     "exp": "hello 4.20"
   },
