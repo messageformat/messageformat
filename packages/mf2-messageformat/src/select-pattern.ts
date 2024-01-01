@@ -1,5 +1,6 @@
 import type { Message, Pattern } from './data-model';
 import { MessageSelectionError } from './errors';
+import { resolveExpression } from './expression/index.js';
 import type { Context } from './format-context';
 
 export function selectPattern(
@@ -12,7 +13,7 @@ export function selectPattern(
 
     case 'select': {
       const ctx = message.selectors.map(sel => {
-        const selector = context.resolveExpression(sel);
+        const selector = resolveExpression(context, sel);
         let selectKey;
         if (typeof selector.selectKey === 'function') {
           selectKey = selector.selectKey.bind(selector);

@@ -2,11 +2,7 @@ import { asDataModel, parseMessage } from './cst-parser/index.js';
 import type { Message } from './data-model';
 import { MessageError, MessageResolutionError } from './errors.js';
 import type { Context } from './format-context';
-import {
-  UnresolvedExpression,
-  resolveExpression,
-  resolveValue
-} from './expression/index.js';
+import { UnresolvedExpression, resolveExpression } from './expression/index.js';
 import { formatMarkup } from './markup/index.js';
 import {
   MessageFunctions,
@@ -76,7 +72,7 @@ export class MessageFormat {
       } else if (elem.type !== 'markup') {
         let mv: MessageValue | undefined;
         try {
-          mv = ctx.resolveExpression(elem);
+          mv = resolveExpression(ctx, elem);
           if (typeof mv.toString === 'function') {
             res += mv.toString();
           } else {
@@ -106,7 +102,7 @@ export class MessageFormat {
       } else {
         let mv: MessageValue | undefined;
         try {
-          mv = ctx.resolveExpression(elem);
+          mv = resolveExpression(ctx, elem);
           if (typeof mv.toParts === 'function') {
             parts.push(...mv.toParts());
           } else {
@@ -142,29 +138,26 @@ export class MessageFormat {
       }
     }
   ) {
-    let scope = { ...msgParams };
+    const scope = { ...msgParams };
     for (const decl of this.#message.declarations) {
-      if (decl.type === 'unsupported-statement') {
-        const source = decl.keyword ?? '�';
-        const msg = `Reserved ${source} annotation is not supported`;
-        onError(
-          new MessageResolutionError('unsupported-statement', msg, source)
-        );
-      } else {
-        const { name, value } = decl;
-        const ue = new UnresolvedExpression(value, scope);
-        if (name in scope) scope = { ...scope, [name]: ue };
-        else scope[name] = ue;
+      switch (decl.type) {
+        case 'input':
+          scope[decl.name] = new UnresolvedExpression(decl.value, msgParams);
+          break;
+        case 'local':
+          scope[decl.name] = new UnresolvedExpression(decl.value);
+          break;
+        default: {
+          const source = decl.keyword ?? '�';
+          const msg = `Reserved ${source} annotation is not supported`;
+          onError(
+            new MessageResolutionError('unsupported-statement', msg, source)
+          );
+        }
       }
     }
     const ctx: Context = {
       onError,
-      resolveExpression(elem) {
-        return resolveExpression(this, elem);
-      },
-      resolveValue(value) {
-        return resolveValue(this, value);
-      },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       localVars: new WeakSet(),

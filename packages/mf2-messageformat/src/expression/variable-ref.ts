@@ -6,7 +6,7 @@ import {
   fallback,
   unknown
 } from '../runtime/index.js';
-import type { Expression } from './index.js';
+import { resolveExpression, type Expression } from './index.js';
 
 /**
  * The value of a VariableRef is defined by the current Scope.
@@ -35,8 +35,8 @@ export interface VariableRef {
  */
 export class UnresolvedExpression {
   expression: Expression;
-  scope: Context['scope'];
-  constructor(expression: Expression, scope: Context['scope']) {
+  scope: Record<string, unknown> | undefined;
+  constructor(expression: Expression, scope?: Record<string, unknown>) {
     this.expression = expression;
     this.scope = scope;
   }
@@ -78,7 +78,8 @@ function getValue(scope: unknown, name: string): unknown {
 export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
   const value = getValue(ctx.scope, name);
   if (value instanceof UnresolvedExpression) {
-    const local = { ...ctx, scope: value.scope }.resolveExpression(
+    const local = resolveExpression(
+      value.scope ? { ...ctx, scope: value.scope } : ctx,
       value.expression
     );
     ctx.scope[name] = local;

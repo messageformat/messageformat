@@ -22,7 +22,6 @@ export {
   isUnsupportedAnnotation,
   UnsupportedAnnotation
 } from './unsupported-annotation';
-export { resolveValue } from './value.js';
 export {
   getMessageValue,
   isVariableRef,
