@@ -66,7 +66,6 @@ function tokenToPart(
     case 'function': {
       const annotation: FunctionAnnotation = {
         type: 'function',
-        kind: 'value',
         name: token.key
       };
       if (token.param && token.param.length > 0) {
@@ -89,7 +88,6 @@ function tokenToPart(
       if (!pluralArg) return '#';
       const annotation: FunctionAnnotation = {
         type: 'function',
-        kind: 'value',
         name: 'number'
       };
       if (pluralOffset)
@@ -121,7 +119,7 @@ function argToExpression({
     return {
       type: 'expression',
       arg,
-      annotation: { type: 'function', kind: 'value', name: 'string' }
+      annotation: { type: 'function', name: 'string' }
     };
 
   const options: Option[] = [];
@@ -138,11 +136,7 @@ function argToExpression({
     });
   }
 
-  const annotation: FunctionAnnotation = {
-    type: 'function',
-    kind: 'value',
-    name: 'number'
-  };
+  const annotation: FunctionAnnotation = { type: 'function', name: 'number' };
   if (options.length) annotation.options = options;
 
   return { type: 'expression', arg, annotation };

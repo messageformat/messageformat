@@ -29,11 +29,16 @@ describe('Reserved syntax', () => {
     expect(msg).toMatchObject([{ type: 'fallback', source: '$foo' }]);
   });
 
+  test('old markup syntax', () => {
+    const msg = resolve('{+open}', {}, [{ type: 'unsupported-annotation' }]);
+    expect(msg).toMatchObject([{ type: 'fallback', source: '+' }]);
+  });
+
   test('whitespace', () => {
-    const msg = resolve('{ # one\ntwo\rthree four }', {}, [
+    const msg = resolve('{ + one\ntwo\rthree four }', {}, [
       { type: 'unsupported-annotation' }
     ]);
-    expect(msg).toMatchObject([{ type: 'fallback', source: '#' }]);
+    expect(msg).toMatchObject([{ type: 'fallback', source: '+' }]);
   });
 
   test('surrogates', () => {

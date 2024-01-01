@@ -16,7 +16,7 @@ export function asDataModel(msg: CST.Message): Model.Message {
     return {
       type: 'select',
       declarations,
-      selectors: msg.selectors.map(asExpression),
+      selectors: msg.selectors.map(sel => asExpression(sel, false)),
       variants: msg.variants.map(cst => ({
         keys: cst.keys.map(key =>
           key.type === '*' ? { type: '*' } : asValue(key)
@@ -36,7 +36,7 @@ export function asDataModel(msg: CST.Message): Model.Message {
 function asDeclaration(decl: CST.Declaration): Model.Declaration {
   switch (decl.type) {
     case 'input': {
-      const value = asExpression(decl.value);
+      const value = asExpression(decl.value, false);
       if (value.arg?.type !== 'variable') {
         const { start, end } = decl.value;
         throw new MessageSyntaxError('parse-error', start, end);
@@ -51,38 +51,69 @@ function asDeclaration(decl: CST.Declaration): Model.Declaration {
       return {
         type: 'local',
         name: asValue(decl.target).name,
-        value: asExpression(decl.value)
+        value: asExpression(decl.value, false)
       };
     default:
       return {
         type: 'unsupported-statement',
         keyword: (decl.keyword?.value ?? '').substring(1),
         body: decl.body?.value || undefined,
-        expressions: decl.values?.map(asExpression) ?? []
+        expressions: decl.values?.map(dv => asExpression(dv, true)) ?? []
       };
   }
 }
 
 function asPattern(cst: CST.Pattern): Model.Pattern {
   const body: Model.Pattern['body'] = cst.body.map(el =>
-    el.type === 'text' ? el.value : asExpression(el)
+    el.type === 'text' ? el.value : asExpression(el, true)
   );
   return { body };
 }
 
-function asExpression(cst: CST.Expression | CST.Junk): Model.Expression {
+function asExpression(
+  cst: CST.Expression | CST.Junk,
+  allowMarkup: false
+): Model.Expression;
+function asExpression(
+  cst: CST.Expression | CST.Junk,
+  allowMarkup: true
+): Model.Expression | Model.Markup;
+function asExpression(
+  cst: CST.Expression | CST.Junk,
+  allowMarkup: boolean
+): Model.Expression | Model.Markup {
   if (cst.type === 'expression') {
+    if (allowMarkup && cst.markup) {
+      const cm = cst.markup;
+      if (cm.type === 'markup-close') {
+        return { type: 'markup', kind: 'close', name: cm.name };
+      }
+      const markup: Model.MarkupOpen | Model.MarkupStandalone = {
+        type: 'markup',
+        kind: cm.close ? 'standalone' : 'open',
+        name: cm.name
+      };
+      if (cm.options.length > 0) {
+        markup.options = cm.options.map(opt => ({
+          name: opt.name,
+          value: asValue(opt.value)
+        }));
+      }
+      return markup;
+    }
+
     const arg = cst.arg ? asValue(cst.arg) : undefined;
     let annotation:
       | Model.FunctionAnnotation
       | Model.UnsupportedAnnotation
       | undefined;
+
     const ca = cst.annotation;
     if (ca) {
       switch (ca.type) {
         case 'function':
-          annotation = { type: 'function', kind: ca.kind, name: ca.name };
-          if (ca.options && ca.options.length > 0) {
+          annotation = { type: 'function', name: ca.name };
+          if (ca.options.length > 0) {
             annotation.options = ca.options.map(opt => ({
               name: opt.name,
               value: asValue(opt.value)

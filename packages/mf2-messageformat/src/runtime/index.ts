@@ -5,7 +5,6 @@ import { string } from './string.js';
 
 export { MessageDateTime, MessageDateTimePart, datetime } from './datetime.js';
 export { MessageFallback, MessageFallbackPart, fallback } from './fallback.js';
-export { MessageMarkup, MessageMarkupPart, markup } from './markup.js';
 export { MessageNumber, MessageNumberPart, number } from './number.js';
 export { MessageString, MessageStringPart, string } from './string.js';
 export { MessageUnknownPart, MessageUnknownValue, unknown } from './unknown.js';
@@ -40,7 +39,27 @@ export interface MessageLiteralPart {
   value: string;
 }
 
-export type MessagePart = MessageExpressionPart | MessageLiteralPart;
+export interface MessageMarkupPart {
+  type: 'markup';
+  kind: 'open' | 'standalone';
+  source: string;
+  name: string;
+  options?: { [key: string]: unknown };
+}
+
+export interface MessageMarkupClosePart {
+  type: 'markup';
+  kind: 'close';
+  source: string;
+  name: string;
+  options?: never;
+}
+
+export type MessagePart =
+  | MessageExpressionPart
+  | MessageLiteralPart
+  | MessageMarkupClosePart
+  | MessageMarkupPart;
 
 /**
  * The default Runtime includes three functions, `datetime`, `number` and `string`.

@@ -1,11 +1,17 @@
 import type { Expression, Literal, VariableRef } from './expression/index.js';
+import type { Markup } from './markup/index.js';
 
 export type {
   FunctionAnnotation,
   Option,
   UnsupportedAnnotation
-} from './expression';
-export type { Expression, Literal, VariableRef };
+} from './expression/index.js';
+export type {
+  MarkupClose,
+  MarkupOpen,
+  MarkupStandalone
+} from './markup/index.js';
+export type { Expression, Literal, Markup, VariableRef };
 
 /**
  * The representation of a single message.
@@ -58,7 +64,7 @@ export interface UnsupportedStatement {
   name?: never;
   value?: never;
   body?: string;
-  expressions: Expression[];
+  expressions: (Expression | Markup)[];
 }
 
 /**
@@ -69,7 +75,7 @@ export interface UnsupportedStatement {
  * @beta
  */
 export interface Pattern {
-  body: Array<string | Expression>;
+  body: Array<string | Expression | Markup>;
 }
 
 /**

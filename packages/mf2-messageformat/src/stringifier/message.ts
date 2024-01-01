@@ -1,22 +1,19 @@
 import { isValidUnquotedLiteral } from '../cst-parser/index.js';
 import {
   Declaration,
-  isPatternMessage,
-  isSelectMessage,
-  Message,
-  Pattern
-} from '../data-model';
-import {
   Expression,
   FunctionAnnotation,
-  functionAnnotationSource,
-  isLiteral,
-  isVariableRef,
   Literal,
+  Markup,
+  Message,
   Option,
+  Pattern,
   UnsupportedAnnotation,
-  VariableRef
-} from '../expression/index.js';
+  VariableRef,
+  isPatternMessage,
+  isSelectMessage
+} from '../data-model.js';
+import { isLiteral, isVariableRef } from '../expression/index.js';
 import { MessageFormat } from '../messageformat.js';
 
 /**
@@ -53,7 +50,12 @@ function stringifyDeclaration(decl: Declaration) {
     case 'unsupported-statement': {
       const parts = [`.${decl.keyword}`];
       if (decl.body) parts.push(decl.body);
-      for (const exp of decl.expressions) parts.push(stringifyExpression(exp));
+      for (const exp of decl.expressions)
+        parts.push(
+          exp.type === 'expression'
+            ? stringifyExpression(exp)
+            : stringifyMarkup(exp)
+        );
       return parts.join(' ');
     }
   }
@@ -61,13 +63,17 @@ function stringifyDeclaration(decl: Declaration) {
   throw new Error(`Unsupported ${decl.type} declaration`);
 }
 
-function stringifyFunctionAnnotation({
-  kind,
-  name,
-  options
-}: FunctionAnnotation) {
-  let res = functionAnnotationSource(kind, name);
+function stringifyFunctionAnnotation({ name, options }: FunctionAnnotation) {
+  let res = `:${name}`;
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
+  return res;
+}
+
+function stringifyMarkup({ kind, name, options }: Markup) {
+  if (kind === 'close') return `{/${name}}`;
+  let res = `{#${name}`;
+  if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
+  res += kind === 'standalone' ? ' /}' : '}';
   return res;
 }
 
@@ -90,7 +96,9 @@ function stringifyPattern({ body }: Pattern, quoted: boolean) {
     quoted = true;
   }
   for (const el of body) {
-    res += typeof el === 'string' ? el : stringifyExpression(el);
+    if (typeof el === 'string') res += el;
+    else if (el.type === 'markup') res += stringifyMarkup(el);
+    else res += stringifyExpression(el);
   }
   return quoted ? `{{${res}}}` : res;
 }

@@ -4,11 +4,7 @@ import type { MessageFunctions } from '../runtime';
 
 function validateParts(parts: Pattern['body'], functions: MessageFunctions) {
   for (const part of parts) {
-    if (
-      isExpression(part) &&
-      isFunctionAnnotation(part.annotation) &&
-      part.annotation.kind === 'value'
-    ) {
+    if (isExpression(part) && isFunctionAnnotation(part.annotation)) {
       const { name } = part.annotation;
       if (typeof functions[name] !== 'function') {
         throw new ReferenceError(`Runtime function not available: ${name}`);

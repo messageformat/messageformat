@@ -5,7 +5,6 @@ import { parseNameValue } from './names.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseQuotedLiteral, parseVariable } from './values.js';
 
-// expression = "{" [s] (((literal / variable) [s annotation]) / annotation) [s] "}"
 export function parseExpression(
   ctx: ParseContext,
   start: number
@@ -24,22 +23,31 @@ export function parseExpression(
     | CST.ReservedAnnotation
     | CST.Junk
     | undefined;
+  let markup: CST.Markup | CST.MarkupClose | undefined;
   let junkError: MessageSyntaxError | undefined;
   pos += whitespaces(ctx.source, pos);
   switch (ctx.source[pos]) {
     case ':':
-    case '+':
-    case '-':
-      annotation = parseFunctionRef(ctx, pos);
+      annotation = parseFunctionRefOrMarkup(ctx, pos, 'function');
       pos = annotation.end;
+      break;
+    case '#':
+      if (arg) ctx.onError('extra-content', arg.start, arg.end);
+      markup = parseFunctionRefOrMarkup(ctx, pos, 'markup');
+      pos = markup.end;
+      break;
+    case '/':
+      if (arg) ctx.onError('extra-content', arg.start, arg.end);
+      markup = parseMarkupClose(ctx, pos);
+      pos = markup.end;
       break;
     case '!':
     case '@':
-    case '#':
     case '%':
     case '^':
     case '&':
     case '*':
+    case '+':
     case '<':
     case '>':
     case '?':
@@ -78,29 +86,44 @@ export function parseExpression(
       pos += 1;
     }
   }
-
-  return {
-    type: 'expression',
-    start,
-    end: pos,
-    braces: close ? [open, close] : [open],
-    arg,
-    annotation
-  };
+  const braces: CST.Expression['braces'] = close ? [open, close] : [open];
+  return markup
+    ? { type: 'expression', start, end: pos, braces, markup }
+    : { type: 'expression', start, end: pos, braces, arg, annotation };
 }
 
-// annotation = (function *(s option)) / reserved
-// function = (":" / "+" / "-") name
-function parseFunctionRef(ctx: ParseContext, start: number): CST.FunctionRef {
-  const sigil = ctx.source[start];
-  let pos = start + 1; // ':' | '+' | '-'
+function parseFunctionRefOrMarkup(
+  ctx: ParseContext,
+  start: number,
+  type: 'function'
+): CST.FunctionRef;
+function parseFunctionRefOrMarkup(
+  ctx: ParseContext,
+  start: number,
+  type: 'markup'
+): CST.Markup;
+function parseFunctionRefOrMarkup(
+  ctx: ParseContext,
+  start: number,
+  type: 'function' | 'markup'
+): CST.FunctionRef | CST.Markup {
+  let pos = start + 1; // ':' | '#'
   const name = parseNameValue(ctx.source, pos);
   if (!name) ctx.onError('empty-token', pos, pos + 1);
   const options: CST.Option[] = [];
   pos += name.length;
+  let close: CST.Syntax<'/'> | undefined;
   while (pos < ctx.source.length) {
-    const ws = whitespaces(ctx.source, pos);
-    if (ctx.source[pos + ws] === '}') break;
+    let ws = whitespaces(ctx.source, pos);
+    const next = ctx.source[pos + ws];
+    if (next === '}') break;
+    if (type === 'markup' && next === '/') {
+      pos += ws + 1;
+      close = { start: pos - 1, end: pos, value: '/' };
+      ws = whitespaces(ctx.source, pos);
+      if (ws > 0) ctx.onError('extra-content', pos, pos + ws);
+      break;
+    }
     if (ws === 0) ctx.onError('missing-syntax', pos, ' ');
     pos += ws;
     const opt = parseOption(ctx, pos);
@@ -108,8 +131,17 @@ function parseFunctionRef(ctx: ParseContext, start: number): CST.FunctionRef {
     options.push(opt);
     pos = opt.end;
   }
-  const kind = sigil === '+' ? 'open' : sigil === '-' ? 'close' : 'value';
-  return { type: 'function', kind, start, end: pos, name, options };
+  return type === 'function'
+    ? { type, start, end: pos, name, options }
+    : { type, start, end: pos, name, options, close };
+}
+
+function parseMarkupClose(ctx: ParseContext, start: number): CST.MarkupClose {
+  let pos = start + 1; // '/'
+  const name = parseNameValue(ctx.source, pos);
+  if (name) pos += name.length;
+  else ctx.onError('empty-token', pos, pos + 1);
+  return { type: 'markup-close', start, end: pos, name };
 }
 
 // option = name [s] "=" [s] (literal / variable)

@@ -7,6 +7,7 @@ export {
   MessageSyntaxError
 } from './errors.js';
 export * from './expression/index.js';
+export { isMarkup } from './markup/index.js';
 export { MessageFormat, MessageFormatOptions } from './messageformat.js';
 export { stringifyMessage } from './stringifier/message.js';
 export * from './runtime/index.js';

@@ -1,19 +1,20 @@
 import { asDataModel, parseMessage } from './cst-parser/index.js';
-import { Message } from './data-model';
+import type { Message } from './data-model';
+import { MessageError, MessageResolutionError } from './errors.js';
 import type { Context } from './format-context';
-import { selectPattern } from './select-pattern.js';
 import {
+  UnresolvedExpression,
   resolveExpression,
-  resolveValue,
-  UnresolvedExpression
+  resolveValue
 } from './expression/index.js';
+import { formatMarkup } from './markup/index.js';
 import {
-  defaultFunctions,
   MessageFunctions,
   MessagePart,
-  MessageValue
-} from './runtime';
-import { MessageError, MessageResolutionError } from './errors.js';
+  MessageValue,
+  defaultFunctions
+} from './runtime/index.js';
+import { selectPattern } from './select-pattern.js';
 
 /** @beta */
 export interface MessageFormatOptions {
@@ -72,7 +73,7 @@ export class MessageFormat {
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
         res += elem;
-      } else {
+      } else if (elem.type !== 'markup') {
         let mv: MessageValue | undefined;
         try {
           mv = ctx.resolveExpression(elem);
@@ -100,6 +101,8 @@ export class MessageFormat {
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
         parts.push({ type: 'literal', value: elem });
+      } else if (elem.type === 'markup') {
+        parts.push(formatMarkup(ctx, elem));
       } else {
         let mv: MessageValue | undefined;
         try {

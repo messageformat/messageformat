@@ -1,6 +1,6 @@
 import { MessageError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import { MessageFunctionContext, fallback, markup } from '../runtime/index.js';
+import { MessageFunctionContext, fallback } from '../runtime/index.js';
 import type { Literal } from './literal.js';
 import { getValueSource, resolveValue } from './value.js';
 import type { VariableRef } from './variable-ref.js';
@@ -19,7 +19,6 @@ import type { VariableRef } from './variable-ref.js';
  */
 export interface FunctionAnnotation {
   type: 'function';
-  kind: 'open' | 'close' | 'value';
   name: string;
   options?: Option[];
 }
@@ -44,24 +43,10 @@ export interface Option {
 export const isFunctionAnnotation = (part: any): part is FunctionAnnotation =>
   !!part && typeof part === 'object' && part.type === 'function';
 
-export function functionAnnotationSource(
-  kind: FunctionAnnotation['kind'],
-  name: string
-) {
-  switch (kind) {
-    case 'open':
-      return `+${name}`;
-    case 'close':
-      return `-${name}`;
-    default:
-      return `:${name}`;
-  }
-}
-
 export function resolveFunctionAnnotation(
   ctx: Context,
   operand: Literal | VariableRef | undefined,
-  { kind, name, options }: FunctionAnnotation
+  { name, options }: FunctionAnnotation
 ) {
   let source: string | undefined;
   try {
@@ -72,27 +57,18 @@ export function resolveFunctionAnnotation(
     } else {
       fnInput = [];
     }
-    source ??= functionAnnotationSource(kind, name);
+    source ??= `:${name}`;
 
-    switch (kind) {
-      case 'open':
-      case 'close': {
-        const opt = options?.length ? resolveOptions(ctx, options) : undefined;
-        return markup(source, kind, name, opt, fnInput[0]);
-      }
-      default: {
-        const rf = ctx.functions[name];
-        if (!rf) {
-          throw new MessageError('missing-func', `Unknown function ${name}`);
-        }
-        const msgCtx = new MessageFunctionContext(ctx, source);
-        const opt = resolveOptions(ctx, options);
-        return rf(msgCtx, opt, ...fnInput);
-      }
+    const rf = ctx.functions[name];
+    if (!rf) {
+      throw new MessageError('missing-func', `Unknown function ${name}`);
     }
+    const msgCtx = new MessageFunctionContext(ctx, source);
+    const opt = resolveOptions(ctx, options);
+    return rf(msgCtx, opt, ...fnInput);
   } catch (error) {
     ctx.onError(error);
-    source ??= getValueSource(operand) ?? functionAnnotationSource(kind, name);
+    source ??= getValueSource(operand) ?? `:${name}`;
     return fallback(source);
   }
 }

@@ -150,9 +150,9 @@ function resolveSelect(
   }
   const selectors = idList(attributes['mf:select']).map(selId => {
     const exp = mf?.elements.find(exp => exp.attributes?.id === selId);
-    if (!exp) {
+    if (exp?.name !== 'mf:expression') {
       const el = prettyElement('group', attributes.id);
-      throw new Error(`Selector ${selId} not found in ${el}`);
+      throw new Error(`Selector expression ${selId} not found in ${el}`);
     }
     return resolveExpression(exp);
   });
@@ -180,17 +180,7 @@ function resolvePattern(
             `Expected to find a <${st}> inside <${el.name}> of ${pe}`
           );
         }
-        if (stel) {
-          for (const ie of stel.elements) {
-            const last = body[body.length - 1];
-            const next = resolveInlineElement(ie, mf);
-            if (typeof last === 'string' && typeof next === 'string') {
-              body[body.length - 1] += next;
-            } else {
-              body.push(next);
-            }
-          }
-        }
+        if (stel) body.push(...resolvePatternElements(mf, stel.elements));
         break;
       }
     }
@@ -198,13 +188,31 @@ function resolvePattern(
   return { body };
 }
 
+function resolvePatternElements(
+  mf: X.MessageFormat | null,
+  elements: (X.Text | X.InlineElement)[]
+) {
+  const body: MF.Pattern['body'] = [];
+  for (const ie of elements) {
+    const last = body[body.length - 1];
+    const next = resolveInlineElement(mf, ie);
+    if (typeof next === 'string') {
+      if (typeof last === 'string') body[body.length - 1] += next;
+      else body.push(next);
+    } else {
+      body.push(...next);
+    }
+  }
+  return body;
+}
+
 const resolveCharCode = (cc: X.CharCode) =>
   String.fromCodePoint(Number(cc.attributes.hex));
 
 function resolveInlineElement(
-  ie: X.Text | X.InlineElement,
-  mf: X.MessageFormat | null
-): string | MF.Expression {
+  mf: X.MessageFormat | null,
+  ie: X.Text | X.InlineElement
+): string | Array<string | MF.Expression | MF.Markup> {
   switch (ie.type) {
     case 'text':
     case 'cdata':
@@ -214,29 +222,63 @@ function resolveInlineElement(
         case 'cp':
           return resolveCharCode(ie);
         case 'ph':
-          return resolveRef(mf, ie.attributes['mf:ref']);
-        case 'pc':
         case 'sc':
         case 'ec':
-        // TODO
+          return [resolvePlaceholder(mf, ie)];
+        case 'pc':
+          return resolveSpanningCode(mf, ie);
       }
   }
   throw new Error(`Unsupported inline ${ie.type} <${ie.name}>`);
 }
 
-function resolveRef(
+function resolveSpanningCode(
   mf: X.MessageFormat | null,
-  ref: string | undefined
-): MF.Expression {
-  if (!ref) throw new Error('Unsupported <ph> without mf:ref attribute');
+  pc: X.CodeSpan
+): Array<string | MF.Expression | MF.Markup> {
+  const open = resolvePlaceholder(mf, pc);
+  return [
+    open,
+    ...resolvePatternElements(mf, pc.elements),
+    { type: 'markup', kind: 'close', name: open.name }
+  ];
+}
+
+function resolvePlaceholder(
+  mf: X.MessageFormat | null,
+  el: X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
+): MF.Markup;
+function resolvePlaceholder(
+  mf: X.MessageFormat | null,
+  el: X.Placeholder | X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
+): MF.Expression | MF.Markup;
+function resolvePlaceholder(
+  mf: X.MessageFormat | null,
+  el: X.Placeholder | X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
+): MF.Expression | MF.Markup {
+  const { name } = el;
+  const ref = el.attributes?.['mf:ref'];
+  if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!mf)
     throw new Error(
-      'Inline <ph> requires a preceding <mf:messageformat> in the same <unit>'
+      `Inline <${name}> requires a preceding <mf:messageformat> in the same <unit>`
     );
   const res = mf.elements.find(el => el.attributes?.id === ref);
-  if (!res)
-    throw new Error(`MessageFormat value not found for <ph mf:ref="${ref}">`);
-  return resolveExpression(res);
+  switch (res?.name) {
+    case 'mf:expression':
+      if (name !== 'ph') {
+        throw new Error('Only <ph> elements may refer to expression values');
+      }
+      return resolveExpression(res);
+    case 'mf:markup': {
+      const kind =
+        name === 'ph' ? 'standalone' : name === 'ec' ? 'close' : 'open';
+      return resolveMarkup(res, kind);
+    }
+  }
+  throw new Error(
+    `MessageFormat value not found for <${name} mf:ref="${ref}">`
+  );
 }
 
 const resolveText = (text: (X.Text | X.CharCode)[]) =>
@@ -260,11 +302,7 @@ function resolveExpression(part: X.MessageExpression): MF.Expression {
 
   let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
   if (xFunc.name === 'mf:function') {
-    annotation = {
-      type: 'function',
-      kind: 'value',
-      name: xFunc.attributes.name
-    };
+    annotation = { type: 'function', name: xFunc.attributes.name };
     if (xFunc.elements.length) {
       annotation.options = xFunc.elements.map(el => ({
         name: el.attributes.name,
@@ -282,6 +320,24 @@ function resolveExpression(part: X.MessageExpression): MF.Expression {
   return arg
     ? { type: 'expression', arg, annotation }
     : { type: 'expression', annotation };
+}
+
+function resolveMarkup(
+  part: X.MessageMarkup,
+  kind: 'open' | 'standalone' | 'close'
+) {
+  const markup: MF.Markup = {
+    type: 'markup',
+    kind,
+    name: part.attributes.name
+  };
+  if (kind !== 'close' && part.elements.length) {
+    markup.options = part.elements.map(el => ({
+      name: el.attributes.name,
+      value: resolveValue(el.elements[0])
+    }));
+  }
+  return markup;
 }
 
 function resolveValue(

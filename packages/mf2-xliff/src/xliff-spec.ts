@@ -1172,7 +1172,7 @@ export interface ValidationRule extends Element {
 
 export interface MessageFormat extends Element {
   name: 'mf:messageformat';
-  elements: MessageExpression[];
+  elements: (MessageExpression | MessageMarkup)[];
 }
 
 export interface MessageExpression extends Element {
@@ -1184,6 +1184,15 @@ export interface MessageExpression extends Element {
     | [MessageLiteral | MessageVariable]
     | [MessageLiteral | MessageVariable, MessageFunction | MessageUnsupported]
     | [MessageFunction | MessageUnsupported];
+}
+
+export interface MessageMarkup extends Element {
+  name: 'mf:markup';
+  attributes: {
+    id: string;
+    name: string;
+  };
+  elements: MessageOption[];
 }
 
 export interface MessageLiteral extends Element {

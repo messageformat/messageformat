@@ -1,5 +1,6 @@
 [
   { "src": "hello", "exp": "hello" },
+  { "src": "hello {world}", "exp": "hello world" },
   { "src": "hello {|world|}", "exp": "hello world" },
   { "src": "hello {||}", "exp": "hello " },
   {
@@ -248,71 +249,63 @@
     "errors": [{ "type": "unresolved-var" }]
   },
   {
-    "src": "{+tag}",
+    "src": "{#tag}",
     "exp": "",
-    "parts": [{ "type": "open", "name": "tag" }]
+    "parts": [{ "type": "markup", "kind": "open", "name": "tag" }]
   },
   {
-    "src": "{+tag}content",
+    "src": "{#tag}content",
     "exp": "content",
     "parts": [
-      { "type": "open", "name": "tag" },
+      { "type": "markup", "kind": "open", "name": "tag" },
       { "type": "literal", "value": "content" }
     ]
   },
   {
-    "src": "{+tag}content{-tag}",
+    "src": "{#tag}content{/tag}",
     "exp": "content",
     "parts": [
-      { "type": "open", "name": "tag" },
+      { "type": "markup", "kind": "open", "name": "tag" },
       { "type": "literal", "value": "content" },
-      { "type": "close", "name": "tag" }
+      { "type": "markup", "kind": "close", "name": "tag" }
     ]
   },
   {
-    "src": "{-tag}content",
+    "src": "{/tag}content",
     "exp": "content",
     "parts": [
-      { "type": "close", "name": "tag" },
+      { "type": "markup", "kind": "close", "name": "tag" },
       { "type": "literal", "value": "content" }
     ]
   },
   {
-    "src": "{+tag foo=bar}",
+    "src": "{#tag foo=bar}",
     "exp": "",
-    "parts": [{ "type": "open", "name": "tag", "options": { "foo": "bar" } }]
+    "parts": [
+      {
+        "type": "markup",
+        "kind": "open",
+        "name": "tag",
+        "options": { "foo": "bar" }
+      }
+    ]
   },
   {
-    "src": "{+tag foo=|foo| bar=$bar}",
+    "src": "{#tag foo=|foo| bar=$bar}",
     "params": { "bar": "b a r" },
     "exp": "",
     "parts": [
       {
-        "type": "open",
+        "type": "markup",
+        "kind": "open",
         "name": "tag",
         "options": { "foo": "foo", "bar": "b a r" }
       }
     ]
   },
-  {
-    "src": "{|foo| +markup}",
-    "exp": "",
-    "parts": [{ "type": "open", "name": "markup", "value": "foo" }]
-  },
-  {
-    "src": "{-tag foo=bar}",
-    "exp": "",
-    "parts": [{ "type": "close", "name": "tag", "options": { "foo": "bar" } }]
-  },
-  {
-    "src": "unquoted {literal}",
-    "exp": "unquoted literal"
-  },
-  {
-    "src": ".match {+foo} * {{foo}}",
-    "exp": "foo",
-    "errors": [{ "type": "not-selectable" }]
-  },
+  { "src": "{|foo| #markup}", "syntaxError": true },
+  { "src": "{/tag foo=bar}", "syntaxError": true },
+  { "src": ".match {#foo} * {{foo}}", "syntaxError": true },
   { "src": "{{missing end brace}", "syntaxError": true },
   { "src": "{{missing end braces", "syntaxError": true },
   { "src": "{{missing end {$braces", "syntaxError": true },

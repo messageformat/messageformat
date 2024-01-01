@@ -738,15 +738,12 @@ describe('messagetoFluent', () => {
       type: 'select',
       declarations: [
         {
+          type: 'local',
           name: 'local',
           value: {
             type: 'expression',
             arg: { type: 'variable', name: 'num' },
-            annotation: {
-              type: 'function',
-              name: 'number',
-              kind: 'value'
-            }
+            annotation: { type: 'function', name: 'number' }
           }
         }
       ],
@@ -804,6 +801,7 @@ describe('messagetoFluent', () => {
       type: 'message',
       declarations: [
         {
+          type: 'local',
           name: 'local',
           value: {
             type: 'expression',
@@ -816,20 +814,12 @@ describe('messagetoFluent', () => {
           {
             type: 'expression',
             arg: { type: 'literal', value: 'msg' },
-            annotation: {
-              type: 'function',
-              name: 'message',
-              kind: 'value'
-            }
+            annotation: { type: 'function', name: 'message' }
           },
           {
             type: 'expression',
             arg: { type: 'variable', name: 'local' },
-            annotation: {
-              type: 'function',
-              name: 'message',
-              kind: 'value'
-            }
+            annotation: { type: 'function', name: 'message' }
           }
         ]
       }
@@ -868,11 +858,7 @@ describe('messagetoFluent', () => {
           {
             type: 'expression',
             arg: { type: 'variable', name: 'input' },
-            annotation: {
-              type: 'function',
-              name: 'message',
-              kind: 'value'
-            }
+            annotation: { type: 'function', name: 'message' }
           }
         ]
       }

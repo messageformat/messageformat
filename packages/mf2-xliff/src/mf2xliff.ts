@@ -229,34 +229,85 @@ function resolvePattern(
   srcPattern: MF.Pattern,
   trgPattern: MF.Pattern | undefined
 ): X.Unit {
-  const expressions: X.MessageExpression[] = [];
-  const handlePart = (p: string | MF.Expression): X.Text | X.InlineElement => {
+  const refs: (X.MessageExpression | X.MessageMarkup)[] = [];
+  const openMarkup: X.MessageMarkup[] = [];
+  const handlePart = (
+    p: string | MF.Expression | MF.Markup
+  ): X.Text | X.InlineElement => {
     if (typeof p === 'string') return asText(p);
     const id = nextId();
+    const attributes: X.CodeSpanStart['attributes'] = {
+      id: id.substring(1),
+      'mf:ref': id
+    };
+    if (p.type === 'markup') {
+      if (p.kind === 'close') {
+        const oi = openMarkup.findIndex(xm => xm.attributes.name === p.name);
+        if (oi === -1) {
+          attributes.isolated = 'yes';
+        } else {
+          const [om] = openMarkup.splice(oi, 1);
+          const { id } = om.attributes;
+          return {
+            type: 'element',
+            name: 'ec',
+            attributes: { startRef: id.substring(1), 'mf:ref': id }
+          };
+        }
+      }
+      const markup = resolveMarkup(id, p);
+      refs.push(markup);
+      openMarkup.unshift(markup);
+      const name = p.kind === 'open' ? 'sc' : p.kind === 'close' ? 'ec' : 'ph';
+      return { type: 'element', name, attributes };
+    }
     const exp = resolveExpression(id, p);
-    expressions.push(exp);
-    const attributes = { id: id.substring(1), 'mf:ref': id };
+    refs.push(exp);
     return { type: 'element', name: 'ph', attributes };
+  };
+  const cleanMarkupSpans = (elements: (X.Text | X.InlineElement)[]) => {
+    for (let i = 0; i < elements.length; ++i) {
+      const sc = elements[i];
+      if (sc.type !== 'element' || sc.name !== 'sc') continue;
+      for (let j = i + 1; j < elements.length; ++j) {
+        const ec = elements[j];
+        if (
+          ec.type === 'element' &&
+          ec.name === 'ec' &&
+          ec.attributes?.startRef === sc.attributes.id
+        ) {
+          const body = elements.splice(i + 1, j - i);
+          body.pop();
+          cleanMarkupSpans(body);
+          Object.assign(sc, { name: 'pc', elements: body });
+          break;
+        }
+      }
+    }
   };
 
   const se = srcPattern.body.map(handlePart);
+  cleanMarkupSpans(se);
   const source: X.Source = { type: 'element', name: 'source', elements: se };
   let ge: X.Segment['elements'];
   if (trgPattern) {
     const te = trgPattern.body.map(handlePart);
+    cleanMarkupSpans(te);
     const target: X.Target = { type: 'element', name: 'target', elements: te };
     ge = [source, target];
-  } else ge = [source];
+  } else {
+    ge = [source];
+  }
   const segment: X.Segment = { type: 'element', name: 'segment', elements: ge };
 
   const attributes = msgAttributes('u', key);
   let elements: X.Unit['elements'];
-  if (expressions.length > 0) {
+  if (refs.length > 0) {
     const name = 'mf:messageformat';
     const mf: X.MessageFormat = {
       type: 'element',
       name,
-      elements: expressions
+      elements: refs
     };
     elements = [mf, segment];
   } else elements = [segment];
@@ -307,6 +358,29 @@ function resolveExpression(
     type: 'element',
     name: 'mf:expression',
     attributes: { id },
+    elements
+  };
+}
+
+function resolveMarkup(
+  id: string,
+  { name, options }: MF.Markup
+): X.MessageMarkup {
+  const elements: X.MessageOption[] = [];
+  if (options) {
+    for (const { name, value } of options) {
+      elements.push({
+        type: 'element',
+        name: 'mf:option',
+        attributes: { name },
+        elements: [resolveArgument(value)]
+      });
+    }
+  }
+  return {
+    type: 'element',
+    name: 'mf:markup',
+    attributes: { id, name },
     elements
   };
 }

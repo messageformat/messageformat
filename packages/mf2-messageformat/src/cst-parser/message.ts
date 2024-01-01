@@ -101,9 +101,9 @@ function parseSelectMessage(
   const selectors: CST.Expression[] = [];
   while (ctx.source[pos] === '{') {
     const sel = parseExpression(ctx, pos);
-    if (sel.annotation && sel.annotation.type !== 'function') {
-      const { start, end } = sel.annotation;
-      ctx.onError('bad-selector', start, end);
+    const body = sel.markup ?? sel.annotation;
+    if (body && body.type !== 'function') {
+      ctx.onError('bad-selector', body.start, body.end);
     }
     selectors.push(sel);
     pos = sel.end;

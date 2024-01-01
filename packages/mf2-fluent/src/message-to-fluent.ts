@@ -146,11 +146,13 @@ function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
 }
 
 function patternToFluent(ctx: MsgContext, pattern: Pattern) {
-  const elements = pattern.body.map(el =>
-    typeof el === 'string'
-      ? new Fluent.TextElement(el)
-      : new Fluent.Placeable(expressionToFluent(ctx, el))
-  );
+  const elements = pattern.body.map(el => {
+    if (typeof el === 'string') return new Fluent.TextElement(el);
+    if (el.type === 'expression') {
+      return new Fluent.Placeable(expressionToFluent(ctx, el));
+    }
+    throw new Error(`Conversion of ${el.type} to Fluent is not supported`);
+  });
   return new Fluent.Pattern(elements);
 }
 
@@ -230,7 +232,7 @@ function expressionToFluent(
       return functionRefToFluent(ctx, fluentArg, annotation);
     } else {
       throw new Error(
-        `Conversion of "${annotation.type}" expression to Fluent is not supported`
+        `Conversion of ${annotation.type} annotation to Fluent is not supported`
       );
     }
   }

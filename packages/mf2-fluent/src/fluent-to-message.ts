@@ -67,7 +67,7 @@ function asExpression(exp: Fluent.Expression): Expression {
       return {
         type: 'expression',
         arg: asValue(exp),
-        annotation: { type: 'function', kind: 'value', name: 'number' }
+        annotation: { type: 'function', name: 'number' }
       };
     case 'StringLiteral':
     case 'VariableReference':
@@ -75,7 +75,6 @@ function asExpression(exp: Fluent.Expression): Expression {
     case 'FunctionReference': {
       const annotation: FunctionAnnotation = {
         type: 'function',
-        kind: 'value',
         name: exp.id.name.toLowerCase()
       };
       const { positional, named } = exp.arguments;
@@ -105,13 +104,12 @@ function asExpression(exp: Fluent.Expression): Expression {
       return {
         type: 'expression',
         arg: { type: 'literal', value: msgId },
-        annotation: { type: 'function', kind: 'value', name: 'message' }
+        annotation: { type: 'function', name: 'message' }
       };
     }
     case 'TermReference': {
       const annotation: FunctionAnnotation = {
         type: 'function',
-        kind: 'value',
         name: 'message'
       };
       const msgId = exp.attribute

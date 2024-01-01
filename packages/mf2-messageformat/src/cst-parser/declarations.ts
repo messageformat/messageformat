@@ -47,7 +47,7 @@ function parseInputDeclaration(
 
   const value = parseDeclarationValue(ctx, pos);
   if (value.type === 'expression') {
-    if (value.arg?.type !== 'variable') {
+    if (value.markup || value.arg?.type !== 'variable') {
       ctx.onError('bad-input-expression', value.start, value.end);
     }
   }

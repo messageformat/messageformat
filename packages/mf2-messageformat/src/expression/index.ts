@@ -13,7 +13,6 @@ import {
 import { resolveVariableRef, VariableRef } from './variable-ref';
 
 export {
-  functionAnnotationSource,
   isFunctionAnnotation,
   FunctionAnnotation,
   Option

@@ -103,8 +103,9 @@ export interface Expression {
   start: number;
   end: number;
   braces: [Syntax<'{'>] | [Syntax<'{'>, Syntax<'}'>];
-  arg: Literal | VariableRef | undefined;
-  annotation: FunctionRef | ReservedAnnotation | Junk | undefined;
+  arg?: Literal | VariableRef;
+  annotation?: FunctionRef | ReservedAnnotation | Junk;
+  markup?: Markup | MarkupClose;
 }
 
 /** @beta */
@@ -139,8 +140,6 @@ export interface VariableRef {
 /** @beta */
 export interface FunctionRef {
   type: 'function';
-  kind: 'open' | 'close' | 'value';
-  /** position of the `:`/`+`/`-` */
   start: number;
   end: number;
   name: string;
@@ -155,6 +154,26 @@ export interface ReservedAnnotation {
   /** position of the sigil */
   start: number;
   end: number;
+}
+
+/** @beta */
+export interface Markup {
+  type: 'markup';
+  /** position of the sigil */
+  start: number;
+  end: number;
+  close: Syntax<'/'> | undefined;
+  name: string;
+  options: Option[];
+}
+
+/** @beta */
+export interface MarkupClose {
+  type: 'markup-close';
+  /** position of the sigil */
+  start: number;
+  end: number;
+  name: string;
 }
 
 /** @beta */
