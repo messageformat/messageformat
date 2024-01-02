@@ -1,4 +1,4 @@
-import { resolveExpression } from './data-model/expression/index.js';
+import { resolveExpression } from './data-model/resolve-expression.js';
 import type { Message, Pattern } from './data-model/types.js';
 import { MessageSelectionError } from './errors';
 import type { Context } from './format-context';

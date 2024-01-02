@@ -1,13 +1,13 @@
-import { MessageResolutionError } from '../../errors.js';
-import type { Context } from '../../format-context.js';
+import { MessageResolutionError } from '../errors.js';
+import type { Context } from '../format-context.js';
 import {
   MessageFunctionContext,
   MessageValue,
   fallback,
   unknown
-} from '../../runtime/index.js';
-import type { Expression, VariableRef } from '../types.js';
-import { resolveExpression } from './index.js';
+} from '../runtime/index.js';
+import type { Expression, VariableRef } from './types.js';
+import { resolveExpression } from './resolve-expression.js';
 
 /**
  * Declarations aren't resolved until they're requierd,
@@ -49,6 +49,14 @@ function getValue(scope: unknown, name: string): unknown {
   return undefined;
 }
 
+/**
+ * Get the raw value of a variable.
+ * Resolves declarations as necessary
+ *
+ * @internal
+ * @returns `unknown` or `any` for input values;
+ *   `MessageValue` for `.input` and `.local` declaration values.
+ */
 export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
   const value = getValue(ctx.scope, name);
   if (value === undefined) {
@@ -67,11 +75,10 @@ export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
   return value;
 }
 
-export function getMessageValue(
-  ctx: Context,
-  source: string,
-  value: unknown
-): MessageValue | undefined {
+export function resolveVariableRef(ctx: Context, ref: VariableRef) {
+  const source = '$' + ref.name;
+  const value = lookupVariableRef(ctx, ref);
+
   let type = typeof value;
   if (type === 'object') {
     const mv = value as MessageValue;
@@ -79,6 +86,7 @@ export function getMessageValue(
     if (value instanceof Number) type = 'number';
     else if (value instanceof String) type = 'string';
   }
+
   switch (type) {
     case 'bigint':
     case 'number': {
@@ -89,13 +97,7 @@ export function getMessageValue(
       const msgCtx = new MessageFunctionContext(ctx, source);
       return ctx.functions.string(msgCtx, {}, value);
     }
-    default:
-      return value === undefined ? undefined : unknown(source, value);
   }
-}
 
-export function resolveVariableRef(ctx: Context, ref: VariableRef) {
-  const source = '$' + ref.name;
-  const value = lookupVariableRef(ctx, ref);
-  return getMessageValue(ctx, source, value) ?? fallback(source);
+  return value === undefined ? fallback(source) : unknown(source, value);
 }

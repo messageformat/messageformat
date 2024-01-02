@@ -1,5 +1,4 @@
 export { asDataModel, parseMessage, type CST } from './cst-parser/index.js';
-export { getMessageValue } from './data-model/expression/variable-ref';
 export type * from './data-model/types.js';
 export * from './data-model/type-guards.js';
 export {

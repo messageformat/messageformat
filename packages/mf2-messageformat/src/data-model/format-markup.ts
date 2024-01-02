@@ -1,4 +1,4 @@
-import { resolveValue } from './expression/value.js';
+import { resolveValue } from './resolve-value.js';
 import type { Context } from '../format-context.js';
 import type {
   MessageMarkupClosePart,

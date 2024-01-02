@@ -1,13 +1,13 @@
-import { MessageError } from '../../errors.js';
-import type { Context } from '../../format-context.js';
-import { MessageFunctionContext, fallback } from '../../runtime/index.js';
+import { MessageError } from '../errors.js';
+import type { Context } from '../format-context.js';
+import { MessageFunctionContext, fallback } from '../runtime/index.js';
 import type {
   FunctionAnnotation,
   Literal,
   Option,
   VariableRef
-} from '../types.js';
-import { getValueSource, resolveValue } from './value.js';
+} from './types.js';
+import { getValueSource, resolveValue } from './resolve-value.js';
 
 export function resolveFunctionAnnotation(
   ctx: Context,

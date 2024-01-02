@@ -1,8 +1,8 @@
-import { MessageResolutionError } from '../../errors.js';
-import type { Context } from '../../format-context.js';
-import { fallback } from '../../runtime/index.js';
-import type { Literal, UnsupportedAnnotation, VariableRef } from '../types.js';
-import { getValueSource } from './value.js';
+import { MessageResolutionError } from '../errors.js';
+import type { Context } from '../format-context.js';
+import { fallback } from '../runtime/index.js';
+import type { Literal, UnsupportedAnnotation, VariableRef } from './types.js';
+import { getValueSource } from './resolve-value.js';
 
 export function resolveUnsupportedAnnotation(
   ctx: Context,

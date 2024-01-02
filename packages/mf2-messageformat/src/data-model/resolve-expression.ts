@@ -1,10 +1,10 @@
-import type { Context } from '../../format-context';
-import type { MessageValue } from '../../runtime';
-import type { Expression } from '../types';
-import { resolveFunctionAnnotation } from './function-annotation';
-import { resolveLiteral } from './literal';
-import { resolveUnsupportedAnnotation } from './unsupported-annotation';
-import { resolveVariableRef } from './variable-ref';
+import type { Context } from '../format-context';
+import type { MessageValue } from '../runtime';
+import type { Expression } from './types';
+import { resolveFunctionAnnotation } from './resolve-function-annotation.js';
+import { resolveLiteral } from './resolve-literal.js';
+import { resolveUnsupportedAnnotation } from './resolve-unsupported-annotation.js';
+import { resolveVariableRef } from './resolve-variable.js';
 
 export function resolveExpression(
   ctx: Context,

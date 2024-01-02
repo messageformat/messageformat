@@ -1,4 +1,4 @@
-import { MessageFormat } from '../../index';
+import { MessageFormat } from '../index';
 
 function resolve(
   source: string,
