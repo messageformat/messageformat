@@ -9,11 +9,14 @@ import {
   Option,
   Pattern,
   UnsupportedAnnotation,
-  VariableRef,
-  isPatternMessage,
-  isSelectMessage
+  VariableRef
 } from '../data-model/index.js';
-import { isLiteral, isVariableRef } from '../data-model/expression/index.js';
+import {
+  isLiteral,
+  isPatternMessage,
+  isSelectMessage,
+  isVariableRef
+} from '../data-model/type-guards.js';
 import { MessageFormat } from '../messageformat.js';
 
 /**

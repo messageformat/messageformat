@@ -1,6 +1,7 @@
 export { asDataModel, parseMessage, type CST } from './cst-parser/index.js';
 export * from './data-model/index.js';
 export * from './data-model/expression/index.js';
+export * from './data-model/type-guards.js';
 export {
   MessageDataModelError,
   MessageError,

@@ -22,17 +22,6 @@ export interface UnsupportedAnnotation {
   name?: never;
 }
 
-/**
- * Type guard for {@link UnsupportedAnnotation} pattern elements
- *
- * @beta
- */
-export const isUnsupportedAnnotation = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  part: any
-): part is UnsupportedAnnotation =>
-  !!part && typeof part === 'object' && part.type === 'unsupported-annotation';
-
 export function resolveUnsupportedAnnotation(
   ctx: Context,
   operand: Literal | VariableRef | undefined,

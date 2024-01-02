@@ -7,7 +7,6 @@ export type {
   UnsupportedAnnotation
 } from './expression/index.js';
 export type { MarkupClose, MarkupOpen, MarkupStandalone } from './markup.js';
-export { isMarkup } from './markup.js';
 export type { Expression, Literal, Markup, VariableRef };
 
 /**
@@ -110,39 +109,3 @@ export interface CatchallKey {
   type: '*';
   value?: string;
 }
-
-/**
- * A type guard for {@link CatchallKey} values
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isCatchallKey = (key: any): key is CatchallKey =>
-  !!key && typeof key === 'object' && key.type === '*';
-
-/**
- * A type guard for {@link Message} values
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isMessage = (msg: any): msg is Message =>
-  !!msg &&
-  typeof msg === 'object' &&
-  (msg.type === 'message' || msg.type === 'select');
-
-/**
- * A type guard for {@link PatternMessage} values
- *
- * @beta
- */
-export const isPatternMessage = (msg: Message): msg is PatternMessage =>
-  msg.type === 'message';
-
-/**
- * A type guard for {@link SelectMessage} values
- *
- * @beta
- */
-export const isSelectMessage = (msg: Message): msg is SelectMessage =>
-  msg.type === 'select';

@@ -42,15 +42,6 @@ export class UnresolvedExpression {
   }
 }
 
-/**
- * Type guard for {@link VariableRef} pattern elements
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isVariableRef = (part: any): part is VariableRef =>
-  !!part && typeof part === 'object' && part.type === 'variable';
-
 const isScope = (scope: unknown): scope is Record<string, unknown> =>
   scope instanceof Object;
 

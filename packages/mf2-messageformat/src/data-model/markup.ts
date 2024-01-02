@@ -42,15 +42,6 @@ export interface MarkupClose {
   options?: never;
 }
 
-/**
- * Type guard for {@link Markup} pattern elements
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isMarkup = (part: any): part is Markup =>
-  !!part && typeof part === 'object' && part.type === 'markup';
-
 export function formatMarkup(
   ctx: Context,
   { kind, name, options }: Markup

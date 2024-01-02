@@ -34,15 +34,6 @@ export interface Option {
   value: Literal | VariableRef;
 }
 
-/**
- * Type guard for {@link FunctionAnnotation} pattern elements
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isFunctionAnnotation = (part: any): part is FunctionAnnotation =>
-  !!part && typeof part === 'object' && part.type === 'function';
-
 export function resolveFunctionAnnotation(
   ctx: Context,
   operand: Literal | VariableRef | undefined,

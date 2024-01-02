@@ -12,19 +12,11 @@ import {
 } from './unsupported-annotation';
 import { VariableRef, resolveVariableRef } from './variable-ref';
 
-export {
-  isFunctionAnnotation,
-  FunctionAnnotation,
-  Option
-} from './function-annotation';
-export { isLiteral, Literal } from './literal';
-export {
-  isUnsupportedAnnotation,
-  UnsupportedAnnotation
-} from './unsupported-annotation';
+export type { FunctionAnnotation, Option } from './function-annotation';
+export type { Literal } from './literal';
+export type { UnsupportedAnnotation } from './unsupported-annotation';
 export {
   getMessageValue,
-  isVariableRef,
   UnresolvedExpression,
   VariableRef
 } from './variable-ref';
@@ -50,15 +42,6 @@ export type Expression<
       arg?: never;
       annotation: FunctionAnnotation | UnsupportedAnnotation;
     };
-
-/**
- * Type guard for {@link Expression} pattern elements
- *
- * @beta
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isExpression = (part: any): part is Expression =>
-  !!part && typeof part === 'object' && part.type === 'expression';
 
 /** @internal */
 export function resolveExpression(
