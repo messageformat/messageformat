@@ -12,8 +12,8 @@ import {
   VariableRef,
   isPatternMessage,
   isSelectMessage
-} from '../data-model.js';
-import { isLiteral, isVariableRef } from '../expression/index.js';
+} from '../data-model/index.js';
+import { isLiteral, isVariableRef } from '../data-model/expression/index.js';
 import { MessageFormat } from '../messageformat.js';
 
 /**

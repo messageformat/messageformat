@@ -1,16 +1,13 @@
 import type { Expression, Literal, VariableRef } from './expression/index.js';
-import type { Markup } from './markup/index.js';
+import type { Markup } from './markup.js';
 
 export type {
   FunctionAnnotation,
   Option,
   UnsupportedAnnotation
 } from './expression/index.js';
-export type {
-  MarkupClose,
-  MarkupOpen,
-  MarkupStandalone
-} from './markup/index.js';
+export type { MarkupClose, MarkupOpen, MarkupStandalone } from './markup.js';
+export { isMarkup } from './markup.js';
 export type { Expression, Literal, Markup, VariableRef };
 
 /**

@@ -1,5 +1,5 @@
-import type { Context } from '../format-context';
-import type { MessageValue } from '../runtime';
+import type { Context } from '../../format-context';
+import type { MessageValue } from '../../runtime';
 
 import {
   FunctionAnnotation,

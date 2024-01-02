@@ -1,10 +1,10 @@
-import type { Option } from '../data-model.js';
-import { resolveValue } from '../expression/value.js';
+import { resolveValue } from './expression/value.js';
 import type { Context } from '../format-context.js';
 import type {
   MessageMarkupClosePart,
   MessageMarkupPart
 } from '../runtime/index.js';
+import type { Option } from './index.js';
 
 /**
  * Markup placeholders can span ranges of other pattern elements,

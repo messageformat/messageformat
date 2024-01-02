@@ -1,4 +1,4 @@
-import type { Context } from '../format-context';
+import type { Context } from '../../format-context';
 import type { Literal } from './literal';
 import { VariableRef, lookupVariableRef } from './variable-ref';
 

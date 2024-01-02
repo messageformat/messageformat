@@ -1,6 +1,6 @@
-import { MessageResolutionError } from '../errors.js';
-import type { Context } from '../format-context.js';
-import { fallback } from '../runtime/index.js';
+import { MessageResolutionError } from '../../errors.js';
+import type { Context } from '../../format-context.js';
+import { fallback } from '../../runtime/index.js';
 import type { Literal } from './literal.js';
 import { getValueSource } from './value.js';
 import type { VariableRef } from './variable-ref.js';

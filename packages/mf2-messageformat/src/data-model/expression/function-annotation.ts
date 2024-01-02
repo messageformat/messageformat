@@ -1,6 +1,6 @@
-import { MessageError } from '../errors.js';
-import type { Context } from '../format-context.js';
-import { MessageFunctionContext, fallback } from '../runtime/index.js';
+import { MessageError } from '../../errors.js';
+import type { Context } from '../../format-context.js';
+import { MessageFunctionContext, fallback } from '../../runtime/index.js';
 import type { Literal } from './literal.js';
 import { getValueSource, resolveValue } from './value.js';
 import type { VariableRef } from './variable-ref.js';

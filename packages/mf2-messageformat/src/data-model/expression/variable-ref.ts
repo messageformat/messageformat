@@ -1,11 +1,11 @@
-import { MessageResolutionError } from '../errors.js';
-import type { Context } from '../format-context.js';
+import { MessageResolutionError } from '../../errors.js';
+import type { Context } from '../../format-context.js';
 import {
   MessageFunctionContext,
   MessageValue,
   fallback,
   unknown
-} from '../runtime/index.js';
+} from '../../runtime/index.js';
 import { type Expression, resolveExpression } from './index.js';
 
 /**

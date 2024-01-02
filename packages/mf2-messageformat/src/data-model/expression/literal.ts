@@ -1,5 +1,5 @@
-import type { Context } from '../format-context.js';
-import { MessageFunctionContext } from '../runtime/index.js';
+import type { Context } from '../../format-context.js';
+import { MessageFunctionContext } from '../../runtime/index.js';
 
 /**
  * An immediately defined value.
