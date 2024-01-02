@@ -2,6 +2,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2020"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "target": "ES2020",
     "types": []
   }
