@@ -1,9 +1,9 @@
 import syntaxErrors from './__fixtures/syntax-errors.json';
 import testCore from './__fixtures/test-core.json';
 import testFunctions from './__fixtures/test-functions.json';
-import { testName } from './__fixtures/util-test-name';
-import { MessageSyntaxError } from './errors';
-import { MessageFormat } from './messageformat';
+import { testName } from './__fixtures/util-test-name.js';
+import { MessageSyntaxError } from './errors.js';
+import { MessageFormat } from './messageformat.js';
 
 export type TestMessage = {
   src: string;

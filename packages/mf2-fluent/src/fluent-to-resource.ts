@@ -1,8 +1,11 @@
 import * as Fluent from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import type { FluentMessageResource, FluentMessageResourceData } from '.';
-import { fluentToMessage } from './fluent-to-message';
-import { getFluentFunctions } from './functions';
+import { fluentToMessage } from './fluent-to-message.js';
+import { getFluentFunctions } from './functions.js';
+import type {
+  FluentMessageResource,
+  FluentMessageResourceData
+} from './index.js';
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of

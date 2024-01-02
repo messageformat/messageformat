@@ -1,4 +1,5 @@
 import { asDataModel, parseMessage } from './cst-parser/index.js';
+import type { MessageFunctionContext } from './data-model/function-context.js';
 import { formatMarkup } from './data-model/format-markup.js';
 import { resolveExpression } from './data-model/resolve-expression.js';
 import { UnresolvedExpression } from './data-model/resolve-variable.js';
@@ -15,7 +16,6 @@ import {
   plural,
   string
 } from './functions/index.js';
-import type { MessageFunctionContext } from './data-model/function-context.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({

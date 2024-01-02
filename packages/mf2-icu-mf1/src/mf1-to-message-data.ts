@@ -1,5 +1,5 @@
 import type * as AST from '@messageformat/parser';
-import {
+import type {
   Expression,
   FunctionAnnotation,
   Message,

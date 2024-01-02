@@ -1,4 +1,8 @@
-import { MessageFormat, MessageFunctions, MessageNumberPart } from '../index';
+import {
+  MessageFormat,
+  MessageFunctions,
+  MessageNumberPart
+} from '../index.js';
 
 test('Custom function', () => {
   const functions = {

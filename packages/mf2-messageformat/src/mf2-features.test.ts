@@ -12,7 +12,7 @@ import {
   MessagePart,
   MessageValue,
   SelectMessage
-} from './index';
+} from './index.js';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function range(

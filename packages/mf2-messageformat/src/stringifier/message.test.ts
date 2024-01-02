@@ -2,8 +2,8 @@ import testCore from '../__fixtures/test-core.json';
 import testFunctions from '../__fixtures/test-functions.json';
 import { testName } from '../__fixtures/util-test-name';
 import { asDataModel, parseMessage } from '../cst-parser/index.js';
-import type { TestMessage } from '../messageformat.test';
-import { stringifyMessage } from './message';
+import type { TestMessage } from '../messageformat.test.js';
+import { stringifyMessage } from './message.js';
 
 for (const [title, messages] of [
   ['Stringify core messages', testCore],

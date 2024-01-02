@@ -1,9 +1,9 @@
 import type * as CST from './cst-types.js';
-import type { ParseContext } from './message.js';
 import { parseExpression, parseReservedBody } from './expression.js';
+import type { ParseContext } from './message.js';
+import { parseNameValue } from './names.js';
 import { whitespaces } from './util.js';
 import { parseVariable } from './values.js';
-import { parseNameValue } from './names.js';
 
 export function parseDeclarations(ctx: ParseContext): {
   declarations: CST.Declaration[];

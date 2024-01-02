@@ -22,12 +22,15 @@ export type FluentMessageResource = Map<string, Map<string, MessageFormat>>;
  */
 export type FluentMessageResourceData = Map<string, Map<string, Message>>;
 
-export { fluentToMessage } from './fluent-to-message';
-export { fluentToResource, fluentToResourceData } from './fluent-to-resource';
+export { fluentToMessage } from './fluent-to-message.js';
+export {
+  fluentToResource,
+  fluentToResourceData
+} from './fluent-to-resource.js';
 export {
   defaultFunctionMap,
   FluentMessageRef,
   messageToFluent
-} from './message-to-fluent';
-export { resourceToFluent } from './resource-to-fluent';
-export { getFluentFunctions } from './functions';
+} from './message-to-fluent.js';
+export { resourceToFluent } from './resource-to-fluent.js';
+export { getFluentFunctions } from './functions.js';

@@ -1,4 +1,4 @@
-import { MessageFormat } from '../index';
+import { MessageFormat } from '../index.js';
 
 function resolve(source: string, errors: any[] = []) {
   const mf = new MessageFormat(source);

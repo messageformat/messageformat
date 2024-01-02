@@ -1,6 +1,6 @@
 import type { MessageFunctionContext, MessageValue } from 'messageformat';
-import type { FluentMessageResource } from '.';
-import { valueToMessageRef } from './message-to-fluent';
+import type { FluentMessageResource } from './index.js';
+import { valueToMessageRef } from './message-to-fluent.js';
 
 /**
  * Build a {@link messageformat#MessageFormat} runtime to use with Fluent messages.

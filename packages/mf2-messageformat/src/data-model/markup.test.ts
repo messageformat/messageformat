@@ -1,4 +1,4 @@
-import { MessageFormat, parseMessage } from '../index';
+import { MessageFormat, parseMessage } from '../index.js';
 
 describe('Simple open/close', () => {
   test('no options, literal body', () => {

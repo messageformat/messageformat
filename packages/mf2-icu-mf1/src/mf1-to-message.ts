@@ -1,7 +1,7 @@
 import { Token, parse } from '@messageformat/parser';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import { mf1ToMessageData } from './mf1-to-message-data';
-import { getMF1Functions } from './functions';
+import { getMF1Functions } from './functions.js';
+import { mf1ToMessageData } from './mf1-to-message-data.js';
 
 /** @beta */
 export type MF1Options = {
