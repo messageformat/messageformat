@@ -13,11 +13,14 @@ rules:
   array-callback-return: error
   camelcase: off
   consistent-return: error
+  curly: [warn, multi-line, consistent]
   eqeqeq: [error, smart]
   no-constant-condition: [error, checkLoops: false]
   no-implicit-globals: error
   no-unused-vars: [warn, argsIgnorePattern: '^_']
+  no-useless-rename: error
   prefer-const: [error, destructuring: all]
+  sort-imports: [warn, ignoreDeclarationSort: true]
 
 overrides:
   - files:
