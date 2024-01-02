@@ -9,9 +9,10 @@ export function testName({
 }) {
   let name = src;
   if (locale) name += ` [${locale}]`;
-  if (params)
+  if (params) {
     name += ` / {${Object.entries(params)
       .map(p => ` ${p[0]}: ${p[1]}`)
       .join()} }`;
+  }
   return name.replace(/ *\n */g, ' ');
 }

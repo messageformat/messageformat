@@ -4,15 +4,15 @@ import {
   Declaration,
   Expression,
   FunctionAnnotation,
-  isCatchallKey,
-  isLiteral,
-  isPatternMessage,
-  isSelectMessage,
   Literal,
   Message,
   Pattern,
   VariableRef,
-  Variant
+  Variant,
+  isCatchallKey,
+  isLiteral,
+  isPatternMessage,
+  isSelectMessage
 } from 'messageformat';
 
 /**

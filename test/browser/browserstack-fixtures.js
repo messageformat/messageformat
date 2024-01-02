@@ -17,8 +17,12 @@ exports.mochaGlobalSetup = async function () {
         if (error.name === 'LocalError') {
           console.info(`Skipping BrowserStack Local start: ${error.message}`);
           resolve();
-        } else reject(error);
-      } else resolve();
+        } else {
+          reject(error);
+        }
+      } else {
+        resolve();
+      }
     });
   });
   console.log('Starting browser tests...');
@@ -31,6 +35,8 @@ exports.mochaGlobalTeardown = async function () {
     if (this.bsl && this.bsl.isRunning()) {
       console.log('\nStopping BrowserStack Local...');
       this.bsl.stop(resolve);
-    } else resolve();
+    } else {
+      resolve();
+    }
   });
 };

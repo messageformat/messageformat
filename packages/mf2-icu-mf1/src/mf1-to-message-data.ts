@@ -41,12 +41,14 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
     if (prev) for (const key of arg.keys) prev.keys.push(key);
     else args.push(arg);
   };
-  for (const token of tokens)
+  for (const token of tokens) {
     if (isAstSelect(token)) {
       add(asSelectArg(token));
-      for (const c of token.cases)
+      for (const c of token.cases) {
         for (const arg of findSelectArgs(c.tokens)) add(arg);
+      }
     }
+  }
   return args;
 }
 
@@ -90,13 +92,14 @@ function tokenToPart(
         type: 'function',
         name: 'number'
       };
-      if (pluralOffset)
+      if (pluralOffset) {
         annotation.options = [
           {
             name: 'pluralOffset',
             value: { type: 'literal', value: String(pluralOffset) }
           }
         ];
+      }
       return {
         type: 'expression',
         arg: { type: 'variable', name: pluralArg },
@@ -115,12 +118,13 @@ function argToExpression({
   type
 }: SelectArg): Expression {
   const arg: VariableRef = { type: 'variable', name: selName };
-  if (type === 'select')
+  if (type === 'select') {
     return {
       type: 'expression',
       arg,
       annotation: { type: 'function', name: 'string' }
     };
+  }
 
   const options: Option[] = [];
   if (pluralOffset) {
@@ -157,12 +161,13 @@ function argToExpression({
  */
 export function mf1ToMessageData(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
-  if (args.length === 0)
+  if (args.length === 0) {
     return {
       type: 'message',
       declarations: [],
       pattern: { body: ast.map(token => tokenToPart(token, null, null)) }
     };
+  }
 
   // First determine the keys for all cases, with empty values
   let keys: (string | number)[][] = [];
@@ -173,10 +178,13 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
       if (typeof b === 'number' || a === 'other') return 1;
       return 0;
     });
-    if (i === 0) keys = kk.map(key => [key]);
-    else
-      for (let i = keys.length - 1; i >= 0; --i)
+    if (i === 0) {
+      keys = kk.map(key => [key]);
+    } else {
+      for (let i = keys.length - 1; i >= 0; --i) {
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
+      }
+    }
   }
   const variants: Variant[] = keys.map(key => ({
     keys: key.map(k =>
@@ -224,7 +232,9 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
             const part = tokenToPart(token, pluralArg, pluralOffset);
             if (typeof vp[i] === 'string' && typeof part === 'string') {
               vp[i] += part;
-            } else vp.push(part);
+            } else {
+              vp.push(part);
+            }
           }
         }
       }

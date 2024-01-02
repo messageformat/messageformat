@@ -80,7 +80,9 @@ describe('Examples', () => {
       if (errors) {
         const messages = onError.mock.calls.map(args => args[0].message);
         expect(messages).toMatchObject(errors);
-      } else expect(onError).not.toHaveBeenCalled();
+      } else {
+        expect(onError).not.toHaveBeenCalled();
+      }
 
       // function from tokens
       const tokens = parseDateTokens(src);

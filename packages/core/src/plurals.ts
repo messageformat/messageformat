@@ -4,8 +4,9 @@ import * as Plurals from 'make-plural/plurals';
 import { identifier } from 'safe-identifier';
 
 function normalize(locale: string) {
-  if (typeof locale !== 'string' || locale.length < 2)
+  if (typeof locale !== 'string' || locale.length < 2) {
     throw new RangeError(`Invalid language tag: ${locale}`);
+  }
 
   // The only locale for which anything but the primary subtag matters is
   // Portuguese as spoken in Portugal.

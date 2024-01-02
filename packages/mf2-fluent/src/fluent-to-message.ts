@@ -39,12 +39,14 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
     if (prev) for (const key of arg.keys) prev.keys.push(key);
     else args.push(arg);
   };
-  for (const el of pattern.elements)
+  for (const el of pattern.elements) {
     if (el.type === 'Placeable' && el.expression.type === 'SelectExpression') {
       add(asSelectArg(el.expression));
-      for (const v of el.expression.variants)
+      for (const v of el.expression.variants) {
         for (const arg of findSelectArgs(v.value)) add(arg);
+      }
     }
+  }
   return args;
 }
 
@@ -193,10 +195,13 @@ export function fluentToMessage(
       if (typeof b === 'number') return 1;
       return 0;
     });
-    if (i === 0) keys = kk.map(key => [key]);
-    else
-      for (let i = keys.length - 1; i >= 0; --i)
+    if (i === 0) {
+      keys = kk.map(key => [key]);
+    } else {
+      for (let i = keys.length - 1; i >= 0; --i) {
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
+      }
+    }
   }
   const variants: Variant[] = keys.map(key => ({
     keys: key.map((k, i) =>
@@ -243,7 +248,9 @@ export function fluentToMessage(
             const part = elementToPart(el);
             if (typeof vp[i] === 'string' && typeof part === 'string') {
               vp[i] += part;
-            } else vp.push(part);
+            } else {
+              vp.push(part);
+            }
           }
         }
       }

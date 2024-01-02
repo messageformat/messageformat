@@ -6,7 +6,7 @@ import {
   fallback,
   unknown
 } from '../runtime/index.js';
-import { resolveExpression, type Expression } from './index.js';
+import { type Expression, resolveExpression } from './index.js';
 
 /**
  * The value of a VariableRef is defined by the current Scope.

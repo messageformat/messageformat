@@ -72,8 +72,9 @@ function monthStyle(token: DateToken, onError: ErrorHandler) {
 
 function dayStyle(token: DateToken, onError: ErrorHandler) {
   const { char, desc, width } = token;
-  if (char === 'd') return numeric(width);
-  else {
+  if (char === 'd') {
+    return numeric(width);
+  } else {
     onError(`${desc} is not supported`);
     return undefined;
   }

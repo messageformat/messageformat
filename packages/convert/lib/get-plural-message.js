@@ -15,8 +15,9 @@ function isPluralObject(data, locale, { verbose }) {
         pluralKeys.includes(key) &&
         (!data[key] || typeof data[key] !== 'object')
     )
-  )
+  ) {
     return true;
+  }
   if (verbose && keys.every(key => cldrPluralCategories.includes(key))) {
     const msg = `Possible plural with keys not supported by ${locale}`;
     console.warn(`messageformat-convert: ${msg}: ${JSON.stringify(data)}`);
@@ -30,8 +31,9 @@ function isPluralObject(data, locale, { verbose }) {
  * `options.pluralVariable` is empty) returns `null`.
  */
 module.exports = function getPluralMessage(data, locale, options) {
-  if (!options.pluralVariable || !isPluralObject(data, locale, options))
+  if (!options.pluralVariable || !isPluralObject(data, locale, options)) {
     return null;
+  }
   const keys = Object.keys(data);
   const messages = keys.map(key => applyReplacements(data[key], options));
   const c0 = commonLength(messages, false);

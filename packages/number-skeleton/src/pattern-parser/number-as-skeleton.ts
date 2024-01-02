@@ -1,6 +1,6 @@
 import {
-  NumberFormatError,
   MaskedValueError,
+  NumberFormatError,
   PatternError
 } from '../errors.js';
 import { Skeleton } from '../types/skeleton.js';
@@ -49,8 +49,9 @@ export function parseNumberAsSkeleton(
       }
 
       case '@': {
-        if (res.precision)
+        if (res.precision) {
           onError(new MaskedValueError('precision', res.precision));
+        }
         res.precision = {
           style: 'precision-fraction',
           minSignificant: token.min,
@@ -72,8 +73,9 @@ export function parseNumberAsSkeleton(
         break;
 
       case 'E': {
-        if (hasExponent)
+        if (hasExponent) {
           onError(new MaskedValueError('exponent', res.notation));
+        }
         if (hasGroups) {
           const msg =
             'Exponential patterns may not contain grouping separators';
@@ -114,8 +116,9 @@ export function parseNumberAsSkeleton(
     } else {
       const dc = intDigits.length + fracDigits.length;
       if (decimalPos === -1) {
-        if (dc > 0)
+        if (dc > 0) {
           res.precision = { style: 'precision-fraction', maxSignificant: dc };
+        }
       } else {
         res.precision = {
           style: 'precision-fraction',

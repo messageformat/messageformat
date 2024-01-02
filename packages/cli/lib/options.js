@@ -102,8 +102,9 @@ messageformat.rc.{js,json,yaml}.`;
         return opt;
       },
       _(input) {
-        if (input.length === 0)
+        if (input.length === 0) {
           throw new Error('At least one input file or directory is required.');
+        }
         return input.map(fn => path.resolve(fn));
       }
     })

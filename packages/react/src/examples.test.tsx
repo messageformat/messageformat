@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import renderer from 'react-test-renderer';
 
 import {
-  getMessage,
-  getMessageGetter,
   Message,
   MessageContext,
   MessageProvider,
+  getMessage,
+  getMessageGetter,
   useLocales,
   useMessage,
   useMessageGetter

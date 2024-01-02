@@ -1,10 +1,10 @@
 import Compiler from './compiler';
 import {
+  PluralFunction,
+  PluralObject,
   getAllPlurals,
   getPlural,
-  hasPlural,
-  PluralFunction,
-  PluralObject
+  hasPlural
 } from './plurals';
 
 export { PluralFunction };

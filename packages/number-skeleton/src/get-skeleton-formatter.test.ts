@@ -123,7 +123,9 @@ for (const [testSet, cases] of Object.entries(tests)) {
           expect(cb.mock.calls).toMatchObject(
             errors.map(error => [{ ...base, ...error }])
           );
-        } else expect(cb).not.toHaveBeenCalled();
+        } else {
+          expect(cb).not.toHaveBeenCalled();
+        }
         expect(fmt(value)).toBe(expected);
 
         // function from skeleton

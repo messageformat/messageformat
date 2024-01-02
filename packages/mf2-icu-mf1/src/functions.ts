@@ -1,9 +1,9 @@
 import {
-  datetime,
   type MessageDateTime,
   type MessageFunctionContext,
   type MessageNumber,
-  type MessageValue
+  type MessageValue,
+  datetime
 } from 'messageformat';
 
 function getParam(options: Record<string, unknown>) {

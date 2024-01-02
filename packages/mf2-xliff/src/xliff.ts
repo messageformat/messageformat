@@ -1,4 +1,4 @@
-import { js2xml, Options, xml2js } from 'xml-js';
+import { Options, js2xml, xml2js } from 'xml-js';
 import type { Xliff, XliffDoc } from './xliff-spec';
 
 export type ParseOptions = Options.XML2JS;
@@ -14,8 +14,9 @@ export function parse(src: string, options?: ParseOptions) {
     !doc.elements ||
     doc.elements.length !== 1 ||
     doc.elements[0].name !== 'xliff'
-  )
+  ) {
     throw new Error('Could not find <xliff> element in XML');
+  }
   return doc as XliffDoc;
 }
 

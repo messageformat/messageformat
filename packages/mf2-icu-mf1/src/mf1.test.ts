@@ -357,8 +357,9 @@ for (const [title, cases] of Object.entries(testCases)) {
       let name = src;
       if (locale || options) {
         const opt = [locale];
-        for (const [key, value] of Object.entries(options || {}))
+        for (const [key, value] of Object.entries(options || {})) {
           opt.push(`${key}: ${value}`);
+        }
         name = `[${opt.join(', ')}] ${src}`;
       }
 
@@ -366,10 +367,13 @@ for (const [title, cases] of Object.entries(testCases)) {
       _describe(name, () => {
         for (const [param, res] of exp) {
           const strParam = [];
-          if (param && typeof param === 'object')
-            for (const [key, value] of Object.entries(param))
+          if (param && typeof param === 'object') {
+            for (const [key, value] of Object.entries(param)) {
               strParam.push(`${key}: ${value}`);
-          else strParam.push(String(param));
+            }
+          } else {
+            strParam.push(String(param));
+          }
 
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));

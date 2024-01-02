@@ -230,8 +230,9 @@ describe('errors', () => {
     'precision-increment',
     'scale',
     '.00'
-  ])
+  ]) {
     cases[`${stem}/foo`] = { code: 'BAD_OPTION', stem, option: 'foo' };
+  }
 
   for (const [src, expected] of Object.entries(cases)) {
     test(src, () => {

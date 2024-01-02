@@ -267,8 +267,9 @@ class Parser {
 
   checkSelectKey(lt: LexerToken, type: Select['type'], key: string) {
     if (key[0] === '=') {
-      if (type === 'select')
+      if (type === 'select') {
         throw new ParseError(lt, `The case ${key} is not valid with select`);
+      }
     } else if (type !== 'select') {
       const keys = type === 'plural' ? this.cardinalKeys : this.ordinalKeys;
       if (this.strictPluralKeys && keys.length > 0 && !keys.includes(key)) {
@@ -290,10 +291,12 @@ class Parser {
     for (const lt of this.lexer) {
       switch (lt.type) {
         case 'offset':
-          if (type === 'select')
+          if (type === 'select') {
             throw new ParseError(lt, 'Unexpected plural offset for select');
-          if (sel.cases.length > 0)
+          }
+          if (sel.cases.length > 0) {
             throw new ParseError(lt, 'Plural offset must be set before cases');
+          }
           sel.pluralOffset = Number(lt.value);
           ctx.text += lt.text;
           ctx.lineBreaks += lt.lineBreaks;
@@ -341,14 +344,16 @@ class Parser {
         const end = this.lexer.next();
         if (!end) throw new ParseError(null, 'Unexpected message end');
         /* istanbul ignore if: never happens */
-        if (end.type !== 'end')
+        if (end.type !== 'end') {
           throw new ParseError(end, `Unexpected lexer token: ${end.type}`);
+        }
         ctx.text += end.text;
-        if (isSelectType(argType.value.toLowerCase()))
+        if (isSelectType(argType.value.toLowerCase())) {
           throw new ParseError(
             argType,
             `Invalid type identifier: ${argType.value}`
           );
+        }
         return {
           type: 'function',
           arg: lt.value,
@@ -362,8 +367,9 @@ class Parser {
           throw new ParseError(argType, msg);
         }
         let param = this.parseBody(this.strict ? false : inPlural);
-        if (this.strict && param.length > 0)
+        if (this.strict && param.length > 0) {
           param = strictArgStyleParam(lt, param);
+        }
         return {
           type: 'function',
           arg: lt.value,
@@ -374,13 +380,14 @@ class Parser {
       }
       case 'select':
         /* istanbul ignore else: never happens */
-        if (isSelectType(argType.value))
+        if (isSelectType(argType.value)) {
           return this.parseSelect(lt, inPlural, ctx, argType.value);
-        else
+        } else {
           throw new ParseError(
             argType,
             `Unexpected select type ${argType.value}`
           );
+        }
       /* istanbul ignore next: never happens */
       default:
         throw new ParseError(

@@ -7,11 +7,11 @@ import { parse } from '@messageformat/parser';
 import { source } from '@messageformat/test-utils';
 
 import {
-  MessageValue,
   MessageFormat,
   MessageFunctionContext,
-  SelectMessage,
-  MessagePart
+  MessagePart,
+  MessageValue,
+  SelectMessage
 } from './index';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {

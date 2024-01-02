@@ -85,8 +85,9 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
           }
           group.set('', entry);
         }
-        for (const attr of msg.attributes)
+        for (const attr of msg.attributes) {
           group.set(attr.id.name, fluentToMessage(attr.value));
+        }
         data.set(id, group);
         break;
       }

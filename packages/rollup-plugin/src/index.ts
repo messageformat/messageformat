@@ -1,5 +1,5 @@
 import { LoadResult } from 'rollup';
-import { createFilter, FilterPattern } from '@rollup/pluginutils';
+import { FilterPattern, createFilter } from '@rollup/pluginutils';
 import { parse } from 'dot-properties';
 import { readFile } from 'fs';
 import MessageFormat, { MessageFormatOptions } from '@messageformat/core';
@@ -83,8 +83,9 @@ export function messageformat({
       if (!id.endsWith('.properties') || !filter(id)) return null;
       return new Promise<LoadResult>((resolve, reject) =>
         readFile(id, (err, buffer) => {
-          if (err) reject(err);
-          else {
+          if (err) {
+            reject(err);
+          } else {
             const encoding = uv(buffer) ? 'utf8' : 'latin1';
             resolve({ code: buffer.toString(encoding) });
           }

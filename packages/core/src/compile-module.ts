@@ -112,8 +112,9 @@ export default function compileModule(
 ) {
   const { plurals } = messageformat;
   const cp: { [key: string]: PluralObject } = {};
-  if (plurals.length > 1)
+  if (plurals.length > 1) {
     for (const pl of plurals) cp[pl.lc] = cp[pl.locale] = pl;
+  }
   const compiler = new Compiler(messageformat.options);
   const msgObj = compiler.compile(messages, plurals[0], cp);
   const msgStr = stringifyObject(msgObj);

@@ -50,12 +50,13 @@ function stringifyDeclaration(decl: Declaration) {
     case 'unsupported-statement': {
       const parts = [`.${decl.keyword}`];
       if (decl.body) parts.push(decl.body);
-      for (const exp of decl.expressions)
+      for (const exp of decl.expressions) {
         parts.push(
           exp.type === 'expression'
             ? stringifyExpression(exp)
             : stringifyMarkup(exp)
         );
+      }
       return parts.join(' ');
     }
   }

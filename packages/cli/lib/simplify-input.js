@@ -1,11 +1,14 @@
 function getAllObjects(obj, level) {
   if (typeof obj !== 'object') throw new Error('non-object value');
-  if (level === 0) return [obj];
-  else if (level === 1) return Object.keys(obj).map(k => obj[k]);
-  else
+  if (level === 0) {
+    return [obj];
+  } else if (level === 1) {
+    return Object.keys(obj).map(k => obj[k]);
+  } else {
     return Object.keys(obj)
       .map(k => getAllObjects(obj[k], level - 1))
       .reduce((a, b) => a.concat(b), []);
+  }
 }
 
 module.exports = function simplifyInput(input) {

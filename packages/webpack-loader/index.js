@@ -30,8 +30,9 @@ module.exports = function loadMessages(content) {
     ...mfOpt
   } = loaderUtils.getOptions(this) || {};
 
-  if (!encoding || encoding === 'auto')
+  if (!encoding || encoding === 'auto') {
     encoding = uv(content) ? 'utf8' : 'latin1';
+  }
   const input = content.toString(encoding);
 
   let messages = this.resourcePath.endsWith('.properties')
@@ -44,8 +45,9 @@ module.exports = function loadMessages(content) {
     messages = cm.translations;
   }
 
-  if (typeof locale === 'string' && locale.indexOf(',') !== -1)
+  if (typeof locale === 'string' && locale.indexOf(',') !== -1) {
     locale = locale.split(',');
+  }
   if (Array.isArray(locale) && locale.length > 1) {
     const relPath = relative(process.cwd(), this.resourcePath);
     locale = localeFromResourcePath(relPath, locale);

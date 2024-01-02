@@ -195,8 +195,9 @@ export function getNumberFormatOptions(
         if (
           (expDigits && expDigits > 1) ||
           (expSign && expSign !== 'sign-auto')
-        )
+        ) {
           fail(style, source);
+        }
         break;
       }
     }

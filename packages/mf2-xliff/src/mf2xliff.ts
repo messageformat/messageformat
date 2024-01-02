@@ -1,11 +1,11 @@
 import deepEqual from 'fast-deep-equal';
 import {
+  MessageFormat,
   isFunctionAnnotation,
   isLiteral,
   isMessage,
   isSelectMessage,
-  isVariableRef,
-  MessageFormat
+  isVariableRef
 } from 'messageformat';
 import type * as MF from 'messageformat';
 import type { MessageFormatInfo, MessageResourceData } from './index';
@@ -27,9 +27,11 @@ export function mf2xliff(
     'xmlns:mf': 'http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet' // FIXME
   };
   attributes.srcLang = source.locale;
-  if (target instanceof MessageFormat)
+  if (target instanceof MessageFormat) {
     throw new Error('source and target must be of the same type');
-  else if (target) attributes.trgLang = target.locale;
+  } else if (target) {
+    attributes.trgLang = target.locale;
+  }
 
   const elements: (X.Unit | X.Group)[] = [];
   for (const [key, srcMsg] of source.data) {
@@ -69,9 +71,11 @@ function resolveEntry(
   if (isMessage(srcMsg)) {
     if (trgMsg) {
       if (!isMessage(trgMsg)) throw new Error(mismatch(key));
-      if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg))
+      if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg)) {
         return resolveSelect(key, srcMsg, trgMsg);
-      else return resolvePattern(key, srcMsg.pattern, trgMsg.pattern);
+      } else {
+        return resolvePattern(key, srcMsg.pattern, trgMsg.pattern);
+      }
     } else {
       return isSelectMessage(srcMsg)
         ? resolveSelect(key, srcMsg, undefined)
@@ -106,10 +110,11 @@ function resolveSelect(
       };
     }
   } else {
-    if (!trgSel || !isSelectMessage(trgSel))
+    if (!trgSel || !isSelectMessage(trgSel)) {
       throw new Error(
         `At least one of source & target at ${key.join('.')} must be a select`
       );
+    }
     srcSel = {
       type: 'select',
       declarations: [],
@@ -142,8 +147,9 @@ function resolveSelect(
     const trgSelMap: number[] = [];
     for (const sel of trgSel.selectors) {
       const prevIdx = srcSel.selectors.findIndex(prev => deepEqual(sel, prev));
-      if (prevIdx !== -1) trgSelMap.push(prevIdx);
-      else {
+      if (prevIdx !== -1) {
+        trgSelMap.push(prevIdx);
+      } else {
         const id = nextId();
         select.push({ id, keys: [] });
         trgSelMap.push(select.length - 1);
@@ -156,11 +162,13 @@ function resolveSelect(
       const { keys } = select[i];
       const sk = key.type === '*' ? '*' : key.value;
       if (keys.includes(sk)) return;
-      if (sk === '*') keys.push(sk);
-      else if (Number.isFinite(Number(sk))) {
+      if (sk === '*') {
+        keys.push(sk);
+      } else if (Number.isFinite(Number(sk))) {
         let pos = 0;
-        while (keys[pos] !== '*' && Number.isFinite(Number(keys[pos])))
+        while (keys[pos] !== '*' && Number.isFinite(Number(keys[pos]))) {
           pos += 1;
+        }
         keys.splice(pos, 0, sk);
       } else {
         let pos = keys.length;
@@ -168,11 +176,14 @@ function resolveSelect(
         keys.splice(pos, 0, sk);
       }
     };
-    for (const c of srcSel.variants)
+    for (const c of srcSel.variants) {
       for (let i = 0; i < c.keys.length; ++i) addSorted(i, c.keys[i]);
-    for (const c of trgSel.variants)
-      for (let i = 0; i < c.keys.length; ++i)
+    }
+    for (const c of trgSel.variants) {
+      for (let i = 0; i < c.keys.length; ++i) {
         addSorted(trgSelMap[i], c.keys[i]);
+      }
+    }
 
     // Add a separate entry for each combined case
     // TODO: Collapse duplicates to default value only, where possible
@@ -186,8 +197,9 @@ function resolveSelect(
           return k.type === '*' || k.value === sk[ti];
         })
       );
-      if (!srcCase || !trgCase)
+      if (!srcCase || !trgCase) {
         throw new Error(`Case ${sk} not found‽ src:${srcCase} trg:${trgCase}`);
+      }
       elements.push(
         resolvePattern([...key, sk.join(' ')], srcCase.value, trgCase.value)
       );
@@ -208,8 +220,9 @@ function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
   let ptr: number[] | null = null;
   const max = select.map(s => s.keys.length - 1);
   function next(): IteratorResult<string[]> {
-    if (!ptr) ptr = new Array<number>(select.length).fill(0);
-    else {
+    if (!ptr) {
+      ptr = new Array<number>(select.length).fill(0);
+    } else {
       for (let i = ptr.length - 1; i >= 0; --i) {
         if (ptr[i] < max[i]) {
           ptr[i] += 1;
@@ -310,7 +323,9 @@ function resolvePattern(
       elements: refs
     };
     elements = [mf, segment];
-  } else elements = [segment];
+  } else {
+    elements = [segment];
+  }
   return { type: 'element', name: 'unit', attributes, elements };
 }
 

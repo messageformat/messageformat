@@ -110,10 +110,11 @@ function resolveSelect(
   { attributes, elements }: X.Group,
   st: 'source' | 'target'
 ): MF.Message {
-  if (!elements || elements.length === 0)
+  if (!elements || elements.length === 0) {
     throw new Error(
       `Select ${prettyElement('group', attributes.id)} cannot be empty`
     );
+  }
   let mf: X.MessageFormat | null = null;
   const variants: MF.Variant[] = [];
   for (const el of elements) {
@@ -259,10 +260,11 @@ function resolvePlaceholder(
   const { name } = el;
   const ref = el.attributes?.['mf:ref'];
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
-  if (!mf)
+  if (!mf) {
     throw new Error(
       `Inline <${name}> requires a preceding <mf:messageformat> in the same <unit>`
     );
+  }
   const res = mf.elements.find(el => el.attributes?.id === ref);
   switch (res?.name) {
     case 'mf:expression':

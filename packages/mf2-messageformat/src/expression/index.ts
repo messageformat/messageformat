@@ -2,15 +2,15 @@ import type { Context } from '../format-context';
 import type { MessageValue } from '../runtime';
 
 import {
-  resolveFunctionAnnotation,
-  FunctionAnnotation
+  FunctionAnnotation,
+  resolveFunctionAnnotation
 } from './function-annotation';
 import { Literal, resolveLiteral } from './literal';
 import {
-  resolveUnsupportedAnnotation,
-  UnsupportedAnnotation
+  UnsupportedAnnotation,
+  resolveUnsupportedAnnotation
 } from './unsupported-annotation';
-import { resolveVariableRef, VariableRef } from './variable-ref';
+import { VariableRef, resolveVariableRef } from './variable-ref';
 
 export {
   isFunctionAnnotation,
