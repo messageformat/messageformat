@@ -51,7 +51,11 @@ function getValue(scope: unknown, name: string): unknown {
 
 export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
   const value = getValue(ctx.scope, name);
-  if (value instanceof UnresolvedExpression) {
+  if (value === undefined) {
+    const source = '$' + name;
+    const msg = `Variable not available: ${source}`;
+    ctx.onError(new MessageResolutionError('unresolved-var', msg, source));
+  } else if (value instanceof UnresolvedExpression) {
     const local = resolveExpression(
       value.scope ? { ...ctx, scope: value.scope } : ctx,
       value.expression
@@ -93,9 +97,5 @@ export function getMessageValue(
 export function resolveVariableRef(ctx: Context, ref: VariableRef) {
   const source = '$' + ref.name;
   const value = lookupVariableRef(ctx, ref);
-  const mv = getMessageValue(ctx, source, value);
-  if (mv !== undefined) return mv;
-  const msg = `Variable not available: ${source}`;
-  ctx.onError(new MessageResolutionError('unresolved-var', msg, source));
-  return fallback(source);
+  return getMessageValue(ctx, source, value) ?? fallback(source);
 }

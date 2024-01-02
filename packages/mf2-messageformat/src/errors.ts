@@ -25,6 +25,7 @@ export class MessageSyntaxError extends MessageError {
     | 'key-mismatch'
     | 'parse-error'
     | 'missing-fallback'
+    | 'missing-selector-annotation'
     | 'missing-syntax';
   start: number;
   end: number;
@@ -54,6 +55,7 @@ export class MessageSyntaxError extends MessageError {
       case 'forward-reference':
       case 'key-mismatch':
       case 'missing-fallback':
+      case 'missing-selector-annotation':
         message = `Data model error: ${type}`;
         if (start >= 0) message += ` at ${start}`;
     }
@@ -78,7 +80,8 @@ export class MessageDataModelError extends MessageSyntaxError {
     | 'duplicate-option'
     | 'forward-reference'
     | 'key-mismatch'
-    | 'missing-fallback';
+    | 'missing-fallback'
+    | 'missing-selector-annotation';
 }
 
 export class MessageResolutionError extends MessageError {

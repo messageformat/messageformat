@@ -105,6 +105,43 @@ function parseSelectMessage(
     if (body && body.type !== 'function') {
       ctx.onError('bad-selector', body.start, body.end);
     }
+    if (!sel.annotation) {
+      let hasAnnotation = false;
+      let arg = sel.arg;
+      loop: while (arg?.type === 'variable') {
+        for (const decl of declarations) {
+          switch (decl.type) {
+            case 'input':
+              if (
+                decl.value.type === 'expression' &&
+                decl.value.arg?.type === 'variable' &&
+                decl.value.arg.name === arg.name
+              ) {
+                hasAnnotation = Boolean(decl.value.annotation);
+                break loop;
+              }
+              break;
+            case 'local':
+              if (
+                decl.target.name === arg.name &&
+                decl.value.type === 'expression'
+              ) {
+                if (decl.value.annotation) {
+                  hasAnnotation = true;
+                  break loop;
+                }
+                arg = decl.value.arg;
+                continue loop;
+              }
+              break;
+          }
+        }
+        break loop;
+      }
+      if (!hasAnnotation) {
+        ctx.onError('missing-selector-annotation', sel.start, sel.end);
+      }
+    }
     selectors.push(sel);
     pos = sel.end;
     pos += whitespaces(ctx.source, pos);

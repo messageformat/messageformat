@@ -159,93 +159,107 @@
     "exp": "42 42"
   },
   {
-    "src": ".match {$foo} |1| {{one}} * {{other}}",
+    "src": ".match {$foo :string} |1| {{one}} * {{other}}",
     "params": { "foo": "1" },
     "exp": "one"
   },
   {
-    "src": ".match {$foo} 1 {{one}} * {{other}}",
+    "src": ".match {$foo :string} 1 {{one}} * {{other}}",
     "params": { "foo": 1 },
     "exp": "one"
   },
   {
-    "src": ".match {$foo} 1 {{one}} * {{other}}",
+    "src": ".match {$foo :string} 1 {{one}} * {{other}}",
     "params": { "foo": null },
-    "exp": "other",
-    "errors": [{ "type": "not-selectable" }]
+    "exp": "other"
   },
   {
-    "src": ".match {$foo} 1 {{one}} * {{other}}",
+    "src": ".match {$foo :string} 1 {{one}} * {{other}}",
     "exp": "other",
-    "errors": [{ "type": "unresolved-var" }, { "type": "not-selectable" }]
+    "errors": [{ "type": "unresolved-var" }]
   },
   {
-    "src": ".match {$foo} one {{one}} * {{other}}",
+    "src": ".match {$foo :number} one {{one}} * {{other}}",
     "params": { "foo": 1 },
     "exp": "one"
   },
   {
-    "src": ".match {$foo} 1 {{=1}} one {{one}} * {{other}}",
+    "src": ".match {$foo :number} 1 {{=1}} one {{one}} * {{other}}",
     "params": { "foo": 1 },
     "exp": "=1"
   },
   {
-    "src": ".match {$foo} one {{one}} 1 {{=1}} * {{other}}",
+    "src": ".match {$foo :number} one {{one}} 1 {{=1}} * {{other}}",
     "params": { "foo": 1 },
     "exp": "=1"
   },
   {
-    "src": ".match {$foo} {$bar} one one {{one one}} one * {{one other}} * * {{other}}",
+    "src": ".match {$foo :number} {$bar :number} one one {{one one}} one * {{one other}} * * {{other}}",
     "params": { "foo": 1, "bar": 1 },
     "exp": "one one"
   },
   {
-    "src": ".match {$foo} {$bar} one one {{one one}} one * {{one other}} * * {{other}}",
+    "src": ".match {$foo :number} {$bar :number} one one {{one one}} one * {{one other}} * * {{other}}",
     "params": { "foo": 1, "bar": 2 },
     "exp": "one other"
   },
   {
-    "src": ".match {$foo} {$bar} one one {{one one}} one * {{one other}} * * {{other}}",
+    "src": ".match {$foo :number} {$bar :number} one one {{one one}} one * {{one other}} * * {{other}}",
     "params": { "foo": 2, "bar": 2 },
     "exp": "other"
   },
   {
-    "src": ".local $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
-    "params": { "bar": 1 },
-    "exp": "one"
-  },
-  {
-    "src": ".local $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
-    "params": { "bar": 2 },
-    "exp": "other"
-  },
-  {
-    "src": ".local $foo = {$bar} .match {$foo :number} one {{one}} * {{other}}",
-    "params": { "bar": 1 },
-    "exp": "one"
-  },
-  {
-    "src": ".local $foo = {$bar} .match {$foo :number} one {{one}} * {{other}}",
-    "params": { "bar": 2 },
-    "exp": "other"
-  },
-  {
-    "src": ".local $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
-    "params": { "bar": 1 },
-    "exp": "one"
-  },
-  {
-    "src": ".local $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
-    "params": { "bar": 2 },
-    "exp": "other"
-  },
-  {
-    "src": ".local $bar = {$none} .match {$foo} one {{one}} * {{{$bar}}}",
+    "src": ".input {$foo :number} .match {$foo} one {{one}} * {{other}}",
     "params": { "foo": 1 },
     "exp": "one"
   },
   {
-    "src": ".local $bar = {$none} .match {$foo} one {{one}} * {{{$bar}}}",
+    "src": ".local $foo = {$bar :number} .match {$foo} one {{one}} * {{other}}",
+    "params": { "bar": 1 },
+    "exp": "one"
+  },
+  {
+    "src": ".input {$foo :number } .local $bar = {$foo} .match {$bar} one {{one}} * {{other}}",
+    "params": { "foo": 1 },
+    "exp": "one"
+  },
+  {
+    "src": ".input {$bar :number} .match {$bar} one {{one}} * {{other}}",
+    "params": { "bar": 2 },
+    "exp": "other"
+  },
+  {
+    "src": ".input {$bar} .match {$bar :number} one {{one}} * {{other}}",
+    "params": { "bar": 1 },
+    "exp": "one"
+  },
+  {
+    "src": ".input {$bar} .match {$bar :number} one {{one}} * {{other}}",
+    "params": { "bar": 2 },
+    "exp": "other"
+  },
+  {
+    "src": ".input {$bar} .match {$bar :number} one {{one}} * {{other}}",
+    "params": { "bar": 1 },
+    "exp": "one"
+  },
+  {
+    "src": ".input {$bar} .match {$bar :number} one {{one}} * {{other}}",
+    "params": { "bar": 2 },
+    "exp": "other"
+  },
+  {
+    "src": ".input {$none} .match {$foo :number} one {{one}} * {{{$none}}}",
+    "params": { "foo": 1 },
+    "exp": "one"
+  },
+  {
+    "src": ".local $bar = {$none} .match {$foo :number} one {{one}} * {{{$bar}}}",
+    "params": { "foo": 1 },
+    "exp": "one"
+  },
+  {
+    "src": ".local $bar = {$none} .match {$foo :number} one {{one}} * {{{$bar}}}",
     "params": { "foo": 2 },
     "exp": "{$none}",
     "errors": [{ "type": "unresolved-var" }]
@@ -350,11 +364,20 @@
   { "src": "no {|literal} end", "syntaxError": true },
   { "src": "no {|literal or placeholder end", "syntaxError": true },
   { "src": ".match {} * {{foo}}", "syntaxError": true },
-  { "src": ".match {|foo|} {|bar|} ** {{foo}}", "syntaxError": true },
+  { "src": ".match {|foo| :x} {|bar| :x} ** {{foo}}", "syntaxError": true },
   { "src": ".match * {{foo}}", "syntaxError": true },
-  { "src": ".match {|x|} * foo", "syntaxError": true },
-  { "src": ".match {|x|} * {{foo}} extra", "syntaxError": true },
+  { "src": ".match {|x| :x} * foo", "syntaxError": true },
+  { "src": ".match {|x| :x} * {{foo}} extra", "syntaxError": true },
   { "src": ".match |x| * {{foo}}", "syntaxError": true },
-  { "src": ".match {$foo} * * {{foo}}", "syntaxError": true },
-  { "src": ".match {$foo} {$bar} * {{foo}}", "syntaxError": true }
+  { "src": ".match {$foo :x} * * {{foo}}", "syntaxError": true },
+  { "src": ".match {$foo :x} {$bar :x} * {{foo}}", "syntaxError": true },
+  { "src": ".match {$foo} one {{one}} * {{other}}", "syntaxError": true },
+  {
+    "src": ".input {$foo} .match {$foo} one {{one}} * {{other}}",
+    "syntaxError": true
+  },
+  {
+    "src": ".local $foo = {$bar} .match {$foo} one {{one}} * {{other}}",
+    "syntaxError": true
+  }
 ]
