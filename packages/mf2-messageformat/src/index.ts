@@ -1,6 +1,8 @@
 export { asDataModel, parseMessage, type CST } from './cst-parser/index.js';
 export type * from './data-model/types.js';
 export * from './data-model/type-guards.js';
+export { validate } from './data-model/validate.js';
+export { visit } from './data-model/visit.js';
 export {
   MessageDataModelError,
   MessageError,
@@ -10,4 +12,3 @@ export {
 export { MessageFormat, MessageFormatOptions } from './messageformat.js';
 export { stringifyMessage } from './stringifier/message.js';
 export * from './runtime/index.js';
-export { validate } from './extra/validate.js'; // must be after ./messageformat -- but why!?

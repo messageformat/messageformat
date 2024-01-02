@@ -377,7 +377,15 @@ for (const [title, cases] of Object.entries(testCases)) {
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));
             const mf = mf1ToMessage(data, locale);
-            validate(data, mf.resolvedOptions().functions);
+            const req = validate(data, type => {
+              throw new Error(`Validation failed: ${type}`);
+            });
+            const { functions } = mf.resolvedOptions();
+            for (const fn of req.functions) {
+              if (typeof functions[fn] !== 'function') {
+                throw new Error(`Unknown message function: ${fn}`);
+              }
+            }
             const msg = mf.format(
               param as Record<string, string | number | Date>
             );

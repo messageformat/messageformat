@@ -188,6 +188,7 @@ export interface UnsupportedAnnotation {
   sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~' | '�';
   source: string;
   name?: never;
+  options?: never;
 }
 
 /**
