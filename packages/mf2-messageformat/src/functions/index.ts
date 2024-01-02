@@ -1,26 +1,16 @@
 import { Context } from '../format-context.js';
+import { MessageExpressionPart } from '../formatted-parts.js';
 import { datetime } from './datetime.js';
+import { fallback } from './fallback.js';
 import { integer, number, ordinal, plural } from './number.js';
 import { string } from './string.js';
+import { unknown } from './unknown.js';
 
-export { MessageDateTime, MessageDateTimePart, datetime } from './datetime.js';
-export { MessageFallback, MessageFallbackPart, fallback } from './fallback.js';
-export {
-  MessageNumber,
-  MessageNumberPart,
-  integer,
-  number,
-  ordinal,
-  plural
-} from './number.js';
-export { MessageString, MessageStringPart, string } from './string.js';
-export { MessageUnknownPart, MessageUnknownValue, unknown } from './unknown.js';
-export {
-  asBoolean,
-  asPositiveInteger,
-  asString,
-  mergeLocales
-} from './utils.js';
+export type { MessageDateTime } from './datetime.js';
+export type { MessageFallback } from './fallback.js';
+export type { MessageNumber } from './number.js';
+export type { MessageString } from './string.js';
+export type { MessageUnknownValue } from './unknown.js';
 
 export interface MessageValue {
   readonly type: string;
@@ -33,55 +23,28 @@ export interface MessageValue {
   valueOf?: () => unknown;
 }
 
-export interface MessageExpressionPart {
-  type: string;
-  source: string;
-  locale?: string;
-  parts?: Array<{ type: string; source?: string; value?: unknown }>;
-  value?: unknown;
-}
-
-export interface MessageLiteralPart {
-  type: 'literal';
-  value: string;
-}
-
-export interface MessageMarkupPart {
-  type: 'markup';
-  kind: 'open' | 'standalone';
-  source: string;
-  name: string;
-  options?: { [key: string]: unknown };
-}
-
-export interface MessageMarkupClosePart {
-  type: 'markup';
-  kind: 'close';
-  source: string;
-  name: string;
-  options?: never;
-}
-
-export type MessagePart =
-  | MessageExpressionPart
-  | MessageLiteralPart
-  | MessageMarkupClosePart
-  | MessageMarkupPart;
-
 /**
  * The default Runtime includes three functions, `datetime`, `number` and `string`,
  * as well as the `integer`, `ordinal`, and `plural` aliases for `number`.
  *
  * @beta
  */
-export const defaultFunctions = {
+export const defaultFunctions = Object.freeze({
   datetime,
   integer,
   number,
   ordinal,
   plural,
   string
-};
+});
+
+/**
+ * Utility functions not available directly as named functions,
+ * but used to handle fallback values and input variables of unknown type.
+ *
+ * @beta
+ */
+export const utilFunctions = Object.freeze({ fallback, unknown });
 
 export class MessageFunctionContext {
   #ctx: Context;

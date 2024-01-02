@@ -5,11 +5,8 @@ import {
   asString,
   mergeLocales
 } from './utils.js';
-import type {
-  MessageExpressionPart,
-  MessageFunctionContext,
-  MessageValue
-} from './index.js';
+import type { MessageFunctionContext, MessageValue } from './index.js';
+import type { MessageExpressionPart } from '../formatted-parts.js';
 
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';

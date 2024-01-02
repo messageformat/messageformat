@@ -1,4 +1,4 @@
-import type { MessageFunctions, MessageValue } from './runtime';
+import type { MessageFunctions, MessageValue } from './functions';
 
 export interface Context {
   functions: MessageFunctions;

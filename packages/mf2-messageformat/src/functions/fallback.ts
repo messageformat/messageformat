@@ -1,4 +1,5 @@
-import type { MessageExpressionPart, MessageValue } from './index.js';
+import type { MessageValue } from './index.js';
+import type { MessageExpressionPart } from '../formatted-parts.js';
 
 /**
  * Used to represent runtime/formatting errors.

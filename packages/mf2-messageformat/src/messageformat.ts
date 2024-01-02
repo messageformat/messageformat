@@ -5,12 +5,12 @@ import { UnresolvedExpression } from './data-model/resolve-variable.js';
 import type { Message } from './data-model/types.js';
 import { MessageError, MessageResolutionError } from './errors.js';
 import type { Context } from './format-context.js';
+import type { MessagePart } from './formatted-parts.js';
 import {
   MessageFunctions,
-  MessagePart,
   MessageValue,
   defaultFunctions
-} from './runtime/index.js';
+} from './functions/index.js';
 import { selectPattern } from './select-pattern.js';
 
 /** @beta */

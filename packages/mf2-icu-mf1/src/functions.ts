@@ -3,7 +3,7 @@ import {
   type MessageFunctionContext,
   type MessageNumber,
   type MessageValue,
-  datetime
+  defaultFunctions
 } from 'messageformat';
 
 function getParam(options: Record<string, unknown>) {
@@ -33,7 +33,7 @@ function date(
           : 'short',
     year: 'numeric'
   };
-  return datetime(msgCtx, opt, input);
+  return defaultFunctions.datetime(msgCtx, opt, input);
 }
 
 function time(
@@ -48,7 +48,7 @@ function time(
     hour: 'numeric',
     timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
   };
-  return datetime(msgCtx, opt, input);
+  return defaultFunctions.datetime(msgCtx, opt, input);
 }
 
 /**

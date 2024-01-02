@@ -1,11 +1,8 @@
 import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import {
-  MessageFunctionContext,
-  MessageValue,
-  fallback,
-  unknown
-} from '../runtime/index.js';
+import { fallback } from '../functions/fallback.js';
+import { MessageFunctionContext, MessageValue } from '../functions/index.js';
+import { unknown } from '../functions/unknown.js';
 import type { Expression, VariableRef } from './types.js';
 import { resolveExpression } from './resolve-expression.js';
 

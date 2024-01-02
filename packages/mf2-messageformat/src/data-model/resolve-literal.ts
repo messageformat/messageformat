@@ -1,5 +1,5 @@
 import type { Context } from '../format-context.js';
-import { MessageFunctionContext } from '../runtime/index.js';
+import { MessageFunctionContext } from '../functions/index.js';
 import type { Literal } from './types.js';
 
 export function resolveLiteral(ctx: Context, lit: Literal) {

@@ -1,9 +1,9 @@
-import { resolveValue } from './resolve-value.js';
 import type { Context } from '../format-context.js';
 import type {
   MessageMarkupClosePart,
   MessageMarkupPart
-} from '../runtime/index.js';
+} from '../formatted-parts.js';
+import { resolveValue } from './resolve-value.js';
 import type { Markup } from './types.js';
 
 export function formatMarkup(
