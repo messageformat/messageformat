@@ -42,7 +42,7 @@
     "test:chrome": "npm run pretest:browsers && mocha-selenium-bridge -b chrome test/browser/test.html",
     "test:firefox": "npm run pretest:browsers && mocha-selenium-bridge -b firefox test/browser/test.html",
     "test:serve": "npm run pretest:browsers && serve",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "prettier": {
     "arrowParens": "avoid",
