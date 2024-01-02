@@ -1,5 +1,11 @@
 import { isValidUnquotedLiteral } from '../cst-parser/names.js';
 import {
+  isLiteral,
+  isPatternMessage,
+  isSelectMessage,
+  isVariableRef
+} from '../data-model/type-guards.js';
+import type {
   Declaration,
   Expression,
   FunctionAnnotation,
@@ -10,13 +16,7 @@ import {
   Pattern,
   UnsupportedAnnotation,
   VariableRef
-} from '../data-model/index.js';
-import {
-  isLiteral,
-  isPatternMessage,
-  isSelectMessage,
-  isVariableRef
-} from '../data-model/type-guards.js';
+} from '../data-model/types.js';
 import { MessageFormat } from '../messageformat.js';
 
 /**

@@ -1,12 +1,10 @@
 import { asDataModel, parseMessage } from './cst-parser/index.js';
-import type { Message } from './data-model/index.js';
+import { resolveExpression } from './data-model/expression/index.js';
+import { UnresolvedExpression } from './data-model/expression/variable-ref.js';
+import { formatMarkup } from './data-model/markup.js';
+import type { Message } from './data-model/types.js';
 import { MessageError, MessageResolutionError } from './errors.js';
 import type { Context } from './format-context';
-import {
-  UnresolvedExpression,
-  resolveExpression
-} from './data-model/expression/index.js';
-import { formatMarkup } from './data-model/markup.js';
 import {
   MessageFunctions,
   MessagePart,

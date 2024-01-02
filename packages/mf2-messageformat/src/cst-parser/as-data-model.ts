@@ -1,4 +1,4 @@
-import type * as Model from '../data-model/index.js';
+import type * as Model from '../data-model/types.js';
 import { MessageSyntaxError } from '../errors.js';
 import type * as CST from './cst-types.js';
 

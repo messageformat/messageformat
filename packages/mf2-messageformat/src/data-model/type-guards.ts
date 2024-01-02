@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { FunctionAnnotation } from './expression/function-annotation.js';
-import type { Expression } from './expression/index.js';
-import type { Literal } from './expression/literal.js';
-import type { UnsupportedAnnotation } from './expression/unsupported-annotation.js';
-import type { VariableRef } from './expression/variable-ref.js';
+import type { FunctionAnnotation } from './types.js';
+import type { Expression } from './types.js';
+import type { Literal } from './types.js';
+import type { UnsupportedAnnotation } from './types.js';
+import type { VariableRef } from './types.js';
 import type {
   CatchallKey,
   Message,
   PatternMessage,
   SelectMessage
-} from './index.js';
-import type { Markup } from './markup.js';
+} from './types.js';
+import type { Markup } from './types.js';
 
 /** @beta */
 export const isCatchallKey = (key: any): key is CatchallKey =>

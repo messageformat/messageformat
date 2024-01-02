@@ -1,38 +1,13 @@
 import { MessageError } from '../../errors.js';
 import type { Context } from '../../format-context.js';
 import { MessageFunctionContext, fallback } from '../../runtime/index.js';
-import type { Literal } from './literal.js';
+import type {
+  FunctionAnnotation,
+  Literal,
+  Option,
+  VariableRef
+} from '../types.js';
 import { getValueSource, resolveValue } from './value.js';
-import type { VariableRef } from './variable-ref.js';
-
-/**
- * To resolve a FunctionAnnotation, an externally defined function is called.
- *
- * @remarks
- * The `name` identifies a function that takes in the arguments `args`, the
- * current locale, as well as any `options`, and returns some corresponding
- * output. Likely functions available by default would include `'plural'` for
- * determining the plural category of a numeric value, as well as `'number'`
- * and `'date'` for formatting values.
- *
- * @beta
- */
-export interface FunctionAnnotation {
-  type: 'function';
-  name: string;
-  options?: Option[];
-}
-
-/**
- * {@link FunctionAnnotation} options are expressed as
- * `key`/`value` pairs to allow their order to be maintained.
- *
- * @beta
- */
-export interface Option {
-  name: string;
-  value: Literal | VariableRef;
-}
 
 export function resolveFunctionAnnotation(
   ctx: Context,

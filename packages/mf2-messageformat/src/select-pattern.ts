@@ -1,6 +1,6 @@
-import type { Message, Pattern } from './data-model/index.js';
-import { MessageSelectionError } from './errors';
 import { resolveExpression } from './data-model/expression/index.js';
+import type { Message, Pattern } from './data-model/types.js';
+import { MessageSelectionError } from './errors';
 import type { Context } from './format-context';
 
 export function selectPattern(
