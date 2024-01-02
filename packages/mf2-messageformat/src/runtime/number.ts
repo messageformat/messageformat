@@ -29,8 +29,8 @@ export interface MessageNumber extends MessageValue {
    * so a key `zero` will never be matched for that locale.
    */
   selectKey(keys: Set<string>): string | null;
-  toParts(): [MessageNumberPart];
-  toString(): string;
+  toParts?: () => [MessageNumberPart];
+  toString?: () => string;
   valueOf(): number | bigint;
 }
 
@@ -40,6 +40,8 @@ export interface MessageNumberPart extends MessageExpressionPart {
   locale: string;
   parts: Intl.NumberFormatPart[];
 }
+
+const NotFormattable = Symbol('not-formattable');
 
 /**
  * `number` accepts a number, BigInt or string representing a JSON number as input
@@ -52,11 +54,12 @@ export interface MessageNumberPart extends MessageExpressionPart {
  */
 export function number(
   { localeMatcher, locales, source }: MessageFunctionContext,
-  options: Record<string, unknown>,
+  options: Record<string | symbol, unknown>,
   input?: unknown
 ): MessageNumber {
   let value: unknown;
-  const opt: Intl.NumberFormatOptions & Intl.PluralRulesOptions = {
+  const opt: Intl.NumberFormatOptions &
+    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
     localeMatcher
   };
   switch (typeof input) {
@@ -88,6 +91,7 @@ export function number(
       try {
         switch (name) {
           case 'locale':
+          case 'type': // used internally by Intl.PluralRules, but called 'select' here
             break;
           case 'minimumIntegerDigits':
           case 'minimumFractionDigits':
@@ -112,6 +116,7 @@ export function number(
     }
   }
 
+  const formattable = !options[NotFormattable];
   const lc = mergeLocales(locales, input, options);
   const num = value;
   let locale: string | undefined;
@@ -130,21 +135,87 @@ export function number(
     selectKey(keys) {
       const str = String(num);
       if (keys.has(str)) return str;
+      if (opt.select === 'exact') return null;
+      const pluralOpt = opt.select
+        ? { ...opt, select: undefined, type: opt.select }
+        : opt;
       // Intl.PluralRules needs a number, not bigint
-      cat ??= new Intl.PluralRules(lc, opt).select(Number(num));
+      cat ??= new Intl.PluralRules(lc, pluralOpt).select(Number(num));
       return keys.has(cat) ? cat : null;
     },
-    toParts() {
-      nf ??= new Intl.NumberFormat(lc, opt);
-      const parts = nf.formatToParts(num);
-      locale ??= nf.resolvedOptions().locale;
-      return [{ type: 'number', source, locale, parts }];
-    },
-    toString() {
-      nf ??= new Intl.NumberFormat(lc, opt);
-      str ??= nf.format(num);
-      return str;
-    },
+    toParts: formattable
+      ? () => {
+          nf ??= new Intl.NumberFormat(lc, opt);
+          const parts = nf.formatToParts(num);
+          locale ??= nf.resolvedOptions().locale;
+          return [{ type: 'number', source, locale, parts }];
+        }
+      : undefined,
+    toString: formattable
+      ? () => {
+          nf ??= new Intl.NumberFormat(lc, opt);
+          str ??= nf.format(num);
+          return str;
+        }
+      : undefined,
     valueOf: () => num
   };
 }
+
+/**
+ * `integer` accepts a number, BigInt or string representing a JSON number as input
+ * and formats it with the same options as
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
+ * It also supports plural category selection via
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
+ *
+ * The `maximumFractionDigits=0` and `style='decimal'` options are fixed for `:integer`.
+ *
+ * @beta
+ */
+export const integer = (
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+) =>
+  number(
+    ctx,
+    { ...options, maximumFractionDigits: 0, style: 'decimal' },
+    input
+  );
+
+/**
+ * `ordinal` accepts a number, BigInt or string representing a JSON number as input
+ * and acts as a ordinal category selector on the value, using
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
+ *
+ * `ordinal` cannot be used as a formatter.
+ *
+ * @beta
+ */
+export const ordinal = (
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+) =>
+  number(ctx, { ...options, select: 'ordinal', [NotFormattable]: true }, input);
+
+/**
+ * `plural` accepts a number, BigInt or string representing a JSON number as input
+ * and acts as a cardinal plural selector on the value, using
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
+ *
+ * `plural` cannot be used as a formatter.
+ *
+ * @beta
+ */
+export const plural = (
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+) =>
+  number(
+    ctx,
+    { ...options, select: 'cardinal', [NotFormattable]: true },
+    input
+  );

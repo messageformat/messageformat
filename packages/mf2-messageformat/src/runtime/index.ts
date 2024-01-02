@@ -1,11 +1,18 @@
 import { Context } from '../format-context.js';
 import { datetime } from './datetime.js';
-import { number } from './number.js';
+import { integer, number, ordinal, plural } from './number.js';
 import { string } from './string.js';
 
 export { MessageDateTime, MessageDateTimePart, datetime } from './datetime.js';
 export { MessageFallback, MessageFallbackPart, fallback } from './fallback.js';
-export { MessageNumber, MessageNumberPart, number } from './number.js';
+export {
+  MessageNumber,
+  MessageNumberPart,
+  integer,
+  number,
+  ordinal,
+  plural
+} from './number.js';
 export { MessageString, MessageStringPart, string } from './string.js';
 export { MessageUnknownPart, MessageUnknownValue, unknown } from './unknown.js';
 export {
@@ -62,11 +69,19 @@ export type MessagePart =
   | MessageMarkupPart;
 
 /**
- * The default Runtime includes three functions, `datetime`, `number` and `string`.
+ * The default Runtime includes three functions, `datetime`, `number` and `string`,
+ * as well as the `integer`, `ordinal`, and `plural` aliases for `number`.
  *
  * @beta
  */
-export const defaultFunctions = { datetime, number, string };
+export const defaultFunctions = {
+  datetime,
+  integer,
+  number,
+  ordinal,
+  plural,
+  string
+};
 
 export class MessageFunctionContext {
   #ctx: Context;

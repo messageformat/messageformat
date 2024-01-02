@@ -1,4 +1,25 @@
 {
+  "integer": [
+    { "src": "hello {4.2 :integer}", "exp": "hello 4" },
+    { "src": "hello {-4.20 :integer}", "exp": "hello -4" },
+    { "src": "hello {0.42e+1 :integer}", "exp": "hello 4" },
+    {
+      "src": ".match {$foo :integer} one {{one}} * {{other}}",
+      "params": { "foo": 1.2 },
+      "exp": "one"
+    },
+    {
+      "src": ".match {$foo :integer} 1.2 {{=1.2}} one {{one}} * {{other}}",
+      "params": { "foo": 1.2 },
+      "exp": "=1.2"
+    },
+    {
+      "src": ".match {$foo :integer} 1.2 {{=1.2}} |1,2| {{=1,2}} * {{other}}",
+      "locale": "fr",
+      "params": { "foo": 1.2 },
+      "exp": "=1.2"
+    }
+  ],
   "number": [
     { "src": "hello {4.2 :number}", "exp": "hello 4.2" },
     { "src": "hello {-4.20 :number}", "exp": "hello -4.2" },
@@ -160,6 +181,50 @@
       "params": { "foo": 2 },
       "exp": "{$none}",
       "errors": [{ "type": "unresolved-var" }]
+    }
+  ],
+  "ordinal": [
+    {
+      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
+      "params": { "foo": 1 },
+      "exp": "st"
+    },
+    {
+      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
+      "params": { "foo": 2 },
+      "exp": "nd"
+    },
+    {
+      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
+      "params": { "foo": 3 },
+      "exp": "rd"
+    },
+    {
+      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
+      "params": { "foo": 4 },
+      "exp": "th"
+    },
+    {
+      "src": "hello {42 :ordinal}",
+      "exp": "hello {|42|}",
+      "errors": [{ "type": "not-formattable" }]
+    }
+  ],
+  "plural": [
+    {
+      "src": ".match {$foo :plural} one {{one}} * {{other}}",
+      "params": { "foo": 1 },
+      "exp": "one"
+    },
+    {
+      "src": ".match {$foo :plural} one {{one}} * {{other}}",
+      "params": { "foo": 1.1 },
+      "exp": "other"
+    },
+    {
+      "src": "hello {42 :plural}",
+      "exp": "hello {|42|}",
+      "errors": [{ "type": "not-formattable" }]
     }
   ],
   "string": [
