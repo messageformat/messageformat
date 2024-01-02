@@ -58,6 +58,7 @@ test('source only', () => {
             <mf:messageformat>
               <mf:expression id="m3">
                 <mf:variable name="selector"/>
+                <mf:function name="string"/>
               </mf:expression>
             </mf:messageformat>
             <unit id="u:select..a" name="a">
@@ -139,6 +140,7 @@ test('combine source & target', () => {
             <mf:messageformat>
               <mf:expression id="m3">
                 <mf:variable name="selector"/>
+                <mf:function name="string"/>
               </mf:expression>
             </mf:messageformat>
             <unit id="u:select..a" name="a">
@@ -191,9 +193,11 @@ test('selector mismatch between source & target languages', () => {
             <mf:messageformat>
               <mf:expression id="m1">
                 <mf:variable name="gender"/>
+                <mf:function name="string"/>
               </mf:expression>
               <mf:expression id="m2">
                 <mf:variable name="case"/>
+                <mf:function name="string"/>
               </mf:expression>
             </mf:messageformat>
             <unit id="u:select..masculine_allative" name="masculine allative">

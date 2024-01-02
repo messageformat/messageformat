@@ -18,20 +18,21 @@ import { getFluentFunctions } from './functions';
  *   or in the shape output by {@link fluentToResourceData} as `data`.
  * @param locales - The locale code or codes to use for all of the resource's messages.
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
+ * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  */
 export function fluentToResource(
   source: string | Fluent.Resource | FluentMessageResourceData,
   locales?: string | string[],
-  options?: MessageFormatOptions
+  options?: MessageFormatOptions & { detectNumberSelection?: boolean }
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();
 
-  const functions = Object.assign(getFluentFunctions(res), options?.functions);
-  const opt = { ...options, functions };
+  const { detectNumberSelection, ...opt } = options ?? {};
+  opt.functions = Object.assign(getFluentFunctions(res), options?.functions);
 
   const data =
     typeof source === 'string' || source instanceof Fluent.Resource
-      ? fluentToResourceData(source).data
+      ? fluentToResourceData(source, { detectNumberSelection }).data
       : source;
   for (const [id, group] of data) {
     let rg = res.get(id);
@@ -55,10 +56,14 @@ export function fluentToResource(
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file or
  *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}
+ * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  * @returns An object containing the messages as `data` and any resource-level
  *   `comments` of the resource.
  */
-export function fluentToResourceData(source: string | Fluent.Resource): {
+export function fluentToResourceData(
+  source: string | Fluent.Resource,
+  options?: { detectNumberSelection?: boolean }
+): {
   data: FluentMessageResourceData;
   comments: string;
 } {
@@ -76,7 +81,7 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
         const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
         const group: Map<string, Message> = new Map();
         if (msg.value) {
-          const entry = fluentToMessage(msg.value);
+          const entry = fluentToMessage(msg.value, options);
           if (msg.comment) entry.comment = msg.comment.content;
           if (groupComment) {
             entry.comment = entry.comment
@@ -86,7 +91,7 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
           group.set('', entry);
         }
         for (const attr of msg.attributes) {
-          group.set(attr.id.name, fluentToMessage(attr.value));
+          group.set(attr.id.name, fluentToMessage(attr.value, options));
         }
         data.set(id, group);
         break;

@@ -94,7 +94,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'num-fraction-bad',
         scope: { arg: 1234 },
         exp: '{$arg}',
-        errors: ['oops']
+        errors: ['bad-option']
       },
       { msg: 'num-style', scope: { arg: 1234 }, exp: '123,400%' },
       { msg: 'num-currency', scope: { arg: 1234 }, exp: '€1,234.00' },
@@ -163,23 +163,23 @@ const testCases: Record<string, TestCase> = {
       }
     `,
     tests: [
-      { msg: 'ref-attr', exp: 'It', errors: ['$style', 'not-selectable'] },
+      { msg: 'ref-attr', exp: 'It', errors: ['$style'] },
       {
         msg: 'ref-attr',
         scope: { style: 'chicago' },
         exp: 'It',
-        errors: ['$style', 'not-selectable']
+        errors: ['$style']
       },
       {
         msg: 'call-attr-no-args',
         exp: 'It',
-        errors: ['$style', 'not-selectable']
+        errors: ['$style']
       },
       {
         msg: 'call-attr-no-args',
         scope: { style: 'chicago' },
         exp: 'It',
-        errors: ['$style', 'not-selectable']
+        errors: ['$style']
       },
       { msg: 'call-attr-with-expected-arg', exp: 'She' },
       {
@@ -190,13 +190,13 @@ const testCases: Record<string, TestCase> = {
       {
         msg: 'call-attr-with-other-arg',
         exp: 'It',
-        errors: ['$style', 'not-selectable']
+        errors: ['$style']
       },
       {
         msg: 'call-attr-with-other-arg',
         scope: { style: 'chicago' },
         exp: 'It',
-        errors: ['$style', 'not-selectable']
+        errors: ['$style']
       }
     ]
   },
@@ -254,7 +254,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'select',
         scope: {},
         exp: 'B',
-        errors: ['$selector', 'not-selectable']
+        errors: ['$selector']
       },
       { msg: 'select', scope: { selector: 'a' }, exp: 'A' },
       { msg: 'select', scope: { selector: 'b' }, exp: 'B' },
@@ -263,7 +263,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'number',
         scope: {},
         exp: 'B',
-        errors: ['$selector', 'not-selectable']
+        errors: ['$selector']
       },
       { msg: 'number', scope: { selector: 0 }, exp: 'A' },
       { msg: 'number', scope: { selector: 1 }, exp: 'B' },
@@ -272,18 +272,23 @@ const testCases: Record<string, TestCase> = {
         msg: 'plural',
         scope: {},
         exp: 'B',
-        errors: ['$selector', 'not-selectable']
+        errors: ['$selector', 'bad-input', 'not-selectable']
       },
       { msg: 'plural', scope: { selector: 1 }, exp: 'A' },
       { msg: 'plural', scope: { selector: 2 }, exp: 'B' },
-      { msg: 'plural', scope: { selector: 'one' }, exp: 'A' },
+      {
+        msg: 'plural',
+        scope: { selector: 'one' },
+        exp: 'B',
+        errors: ['bad-input', 'not-selectable']
+      },
       {
         msg: 'default',
         scope: {},
         exp: 'D',
-        errors: ['$selector', 'not-selectable']
+        errors: ['$selector']
       },
-      { msg: 'default', scope: { selector: 1 }, exp: 'A' },
+      { msg: 'default', scope: { selector: 1 }, exp: 'D' },
       { msg: 'default', scope: { selector: 2 }, exp: 'D' },
       { msg: 'default', scope: { selector: 'one' }, exp: 'A' }
     ]
@@ -335,7 +340,14 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
         for (const [attr, mf] of group) {
           const { functions } = mf.resolvedOptions();
           // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-          validate(data.get(id)?.get(attr ?? '')!, functions);
+          const req = validate(data.get(id)?.get(attr ?? '')!, type => {
+            throw new Error(`Validation failed: ${type}`);
+          });
+          for (const fn of req.functions) {
+            if (typeof functions[fn] !== 'function') {
+              throw new Error(`Unknown message function: ${fn}`);
+            }
+          }
         }
       }
     });
@@ -352,17 +364,22 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       const test_ = only ? test.only : test;
       test_(name, () => {
         const onError = jest.fn();
-        const str = res
-          .get(msg)
-          ?.get(attr ?? '')
-          ?.format(scope, onError);
+        const mf = res.get(msg)!.get(attr ?? '');
+        const str = mf!.format(scope, onError);
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
         if (errors?.length) {
+          //console.dir(mf?.resolvedOptions().message,{depth:null});
+          //console.dir(onError.mock.calls, { depth: null });
           expect(onError).toHaveBeenCalledTimes(errors.length);
           for (let i = 0; i < errors.length; ++i) {
             const [err] = onError.mock.calls[i];
-            expect(err.message).toMatch(errors[i]);
+            const expErr = errors[i];
+            if (typeof expErr === 'string' && !expErr.startsWith('$')) {
+              expect(err.type).toBe(expErr);
+            } else {
+              expect(err.message).toMatch(expErr);
+            }
           }
         } else {
           expect(onError).not.toHaveBeenCalled();
@@ -373,6 +390,20 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
     test('resourceToFluent', () => {
       const template = Fluent.parse(src, { withSpans: false });
       const res = resourceToFluent(data, template);
+
+      class FixResult extends Fluent.Transformer {
+        // When converting to MF2, number wrappers are added
+        visitSelectExpression(node: Fluent.SelectExpression) {
+          if (
+            node.selector.type === 'FunctionReference' &&
+            node.selector.id.name === 'NUMBER'
+          ) {
+            node.selector = node.selector.arguments.positional[0];
+          }
+          return this.genericVisit(node);
+        }
+      }
+      new FixResult().visit(res);
 
       class FixExpected extends Fluent.Transformer {
         // MF2 uses first-match selection, so default variants will be last
@@ -456,7 +487,7 @@ describe('formatToParts', () => {
       const onError = jest.fn();
       const sel = res.get('sel')?.get('')?.formatToParts(undefined, onError);
       expect(sel).toEqual([{ type: 'literal', value: 'B' }]);
-      expect(onError).toHaveBeenCalledTimes(2);
+      expect(onError).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -612,7 +643,9 @@ describe('formatToParts', () => {
       const onError = jest.fn();
       const msg = res.get('gender')?.get('')?.formatToParts(undefined, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'N' }]);
-      expect(onError).toHaveBeenCalledTimes(2);
+      expect(onError.mock.calls.map(args => args[0].type)).toEqual([
+        'unresolved-var'
+      ]);
     });
 
     test('plural with match', () => {
@@ -631,8 +664,16 @@ describe('formatToParts', () => {
     });
 
     test('plural with non-plural input', () => {
-      const msg = res.get('plural')?.get('')?.formatToParts({ num: 'NaN' });
+      const onError = jest.fn();
+      const msg = res
+        .get('plural')
+        ?.get('')
+        ?.formatToParts({ num: 'NaN' }, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
+      expect(onError.mock.calls.map(args => args[0].type)).toEqual([
+        'bad-input',
+        'not-selectable'
+      ]);
     });
   });
 });
@@ -709,12 +750,12 @@ describe('fluentToResourceData', () => {
     const res = resourceToFluent(data);
     expect(Fluent.serialize(res, {})).toBe(source`
       single =
-          { $num ->
+          { NUMBER($num) ->
               [0] One Zero selector.
              *[other] One Other selector.
           }
       multi =
-          { $num ->
+          { NUMBER($num) ->
               [0]
                   { $gender ->
                       [feminine] Combine Zero multiple F selectors.

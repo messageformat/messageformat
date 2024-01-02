@@ -18,20 +18,6 @@ interface SelectArg {
   keys: (string | number | typeof CATCHALL)[];
 }
 
-function asSelectArg(sel: Fluent.SelectExpression): SelectArg {
-  let defaultName = '';
-  const keys = sel.variants.map(v => {
-    const name = v.key.type === 'Identifier' ? v.key.name : v.key.parse().value;
-    if (v.default) {
-      defaultName = String(name);
-      return CATCHALL;
-    } else {
-      return name;
-    }
-  });
-  return { selector: sel.selector, defaultName, keys };
-}
-
 function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
   const args: SelectArg[] = [];
   const add = (arg: SelectArg) => {
@@ -39,15 +25,62 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
     if (prev) for (const key of arg.keys) prev.keys.push(key);
     else args.push(arg);
   };
+
   for (const el of pattern.elements) {
     if (el.type === 'Placeable' && el.expression.type === 'SelectExpression') {
-      add(asSelectArg(el.expression));
-      for (const v of el.expression.variants) {
+      const { selector, variants } = el.expression;
+      let defaultName = '';
+      const keys = variants.map(v => {
+        const name =
+          v.key.type === 'Identifier' ? v.key.name : v.key.parse().value;
+        if (v.default) {
+          defaultName = String(name);
+          return CATCHALL;
+        } else {
+          return name;
+        }
+      });
+      add({ selector, defaultName, keys });
+      for (const v of variants) {
         for (const arg of findSelectArgs(v.value)) add(arg);
       }
     }
   }
   return args;
+}
+
+function asSelectExpression(
+  { selector, defaultName, keys }: SelectArg,
+  detectNumberSelection: boolean = true
+): Expression {
+  switch (selector.type) {
+    case 'StringLiteral':
+      return {
+        type: 'expression',
+        arg: asValue(selector),
+        annotation: { type: 'function', name: 'string' }
+      };
+    case 'VariableReference': {
+      let name = detectNumberSelection ? 'number' : 'string';
+      if (name === 'number') {
+        for (const key of [...keys, defaultName]) {
+          if (
+            typeof key === 'string' &&
+            !['zero', 'one', 'two', 'few', 'many', 'other'].includes(key)
+          ) {
+            name = 'string';
+            break;
+          }
+        }
+      }
+      return {
+        type: 'expression',
+        arg: asValue(selector),
+        annotation: { type: 'function', name }
+      };
+    }
+  }
+  return asExpression(selector);
 }
 
 function asValue(exp: Fluent.InlineExpression): Literal | VariableRef {
@@ -72,8 +105,9 @@ function asExpression(exp: Fluent.Expression): Expression {
         annotation: { type: 'function', name: 'number' }
       };
     case 'StringLiteral':
-    case 'VariableReference':
+    case 'VariableReference': {
       return { type: 'expression', arg: asValue(exp) };
+    }
     case 'FunctionReference': {
       const annotation: FunctionAnnotation = {
         type: 'function',
@@ -171,9 +205,11 @@ function asFluentSelect(
  * {@link messageformat#Message} data object.
  *
  * @beta
+ * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  */
 export function fluentToMessage(
-  ast: Fluent.Pattern
+  ast: Fluent.Pattern,
+  options?: { detectNumberSelection?: boolean }
 ): PatternMessage | SelectMessage {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
@@ -261,7 +297,9 @@ export function fluentToMessage(
   return {
     type: 'select',
     declarations: [],
-    selectors: args.map(arg => asExpression(arg.selector)),
+    selectors: args.map(arg =>
+      asSelectExpression(arg, options?.detectNumberSelection)
+    ),
     variants
   };
 }

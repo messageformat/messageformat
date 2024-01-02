@@ -26,7 +26,7 @@ type MsgContext = {
   functionMap: FunctionMap;
 };
 
-export type FunctionMap = Record<string, string | symbol>;
+export type FunctionMap = Record<string, string | symbol | null>;
 
 /**
  * Default value for the {@link messageToFluent} `functionMap` option.
@@ -35,7 +35,9 @@ export type FunctionMap = Record<string, string | symbol>;
 export const defaultFunctionMap: FunctionMap = {
   datetime: 'DATETIME',
   message: FluentMessageRef,
-  number: 'NUMBER'
+  number: 'NUMBER',
+  plural: 'NUMBER',
+  string: null
 };
 
 const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
@@ -177,6 +179,14 @@ function functionRefToFluent(
   }
 
   const id = ctx.functionMap[name];
+  if (id === null) {
+    if (args.named.length > 0) {
+      throw new Error(
+        `The function :${name} is dropped in Fluent, so cannot have options.`
+      );
+    }
+    return args.positional[0];
+  }
   if (
     id === 'NUMBER' &&
     args.positional[0] instanceof Fluent.NumberLiteral &&
