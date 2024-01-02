@@ -1,6 +1,6 @@
 import { MessageResolutionError } from '../errors.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
+import type { MessageFunctionContext, MessageValue } from './index.js';
 import {
   asBoolean,
   asPositiveInteger,

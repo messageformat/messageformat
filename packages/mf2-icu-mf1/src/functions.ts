@@ -1,10 +1,10 @@
-import {
-  type MessageDateTime,
-  type MessageFunctionContext,
-  type MessageNumber,
-  type MessageValue,
-  defaultFunctions
+import type {
+  MessageDateTime,
+  MessageFunctionContext,
+  MessageNumber,
+  MessageValue
 } from 'messageformat';
+import { datetime } from 'messageformat/functions';
 
 function getParam(options: Record<string, unknown>) {
   if (options.param) {
@@ -33,7 +33,7 @@ function date(
           : 'short',
     year: 'numeric'
   };
-  return defaultFunctions.datetime(msgCtx, opt, input);
+  return datetime(msgCtx, opt, input);
 }
 
 function time(
@@ -48,7 +48,7 @@ function time(
     hour: 'numeric',
     timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
   };
-  return defaultFunctions.datetime(msgCtx, opt, input);
+  return datetime(msgCtx, opt, input);
 }
 
 /**

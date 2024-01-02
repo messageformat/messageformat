@@ -1,4 +1,5 @@
-import type { MessageFunctions, MessageValue } from './functions';
+import type { MessageValue } from './functions/index.js';
+import type { MessageFunctions } from './messageformat.js';
 
 export interface Context {
   functions: MessageFunctions;

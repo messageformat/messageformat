@@ -7,11 +7,38 @@ import { MessageError, MessageResolutionError } from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
-  MessageFunctions,
   MessageValue,
-  defaultFunctions
+  datetime,
+  integer,
+  number,
+  ordinal,
+  plural,
+  string
 } from './functions/index.js';
+import type { MessageFunctionContext } from './data-model/function-context.js';
 import { selectPattern } from './select-pattern.js';
+
+const defaultFunctions = Object.freeze({
+  datetime,
+  integer,
+  number,
+  ordinal,
+  plural,
+  string
+});
+
+/**
+ * The runtime function registry available when resolving {@link FunctionAnnotation} elements.
+ *
+ * @beta
+ */
+export interface MessageFunctions {
+  [key: string]: (
+    context: MessageFunctionContext,
+    options: Record<string, unknown>,
+    input?: unknown
+  ) => MessageValue;
+}
 
 /** @beta */
 export interface MessageFormatOptions {
@@ -27,7 +54,7 @@ export interface MessageFormatOptions {
 
   /**
    * The set of custom functions available during message resolution.
-   * Extends {@link defaultFunctions}.
+   * Extends the default set of functions.
    */
   functions?: MessageFunctions;
 }

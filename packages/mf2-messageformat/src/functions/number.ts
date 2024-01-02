@@ -1,12 +1,12 @@
 import { MessageResolutionError } from '../errors.js';
+import type { MessageExpressionPart } from '../formatted-parts.js';
+import type { MessageFunctionContext, MessageValue } from './index.js';
 import {
   asBoolean,
   asPositiveInteger,
   asString,
   mergeLocales
 } from './utils.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
-import type { MessageExpressionPart } from '../formatted-parts.js';
 
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';
@@ -17,7 +17,7 @@ export interface MessageNumber extends MessageValue {
   >;
   /**
    * In addition to matching exact values,
-   * numerical values will also match keys with the same plural rule category,
+   * numerical values may also match keys with the same plural rule category,
    * i.e. one of `zero`, `one`, `two`, `few`, `many`, and `other`.
    *
    * @remarks

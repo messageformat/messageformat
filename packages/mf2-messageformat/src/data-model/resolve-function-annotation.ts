@@ -1,7 +1,7 @@
 import { MessageError } from '../errors.js';
 import type { Context } from '../format-context.js';
 import { fallback } from '../functions/fallback.js';
-import { MessageFunctionContext } from '../functions/index.js';
+import { MessageFunctionContext } from './function-context.js';
 import { getValueSource, resolveValue } from './resolve-value.js';
 import type {
   FunctionAnnotation,

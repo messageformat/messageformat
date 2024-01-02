@@ -1,5 +1,5 @@
-import type { MessageFunctionContext, MessageValue } from './index.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
+import type { MessageFunctionContext, MessageValue } from './index.js';
 import { mergeLocales } from './utils.js';
 
 export interface MessageString extends MessageValue {
