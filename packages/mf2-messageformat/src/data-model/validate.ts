@@ -1,4 +1,4 @@
-import type { MessageDataModelError } from '../errors.js';
+import { MessageDataModelError } from '../errors.js';
 import type {
   Expression,
   Message,
@@ -39,7 +39,12 @@ import { visit } from './visit.js';
  */
 export function validate(
   msg: Message,
-  onError: (type: MessageDataModelError['type'], node: MessageNode) => void
+  onError: (type: MessageDataModelError['type'], node: MessageNode) => void = (
+    type,
+    node
+  ) => {
+    throw new MessageDataModelError(type, node);
+  }
 ) {
   let selectorCount = 0;
   let missingFallback: Expression | Variant | null = null;
