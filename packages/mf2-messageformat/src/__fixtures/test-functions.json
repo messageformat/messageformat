@@ -137,7 +137,7 @@
       "exp": "one"
     },
     {
-      "src": ".input {$foo :number } .local $bar = {$foo} .match {$bar} one {{one}} * {{other}}",
+      "src": ".input {$foo :number} .local $bar = {$foo} .match {$bar} one {{one}} * {{other}}",
       "params": { "foo": 1 },
       "exp": "one"
     },

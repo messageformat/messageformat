@@ -5,6 +5,7 @@ export type * from './formatted-parts.js';
 export type * from './functions/index.js';
 
 export { parseCST } from './cst/parse-cst.js';
+export { stringifyCST } from './cst/stringify-cst.js';
 export { messageFromCST, cst } from './data-model/from-cst.js';
 export {
   isCatchallKey,

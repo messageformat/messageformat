@@ -12,6 +12,7 @@ export type TestMessage = {
   params?: Record<string, string | number | null | undefined>;
   exp: string;
   parts?: Array<object>;
+  cleanSrc?: string;
   errors?: Array<{ type: string }>;
 };
 
