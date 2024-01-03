@@ -6,6 +6,8 @@ with the [Unicode MessageFormat 2.0] -based [ECMA-402 Intl.MessageFormat proposa
 The Fluent message representation relies on [`@fluent/syntax`],
 while the MessageFormat 2 representation uses [`messageformat@next`].
 
+This package is distributed only as an ES module.
+
 [fluent]: https://projectfluent.org/
 [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat
 [unicode messageformat 2.0]: https://github.com/unicode-org/message-format-wg
