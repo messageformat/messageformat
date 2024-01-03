@@ -51,7 +51,7 @@ export class ParseContext {
  *
  * @beta
  */
-export function parseMessage(
+export function parseCST(
   source: string,
   opt?: { resource?: boolean }
 ): CST.Message {

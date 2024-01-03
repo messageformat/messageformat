@@ -1,6 +1,6 @@
 import type * as CST from './cst-types.js';
-import type { ParseContext } from './message.js';
 import { parseNameValue, parseUnquotedLiteralValue } from './names.js';
+import type { ParseContext } from './parse-cst.js';
 
 // Text ::= (TextChar | TextEscape)+
 // TextChar ::= AnyChar - ('{' | '}' | Esc)

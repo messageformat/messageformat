@@ -1,5 +1,5 @@
 import { type MessageNode } from './data-model/types.js';
-import { cst } from './cst-parser/as-data-model.js';
+import { cst } from './data-model/from-cst.js';
 
 export class MessageError extends Error {
   type:

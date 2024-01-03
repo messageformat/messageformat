@@ -1,6 +1,6 @@
-import type * as Model from '../data-model/types.js';
+import type * as Model from './types.js';
 import { MessageSyntaxError } from '../errors.js';
-import type * as CST from './cst-types.js';
+import type * as CST from '../cst-parser/cst-types.js';
 
 export const cst = Symbol.for('CST');
 
@@ -9,7 +9,7 @@ export const cst = Symbol.for('CST');
  *
  * @beta
  */
-export function asDataModel(msg: CST.Message): Model.Message {
+export function messageFromCST(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
   const declarations: Model.Declaration[] = msg.declarations
     ? msg.declarations.map(asDeclaration)

@@ -1,4 +1,4 @@
-import { MessageFormat, parseMessage } from '../index.js';
+import { MessageFormat, parseCST } from '../index.js';
 
 describe('Simple open/close', () => {
   test('no options, literal body', () => {
@@ -32,7 +32,7 @@ describe('Simple open/close', () => {
   test('do not allow operands', () => {
     const src = '{x #b}';
     expect(() => new MessageFormat(src, 'en')).toThrow();
-    const cst = parseMessage(src);
+    const cst = parseCST(src);
     expect(cst).toMatchObject({
       type: 'simple',
       errors: [{ type: 'extra-content' }],
@@ -50,7 +50,7 @@ describe('Simple open/close', () => {
   test('do not allow options on close', () => {
     const src = '{/b foo=13}';
     expect(() => new MessageFormat(src, 'en')).toThrow();
-    const cst = parseMessage(src);
+    const cst = parseCST(src);
     expect(cst).toMatchObject({
       type: 'simple',
       errors: [{ type: 'extra-content' }],

@@ -1,4 +1,4 @@
-import type { ParseContext } from './message.js';
+import type { ParseContext } from './parse-cst.js';
 
 // name-start = ALPHA / "_"
 //            / %xC0-D6 / %xD8-F6 / %xF8-2FF

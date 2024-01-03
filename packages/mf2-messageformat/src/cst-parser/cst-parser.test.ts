@@ -1,12 +1,11 @@
-import type * as CST from './cst-types.js';
-import { parseMessage } from './index.js';
+import { type CST, parseCST } from '../index.js';
 
 describe('messages in resources', () => {
   test('text character escapes', () => {
     const src = '\\\t\\ \\n\\r\\t\\x01\\u0002\\U000003';
-    const noRes = parseMessage(src, { resource: false });
+    const noRes = parseCST(src, { resource: false });
     expect(noRes.errors).toHaveLength(8);
-    const msg = parseMessage(src, { resource: true });
+    const msg = parseCST(src, { resource: true });
     expect(msg).toMatchObject<CST.Message>({
       type: 'simple',
       errors: [],
@@ -27,9 +26,9 @@ describe('messages in resources', () => {
 
   test('quoted literal character escapes', () => {
     const src = '{|\\\t\\ \\n\\r\\t\\x01\\u0002\\U000003|}';
-    const noRes = parseMessage(src, { resource: false });
+    const noRes = parseCST(src, { resource: false });
     expect(noRes.errors).toHaveLength(8);
-    const msg = parseMessage(src, { resource: true });
+    const msg = parseCST(src, { resource: true });
     expect(msg).toMatchObject<CST.Message>({
       type: 'simple',
       errors: [],
@@ -61,7 +60,7 @@ describe('messages in resources', () => {
 
   test('complex pattern with leading .', () => {
     const src = '{{.local}}';
-    const msg = parseMessage(src, { resource: false });
+    const msg = parseCST(src, { resource: false });
     expect(msg).toMatchObject<CST.Message>({
       type: 'complex',
       errors: [],
@@ -80,13 +79,13 @@ describe('messages in resources', () => {
 
   test('newlines in text', () => {
     const src = '1\n \t2 \n \\ 3\n\\t';
-    const noRes = parseMessage(src, { resource: false });
+    const noRes = parseCST(src, { resource: false });
     expect(noRes).toMatchObject({
       type: 'simple',
       errors: [{ type: 'bad-escape' }, { type: 'bad-escape' }],
       pattern: { body: [{ type: 'text', value: '1\n \t2 \n \\ 3\n\\t' }] }
     });
-    const msg = parseMessage(src, { resource: true });
+    const msg = parseCST(src, { resource: true });
     expect(msg).toMatchObject({
       type: 'simple',
       errors: [],
@@ -96,7 +95,7 @@ describe('messages in resources', () => {
 
   test('newlines in quoted literal', () => {
     const src = '{|1\n \t2 \n \\ 3\n\\t|}';
-    const noRes = parseMessage(src, { resource: false });
+    const noRes = parseCST(src, { resource: false });
     expect(noRes).toMatchObject({
       type: 'simple',
       errors: [{ type: 'bad-escape' }, { type: 'bad-escape' }],
@@ -109,7 +108,7 @@ describe('messages in resources', () => {
         ]
       }
     });
-    const msg = parseMessage(src, { resource: true });
+    const msg = parseCST(src, { resource: true });
     expect(msg).toMatchObject({
       type: 'simple',
       errors: [],
