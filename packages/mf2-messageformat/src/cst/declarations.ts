@@ -85,12 +85,11 @@ function parseLocalDeclaration(
   }
 
   pos += whitespaces(source, pos);
-  let equals: CST.Syntax<'=' | ''>;
+  let equals: CST.Syntax<'='> | undefined;
   if (source[pos] === '=') {
     equals = { start: pos, end: pos + 1, value: '=' };
     pos += 1;
   } else {
-    equals = { start: pos, end: pos, value: '' };
     ctx.onError('missing-syntax', pos, '=');
   }
 

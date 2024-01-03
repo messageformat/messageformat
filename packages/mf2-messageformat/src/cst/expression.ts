@@ -130,28 +130,38 @@ function parseFunctionRefOrMarkup(
     options.push(opt);
     pos = opt.end;
   }
-  return type === 'function'
-    ? { type, start, end: pos, name: id.parts, options }
-    : { type, start, end: pos, name: id.parts, options, close };
+  if (type === 'function') {
+    const open = { start, end: start + 1, value: ':' as const };
+    return { type, start, end: pos, open, name: id.parts, options };
+  } else {
+    const open = { start, end: start + 1, value: '#' as const };
+    return { type, start, end: pos, open, name: id.parts, options, close };
+  }
 }
 
 function parseMarkupClose(ctx: ParseContext, start: number): CST.MarkupClose {
   const id = parseIdentifier(ctx, start + 1);
-  return { type: 'markup-close', start, end: id.end, name: id.parts };
+  const open = { start, end: start + 1, value: '/' as const };
+  return { type: 'markup-close', start, end: id.end, open, name: id.parts };
 }
 
 function parseOption(ctx: ParseContext, start: number): CST.Option {
   const id = parseIdentifier(ctx, start);
   let pos = id.end;
   pos += whitespaces(ctx.source, pos);
-  if (ctx.source[pos] === '=') pos += 1;
-  else ctx.onError('missing-syntax', pos, '=');
+  let equals: CST.Syntax<'='> | undefined;
+  if (ctx.source[pos] === '=') {
+    equals = { start: pos, end: pos + 1, value: '=' };
+    pos += 1;
+  } else {
+    ctx.onError('missing-syntax', pos, '=');
+  }
   pos += whitespaces(ctx.source, pos);
   const value =
     ctx.source[pos] === '$'
       ? parseVariable(ctx, pos)
       : parseLiteral(ctx, pos, true);
-  return { start, end: value.end, name: id.parts, value };
+  return { start, end: value.end, name: id.parts, equals, value };
 }
 
 function parseIdentifier(
@@ -186,13 +196,17 @@ function parseReservedAnnotation(
   ctx: ParseContext,
   start: number
 ): CST.ReservedAnnotation {
-  const sigil = ctx.source[start] as CST.ReservedAnnotation['sigil'];
+  const open = {
+    start,
+    end: start + 1,
+    value: ctx.source[start]
+  } as CST.ReservedAnnotation['open'];
   const source = parseReservedBody(ctx, start + 1); // skip sigil
   return {
     type: 'reserved-annotation',
     start,
     end: source.end,
-    sigil,
+    open,
     source
   };
 }

@@ -51,7 +51,7 @@ export interface LocalDeclaration {
   end: number;
   keyword: Syntax<'.local'>;
   target: VariableRef | Junk;
-  equals: Syntax<'=' | ''>;
+  equals?: Syntax<'='>;
   value: Expression | Junk;
 }
 
@@ -121,19 +121,19 @@ export interface Junk {
 export interface Literal {
   type: 'literal';
   quoted: boolean;
-  /** position of the initial `|` */
   start: number;
-  /** position one past the terminal `|` */
   end: number;
+  open?: Syntax<'|'>;
   value: string;
+  close?: Syntax<'|'>;
 }
 
 /** @beta */
 export interface VariableRef {
   type: 'variable';
-  /** position of the `$` */
   start: number;
   end: number;
+  open: Syntax<'$'>;
   name: string;
 }
 
@@ -142,6 +142,7 @@ export interface FunctionRef {
   type: 'function';
   start: number;
   end: number;
+  open: Syntax<':'>;
   name: Identifier;
   options: Option[];
 }
@@ -149,9 +150,8 @@ export interface FunctionRef {
 /** @beta */
 export interface ReservedAnnotation {
   type: 'reserved-annotation';
-  sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~';
+  open: Syntax<'!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~'>;
   source: Syntax<string>;
-  /** position of the sigil */
   start: number;
   end: number;
 }
@@ -159,20 +159,20 @@ export interface ReservedAnnotation {
 /** @beta */
 export interface Markup {
   type: 'markup';
-  /** position of the sigil */
   start: number;
   end: number;
+  open: Syntax<'#'>;
   name: Identifier;
   options: Option[];
-  close: Syntax<'/'> | undefined;
+  close?: Syntax<'/'>;
 }
 
 /** @beta */
 export interface MarkupClose {
   type: 'markup-close';
-  /** position of the sigil */
   start: number;
   end: number;
+  open: Syntax<'/'>;
   name: Identifier;
 }
 
@@ -182,6 +182,7 @@ export interface Option {
   start: number;
   end: number;
   name: Identifier;
+  equals?: Syntax<'='>;
   value: Literal | VariableRef;
 }
 

@@ -76,6 +76,7 @@ export function parseQuotedLiteral(
 ): CST.Literal {
   let value = '';
   let pos = start + 1;
+  const open = { start, end: pos, value: '|' as const };
   for (let i = pos; i < ctx.source.length; ++i) {
     switch (ctx.source[i]) {
       case '\\': {
@@ -89,7 +90,15 @@ export function parseQuotedLiteral(
       }
       case '|':
         value += ctx.source.substring(pos, i);
-        return { type: 'literal', quoted: true, start, end: i + 1, value };
+        return {
+          type: 'literal',
+          quoted: true,
+          start,
+          end: i + 1,
+          open,
+          value,
+          close: { start: i, end: i + 1, value: '|' }
+        };
       case '\n':
         if (ctx.resource) {
           const nl = i;
@@ -113,20 +122,22 @@ export function parseQuotedLiteral(
     quoted: true,
     start,
     end: ctx.source.length,
-    value
+    open,
+    value,
+    close: undefined
   };
 }
 
-// Variable ::= '$' Name /* ws: explicit */
 export function parseVariable(
   ctx: ParseContext,
   start: number
 ): CST.VariableRef {
   const pos = start + 1;
+  const open = { start, end: pos, value: '$' as const };
   const name = parseNameValue(ctx.source, pos);
   const end = pos + name.length;
   if (!name) ctx.onError('empty-token', pos, pos + 1);
-  return { type: 'variable', start, end, name };
+  return { type: 'variable', start, end, open, name };
 }
 
 function parseEscape(

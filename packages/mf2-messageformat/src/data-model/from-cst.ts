@@ -121,12 +121,11 @@ function asExpression(
           if (ca.options.length > 0) {
             annotation.options = ca.options.map(asOption);
           }
-
           break;
         case 'reserved-annotation':
           annotation = {
             type: 'unsupported-annotation',
-            sigil: ca.sigil,
+            sigil: ca.open.value,
             source: ca.source.value,
             [cst]: ca
           };
