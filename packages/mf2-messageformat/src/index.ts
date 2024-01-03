@@ -2,7 +2,12 @@ export type * from './data-model/types.js';
 export type * from './formatted-parts.js';
 export type * from './functions/index.js';
 
-export { asDataModel, parseMessage, type CST } from './cst-parser/index.js';
+export {
+  type CST,
+  asDataModel,
+  cst,
+  parseMessage
+} from './cst-parser/index.js';
 export {
   isCatchallKey,
   isExpression,

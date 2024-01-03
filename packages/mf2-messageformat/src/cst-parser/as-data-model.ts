@@ -2,6 +2,8 @@ import type * as Model from '../data-model/types.js';
 import { MessageSyntaxError } from '../errors.js';
 import type * as CST from './cst-types.js';
 
+export const cst = Symbol.for('CST');
+
 /**
  * Convert a CST message structure into its data model representation.
  *
@@ -17,18 +19,21 @@ export function asDataModel(msg: CST.Message): Model.Message {
       type: 'select',
       declarations,
       selectors: msg.selectors.map(sel => asExpression(sel, false)),
-      variants: msg.variants.map(cst => ({
-        keys: cst.keys.map(key =>
-          key.type === '*' ? { type: '*' } : asValue(key)
+      variants: msg.variants.map(variant => ({
+        keys: variant.keys.map(key =>
+          key.type === '*' ? { type: '*', [cst]: key } : asValue(key)
         ),
-        value: asPattern(cst.value)
-      }))
+        value: asPattern(variant.value),
+        [cst]: variant
+      })),
+      [cst]: msg
     };
   } else {
     return {
       type: 'message',
       declarations,
-      pattern: asPattern(msg.pattern)
+      pattern: asPattern(msg.pattern),
+      [cst]: msg
     };
   }
 }
@@ -44,131 +49,138 @@ function asDeclaration(decl: CST.Declaration): Model.Declaration {
       return {
         type: 'input',
         name: value.arg.name,
-        value: value as Model.Expression<Model.VariableRef>
+        value: value as Model.Expression<Model.VariableRef>,
+        [cst]: decl
       };
     }
     case 'local':
       return {
         type: 'local',
         name: asValue(decl.target).name,
-        value: asExpression(decl.value, false)
+        value: asExpression(decl.value, false),
+        [cst]: decl
       };
     default:
       return {
         type: 'unsupported-statement',
         keyword: (decl.keyword?.value ?? '').substring(1),
         body: decl.body?.value || undefined,
-        expressions: decl.values?.map(dv => asExpression(dv, true)) ?? []
+        expressions: decl.values?.map(dv => asExpression(dv, true)) ?? [],
+        [cst]: decl
       };
   }
 }
 
-function asPattern(cst: CST.Pattern): Model.Pattern {
-  const body: Model.Pattern['body'] = cst.body.map(el =>
+function asPattern(pattern: CST.Pattern): Model.Pattern {
+  const body: Model.Pattern['body'] = pattern.body.map(el =>
     el.type === 'text' ? el.value : asExpression(el, true)
   );
   return { body };
 }
 
 function asExpression(
-  cst: CST.Expression | CST.Junk,
+  exp: CST.Expression | CST.Junk,
   allowMarkup: false
 ): Model.Expression;
 function asExpression(
-  cst: CST.Expression | CST.Junk,
+  exp: CST.Expression | CST.Junk,
   allowMarkup: true
 ): Model.Expression | Model.Markup;
 function asExpression(
-  cst: CST.Expression | CST.Junk,
+  exp: CST.Expression | CST.Junk,
   allowMarkup: boolean
 ): Model.Expression | Model.Markup {
-  if (cst.type === 'expression') {
-    if (allowMarkup && cst.markup) {
-      const cm = cst.markup;
+  if (exp.type === 'expression') {
+    if (allowMarkup && exp.markup) {
+      const cm = exp.markup;
       const name = asName(cm.name);
       if (cm.type === 'markup-close') {
-        return { type: 'markup', kind: 'close', name };
+        return { type: 'markup', kind: 'close', name, [cst]: exp };
       }
       const markup: Model.MarkupOpen | Model.MarkupStandalone = {
         type: 'markup',
         kind: cm.close ? 'standalone' : 'open',
-        name
+        name,
+        [cst]: exp
       };
       if (cm.options.length > 0) markup.options = cm.options.map(asOption);
       return markup;
     }
 
-    const arg = cst.arg ? asValue(cst.arg) : undefined;
+    const arg = exp.arg ? asValue(exp.arg) : undefined;
     let annotation:
       | Model.FunctionAnnotation
       | Model.UnsupportedAnnotation
       | undefined;
 
-    const ca = cst.annotation;
+    const ca = exp.annotation;
     if (ca) {
       switch (ca.type) {
         case 'function':
-          annotation = { type: 'function', name: asName(ca.name) };
+          annotation = { type: 'function', name: asName(ca.name), [cst]: ca };
           if (ca.options.length > 0) {
             annotation.options = ca.options.map(asOption);
           }
+
           break;
         case 'reserved-annotation':
           annotation = {
             type: 'unsupported-annotation',
             sigil: ca.sigil,
-            source: ca.source.value
+            source: ca.source.value,
+            [cst]: ca
           };
           break;
         default:
-          throw new MessageSyntaxError('parse-error', cst.start, cst.end);
+          throw new MessageSyntaxError('parse-error', exp.start, exp.end);
       }
     }
     if (arg) {
       return annotation
-        ? { type: 'expression', arg, annotation }
-        : { type: 'expression', arg };
+        ? { type: 'expression', arg, annotation, [cst]: exp }
+        : { type: 'expression', arg, [cst]: exp };
     } else if (annotation) {
-      return { type: 'expression', annotation };
+      return { type: 'expression', annotation, [cst]: exp };
     }
   }
-  throw new MessageSyntaxError('parse-error', cst.start, cst.end);
+  throw new MessageSyntaxError('parse-error', exp.start, exp.end);
 }
 
-const asOption = (cst: CST.Option): Model.Option => ({
-  name: asName(cst.name),
-  value: asValue(cst.value)
+const asOption = (option: CST.Option): Model.Option => ({
+  name: asName(option.name),
+  value: asValue(option.value),
+  [cst]: option
 });
 
-function asName(cst: CST.Identifier): string {
-  switch (cst.length) {
+function asName(id: CST.Identifier): string {
+  switch (id.length) {
     case 1:
-      return cst[0].value;
+      return id[0].value;
     case 3:
-      return `${cst[0].value}:${cst[2].value}`;
+      return `${id[0].value}:${id[2].value}`;
     default:
       throw new MessageSyntaxError(
         'parse-error',
-        cst[0]?.start ?? -1,
-        cst.at(-1)?.end ?? -1
+        id[0]?.start ?? -1,
+        id.at(-1)?.end ?? -1
       );
   }
 }
 
-function asValue(cst: CST.Literal | CST.Junk): Model.Literal;
-function asValue(cst: CST.VariableRef | CST.Junk): Model.VariableRef;
+function asValue(value: CST.Literal | CST.Junk): Model.Literal;
+function asValue(value: CST.VariableRef | CST.Junk): Model.VariableRef;
 function asValue(
-  cst: CST.Literal | CST.VariableRef | CST.Junk
+  value: CST.Literal | CST.VariableRef | CST.Junk
 ): Model.Literal | Model.VariableRef;
 function asValue(
-  cst: CST.Literal | CST.VariableRef | CST.Junk
+  value: CST.Literal | CST.VariableRef | CST.Junk
 ): Model.Literal | Model.VariableRef {
-  switch (cst.type) {
+  switch (value.type) {
     case 'literal':
-      return { type: 'literal', value: cst.value };
+      return { type: 'literal', value: value.value, [cst]: value };
     case 'variable':
-      return { type: 'variable', name: cst.name };
+      return { type: 'variable', name: value.name, [cst]: value };
     default:
-      throw new MessageSyntaxError('parse-error', cst.start, cst.end);
+      throw new MessageSyntaxError('parse-error', value.start, value.end);
   }
 }

@@ -1,3 +1,6 @@
+import { cst } from '../cst-parser/as-data-model.js';
+import type * as CST from '../cst-parser/cst-types.js';
+
 /** A node in a message data model */
 export type MessageNode =
   | Declaration
@@ -30,6 +33,7 @@ export interface PatternMessage {
   declarations: Declaration[];
   pattern: Pattern;
   comment?: string;
+  [cst]?: CST.SimpleMessage | CST.ComplexMessage;
 }
 
 /**
@@ -48,12 +52,14 @@ export interface InputDeclaration {
   type: 'input';
   name: string;
   value: Expression<VariableRef>;
+  [cst]?: CST.Declaration;
 }
 
 export interface LocalDeclaration {
   type: 'local';
   name: string;
   value: Expression;
+  [cst]?: CST.Declaration;
 }
 
 export interface UnsupportedStatement {
@@ -63,6 +69,7 @@ export interface UnsupportedStatement {
   value?: never;
   body?: string;
   expressions: (Expression | Markup)[];
+  [cst]?: CST.Declaration;
 }
 
 /**
@@ -83,6 +90,7 @@ export interface SelectMessage {
   selectors: Expression[];
   variants: Variant[];
   comment?: string;
+  [cst]?: CST.SelectMessage;
 }
 
 /** @beta */
@@ -90,6 +98,7 @@ export interface Variant {
   type?: never;
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
+  [cst]?: CST.Variant;
 }
 
 /**
@@ -100,6 +109,7 @@ export interface Variant {
 export interface CatchallKey {
   type: '*';
   value?: string;
+  [cst]?: CST.CatchallKey;
 }
 
 /**
@@ -129,11 +139,13 @@ export type Expression<
       type: 'expression';
       arg: A;
       annotation?: FunctionAnnotation | UnsupportedAnnotation;
+      [cst]?: CST.Expression;
     }
   : {
       type: 'expression';
       arg?: never;
       annotation: FunctionAnnotation | UnsupportedAnnotation;
+      [cst]?: CST.Expression;
     };
 
 /**
@@ -149,6 +161,7 @@ export type Expression<
 export interface Literal {
   type: 'literal';
   value: string;
+  [cst]?: CST.Literal;
 }
 
 /**
@@ -167,6 +180,7 @@ export interface Literal {
 export interface VariableRef {
   type: 'variable';
   name: string;
+  [cst]?: CST.VariableRef;
 }
 
 /**
@@ -185,6 +199,7 @@ export interface FunctionAnnotation {
   type: 'function';
   name: string;
   options?: Option[];
+  [cst]?: CST.FunctionRef;
 }
 
 /**
@@ -203,6 +218,7 @@ export interface UnsupportedAnnotation {
   source: string;
   name?: never;
   options?: never;
+  [cst]?: CST.ReservedAnnotation;
 }
 
 /**
@@ -225,6 +241,7 @@ export interface MarkupOpen {
   kind: 'open';
   name: string;
   options?: Option[];
+  [cst]?: CST.Expression;
 }
 
 export interface MarkupStandalone {
@@ -232,6 +249,7 @@ export interface MarkupStandalone {
   kind: 'standalone';
   name: string;
   options?: Option[];
+  [cst]?: CST.Expression;
 }
 
 export interface MarkupClose {
@@ -239,6 +257,7 @@ export interface MarkupClose {
   kind: 'close';
   name: string;
   options?: never;
+  [cst]?: CST.Expression;
 }
 
 /**
@@ -251,4 +270,5 @@ export interface Option {
   type?: never;
   name: string;
   value: Literal | VariableRef;
+  [cst]?: CST.Option;
 }
