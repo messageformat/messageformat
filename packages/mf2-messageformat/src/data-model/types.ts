@@ -1,3 +1,16 @@
+/** A node in a message data model */
+export type MessageNode =
+  | Declaration
+  | Variant
+  | CatchallKey
+  | Expression
+  | Literal
+  | VariableRef
+  | FunctionAnnotation
+  | UnsupportedAnnotation
+  | Markup
+  | Option;
+
 /**
  * The representation of a single message.
  * The shape of the message is an implementation detail,
@@ -74,6 +87,7 @@ export interface SelectMessage {
 
 /** @beta */
 export interface Variant {
+  type?: never;
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
 }
@@ -234,6 +248,7 @@ export interface MarkupClose {
  * @beta
  */
 export interface Option {
+  type?: never;
   name: string;
   value: Literal | VariableRef;
 }

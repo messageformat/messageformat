@@ -1,10 +1,8 @@
 import type { MessageDataModelError } from '../errors.js';
 import type {
-  Declaration,
   Expression,
-  Literal,
   Message,
-  Option,
+  MessageNode,
   VariableRef,
   Variant
 } from './types.js';
@@ -41,111 +39,93 @@ import { visit } from './visit.js';
  */
 export function validate(
   msg: Message,
-  onError: (
-    type: MessageDataModelError['type'],
-    node: Message | Declaration | Expression | Option | VariableRef | Variant
-  ) => void
+  onError: (type: MessageDataModelError['type'], node: MessageNode) => void
 ) {
-  const annotated = new Set<string>();
-  const declared = new Set<string>();
   let selectorCount = 0;
-  let missingFallback = false;
+  let missingFallback: Expression | Variant | null = null;
+
+  /** Tracks directly & indirectly annotated variables for `missing-selector-annotation` */
+  const annotated = new Set<string>();
+
+  /** Tracks declared variables for `duplicate-declaration` */
+  const declared = new Set<string>();
 
   const declRefs = new Map<string, VariableRef[]>();
-  const addDeclarationRef = (ref: Literal | VariableRef | undefined) => {
-    if (ref?.type === 'variable') {
-      const prev = declRefs.get(ref.name);
-      if (prev) prev.push(ref);
-      else declRefs.set(ref.name, [ref]);
-    }
-  };
-
   const functions = new Set<string>();
   const localVars = new Set<string>();
   const variables = new Set<string>();
 
-  const visitOptions = (
-    options: Option[] | undefined,
-    context: 'declaration' | 'selector' | 'placeholder'
-  ) => {
-    if (options) {
-      for (let i = 0; i < options.length; ++i) {
-        const { name, value } = options[i];
-        for (let j = i + 1; j < options.length; ++j) {
-          if (options[j].name === name) onError('duplicate-option', options[j]);
-        }
-        if (value.type === 'variable') {
-          variables.add(value.name);
-          if (context === 'declaration') addDeclarationRef(value);
-        }
-      }
-    }
-  };
-
   visit(msg, {
     declaration(decl) {
-      if (decl.name) {
-        if (declared.has(decl.name)) onError('duplicate-declaration', decl);
-        else declared.add(decl.name);
+      // Skip all ReservedStatement
+      if (!decl.name) return undefined;
 
+      if (declared.has(decl.name)) onError('duplicate-declaration', decl);
+      else declared.add(decl.name);
+
+      if (
+        decl.value.annotation ||
+        (decl.type === 'local' &&
+          decl.value.arg?.type === 'variable' &&
+          annotated.has(decl.value.arg.name))
+      ) {
+        annotated.add(decl.name);
+      }
+
+      if (decl.type === 'local') localVars.add(decl.name);
+
+      return () => {
         for (const ref of declRefs.get(decl.name) ?? []) {
           if (decl.type !== 'input' || ref !== decl.value.arg) {
             onError('forward-reference', ref);
           }
         }
-
-        if (
-          decl.value.annotation ||
-          (decl.type === 'local' &&
-            decl.value.arg?.type === 'variable' &&
-            annotated.has(decl.value.arg.name))
-        ) {
-          annotated.add(decl.name);
-        }
-
-        if (decl.type === 'local') localVars.add(decl.name);
-      }
+      };
     },
 
     expression(expression, context) {
       const { arg, annotation } = expression;
-      visitOptions(annotation?.options, context);
-
       if (annotation?.type === 'function') functions.add(annotation.name);
-
-      switch (context) {
-        case 'declaration': {
-          addDeclarationRef(arg);
-          break;
+      if (context === 'selector') {
+        selectorCount += 1;
+        missingFallback = expression;
+        if (
+          !annotation &&
+          (arg?.type !== 'variable' || !annotated.has(arg.name))
+        ) {
+          onError('missing-selector-annotation', expression);
         }
-
-        case 'selector':
-          selectorCount += 1;
-          missingFallback = true;
-          if (
-            !annotation &&
-            (arg?.type !== 'variable' || !annotated.has(arg.name))
-          ) {
-            onError('missing-selector-annotation', expression);
-          }
-          break;
       }
     },
 
-    markup({ options }, context) {
-      visitOptions(options, context);
+    option({ name }, index, options) {
+      for (let j = index + 1; j < options.length; ++j) {
+        if (options[j].name === name) {
+          onError('duplicate-option', options[j]);
+          break;
+        }
+      }
+    },
+
+    value(value, context) {
+      if (value.type === 'variable') {
+        variables.add(value.name);
+        if (context === 'declaration') {
+          const prev = declRefs.get(value.name);
+          if (prev) prev.push(value);
+          else declRefs.set(value.name, [value]);
+        }
+      }
     },
 
     variant(variant) {
       const { keys } = variant;
       if (keys.length !== selectorCount) onError('key-mismatch', variant);
-      if (missingFallback && keys.every(key => key.type === '*')) {
-        missingFallback = false;
-      }
+      missingFallback &&= keys.every(key => key.type === '*') ? null : variant;
     }
   });
 
-  if (missingFallback) onError('missing-fallback', msg);
+  if (missingFallback) onError('missing-fallback', missingFallback);
 
   for (const lv of localVars) variables.delete(lv);
 
