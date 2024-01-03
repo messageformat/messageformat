@@ -1,10 +1,10 @@
-import type {
-  MessageDateTime,
-  MessageFunctionContext,
-  MessageNumber,
-  MessageValue
-} from 'messageformat';
-import { datetime } from 'messageformat/functions';
+import {
+  type MessageDateTime,
+  type MessageFunctionContext,
+  type MessageNumber,
+  type MessageValue,
+  datetime
+} from 'messageformat/functions';
 
 function getParam(options: Record<string, unknown>) {
   if (options.param) {

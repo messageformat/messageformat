@@ -1,4 +1,7 @@
-import type { MessageFunctionContext, MessageValue } from 'messageformat';
+import type {
+  MessageFunctionContext,
+  MessageValue
+} from 'messageformat/functions';
 import type { FluentMessageResource } from './index.js';
 import { valueToMessageRef } from './message-to-fluent.js';
 

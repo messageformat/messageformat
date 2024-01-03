@@ -2,7 +2,6 @@ import type * as CST from './cst/types.js';
 export type { CST };
 export type * from './data-model/types.js';
 export type * from './formatted-parts.js';
-export type * from './functions/index.js';
 
 export { parseCST } from './cst/parse-cst.js';
 export { stringifyCST } from './cst/stringify-cst.js';
