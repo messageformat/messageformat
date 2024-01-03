@@ -7,6 +7,7 @@ export type * from './functions/index.js';
 export { parseCST } from './cst/parse-cst.js';
 export { stringifyCST } from './cst/stringify-cst.js';
 export { messageFromCST, cst } from './data-model/from-cst.js';
+export { stringifyMessage } from './data-model/stringify.js';
 export {
   isCatchallKey,
   isExpression,
@@ -33,4 +34,3 @@ export {
   MessageFormatOptions,
   MessageFunctions
 } from './messageformat.js';
-export { stringifyMessage } from './stringifier/message.js';

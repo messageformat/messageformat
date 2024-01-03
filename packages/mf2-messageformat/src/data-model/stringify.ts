@@ -1,10 +1,11 @@
 import { isValidUnquotedLiteral } from '../cst/names.js';
+import { MessageFormat } from '../messageformat.js';
 import {
   isLiteral,
   isPatternMessage,
   isSelectMessage,
   isVariableRef
-} from '../data-model/type-guards.js';
+} from './type-guards.js';
 import type {
   Declaration,
   Expression,
@@ -16,8 +17,7 @@ import type {
   Pattern,
   UnsupportedAnnotation,
   VariableRef
-} from '../data-model/types.js';
-import { MessageFormat } from '../messageformat.js';
+} from './types.js';
 
 /**
  * Stringify a message using its syntax representation.
