@@ -1,6 +1,8 @@
 [
   { "src": "hello", "exp": "hello" },
   { "src": "hello {world}", "exp": "hello world" },
+  { "src": "hello { world\t\n}", "exp": "hello world" },
+  { "src": "hello {\u3000world\r}", "exp": "hello world" },
   { "src": "hello {|world|}", "exp": "hello world" },
   { "src": "hello {||}", "exp": "hello " },
   {

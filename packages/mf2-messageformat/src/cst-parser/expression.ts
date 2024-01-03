@@ -2,7 +2,7 @@ import { MessageSyntaxError } from '../errors.js';
 import type * as CST from './cst-types.js';
 import type { ParseContext } from './message.js';
 import { parseNameValue } from './names.js';
-import { whitespaces } from './util.js';
+import { whitespaceChars, whitespaces } from './util.js';
 import { parseLiteral, parseQuotedLiteral, parseVariable } from './values.js';
 
 export function parseExpression(
@@ -246,7 +246,7 @@ export function parseReservedBody(
     }
   }
   let prev = ctx.source[pos - 1];
-  while (prev === '\r' || prev === '\n' || prev === '\t' || prev === ' ') {
+  while (whitespaceChars.includes(prev)) {
     pos -= 1;
     prev = ctx.source[pos - 1];
   }
