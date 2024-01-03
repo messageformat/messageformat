@@ -20,7 +20,10 @@ export class ParseContext {
   }
 
   onError(
-    type: Exclude<typeof MessageSyntaxError.prototype.type, 'missing-syntax'>,
+    type: Exclude<
+      typeof MessageSyntaxError.prototype.type,
+      'missing-syntax' | typeof MessageDataModelError.prototype.type
+    >,
     start: number,
     end: number
   ): void;
@@ -32,12 +35,6 @@ export class ParseContext {
   ) {
     let err: MessageSyntaxError;
     switch (type) {
-      case 'duplicate-declaration':
-      case 'forward-reference':
-      case 'key-mismatch':
-      case 'missing-fallback':
-        err = new MessageDataModelError(type, start, Number(end));
-        break;
       case 'missing-syntax':
         err = new MissingSyntaxError(start, String(end));
         break;
@@ -105,43 +102,6 @@ function parseSelectMessage(
     if (body && body.type !== 'function') {
       ctx.onError('bad-selector', body.start, body.end);
     }
-    if (!sel.annotation) {
-      let hasAnnotation = false;
-      let arg = sel.arg;
-      loop: while (arg?.type === 'variable') {
-        for (const decl of declarations) {
-          switch (decl.type) {
-            case 'input':
-              if (
-                decl.value.type === 'expression' &&
-                decl.value.arg?.type === 'variable' &&
-                decl.value.arg.name === arg.name
-              ) {
-                hasAnnotation = Boolean(decl.value.annotation);
-                break loop;
-              }
-              break;
-            case 'local':
-              if (
-                decl.target.name === arg.name &&
-                decl.value.type === 'expression'
-              ) {
-                if (decl.value.annotation) {
-                  hasAnnotation = true;
-                  break loop;
-                }
-                arg = decl.value.arg;
-                continue loop;
-              }
-              break;
-          }
-        }
-        break loop;
-      }
-      if (!hasAnnotation) {
-        ctx.onError('missing-selector-annotation', sel.start, sel.end);
-      }
-    }
     selectors.push(sel);
     pos = sel.end;
     pos += whitespaces(ctx.source, pos);
@@ -153,7 +113,7 @@ function parseSelectMessage(
   const variants: CST.Variant[] = [];
   pos += whitespaces(ctx.source, pos);
   while (pos < ctx.source.length) {
-    const variant = parseVariant(ctx, pos, selectors.length);
+    const variant = parseVariant(ctx, pos);
     variants.push(variant);
     pos = variant.end;
     pos += whitespaces(ctx.source, pos);
@@ -173,11 +133,7 @@ function parseSelectMessage(
   };
 }
 
-function parseVariant(
-  ctx: ParseContext,
-  start: number,
-  selCount: number
-): CST.Variant {
+function parseVariant(ctx: ParseContext, start: number): CST.Variant {
   let pos = start;
   const keys: Array<CST.Literal | CST.CatchallKey> = [];
   while (pos < ctx.source.length) {
@@ -195,11 +151,6 @@ function parseVariant(
     if (key.end === pos) break; // error; reported in pattern.errors
     keys.push(key);
     pos = key.end;
-  }
-
-  if (selCount > 0 && keys.length !== selCount) {
-    const end = keys.length === 0 ? pos : keys[keys.length - 1].end;
-    ctx.onError('key-mismatch', start, end);
   }
 
   const value = parsePattern(ctx, pos, true);

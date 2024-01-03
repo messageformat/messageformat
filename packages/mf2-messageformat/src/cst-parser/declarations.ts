@@ -32,7 +32,6 @@ export function parseDeclarations(ctx: ParseContext): {
     pos = decl.end;
     pos += whitespaces(source, pos);
   }
-  checkDeclarations(ctx, declarations);
   return { declarations, end: pos };
 }
 
@@ -150,53 +149,4 @@ function parseDeclarationValue(
   const end = junkEndOffset === -1 ? source.length : start + junkEndOffset;
   ctx.onError('missing-syntax', start, '{');
   return { type: 'junk', start, end, source: source.substring(start, end) };
-}
-
-/** Variables can only be declared once & declarations can't refer to later ones */
-function checkDeclarations(ctx: ParseContext, declarations: CST.Declaration[]) {
-  const targets = new Set<string>();
-  const refs = new Map<string, CST.VariableRef[]>();
-  const addRef = (ref: CST.Literal | CST.VariableRef | undefined) => {
-    if (ref?.type === 'variable') {
-      const prev = refs.get(ref.name);
-      if (prev) prev.push(ref);
-      else refs.set(ref.name, [ref]);
-    }
-  };
-
-  loop: for (const decl of declarations) {
-    let target: CST.VariableRef | undefined;
-    switch (decl.type) {
-      case 'input': {
-        const dv = decl.value;
-        if (dv.type === 'expression' && dv.arg?.type === 'variable') {
-          target = dv.arg;
-        }
-        break;
-      }
-      case 'local':
-        if (decl.target.type === 'variable') target = decl.target;
-        break;
-      default:
-        continue loop;
-    }
-    if (target) {
-      if (targets.has(target.name)) {
-        ctx.onError('duplicate-declaration', target.start, target.end);
-      } else {
-        targets.add(target.name);
-      }
-      for (const { start, end } of refs.get(target.name) ?? []) {
-        ctx.onError('forward-reference', start, end);
-      }
-    }
-
-    if (decl.value.type === 'expression') {
-      const { arg, annotation } = decl.value;
-      if (arg?.type === 'variable') addRef(arg);
-      if (annotation?.type === 'function') {
-        for (const opt of annotation.options) addRef(opt.value);
-      }
-    }
-  }
 }

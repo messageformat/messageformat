@@ -4,7 +4,11 @@ import { formatMarkup } from './data-model/format-markup.js';
 import { resolveExpression } from './data-model/resolve-expression.js';
 import { UnresolvedExpression } from './data-model/resolve-variable.js';
 import type { Message } from './data-model/types.js';
-import { MessageError, MessageResolutionError } from './errors.js';
+import {
+  MessageDataModelError,
+  MessageError,
+  MessageResolutionError
+} from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
@@ -17,6 +21,7 @@ import {
   string
 } from './functions/index.js';
 import { selectPattern } from './select-pattern.js';
+import { validate } from './data-model/validate.js';
 
 const defaultFunctions = Object.freeze({
   datetime,
@@ -83,6 +88,9 @@ export class MessageFormat {
         : [];
     this.#message =
       typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
+    validate(this.#message, (type, node) => {
+      throw new MessageDataModelError(type, node);
+    });
     this.#functions = options?.functions
       ? { ...defaultFunctions, ...options.functions }
       : defaultFunctions;

@@ -127,13 +127,6 @@ function parseFunctionRefOrMarkup(
     pos += ws;
     const opt = parseOption(ctx, pos);
     if (opt.end === pos) break; // error
-    if (options.some(prev => sameIdentifier(prev.name, opt.name))) {
-      ctx.onError(
-        'duplicate-option',
-        opt.name[0].start,
-        opt.name.at(-1)?.end ?? -1
-      );
-    }
     options.push(opt);
     pos = opt.end;
   }
@@ -188,11 +181,6 @@ function parseIdentifier(
     return { parts: [id0, sep], end: pos };
   }
 }
-
-const sameIdentifier = (a: CST.Identifier, b: CST.Identifier) =>
-  a.length === b.length &&
-  a[0].value === b[0].value &&
-  a[2]?.value === b[2]?.value;
 
 function parseReservedAnnotation(
   ctx: ParseContext,

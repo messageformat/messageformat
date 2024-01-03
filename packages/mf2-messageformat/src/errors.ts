@@ -1,3 +1,6 @@
+import { type MessageNode } from './data-model/types.js';
+import { cst } from './cst-parser/as-data-model.js';
+
 export class MessageError extends Error {
   type:
     | 'missing-func'
@@ -82,6 +85,13 @@ export class MessageDataModelError extends MessageSyntaxError {
     | 'key-mismatch'
     | 'missing-fallback'
     | 'missing-selector-annotation';
+  constructor(
+    type: typeof MessageDataModelError.prototype.type,
+    node: MessageNode
+  ) {
+    const { start, end } = node[cst] ?? { start: -1, end: -1 };
+    super(type, start, end);
+  }
 }
 
 export class MessageResolutionError extends MessageError {
