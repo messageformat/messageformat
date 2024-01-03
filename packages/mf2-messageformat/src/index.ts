@@ -1,10 +1,10 @@
-import type * as CST from './cst-parser/cst-types.js';
+import type * as CST from './cst/types.js';
 export type { CST };
 export type * from './data-model/types.js';
 export type * from './formatted-parts.js';
 export type * from './functions/index.js';
 
-export { parseCST } from './cst-parser/parse-cst.js';
+export { parseCST } from './cst/parse-cst.js';
 export { messageFromCST, cst } from './data-model/from-cst.js';
 export {
   isCatchallKey,

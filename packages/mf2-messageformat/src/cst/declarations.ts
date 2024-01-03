@@ -1,7 +1,7 @@
-import type * as CST from './cst-types.js';
 import { parseExpression, parseReservedBody } from './expression.js';
 import { parseNameValue } from './names.js';
 import type { ParseContext } from './parse-cst.js';
+import type * as CST from './types.js';
 import { whitespaces } from './util.js';
 import { parseVariable } from './values.js';
 

@@ -3,9 +3,9 @@ import {
   MessageSyntaxError,
   MissingSyntaxError
 } from '../errors.js';
-import type * as CST from './cst-types.js';
 import { parseDeclarations } from './declarations.js';
 import { parseExpression } from './expression.js';
+import type * as CST from './types.js';
 import { whitespaces } from './util.js';
 import { parseLiteral, parseText } from './values.js';
 

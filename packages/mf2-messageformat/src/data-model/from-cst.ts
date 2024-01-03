@@ -1,6 +1,6 @@
 import type * as Model from './types.js';
 import { MessageSyntaxError } from '../errors.js';
-import type * as CST from '../cst-parser/cst-types.js';
+import type * as CST from '../cst/types.js';
 
 export const cst = Symbol.for('CST');
 

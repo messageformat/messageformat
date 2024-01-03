@@ -1,4 +1,4 @@
-import { parseCST } from './cst-parser/parse-cst.js';
+import { parseCST } from './cst/parse-cst.js';
 import { messageFromCST } from './data-model/from-cst.js';
 import type { MessageFunctionContext } from './data-model/function-context.js';
 import { formatMarkup } from './data-model/format-markup.js';

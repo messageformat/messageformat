@@ -1,7 +1,7 @@
 import { MessageSyntaxError } from '../errors.js';
-import type * as CST from './cst-types.js';
 import type { ParseContext } from './parse-cst.js';
 import { parseNameValue } from './names.js';
+import type * as CST from './types.js';
 import { whitespaceChars, whitespaces } from './util.js';
 import { parseLiteral, parseQuotedLiteral, parseVariable } from './values.js';
 
