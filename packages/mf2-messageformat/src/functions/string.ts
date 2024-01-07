@@ -2,6 +2,7 @@ import type { MessageExpressionPart } from '../formatted-parts.js';
 import type { MessageFunctionContext, MessageValue } from './index.js';
 import { mergeLocales } from './utils.js';
 
+/** @beta */
 export interface MessageString extends MessageValue {
   readonly type: 'string';
   readonly source: string;
@@ -12,6 +13,7 @@ export interface MessageString extends MessageValue {
   valueOf(): string;
 }
 
+/** @beta */
 export interface MessageStringPart extends MessageExpressionPart {
   type: 'string';
   source: string;
@@ -19,6 +21,12 @@ export interface MessageStringPart extends MessageExpressionPart {
   value: string;
 }
 
+/**
+ * Accepts any input, and parses any non-string value using `String()`.
+ * For no input, resolves its value to an empty string.
+ * On error, resolves to a fallback value.
+ *
+ * @beta */
 export function string(
   { locales, source }: Pick<MessageFunctionContext, 'locales' | 'source'>,
   options: Record<string, unknown>,

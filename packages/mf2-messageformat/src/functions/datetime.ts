@@ -8,6 +8,7 @@ import {
   mergeLocales
 } from './utils.js';
 
+/** @beta */
 export interface MessageDateTime extends MessageValue {
   readonly type: 'datetime';
   readonly source: string;
@@ -18,6 +19,7 @@ export interface MessageDateTime extends MessageValue {
   valueOf(): Date;
 }
 
+/** @beta */
 export interface MessageDateTimePart extends MessageExpressionPart {
   type: 'datetime';
   source: string;

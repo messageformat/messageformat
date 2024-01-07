@@ -2,6 +2,12 @@ import type * as Model from './types.js';
 import { MessageSyntaxError } from '../errors.js';
 import type * as CST from '../cst/types.js';
 
+/**
+ * Shared symbol used as a key on message data model nodes
+ * to reference their CST source.
+ *
+ * @beta
+ */
 export const cst = Symbol.for('CST');
 
 /**

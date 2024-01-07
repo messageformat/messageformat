@@ -4,6 +4,7 @@ export type { MessageNumberPart } from './functions/number.js';
 export type { MessageStringPart } from './functions/string.js';
 export type { MessageUnknownPart } from './functions/unknown.js';
 
+/** @beta */
 export interface MessageExpressionPart {
   type: string;
   source: string;
@@ -12,11 +13,13 @@ export interface MessageExpressionPart {
   value?: unknown;
 }
 
+/** @beta */
 export interface MessageLiteralPart {
   type: 'literal';
   value: string;
 }
 
+/** @beta */
 export interface MessageMarkupPart {
   type: 'markup';
   kind: 'open' | 'standalone';
@@ -25,6 +28,7 @@ export interface MessageMarkupPart {
   options?: { [key: string]: unknown };
 }
 
+/** @beta */
 export interface MessageMarkupClosePart {
   type: 'markup';
   kind: 'close';
@@ -33,6 +37,7 @@ export interface MessageMarkupClosePart {
   options?: never;
 }
 
+/** @beta */
 export type MessagePart =
   | MessageExpressionPart
   | MessageLiteralPart

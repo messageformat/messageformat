@@ -1,6 +1,9 @@
 import * as Fluent from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import { fluentToMessage } from './fluent-to-message.js';
+import {
+  FluentToMessageOptions,
+  fluentToMessage
+} from './fluent-to-message.js';
 import { getFluentFunctions } from './functions.js';
 import type {
   FluentMessageResource,
@@ -21,12 +24,11 @@ import type {
  *   or in the shape output by {@link fluentToResourceData} as `data`.
  * @param locales - The locale code or codes to use for all of the resource's messages.
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
- * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  */
 export function fluentToResource(
   source: string | Fluent.Resource | FluentMessageResourceData,
   locales?: string | string[],
-  options?: MessageFormatOptions & { detectNumberSelection?: boolean }
+  options?: MessageFormatOptions & FluentToMessageOptions
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();
 
@@ -59,13 +61,12 @@ export function fluentToResource(
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file or
  *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}
- * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  * @returns An object containing the messages as `data` and any resource-level
  *   `comments` of the resource.
  */
 export function fluentToResourceData(
   source: string | Fluent.Resource,
-  options?: { detectNumberSelection?: boolean }
+  options?: FluentToMessageOptions
 ): {
   data: FluentMessageResourceData;
   comments: string;

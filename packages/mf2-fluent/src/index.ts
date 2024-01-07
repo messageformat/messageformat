@@ -22,7 +22,10 @@ export type FluentMessageResource = Map<string, Map<string, MessageFormat>>;
  */
 export type FluentMessageResourceData = Map<string, Map<string, Message>>;
 
-export { fluentToMessage } from './fluent-to-message.js';
+export {
+  type FluentToMessageOptions,
+  fluentToMessage
+} from './fluent-to-message.js';
 export {
   fluentToResource,
   fluentToResourceData

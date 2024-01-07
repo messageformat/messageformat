@@ -8,6 +8,7 @@ import {
   mergeLocales
 } from './utils.js';
 
+/** @beta */
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';
   readonly source: string;
@@ -31,6 +32,7 @@ export interface MessageNumber extends MessageValue {
   valueOf(): number | bigint;
 }
 
+/** @beta */
 export interface MessageNumberPart extends MessageExpressionPart {
   type: 'number';
   source: string;

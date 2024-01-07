@@ -1,7 +1,11 @@
 import type * as CST from '../cst/types.js';
 import { cst } from './from-cst.js';
 
-/** A node in a message data model */
+/**
+ * A node in a message data model
+ *
+ * @beta
+ */
 export type MessageNode =
   | Declaration
   | Variant
@@ -48,6 +52,7 @@ export type Declaration =
   | LocalDeclaration
   | UnsupportedStatement;
 
+/** @beta */
 export interface InputDeclaration {
   type: 'input';
   name: string;
@@ -55,6 +60,7 @@ export interface InputDeclaration {
   [cst]?: CST.Declaration;
 }
 
+/** @beta */
 export interface LocalDeclaration {
   type: 'local';
   name: string;
@@ -62,6 +68,7 @@ export interface LocalDeclaration {
   [cst]?: CST.Declaration;
 }
 
+/** @beta */
 export interface UnsupportedStatement {
   type: 'unsupported-statement';
   keyword: string;
@@ -236,6 +243,7 @@ export interface UnsupportedAnnotation {
  */
 export type Markup = MarkupOpen | MarkupStandalone | MarkupClose;
 
+/** @beta */
 export interface MarkupOpen {
   type: 'markup';
   kind: 'open';
@@ -244,6 +252,7 @@ export interface MarkupOpen {
   [cst]?: CST.Expression;
 }
 
+/** @beta */
 export interface MarkupStandalone {
   type: 'markup';
   kind: 'standalone';
@@ -252,6 +261,7 @@ export interface MarkupStandalone {
   [cst]?: CST.Expression;
 }
 
+/** @beta */
 export interface MarkupClose {
   type: 'markup';
   kind: 'close';

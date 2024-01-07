@@ -1,5 +1,11 @@
 import type * as CST from './types.js';
 
+/**
+ * Stringify a message CST.
+ * Does not perform any error checking or validation.
+ *
+ * @beta
+ */
 export function stringifyCST(cst: CST.Message): string {
   let str = '';
 

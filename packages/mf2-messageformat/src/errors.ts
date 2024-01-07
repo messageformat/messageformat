@@ -1,6 +1,11 @@
 import { type MessageNode } from './data-model/types.js';
 import { cst } from './data-model/from-cst.js';
 
+/**
+ * Base error class used by MessageFormat
+ *
+ * @beta
+ */
 export class MessageError extends Error {
   type:
     | 'missing-func'
@@ -15,6 +20,11 @@ export class MessageError extends Error {
   }
 }
 
+/**
+ * Errors in the message syntax.
+ *
+ * @beta
+ */
 export class MessageSyntaxError extends MessageError {
   declare type:
     | 'empty-token'
@@ -68,6 +78,7 @@ export class MessageSyntaxError extends MessageError {
   }
 }
 
+/** @beta */
 export class MissingSyntaxError extends MessageSyntaxError {
   expected: string;
 
@@ -77,6 +88,11 @@ export class MissingSyntaxError extends MessageSyntaxError {
   }
 }
 
+/**
+ * Errors in the message data model.
+ *
+ * @beta
+ */
 export class MessageDataModelError extends MessageSyntaxError {
   declare type:
     | 'duplicate-declaration'
@@ -94,6 +110,11 @@ export class MessageDataModelError extends MessageSyntaxError {
   }
 }
 
+/**
+ * Message runtime resolution errors
+ *
+ * @beta
+ */
 export class MessageResolutionError extends MessageError {
   declare type:
     | 'bad-input'
@@ -112,6 +133,11 @@ export class MessageResolutionError extends MessageError {
   }
 }
 
+/**
+ * Errors in message selection.
+ *
+ * @beta
+ */
 export class MessageSelectionError extends MessageError {
   declare type: 'no-match' | 'not-selectable';
   constructor(type: typeof MessageSelectionError.prototype.type) {

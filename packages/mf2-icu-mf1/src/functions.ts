@@ -54,7 +54,7 @@ function time(
 /**
  * Represent a duration in seconds as a string
  *
- * @return Includes one or two `:` separators, and matches the pattern
+ * @returns Includes one or two `:` separators, and matches the pattern
  *   `hhhh:mm:ss`, possibly with a leading `-` for negative values and a
  *   trailing `.sss` part for non-integer input
  */
