@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.5.0...@messageformat/icu-messageformat-1@0.6.0) (2024-01-07)
+
+### Update MF2 to match upstream changes ([#414](https://github.com/messageformat/messageformat/pull/414))
+
+* In Pattern, replace Text with a primitive string ([fc4db14](https://github.com/messageformat/messageformat/commit/fc4db14df9f0445f3960f3ca7d2426b0b5c8c95c))
+* Refactor Expression to have arg+annotation rather than body ([c98b911](https://github.com/messageformat/messageformat/commit/c98b911688f97c94a4703a4afa698f064551f849))
+* Support `{#markup}`, `{/markup}`, and `{#markup /}` ([c4e8261](https://github.com/messageformat/messageformat/commit/c4e8261677e499c39ac3fcc16579910037d6498f))
+* Require annotations on all selectors ([af3c1bb](https://github.com/messageformat/messageformat/commit/af3c1bb6dcb03dad7916778aebd722d532140ad6))
+* Add a data model validator & visitor ([3de3609](https://github.com/messageformat/messageformat/commit/3de36095e3c6e98123cf97cb36f00b8184920ca5))
+* Rename FunctionRef -> FunctionAnnotation ([8aef253](https://github.com/messageformat/messageformat/commit/8aef2531256df40ecffd75d90ec17ab48aff7af8))
+* Use only 'messageformat/functions' for function type exports ([207476f](https://github.com/messageformat/messageformat/commit/207476f9c3adaead437fc7c7c84ac42a3b26c1c8))
+
 ## [0.5.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.4.0...@messageformat/icu-messageformat-1@0.5.0) (2023-11-14)
 
 ### ⚠ Breaking Changes

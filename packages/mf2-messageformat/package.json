@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "4.0.0-5",
+  "version": "4.0.0-6",
   "description": "Intl.MessageFormat / Unicode MessageFormat 2 parser, runtime and polyfill",
   "keywords": [
     "messageformat",

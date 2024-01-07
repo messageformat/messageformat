@@ -1,5 +1,35 @@
 # Changelog
 
+## [4.0.0-6](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-5...messageformat@4.0.0-6) (2024-01-07)
+
+### Update MF2 to match upstream changes ([#414](https://github.com/messageformat/messageformat/pull/414))
+
+* In Pattern, replace Text with a primitive string ([fc4db14](https://github.com/messageformat/messageformat/commit/fc4db14df9f0445f3960f3ca7d2426b0b5c8c95c))
+* Refactor Expression to have arg+annotation rather than body ([c98b911](https://github.com/messageformat/messageformat/commit/c98b911688f97c94a4703a4afa698f064551f849))
+* Update syntax to `.let` & `.match`, with `{{`doubled pattern braces`}}` ([ac2cc2f](https://github.com/messageformat/messageformat/commit/ac2cc2fdec81d70e811896feec9ff7bb9ffaab30))
+* Replace `.let` with `.input` and `.local` ([ad608e1](https://github.com/messageformat/messageformat/commit/ad608e1451f0bedd369290d4e7fa833513962bdd))
+* Add ReservedStatement ([c0dda51](https://github.com/messageformat/messageformat/commit/c0dda5188d12a86461ea103b71ac41bf23d79509))
+* Support `{#markup}`, `{/markup}`, and `{#markup /}` ([c4e8261](https://github.com/messageformat/messageformat/commit/c4e8261677e499c39ac3fcc16579910037d6498f))
+* Allow number-literal as unquoted value ([7ae0e10](https://github.com/messageformat/messageformat/commit/7ae0e1057e9181d1c4d584fa580b1797f14722d0))
+* Add CST Identifier, with `ns:name` support ([c9e081f](https://github.com/messageformat/messageformat/commit/c9e081f4f8ee5f623a100738536344970a5e7877))
+* Require annotations on all selectors ([af3c1bb](https://github.com/messageformat/messageformat/commit/af3c1bb6dcb03dad7916778aebd722d532140ad6))
+* Add `:integer`, `:ordinal` and `:plural` aliases ([00d742b](https://github.com/messageformat/messageformat/commit/00d742b397d6fc49867d472cad93ef38e1a401af))
+* Add a data model validator & visitor ([3de3609](https://github.com/messageformat/messageformat/commit/3de36095e3c6e98123cf97cb36f00b8184920ca5))
+* Improve visitor, add MessageNode type ([e6566cf](https://github.com/messageformat/messageformat/commit/e6566cf68a02f3de155ed22726696fc1ad5bb2f8))
+* Include CST reference in parsed data model, using `cst` Symbol key ([28c2e99](https://github.com/messageformat/messageformat/commit/28c2e995d958c5c5159e090a9aab638a84d23138))
+* Add CST stringifier ([867c575](https://github.com/messageformat/messageformat/commit/867c57549099282e7bd6da95ca6191b341dd502f))
+* Rename Reserved -> UnsupportedAnnotation ([a19397b](https://github.com/messageformat/messageformat/commit/a19397b57d755a7fa8fc43021699ddd82bab73f1))
+* Rename FunctionRef -> FunctionAnnotation ([8aef253](https://github.com/messageformat/messageformat/commit/8aef2531256df40ecffd75d90ec17ab48aff7af8))
+* Rename pattern/ -> expression/ ([0444f0a](https://github.com/messageformat/messageformat/commit/0444f0ab3a489549c9a5dea29fe37ed4e6f47151))
+* Refactor CST Expression structure ([1d9e73f](https://github.com/messageformat/messageformat/commit/1d9e73f9d74b4fac0c545b7e25e4ceeb4dd1226f))
+* Simplify formatting Context, dropping resolveExpression & resolveValue wrappers ([e22e4b7](https://github.com/messageformat/messageformat/commit/e22e4b7b581350c13e8f7581598614b490473f15))
+* Treat duplicate option identifiers as a data model error ([d821d05](https://github.com/messageformat/messageformat/commit/d821d05990aebe2275bafef9851068489f39903e))
+* Consider U+3000 as whitespace ([8804022](https://github.com/messageformat/messageformat/commit/880402288319f79a7e2697572e371596a84ad28a))
+* Use validate() for all data model error detection ([ab0f807](https://github.com/messageformat/messageformat/commit/ab0f80715fc592d1b021c61b2520342dbb716b7d))
+* Include all sigils in CST ([825c189](https://github.com/messageformat/messageformat/commit/825c18902dfd9dfe69b5d8509f7984e472e9cc37))
+* Use only 'messageformat/functions' for function type exports ([207476f](https://github.com/messageformat/messageformat/commit/207476f9c3adaead437fc7c7c84ac42a3b26c1c8))
+* Add default onError handler (throws) for validate() ([579501e](https://github.com/messageformat/messageformat/commit/579501eff1daf3491880c7848840aa48335ae4a9))
+
 ## [4.0.0-5](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-4...messageformat@4.0.0-5) (2023-11-14)
 
 ### ⚠ Breaking Changes

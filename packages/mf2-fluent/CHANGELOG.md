@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.6.0...@messageformat/fluent@0.7.0) (2024-01-07)
+
+### ⚠ Breaking Changes
+
+* Change module type to ES only
+
+### Update MF2 to match upstream changes ([#414](https://github.com/messageformat/messageformat/pull/414))
+
+* **mf2-fluent:** Add default-true detectNumberSelection option ([6d31d55](https://github.com/messageformat/messageformat/commit/6d31d55fec5dfc51e553629eb75f305a09b0cd76))
+* **mf2-fluent:** Resolve message references with local variable inputs ([6f6c1a3](https://github.com/messageformat/messageformat/commit/6f6c1a30458ecc385058cf14c5bfbfadee0a1583))
+* In Pattern, replace Text with a primitive string ([fc4db14](https://github.com/messageformat/messageformat/commit/fc4db14df9f0445f3960f3ca7d2426b0b5c8c95c))
+* Refactor Expression to have arg+annotation rather than body ([c98b911](https://github.com/messageformat/messageformat/commit/c98b911688f97c94a4703a4afa698f064551f849))
+* Add ReservedStatement ([c0dda51](https://github.com/messageformat/messageformat/commit/c0dda5188d12a86461ea103b71ac41bf23d79509))
+* Support `{#markup}`, `{/markup}`, and `{#markup /}` ([c4e8261](https://github.com/messageformat/messageformat/commit/c4e8261677e499c39ac3fcc16579910037d6498f))
+* Rename FunctionRef -> FunctionAnnotation ([8aef253](https://github.com/messageformat/messageformat/commit/8aef2531256df40ecffd75d90ec17ab48aff7af8))
+* Use only 'messageformat/functions' for function type exports ([207476f](https://github.com/messageformat/messageformat/commit/207476f9c3adaead437fc7c7c84ac42a3b26c1c8))
+
 ## [0.6.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.5.0...@messageformat/fluent@0.6.0) (2023-11-14)
 
 ### ⚠ Breaking Changes
