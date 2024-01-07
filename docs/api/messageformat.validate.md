@@ -13,28 +13,43 @@ grand_parent: API Reference
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-Validate a message.
+Ensure that the `msg` data model is \_valid\_, calling `onError` on errors.
 
 **Signature:**
 
 ```typescript
-export declare function validate(msg: Readonly<Message>, functions: MessageFunctions): void;
+export declare function validate(msg: Message, onError?: (type: MessageDataModelError['type'], node: MessageNode) => void): {
+    functions: Set<string>;
+    variables: Set<string>;
+};
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  msg | Readonly&lt;[Message](./messageformat.message.md)<!-- -->&gt; |  |
-|  functions | [MessageFunctions](./messageformat.messagefunctions.md) |  |
+|  msg | [Message](./messageformat.message.md) |  |
+|  onError | (type: [MessageDataModelError](./messageformat.messagedatamodelerror.md)<!-- -->\['type'\], node: [MessageNode](./messageformat.messagenode.md)<!-- -->) =&gt; void | _(Optional)_ |
 
 **Returns:**
 
-void
+{ functions: Set&lt;string&gt;; variables: Set&lt;string&gt;; }
+
+The sets of runtime `functions` and `variables` used by the message.
 
 ## Remarks
 
-Throws if `msg` is not a pattern or select message, or if it references runtime functions that are not available in the `functions`<!-- -->.
+Detects the following errors:
 
-Formatting a message that passes validation may still fail, as it may depend on parameters that are not passed in, or its runtime function calls may fail.
+- \*\*Variant Key Mismatch\*\*: The number of keys on a \_variant\_ does not equal the number of \_selectors\_.
+
+- \*\*Missing Fallback Variant\*\*: The message does not include a \_variant\_ with only catch-all keys.
+
+- \*\*Missing Selector Annotation\*\*: A \_selector\_ does not have an \_annotation\_, or contains a \_variable\_ that does not directly or indirectly reference a \_declaration\_ with an \_annotation\_.
+
+- \*\*Duplicate Declaration\*\*: A \_variable\_ appears in two \_declarations\_.
+
+- \*\*Invalid Forward Reference\*\*: A \_declaration\_ \_expression\_ refers to a \_variable\_ defined by a later \_declaration\_.
+
+- \*\*Duplicate Option Name\*\*: The same \_identifier\_ appears as the name of more than one \_option\_ in the same \_expression\_.
 

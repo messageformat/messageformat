@@ -27,6 +27,7 @@ export interface VariableRef
 |  --- | --- | --- | --- |
 |  [end](./messageformat.cst.variableref.end.md) |  | number | **_(BETA)_** |
 |  [name](./messageformat.cst.variableref.name.md) |  | string | **_(BETA)_** |
-|  [start](./messageformat.cst.variableref.start.md) |  | number | **_(BETA)_** position of the <code>$</code> |
+|  [open](./messageformat.cst.variableref.open.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'$'&gt; | **_(BETA)_** |
+|  [start](./messageformat.cst.variableref.start.md) |  | number | **_(BETA)_** |
 |  [type](./messageformat.cst.variableref.type.md) |  | 'variable' | **_(BETA)_** |
 

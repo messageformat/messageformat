@@ -1,5 +1,5 @@
 ---
-title: "CST"
+title: "cst"
 parent: "messageformat"
 grand_parent: API Reference
 ---
@@ -8,32 +8,15 @@ grand_parent: API Reference
 
 
 
-# CST namespace
+# cst variable
 
-## Interfaces
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
 
-|  Interface | Description |
-|  --- | --- |
-|  [CatchallKey](./messageformat.cst.catchallkey.md) | **_(BETA)_** |
-|  [Declaration](./messageformat.cst.declaration.md) | **_(BETA)_** |
-|  [Expression](./messageformat.cst.expression.md) | **_(BETA)_** |
-|  [FunctionRef](./messageformat.cst.functionref.md) | **_(BETA)_** |
-|  [Junk](./messageformat.cst.junk.md) | **_(BETA)_** |
-|  [JunkMessage](./messageformat.cst.junkmessage.md) | **_(BETA)_** |
-|  [Literal](./messageformat.cst.literal.md) | **_(BETA)_** |
-|  [Option](./messageformat.cst.option.md) | **_(BETA)_** |
-|  [Pattern](./messageformat.cst.pattern.md) | **_(BETA)_** |
-|  [PatternMessage](./messageformat.cst.patternmessage.md) | **_(BETA)_** |
-|  [Reserved](./messageformat.cst.reserved.md) | **_(BETA)_** |
-|  [SelectMessage](./messageformat.cst.selectmessage.md) | **_(BETA)_** |
-|  [Syntax](./messageformat.cst.syntax.md) | **_(BETA)_** |
-|  [Text](./messageformat.cst.text.md) | **_(BETA)_** |
-|  [VariableRef](./messageformat.cst.variableref.md) | **_(BETA)_** |
-|  [Variant](./messageformat.cst.variant.md) | **_(BETA)_** |
+Shared symbol used as a key on message data model nodes to reference their CST source.
 
-## Type Aliases
+**Signature:**
 
-|  Type Alias | Description |
-|  --- | --- |
-|  [Message](./messageformat.cst.message.md) | **_(BETA)_** |
-
+```typescript
+cst: unique symbol
+```

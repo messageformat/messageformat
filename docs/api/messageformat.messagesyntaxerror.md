@@ -10,6 +10,11 @@ grand_parent: API Reference
 
 # MessageSyntaxError class
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+Errors in the message syntax.
+
 **Signature:**
 
 ```typescript
@@ -21,14 +26,14 @@ export declare class MessageSyntaxError extends MessageError
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(type, start, end, char)](./messageformat.messagesyntaxerror._constructor_.md) |  | Constructs a new instance of the <code>MessageSyntaxError</code> class |
+|  [(constructor)(type, start, end, expected)](./messageformat.messagesyntaxerror._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageSyntaxError</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [char?](./messageformat.messagesyntaxerror.char.md) |  | string | _(Optional)_ |
-|  [end](./messageformat.messagesyntaxerror.end.md) |  | number |  |
-|  [start](./messageformat.messagesyntaxerror.start.md) |  | number |  |
-|  [type](./messageformat.messagesyntaxerror.type.md) |  | 'empty-token' \| 'bad-escape' \| 'bad-local-var' \| 'bad-selector' \| 'extra-content' \| 'key-mismatch' \| 'parse-error' \| 'missing-char' \| 'missing-fallback' |  |
+|  [end](./messageformat.messagesyntaxerror.end.md) |  | number | **_(BETA)_** |
+|  [expected?](./messageformat.messagesyntaxerror.expected.md) |  | string | **_(BETA)_** _(Optional)_ |
+|  [start](./messageformat.messagesyntaxerror.start.md) |  | number | **_(BETA)_** |
+|  [type](./messageformat.messagesyntaxerror.type.md) |  | 'empty-token' \| 'bad-escape' \| 'bad-input-expression' \| 'bad-selector' \| 'duplicate-declaration' \| 'duplicate-option' \| 'extra-content' \| 'forward-reference' \| 'key-mismatch' \| 'parse-error' \| 'missing-fallback' \| 'missing-selector-annotation' \| 'missing-syntax' | **_(BETA)_** |
 

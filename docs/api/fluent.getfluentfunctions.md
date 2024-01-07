@@ -43,7 +43,7 @@ export declare function getFluentFunctions(res: FluentMessageResource): {
 
 **Returns:**
 
-{ message: ({ locales, onError, source }: [MessageFunctionContext](./messageformat.messagefunctioncontext.md)<!-- -->, options: Record&lt;string, unknown&gt;, input?: unknown) =&gt; { type: "fluent-message"; locale: string; source: string; selectKey(keys: Set&lt;string&gt;): string \| null; toParts(): \[{ type: "fluent-message"; source: string; parts: import("messageformat").[MessagePart](./messageformat.messagepart.md)<!-- -->\[\]; }\]; toString: () =&gt; string; valueOf: () =&gt; string; }; }
+{ message: ({ locales, onError, source }: MessageFunctionContext, options: Record&lt;string, unknown&gt;, input?: unknown) =&gt; { type: "fluent-message"; locale: string; source: string; selectKey(keys: Set&lt;string&gt;): string \| null; toParts(): \[{ type: "fluent-message"; source: string; parts: import("messageformat").[MessagePart](./messageformat.messagepart.md)<!-- -->\[\]; }\]; toString: () =&gt; string; valueOf: () =&gt; string; }; }
 
 ## Remarks
 

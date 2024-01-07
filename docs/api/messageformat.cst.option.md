@@ -26,7 +26,8 @@ export interface Option
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [end](./messageformat.cst.option.end.md) |  | number | **_(BETA)_** |
-|  [name](./messageformat.cst.option.name.md) |  | string | **_(BETA)_** |
+|  [equals?](./messageformat.cst.option.equals.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'='&gt; | **_(BETA)_** _(Optional)_ |
+|  [name](./messageformat.cst.option.name.md) |  | [Identifier](./messageformat.cst.identifier.md) | **_(BETA)_** |
 |  [start](./messageformat.cst.option.start.md) |  | number | **_(BETA)_** position at the start of the name |
 |  [value](./messageformat.cst.option.value.md) |  | Literal \| VariableRef | **_(BETA)_** |
 

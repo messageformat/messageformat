@@ -18,7 +18,7 @@ Compile a Fluent resource (i.e. an FTL file) into a Map of [Message](./messagefo
 **Signature:**
 
 ```typescript
-export declare function fluentToResourceData(source: string | Fluent.Resource): {
+export declare function fluentToResourceData(source: string | Fluent.Resource, options?: FluentToMessageOptions): {
     data: FluentMessageResourceData;
     comments: string;
 };
@@ -29,6 +29,7 @@ export declare function fluentToResourceData(source: string | Fluent.Resource): 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  source | string \| Fluent.Resource | A Fluent resource, as the string contents of an FTL file or as a [Fluent.Resource](https://projectfluent.org/fluent.js/syntax/classes/resource.html) |
+|  options | [FluentToMessageOptions](./fluent.fluenttomessageoptions.md) | _(Optional)_ |
 
 **Returns:**
 

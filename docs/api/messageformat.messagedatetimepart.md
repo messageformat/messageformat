@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageDateTimePart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -21,8 +25,8 @@ export interface MessageDateTimePart extends MessageExpressionPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [locale](./messageformat.messagedatetimepart.locale.md) |  | string |  |
-|  [parts](./messageformat.messagedatetimepart.parts.md) |  | Intl.DateTimeFormatPart\[\] |  |
-|  [source](./messageformat.messagedatetimepart.source.md) |  | string |  |
-|  [type](./messageformat.messagedatetimepart.type.md) |  | 'datetime' |  |
+|  [locale](./messageformat.messagedatetimepart.locale.md) |  | string | **_(BETA)_** |
+|  [parts](./messageformat.messagedatetimepart.parts.md) |  | Intl.DateTimeFormatPart\[\] | **_(BETA)_** |
+|  [source](./messageformat.messagedatetimepart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messagedatetimepart.type.md) |  | 'datetime' | **_(BETA)_** |
 

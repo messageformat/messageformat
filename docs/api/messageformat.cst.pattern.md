@@ -25,7 +25,8 @@ export interface Pattern
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.cst.pattern.body.md) |  | Array&lt;Text \| Expression&gt; | **_(BETA)_** |
-|  [end](./messageformat.cst.pattern.end.md) |  | number | **_(BETA)_** position one past the <code>}</code> |
-|  [start](./messageformat.cst.pattern.start.md) |  | number | **_(BETA)_** position of the <code>{</code> |
+|  [body](./messageformat.cst.pattern.body.md) |  | Array&lt;[Text](./messageformat.cst.text.md) \| Expression&gt; | **_(BETA)_** |
+|  [braces?](./messageformat.cst.pattern.braces.md) |  | \[[Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'{{'&gt;\] \| \[[Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'{{'&gt;, [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'}}'&gt;\] | **_(BETA)_** _(Optional)_ |
+|  [end](./messageformat.cst.pattern.end.md) |  | number | **_(BETA)_** |
+|  [start](./messageformat.cst.pattern.start.md) |  | number | **_(BETA)_** |
 

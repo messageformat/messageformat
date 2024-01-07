@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageFallbackPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -21,6 +25,6 @@ export interface MessageFallbackPart extends MessageExpressionPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [source](./messageformat.messagefallbackpart.source.md) |  | string |  |
-|  [type](./messageformat.messagefallbackpart.type.md) |  | 'fallback' |  |
+|  [source](./messageformat.messagefallbackpart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messagefallbackpart.type.md) |  | 'fallback' | **_(BETA)_** |
 

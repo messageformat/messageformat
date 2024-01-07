@@ -25,6 +25,7 @@ export interface CatchallKey
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.catchallkey._cst_.md) |  | CST.CatchallKey | **_(BETA)_** _(Optional)_ |
 |  [type](./messageformat.catchallkey.type.md) |  | '\*' | **_(BETA)_** |
 |  [value?](./messageformat.catchallkey.value.md) |  | string | **_(BETA)_** _(Optional)_ |
 

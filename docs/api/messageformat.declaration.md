@@ -8,23 +8,17 @@ grand_parent: API Reference
 
 
 
-# Declaration interface
+# Declaration type
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-A message may declare any number of local variables or aliases, each with a value defined by an expression. The order of the declarations is not relevant, but a valid message may not include a dependency loop amond them.
+A message may declare any number of input and local variables, each with a value defined by an expression. The variable name for each declaration must be unique.
 
 **Signature:**
 
 ```typescript
-export interface Declaration 
+export type Declaration = InputDeclaration | LocalDeclaration | UnsupportedStatement;
 ```
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [name](./messageformat.declaration.name.md) |  | string | **_(BETA)_** |
-|  [value](./messageformat.declaration.value.md) |  | [Expression](./messageformat.expression.md) | **_(BETA)_** |
+**References:** [InputDeclaration](./messageformat.inputdeclaration.md)<!-- -->, [LocalDeclaration](./messageformat.localdeclaration.md)<!-- -->, [UnsupportedStatement](./messageformat.unsupportedstatement.md)
 

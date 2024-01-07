@@ -26,10 +26,9 @@ export interface FunctionRef
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [end](./messageformat.cst.functionref.end.md) |  | number | **_(BETA)_** |
-|  [kind](./messageformat.cst.functionref.kind.md) |  | 'open' \| 'close' \| 'value' | **_(BETA)_** |
-|  [name](./messageformat.cst.functionref.name.md) |  | string | **_(BETA)_** |
-|  [operand](./messageformat.cst.functionref.operand.md) |  | Literal \| VariableRef \| undefined | **_(BETA)_** |
+|  [name](./messageformat.cst.functionref.name.md) |  | [Identifier](./messageformat.cst.identifier.md) | **_(BETA)_** |
+|  [open](./messageformat.cst.functionref.open.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;':'&gt; | **_(BETA)_** |
 |  [options](./messageformat.cst.functionref.options.md) |  | Option\[\] | **_(BETA)_** |
-|  [start](./messageformat.cst.functionref.start.md) |  | number | **_(BETA)_** position of the <code>:</code>/<code>+</code>/<code>-</code>, so <code>operand.start</code> may be earlier |
+|  [start](./messageformat.cst.functionref.start.md) |  | number | **_(BETA)_** |
 |  [type](./messageformat.cst.functionref.type.md) |  | 'function' | **_(BETA)_** |
 

@@ -25,6 +25,7 @@ export interface SelectMessage
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.selectmessage._cst_.md) |  | CST.SelectMessage | **_(BETA)_** _(Optional)_ |
 |  [comment?](./messageformat.selectmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [declarations](./messageformat.selectmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
 |  [selectors](./messageformat.selectmessage.selectors.md) |  | [Expression](./messageformat.expression.md)<!-- -->\[\] | **_(BETA)_** |

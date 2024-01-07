@@ -10,20 +10,23 @@ grand_parent: API Reference
 
 # MessageMarkupPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
-export interface MessageMarkupPart extends MessageExpressionPart 
+export interface MessageMarkupPart 
 ```
-**Extends:** [MessageExpressionPart](./messageformat.messageexpressionpart.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [name](./messageformat.messagemarkuppart.name.md) |  | string |  |
-|  [options?](./messageformat.messagemarkuppart.options.md) |  | { \[key: string\]: unknown; } | _(Optional)_ |
-|  [source](./messageformat.messagemarkuppart.source.md) |  | string |  |
-|  [type](./messageformat.messagemarkuppart.type.md) |  | 'open' \| 'close' |  |
-|  [value?](./messageformat.messagemarkuppart.value.md) |  | unknown | _(Optional)_ |
+|  [kind](./messageformat.messagemarkuppart.kind.md) |  | 'open' \| 'standalone' | **_(BETA)_** |
+|  [name](./messageformat.messagemarkuppart.name.md) |  | string | **_(BETA)_** |
+|  [options?](./messageformat.messagemarkuppart.options.md) |  | { \[key: string\]: unknown; } | **_(BETA)_** _(Optional)_ |
+|  [source](./messageformat.messagemarkuppart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messagemarkuppart.type.md) |  | 'markup' | **_(BETA)_** |
 

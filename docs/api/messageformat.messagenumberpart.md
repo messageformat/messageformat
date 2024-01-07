@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageNumberPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -21,8 +25,8 @@ export interface MessageNumberPart extends MessageExpressionPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [locale](./messageformat.messagenumberpart.locale.md) |  | string |  |
-|  [parts](./messageformat.messagenumberpart.parts.md) |  | Intl.NumberFormatPart\[\] |  |
-|  [source](./messageformat.messagenumberpart.source.md) |  | string |  |
-|  [type](./messageformat.messagenumberpart.type.md) |  | 'number' |  |
+|  [locale](./messageformat.messagenumberpart.locale.md) |  | string | **_(BETA)_** |
+|  [parts](./messageformat.messagenumberpart.parts.md) |  | Intl.NumberFormatPart\[\] | **_(BETA)_** |
+|  [source](./messageformat.messagenumberpart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messagenumberpart.type.md) |  | 'number' | **_(BETA)_** |
 

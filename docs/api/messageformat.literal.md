@@ -29,6 +29,7 @@ Always contains a string value. In Function arguments and options, the expeted t
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.literal._cst_.md) |  | CST.Literal | **_(BETA)_** _(Optional)_ |
 |  [type](./messageformat.literal.type.md) |  | 'literal' | **_(BETA)_** |
 |  [value](./messageformat.literal.value.md) |  | string | **_(BETA)_** |
 

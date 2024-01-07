@@ -25,6 +25,7 @@ export interface PatternMessage
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.patternmessage._cst_.md) |  | [CST.SimpleMessage](./messageformat.cst.simplemessage.md) \| [CST.ComplexMessage](./messageformat.cst.complexmessage.md) | **_(BETA)_** _(Optional)_ |
 |  [comment?](./messageformat.patternmessage.comment.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [declarations](./messageformat.patternmessage.declarations.md) |  | [Declaration](./messageformat.declaration.md)<!-- -->\[\] | **_(BETA)_** |
 |  [pattern](./messageformat.patternmessage.pattern.md) |  | [Pattern](./messageformat.pattern.md) | **_(BETA)_** |

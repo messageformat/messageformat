@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageStringPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -21,8 +25,8 @@ export interface MessageStringPart extends MessageExpressionPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [locale](./messageformat.messagestringpart.locale.md) |  | string |  |
-|  [source](./messageformat.messagestringpart.source.md) |  | string |  |
-|  [type](./messageformat.messagestringpart.type.md) |  | 'string' |  |
-|  [value](./messageformat.messagestringpart.value.md) |  | string |  |
+|  [locale](./messageformat.messagestringpart.locale.md) |  | string | **_(BETA)_** |
+|  [source](./messageformat.messagestringpart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messagestringpart.type.md) |  | 'string' | **_(BETA)_** |
+|  [value](./messageformat.messagestringpart.value.md) |  | string | **_(BETA)_** |
 

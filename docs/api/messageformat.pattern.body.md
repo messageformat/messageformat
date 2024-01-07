@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-body: Array<Text | Expression>;
+body: Array<string | Expression | Markup>;
 ```

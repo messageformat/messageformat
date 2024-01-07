@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageExpressionPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -20,9 +24,9 @@ export interface MessageExpressionPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [locale?](./messageformat.messageexpressionpart.locale.md) |  | string | _(Optional)_ |
-|  [parts?](./messageformat.messageexpressionpart.parts.md) |  | Array&lt;{ type: string; source?: string; value?: unknown; }&gt; | _(Optional)_ |
-|  [source](./messageformat.messageexpressionpart.source.md) |  | string |  |
-|  [type](./messageformat.messageexpressionpart.type.md) |  | string |  |
-|  [value?](./messageformat.messageexpressionpart.value.md) |  | unknown | _(Optional)_ |
+|  [locale?](./messageformat.messageexpressionpart.locale.md) |  | string | **_(BETA)_** _(Optional)_ |
+|  [parts?](./messageformat.messageexpressionpart.parts.md) |  | Array&lt;{ type: string; source?: string; value?: unknown; }&gt; | **_(BETA)_** _(Optional)_ |
+|  [source](./messageformat.messageexpressionpart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messageexpressionpart.type.md) |  | string | **_(BETA)_** |
+|  [value?](./messageformat.messageexpressionpart.value.md) |  | unknown | **_(BETA)_** _(Optional)_ |
 

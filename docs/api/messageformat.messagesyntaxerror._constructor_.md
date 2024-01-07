@@ -11,12 +11,15 @@ nav_exclude: true
 
 # MessageSyntaxError.(constructor)
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
 Constructs a new instance of the `MessageSyntaxError` class
 
 **Signature:**
 
 ```typescript
-constructor(type: typeof MessageSyntaxError.prototype.type, start: number, end: number, char?: string);
+constructor(type: typeof MessageSyntaxError.prototype.type, start: number, end: number, expected?: string);
 ```
 
 ## Parameters
@@ -26,5 +29,5 @@ constructor(type: typeof MessageSyntaxError.prototype.type, start: number, end: 
 |  type | typeof [MessageSyntaxError.prototype.type](./messageformat.messagesyntaxerror.type.md) |  |
 |  start | number |  |
 |  end | number |  |
-|  char | string | _(Optional)_ |
+|  expected | string | _(Optional)_ |
 

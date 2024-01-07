@@ -25,9 +25,11 @@ export interface Literal
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [end](./messageformat.cst.literal.end.md) |  | number | **_(BETA)_** position one past the terminal <code>&#124;</code> |
+|  [close?](./messageformat.cst.literal.close.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'\|'&gt; | **_(BETA)_** _(Optional)_ |
+|  [end](./messageformat.cst.literal.end.md) |  | number | **_(BETA)_** |
+|  [open?](./messageformat.cst.literal.open.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'\|'&gt; | **_(BETA)_** _(Optional)_ |
 |  [quoted](./messageformat.cst.literal.quoted.md) |  | boolean | **_(BETA)_** |
-|  [start](./messageformat.cst.literal.start.md) |  | number | **_(BETA)_** position of the initial <code>&#124;</code> |
+|  [start](./messageformat.cst.literal.start.md) |  | number | **_(BETA)_** |
 |  [type](./messageformat.cst.literal.type.md) |  | 'literal' | **_(BETA)_** |
 |  [value](./messageformat.cst.literal.value.md) |  | string | **_(BETA)_** |
 

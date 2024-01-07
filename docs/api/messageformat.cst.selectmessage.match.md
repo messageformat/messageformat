@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-match: Syntax<'match'>;
+match: Syntax<'.match'>;
 ```

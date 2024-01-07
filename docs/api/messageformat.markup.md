@@ -1,5 +1,5 @@
 ---
-title: "markup"
+title: "Markup"
 parent: "messageformat"
 grand_parent: API Reference
 ---
@@ -8,25 +8,23 @@ grand_parent: API Reference
 
 
 
-# markup() function
+# Markup type
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+Markup placeholders can span ranges of other pattern elements, or represent other inline elements.
 
 **Signature:**
 
 ```typescript
-export declare function markup(source: string, type: 'open' | 'close', name: string, options?: Record<string, unknown>, input?: unknown): MessageMarkup;
+export type Markup = MarkupOpen | MarkupStandalone | MarkupClose;
 ```
+**References:** [MarkupOpen](./messageformat.markupopen.md)<!-- -->, [MarkupStandalone](./messageformat.markupstandalone.md)<!-- -->, [MarkupClose](./messageformat.markupclose.md)
 
-## Parameters
+## Remarks
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  source | string |  |
-|  type | 'open' \| 'close' |  |
-|  name | string |  |
-|  options | Record&lt;string, unknown&gt; | _(Optional)_ |
-|  input | unknown | _(Optional)_ |
+The `name` identifies the markup part, which will be included in the result along with any `options`<!-- -->.
 
-**Returns:**
-
-[MessageMarkup](./messageformat.messagemarkup.md)
+When formatted to string, all markup will format as an empty string. To use markup, format to parts and post-process the formatted results.
 

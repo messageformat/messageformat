@@ -29,6 +29,7 @@ To refer to an inner property of an object value, use `.` as a separator; in cas
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.variableref._cst_.md) |  | CST.VariableRef | **_(BETA)_** _(Optional)_ |
 |  [name](./messageformat.variableref.name.md) |  | string | **_(BETA)_** |
 |  [type](./messageformat.variableref.type.md) |  | 'variable' | **_(BETA)_** |
 

@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageLiteralPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -20,6 +24,6 @@ export interface MessageLiteralPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.messageliteralpart.type.md) |  | 'literal' |  |
-|  [value](./messageformat.messageliteralpart.value.md) |  | string |  |
+|  [type](./messageformat.messageliteralpart.type.md) |  | 'literal' | **_(BETA)_** |
+|  [value](./messageformat.messageliteralpart.value.md) |  | string | **_(BETA)_** |
 

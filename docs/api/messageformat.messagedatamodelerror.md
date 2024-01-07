@@ -10,6 +10,11 @@ grand_parent: API Reference
 
 # MessageDataModelError class
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+Errors in the message data model.
+
 **Signature:**
 
 ```typescript
@@ -17,9 +22,15 @@ export declare class MessageDataModelError extends MessageSyntaxError
 ```
 **Extends:** [MessageSyntaxError](./messageformat.messagesyntaxerror.md)
 
+## Constructors
+
+|  Constructor | Modifiers | Description |
+|  --- | --- | --- |
+|  [(constructor)(type, node)](./messageformat.messagedatamodelerror._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageDataModelError</code> class |
+
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.messagedatamodelerror.type.md) |  | 'key-mismatch' \| 'missing-fallback' |  |
+|  [type](./messageformat.messagedatamodelerror.type.md) |  | 'duplicate-declaration' \| 'duplicate-option' \| 'forward-reference' \| 'key-mismatch' \| 'missing-fallback' \| 'missing-selector-annotation' | **_(BETA)_** |
 

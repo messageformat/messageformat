@@ -10,6 +10,11 @@ grand_parent: API Reference
 
 # MessageResolutionError class
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+Message runtime resolution errors
+
 **Signature:**
 
 ```typescript
@@ -21,12 +26,12 @@ export declare class MessageResolutionError extends MessageError
 
 |  Constructor | Modifiers | Description |
 |  --- | --- | --- |
-|  [(constructor)(type, message, source)](./messageformat.messageresolutionerror._constructor_.md) |  | Constructs a new instance of the <code>MessageResolutionError</code> class |
+|  [(constructor)(type, message, source)](./messageformat.messageresolutionerror._constructor_.md) |  | **_(BETA)_** Constructs a new instance of the <code>MessageResolutionError</code> class |
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [source](./messageformat.messageresolutionerror.source.md) |  | string |  |
-|  [type](./messageformat.messageresolutionerror.type.md) |  | 'bad-input' \| 'bad-option' \| 'reserved' \| 'unresolved-var' |  |
+|  [source](./messageformat.messageresolutionerror.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messageresolutionerror.type.md) |  | 'bad-input' \| 'bad-option' \| 'unresolved-var' \| 'unsupported-annotation' \| 'unsupported-statement' | **_(BETA)_** |
 

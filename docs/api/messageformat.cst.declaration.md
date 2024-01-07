@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# CST.Declaration interface
+# CST.Declaration type
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -18,17 +18,7 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-export interface Declaration 
+export type Declaration = InputDeclaration | LocalDeclaration | ReservedStatement;
 ```
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [end](./messageformat.cst.declaration.end.md) |  | number | **_(BETA)_** |
-|  [equals](./messageformat.cst.declaration.equals.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'=' \| ''&gt; | **_(BETA)_** |
-|  [let](./messageformat.cst.declaration.let.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'let'&gt; | **_(BETA)_** |
-|  [start](./messageformat.cst.declaration.start.md) |  | number | **_(BETA)_** |
-|  [target](./messageformat.cst.declaration.target.md) |  | VariableRef \| [Junk](./messageformat.cst.junk.md) | **_(BETA)_** |
-|  [value](./messageformat.cst.declaration.value.md) |  | Expression \| [Junk](./messageformat.cst.junk.md) | **_(BETA)_** |
+**References:** [ReservedStatement](./messageformat.cst.reservedstatement.md)
 

@@ -24,6 +24,8 @@ export interface Variant
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.variant._cst_.md) |  | CST.Variant | **_(BETA)_** _(Optional)_ |
 |  [keys](./messageformat.variant.keys.md) |  | Array&lt;[Literal](./messageformat.literal.md) \| [CatchallKey](./messageformat.catchallkey.md)<!-- -->&gt; | **_(BETA)_** |
+|  [type?](./messageformat.variant.type.md) |  | never | **_(BETA)_** _(Optional)_ |
 |  [value](./messageformat.variant.value.md) |  | [Pattern](./messageformat.pattern.md) | **_(BETA)_** |
 

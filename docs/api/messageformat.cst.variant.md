@@ -29,5 +29,4 @@ export interface Variant
 |  [keys](./messageformat.cst.variant.keys.md) |  | Array&lt;Literal \| CatchallKey&gt; | **_(BETA)_** |
 |  [start](./messageformat.cst.variant.start.md) |  | number | **_(BETA)_** |
 |  [value](./messageformat.cst.variant.value.md) |  | Pattern | **_(BETA)_** |
-|  [when](./messageformat.cst.variant.when.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'when'&gt; | **_(BETA)_** |
 

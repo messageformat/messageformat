@@ -25,8 +25,11 @@ export interface Expression
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.cst.expression.body.md) |  | Literal \| VariableRef \| FunctionRef \| Reserved \| [Junk](./messageformat.cst.junk.md) | **_(BETA)_** |
-|  [end](./messageformat.cst.expression.end.md) |  | number | **_(BETA)_** position one past the <code>}</code> |
-|  [start](./messageformat.cst.expression.start.md) |  | number | **_(BETA)_** position of the <code>{</code> |
+|  [annotation?](./messageformat.cst.expression.annotation.md) |  | [FunctionRef](./messageformat.cst.functionref.md) \| [ReservedAnnotation](./messageformat.cst.reservedannotation.md) \| [Junk](./messageformat.cst.junk.md) | **_(BETA)_** _(Optional)_ |
+|  [arg?](./messageformat.cst.expression.arg.md) |  | Literal \| VariableRef | **_(BETA)_** _(Optional)_ |
+|  [braces](./messageformat.cst.expression.braces.md) |  | \[[Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'{'&gt;\] \| \[[Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'{'&gt;, [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'}'&gt;\] | **_(BETA)_** |
+|  [end](./messageformat.cst.expression.end.md) |  | number | **_(BETA)_** |
+|  [markup?](./messageformat.cst.expression.markup.md) |  | Markup \| MarkupClose | **_(BETA)_** _(Optional)_ |
+|  [start](./messageformat.cst.expression.start.md) |  | number | **_(BETA)_** |
 |  [type](./messageformat.cst.expression.type.md) |  | 'expression' | **_(BETA)_** |
 

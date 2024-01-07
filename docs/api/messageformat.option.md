@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-[FunctionRef](./messageformat.functionref.md) options are expressed as `key`<!-- -->/`value` pairs to allow their order to be maintained.
+The options of [FunctionAnnotation](./messageformat.functionannotation.md) and [Markup](./messageformat.markup.md) are expressed as `key`<!-- -->/`value` pairs to allow their order to be maintained.
 
 **Signature:**
 
@@ -25,6 +25,8 @@ export interface Option
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.option._cst_.md) |  | CST.Option | **_(BETA)_** _(Optional)_ |
 |  [name](./messageformat.option.name.md) |  | string | **_(BETA)_** |
+|  [type?](./messageformat.option.type.md) |  | never | **_(BETA)_** _(Optional)_ |
 |  [value](./messageformat.option.value.md) |  | [Literal](./messageformat.literal.md) \| [VariableRef](./messageformat.variableref.md) | **_(BETA)_** |
 

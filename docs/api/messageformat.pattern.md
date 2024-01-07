@@ -25,5 +25,5 @@ export interface Pattern
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [body](./messageformat.pattern.body.md) |  | Array&lt;[Text](./messageformat.text.md) \| [Expression](./messageformat.expression.md)<!-- -->&gt; | **_(BETA)_** |
+|  [body](./messageformat.pattern.body.md) |  | Array&lt;string \| [Expression](./messageformat.expression.md) \| [Markup](./messageformat.markup.md)<!-- -->&gt; | **_(BETA)_** |
 

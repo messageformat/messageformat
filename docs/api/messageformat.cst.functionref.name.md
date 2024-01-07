@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-name: string;
+name: Identifier;
 ```

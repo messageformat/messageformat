@@ -11,8 +11,11 @@ nav_exclude: true
 
 # MessageSyntaxError.type property
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
 **Signature:**
 
 ```typescript
-type: 'empty-token' | 'bad-escape' | 'bad-local-var' | 'bad-selector' | 'extra-content' | 'key-mismatch' | 'parse-error' | 'missing-char' | 'missing-fallback';
+type: 'empty-token' | 'bad-escape' | 'bad-input-expression' | 'bad-selector' | 'duplicate-declaration' | 'duplicate-option' | 'extra-content' | 'forward-reference' | 'key-mismatch' | 'parse-error' | 'missing-fallback' | 'missing-selector-annotation' | 'missing-syntax';
 ```

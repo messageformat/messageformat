@@ -18,7 +18,7 @@ Compile a [Fluent.Pattern](https://projectfluent.org/fluent.js/syntax/classes/pa
 **Signature:**
 
 ```typescript
-export declare function fluentToMessage(ast: Fluent.Pattern): PatternMessage | SelectMessage;
+export declare function fluentToMessage(ast: Fluent.Pattern, { detectNumberSelection }?: FluentToMessageOptions): PatternMessage | SelectMessage;
 ```
 
 ## Parameters
@@ -26,6 +26,7 @@ export declare function fluentToMessage(ast: Fluent.Pattern): PatternMessage | S
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  ast | Fluent.Pattern |  |
+|  { detectNumberSelection } | [FluentToMessageOptions](./fluent.fluenttomessageoptions.md) | _(Optional)_ |
 
 **Returns:**
 

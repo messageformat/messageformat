@@ -13,7 +13,7 @@ grand_parent: API Reference
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-The runtime function registry available when resolving [FunctionRef](./messageformat.functionref.md) elements.
+The runtime function registry available when resolving [FunctionAnnotation](./messageformat.functionannotation.md) elements.
 
 **Signature:**
 

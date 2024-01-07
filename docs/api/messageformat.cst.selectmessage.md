@@ -27,7 +27,7 @@ export interface SelectMessage
 |  --- | --- | --- | --- |
 |  [declarations](./messageformat.cst.selectmessage.declarations.md) |  | Declaration\[\] | **_(BETA)_** |
 |  [errors](./messageformat.cst.selectmessage.errors.md) |  | [MessageSyntaxError](./messageformat.messagesyntaxerror.md)<!-- -->\[\] | **_(BETA)_** |
-|  [match](./messageformat.cst.selectmessage.match.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'match'&gt; | **_(BETA)_** |
+|  [match](./messageformat.cst.selectmessage.match.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'.match'&gt; | **_(BETA)_** |
 |  [selectors](./messageformat.cst.selectmessage.selectors.md) |  | Expression\[\] | **_(BETA)_** |
 |  [type](./messageformat.cst.selectmessage.type.md) |  | 'select' | **_(BETA)_** |
 |  [variants](./messageformat.cst.selectmessage.variants.md) |  | Variant\[\] | **_(BETA)_** |

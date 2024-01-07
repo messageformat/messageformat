@@ -14,7 +14,7 @@ nav_exclude: true
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
-The set of custom functions available during message resolution. Extends [defaultFunctions](./messageformat.defaultfunctions.md)<!-- -->.
+The set of custom functions available during message resolution. Extends the default set of functions.
 
 **Signature:**
 

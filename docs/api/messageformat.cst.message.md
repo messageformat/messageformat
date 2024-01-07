@@ -18,7 +18,7 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-export type Message = PatternMessage | SelectMessage | JunkMessage;
+export type Message = SimpleMessage | ComplexMessage | SelectMessage;
 ```
-**References:** [JunkMessage](./messageformat.cst.junkmessage.md)
+**References:** [SimpleMessage](./messageformat.cst.simplemessage.md)<!-- -->, [ComplexMessage](./messageformat.cst.complexmessage.md)
 

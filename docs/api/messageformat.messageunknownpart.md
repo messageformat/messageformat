@@ -10,6 +10,10 @@ grand_parent: API Reference
 
 # MessageUnknownPart interface
 
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+> 
+
+
 **Signature:**
 
 ```typescript
@@ -21,7 +25,7 @@ export interface MessageUnknownPart extends MessageExpressionPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [source](./messageformat.messageunknownpart.source.md) |  | string |  |
-|  [type](./messageformat.messageunknownpart.type.md) |  | 'unknown' |  |
-|  [value](./messageformat.messageunknownpart.value.md) |  | unknown |  |
+|  [source](./messageformat.messageunknownpart.source.md) |  | string | **_(BETA)_** |
+|  [type](./messageformat.messageunknownpart.type.md) |  | 'unknown' | **_(BETA)_** |
+|  [value](./messageformat.messageunknownpart.value.md) |  | unknown | **_(BETA)_** |
 
