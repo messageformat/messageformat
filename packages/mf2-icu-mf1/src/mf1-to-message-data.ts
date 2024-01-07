@@ -1,11 +1,9 @@
 import type * as AST from '@messageformat/parser';
-import {
+import type {
   Expression,
-  FunctionRef,
-  isText,
+  FunctionAnnotation,
   Message,
   Option,
-  Text,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -43,12 +41,14 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
     if (prev) for (const key of arg.keys) prev.keys.push(key);
     else args.push(arg);
   };
-  for (const token of tokens)
+  for (const token of tokens) {
     if (isAstSelect(token)) {
       add(asSelectArg(token));
-      for (const c of token.cases)
+      for (const c of token.cases) {
         for (const arg of findSelectArgs(c.tokens)) add(arg);
+      }
     }
+  }
   return args;
 }
 
@@ -56,21 +56,19 @@ function tokenToPart(
   token: AST.Token,
   pluralArg: string | null,
   pluralOffset: number | null
-): Text | Expression {
+): string | Expression {
   switch (token.type) {
     case 'content':
-      return { type: 'text', value: token.value };
+      return token.value;
     case 'argument':
       return {
         type: 'expression',
-        body: { type: 'variable', name: token.arg }
+        arg: { type: 'variable', name: token.arg }
       };
     case 'function': {
-      const body: FunctionRef = {
+      const annotation: FunctionAnnotation = {
         type: 'function',
-        kind: 'value',
-        name: token.key,
-        operand: { type: 'variable', name: token.arg }
+        name: token.key
       };
       if (token.param && token.param.length > 0) {
         let value = '';
@@ -78,26 +76,35 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        body.options = [{ name: 'param', value: { type: 'literal', value } }];
+        annotation.options = [
+          { name: 'param', value: { type: 'literal', value } }
+        ];
       }
-      return { type: 'expression', body };
+      return {
+        type: 'expression',
+        arg: { type: 'variable', name: token.arg },
+        annotation
+      };
     }
     case 'octothorpe': {
-      if (!pluralArg) return { type: 'text', value: '#' };
-      const body: FunctionRef = {
+      if (!pluralArg) return '#';
+      const annotation: FunctionAnnotation = {
         type: 'function',
-        kind: 'value',
-        name: 'number',
-        operand: { type: 'variable', name: pluralArg }
+        name: 'number'
       };
-      if (pluralOffset)
-        body.options = [
+      if (pluralOffset) {
+        annotation.options = [
           {
             name: 'pluralOffset',
             value: { type: 'literal', value: String(pluralOffset) }
           }
         ];
-      return { type: 'expression', body };
+      }
+      return {
+        type: 'expression',
+        arg: { type: 'variable', name: pluralArg },
+        annotation
+      };
     }
     /* istanbul ignore next - never happens */
     default:
@@ -105,13 +112,19 @@ function tokenToPart(
   }
 }
 
-function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
-  const argVar: VariableRef = { type: 'variable', name: arg };
-  if (type === 'select')
+function argToExpression({
+  arg: selName,
+  pluralOffset,
+  type
+}: SelectArg): Expression {
+  const arg: VariableRef = { type: 'variable', name: selName };
+  if (type === 'select') {
     return {
       type: 'expression',
-      body: { type: 'function', kind: 'value', name: 'string', operand: argVar }
+      arg,
+      annotation: { type: 'function', name: 'string' }
     };
+  }
 
   const options: Option[] = [];
   if (pluralOffset) {
@@ -127,16 +140,10 @@ function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
     });
   }
 
-  return {
-    type: 'expression',
-    body: {
-      type: 'function',
-      kind: 'value',
-      name: 'number',
-      operand: argVar,
-      options
-    }
-  };
+  const annotation: FunctionAnnotation = { type: 'function', name: 'number' };
+  if (options.length) annotation.options = options;
+
+  return { type: 'expression', arg, annotation };
 }
 
 /**
@@ -154,12 +161,13 @@ function argToExpression({ arg, pluralOffset, type }: SelectArg): Expression {
  */
 export function mf1ToMessageData(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);
-  if (args.length === 0)
+  if (args.length === 0) {
     return {
       type: 'message',
       declarations: [],
       pattern: { body: ast.map(token => tokenToPart(token, null, null)) }
     };
+  }
 
   // First determine the keys for all cases, with empty values
   let keys: (string | number)[][] = [];
@@ -170,10 +178,13 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
       if (typeof b === 'number' || a === 'other') return 1;
       return 0;
     });
-    if (i === 0) keys = kk.map(key => [key]);
-    else
-      for (let i = keys.length - 1; i >= 0; --i)
+    if (i === 0) {
+      keys = kk.map(key => [key]);
+    } else {
+      for (let i = keys.length - 1; i >= 0; --i) {
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
+      }
+    }
   }
   const variants: Variant[] = keys.map(key => ({
     keys: key.map(k =>
@@ -217,11 +228,13 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
                 : String(value) === vi.value;
             })
           ) {
-            const last = vp[vp.length - 1];
+            const i = vp.length - 1;
             const part = tokenToPart(token, pluralArg, pluralOffset);
-            if (isText(last) && isText(part)) {
-              last.value += part.value;
-            } else vp.push(part);
+            if (typeof vp[i] === 'string' && typeof part === 'string') {
+              vp[i] += part;
+            } else {
+              vp.push(part);
+            }
           }
         }
       }

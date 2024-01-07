@@ -303,7 +303,9 @@ for (const [testSet, cases] of Object.entries(tests)) {
             new UnsupportedError(stem, source)
           ]);
           expect(cb.mock.calls).toEqual(errors);
-        } else expect(cb).not.toHaveBeenCalled();
+        } else {
+          expect(cb).not.toHaveBeenCalled();
+        }
       });
     }
   });

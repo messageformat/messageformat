@@ -87,7 +87,9 @@ export function select(value: string, data: { [key: string]: unknown }) {
  * @param data The data object being checked
  */
 export function reqArgs(keys: string[], data: { [key: string]: unknown }) {
-  for (let i = 0; i < keys.length; ++i)
-    if (!data || data[keys[i]] === undefined)
+  for (let i = 0; i < keys.length; ++i) {
+    if (!data || data[keys[i]] === undefined) {
       throw new Error(`Message requires argument '${keys[i]}'`);
+    }
+  }
 }

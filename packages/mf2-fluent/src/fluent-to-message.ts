@@ -2,14 +2,10 @@ import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
   Expression,
-  FunctionRef,
-  isFunctionRef,
-  isText,
+  FunctionAnnotation,
   Literal,
-  Option,
   PatternMessage,
   SelectMessage,
-  Text,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -22,20 +18,6 @@ interface SelectArg {
   keys: (string | number | typeof CATCHALL)[];
 }
 
-function asSelectArg(sel: Fluent.SelectExpression): SelectArg {
-  let defaultName = '';
-  const keys = sel.variants.map(v => {
-    const name = v.key.type === 'Identifier' ? v.key.name : v.key.parse().value;
-    if (v.default) {
-      defaultName = String(name);
-      return CATCHALL;
-    } else {
-      return name;
-    }
-  });
-  return { selector: sel.selector, defaultName, keys };
-}
-
 function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
   const args: SelectArg[] = [];
   const add = (arg: SelectArg) => {
@@ -43,96 +25,153 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
     if (prev) for (const key of arg.keys) prev.keys.push(key);
     else args.push(arg);
   };
-  for (const el of pattern.elements)
+
+  for (const el of pattern.elements) {
     if (el.type === 'Placeable' && el.expression.type === 'SelectExpression') {
-      add(asSelectArg(el.expression));
-      for (const v of el.expression.variants)
+      const { selector, variants } = el.expression;
+      let defaultName = '';
+      const keys = variants.map(v => {
+        const name =
+          v.key.type === 'Identifier' ? v.key.name : v.key.parse().value;
+        if (v.default) {
+          defaultName = String(name);
+          return CATCHALL;
+        } else {
+          return name;
+        }
+      });
+      add({ selector, defaultName, keys });
+      for (const v of variants) {
         for (const arg of findSelectArgs(v.value)) add(arg);
+      }
     }
+  }
   return args;
 }
 
-function expressionToPart(
-  exp: Fluent.Expression
-): Literal | VariableRef | FunctionRef {
+function asSelectExpression(
+  { selector, defaultName, keys }: SelectArg,
+  detectNumberSelection: boolean = true
+): Expression {
+  switch (selector.type) {
+    case 'StringLiteral':
+      return {
+        type: 'expression',
+        arg: asValue(selector),
+        annotation: { type: 'function', name: 'string' }
+      };
+    case 'VariableReference': {
+      let name = detectNumberSelection ? 'number' : 'string';
+      if (name === 'number') {
+        for (const key of [...keys, defaultName]) {
+          if (
+            typeof key === 'string' &&
+            !['zero', 'one', 'two', 'few', 'many', 'other'].includes(key)
+          ) {
+            name = 'string';
+            break;
+          }
+        }
+      }
+      return {
+        type: 'expression',
+        arg: asValue(selector),
+        annotation: { type: 'function', name }
+      };
+    }
+  }
+  return asExpression(selector);
+}
+
+function asValue(exp: Fluent.InlineExpression): Literal | VariableRef {
   switch (exp.type) {
     case 'NumberLiteral':
-      return {
-        type: 'function',
-        kind: 'value',
-        name: 'number',
-        operand: { type: 'literal', value: exp.value }
-      };
+      return { type: 'literal', value: exp.value };
     case 'StringLiteral':
       return { type: 'literal', value: exp.parse().value };
     case 'VariableReference':
       return { type: 'variable', name: exp.id.name };
+    default:
+      throw new Error(`A Fluent ${exp.type} is not supported here.`);
+  }
+}
+
+function asExpression(exp: Fluent.Expression): Expression {
+  switch (exp.type) {
+    case 'NumberLiteral':
+      return {
+        type: 'expression',
+        arg: asValue(exp),
+        annotation: { type: 'function', name: 'number' }
+      };
+    case 'StringLiteral':
+    case 'VariableReference': {
+      return { type: 'expression', arg: asValue(exp) };
+    }
     case 'FunctionReference': {
-      const func = exp.id.name.toLowerCase();
+      const annotation: FunctionAnnotation = {
+        type: 'function',
+        name: exp.id.name.toLowerCase()
+      };
       const { positional, named } = exp.arguments;
-      const args = positional.map(exp => {
-        const part = expressionToPart(exp);
-        if (isFunctionRef(part))
-          throw new Error(`A Fluent ${exp.type} is not supported here.`);
-        return part;
-      });
+      const args = positional.map(asValue);
       if (args.length > 1) {
         throw new Error(`More than one positional argument is not supported.`);
       }
-      const operand = args[0];
-      if (named.length === 0)
-        return { type: 'function', kind: 'value', name: func, operand };
-      const options: Option[] = [];
-      for (const { name, value } of named) {
-        const quoted = value.type !== 'NumberLiteral';
-        const litValue = quoted ? value.parse().value : value.value;
-        options.push({
-          name: name.name,
-          value: { type: 'literal', value: litValue }
-        });
+      if (named.length > 0) {
+        annotation.options = [];
+        for (const { name, value } of named) {
+          const quoted = value.type !== 'NumberLiteral';
+          const litValue = quoted ? value.parse().value : value.value;
+          annotation.options.push({
+            name: name.name,
+            value: { type: 'literal', value: litValue }
+          });
+        }
       }
-      return { type: 'function', kind: 'value', name: func, operand, options };
+      return args.length > 0
+        ? { type: 'expression', arg: args[0], annotation }
+        : { type: 'expression', annotation };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
         ? `${exp.id.name}.${exp.attribute.name}`
         : exp.id.name;
       return {
-        type: 'function',
-        kind: 'value',
-        name: 'message',
-        operand: { type: 'literal', value: msgId }
+        type: 'expression',
+        arg: { type: 'literal', value: msgId },
+        annotation: { type: 'function', name: 'message' }
       };
     }
     case 'TermReference': {
+      const annotation: FunctionAnnotation = {
+        type: 'function',
+        name: 'message'
+      };
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
-      const operand: Literal = { type: 'literal', value: msgId };
-      if (!exp.arguments)
-        return { type: 'function', kind: 'value', name: 'message', operand };
-
-      const options: Option[] = [];
-      for (const { name, value } of exp.arguments.named) {
-        const quoted = value.type !== 'NumberLiteral';
-        const litValue = quoted ? value.parse().value : value.value;
-        options.push({
-          name: name.name,
-          value: { type: 'literal', value: litValue }
-        });
+      if (exp.arguments?.named.length) {
+        annotation.options = [];
+        for (const { name, value } of exp.arguments.named) {
+          const quoted = value.type !== 'NumberLiteral';
+          const litValue = quoted ? value.parse().value : value.value;
+          annotation.options.push({
+            name: name.name,
+            value: { type: 'literal', value: litValue }
+          });
+        }
       }
       return {
-        type: 'function',
-        kind: 'value',
-        name: 'message',
-        operand,
-        options
+        type: 'expression',
+        arg: { type: 'literal', value: msgId },
+        annotation
       };
     }
 
     /* istanbul ignore next - never happens */
     case 'Placeable':
-      return expressionToPart(exp.expression);
+      return asExpression(exp.expression);
 
     /* istanbul ignore next - never happens */
     default:
@@ -140,10 +179,8 @@ function expressionToPart(
   }
 }
 
-const elementToPart = (el: Fluent.PatternElement): Expression | Text =>
-  el.type === 'TextElement'
-    ? { type: 'text', value: el.value }
-    : { type: 'expression', body: expressionToPart(el.expression) };
+const elementToPart = (el: Fluent.PatternElement): string | Expression =>
+  el.type === 'TextElement' ? el.value : asExpression(el.expression);
 
 function asFluentSelect(
   el: Fluent.PatternElement
@@ -162,6 +199,12 @@ function asFluentSelect(
   }
 }
 
+/** @beta */
+export type FluentToMessageOptions = {
+  /** Set `false` to disable number selector detection based on keys. */
+  detectNumberSelection?: boolean;
+};
+
 /**
  * Compile a {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute) into a
@@ -170,7 +213,8 @@ function asFluentSelect(
  * @beta
  */
 export function fluentToMessage(
-  ast: Fluent.Pattern
+  ast: Fluent.Pattern,
+  { detectNumberSelection }: FluentToMessageOptions = {}
 ): PatternMessage | SelectMessage {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
@@ -192,10 +236,13 @@ export function fluentToMessage(
       if (typeof b === 'number') return 1;
       return 0;
     });
-    if (i === 0) keys = kk.map(key => [key]);
-    else
-      for (let i = keys.length - 1; i >= 0; --i)
+    if (i === 0) {
+      keys = kk.map(key => [key]);
+    } else {
+      for (let i = keys.length - 1; i >= 0; --i) {
         keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
+      }
+    }
   }
   const variants: Variant[] = keys.map(key => ({
     keys: key.map((k, i) =>
@@ -238,10 +285,13 @@ export function fluentToMessage(
                 : String(value) === vi.value;
             })
           ) {
-            const last = vp[vp.length - 1];
+            const i = vp.length - 1;
             const part = elementToPart(el);
-            if (isText(last) && isText(part)) last.value += part.value;
-            else vp.push(part);
+            if (typeof vp[i] === 'string' && typeof part === 'string') {
+              vp[i] += part;
+            } else {
+              vp.push(part);
+            }
           }
         }
       }
@@ -252,10 +302,7 @@ export function fluentToMessage(
   return {
     type: 'select',
     declarations: [],
-    selectors: args.map(arg => ({
-      type: 'expression',
-      body: expressionToPart(arg.selector)
-    })),
+    selectors: args.map(arg => asSelectExpression(arg, detectNumberSelection)),
     variants
   };
 }

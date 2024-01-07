@@ -28,7 +28,7 @@
     "packages/webpack-loader"
   ],
   "scripts": {
-    "clean": "git clean -fdx -e node_modules -e config/husky/_",
+    "clean": "git clean -fdx -e node_modules",
     "build": "npm run build --workspaces --if-present",
     "build:mf2": "npm run build -w packages/mf2-messageformat -w packages/mf2-fluent -w packages/mf2-icu-mf1 -w packages/mf2-resource -w packages/mf2-xliff",
     "predocs": "npm run extract-api --workspaces --if-present",
@@ -37,13 +37,12 @@
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "prettier": "prettier --write .",
     "start": "node -i -r ./scripts/start.js",
-    "prepare": "husky install config/husky",
     "pretest:browsers": "cd test && rollup -c",
     "test:browsers": "mocha --parallel --jobs 5 --require test/browser/browserstack-fixtures.js --timeout 120000 test/browser/tests/",
     "test:chrome": "npm run pretest:browsers && mocha-selenium-bridge -b chrome test/browser/test.html",
     "test:firefox": "npm run pretest:browsers && mocha-selenium-bridge -b firefox test/browser/test.html",
     "test:serve": "npm run pretest:browsers && serve",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "prettier": {
     "arrowParens": "avoid",
@@ -57,8 +56,6 @@
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-react": "^7.12.7",
     "@babel/preset-typescript": "^7.12.7",
-    "@commitlint/cli": "^18.2.0",
-    "@commitlint/config-conventional": "^18.1.0",
     "@microsoft/api-documenter": "^7.11.0",
     "@microsoft/api-extractor": "^7.12.0",
     "@rollup/plugin-alias": "^5.0.1",
@@ -80,7 +77,6 @@
     "chai": "^4.2.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^9.0.0",
-    "husky": "^8.0.1",
     "intl-list-format": "^1.0.3",
     "jest": "^29.2.1",
     "jest-ts-webcompat-resolver": "^1.0.0",

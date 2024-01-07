@@ -1,7 +1,7 @@
 import {
-  NumberFormatError,
   BadOptionError,
   MissingOptionError,
+  NumberFormatError,
   TooManyOptionsError
 } from '../errors.js';
 

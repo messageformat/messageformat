@@ -76,10 +76,9 @@ const tests: {
 
 for (const [testSet, cases] of Object.entries(tests)) {
   describe(testSet, () => {
-    for (const [
-      src,
-      { value, lc, cur: cur, exp, errors = [] }
-    ] of Object.entries(cases)) {
+    for (const [src, { value, lc, cur, exp, errors = [] }] of Object.entries(
+      cases
+    )) {
       test(src, () => {
         const cb = jest.fn();
 

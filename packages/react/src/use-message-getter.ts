@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { getMessageGetter, MessageGetterOptions } from './get-message';
+import { MessageGetterOptions, getMessageGetter } from './get-message';
 import { MessageContext } from './message-context';
 
 /**

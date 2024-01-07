@@ -1,11 +1,9 @@
-import type { Expression, Literal, VariableRef } from './pattern';
-import type { MessageFunctions, MessageValue } from './runtime';
+import type { MessageValue } from './functions/index.js';
+import type { MessageFunctions } from './messageformat.js';
 
 export interface Context {
   functions: MessageFunctions;
   onError(error: unknown): void;
-  resolveExpression(expr: Expression): MessageValue;
-  resolveValue(value: Literal | VariableRef): unknown;
   localeMatcher: 'best fit' | 'lookup';
   locales: string[];
   /** Cache for local variables */

@@ -1,6 +1,6 @@
 import {
-  NumberFormatError,
   BadOptionError,
+  NumberFormatError,
   TooManyOptionsError
 } from '../errors.js';
 import { Skeleton } from '../types/skeleton.js';
@@ -44,7 +44,9 @@ export function parsePrecisionBlueprint(
       res.source = `${stem}/${option}`;
       res.minSignificant = sd.min;
       if (sd.max != null) res.maxSignificant = sd.max;
-    } else if (option) onError(new BadOptionError(stem, option));
+    } else if (option) {
+      onError(new BadOptionError(stem, option));
+    }
     return res;
   }
 

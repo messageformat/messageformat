@@ -5,8 +5,9 @@ export function source(
 ) {
   // concatenate
   let res = strings[0];
-  for (let i = 1; i < strings.length; ++i)
+  for (let i = 1; i < strings.length; ++i) {
     res += String(expressions[i]) + strings[i + 1];
+  }
 
   // remove trailing whitespace + initial newline
   res = res.replace(/[^\S\n]+$/gm, '').replace(/^\n/, '');

@@ -1170,18 +1170,34 @@ export interface ValidationRule extends Element {
  * MessageFormat Module
  */
 
-export type MessagePart = MessageLiteral | MessageFunction | MessageVariable;
-
 export interface MessageFormat extends Element {
   name: 'mf:messageformat';
-  elements: MessagePart[];
+  elements: (MessageExpression | MessageMarkup)[];
+}
+
+export interface MessageExpression extends Element {
+  name: 'mf:expression';
+  attributes: {
+    id: string;
+  };
+  elements:
+    | [MessageLiteral | MessageVariable]
+    | [MessageLiteral | MessageVariable, MessageFunction | MessageUnsupported]
+    | [MessageFunction | MessageUnsupported];
+}
+
+export interface MessageMarkup extends Element {
+  name: 'mf:markup';
+  attributes: {
+    id: string;
+    name: string;
+  };
+  elements: MessageOption[];
 }
 
 export interface MessageLiteral extends Element {
   name: 'mf:literal';
   attributes?: {
-    id?: string;
-
     /**
      * Directionality of content: `ltr` (Left-To-Right), `rtl` (Right-To-Left),
      * or `auto` (determined heuristically, based on the first strong
@@ -1204,10 +1220,9 @@ export interface MessageLiteral extends Element {
 export interface MessageFunction extends Element {
   name: 'mf:function';
   attributes: {
-    id?: string;
     name: string;
   };
-  elements: (MessageOption | MessageLiteral | MessageVariable)[];
+  elements: MessageOption[];
 }
 
 export interface MessageOption extends Element {
@@ -1216,13 +1231,32 @@ export interface MessageOption extends Element {
     name: string;
     values?: string;
   };
-  elements: (MessageLiteral | MessageVariable)[];
+  elements: [MessageLiteral | MessageVariable];
+}
+
+export interface MessageUnsupported extends Element {
+  name: 'mf:unsupported';
+  attributes: {
+    sigil:
+      | '!'
+      | '@'
+      | '#'
+      | '%'
+      | '^'
+      | '&'
+      | '*'
+      | '<'
+      | '>'
+      | '?'
+      | '~'
+      | '�';
+  };
+  elements: (Text | CharCode)[];
 }
 
 export interface MessageVariable extends Element {
   name: 'mf:variable';
   attributes: {
-    id?: string;
     name: string;
   };
 }

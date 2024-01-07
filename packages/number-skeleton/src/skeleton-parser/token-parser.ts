@@ -1,10 +1,10 @@
 import {
-  NumberFormatError,
   BadOptionError,
   BadStemError,
-  MaskedValueError
+  MaskedValueError,
+  NumberFormatError
 } from '../errors.js';
-import { isNumberingSystem, Skeleton } from '../types/skeleton.js';
+import { Skeleton, isNumberingSystem } from '../types/skeleton.js';
 import { isUnit } from '../types/unit.js';
 import { validOptions } from './options.js';
 import { parsePrecisionBlueprint } from './parse-precision-blueprint.js';
@@ -57,8 +57,9 @@ export class TokenParser {
               expSign = opt;
               break;
             default:
-              if (/^\+e+$/.test(opt)) expDigits = opt.length - 1;
-              else {
+              if (/^\+e+$/.test(opt)) {
+                expDigits = opt.length - 1;
+              } else {
                 this.badOption(stem, opt);
               }
           }
@@ -87,13 +88,17 @@ export class TokenParser {
         if (/^[A-Z]{3}$/.test(option)) {
           this.assertEmpty('unit');
           res.unit = { style: stem, currency: option };
-        } else this.badOption(stem, option);
+        } else {
+          this.badOption(stem, option);
+        }
         break;
       case 'measure-unit': {
         if (isUnit(option)) {
           this.assertEmpty('unit');
           res.unit = { style: stem, unit: option };
-        } else this.badOption(stem, option);
+        } else {
+          this.badOption(stem, option);
+        }
         break;
       }
 
@@ -102,7 +107,9 @@ export class TokenParser {
         if (isUnit(option)) {
           this.assertEmpty('unitPer');
           res.unitPer = option;
-        } else this.badOption(stem, option);
+        } else {
+          this.badOption(stem, option);
+        }
         break;
       }
 
@@ -136,7 +143,9 @@ export class TokenParser {
         if (increment > 0) {
           this.assertEmpty('precision');
           res.precision = { style: stem, increment };
-        } else this.badOption(stem, option);
+        } else {
+          this.badOption(stem, option);
+        }
         break;
       }
 
@@ -170,7 +179,9 @@ export class TokenParser {
               min: m[1].length,
               max: m[0].length
             };
-          } else this.badOption(stem, option);
+          } else {
+            this.badOption(stem, option);
+          }
         }
         break;
       }
@@ -181,7 +192,9 @@ export class TokenParser {
         if (scale > 0) {
           this.assertEmpty('scale');
           res.scale = scale;
-        } else this.badOption(stem, option);
+        } else {
+          this.badOption(stem, option);
+        }
         break;
       }
 
@@ -204,7 +217,9 @@ export class TokenParser {
         if (isNumberingSystem(option)) {
           this.assertEmpty('numberingSystem');
           res.numberingSystem = option;
-        } else this.badOption(stem, option);
+        } else {
+          this.badOption(stem, option);
+        }
         break;
       }
 

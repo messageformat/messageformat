@@ -3,17 +3,16 @@ import {
   CatchallKey,
   Declaration,
   Expression,
-  FunctionRef,
-  isCatchallKey,
-  isLiteral,
-  isPatternMessage,
-  isSelectMessage,
-  isText,
+  FunctionAnnotation,
   Literal,
   Message,
   Pattern,
   VariableRef,
-  Variant
+  Variant,
+  isCatchallKey,
+  isLiteral,
+  isPatternMessage,
+  isSelectMessage
 } from 'messageformat';
 
 /**
@@ -27,7 +26,7 @@ type MsgContext = {
   functionMap: FunctionMap;
 };
 
-export type FunctionMap = Record<string, string | symbol>;
+export type FunctionMap = Record<string, string | symbol | null>;
 
 /**
  * Default value for the {@link messageToFluent} `functionMap` option.
@@ -36,7 +35,9 @@ export type FunctionMap = Record<string, string | symbol>;
 export const defaultFunctionMap: FunctionMap = {
   datetime: 'DATETIME',
   message: FluentMessageRef,
-  number: 'NUMBER'
+  number: 'NUMBER',
+  plural: 'NUMBER',
+  string: null
 };
 
 const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
@@ -147,20 +148,23 @@ function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
 }
 
 function patternToFluent(ctx: MsgContext, pattern: Pattern) {
-  const elements = pattern.body.map(el =>
-    isText(el)
-      ? new Fluent.TextElement(el.value)
-      : new Fluent.Placeable(expressionToFluent(ctx, el))
-  );
+  const elements = pattern.body.map(el => {
+    if (typeof el === 'string') return new Fluent.TextElement(el);
+    if (el.type === 'expression') {
+      return new Fluent.Placeable(expressionToFluent(ctx, el));
+    }
+    throw new Error(`Conversion of ${el.type} to Fluent is not supported`);
+  });
   return new Fluent.Pattern(elements);
 }
 
 function functionRefToFluent(
   ctx: MsgContext,
-  { name, operand, options }: FunctionRef
+  arg: Fluent.InlineExpression | null,
+  { name, options }: FunctionAnnotation
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
-  if (operand) args.positional[0] = valueToFluent(ctx, operand);
+  if (arg) args.positional[0] = arg;
   if (options) {
     args.named = options.map(opt => {
       const va = valueToFluent(ctx, opt.value);
@@ -175,6 +179,14 @@ function functionRefToFluent(
   }
 
   const id = ctx.functionMap[name];
+  if (id === null) {
+    if (args.named.length > 0) {
+      throw new Error(
+        `The function :${name} is dropped in Fluent, so cannot have options.`
+      );
+    }
+    return args.positional[0];
+  }
   if (
     id === 'NUMBER' &&
     args.positional[0] instanceof Fluent.NumberLiteral &&
@@ -222,20 +234,20 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  { body }: Expression
+  { arg, annotation }: Expression
 ): Fluent.InlineExpression {
-  switch (body.type) {
-    case 'function':
-      return functionRefToFluent(ctx, body);
-    case 'literal':
-      return new Fluent.StringLiteral(body.value);
-    case 'variable':
-      return variableRefToFluent(ctx, body);
-    default:
+  const fluentArg = arg ? valueToFluent(ctx, arg) : null;
+  if (annotation) {
+    if (annotation.type === 'function') {
+      return functionRefToFluent(ctx, fluentArg, annotation);
+    } else {
       throw new Error(
-        `Conversion of "${body.type}" expression to Fluent is not supported`
+        `Conversion of ${annotation.type} annotation to Fluent is not supported`
       );
+    }
   }
+  if (fluentArg) return fluentArg;
+  throw new Error('Invalid empty expression');
 }
 
 function valueToFluent(
@@ -259,7 +271,7 @@ function variableRefToFluent(
   { name }: VariableRef
 ): Fluent.InlineExpression {
   const local = ctx.declarations.find(decl => decl.name === name);
-  return local
+  return local?.value
     ? expressionToFluent(ctx, local.value)
     : new Fluent.VariableReference(new Fluent.Identifier(name));
 }

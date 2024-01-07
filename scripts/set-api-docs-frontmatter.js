@@ -15,8 +15,9 @@ async function main() {
     const bc0 = src.indexOf('[Home](./index.md)');
     const bc1 = src.indexOf('\n', bc0);
     const bc = src.substring(bc0, bc1).split(/ &gt; /);
-    if (bc0 === -1 || bc1 === -1 || bc1 < bc0 || bc.length === 0)
+    if (bc0 === -1 || bc1 === -1 || bc1 < bc0 || bc.length === 0) {
       throw new Error(`Failed to parse breadcrumbs for ${fn}`);
+    }
 
     const navpath = bc.map(md => md.match(/^\[(.*)][^\]]*$/)[1]);
 

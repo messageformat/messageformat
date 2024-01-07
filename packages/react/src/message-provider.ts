@@ -1,6 +1,6 @@
-import { createElement, ReactNode, useContext, useMemo } from 'react';
+import { ReactNode, createElement, useContext, useMemo } from 'react';
 import { MessageContext, MessageObject, defaultValue } from './message-context';
-import { MessageError, ErrorCode, errorMessages } from './message-error';
+import { ErrorCode, MessageError, errorMessages } from './message-error';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - https://github.com/microsoft/rushstack/issues/1050
@@ -71,9 +71,10 @@ function getOnError(
 
   if (onError === undefined) {
     // debug is deprecated, will be removed later
-    if (typeof debug === 'function')
+    if (typeof debug === 'function') {
       return (path: string[], code: ErrorCode) =>
         debug(`${errorMessages[code]}: ${asId(path)}`);
+    }
     onError = debug;
   }
 

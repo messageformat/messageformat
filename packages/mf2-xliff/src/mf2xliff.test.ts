@@ -27,7 +27,9 @@ test('source only', () => {
         <group id="g:var" name="var">
           <unit id="u:var." name="var">
             <mf:messageformat>
-              <mf:variable id="m1" name="num"/>
+              <mf:expression id="m1">
+                <mf:variable name="num"/>
+              </mf:expression>
             </mf:messageformat>
             <segment>
               <source>Foo·
@@ -39,9 +41,10 @@ test('source only', () => {
         <group id="g:ref" name="ref">
           <unit id="u:ref." name="ref">
             <mf:messageformat>
-              <mf:function id="m2" name="message">
+              <mf:expression id="m2">
                 <mf:literal>msg</mf:literal>
-              </mf:function>
+                <mf:function name="message"/>
+              </mf:expression>
             </mf:messageformat>
             <segment>
               <source>This is the·
@@ -53,7 +56,10 @@ test('source only', () => {
         <group id="g:select" name="select">
           <group id="g:select." name="select" mf:select="m3">
             <mf:messageformat>
-              <mf:variable id="m3" name="selector"/>
+              <mf:expression id="m3">
+                <mf:variable name="selector"/>
+                <mf:function name="string"/>
+              </mf:expression>
             </mf:messageformat>
             <unit id="u:select..a" name="a">
               <segment>
@@ -112,8 +118,12 @@ test('combine source & target', () => {
         <group id="g:var" name="var">
           <unit id="u:var." name="var">
             <mf:messageformat>
-              <mf:variable id="m1" name="num"/>
-              <mf:variable id="m2" name="num"/>
+              <mf:expression id="m1">
+                <mf:variable name="num"/>
+              </mf:expression>
+              <mf:expression id="m2">
+                <mf:variable name="num"/>
+              </mf:expression>
             </mf:messageformat>
             <segment>
               <source>Foo·
@@ -128,7 +138,10 @@ test('combine source & target', () => {
         <group id="g:select" name="select">
           <group id="g:select." name="select" mf:select="m3">
             <mf:messageformat>
-              <mf:variable id="m3" name="selector"/>
+              <mf:expression id="m3">
+                <mf:variable name="selector"/>
+                <mf:function name="string"/>
+              </mf:expression>
             </mf:messageformat>
             <unit id="u:select..a" name="a">
               <segment>
@@ -178,8 +191,14 @@ test('selector mismatch between source & target languages', () => {
         <group id="g:select" name="select">
           <group id="g:select." name="select" mf:select="m1 m2">
             <mf:messageformat>
-              <mf:variable id="m1" name="gender"/>
-              <mf:variable id="m2" name="case"/>
+              <mf:expression id="m1">
+                <mf:variable name="gender"/>
+                <mf:function name="string"/>
+              </mf:expression>
+              <mf:expression id="m2">
+                <mf:variable name="case"/>
+                <mf:function name="string"/>
+              </mf:expression>
             </mf:messageformat>
             <unit id="u:select..masculine_allative" name="masculine allative">
               <segment>

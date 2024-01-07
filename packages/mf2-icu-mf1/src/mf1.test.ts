@@ -1,6 +1,6 @@
 import { parse } from '@messageformat/parser';
 import { validate } from 'messageformat';
-import { mf1ToMessage, mf1ToMessageData } from './index';
+import { mf1ToMessage, mf1ToMessageData } from './index.js';
 
 export type TestCase = {
   locale?: string;
@@ -169,8 +169,7 @@ export const testCases: Record<string, TestCase[]> = {
       exp: [
         [{ FEELING: 'a' }, 'I am happy.'],
         [{ FEELING: 'b' }, 'I am sad.'],
-        [{ FEELING: 'q' }, 'I am indifferent.'],
-        [{}, 'I am indifferent.']
+        [{ FEELING: 'q' }, 'I am indifferent.']
       ]
     },
     {
@@ -249,19 +248,19 @@ export const testCases: Record<string, TestCase[]> = {
           'Kit added himself and 2 other people to his group.'
         ],
         [
-          { PLURAL_NUM_PEOPLE: 0, PERSON: 'Kot' },
+          { PLURAL_NUM_PEOPLE: 0, PERSON: 'Kot', GENDER: 'other' },
           'Kot added no one to their group.'
         ],
         [
-          { PLURAL_NUM_PEOPLE: 1, PERSON: 'Kot' },
+          { PLURAL_NUM_PEOPLE: 1, PERSON: 'Kot', GENDER: 'other' },
           'Kot added just themself to their group.'
         ],
         [
-          { PLURAL_NUM_PEOPLE: 2, PERSON: 'Kot' },
+          { PLURAL_NUM_PEOPLE: 2, PERSON: 'Kot', GENDER: 'other' },
           'Kot added themself and one other person to their group.'
         ],
         [
-          { PLURAL_NUM_PEOPLE: 3, PERSON: 'Kot' },
+          { PLURAL_NUM_PEOPLE: 3, PERSON: 'Kot', GENDER: 'other' },
           'Kot added themself and 2 other people to their group.'
         ]
       ]
@@ -357,8 +356,9 @@ for (const [title, cases] of Object.entries(testCases)) {
       let name = src;
       if (locale || options) {
         const opt = [locale];
-        for (const [key, value] of Object.entries(options || {}))
+        for (const [key, value] of Object.entries(options || {})) {
           opt.push(`${key}: ${value}`);
+        }
         name = `[${opt.join(', ')}] ${src}`;
       }
 
@@ -366,15 +366,26 @@ for (const [title, cases] of Object.entries(testCases)) {
       _describe(name, () => {
         for (const [param, res] of exp) {
           const strParam = [];
-          if (param && typeof param === 'object')
-            for (const [key, value] of Object.entries(param))
+          if (param && typeof param === 'object') {
+            for (const [key, value] of Object.entries(param)) {
               strParam.push(`${key}: ${value}`);
-          else strParam.push(String(param));
+            }
+          } else {
+            strParam.push(String(param));
+          }
 
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));
             const mf = mf1ToMessage(data, locale);
-            validate(data, mf.resolvedOptions().functions);
+            const req = validate(data, type => {
+              throw new Error(`Validation failed: ${type}`);
+            });
+            const { functions } = mf.resolvedOptions();
+            for (const fn of req.functions) {
+              if (typeof functions[fn] !== 'function') {
+                throw new Error(`Unknown message function: ${fn}`);
+              }
+            }
             const msg = mf.format(
               param as Record<string, string | number | Date>
             );

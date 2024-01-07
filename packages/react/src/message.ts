@@ -71,8 +71,9 @@ export function Message(props: MessageProps) {
   const msgParams = rest(props, ['children', 'id', 'locale', 'params']);
   let context = useContext(MessageContext);
   let fallback = false;
-  if (children && typeof children !== 'function')
+  if (children && typeof children !== 'function') {
     context = Object.assign({}, context, { onError: () => (fallback = true) });
+  }
   const msg = getMessage(context, id, locale);
   if (fallback) return children;
   if (typeof children === 'function') return children(msg);
@@ -82,8 +83,9 @@ export function Message(props: MessageProps) {
     case 'boolean':
       return String(msg);
     case 'object':
-      if (msg && !Array.isArray(msg))
+      if (msg && !Array.isArray(msg)) {
         return context.onError ? context.onError(getPath(id), 'EBADMSG') : null;
+      }
   }
   return msg || null;
 }

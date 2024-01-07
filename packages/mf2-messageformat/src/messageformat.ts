@@ -1,16 +1,50 @@
-import { asDataModel, parseMessage } from './cst-parser/index.js';
-import { Message } from './data-model';
-import type { Context } from './format-context';
-import { selectPattern } from './select-pattern.js';
-import { resolveExpression, UnresolvedExpression } from './pattern';
-import { resolveValue } from './pattern/value.js';
+import { parseCST } from './cst/parse-cst.js';
+import { messageFromCST } from './data-model/from-cst.js';
+import type { MessageFunctionContext } from './data-model/function-context.js';
+import { formatMarkup } from './data-model/format-markup.js';
+import { resolveExpression } from './data-model/resolve-expression.js';
+import { UnresolvedExpression } from './data-model/resolve-variable.js';
+import type { Message } from './data-model/types.js';
+import { validate } from './data-model/validate.js';
 import {
-  defaultFunctions,
-  MessageFunctions,
-  MessagePart,
-  MessageValue
-} from './runtime';
-import { MessageError } from './errors.js';
+  MessageDataModelError,
+  MessageError,
+  MessageResolutionError
+} from './errors.js';
+import type { Context } from './format-context.js';
+import type { MessagePart } from './formatted-parts.js';
+import {
+  MessageValue,
+  datetime,
+  integer,
+  number,
+  ordinal,
+  plural,
+  string
+} from './functions/index.js';
+import { selectPattern } from './select-pattern.js';
+
+const defaultFunctions = Object.freeze({
+  datetime,
+  integer,
+  number,
+  ordinal,
+  plural,
+  string
+});
+
+/**
+ * The runtime function registry available when resolving {@link FunctionAnnotation} elements.
+ *
+ * @beta
+ */
+export interface MessageFunctions {
+  [key: string]: (
+    context: MessageFunctionContext,
+    options: Record<string, unknown>,
+    input?: unknown
+  ) => MessageValue;
+}
 
 /** @beta */
 export interface MessageFormatOptions {
@@ -26,7 +60,7 @@ export interface MessageFormatOptions {
 
   /**
    * The set of custom functions available during message resolution.
-   * Extends {@link defaultFunctions}.
+   * Extends the default set of functions.
    */
   functions?: MessageFunctions;
 }
@@ -54,7 +88,10 @@ export class MessageFormat {
         ? [locales]
         : [];
     this.#message =
-      typeof source === 'string' ? asDataModel(parseMessage(source)) : source;
+      typeof source === 'string' ? messageFromCST(parseCST(source)) : source;
+    validate(this.#message, (type, node) => {
+      throw new MessageDataModelError(type, node);
+    });
     this.#functions = options?.functions
       ? { ...defaultFunctions, ...options.functions }
       : defaultFunctions;
@@ -67,12 +104,12 @@ export class MessageFormat {
     const ctx = this.createContext(msgParams, onError);
     let res = '';
     for (const elem of selectPattern(ctx, this.#message)) {
-      if (elem.type === 'text') {
-        res += elem.value;
-      } else {
+      if (typeof elem === 'string') {
+        res += elem;
+      } else if (elem.type !== 'markup') {
         let mv: MessageValue | undefined;
         try {
-          mv = ctx.resolveExpression(elem);
+          mv = resolveExpression(ctx, elem);
           if (typeof mv.toString === 'function') {
             res += mv.toString();
           } else {
@@ -95,12 +132,14 @@ export class MessageFormat {
     const ctx = this.createContext(msgParams, onError);
     const parts: MessagePart[] = [];
     for (const elem of selectPattern(ctx, this.#message)) {
-      if (elem.type === 'text') {
-        parts.push({ type: 'literal', value: elem.value });
+      if (typeof elem === 'string') {
+        parts.push({ type: 'literal', value: elem });
+      } else if (elem.type === 'markup') {
+        parts.push(formatMarkup(ctx, elem));
       } else {
         let mv: MessageValue | undefined;
         try {
-          mv = ctx.resolveExpression(elem);
+          mv = resolveExpression(ctx, elem);
           if (typeof mv.toParts === 'function') {
             parts.push(...mv.toParts());
           } else {
@@ -136,20 +175,26 @@ export class MessageFormat {
       }
     }
   ) {
-    let scope = { ...msgParams };
-    for (const { name, value } of this.#message.declarations) {
-      const ue = new UnresolvedExpression(value, scope);
-      if (name in scope) scope = { ...scope, [name]: ue };
-      else scope[name] = ue;
+    const scope = { ...msgParams };
+    for (const decl of this.#message.declarations) {
+      switch (decl.type) {
+        case 'input':
+          scope[decl.name] = new UnresolvedExpression(decl.value, msgParams);
+          break;
+        case 'local':
+          scope[decl.name] = new UnresolvedExpression(decl.value);
+          break;
+        default: {
+          const source = decl.keyword ?? '�';
+          const msg = `Reserved ${source} annotation is not supported`;
+          onError(
+            new MessageResolutionError('unsupported-statement', msg, source)
+          );
+        }
+      }
     }
     const ctx: Context = {
       onError,
-      resolveExpression(elem) {
-        return resolveExpression(this, elem);
-      },
-      resolveValue(value) {
-        return resolveValue(this, value);
-      },
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
       localVars: new WeakSet(),

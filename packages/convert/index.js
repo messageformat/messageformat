@@ -12,8 +12,9 @@ const defaultOptions = {
 
 const convertData = (data, locale, options) => {
   if (!data) return '';
-  if (Array.isArray(data))
+  if (Array.isArray(data)) {
     return data.map(d => convertData(d, locale, options));
+  }
   if (typeof data !== 'object') return applyReplacements(data, options);
   const pluralMsg =
     options.pluralVariable && getPluralMessage(data, locale, options);

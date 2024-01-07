@@ -1,6 +1,7 @@
-import type { Message, Pattern } from './data-model';
-import { MessageSelectionError } from './errors';
-import type { Context } from './format-context';
+import { resolveExpression } from './data-model/resolve-expression.js';
+import type { Message, Pattern } from './data-model/types.js';
+import { MessageSelectionError } from './errors.js';
+import type { Context } from './format-context.js';
 
 export function selectPattern(
   context: Context,
@@ -12,7 +13,7 @@ export function selectPattern(
 
     case 'select': {
       const ctx = message.selectors.map(sel => {
-        const selector = context.resolveExpression(sel);
+        const selector = resolveExpression(context, sel);
         let selectKey;
         if (typeof selector.selectKey === 'function') {
           selectKey = selector.selectKey.bind(selector);

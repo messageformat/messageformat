@@ -6,7 +6,7 @@ import {
   getNumberFormatter,
   getNumberFormatterSource
 } from '@messageformat/number-skeleton';
-import { parse, FunctionArg, Select, Token } from '@messageformat/parser';
+import { FunctionArg, Select, Token, parse } from '@messageformat/parser';
 import * as Runtime from '@messageformat/runtime';
 import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
@@ -122,8 +122,9 @@ export default class Compiler {
         type === 'select' ||
         (type === 'plural' && cardinals.includes('other')) ||
         (type === 'selectordinal' && ordinals.includes('other'))
-      )
+      ) {
         throw new Error(`No 'other' form found in ${JSON.stringify(token)}`);
+      }
     }
     return `{ ${r.join(', ')} }`;
   }
@@ -143,7 +144,9 @@ export default class Compiler {
     if ('arg' in token) {
       this.arguments.push(token.arg);
       args = [property('d', token.arg)];
-    } else args = [];
+    } else {
+      args = [];
+    }
     switch (token.type) {
       case 'argument':
         return this.options.biDiSupport
@@ -224,8 +227,9 @@ export default class Compiler {
   }
 
   runtimeIncludes(key: string, type: RuntimeType) {
-    if (identifier(key) !== key)
+    if (identifier(key) !== key) {
       throw new SyntaxError(`Reserved word used as ${type} identifier: ${key}`);
+    }
     const prev = this.runtime[key];
     if (!prev || prev.type === type) return prev;
     throw new TypeError(
@@ -279,23 +283,29 @@ export default class Compiler {
     if (argShape === 'options') {
       let value = '';
       for (const tok of param) {
-        if (tok.type === 'content') value += tok.value;
-        else
+        if (tok.type === 'content') {
+          value += tok.value;
+        } else {
           throw new SyntaxError(
             `Expected literal options for ${key} formatter`
           );
+        }
       }
       const options: Record<string, string | number | boolean | null> = {};
       for (const pair of value.split(',')) {
         const keyEnd = pair.indexOf(':');
-        if (keyEnd === -1) options[pair.trim()] = null;
-        else {
+        if (keyEnd === -1) {
+          options[pair.trim()] = null;
+        } else {
           const k = pair.substring(0, keyEnd).trim();
           const v = pair.substring(keyEnd + 1).trim();
-          if (v === 'true') options[k] = true;
-          else if (v === 'false') options[k] = false;
-          else if (v === 'null') options[k] = null;
-          else {
+          if (v === 'true') {
+            options[k] = true;
+          } else if (v === 'false') {
+            options[k] = false;
+          } else if (v === 'null') {
+            options[k] = null;
+          } else {
             const n = Number(v);
             options[k] = Number.isFinite(n) ? n : v;
           }

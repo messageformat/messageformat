@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { parse, ParseOptions, Select } from './parser.js';
+import { ParseOptions, Select, parse } from './parser.js';
 
 function run(shape: Record<string, any>) {
   for (const [src, value] of Object.entries(shape)) {
@@ -234,8 +234,9 @@ describe('Plurals', () => {
       '{NUM,plural,one{1}other{2}}',
       '{\nNUM,   \nplural,\n   one\n\n{1}\n other {2}\n\n\n}',
       '{\tNUM\t,\t\t\r plural\t\n, \tone\n{1}    other\t\n{2}\n\n\n}'
-    ])
+    ]) {
       expect(parse(src)).toMatchObject(exp);
+    }
   });
 
   describe('Plural offsets', () => {
@@ -360,10 +361,11 @@ describe('Ordinals', () => {
 
 describe('Functions', function () {
   it('should allow upper-case type, except for built-ins', function () {
-    for (const date of ['date', 'Date', '9ate'])
+    for (const date of ['date', 'Date', '9ate']) {
       expect(parse(`{var,${date}}`)).toMatchObject([
         { type: 'function', arg: 'var', key: date }
       ]);
+    }
     expect(() => parse('{var,Select}')).toThrow(
       /Invalid type identifier: Select/
     );

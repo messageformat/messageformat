@@ -1,8 +1,14 @@
 import * as Fluent from '@fluent/syntax';
 import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import type { FluentMessageResource, FluentMessageResourceData } from '.';
-import { fluentToMessage } from './fluent-to-message';
-import { getFluentFunctions } from './functions';
+import {
+  FluentToMessageOptions,
+  fluentToMessage
+} from './fluent-to-message.js';
+import { getFluentFunctions } from './functions.js';
+import type {
+  FluentMessageResource,
+  FluentMessageResourceData
+} from './index.js';
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
@@ -22,16 +28,16 @@ import { getFluentFunctions } from './functions';
 export function fluentToResource(
   source: string | Fluent.Resource | FluentMessageResourceData,
   locales?: string | string[],
-  options?: MessageFormatOptions
+  options?: MessageFormatOptions & FluentToMessageOptions
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();
 
-  const functions = Object.assign(getFluentFunctions(res), options?.functions);
-  const opt = { ...options, functions };
+  const { detectNumberSelection, ...opt } = options ?? {};
+  opt.functions = Object.assign(getFluentFunctions(res), options?.functions);
 
   const data =
     typeof source === 'string' || source instanceof Fluent.Resource
-      ? fluentToResourceData(source).data
+      ? fluentToResourceData(source, { detectNumberSelection }).data
       : source;
   for (const [id, group] of data) {
     let rg = res.get(id);
@@ -58,7 +64,10 @@ export function fluentToResource(
  * @returns An object containing the messages as `data` and any resource-level
  *   `comments` of the resource.
  */
-export function fluentToResourceData(source: string | Fluent.Resource): {
+export function fluentToResourceData(
+  source: string | Fluent.Resource,
+  options?: FluentToMessageOptions
+): {
   data: FluentMessageResourceData;
   comments: string;
 } {
@@ -76,7 +85,7 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
         const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
         const group: Map<string, Message> = new Map();
         if (msg.value) {
-          const entry = fluentToMessage(msg.value);
+          const entry = fluentToMessage(msg.value, options);
           if (msg.comment) entry.comment = msg.comment.content;
           if (groupComment) {
             entry.comment = entry.comment
@@ -85,8 +94,9 @@ export function fluentToResourceData(source: string | Fluent.Resource): {
           }
           group.set('', entry);
         }
-        for (const attr of msg.attributes)
-          group.set(attr.id.name, fluentToMessage(attr.value));
+        for (const attr of msg.attributes) {
+          group.set(attr.id.name, fluentToMessage(attr.value, options));
+        }
         data.set(id, group);
         break;
       }

@@ -1,3 +1,11 @@
+import { type MessageNode } from './data-model/types.js';
+import { cst } from './data-model/from-cst.js';
+
+/**
+ * Base error class used by MessageFormat
+ *
+ * @beta
+ */
 export class MessageError extends Error {
   type:
     | 'missing-func'
@@ -12,42 +20,55 @@ export class MessageError extends Error {
   }
 }
 
+/**
+ * Errors in the message syntax.
+ *
+ * @beta
+ */
 export class MessageSyntaxError extends MessageError {
   declare type:
     | 'empty-token'
     | 'bad-escape'
-    | 'bad-local-var'
+    | 'bad-input-expression'
     | 'bad-selector'
+    | 'duplicate-declaration'
+    | 'duplicate-option'
     | 'extra-content'
+    | 'forward-reference'
     | 'key-mismatch'
     | 'parse-error'
-    | 'missing-char'
-    | 'missing-fallback';
+    | 'missing-fallback'
+    | 'missing-selector-annotation'
+    | 'missing-syntax';
   start: number;
   end: number;
-  char?: string;
+  expected?: string;
 
   constructor(
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
     end: number,
-    char?: string
+    expected?: string
   ) {
     let message: string;
     switch (type) {
       case 'empty-token':
       case 'bad-escape':
-      case 'bad-local-var':
+      case 'bad-input-expression':
       case 'bad-selector':
       case 'extra-content':
       case 'parse-error':
         message = `Syntax parse error: ${type} at ${start}`;
         break;
-      case 'missing-char':
-        message = `Syntax parse error: Missing character ${char} at ${start}`;
+      case 'missing-syntax':
+        message = `Syntax parse error: Missing ${expected} at ${start}`;
         break;
+      case 'duplicate-declaration':
+      case 'duplicate-option':
+      case 'forward-reference':
       case 'key-mismatch':
       case 'missing-fallback':
+      case 'missing-selector-annotation':
         message = `Data model error: ${type}`;
         if (start >= 0) message += ` at ${start}`;
     }
@@ -57,21 +78,50 @@ export class MessageSyntaxError extends MessageError {
   }
 }
 
-export class MissingCharError extends MessageSyntaxError {
-  char: string;
+/** @beta */
+export class MissingSyntaxError extends MessageSyntaxError {
+  expected: string;
 
-  constructor(pos: number, char: string) {
-    super('missing-char', pos, pos + 1, char);
-    this.char = char;
+  constructor(pos: number, expected: string) {
+    super('missing-syntax', pos, pos + expected.length, expected);
+    this.expected = expected;
   }
 }
 
+/**
+ * Errors in the message data model.
+ *
+ * @beta
+ */
 export class MessageDataModelError extends MessageSyntaxError {
-  declare type: 'key-mismatch' | 'missing-fallback';
+  declare type:
+    | 'duplicate-declaration'
+    | 'duplicate-option'
+    | 'forward-reference'
+    | 'key-mismatch'
+    | 'missing-fallback'
+    | 'missing-selector-annotation';
+  constructor(
+    type: typeof MessageDataModelError.prototype.type,
+    node: MessageNode
+  ) {
+    const { start, end } = node[cst] ?? { start: -1, end: -1 };
+    super(type, start, end);
+  }
 }
 
+/**
+ * Message runtime resolution errors
+ *
+ * @beta
+ */
 export class MessageResolutionError extends MessageError {
-  declare type: 'bad-input' | 'bad-option' | 'reserved' | 'unresolved-var';
+  declare type:
+    | 'bad-input'
+    | 'bad-option'
+    | 'unresolved-var'
+    | 'unsupported-annotation'
+    | 'unsupported-statement';
   source: string;
   constructor(
     type: typeof MessageResolutionError.prototype.type,
@@ -83,6 +133,11 @@ export class MessageResolutionError extends MessageError {
   }
 }
 
+/**
+ * Errors in message selection.
+ *
+ * @beta
+ */
 export class MessageSelectionError extends MessageError {
   declare type: 'no-match' | 'not-selectable';
   constructor(type: typeof MessageSelectionError.prototype.type) {

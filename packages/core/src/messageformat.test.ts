@@ -183,17 +183,21 @@ for (const [title, cases] of Object.entries(
       let name = src;
       if (locale || options) {
         const opt = [locale || 'en'];
-        for (const [key, value] of Object.entries(options || {}))
+        for (const [key, value] of Object.entries(options || {})) {
           opt.push(`${key}: ${value}`);
+        }
         name = `[${opt.join(', ')}] ${src}`;
       }
       desc(name, () => {
         for (const [param, res] of exp) {
           const strParam = [];
-          if (param && typeof param === 'object')
-            for (const [key, value] of Object.entries(param))
+          if (param && typeof param === 'object') {
+            for (const [key, value] of Object.entries(param)) {
               strParam.push(`${key}: ${value}`);
-          else strParam.push(String(param));
+            }
+          } else {
+            strParam.push(String(param));
+          }
           test(strParam.join(', '), () => {
             const mf = new MessageFormat(locale || 'en', options);
             const msg = mf.compile(src);

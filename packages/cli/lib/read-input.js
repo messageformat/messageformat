@@ -76,7 +76,9 @@ module.exports = function readInput(include, extensions, sep) {
       const child = input[keys[0]];
       if (!child || typeof child !== 'object') break;
       input = child;
-    } else break;
+    } else {
+      break;
+    }
   }
   return input;
 };

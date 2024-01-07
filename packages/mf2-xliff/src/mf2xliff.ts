@@ -1,12 +1,11 @@
 import deepEqual from 'fast-deep-equal';
 import {
-  isFunctionRef,
+  MessageFormat,
+  isFunctionAnnotation,
   isLiteral,
   isMessage,
   isSelectMessage,
-  isText,
-  isVariableRef,
-  MessageFormat
+  isVariableRef
 } from 'messageformat';
 import type * as MF from 'messageformat';
 import type { MessageFormatInfo, MessageResourceData } from './index';
@@ -28,9 +27,11 @@ export function mf2xliff(
     'xmlns:mf': 'http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet' // FIXME
   };
   attributes.srcLang = source.locale;
-  if (target instanceof MessageFormat)
+  if (target instanceof MessageFormat) {
     throw new Error('source and target must be of the same type');
-  else if (target) attributes.trgLang = target.locale;
+  } else if (target) {
+    attributes.trgLang = target.locale;
+  }
 
   const elements: (X.Unit | X.Group)[] = [];
   for (const [key, srcMsg] of source.data) {
@@ -56,7 +57,7 @@ const msgAttributes = (pre: 'g' | 'u', key: string[]) => ({
 // TODO Add <cp> escapes
 const asText = (value: unknown): X.Text => ({
   type: 'text',
-  text: String(isText(value) || isLiteral(value) ? value.value : value)
+  text: String(isLiteral(value) ? value.value : value)
 });
 
 const mismatch = (key: string[]) =>
@@ -70,9 +71,11 @@ function resolveEntry(
   if (isMessage(srcMsg)) {
     if (trgMsg) {
       if (!isMessage(trgMsg)) throw new Error(mismatch(key));
-      if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg))
+      if (isSelectMessage(srcMsg) || isSelectMessage(trgMsg)) {
         return resolveSelect(key, srcMsg, trgMsg);
-      else return resolvePattern(key, srcMsg.pattern, trgMsg.pattern);
+      } else {
+        return resolvePattern(key, srcMsg.pattern, trgMsg.pattern);
+      }
     } else {
       return isSelectMessage(srcMsg)
         ? resolveSelect(key, srcMsg, undefined)
@@ -107,10 +110,11 @@ function resolveSelect(
       };
     }
   } else {
-    if (!trgSel || !isSelectMessage(trgSel))
+    if (!trgSel || !isSelectMessage(trgSel)) {
       throw new Error(
         `At least one of source & target at ${key.join('.')} must be a select`
       );
+    }
     srcSel = {
       type: 'select',
       declarations: [],
@@ -120,14 +124,14 @@ function resolveSelect(
   }
 
   const select: { id: string; keys: string[] }[] = [];
-  const parts: X.MessagePart[] = srcSel.selectors.map(sel => {
+  const expressions: X.MessageExpression[] = srcSel.selectors.map(sel => {
     const id = nextId();
     select.push({ id, keys: [] });
     return resolveExpression(id, sel);
   });
 
   const elements: (X.MessageFormat | X.Unit)[] = [
-    { type: 'element', name: 'mf:messageformat', elements: parts }
+    { type: 'element', name: 'mf:messageformat', elements: expressions }
   ];
 
   if (!trgSel) {
@@ -143,12 +147,13 @@ function resolveSelect(
     const trgSelMap: number[] = [];
     for (const sel of trgSel.selectors) {
       const prevIdx = srcSel.selectors.findIndex(prev => deepEqual(sel, prev));
-      if (prevIdx !== -1) trgSelMap.push(prevIdx);
-      else {
+      if (prevIdx !== -1) {
+        trgSelMap.push(prevIdx);
+      } else {
         const id = nextId();
         select.push({ id, keys: [] });
         trgSelMap.push(select.length - 1);
-        parts.push(resolveExpression(id, sel));
+        expressions.push(resolveExpression(id, sel));
       }
     }
 
@@ -157,11 +162,13 @@ function resolveSelect(
       const { keys } = select[i];
       const sk = key.type === '*' ? '*' : key.value;
       if (keys.includes(sk)) return;
-      if (sk === '*') keys.push(sk);
-      else if (Number.isFinite(Number(sk))) {
+      if (sk === '*') {
+        keys.push(sk);
+      } else if (Number.isFinite(Number(sk))) {
         let pos = 0;
-        while (keys[pos] !== '*' && Number.isFinite(Number(keys[pos])))
+        while (keys[pos] !== '*' && Number.isFinite(Number(keys[pos]))) {
           pos += 1;
+        }
         keys.splice(pos, 0, sk);
       } else {
         let pos = keys.length;
@@ -169,11 +176,14 @@ function resolveSelect(
         keys.splice(pos, 0, sk);
       }
     };
-    for (const c of srcSel.variants)
+    for (const c of srcSel.variants) {
       for (let i = 0; i < c.keys.length; ++i) addSorted(i, c.keys[i]);
-    for (const c of trgSel.variants)
-      for (let i = 0; i < c.keys.length; ++i)
+    }
+    for (const c of trgSel.variants) {
+      for (let i = 0; i < c.keys.length; ++i) {
         addSorted(trgSelMap[i], c.keys[i]);
+      }
+    }
 
     // Add a separate entry for each combined case
     // TODO: Collapse duplicates to default value only, where possible
@@ -187,8 +197,9 @@ function resolveSelect(
           return k.type === '*' || k.value === sk[ti];
         })
       );
-      if (!srcCase || !trgCase)
+      if (!srcCase || !trgCase) {
         throw new Error(`Case ${sk} not found‽ src:${srcCase} trg:${trgCase}`);
+      }
       elements.push(
         resolvePattern([...key, sk.join(' ')], srcCase.value, trgCase.value)
       );
@@ -209,8 +220,9 @@ function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
   let ptr: number[] | null = null;
   const max = select.map(s => s.keys.length - 1);
   function next(): IteratorResult<string[]> {
-    if (!ptr) ptr = new Array<number>(select.length).fill(0);
-    else {
+    if (!ptr) {
+      ptr = new Array<number>(select.length).fill(0);
+    } else {
       for (let i = ptr.length - 1; i >= 0; --i) {
         if (ptr[i] < max[i]) {
           ptr[i] += 1;
@@ -230,84 +242,171 @@ function resolvePattern(
   srcPattern: MF.Pattern,
   trgPattern: MF.Pattern | undefined
 ): X.Unit {
-  const parts: X.MessagePart[] = [];
-  const handlePart = (p: MF.Text | MF.Expression): X.Text | X.InlineElement => {
-    if (isText(p)) return asText(p);
+  const refs: (X.MessageExpression | X.MessageMarkup)[] = [];
+  const openMarkup: X.MessageMarkup[] = [];
+  const handlePart = (
+    p: string | MF.Expression | MF.Markup
+  ): X.Text | X.InlineElement => {
+    if (typeof p === 'string') return asText(p);
     const id = nextId();
-    const part = resolveExpression(id, p);
-    parts.push(part);
-    const attributes = { id: id.substring(1), 'mf:ref': id };
+    const attributes: X.CodeSpanStart['attributes'] = {
+      id: id.substring(1),
+      'mf:ref': id
+    };
+    if (p.type === 'markup') {
+      if (p.kind === 'close') {
+        const oi = openMarkup.findIndex(xm => xm.attributes.name === p.name);
+        if (oi === -1) {
+          attributes.isolated = 'yes';
+        } else {
+          const [om] = openMarkup.splice(oi, 1);
+          const { id } = om.attributes;
+          return {
+            type: 'element',
+            name: 'ec',
+            attributes: { startRef: id.substring(1), 'mf:ref': id }
+          };
+        }
+      }
+      const markup = resolveMarkup(id, p);
+      refs.push(markup);
+      openMarkup.unshift(markup);
+      const name = p.kind === 'open' ? 'sc' : p.kind === 'close' ? 'ec' : 'ph';
+      return { type: 'element', name, attributes };
+    }
+    const exp = resolveExpression(id, p);
+    refs.push(exp);
     return { type: 'element', name: 'ph', attributes };
+  };
+  const cleanMarkupSpans = (elements: (X.Text | X.InlineElement)[]) => {
+    for (let i = 0; i < elements.length; ++i) {
+      const sc = elements[i];
+      if (sc.type !== 'element' || sc.name !== 'sc') continue;
+      for (let j = i + 1; j < elements.length; ++j) {
+        const ec = elements[j];
+        if (
+          ec.type === 'element' &&
+          ec.name === 'ec' &&
+          ec.attributes?.startRef === sc.attributes.id
+        ) {
+          const body = elements.splice(i + 1, j - i);
+          body.pop();
+          cleanMarkupSpans(body);
+          Object.assign(sc, { name: 'pc', elements: body });
+          break;
+        }
+      }
+    }
   };
 
   const se = srcPattern.body.map(handlePart);
+  cleanMarkupSpans(se);
   const source: X.Source = { type: 'element', name: 'source', elements: se };
   let ge: X.Segment['elements'];
   if (trgPattern) {
     const te = trgPattern.body.map(handlePart);
+    cleanMarkupSpans(te);
     const target: X.Target = { type: 'element', name: 'target', elements: te };
     ge = [source, target];
-  } else ge = [source];
+  } else {
+    ge = [source];
+  }
   const segment: X.Segment = { type: 'element', name: 'segment', elements: ge };
 
   const attributes = msgAttributes('u', key);
   let elements: X.Unit['elements'];
-  if (parts.length > 0) {
+  if (refs.length > 0) {
     const name = 'mf:messageformat';
-    const mf: X.MessageFormat = { type: 'element', name, elements: parts };
+    const mf: X.MessageFormat = {
+      type: 'element',
+      name,
+      elements: refs
+    };
     elements = [mf, segment];
-  } else elements = [segment];
+  } else {
+    elements = [segment];
+  }
   return { type: 'element', name: 'unit', attributes, elements };
 }
 
 function resolveExpression(
-  id: string | null,
-  { body }: MF.Expression
-): X.MessagePart {
-  if (isLiteral(body) || isVariableRef(body)) return resolveArgument(id, body);
-
-  if (isFunctionRef(body)) {
-    const elements: X.MessageFunction['elements'] = [];
-    if (body.options) {
-      for (const { name, value } of body.options) {
-        elements.push({
-          type: 'element',
-          name: 'mf:option',
-          attributes: { name },
-          elements: [resolveArgument(null, value)]
-        });
+  id: string,
+  { arg, annotation }: MF.Expression
+): X.MessageExpression {
+  let resFunc: X.MessageFunction | X.MessageUnsupported | undefined;
+  if (annotation) {
+    if (isFunctionAnnotation(annotation)) {
+      const elements: X.MessageFunction['elements'] = [];
+      if (annotation.options) {
+        for (const { name, value } of annotation.options) {
+          elements.push({
+            type: 'element',
+            name: 'mf:option',
+            attributes: { name },
+            elements: [resolveArgument(value)]
+          });
+        }
       }
+      const attributes = { name: annotation.name };
+      resFunc = { type: 'element', name: 'mf:function', attributes, elements };
+    } else {
+      resFunc = {
+        type: 'element',
+        name: 'mf:unsupported',
+        attributes: { sigil: annotation.sigil ?? '�' },
+        elements: [asText(annotation.source ?? '�')]
+      };
     }
-    if (body.operand) elements.push(resolveArgument(null, body.operand));
-    const attributes = { id: id ?? undefined, name: body.name };
-    return { type: 'element', name: 'mf:function', attributes, elements };
   }
 
-  /* istanbul ignore next - never happens */
-  throw new Error(`Unsupported part: ${JSON.stringify(body)}`);
+  let elements: X.MessageExpression['elements'];
+  if (arg) {
+    const resArg = resolveArgument(arg);
+    elements = resFunc ? [resArg, resFunc] : [resArg];
+  } else if (resFunc) {
+    elements = [resFunc];
+  } else {
+    throw new Error('Invalid empty expression');
+  }
+
+  return {
+    type: 'element',
+    name: 'mf:expression',
+    attributes: { id },
+    elements
+  };
+}
+
+function resolveMarkup(
+  id: string,
+  { name, options }: MF.Markup
+): X.MessageMarkup {
+  const elements: X.MessageOption[] = [];
+  if (options) {
+    for (const { name, value } of options) {
+      elements.push({
+        type: 'element',
+        name: 'mf:option',
+        attributes: { name },
+        elements: [resolveArgument(value)]
+      });
+    }
+  }
+  return {
+    type: 'element',
+    name: 'mf:markup',
+    attributes: { id, name },
+    elements
+  };
 }
 
 function resolveArgument(
-  id: string | null,
-  part: MF.Literal | string | number | boolean
-): X.MessageLiteral;
-function resolveArgument(
-  id: string | null,
-  part: MF.VariableRef
-): X.MessageVariable;
-function resolveArgument(
-  id: string | null,
-  part: MF.Literal | MF.VariableRef | string | number | boolean
-): X.MessageLiteral | X.MessageVariable;
-function resolveArgument(
-  id: string | null,
-  part: MF.Literal | MF.VariableRef | string | number | boolean
+  part: MF.Literal | MF.VariableRef
 ): X.MessageLiteral | X.MessageVariable {
-  if (isLiteral(part) || typeof part !== 'object') {
+  if (isLiteral(part)) {
     return {
       type: 'element',
       name: 'mf:literal',
-      attributes: { id: id ?? undefined },
       elements: [asText(part)]
     };
   }
@@ -316,7 +415,7 @@ function resolveArgument(
     return {
       type: 'element',
       name: 'mf:variable',
-      attributes: { id: id ?? undefined, name: part.name }
+      attributes: { name: part.name }
     };
   }
 
