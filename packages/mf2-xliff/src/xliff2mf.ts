@@ -23,7 +23,7 @@ function resolveFile(
   { srcLang, trgLang }: X.Xliff['attributes']
 ) {
   checkResegment(file);
-  const { id } = file.attributes;
+  const id = parseId('f', file.attributes.id).key.join('.');
   const source: MessageFormatInfo = {
     id,
     locale: srcLang,
@@ -95,9 +95,12 @@ function parseId(
   pre: 's',
   id: string | undefined
 ): { key: string[]; variant: MF.Variant['keys'] };
-function parseId(pre: 'g' | 'u', id: string | undefined): { key: string[] };
 function parseId(
-  pre: 'g' | 's' | 'u',
+  pre: 'f' | 'g' | 'u',
+  id: string | undefined
+): { key: string[] };
+function parseId(
+  pre: 'f' | 'g' | 's' | 'u',
   id: string | undefined
 ): { key: string[]; variant?: MF.Variant['keys'] } {
   const match = id?.match(/(?:_[_:]|[^:])+/g);
@@ -115,7 +118,7 @@ function parseId(
       };
     }
   }
-  const el = { g: 'group', s: 'segment', u: 'unit' }[pre];
+  const el = { f: 'file', g: 'group', s: 'segment', u: 'unit' }[pre];
   const pe = prettyElement(el, id);
   throw new Error(`Invalid id attribute for ${pe}`);
 }
@@ -129,33 +132,35 @@ function resolveSelectMessage(
       `Select ${prettyElement('unit', attributes.id)} cannot be empty`
     );
   }
-  let mf: X.MessageFormat | null = null;
+  let rd: X.ResourceData | null = null;
   const variants: MF.Variant[] = [];
   for (const el of elements) {
     switch (el.name) {
-      case 'mf:messageformat':
-        mf = el;
+      case 'res:resourceData':
+        rd = el;
         break;
       case 'segment':
         variants.push({
           keys: parseId('s', el.attributes?.id).variant,
-          value: resolvePattern(mf, el, st)
+          value: resolvePattern(rd, el, st)
         });
         break;
     }
   }
-  if (!mf) {
+  if (!rd) {
     const el = prettyElement('unit', attributes.id);
     throw new Error(`<mf:messageformat> not found in ${el}`);
   }
   const selIds = attributes['mf:select']?.trim().split(/\s+/) ?? [];
   const selectors = selIds.map(selId => {
-    const exp = mf?.elements.find(exp => exp.attributes?.id === selId);
-    if (exp?.name !== 'mf:expression') {
+    const ri = rd?.elements.find(exp => exp.attributes?.id === selId);
+    const mfElements = ri?.elements?.find(el => el.name === 'res:source')
+      ?.elements as X.MessageElements | undefined;
+    if (!mfElements) {
       const el = prettyElement('unit', attributes.id);
       throw new Error(`Selector expression ${selId} not found in ${el}`);
     }
-    return resolveExpression(exp);
+    return resolveExpression(mfElements);
   });
   return { type: 'select', declarations: [], selectors, variants };
 }
@@ -166,15 +171,15 @@ function resolvePatternMessage(
 ): MF.PatternMessage {
   const pattern: MF.Pattern = [];
   if (elements) {
-    let mf: X.MessageFormat | null = null;
+    let rd: X.ResourceData | null = null;
     for (const el of elements) {
       switch (el.name) {
-        case 'mf:messageformat':
-          mf = el;
+        case 'res:resourceData':
+          rd = el;
           break;
         case 'segment':
         case 'ignorable':
-          pattern.push(...resolvePattern(mf, el, st));
+          pattern.push(...resolvePattern(rd, el, st));
           break;
       }
     }
@@ -183,7 +188,7 @@ function resolvePatternMessage(
 }
 
 function resolvePattern(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   { attributes, elements }: X.Segment | X.Ignorable,
   st: 'source' | 'target'
 ): MF.Pattern {
@@ -192,17 +197,17 @@ function resolvePattern(
     const pe = prettyElement('segment', attributes?.id);
     throw new Error(`Expected to find a <${st}> inside ${pe}`);
   }
-  return stel ? resolvePatternElements(mf, stel.elements) : [];
+  return stel ? resolvePatternElements(rd, stel.elements) : [];
 }
 
 function resolvePatternElements(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   elements: (X.Text | X.InlineElement)[]
 ): MF.Pattern {
   const pattern: MF.Pattern = [];
   for (const ie of elements) {
     const last = pattern.at(-1);
-    const next = resolveInlineElement(mf, ie);
+    const next = resolveInlineElement(rd, ie);
     if (typeof next === 'string') {
       if (typeof last === 'string') pattern[pattern.length - 1] += next;
       else pattern.push(next);
@@ -217,7 +222,7 @@ const resolveCharCode = (cc: X.CharCode) =>
   String.fromCodePoint(Number(cc.attributes.hex));
 
 function resolveInlineElement(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   ie: X.Text | X.InlineElement
 ): string | Array<string | MF.Expression | MF.Markup> {
   switch (ie.type) {
@@ -231,78 +236,81 @@ function resolveInlineElement(
         case 'ph':
         case 'sc':
         case 'ec':
-          return [resolvePlaceholder(mf, ie)];
+          return [resolvePlaceholder(rd, ie)];
         case 'pc':
-          return resolveSpanningCode(mf, ie);
+          return resolveSpanningCode(rd, ie);
       }
   }
   throw new Error(`Unsupported inline ${ie.type} <${ie.name}>`);
 }
 
 function resolveSpanningCode(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   pc: X.CodeSpan
 ): Array<string | MF.Expression | MF.Markup> {
-  const open = resolvePlaceholder(mf, pc);
+  const open = resolvePlaceholder(rd, pc);
   return [
     open,
-    ...resolvePatternElements(mf, pc.elements),
+    ...resolvePatternElements(rd, pc.elements),
     { type: 'markup', kind: 'close', name: open.name }
   ];
 }
 
 function resolvePlaceholder(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   el: X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
 ): MF.Markup;
 function resolvePlaceholder(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   el: X.Placeholder | X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
 ): MF.Expression | MF.Markup;
 function resolvePlaceholder(
-  mf: X.MessageFormat | null,
+  rd: X.ResourceData | null,
   el: X.Placeholder | X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
 ): MF.Expression | MF.Markup {
   const { name } = el;
   const ref = el.attributes?.['mf:ref'];
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
-  if (!mf) {
+  if (!rd) {
     throw new Error(
       `Inline <${name}> requires a preceding <mf:messageformat> in the same <unit>`
     );
   }
-  const res = mf.elements.find(el => el.attributes?.id === ref);
-  switch (res?.name) {
-    case 'mf:expression':
-      if (name !== 'ph') {
-        throw new Error('Only <ph> elements may refer to expression values');
-      }
-      return resolveExpression(res);
-    case 'mf:markup': {
-      const kind =
-        name === 'ph' ? 'standalone' : name === 'ec' ? 'close' : 'open';
-      return resolveMarkup(res, kind);
-    }
+  const ri = rd.elements.find(el => el.attributes?.id === ref);
+  const mfElements = ri?.elements?.find(el => el.name === 'res:source')
+    ?.elements as X.MessageElements | undefined;
+  if (!mfElements) {
+    throw new Error(
+      `MessageFormat value not found for <${name} mf:ref="${ref}">`
+    );
   }
-  throw new Error(
-    `MessageFormat value not found for <${name} mf:ref="${ref}">`
-  );
+  if (mfElements[0].name === 'mf:markup') {
+    const kind =
+      name === 'ph' ? 'standalone' : name === 'ec' ? 'close' : 'open';
+    return resolveMarkup(mfElements[0], kind);
+  }
+  if (name !== 'ph') {
+    throw new Error('Only <ph> elements may refer to expression values');
+  }
+  return resolveExpression(mfElements);
 }
 
 const resolveText = (text: (X.Text | X.CharCode)[]) =>
   text.map(t => (t.type === 'element' ? resolveCharCode(t) : t.text)).join('');
 
-function resolveExpression(part: X.MessageExpression): MF.Expression {
-  const xArg = part.elements[0];
+function resolveExpression(elements: X.MessageElements): MF.Expression {
+  const xArg = elements[0];
   let xFunc;
   let arg: MF.Literal | MF.VariableRef | undefined;
   switch (xArg.name) {
     case 'mf:literal':
     case 'mf:variable':
       arg = resolveValue(xArg);
-      xFunc = part.elements[1];
+      xFunc = elements[1];
       if (!xFunc) return { type: 'expression', arg };
       break;
+    case 'mf:markup':
+      throw new Error('Cannot reference markup as expression');
     default:
       xFunc = xArg;
       if (!xFunc) throw new Error('Invalid empty expression');
@@ -311,7 +319,7 @@ function resolveExpression(part: X.MessageExpression): MF.Expression {
   let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
   if (xFunc.name === 'mf:function') {
     annotation = { type: 'function', name: xFunc.attributes.name };
-    if (xFunc.elements.length) {
+    if (xFunc.elements?.length) {
       annotation.options = xFunc.elements.map(el => ({
         name: el.attributes.name,
         value: resolveValue(el.elements[0])

@@ -26,11 +26,13 @@ test('source only', () => {
         </group>
         <group id="g:var" name="var">
           <unit id="u:var" name="var">
-            <mf:messageformat>
-              <mf:expression id="m1">
-                <mf:variable name="num"/>
-              </mf:expression>
-            </mf:messageformat>
+            <res:resourceData>
+              <res:resourceItem id="m1">
+                <res:source>
+                  <mf:variable name="num"/>
+                </res:source>
+              </res:resourceItem>
+            </res:resourceData>
             <segment>
               <source>Foo·
                 <ph id="1" mf:ref="m1"/>
@@ -40,12 +42,14 @@ test('source only', () => {
         </group>
         <group id="g:ref" name="ref">
           <unit id="u:ref" name="ref">
-            <mf:messageformat>
-              <mf:expression id="m2">
-                <mf:literal>msg</mf:literal>
-                <mf:function name="message"/>
-              </mf:expression>
-            </mf:messageformat>
+            <res:resourceData>
+              <res:resourceItem id="m2">
+                <res:source>
+                  <mf:literal>msg</mf:literal>
+                  <mf:function name="message"/>
+                </res:source>
+              </res:resourceItem>
+            </res:resourceData>
             <segment>
               <source>This is the·
                 <ph id="2" mf:ref="m2"/>
@@ -55,12 +59,14 @@ test('source only', () => {
         </group>
         <group id="g:select" name="select">
           <unit id="u:select" name="select" mf:select="m3">
-            <mf:messageformat>
-              <mf:expression id="m3">
-                <mf:variable name="selector"/>
-                <mf:function name="string"/>
-              </mf:expression>
-            </mf:messageformat>
+            <res:resourceData>
+              <res:resourceItem id="m3">
+                <res:source>
+                  <mf:variable name="selector"/>
+                  <mf:function name="string"/>
+                </res:source>
+              </res:resourceItem>
+            </res:resourceData>
             <segment id="s:select:a">
               <source>A</source>
             </segment>
@@ -113,14 +119,18 @@ test('combine source & target', () => {
         </group>
         <group id="g:var" name="var">
           <unit id="u:var" name="var">
-            <mf:messageformat>
-              <mf:expression id="m1">
-                <mf:variable name="num"/>
-              </mf:expression>
-              <mf:expression id="m2">
-                <mf:variable name="num"/>
-              </mf:expression>
-            </mf:messageformat>
+            <res:resourceData>
+              <res:resourceItem id="m1">
+                <res:source>
+                  <mf:variable name="num"/>
+                </res:source>
+              </res:resourceItem>
+              <res:resourceItem id="m2">
+                <res:source>
+                  <mf:variable name="num"/>
+                </res:source>
+              </res:resourceItem>
+            </res:resourceData>
             <segment>
               <source>Foo·
                 <ph id="1" mf:ref="m1"/>
@@ -133,12 +143,14 @@ test('combine source & target', () => {
         </group>
         <group id="g:select" name="select">
           <unit id="u:select" name="select" mf:select="m3">
-            <mf:messageformat>
-              <mf:expression id="m3">
-                <mf:variable name="selector"/>
-                <mf:function name="string"/>
-              </mf:expression>
-            </mf:messageformat>
+            <res:resourceData>
+              <res:resourceItem id="m3">
+                <res:source>
+                  <mf:variable name="selector"/>
+                  <mf:function name="string"/>
+                </res:source>
+              </res:resourceItem>
+            </res:resourceData>
             <segment id="s:select:a">
               <source>A</source>
               <target>Ä</target>
@@ -182,16 +194,20 @@ test('selector mismatch between source & target languages', () => {
       <file id="f:res" mf:resourceId="res">
         <group id="g:select" name="select">
           <unit id="u:select" name="select" mf:select="m1 m2">
-            <mf:messageformat>
-              <mf:expression id="m1">
-                <mf:variable name="gender"/>
-                <mf:function name="string"/>
-              </mf:expression>
-              <mf:expression id="m2">
-                <mf:variable name="case"/>
-                <mf:function name="string"/>
-              </mf:expression>
-            </mf:messageformat>
+            <res:resourceData>
+              <res:resourceItem id="m1">
+                <res:source>
+                  <mf:variable name="gender"/>
+                  <mf:function name="string"/>
+                </res:source>
+              </res:resourceItem>
+              <res:resourceItem id="m2">
+                <res:source>
+                  <mf:variable name="case"/>
+                  <mf:function name="string"/>
+                </res:source>
+              </res:resourceItem>
+            </res:resourceData>
             <segment id="s:select:masculine.allative">
               <source>his house</source>
               <target>hänen talolle</target>

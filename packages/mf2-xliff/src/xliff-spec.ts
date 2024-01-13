@@ -360,7 +360,6 @@ export interface Unit<UnitOther extends Element | never = never>
     | ResourceData
     | SizeLengthData
     | Validation
-    | MessageFormat
     | UnitOther
     | Notes
     | OriginalData
@@ -1169,26 +1168,19 @@ export interface ValidationRule extends Element {
  * MessageFormat Module
  */
 
-export interface MessageFormat extends Element {
-  name: 'mf:messageformat';
-  elements: (MessageExpression | MessageMarkup)[];
-}
-
-export interface MessageExpression extends Element {
-  name: 'mf:expression';
-  attributes: {
-    id: string;
-  };
-  elements:
-    | [MessageLiteral | MessageVariable]
-    | [MessageLiteral | MessageVariable, MessageFunction | MessageUnsupported]
-    | [MessageFunction | MessageUnsupported];
-}
+export type MessageElements =
+  | [
+      | MessageLiteral
+      | MessageVariable
+      | MessageMarkup
+      | MessageFunction
+      | MessageUnsupported
+    ]
+  | [MessageLiteral | MessageVariable, MessageFunction | MessageUnsupported];
 
 export interface MessageMarkup extends Element {
   name: 'mf:markup';
   attributes: {
-    id: string;
     name: string;
   };
   elements: MessageOption[];
@@ -1221,7 +1213,7 @@ export interface MessageFunction extends Element {
   attributes: {
     name: string;
   };
-  elements: MessageOption[];
+  elements?: MessageOption[];
 }
 
 export interface MessageOption extends Element {

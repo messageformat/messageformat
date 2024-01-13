@@ -103,22 +103,35 @@ function resolveMessage(
   if (isSelectMessage(srcMsg) || (trgMsg && isSelectMessage(trgMsg))) {
     return resolveSelect(key, srcMsg, trgMsg);
   }
-  const mfElements: X.MessageFormat['elements'] = [];
-  const onRef = mfElements.push.bind(mfElements);
-  const segment = resolvePattern(srcMsg.pattern, trgMsg?.pattern, onRef);
-  return buildUnit(key, mfElements, [segment]);
+  const rdElements: X.ResourceItem[] = [];
+  const addRef = (elements: X.MessageElements) => {
+    const id = nextId();
+    const ri: X.ResourceItem = {
+      type: 'element',
+      name: 'res:resourceItem',
+      attributes: { id },
+      elements: [{ type: 'element', name: 'res:source', elements }]
+    };
+    rdElements.push(ri);
+    return id;
+  };
+  const segment = resolvePattern(srcMsg.pattern, trgMsg?.pattern, addRef);
+  return buildUnit(key, rdElements, [segment]);
 }
 
 function buildUnit(
   key: string[],
-  mfElements: X.MessageFormat['elements'],
+  rdElements: X.ResourceItem[],
   segments: X.Segment[]
 ): X.Unit {
   let elements: X.Unit['elements'];
-  if (mfElements.length > 0) {
-    const name = 'mf:messageformat';
-    const mf: X.MessageFormat = { type: 'element', name, elements: mfElements };
-    elements = [mf, ...segments];
+  if (rdElements.length > 0) {
+    const rd: X.ResourceData = {
+      type: 'element',
+      name: 'res:resourceData',
+      elements: rdElements
+    };
+    elements = [rd, ...segments];
   } else {
     elements = segments;
   }
@@ -160,18 +173,28 @@ function resolveSelect(
   }
 
   const select: { id: string; keys: (string | typeof star)[] }[] = [];
-  const mfElements: X.MessageFormat['elements'] = srcSel.selectors.map(sel => {
+  const rdElements: X.ResourceItem[] = [];
+  const addRef = (elements: X.MessageElements) => {
     const id = nextId();
+    const ri: X.ResourceItem = {
+      type: 'element',
+      name: 'res:resourceItem',
+      attributes: { id },
+      elements: [{ type: 'element', name: 'res:source', elements }]
+    };
+    rdElements.push(ri);
+    return id;
+  };
+  for (const sel of srcSel.selectors) {
+    const id = addRef(resolveExpression(sel));
     select.push({ id, keys: [] });
-    return resolveExpression(id, sel);
-  });
-  const onRef = mfElements.push.bind(mfElements);
+  }
   const segments: X.Segment[] = [];
 
   if (!trgSel) {
     // If there's only a source, we use its cases directly
     for (const v of srcSel.variants) {
-      const segment = resolvePattern(v.value, undefined, onRef);
+      const segment = resolvePattern(v.value, undefined, addRef);
       const vk = v.keys.map(k => (k.type === '*' ? star : k.value));
       segment.attributes = { id: msgId('s', key, vk) };
       segments.push(segment);
@@ -186,10 +209,9 @@ function resolveSelect(
       if (prevIdx !== -1) {
         trgSelMap.push(prevIdx);
       } else {
-        const id = nextId();
+        const id = addRef(resolveExpression(sel));
         select.push({ id, keys: [] });
         trgSelMap.push(select.length - 1);
-        mfElements.push(resolveExpression(id, sel));
       }
     }
 
@@ -236,13 +258,13 @@ function resolveSelect(
       if (!srcCase || !trgCase) {
         throw new Error(`Case ${sk} not found‽ src:${srcCase} trg:${trgCase}`);
       }
-      const segment = resolvePattern(srcCase.value, trgCase.value, onRef);
+      const segment = resolvePattern(srcCase.value, trgCase.value, addRef);
       segment.attributes = { id: msgId('s', key, sk) };
       segments.push(segment);
     }
   }
 
-  const unit = buildUnit(key, mfElements, segments);
+  const unit = buildUnit(key, rdElements, segments);
   unit.attributes['mf:select'] = select.map(s => s.id).join(' ');
   return unit;
 }
@@ -273,26 +295,23 @@ function everyKey(
 function resolvePattern(
   srcPattern: MF.Pattern,
   trgPattern: MF.Pattern | undefined,
-  onRef: (ref: X.MessageExpression | X.MessageMarkup) => void
+  addRef: (elements: X.MessageElements) => string
 ): X.Segment {
-  const openMarkup: X.MessageMarkup[] = [];
+  const openMarkup: { id: string; markup: X.MessageMarkup }[] = [];
   const handlePart = (
     p: string | MF.Expression | MF.Markup
   ): X.Text | X.InlineElement => {
     if (typeof p === 'string') return asText(p);
-    const id = nextId();
-    const attributes: X.CodeSpanStart['attributes'] = {
-      id: id.substring(1),
-      'mf:ref': id
-    };
     if (p.type === 'markup') {
+      let isolated: X.YesNo | undefined;
       if (p.kind === 'close') {
-        const oi = openMarkup.findIndex(xm => xm.attributes.name === p.name);
+        const oi = openMarkup.findIndex(
+          xm => xm.markup.attributes.name === p.name
+        );
         if (oi === -1) {
-          attributes.isolated = 'yes';
+          isolated = 'yes';
         } else {
-          const [om] = openMarkup.splice(oi, 1);
-          const { id } = om.attributes;
+          const [{ id }] = openMarkup.splice(oi, 1);
           return {
             type: 'element',
             name: 'ec',
@@ -300,15 +319,21 @@ function resolvePattern(
           };
         }
       }
-      const markup = resolveMarkup(id, p);
-      onRef(markup);
-      openMarkup.unshift(markup);
-      const name = p.kind === 'open' ? 'sc' : p.kind === 'close' ? 'ec' : 'ph';
-      return { type: 'element', name, attributes };
+      const markup = resolveMarkup(p);
+      const id = addRef([markup]);
+      openMarkup.unshift({ id, markup });
+      return {
+        type: 'element',
+        name: p.kind === 'open' ? 'sc' : p.kind === 'close' ? 'ec' : 'ph',
+        attributes: { id: id.substring(1), isolated, 'mf:ref': id }
+      };
     }
-    const exp = resolveExpression(id, p);
-    onRef(exp);
-    return { type: 'element', name: 'ph', attributes };
+    const id = addRef(resolveExpression(p));
+    return {
+      type: 'element',
+      name: 'ph',
+      attributes: { id: id.substring(1), 'mf:ref': id }
+    };
   };
   const cleanMarkupSpans = (elements: (X.Text | X.InlineElement)[]) => {
     for (let i = 0; i < elements.length; ++i) {
@@ -346,10 +371,10 @@ function resolvePattern(
   return { type: 'element', name: 'segment', elements: ge };
 }
 
-function resolveExpression(
-  id: string,
-  { arg, annotation }: MF.Expression
-): X.MessageExpression {
+function resolveExpression({
+  arg,
+  annotation
+}: MF.Expression): X.MessageElements {
   let resFunc: X.MessageFunction | X.MessageUnsupported | undefined;
   if (annotation) {
     if (isFunctionAnnotation(annotation)) {
@@ -376,28 +401,15 @@ function resolveExpression(
     }
   }
 
-  let elements: X.MessageExpression['elements'];
   if (arg) {
     const resArg = resolveArgument(arg);
-    elements = resFunc ? [resArg, resFunc] : [resArg];
-  } else if (resFunc) {
-    elements = [resFunc];
-  } else {
-    throw new Error('Invalid empty expression');
+    return resFunc ? [resArg, resFunc] : [resArg];
   }
-
-  return {
-    type: 'element',
-    name: 'mf:expression',
-    attributes: { id },
-    elements
-  };
+  if (resFunc) return [resFunc];
+  throw new Error('Invalid empty expression');
 }
 
-function resolveMarkup(
-  id: string,
-  { name, options }: MF.Markup
-): X.MessageMarkup {
+function resolveMarkup({ name, options }: MF.Markup): X.MessageMarkup {
   const elements: X.MessageOption[] = [];
   if (options) {
     for (const { name, value } of options) {
@@ -412,7 +424,7 @@ function resolveMarkup(
   return {
     type: 'element',
     name: 'mf:markup',
-    attributes: { id, name },
+    attributes: { name },
     elements
   };
 }
