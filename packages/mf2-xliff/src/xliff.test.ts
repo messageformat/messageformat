@@ -1,6 +1,7 @@
 import { fluentToResourceData } from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
-import { mf2xliff, stringify } from './index';
+import { mf2xliff, stringify, xliff2mf } from './index';
+import { stringifyMessage } from 'messageformat';
 
 test('source only', () => {
   const src = source`
@@ -34,9 +35,7 @@ test('source only', () => {
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source>Foo·
-                <ph id="1" mf:ref="m1"/>
-              </source>
+              <source>Foo <ph id="1" mf:ref="m1"/></source>
             </segment>
           </unit>
         </group>
@@ -51,9 +50,7 @@ test('source only', () => {
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source>This is the·
-                <ph id="2" mf:ref="m2"/>
-              </source>
+              <source>This is the <ph id="2" mf:ref="m2"/></source>
             </segment>
           </unit>
         </group>
@@ -76,8 +73,22 @@ test('source only', () => {
           </unit>
         </group>
       </file>
-    </xliff>`.replace(/·/g, ' ')
+    </xliff>`
   );
+  const [res] = xliff2mf(xliff);
+  expect(res.target).toBeUndefined();
+  expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+  expect(
+    Array.from(res.source.data.entries()).map(([key, value]) => [
+      key,
+      stringifyMessage((value as any).get(''))
+    ])
+  ).toEqual([
+    ['msg', 'Message'],
+    ['var', 'Foo {$num}'],
+    ['ref', 'This is the {msg :message}'],
+    ['select', '.match {$selector :string}\na {{A}}\n* {{B}}']
+  ]);
 });
 
 test('combine source & target', () => {
@@ -132,12 +143,8 @@ test('combine source & target', () => {
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source>Foo·
-                <ph id="1" mf:ref="m1"/>
-              </source>
-              <target>Föö·
-                <ph id="2" mf:ref="m2"/>
-              </target>
+              <source>Foo <ph id="1" mf:ref="m1"/></source>
+              <target>Föö <ph id="2" mf:ref="m2"/></target>
             </segment>
           </unit>
         </group>
@@ -162,8 +169,31 @@ test('combine source & target', () => {
           </unit>
         </group>
       </file>
-    </xliff>`.replace(/·/g, ' ')
+    </xliff>`
   );
+  const [res] = xliff2mf(xliff);
+  expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+  expect(
+    Array.from(res.source.data.entries()).map(([key, value]) => [
+      key,
+      stringifyMessage((value as any).get(''))
+    ])
+  ).toEqual([
+    ['msg', 'Message'],
+    ['var', 'Foo {$num}'],
+    ['select', '.match {$selector :string}\na {{A}}\n* {{B}}']
+  ]);
+  expect(res.target).toMatchObject({ id: 'res', locale: 'fi' });
+  expect(
+    Array.from(res.target!.data.entries()).map(([key, value]) => [
+      key,
+      stringifyMessage((value as any).get(''))
+    ])
+  ).toEqual([
+    ['msg', 'Viesti'],
+    ['var', 'Föö {$num}'],
+    ['select', '.match {$selector :string}\na {{Ä}}\n* {{B}}']
+  ]);
 });
 
 test('selector mismatch between source & target languages', () => {
@@ -235,6 +265,31 @@ test('selector mismatch between source & target languages', () => {
           </unit>
         </group>
       </file>
-    </xliff>`.replace(/·/g, ' ')
+    </xliff>`
+  );
+  const [res] = xliff2mf(xliff);
+  expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+  expect(stringifyMessage((res.source.data.get('select') as any).get(''))).toBe(
+    source`
+    .match {$gender :string} {$case :string}
+    masculine allative {{his house}}
+    masculine * {{his house}}
+    feminine allative {{her house}}
+    feminine * {{her house}}
+    * allative {{their house}}
+    * * {{their house}}`
+  );
+  expect(res.target).toMatchObject({ id: 'res', locale: 'fi' });
+  expect(
+    stringifyMessage((res.target!.data.get('select') as any).get(''))
+  ).toBe(
+    source`
+    .match {$gender :string} {$case :string}
+    masculine allative {{hänen talolle}}
+    masculine * {{hänen talo}}
+    feminine allative {{hänen talolle}}
+    feminine * {{hänen talo}}
+    * allative {{hänen talolle}}
+    * * {{hänen talo}}`
   );
 });

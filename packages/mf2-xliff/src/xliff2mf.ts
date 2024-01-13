@@ -35,7 +35,7 @@ function resolveFile(
     data: new Map()
   };
   for (const el of file.elements) {
-    resolveEntry(el, source.data, target.data);
+    resolveEntry([], el, source.data, target.data);
   }
   return { source, target };
 }
@@ -58,6 +58,7 @@ function checkResegment({
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 function resolveEntry(
+  key: string[],
   entry: ArrayElement<X.File['elements'] | X.Group['elements']>,
   source: MessageResourceData,
   target: MessageResourceData
@@ -65,26 +66,31 @@ function resolveEntry(
   switch (entry.name) {
     case 'group': {
       checkResegment(entry);
-      const key = parseId('g', entry.attributes.id).key.at(-1)!;
+      const { key } = parseId('g', entry.attributes.id);
+      const name = key.at(-1)!;
       if (entry.elements) {
         const sg: MessageResourceData = new Map();
         const tg: MessageResourceData = new Map();
-        source.set(key, sg);
-        target.set(key, tg);
-        for (const el of entry.elements) resolveEntry(el, sg, tg);
+        source.set(name, sg);
+        target.set(name, tg);
+        for (const el of entry.elements) resolveEntry(key, el, sg, tg);
       }
       return;
     }
 
     case 'unit': {
       checkResegment(entry);
-      const key = parseId('u', entry.attributes.id).key.at(-1)!;
+      const unitKey = parseId('u', entry.attributes.id).key;
+      const name =
+        unitKey.length === key.length && unitKey.every((k, i) => k === key[i])
+          ? ''
+          : key.at(-1)!;
       if (entry.attributes['mf:select']) {
-        source.set(key, resolveSelectMessage(entry, 'source'));
-        target.set(key, resolveSelectMessage(entry, 'target'));
+        source.set(name, resolveSelectMessage(entry, 'source'));
+        target.set(name, resolveSelectMessage(entry, 'target'));
       } else {
-        source.set(key, resolvePatternMessage(entry, 'source'));
-        target.set(key, resolvePatternMessage(entry, 'target'));
+        source.set(name, resolvePatternMessage(entry, 'source'));
+        target.set(name, resolvePatternMessage(entry, 'target'));
       }
       return;
     }

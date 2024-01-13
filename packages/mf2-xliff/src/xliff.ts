@@ -1,5 +1,6 @@
-import { Options, js2xml, xml2js } from 'xml-js';
+import { Options, xml2js } from 'xml-js';
 import type { Xliff, XliffDoc } from './xliff-spec';
+import { stringifyXML } from './stringify-xml';
 
 export type ParseOptions = Options.XML2JS;
 export type StringifyOptions = Options.JS2XML;
@@ -20,8 +21,7 @@ export function parse(src: string, options?: ParseOptions) {
   return doc as XliffDoc;
 }
 
-export function stringify(xliff: Xliff | XliffDoc, options?: StringifyOptions) {
-  const doc = xliff.name === 'xliff' ? { elements: [xliff] } : xliff;
-  const opt = Object.assign({ spaces: 2 }, options, { compact: false });
-  return js2xml(doc, opt);
+export function stringify(xliff: Xliff | XliffDoc) {
+  const doc: XliffDoc = xliff.name === 'xliff' ? { elements: [xliff] } : xliff;
+  return stringifyXML(doc);
 }
