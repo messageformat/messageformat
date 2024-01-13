@@ -148,7 +148,7 @@ function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
 }
 
 function patternToFluent(ctx: MsgContext, pattern: Pattern) {
-  const elements = pattern.body.map(el => {
+  const elements = pattern.map(el => {
     if (typeof el === 'string') return new Fluent.TextElement(el);
     if (el.type === 'expression') {
       return new Fluent.Placeable(expressionToFluent(ctx, el));

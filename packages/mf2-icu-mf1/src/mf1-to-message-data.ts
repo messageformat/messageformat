@@ -165,7 +165,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
     return {
       type: 'message',
       declarations: [],
-      pattern: { body: ast.map(token => tokenToPart(token, null, null)) }
+      pattern: ast.map(token => tokenToPart(token, null, null))
     };
   }
 
@@ -192,7 +192,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
         ? { type: '*' }
         : { type: 'literal', quoted: false, value: String(k) }
     ),
-    value: { body: [] }
+    value: []
   }));
 
   /**
@@ -219,7 +219,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
         }
       } else {
         for (const v of variants) {
-          const vp = v.value.body;
+          const vp = v.value;
           if (
             filter.every(({ idx, value }) => {
               const vi = v.keys[idx];

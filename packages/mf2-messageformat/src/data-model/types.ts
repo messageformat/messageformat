@@ -126,9 +126,7 @@ export interface CatchallKey {
  *
  * @beta
  */
-export interface Pattern {
-  body: Array<string | Expression | Markup>;
-}
+export type Pattern = Array<string | Expression | Markup>;
 
 /**
  * Expressions are used in declarations, as selectors, and as placeholders.

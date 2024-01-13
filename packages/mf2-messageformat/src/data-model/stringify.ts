@@ -94,12 +94,12 @@ function stringifyOption({ name, value }: Option) {
   return `${name}=${valueStr}`;
 }
 
-function stringifyPattern({ body }: Pattern, quoted: boolean) {
+function stringifyPattern(pattern: Pattern, quoted: boolean) {
   let res = '';
-  if (!quoted && typeof body[0] === 'string' && body[0][0] === '.') {
+  if (!quoted && typeof pattern[0] === 'string' && pattern[0][0] === '.') {
     quoted = true;
   }
-  for (const el of body) {
+  for (const el of pattern) {
     if (typeof el === 'string') res += el;
     else if (el.type === 'markup') res += stringifyMarkup(el);
     else res += stringifyExpression(el);

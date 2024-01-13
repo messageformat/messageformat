@@ -77,12 +77,10 @@ function asDeclaration(decl: CST.Declaration): Model.Declaration {
   }
 }
 
-function asPattern(pattern: CST.Pattern): Model.Pattern {
-  const body: Model.Pattern['body'] = pattern.body.map(el =>
+const asPattern = (pattern: CST.Pattern) =>
+  pattern.body.map(el =>
     el.type === 'text' ? el.value : asExpression(el, true)
   );
-  return { body };
-}
 
 function asExpression(
   exp: CST.Expression | CST.Junk,

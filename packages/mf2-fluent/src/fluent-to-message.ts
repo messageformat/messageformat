@@ -221,7 +221,7 @@ export function fluentToMessage(
     return {
       type: 'message',
       declarations: [],
-      pattern: { body: ast.elements.map(elementToPart) }
+      pattern: ast.elements.map(elementToPart)
     };
   }
 
@@ -250,7 +250,7 @@ export function fluentToMessage(
         ? { type: '*', value: args[i].defaultName }
         : { type: 'literal', quoted: false, value: String(k) }
     ),
-    value: { body: [] }
+    value: []
   }));
 
   /**
@@ -276,7 +276,7 @@ export function fluentToMessage(
         }
       } else {
         for (const v of variants) {
-          const vp = v.value.body;
+          const vp = v.value;
           if (
             filter.every(({ idx, value }) => {
               const vi = v.keys[idx];

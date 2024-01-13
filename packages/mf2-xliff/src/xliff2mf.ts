@@ -164,9 +164,9 @@ function resolvePattern(
   { attributes, elements }: X.Unit,
   st: 'source' | 'target'
 ): MF.Pattern {
-  if (!elements) return { body: [] };
+  if (!elements) return [];
   let mf: X.MessageFormat | null = null;
-  const body: MF.Pattern['body'] = [];
+  const pattern: MF.Pattern = [];
   for (const el of elements) {
     switch (el.name) {
       case 'mf:messageformat':
@@ -181,30 +181,30 @@ function resolvePattern(
             `Expected to find a <${st}> inside <${el.name}> of ${pe}`
           );
         }
-        if (stel) body.push(...resolvePatternElements(mf, stel.elements));
+        if (stel) pattern.push(...resolvePatternElements(mf, stel.elements));
         break;
       }
     }
   }
-  return { body };
+  return pattern;
 }
 
 function resolvePatternElements(
   mf: X.MessageFormat | null,
   elements: (X.Text | X.InlineElement)[]
 ) {
-  const body: MF.Pattern['body'] = [];
+  const pattern: MF.Pattern = [];
   for (const ie of elements) {
-    const last = body[body.length - 1];
+    const last = pattern.at(-1);
     const next = resolveInlineElement(mf, ie);
     if (typeof next === 'string') {
-      if (typeof last === 'string') body[body.length - 1] += next;
-      else body.push(next);
+      if (typeof last === 'string') pattern[pattern.length - 1] += next;
+      else pattern.push(next);
     } else {
-      body.push(...next);
+      pattern.push(...next);
     }
   }
-  return body;
+  return pattern;
 }
 
 const resolveCharCode = (cc: X.CharCode) =>

@@ -299,12 +299,12 @@ function resolvePattern(
     }
   };
 
-  const se = srcPattern.body.map(handlePart);
+  const se = srcPattern.map(handlePart);
   cleanMarkupSpans(se);
   const source: X.Source = { type: 'element', name: 'source', elements: se };
   let ge: X.Segment['elements'];
   if (trgPattern) {
-    const te = trgPattern.body.map(handlePart);
+    const te = trgPattern.map(handlePart);
     cleanMarkupSpans(te);
     const target: X.Target = { type: 'element', name: 'target', elements: te };
     ge = [source, target];

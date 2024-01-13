@@ -124,7 +124,7 @@ export function visit(
 
   const handlePattern = (pat: Pattern) => {
     const end = pattern?.(pat);
-    for (const el of pat.body) handleElement(el, 'placeholder');
+    for (const el of pat) handleElement(el, 'placeholder');
     end?.();
   };
 

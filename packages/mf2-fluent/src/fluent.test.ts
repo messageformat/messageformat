@@ -528,15 +528,10 @@ describe('formatToParts', () => {
                 type: 'message',
                 comment: 'Group 1\n\nFirst message',
                 declarations: [],
-                pattern: {
-                  body: [
-                    'Foo ',
-                    {
-                      type: 'expression',
-                      arg: { type: 'variable', name: 'num' }
-                    }
-                  ]
-                }
+                pattern: [
+                  'Foo ',
+                  { type: 'expression', arg: { type: 'variable', name: 'num' } }
+                ]
               }
             ]
           ]
@@ -550,7 +545,7 @@ describe('formatToParts', () => {
                 type: 'message',
                 comment: 'Group 1',
                 declarations: [],
-                pattern: { body: ['Bar'] }
+                pattern: ['Bar']
               }
             ]
           ]
@@ -564,7 +559,7 @@ describe('formatToParts', () => {
                 type: 'message',
                 comment: 'Group 2\n\nOther message',
                 declarations: [],
-                pattern: { body: ['Qux'] }
+                pattern: ['Qux']
               }
             ]
           ]
@@ -698,7 +693,7 @@ describe('fluentToResourceData', () => {
 
   test('Merge adjacent text elements for one selector', () => {
     const msg = data.get('single')?.get('') as SelectMessage;
-    expect(msg.variants.map(v => v.value.body)).toMatchObject([
+    expect(msg.variants.map(v => v.value)).toMatchObject([
       ['One Zero selector.'],
       ['One Other selector.']
     ]);
@@ -706,7 +701,7 @@ describe('fluentToResourceData', () => {
 
   test('Merge adjacent text elements for multiple selectors', () => {
     const msg = data.get('multi')?.get('') as SelectMessage;
-    expect(msg.variants.map(v => v.value.body)).toMatchObject([
+    expect(msg.variants.map(v => v.value)).toMatchObject([
       ['Combine Zero multiple F selectors.'],
       ['Combine Zero multiple M selectors.'],
       ['Combine Zero multiple N selectors.'],
@@ -794,7 +789,7 @@ describe('messagetoFluent', () => {
       variants: [
         {
           keys: [{ type: '*' }],
-          value: { body: ['X'] }
+          value: ['X']
         }
       ]
     };
@@ -850,20 +845,18 @@ describe('messagetoFluent', () => {
           }
         }
       ],
-      pattern: {
-        body: [
-          {
-            type: 'expression',
-            arg: { type: 'literal', value: 'msg' },
-            annotation: { type: 'function', name: 'message' }
-          },
-          {
-            type: 'expression',
-            arg: { type: 'variable', name: 'local' },
-            annotation: { type: 'function', name: 'message' }
-          }
-        ]
-      }
+      pattern: [
+        {
+          type: 'expression',
+          arg: { type: 'literal', value: 'msg' },
+          annotation: { type: 'function', name: 'message' }
+        },
+        {
+          type: 'expression',
+          arg: { type: 'variable', name: 'local' },
+          annotation: { type: 'function', name: 'message' }
+        }
+      ]
     };
     const fm = messageToFluent(msg);
     expect(fm).toEqual({
@@ -894,15 +887,13 @@ describe('messagetoFluent', () => {
     const msg: PatternMessage = {
       type: 'message',
       declarations: [],
-      pattern: {
-        body: [
-          {
-            type: 'expression',
-            arg: { type: 'variable', name: 'input' },
-            annotation: { type: 'function', name: 'message' }
-          }
-        ]
-      }
+      pattern: [
+        {
+          type: 'expression',
+          arg: { type: 'variable', name: 'input' },
+          annotation: { type: 'function', name: 'message' }
+        }
+      ]
     };
     expect(() => messageToFluent(msg)).toThrow(
       'Fluent message and term references must have a literal message identifier'

@@ -3,13 +3,10 @@ import type { Message, Pattern } from './data-model/types.js';
 import { MessageSelectionError } from './errors.js';
 import type { Context } from './format-context.js';
 
-export function selectPattern(
-  context: Context,
-  message: Message
-): Pattern['body'] {
+export function selectPattern(context: Context, message: Message): Pattern {
   switch (message.type) {
     case 'message':
-      return message.pattern.body;
+      return message.pattern;
 
     case 'select': {
       const ctx = message.selectors.map(sel => {
@@ -69,7 +66,7 @@ export function selectPattern(
         context.onError(new MessageSelectionError('no-match'));
         return [];
       }
-      return res.value.body;
+      return res.value;
     }
 
     default:
