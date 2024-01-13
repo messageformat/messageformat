@@ -265,7 +265,6 @@ export interface Group<
      * value defined by the authority. The prefix `xlf` is reserved.
      */
     type?: string;
-    'mf:select'?: string;
     'slr:sizeInfo'?: string | number;
     'slr:sizeInfoRef'?: string;
     'slr:sizeRestriction'?: string | number;
@@ -283,7 +282,6 @@ export interface Group<
     | Metadata
     | SizeLengthData
     | Validation
-    | MessageFormat
     | GroupOther
     | Notes
     | Group<GroupOther, UnitOther>
@@ -341,6 +339,7 @@ export interface Unit<UnitOther extends Element | never = never>
     type?: string;
     'fs:fs'?: FormatStyle;
     'fs:subFs'?: string;
+    'mf:select'?: string;
     'slr:sizeInfo'?: string | number;
     'slr:sizeInfoRef'?: string;
     'slr:sizeRestriction'?: string | number;

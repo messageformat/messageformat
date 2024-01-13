@@ -18,14 +18,14 @@ test('source only', () => {
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
       <file id="f:res" mf:resourceId="res">
         <group id="g:msg" name="msg">
-          <unit id="u:msg." name="msg">
+          <unit id="u:msg" name="msg">
             <segment>
               <source>Message</source>
             </segment>
           </unit>
         </group>
         <group id="g:var" name="var">
-          <unit id="u:var." name="var">
+          <unit id="u:var" name="var">
             <mf:messageformat>
               <mf:expression id="m1">
                 <mf:variable name="num"/>
@@ -39,7 +39,7 @@ test('source only', () => {
           </unit>
         </group>
         <group id="g:ref" name="ref">
-          <unit id="u:ref." name="ref">
+          <unit id="u:ref" name="ref">
             <mf:messageformat>
               <mf:expression id="m2">
                 <mf:literal>msg</mf:literal>
@@ -54,24 +54,20 @@ test('source only', () => {
           </unit>
         </group>
         <group id="g:select" name="select">
-          <group id="g:select." name="select" mf:select="m3">
+          <unit id="u:select" name="select" mf:select="m3">
             <mf:messageformat>
               <mf:expression id="m3">
                 <mf:variable name="selector"/>
                 <mf:function name="string"/>
               </mf:expression>
             </mf:messageformat>
-            <unit id="u:select..a" name="a">
-              <segment>
-                <source>A</source>
-              </segment>
-            </unit>
-            <unit id="u:select..*" name="*">
-              <segment>
-                <source>B</source>
-              </segment>
-            </unit>
-          </group>
+            <segment id="s:select:a">
+              <source>A</source>
+            </segment>
+            <segment id="s:select:_other">
+              <source>B</source>
+            </segment>
+          </unit>
         </group>
       </file>
     </xliff>`.replace(/·/g, ' ')
@@ -108,7 +104,7 @@ test('combine source & target', () => {
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
       <file id="f:res" mf:resourceId="res">
         <group id="g:msg" name="msg">
-          <unit id="u:msg." name="msg">
+          <unit id="u:msg" name="msg">
             <segment>
               <source>Message</source>
               <target>Viesti</target>
@@ -116,7 +112,7 @@ test('combine source & target', () => {
           </unit>
         </group>
         <group id="g:var" name="var">
-          <unit id="u:var." name="var">
+          <unit id="u:var" name="var">
             <mf:messageformat>
               <mf:expression id="m1">
                 <mf:variable name="num"/>
@@ -136,26 +132,22 @@ test('combine source & target', () => {
           </unit>
         </group>
         <group id="g:select" name="select">
-          <group id="g:select." name="select" mf:select="m3">
+          <unit id="u:select" name="select" mf:select="m3">
             <mf:messageformat>
               <mf:expression id="m3">
                 <mf:variable name="selector"/>
                 <mf:function name="string"/>
               </mf:expression>
             </mf:messageformat>
-            <unit id="u:select..a" name="a">
-              <segment>
-                <source>A</source>
-                <target>Ä</target>
-              </segment>
-            </unit>
-            <unit id="u:select..*" name="*">
-              <segment>
-                <source>B</source>
-                <target>B</target>
-              </segment>
-            </unit>
-          </group>
+            <segment id="s:select:a">
+              <source>A</source>
+              <target>Ä</target>
+            </segment>
+            <segment id="s:select:_other">
+              <source>B</source>
+              <target>B</target>
+            </segment>
+          </unit>
         </group>
       </file>
     </xliff>`.replace(/·/g, ' ')
@@ -189,7 +181,7 @@ test('selector mismatch between source & target languages', () => {
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
       <file id="f:res" mf:resourceId="res">
         <group id="g:select" name="select">
-          <group id="g:select." name="select" mf:select="m1 m2">
+          <unit id="u:select" name="select" mf:select="m1 m2">
             <mf:messageformat>
               <mf:expression id="m1">
                 <mf:variable name="gender"/>
@@ -200,43 +192,31 @@ test('selector mismatch between source & target languages', () => {
                 <mf:function name="string"/>
               </mf:expression>
             </mf:messageformat>
-            <unit id="u:select..masculine_allative" name="masculine allative">
-              <segment>
-                <source>his house</source>
-                <target>hänen talolle</target>
-              </segment>
-            </unit>
-            <unit id="u:select..masculine_*" name="masculine *">
-              <segment>
-                <source>his house</source>
-                <target>hänen talo</target>
-              </segment>
-            </unit>
-            <unit id="u:select..feminine_allative" name="feminine allative">
-              <segment>
-                <source>her house</source>
-                <target>hänen talolle</target>
-              </segment>
-            </unit>
-            <unit id="u:select..feminine_*" name="feminine *">
-              <segment>
-                <source>her house</source>
-                <target>hänen talo</target>
-              </segment>
-            </unit>
-            <unit id="u:select..*_allative" name="* allative">
-              <segment>
-                <source>their house</source>
-                <target>hänen talolle</target>
-              </segment>
-            </unit>
-            <unit id="u:select..*_*" name="* *">
-              <segment>
-                <source>their house</source>
-                <target>hänen talo</target>
-              </segment>
-            </unit>
-          </group>
+            <segment id="s:select:masculine.allative">
+              <source>his house</source>
+              <target>hänen talolle</target>
+            </segment>
+            <segment id="s:select:masculine._other">
+              <source>his house</source>
+              <target>hänen talo</target>
+            </segment>
+            <segment id="s:select:feminine.allative">
+              <source>her house</source>
+              <target>hänen talolle</target>
+            </segment>
+            <segment id="s:select:feminine._other">
+              <source>her house</source>
+              <target>hänen talo</target>
+            </segment>
+            <segment id="s:select:_other.allative">
+              <source>their house</source>
+              <target>hänen talolle</target>
+            </segment>
+            <segment id="s:select:_other._other">
+              <source>their house</source>
+              <target>hänen talo</target>
+            </segment>
+          </unit>
         </group>
       </file>
     </xliff>`.replace(/·/g, ' ')
