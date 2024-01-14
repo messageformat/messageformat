@@ -1170,13 +1170,20 @@ export interface ValidationRule extends Element {
 
 export type MessageElements =
   | [
-      | MessageLiteral
-      | MessageVariable
-      | MessageMarkup
-      | MessageFunction
-      | MessageUnsupported
+      (
+        | MessageLiteral
+        | MessageVariable
+        | MessageMarkup
+        | MessageFunction
+        | MessageUnsupported
+      ),
+      ...MessageAttribute[]
     ]
-  | [MessageLiteral | MessageVariable, MessageFunction | MessageUnsupported];
+  | [
+      MessageLiteral | MessageVariable,
+      MessageFunction | MessageUnsupported,
+      ...MessageAttribute[]
+    ];
 
 export interface MessageMarkup extends Element {
   name: 'mf:markup';
@@ -1220,7 +1227,6 @@ export interface MessageOption extends Element {
   name: 'mf:option';
   attributes: {
     name: string;
-    values?: string;
   };
   elements: [MessageLiteral | MessageVariable];
 }
@@ -1228,19 +1234,7 @@ export interface MessageOption extends Element {
 export interface MessageUnsupported extends Element {
   name: 'mf:unsupported';
   attributes: {
-    sigil:
-      | '!'
-      | '@'
-      | '#'
-      | '%'
-      | '^'
-      | '&'
-      | '*'
-      | '<'
-      | '>'
-      | '?'
-      | '~'
-      | '�';
+    sigil: '!' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~' | '�';
   };
   elements: (Text | CharCode)[];
 }
@@ -1250,4 +1244,12 @@ export interface MessageVariable extends Element {
   attributes: {
     name: string;
   };
+}
+
+export interface MessageAttribute extends Element {
+  name: 'mf:attribute';
+  attributes: {
+    name: string;
+  };
+  elements?: [] | [MessageLiteral | MessageVariable];
 }

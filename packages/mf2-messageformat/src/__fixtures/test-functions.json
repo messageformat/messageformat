@@ -181,6 +181,13 @@
       "params": { "foo": 2 },
       "exp": "{$none}",
       "errors": [{ "type": "unresolved-var" }]
+    },
+    {
+      "src": "{42 :number @foo @bar=13}",
+      "exp": "42",
+      "parts": [
+        { "type": "number", "parts": [{ "type": "integer", "value": "42" }] }
+      ]
     }
   ],
   "ordinal": [

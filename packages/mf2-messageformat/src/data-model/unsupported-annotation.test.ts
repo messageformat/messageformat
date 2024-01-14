@@ -23,10 +23,17 @@ describe('Reserved syntax', () => {
   });
 
   test('argument', () => {
-    const msg = resolve('{$foo @bar}', { foo: 42 }, [
+    const msg = resolve('{$foo ~bar}', { foo: 42 }, [
       { type: 'unsupported-annotation' }
     ]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '$foo' }]);
+  });
+
+  test('attribute', () => {
+    const msg = resolve('{%bar @foo}', {}, [
+      { type: 'unsupported-annotation' }
+    ]);
+    expect(msg).toMatchObject([{ type: 'fallback', source: '%' }]);
   });
 
   test('old markup syntax', () => {

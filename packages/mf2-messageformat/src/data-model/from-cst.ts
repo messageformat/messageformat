@@ -95,19 +95,22 @@ function asExpression(
   allowMarkup: boolean
 ): Model.Expression | Model.Markup {
   if (exp.type === 'expression') {
+    const attributes = exp.attributes.length
+      ? exp.attributes.map(asAttribute)
+      : undefined;
     if (allowMarkup && exp.markup) {
       const cm = exp.markup;
       const name = asName(cm.name);
+      let markup: Model.Markup;
       if (cm.type === 'markup-close') {
-        return { type: 'markup', kind: 'close', name, [cst]: exp };
+        markup = { type: 'markup', kind: 'close', name };
+      } else {
+        const kind = cm.close ? 'standalone' : 'open';
+        markup = { type: 'markup', kind, name };
+        if (cm.options.length) markup.options = cm.options.map(asOption);
       }
-      const markup: Model.MarkupOpen | Model.MarkupStandalone = {
-        type: 'markup',
-        kind: cm.close ? 'standalone' : 'open',
-        name,
-        [cst]: exp
-      };
-      if (cm.options.length > 0) markup.options = cm.options.map(asOption);
+      if (attributes) markup.attributes = attributes;
+      markup[cst] = exp;
       return markup;
     }
 
@@ -121,29 +124,32 @@ function asExpression(
     if (ca) {
       switch (ca.type) {
         case 'function':
-          annotation = { type: 'function', name: asName(ca.name), [cst]: ca };
-          if (ca.options.length > 0) {
-            annotation.options = ca.options.map(asOption);
-          }
+          annotation = { type: 'function', name: asName(ca.name) };
+          if (ca.options.length) annotation.options = ca.options.map(asOption);
           break;
         case 'reserved-annotation':
           annotation = {
             type: 'unsupported-annotation',
             sigil: ca.open.value,
-            source: ca.source.value,
-            [cst]: ca
+            source: ca.source.value
           };
           break;
         default:
           throw new MessageSyntaxError('parse-error', exp.start, exp.end);
       }
     }
-    if (arg) {
-      return annotation
-        ? { type: 'expression', arg, annotation, [cst]: exp }
-        : { type: 'expression', arg, [cst]: exp };
-    } else if (annotation) {
-      return { type: 'expression', annotation, [cst]: exp };
+    let expression: Model.Expression | undefined = arg
+      ? { type: 'expression', arg }
+      : undefined;
+    if (annotation) {
+      annotation[cst] = ca;
+      if (expression) expression.annotation = annotation;
+      else expression = { type: 'expression', annotation };
+    }
+    if (expression) {
+      if (attributes) expression.attributes = attributes;
+      expression[cst] = exp;
+      return expression;
     }
   }
   throw new MessageSyntaxError('parse-error', exp.start, exp.end);
@@ -154,6 +160,13 @@ const asOption = (option: CST.Option): Model.Option => ({
   value: asValue(option.value),
   [cst]: option
 });
+
+function asAttribute(attr: CST.Attribute): Model.Attribute {
+  const name = asName(attr.name);
+  return attr.value
+    ? { name, value: asValue(attr.value), [cst]: attr }
+    : { name, [cst]: attr };
+}
 
 function asName(id: CST.Identifier): string {
   switch (id.length) {

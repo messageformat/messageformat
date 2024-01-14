@@ -290,21 +290,38 @@ function getMessageElements(
 }
 
 function resolveExpression(elements: X.MessageElements): MF.Expression {
-  const xArg = elements[0];
-  let xFunc;
-  let arg: MF.Literal | MF.VariableRef | undefined;
-  switch (xArg.name) {
-    case 'mf:literal':
-    case 'mf:variable':
-      arg = resolveValue(xArg);
-      xFunc = elements[1];
-      if (!xFunc) return { type: 'expression', arg };
-      break;
-    case 'mf:markup':
-      throw new Error('Cannot reference markup as expression');
-    default:
-      xFunc = xArg;
-      if (!xFunc) throw new Error('Invalid empty expression');
+  let xArg: X.MessageLiteral | X.MessageVariable | undefined;
+  let xFunc: X.MessageFunction | X.MessageUnsupported | undefined;
+  const attributes: MF.Attribute[] = [];
+  for (const el of elements) {
+    switch (el.name) {
+      case 'mf:literal':
+      case 'mf:variable':
+        if (xArg) throw new Error('More than one value in an expression');
+        xArg = el;
+        break;
+      case 'mf:function':
+      case 'mf:unsupported':
+        if (xFunc) throw new Error('More than one annotation in an expression');
+        xFunc = el;
+        break;
+      case 'mf:markup':
+        throw new Error('Cannot reference markup as expression');
+      case 'mf:attribute': {
+        const value = el.elements?.find(el => el.type === 'element');
+        attributes.push({
+          name: el.attributes.name,
+          value: value ? resolveValue(value) : undefined
+        });
+        break;
+      }
+    }
+  }
+
+  const arg = xArg ? resolveValue(xArg) : undefined;
+  if (!xFunc) {
+    if (!arg) throw new Error('Invalid empty expression');
+    return { type: 'expression', arg, attributes };
   }
 
   let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
@@ -326,8 +343,8 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
   }
 
   return arg
-    ? { type: 'expression', arg, annotation }
-    : { type: 'expression', annotation };
+    ? { type: 'expression', arg, annotation, attributes }
+    : { type: 'expression', annotation, attributes };
 }
 
 function resolveMarkup(

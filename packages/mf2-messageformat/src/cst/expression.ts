@@ -9,14 +9,22 @@ export function parseExpression(
   ctx: ParseContext,
   start: number
 ): CST.Expression {
+  const { source } = ctx;
   let pos = start + 1; // '{'
-  pos += whitespaces(ctx.source, pos);
+  pos += whitespaces(source, pos);
 
   const arg =
-    ctx.source[pos] === '$'
+    source[pos] === '$'
       ? parseVariable(ctx, pos)
       : parseLiteral(ctx, pos, false);
-  if (arg) pos = arg.end;
+  if (arg) {
+    pos = arg.end;
+    const ws = whitespaces(source, pos);
+    if (ws === 0 && source[pos] !== '}') {
+      ctx.onError('missing-syntax', pos, ' ');
+    }
+    pos += ws;
+  }
 
   let annotation:
     | CST.FunctionRef
@@ -25,8 +33,7 @@ export function parseExpression(
     | undefined;
   let markup: CST.Markup | CST.MarkupClose | undefined;
   let junkError: MessageSyntaxError | undefined;
-  pos += whitespaces(ctx.source, pos);
-  switch (ctx.source[pos]) {
+  switch (source[pos]) {
     case ':':
       annotation = parseFunctionRefOrMarkup(ctx, pos, 'function');
       pos = annotation.end;
@@ -42,7 +49,6 @@ export function parseExpression(
       pos = markup.end;
       break;
     case '!':
-    case '@':
     case '%':
     case '^':
     case '&':
@@ -55,41 +61,59 @@ export function parseExpression(
       annotation = parseReservedAnnotation(ctx, pos);
       pos = annotation.end;
       break;
+    case '@':
+    case '}':
+      if (!arg) ctx.onError('empty-token', start, pos);
+      break;
     default:
       if (!arg) {
-        const source = ctx.source.substring(pos, pos + 1);
-        annotation = { type: 'junk', start: pos, end: pos, source };
-        junkError = new MessageSyntaxError('parse-error', pos, pos + 1);
+        const end = pos + 1;
+        annotation = { type: 'junk', start: pos, end, source: source[pos] };
+        junkError = new MessageSyntaxError('parse-error', start, end);
         ctx.errors.push(junkError);
       }
   }
-  pos += whitespaces(ctx.source, pos);
+
+  const attributes: CST.Attribute[] = [];
+  let reqWS = Boolean(annotation || markup);
+  let ws = whitespaces(source, pos);
+  while (source[pos + ws] === '@') {
+    if (reqWS && ws === 0) ctx.onError('missing-syntax', pos, ' ');
+    pos += ws;
+    const attr = parseAttribute(ctx, pos);
+    attributes.push(attr);
+    pos = attr.end;
+    reqWS = true;
+    ws = whitespaces(source, pos);
+  }
+  pos += ws;
 
   const open: CST.Syntax<'{'> = { start, end: start + 1, value: '{' };
   let close: CST.Syntax<'}'> | undefined;
-  if (pos >= ctx.source.length) {
+  if (pos >= source.length) {
     ctx.onError('missing-syntax', pos, '}');
   } else {
-    if (ctx.source[pos] !== '}') {
+    if (source[pos] !== '}') {
       const errStart = pos;
-      while (pos < ctx.source.length && ctx.source[pos] !== '}') pos += 1;
+      while (pos < source.length && source[pos] !== '}') pos += 1;
       if (annotation?.type === 'junk') {
         annotation.end = pos;
-        annotation.source = ctx.source.substring(annotation.start, pos);
+        annotation.source = source.substring(annotation.start, pos);
         if (junkError) junkError.end = pos;
       } else {
         ctx.onError('extra-content', errStart, pos);
       }
     }
-    if (ctx.source[pos] === '}') {
+    if (source[pos] === '}') {
       close = { start: pos, end: pos + 1, value: '}' };
       pos += 1;
     }
   }
   const braces: CST.Expression['braces'] = close ? [open, close] : [open];
+  const end = pos;
   return markup
-    ? { type: 'expression', start, end: pos, braces, markup }
-    : { type: 'expression', start, end: pos, braces, arg, annotation };
+    ? { type: 'expression', start, end, braces, markup, attributes }
+    : { type: 'expression', start, end, braces, arg, annotation, attributes };
 }
 
 function parseFunctionRefOrMarkup(
@@ -115,7 +139,7 @@ function parseFunctionRefOrMarkup(
   while (pos < source.length) {
     let ws = whitespaces(source, pos);
     const next = source[pos + ws];
-    if (next === '}') break;
+    if (next === '@' || next === '}') break;
     if (type === 'markup' && next === '/') {
       pos += ws + 1;
       close = { start: pos - 1, end: pos, value: '/' };
@@ -253,4 +277,31 @@ export function parseReservedBody(
     prev = ctx.source[pos - 1];
   }
   return { start, end: pos, value: ctx.source.substring(start, pos) };
+}
+
+function parseAttribute(ctx: ParseContext, start: number): CST.Attribute {
+  const { source } = ctx;
+  const id = parseIdentifier(ctx, start + 1);
+  let pos = id.end;
+  const ws = whitespaces(source, pos);
+  let equals: CST.Syntax<'='> | undefined;
+  let value: CST.Literal | CST.VariableRef | undefined;
+  if (source[pos + ws] === '=') {
+    pos += ws + 1;
+    equals = { start: pos - 1, end: pos, value: '=' };
+    pos += whitespaces(source, pos);
+    value =
+      source[pos] === '$'
+        ? parseVariable(ctx, pos)
+        : parseLiteral(ctx, pos, true);
+    pos = value.end;
+  }
+  return {
+    start,
+    end: pos,
+    open: { start, end: start + 1, value: '@' },
+    name: id.parts,
+    equals,
+    value
+  };
 }

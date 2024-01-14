@@ -126,5 +126,15 @@
         "options": { "a:foo": "foo", "b:bar": "b a r" }
       }
     ]
+  },
+  {
+    "src": "{42 @foo @bar=13}",
+    "exp": "42",
+    "parts": [{ "type": "string", "value": "42" }]
+  },
+  {
+    "src": "{42 @foo=$bar}",
+    "exp": "42",
+    "parts": [{ "type": "string", "value": "42" }]
   }
 ]

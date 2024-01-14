@@ -73,7 +73,7 @@ function stringifyExpression(
   exp: CST.Expression | CST.Junk | undefined
 ): string {
   if (exp?.type !== 'expression') return exp?.source ?? '';
-  const { braces, arg, annotation, markup } = exp;
+  const { braces, arg, annotation, markup, attributes } = exp;
   let str = braces[0]?.value ?? '{';
   if (markup) {
     str += markup.open.value + stringifyIdentifier(markup.name);
@@ -98,6 +98,10 @@ function stringifyExpression(
         str += annotation.source;
         break;
     }
+  }
+  for (const { name, equals, value } of attributes) {
+    str += ' @' + stringifyIdentifier(name);
+    if (value) str += (equals?.value ?? '=') + stringifyValue(value);
   }
   return str + (braces[1]?.value ?? '}');
 }

@@ -7,6 +7,7 @@ import {
   isVariableRef
 } from './type-guards.js';
 import type {
+  Attribute,
   Declaration,
   Expression,
   FunctionAnnotation,
@@ -73,10 +74,13 @@ function stringifyFunctionAnnotation({ name, options }: FunctionAnnotation) {
   return res;
 }
 
-function stringifyMarkup({ kind, name, options }: Markup) {
+function stringifyMarkup({ kind, name, options, attributes }: Markup) {
   if (kind === 'close') return `{/${name}}`;
   let res = `{#${name}`;
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
+  if (attributes) {
+    for (const attr of attributes) res += ' ' + stringifyAttribute(attr);
+  }
   res += kind === 'standalone' ? ' /}' : '}';
   return res;
 }
@@ -94,6 +98,14 @@ function stringifyOption({ name, value }: Option) {
   return `${name}=${valueStr}`;
 }
 
+function stringifyAttribute({ name, value }: Attribute) {
+  if (!value) return `@${name}`;
+  const valueStr = isVariableRef(value)
+    ? stringifyVariableRef(value)
+    : stringifyLiteral(value);
+  return `@${name}=${valueStr}`;
+}
+
 function stringifyPattern(pattern: Pattern, quoted: boolean) {
   let res = '';
   if (!quoted && typeof pattern[0] === 'string' && pattern[0][0] === '.') {
@@ -107,7 +119,7 @@ function stringifyPattern(pattern: Pattern, quoted: boolean) {
   return quoted ? `{{${res}}}` : res;
 }
 
-function stringifyExpression({ arg, annotation }: Expression) {
+function stringifyExpression({ arg, annotation, attributes }: Expression) {
   let res: string;
   switch (arg?.type) {
     case 'literal':
@@ -125,6 +137,9 @@ function stringifyExpression({ arg, annotation }: Expression) {
       annotation.type === 'function'
         ? stringifyFunctionAnnotation(annotation)
         : stringifyUnsupportedAnnotation(annotation);
+  }
+  if (attributes) {
+    for (const attr of attributes) res += ' ' + stringifyAttribute(attr);
   }
   return `{${res}}`;
 }

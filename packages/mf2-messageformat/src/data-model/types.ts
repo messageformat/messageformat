@@ -16,7 +16,8 @@ export type MessageNode =
   | FunctionAnnotation
   | UnsupportedAnnotation
   | Markup
-  | Option;
+  | Option
+  | Attribute;
 
 /**
  * The representation of a single message.
@@ -144,12 +145,14 @@ export type Expression<
       type: 'expression';
       arg: A;
       annotation?: FunctionAnnotation | UnsupportedAnnotation;
+      attributes?: Attribute[];
       [cst]?: CST.Expression;
     }
   : {
       type: 'expression';
       arg?: never;
       annotation: FunctionAnnotation | UnsupportedAnnotation;
+      attributes?: Attribute[];
       [cst]?: CST.Expression;
     };
 
@@ -219,7 +222,7 @@ export interface FunctionAnnotation {
  */
 export interface UnsupportedAnnotation {
   type: 'unsupported-annotation';
-  sigil: '!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~' | '�';
+  sigil: '!' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~' | '�';
   source: string;
   name?: never;
   options?: never;
@@ -247,6 +250,7 @@ export interface MarkupOpen {
   kind: 'open';
   name: string;
   options?: Option[];
+  attributes?: Attribute[];
   [cst]?: CST.Expression;
 }
 
@@ -256,6 +260,7 @@ export interface MarkupStandalone {
   kind: 'standalone';
   name: string;
   options?: Option[];
+  attributes?: Attribute[];
   [cst]?: CST.Expression;
 }
 
@@ -265,6 +270,7 @@ export interface MarkupClose {
   kind: 'close';
   name: string;
   options?: never;
+  attributes?: Attribute[];
   [cst]?: CST.Expression;
 }
 
@@ -279,4 +285,17 @@ export interface Option {
   name: string;
   value: Literal | VariableRef;
   [cst]?: CST.Option;
+}
+
+/**
+ * The attributes of {@link Expression} and {@link Markup}
+ * are expressed as `key`/`value` pairs to allow their order to be maintained.
+ *
+ * @beta
+ */
+export interface Attribute {
+  type?: never;
+  name: string;
+  value?: Literal | VariableRef;
+  [cst]?: CST.Attribute;
 }

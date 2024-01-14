@@ -106,6 +106,7 @@ export interface Expression {
   arg?: Literal | VariableRef;
   annotation?: FunctionRef | ReservedAnnotation | Junk;
   markup?: Markup | MarkupClose;
+  attributes: Attribute[];
 }
 
 /** @beta */
@@ -150,7 +151,7 @@ export interface FunctionRef {
 /** @beta */
 export interface ReservedAnnotation {
   type: 'reserved-annotation';
-  open: Syntax<'!' | '@' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~'>;
+  open: Syntax<'!' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~'>;
   source: Syntax<string>;
   start: number;
   end: number;
@@ -184,6 +185,17 @@ export interface Option {
   name: Identifier;
   equals?: Syntax<'='>;
   value: Literal | VariableRef;
+}
+
+/** @beta */
+export interface Attribute {
+  /** position at the start of the name */
+  start: number;
+  end: number;
+  open: Syntax<'@'>;
+  name: Identifier;
+  equals?: Syntax<'='>;
+  value?: Literal | VariableRef;
 }
 
 /** @beta */

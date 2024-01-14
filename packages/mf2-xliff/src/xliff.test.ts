@@ -1,77 +1,75 @@
 import { fluentToResourceData } from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
 import { mf2xliff, stringify, xliff2mf } from './index';
-import { stringifyMessage } from 'messageformat';
+import {
+  Message,
+  messageFromCST,
+  parseCST,
+  stringifyMessage
+} from 'messageformat';
 
 test('source only', () => {
-  const src = source`
-    msg = Message
-    var = Foo { $num }
-    ref = This is the { msg }
-    select = {$selector ->
-        [a] A
-       *[b] B
-    }`;
-  const { data } = fluentToResourceData(src);
+  const data = new Map<string, Message>([
+    ['msg', messageFromCST(parseCST('Message'))],
+    ['var', messageFromCST(parseCST('Foo {$num}'))],
+    ['ref', messageFromCST(parseCST('This is the {msg :message @attr}'))],
+    [
+      'select',
+      messageFromCST(parseCST('.match {$selector :string} a {{A}} * {{B}}'))
+    ]
+  ]);
   const xliff = stringify(mf2xliff({ data, id: 'res', locale: 'en' }));
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
       <file id="f:res">
-        <group id="g:msg" name="msg">
-          <unit id="u:msg" name="msg">
-            <segment>
-              <source>Message</source>
-            </segment>
-          </unit>
-        </group>
-        <group id="g:var" name="var">
-          <unit id="u:var" name="var">
-            <res:resourceData>
-              <res:resourceItem id="m1">
-                <res:source>
-                  <mf:variable name="num"/>
-                </res:source>
-              </res:resourceItem>
-            </res:resourceData>
-            <segment>
-              <source xml:space="preserve">Foo <ph id="1" mf:ref="m1"/></source>
-            </segment>
-          </unit>
-        </group>
-        <group id="g:ref" name="ref">
-          <unit id="u:ref" name="ref">
-            <res:resourceData>
-              <res:resourceItem id="m2">
-                <res:source>
-                  <mf:literal>msg</mf:literal>
-                  <mf:function name="message"/>
-                </res:source>
-              </res:resourceItem>
-            </res:resourceData>
-            <segment>
-              <source xml:space="preserve">This is the <ph id="2" mf:ref="m2"/></source>
-            </segment>
-          </unit>
-        </group>
-        <group id="g:select" name="select">
-          <unit id="u:select" name="select" canResegment="no" mf:select="m3">
-            <res:resourceData>
-              <res:resourceItem id="m3">
-                <res:source>
-                  <mf:variable name="selector"/>
-                  <mf:function name="string"/>
-                </res:source>
-              </res:resourceItem>
-            </res:resourceData>
-            <segment id="s:select:a">
-              <source>A</source>
-            </segment>
-            <segment id="s:select:_other">
-              <source>B</source>
-            </segment>
-          </unit>
-        </group>
+        <unit id="u:msg" name="msg">
+          <segment>
+            <source>Message</source>
+          </segment>
+        </unit>
+        <unit id="u:var" name="var">
+          <res:resourceData>
+            <res:resourceItem id="m1">
+              <res:source>
+                <mf:variable name="num"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment>
+            <source xml:space="preserve">Foo <ph id="1" mf:ref="m1"/></source>
+          </segment>
+        </unit>
+        <unit id="u:ref" name="ref">
+          <res:resourceData>
+            <res:resourceItem id="m2">
+              <res:source>
+                <mf:literal>msg</mf:literal>
+                <mf:function name="message"/>
+                <mf:attribute name="attr"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment>
+            <source xml:space="preserve">This is the <ph id="2" mf:ref="m2"/></source>
+          </segment>
+        </unit>
+        <unit id="u:select" name="select" canResegment="no" mf:select="m3">
+          <res:resourceData>
+            <res:resourceItem id="m3">
+              <res:source>
+                <mf:variable name="selector"/>
+                <mf:function name="string"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment id="s:select:a">
+            <source>A</source>
+          </segment>
+          <segment id="s:select:_other">
+            <source>B</source>
+          </segment>
+        </unit>
       </file>
     </xliff>`
   );
@@ -95,7 +93,7 @@ test('source only', () => {
   expect(res).toEqual([
     [['msg'], 'Message', undefined],
     [['var'], 'Foo {$num}', undefined],
-    [['ref'], 'This is the {msg :message}', undefined],
+    [['ref'], 'This is the {msg :message @attr}', undefined],
     [['select'], '.match {$selector :string}\na {{A}}\n* {{B}}', undefined]
   ]);
 });

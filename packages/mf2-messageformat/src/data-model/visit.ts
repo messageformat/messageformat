@@ -1,4 +1,5 @@
 import type {
+  Attribute,
   CatchallKey,
   Declaration,
   Expression,
@@ -38,6 +39,12 @@ export function visit(
       context: 'declaration' | 'selector' | 'placeholder',
       argument: Literal | VariableRef | undefined
     ) => (() => void) | void;
+    attribute?: (
+      attr: Attribute,
+      index: number,
+      attributes: Attribute[],
+      context: 'declaration' | 'selector' | 'placeholder'
+    ) => (() => void) | void;
     declaration?: (declaration: Declaration) => (() => void) | void;
     expression?: (
       expression: Expression,
@@ -63,7 +70,7 @@ export function visit(
     value?: (
       value: Literal | VariableRef,
       context: 'declaration' | 'selector' | 'placeholder',
-      position: 'arg' | 'option'
+      position: 'arg' | 'option' | 'attribute'
     ) => void;
     variant?: (variant: Variant) => (() => void) | void;
   }
@@ -71,6 +78,7 @@ export function visit(
   const { node, pattern } = visitors;
   const {
     annotation = node,
+    attribute = node,
     declaration = node,
     expression = node,
     key = node,
@@ -94,31 +102,46 @@ export function visit(
     }
   };
 
+  const handleAttributes = (
+    attributes: Attribute[] | undefined,
+    context: 'declaration' | 'selector' | 'placeholder'
+  ) => {
+    if (attributes) {
+      for (let i = 0; i < attributes.length; ++i) {
+        const attr = attributes[i];
+        const end = attribute?.(attr, i, attributes, context);
+        if (attr.value) value?.(attr.value, context, 'attribute');
+        end?.();
+      }
+    }
+  };
+
   const handleElement = (
     exp: string | Expression | Markup,
     context: 'declaration' | 'selector' | 'placeholder'
   ) => {
     if (typeof exp === 'object') {
+      let end: (() => void) | void | undefined;
       switch (exp.type) {
         case 'expression': {
-          const endE = expression?.(exp, context);
+          end = expression?.(exp, context);
           if (exp.arg) value?.(exp.arg, context, 'arg');
           if (exp.annotation) {
             const endA = annotation?.(exp.annotation, context, exp.arg);
             handleOptions(exp.annotation.options, context);
             endA?.();
           }
-          endE?.();
+          handleAttributes(exp.attributes, context);
           break;
         }
         case 'markup': {
-          const end =
-            context !== 'selector' ? markup?.(exp, context) : undefined;
+          end = context !== 'selector' ? markup?.(exp, context) : undefined;
           handleOptions(exp.options, context);
-          end?.();
+          handleAttributes(exp.attributes, context);
           break;
         }
       }
+      end?.();
     }
   };
 

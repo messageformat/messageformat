@@ -321,8 +321,8 @@ function resolvePattern(
         }
       }
       const markup = resolveMarkup(p);
-      const id = addRef([markup]);
-      openMarkup.unshift({ id, markup });
+      const id = addRef(markup);
+      openMarkup.unshift({ id, markup: markup[0] });
       return {
         type: 'element',
         name: p.kind === 'open' ? 'sc' : p.kind === 'close' ? 'ec' : 'ph',
@@ -374,7 +374,8 @@ function resolvePattern(
 
 function resolveExpression({
   arg,
-  annotation
+  annotation,
+  attributes
 }: MF.Expression): X.MessageElements {
   let resFunc: X.MessageFunction | X.MessageUnsupported | undefined;
   if (annotation) {
@@ -402,15 +403,28 @@ function resolveExpression({
     }
   }
 
+  let elements: X.MessageElements;
   if (arg) {
     const resArg = resolveArgument(arg);
-    return resFunc ? [resArg, resFunc] : [resArg];
+    elements = resFunc ? [resArg, resFunc] : [resArg];
+  } else {
+    if (resFunc) elements = [resFunc];
+    else throw new Error('Invalid empty expression');
   }
-  if (resFunc) return [resFunc];
-  throw new Error('Invalid empty expression');
+  if (attributes) {
+    for (const { name, value } of attributes) {
+      elements.push({
+        type: 'element',
+        name: 'mf:attribute',
+        attributes: { name },
+        elements: value ? [resolveArgument(value)] : undefined
+      });
+    }
+  }
+  return elements;
 }
 
-function resolveMarkup({ name, options }: MF.Markup): X.MessageMarkup {
+function resolveMarkup({ name, options, attributes }: MF.Markup) {
   const elements: X.MessageOption[] = [];
   if (options) {
     for (const { name, value } of options) {
@@ -422,12 +436,20 @@ function resolveMarkup({ name, options }: MF.Markup): X.MessageMarkup {
       });
     }
   }
-  return {
-    type: 'element',
-    name: 'mf:markup',
-    attributes: { name },
-    elements
-  };
+  const mfElements: [X.MessageMarkup, ...X.MessageAttribute[]] = [
+    { type: 'element', name: 'mf:markup', attributes: { name }, elements }
+  ];
+  if (attributes) {
+    for (const { name, value } of attributes) {
+      mfElements.push({
+        type: 'element',
+        name: 'mf:attribute',
+        attributes: { name },
+        elements: value ? [resolveArgument(value)] : undefined
+      });
+    }
+  }
+  return mfElements;
 }
 
 function resolveArgument(
