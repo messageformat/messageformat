@@ -75,19 +75,28 @@ test('source only', () => {
       </file>
     </xliff>`
   );
-  const [res] = xliff2mf(xliff);
-  expect(res.target).toBeUndefined();
-  expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
-  expect(
-    Array.from(res.source.data.entries()).map(([key, value]) => [
-      key,
-      stringifyMessage((value as any).get(''))
-    ])
-  ).toEqual([
-    ['msg', 'Message'],
-    ['var', 'Foo {$num}'],
-    ['ref', 'This is the {msg :message}'],
-    ['select', '.match {$selector :string}\na {{A}}\n* {{B}}']
+
+  let file_: any;
+  const res = Array.from(xliff2mf(xliff)).map(
+    ({ file, key, source, target }) => {
+      if (!file_) {
+        expect(file).toEqual({ id: 'res', srcLang: 'en', trgLang: undefined });
+        file_ = file;
+      } else {
+        expect(file).toBe(file_);
+      }
+      return [
+        key,
+        stringifyMessage(source),
+        target && stringifyMessage(target)
+      ];
+    }
+  );
+  expect(res).toEqual([
+    [['msg'], 'Message', undefined],
+    [['var'], 'Foo {$num}', undefined],
+    [['ref'], 'This is the {msg :message}', undefined],
+    [['select'], '.match {$selector :string}\na {{A}}\n* {{B}}', undefined]
   ]);
 });
 
@@ -171,28 +180,21 @@ test('combine source & target', () => {
       </file>
     </xliff>`
   );
-  const [res] = xliff2mf(xliff);
-  expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+
   expect(
-    Array.from(res.source.data.entries()).map(([key, value]) => [
+    Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
       key,
-      stringifyMessage((value as any).get(''))
+      stringifyMessage(source),
+      target && stringifyMessage(target)
     ])
   ).toEqual([
-    ['msg', 'Message'],
-    ['var', 'Foo {$num}'],
-    ['select', '.match {$selector :string}\na {{A}}\n* {{B}}']
-  ]);
-  expect(res.target).toMatchObject({ id: 'res', locale: 'fi' });
-  expect(
-    Array.from(res.target!.data.entries()).map(([key, value]) => [
-      key,
-      stringifyMessage((value as any).get(''))
-    ])
-  ).toEqual([
-    ['msg', 'Viesti'],
-    ['var', 'Föö {$num}'],
-    ['select', '.match {$selector :string}\na {{Ä}}\n* {{B}}']
+    [['msg'], 'Message', 'Viesti'],
+    [['var'], 'Foo {$num}', 'Föö {$num}'],
+    [
+      ['select'],
+      '.match {$selector :string}\na {{A}}\n* {{B}}',
+      '.match {$selector :string}\na {{Ä}}\n* {{B}}'
+    ]
   ]);
 });
 
@@ -267,31 +269,34 @@ test('selector mismatch between source & target languages', () => {
       </file>
     </xliff>`
   );
-  const [res] = xliff2mf(xliff);
-  expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
-  expect(stringifyMessage((res.source.data.get('select') as any).get(''))).toBe(
-    source`
-    .match {$gender :string} {$case :string}
-    masculine allative {{his house}}
-    masculine * {{his house}}
-    feminine allative {{her house}}
-    feminine * {{her house}}
-    * allative {{their house}}
-    * * {{their house}}`
-  );
-  expect(res.target).toMatchObject({ id: 'res', locale: 'fi' });
+
   expect(
-    stringifyMessage((res.target!.data.get('select') as any).get(''))
-  ).toBe(
-    source`
-    .match {$gender :string} {$case :string}
-    masculine allative {{hänen talolle}}
-    masculine * {{hänen talo}}
-    feminine allative {{hänen talolle}}
-    feminine * {{hänen talo}}
-    * allative {{hänen talolle}}
-    * * {{hänen talo}}`
-  );
+    Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
+      key,
+      stringifyMessage(source),
+      target && stringifyMessage(target)
+    ])
+  ).toEqual([
+    [
+      ['select'],
+      source`
+        .match {$gender :string} {$case :string}
+        masculine allative {{his house}}
+        masculine * {{his house}}
+        feminine allative {{her house}}
+        feminine * {{her house}}
+        * allative {{their house}}
+        * * {{their house}}`,
+      source`
+        .match {$gender :string} {$case :string}
+        masculine allative {{hänen talolle}}
+        masculine * {{hänen talo}}
+        feminine allative {{hänen talolle}}
+        feminine * {{hänen talo}}
+        * allative {{hänen talolle}}
+        * * {{hänen talo}}`
+    ]
+  ]);
 });
 
 describe('Parsing xml:space in parent elements', () => {
@@ -306,11 +311,13 @@ describe('Parsing xml:space in parent elements', () => {
         </unit>
       </file>
     </xliff>`;
-    const [res] = xliff2mf(xliff);
-    expect(res.target).toBeUndefined();
-    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
-    const { data } = res.source;
-    expect(stringifyMessage(data.get('key') as any)).toBe(' Message ');
+    expect(
+      Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
+        key,
+        stringifyMessage(source),
+        target && stringifyMessage(target)
+      ])
+    ).toEqual([[['key'], ' Message ', undefined]]);
   });
 
   test('<group xml:space="preserve">', () => {
@@ -326,13 +333,13 @@ describe('Parsing xml:space in parent elements', () => {
         </group>
       </file>
     </xliff>`;
-    const [res] = xliff2mf(xliff);
-    expect(res.target).toBeUndefined();
-    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
-    const { data } = res.source;
-    expect(stringifyMessage((data.get('key') as any).get(''))).toBe(
-      ' Message '
-    );
+    expect(
+      Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
+        key,
+        stringifyMessage(source),
+        target && stringifyMessage(target)
+      ])
+    ).toEqual([[['key'], ' Message ', undefined]]);
   });
 
   test('<unit xml:space="preserve"> with pattern message', () => {
@@ -354,13 +361,13 @@ describe('Parsing xml:space in parent elements', () => {
         </unit>
       </file>
     </xliff>`;
-    const [res] = xliff2mf(xliff);
-    expect(res.target).toBeUndefined();
-    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
-    const { data } = res.source;
-    expect(stringifyMessage(data.get('key') as any)).toBe(
-      ' Message {msg :message} '
-    );
+    expect(
+      Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
+        key,
+        stringifyMessage(source),
+        target && stringifyMessage(target)
+      ])
+    ).toEqual([[['key'], ' Message {msg :message} ', undefined]]);
   });
 
   test('<unit xml:space="preserve"> with select message', () => {
@@ -385,12 +392,93 @@ describe('Parsing xml:space in parent elements', () => {
         </unit>
       </file>
     </xliff>`;
-    const [res] = xliff2mf(xliff);
-    expect(res.target).toBeUndefined();
-    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
-    const { data } = res.source;
-    expect(stringifyMessage(data.get('key') as any)).toBe(
-      '.match {$sel :string}\na {{ A }}\n* {{ B }}'
-    );
+    expect(
+      Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
+        key,
+        stringifyMessage(source),
+        target && stringifyMessage(target)
+      ])
+    ).toEqual([
+      [['key'], '.match {$sel :string}\na {{ A }}\n* {{ B }}', undefined]
+    ]);
   });
+});
+
+test('variably available targets', () => {
+  const xliff = source`
+    <xliff version="2.0" srcLang="en" trgLang="fi" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
+      <file id="f:res">
+        <unit id="u:one">
+          <segment>
+            <source>Message</source>
+          </segment>
+        </unit>
+        <unit id="u:two">
+          <segment>
+            <source>First</source>
+          </segment>
+          <segment>
+            <source>Second</source>
+            <target>Toinen</target>
+          </segment>
+        </unit>
+        <unit id="u:three">
+          <segment>
+            <source>Message</source>
+            <target>Viesti</target>
+          </segment>
+        </unit>
+        <unit id="u:four">
+          <segment>
+            <source></source>
+            <target></target>
+          </segment>
+        </unit>
+        <unit id="u:five" canResegment="no" mf:select="m1">
+          <res:resourceData>
+            <res:resourceItem id="m1">
+              <res:source>
+                <mf:variable name="x"/>
+                <mf:function name="number"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment id="s:select:0">
+            <source>A</source>
+            <target>Ä</target>
+          </segment>
+          <segment id="s:select:one">
+            <source>B</source>
+          </segment>
+          <segment id="s:select:_other">
+            <source>C</source>
+            <target>C</target>
+          </segment>
+        </unit>
+      </file>
+    </xliff>`;
+  expect(
+    Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
+      key,
+      stringifyMessage(source),
+      target && stringifyMessage(target)
+    ])
+  ).toEqual([
+    [['one'], 'Message', undefined],
+    [['two'], 'FirstSecond', 'Toinen'],
+    [['three'], 'Message', 'Viesti'],
+    [['four'], '', ''],
+    [
+      ['five'],
+      source`
+        .match {$x :number}
+        0 {{A}}
+        one {{B}}
+        * {{C}}`,
+      source`
+        .match {$x :number}
+        0 {{Ä}}
+        * {{C}}`
+    ]
+  ]);
 });

@@ -1,84 +1,53 @@
 import type * as MF from 'messageformat';
-import type { MessageFormatInfo, MessageResourceData } from './index';
 import type * as X from './xliff-spec';
-
 import { parse } from './xliff';
 import { fromNmtoken } from './nmtoken';
 
+export type ParsedUnit = {
+  /** The same `file` object is used for all units in the same file. */
+  file: { id: string; srcLang: string; trgLang?: string };
+  key: string[];
+  source: MF.Message;
+  target?: MF.Message;
+};
+
 // TODO: Support declarations
-export function xliff2mf(
+export function* xliff2mf(
   xliff: string | X.Xliff | X.XliffDoc
-): { source: MessageFormatInfo; target?: MessageFormatInfo }[] {
+): Generator<ParsedUnit, void> {
   if (typeof xliff === 'string') xliff = parse(xliff);
   if (xliff.name !== 'xliff') xliff = xliff.elements[0];
-  const xAttr = xliff.attributes;
-  return xliff.elements.map(file => {
-    const fr = resolveFile(file, xAttr);
-    return xAttr.trgLang ? fr : { source: fr.source };
-  });
-}
-
-function resolveFile(
-  file: X.File,
-  { srcLang, trgLang }: X.Xliff['attributes']
-) {
-  const id = parseId('f', file.attributes.id).key.join('.');
-  const source: MessageFormatInfo = {
-    id,
-    locale: srcLang,
-    data: new Map()
-  };
-  const target: MessageFormatInfo = {
-    id,
-    locale: trgLang || '',
-    data: new Map()
-  };
-  for (const el of file.elements) {
-    resolveEntry([], el, source.data, target.data);
-  }
-  return { source, target };
-}
-
-const prettyElement = (name: string, id: string | undefined) =>
-  id ? `<${name} id=${JSON.stringify(id)}>` : `<${name}>`;
-
-type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
-
-function resolveEntry(
-  key: string[],
-  entry: ArrayElement<X.File['elements'] | X.Group['elements']>,
-  source: MessageResourceData,
-  target: MessageResourceData
-) {
-  switch (entry.name) {
-    case 'group': {
-      if (entry.elements) {
-        const { key } = parseId('g', entry.attributes.id);
-        const name = key.at(-1)!;
-        const sg: MessageResourceData = new Map();
-        const tg: MessageResourceData = new Map();
-        source.set(name, sg);
-        target.set(name, tg);
-        for (const el of entry.elements) resolveEntry(key, el, sg, tg);
-      }
-      return;
+  const { srcLang, trgLang } = xliff.attributes;
+  for (const file of xliff.elements) {
+    const id = parseId('f', file.attributes.id).key.join('.');
+    const fileInfo = { id, srcLang, trgLang };
+    for (const el of file.elements) {
+      yield* resolveEntry(fileInfo, el);
     }
+  }
+}
 
-    case 'unit': {
-      const unitKey = parseId('u', entry.attributes.id).key;
-      const name =
-        unitKey.length === key.length && unitKey.every((k, i) => k === key[i])
-          ? ''
-          : unitKey.at(-1)!;
-      const rd = entry.elements?.find(el => el.name === 'res:resourceData') as
-        | X.ResourceData
-        | undefined;
-      const msg = entry.attributes['mf:select']
-        ? resolveSelectMessage(rd, entry)
-        : resolvePatternMessage(rd, entry);
-      source.set(name, msg.source);
-      target.set(name, msg.target);
-      return;
+function* resolveEntry(
+  file: ParsedUnit['file'],
+  entry: X.File['elements'][number] | Required<X.Group>['elements'][number]
+): Generator<ParsedUnit, void> {
+  if (entry.elements) {
+    switch (entry.name) {
+      case 'group': {
+        for (const el of entry.elements) yield* resolveEntry(file, el);
+        break;
+      }
+      case 'unit': {
+        const { key } = parseId('u', entry.attributes.id);
+        const rd = entry.elements.find(el => el.name === 'res:resourceData') as
+          | X.ResourceData
+          | undefined;
+        const { source, target } = entry.attributes['mf:select']
+          ? resolveSelectMessage(rd, entry)
+          : resolvePatternMessage(rd, entry);
+        yield { file, key, source, target };
+        break;
+      }
     }
   }
 }
@@ -115,10 +84,13 @@ function parseId(
   throw new Error(`Invalid id attribute for ${pe}`);
 }
 
+const prettyElement = (name: string, id: string | undefined) =>
+  id ? `<${name} id=${JSON.stringify(id)}>` : `<${name}>`;
+
 function resolveSelectMessage(
   rd: X.ResourceData | undefined,
   { attributes, elements }: X.Unit
-): { source: MF.SelectMessage; target: MF.SelectMessage } {
+): { source: MF.SelectMessage; target?: MF.SelectMessage } {
   if (!rd) {
     const el = prettyElement('unit', attributes.id);
     throw new Error(`<res:resourceData> not found in ${el}`);
@@ -140,28 +112,32 @@ function resolveSelectMessage(
       const keys = parseId('s', el.attributes?.id).variant;
       const pattern = resolvePattern(rd, el);
       source.variants.push({ keys, value: pattern.source });
-      target.variants.push({ keys, value: pattern.target });
+      if (pattern.target) target.variants.push({ keys, value: pattern.target });
     }
   }
   if (!source.variants.length) {
     const el = prettyElement('unit', attributes.id);
     throw new Error(`No variant <segment> elements found in ${el}`);
   }
+  const hasTarget = !!target.variants.length;
   for (const ref of attributes['mf:select']!.trim().split(/\s+/)) {
     const srcElements = getMessageElements('source', rd!, ref);
     source.selectors.push(resolveExpression(srcElements));
-    const tgtElements = getMessageElements('target', rd!, ref);
-    target.selectors.push(resolveExpression(tgtElements));
+    if (hasTarget) {
+      const tgtElements = getMessageElements('target', rd!, ref);
+      target.selectors.push(resolveExpression(tgtElements));
+    }
   }
-  return { source, target };
+  return { source, target: hasTarget ? target : undefined };
 }
 
 function resolvePatternMessage(
   rd: X.ResourceData | undefined,
   { elements }: X.Unit
-): { source: MF.PatternMessage; target: MF.PatternMessage } {
+): { source: MF.PatternMessage; target?: MF.PatternMessage } {
   const source: MF.Pattern = [];
   const target: MF.Pattern = [];
+  let hasTarget = false;
   if (elements) {
     for (const el of elements) {
       switch (el.name) {
@@ -169,7 +145,10 @@ function resolvePatternMessage(
         case 'ignorable': {
           const pattern = resolvePattern(rd, el);
           source.push(...pattern.source);
-          target.push(...pattern.target);
+          if (pattern.target) {
+            target.push(...pattern.target);
+            hasTarget = true;
+          }
           break;
         }
       }
@@ -177,16 +156,18 @@ function resolvePatternMessage(
   }
   return {
     source: { type: 'message', declarations: [], pattern: source },
-    target: { type: 'message', declarations: [], pattern: target }
+    target: hasTarget
+      ? { type: 'message', declarations: [], pattern: target }
+      : undefined
   };
 }
 
 function resolvePattern(
   rd: X.ResourceData | undefined,
   { name, attributes, elements }: X.Segment | X.Ignorable
-): { source: MF.Pattern; target: MF.Pattern } {
+): { source: MF.Pattern; target?: MF.Pattern } {
   let source: MF.Pattern | undefined;
-  let target: MF.Pattern = [];
+  let target: MF.Pattern | undefined;
   for (const el of elements) {
     switch (el.name) {
       case 'source':
