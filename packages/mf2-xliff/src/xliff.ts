@@ -1,16 +1,8 @@
-import { Options, xml2js } from 'xml-js';
 import type { Xliff, XliffDoc } from './xliff-spec';
-import { stringifyXML } from './stringify-xml';
+import { parseXML, stringifyXML } from './xml';
 
-export type ParseOptions = Options.XML2JS;
-export type StringifyOptions = Options.JS2XML;
-
-export function parse(src: string, options?: ParseOptions) {
-  const opt = Object.assign({ ignoreComment: true }, options, {
-    cdataKey: 'text',
-    compact: false
-  });
-  const doc = xml2js(src, opt);
+export function parse(src: string) {
+  const doc = parseXML(src);
   if (
     !doc.elements ||
     doc.elements.length !== 1 ||

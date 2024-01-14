@@ -2,7 +2,8 @@
   "extends": "../../config/tsconfig.mf2-base.json",
   "compilerOptions": {
     "declaration": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "skipLibCheck": true
   },
   "include": ["src/*"],
   "exclude": ["**/*.test.ts"]

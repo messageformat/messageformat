@@ -17,7 +17,7 @@ test('source only', () => {
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
-      <file id="f:res" mf:resourceId="res">
+      <file id="f:res">
         <group id="g:msg" name="msg">
           <unit id="u:msg" name="msg">
             <segment>
@@ -35,7 +35,7 @@ test('source only', () => {
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source>Foo <ph id="1" mf:ref="m1"/></source>
+              <source xml:space="preserve">Foo <ph id="1" mf:ref="m1"/></source>
             </segment>
           </unit>
         </group>
@@ -50,12 +50,12 @@ test('source only', () => {
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source>This is the <ph id="2" mf:ref="m2"/></source>
+              <source xml:space="preserve">This is the <ph id="2" mf:ref="m2"/></source>
             </segment>
           </unit>
         </group>
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" mf:select="m3">
+          <unit id="u:select" name="select" canResegment="no" mf:select="m3">
             <res:resourceData>
               <res:resourceItem id="m3">
                 <res:source>
@@ -119,7 +119,7 @@ test('combine source & target', () => {
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
-      <file id="f:res" mf:resourceId="res">
+      <file id="f:res">
         <group id="g:msg" name="msg">
           <unit id="u:msg" name="msg">
             <segment>
@@ -143,13 +143,13 @@ test('combine source & target', () => {
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source>Foo <ph id="1" mf:ref="m1"/></source>
-              <target>Föö <ph id="2" mf:ref="m2"/></target>
+              <source xml:space="preserve">Foo <ph id="1" mf:ref="m1"/></source>
+              <target xml:space="preserve">Föö <ph id="2" mf:ref="m2"/></target>
             </segment>
           </unit>
         </group>
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" mf:select="m3">
+          <unit id="u:select" name="select" canResegment="no" mf:select="m3">
             <res:resourceData>
               <res:resourceItem id="m3">
                 <res:source>
@@ -221,9 +221,9 @@ test('selector mismatch between source & target languages', () => {
   expect(xliff).toBe(
     source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
-      <file id="f:res" mf:resourceId="res">
+      <file id="f:res">
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" mf:select="m1 m2">
+          <unit id="u:select" name="select" canResegment="no" mf:select="m1 m2">
             <res:resourceData>
               <res:resourceItem id="m1">
                 <res:source>
@@ -292,4 +292,105 @@ test('selector mismatch between source & target languages', () => {
     * allative {{hänen talolle}}
     * * {{hänen talo}}`
   );
+});
+
+describe('Parsing xml:space in parent elements', () => {
+  test('<segment xml:space="preserve">', () => {
+    const xliff = source`
+    <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
+      <file id="f:res">
+        <unit id="u:key">
+          <segment xml:space="preserve">
+            <source> Message </source>
+          </segment>
+        </unit>
+      </file>
+    </xliff>`;
+    const [res] = xliff2mf(xliff);
+    expect(res.target).toBeUndefined();
+    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+    const { data } = res.source;
+    expect(stringifyMessage(data.get('key') as any)).toBe(' Message ');
+  });
+
+  test('<group xml:space="preserve">', () => {
+    const xliff = source`
+    <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
+      <file id="f:res">
+        <group id="g:key" xml:space="preserve">
+          <unit id="u:key">
+            <segment>
+              <source> Message </source>
+            </segment>
+          </unit>
+        </group>
+      </file>
+    </xliff>`;
+    const [res] = xliff2mf(xliff);
+    expect(res.target).toBeUndefined();
+    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+    const { data } = res.source;
+    expect(stringifyMessage((data.get('key') as any).get(''))).toBe(
+      ' Message '
+    );
+  });
+
+  test('<unit xml:space="preserve"> with pattern message', () => {
+    const xliff = source`
+    <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
+      <file id="f:res">
+        <unit id="u:key" xml:space="preserve">
+          <res:resourceData>
+            <res:resourceItem id="m1">
+              <res:source>
+                <mf:literal>msg</mf:literal>
+                <mf:function name="message"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment>
+            <source> Message <ph id="1" mf:ref="m1"/> </source>
+          </segment>
+        </unit>
+      </file>
+    </xliff>`;
+    const [res] = xliff2mf(xliff);
+    expect(res.target).toBeUndefined();
+    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+    const { data } = res.source;
+    expect(stringifyMessage(data.get('key') as any)).toBe(
+      ' Message {msg :message} '
+    );
+  });
+
+  test('<unit xml:space="preserve"> with select message', () => {
+    const xliff = source`
+    <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
+      <file id="f:res">
+        <unit id="u:key" canResegment="no" mf:select="m3" xml:space="preserve">
+          <res:resourceData>
+            <res:resourceItem id="m3">
+              <res:source>
+                <mf:variable name="sel"/>
+                <mf:function name="string"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment id="s:select:a">
+            <source> A </source>
+          </segment>
+          <segment id="s:select:_other">
+            <source> B </source>
+          </segment>
+        </unit>
+      </file>
+    </xliff>`;
+    const [res] = xliff2mf(xliff);
+    expect(res.target).toBeUndefined();
+    expect(res.source).toMatchObject({ id: 'res', locale: 'en' });
+    const { data } = res.source;
+    expect(stringifyMessage(data.get('key') as any)).toBe(
+      '.match {$sel :string}\na {{ A }}\n* {{ B }}'
+    );
+  });
 });

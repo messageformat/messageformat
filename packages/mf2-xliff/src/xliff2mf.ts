@@ -22,7 +22,6 @@ function resolveFile(
   file: X.File,
   { srcLang, trgLang }: X.Xliff['attributes']
 ) {
-  checkResegment(file);
   const id = parseId('f', file.attributes.id).key.join('.');
   const source: MessageFormatInfo = {
     id,
@@ -43,18 +42,6 @@ function resolveFile(
 const prettyElement = (name: string, id: string | undefined) =>
   id ? `<${name} id=${JSON.stringify(id)}>` : `<${name}>`;
 
-function checkResegment({
-  attributes,
-  name
-}: X.File | X.Group | X.Unit | X.Segment) {
-  if (attributes?.canResegment === 'no') {
-    const el = prettyElement(name, attributes.id);
-    throw new Error(
-      `xliff2mf conversion requires re-segmenting messages, but canResegment="no" is set for ${el}`
-    );
-  }
-}
-
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 function resolveEntry(
@@ -65,7 +52,6 @@ function resolveEntry(
 ) {
   switch (entry.name) {
     case 'group': {
-      checkResegment(entry);
       const { key } = parseId('g', entry.attributes.id);
       const name = key.at(-1)!;
       if (entry.elements) {
@@ -79,12 +65,11 @@ function resolveEntry(
     }
 
     case 'unit': {
-      checkResegment(entry);
       const unitKey = parseId('u', entry.attributes.id).key;
       const name =
         unitKey.length === key.length && unitKey.every((k, i) => k === key[i])
           ? ''
-          : key.at(-1)!;
+          : unitKey.at(-1)!;
       if (entry.attributes['mf:select']) {
         source.set(name, resolveSelectMessage(entry, 'source'));
         target.set(name, resolveSelectMessage(entry, 'target'));
@@ -160,8 +145,11 @@ function resolveSelectMessage(
   const selIds = attributes['mf:select']?.trim().split(/\s+/) ?? [];
   const selectors = selIds.map(selId => {
     const ri = rd?.elements.find(exp => exp.attributes?.id === selId);
-    const mfElements = ri?.elements?.find(el => el.name === 'res:source')
-      ?.elements as X.MessageElements | undefined;
+    const mfElements = ri?.elements
+      ?.find(el => el.name === 'res:source')
+      ?.elements?.filter(
+        el => el.type === 'element' && el.name.startsWith('mf:')
+      ) as X.MessageElements | undefined;
     if (!mfElements) {
       const el = prettyElement('unit', attributes.id);
       throw new Error(`Selector expression ${selId} not found in ${el}`);
@@ -198,7 +186,9 @@ function resolvePattern(
   { attributes, elements }: X.Segment | X.Ignorable,
   st: 'source' | 'target'
 ): MF.Pattern {
-  const stel = elements[st === 'source' ? 0 : 1];
+  const stel = elements.filter(el => el.type === 'element')[
+    st === 'source' ? 0 : 1
+  ];
   if ((stel && stel.name !== st) || (!stel && st === 'source')) {
     const pe = prettyElement('segment', attributes?.id);
     throw new Error(`Expected to find a <${st}> inside ${pe}`);
@@ -283,8 +273,11 @@ function resolvePlaceholder(
     );
   }
   const ri = rd.elements.find(el => el.attributes?.id === ref);
-  const mfElements = ri?.elements?.find(el => el.name === 'res:source')
-    ?.elements as X.MessageElements | undefined;
+  const mfElements = ri?.elements
+    ?.find(el => el.name === 'res:source')
+    ?.elements?.filter(
+      el => el.type === 'element' && el.name.startsWith('mf:')
+    ) as X.MessageElements | undefined;
   if (!mfElements) {
     throw new Error(
       `MessageFormat value not found for <${name} mf:ref="${ref}">`
@@ -325,10 +318,11 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
   let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
   if (xFunc.name === 'mf:function') {
     annotation = { type: 'function', name: xFunc.attributes.name };
-    if (xFunc.elements?.length) {
-      annotation.options = xFunc.elements.map(el => ({
+    const optEls = xFunc.elements?.filter(el => el.type === 'element');
+    if (optEls?.length) {
+      annotation.options = optEls.map(el => ({
         name: el.attributes.name,
-        value: resolveValue(el.elements[0])
+        value: resolveValue(el.elements.find(el => el.type === 'element'))
       }));
     }
   } else {
@@ -353,26 +347,27 @@ function resolveMarkup(
     kind,
     name: part.attributes.name
   };
-  if (kind !== 'close' && part.elements.length) {
-    markup.options = part.elements.map(el => ({
-      name: el.attributes.name,
-      value: resolveValue(el.elements[0])
-    }));
+  if (kind !== 'close') {
+    const optEls = part.elements?.filter(el => el.type === 'element');
+    if (optEls?.length) {
+      markup.options = optEls.map(el => ({
+        name: el.attributes.name,
+        value: resolveValue(el.elements.find(el => el.type === 'element'))
+      }));
+    }
   }
   return markup;
 }
 
 function resolveValue(
-  part: X.MessageLiteral | X.MessageVariable
+  part: X.MessageLiteral | X.MessageVariable | undefined
 ): MF.Literal | MF.VariableRef {
-  switch (part.name) {
+  switch (part?.name) {
     case 'mf:literal':
       return { type: 'literal', value: resolveText(part.elements) };
     case 'mf:variable':
       return { type: 'variable', name: part.attributes.name };
   }
 
-  /* istanbul ignore next - never happens */
-  // @ts-expect-error - Guard against unexpected <mf:option> contents
-  throw new Error(`Unsupported value <${part.name}>`);
+  throw new Error(`Unsupported value: ${part}`);
 }

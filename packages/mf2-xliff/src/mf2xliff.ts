@@ -45,7 +45,7 @@ export function mf2xliff(
   const file: X.File = {
     type: 'element',
     name: 'file',
-    attributes: { id: `f:${source.id}`, 'mf:resourceId': source.id },
+    attributes: { id: msgId('f', [source.id]) },
     elements
   };
 
@@ -53,7 +53,7 @@ export function mf2xliff(
 }
 
 function msgId(
-  pre: 'g' | 's' | 'u',
+  pre: 'f' | 'g' | 's' | 'u',
   key: string[],
   variant?: (string | typeof star)[]
 ) {
@@ -265,6 +265,7 @@ function resolveSelect(
   }
 
   const unit = buildUnit(key, rdElements, segments);
+  unit.attributes.canResegment = 'no';
   unit.attributes['mf:select'] = select.map(s => s.id).join(' ');
   return unit;
 }
