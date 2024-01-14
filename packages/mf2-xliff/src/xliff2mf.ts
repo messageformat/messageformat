@@ -52,9 +52,9 @@ function resolveEntry(
 ) {
   switch (entry.name) {
     case 'group': {
-      const { key } = parseId('g', entry.attributes.id);
-      const name = key.at(-1)!;
       if (entry.elements) {
+        const { key } = parseId('g', entry.attributes.id);
+        const name = key.at(-1)!;
         const sg: MessageResourceData = new Map();
         const tg: MessageResourceData = new Map();
         source.set(name, sg);
@@ -70,13 +70,14 @@ function resolveEntry(
         unitKey.length === key.length && unitKey.every((k, i) => k === key[i])
           ? ''
           : unitKey.at(-1)!;
-      if (entry.attributes['mf:select']) {
-        source.set(name, resolveSelectMessage(entry, 'source'));
-        target.set(name, resolveSelectMessage(entry, 'target'));
-      } else {
-        source.set(name, resolvePatternMessage(entry, 'source'));
-        target.set(name, resolvePatternMessage(entry, 'target'));
-      }
+      const rd = entry.elements?.find(el => el.name === 'res:resourceData') as
+        | X.ResourceData
+        | undefined;
+      const msg = entry.attributes['mf:select']
+        ? resolveSelectMessage(rd, entry)
+        : resolvePatternMessage(rd, entry);
+      source.set(name, msg.source);
+      target.set(name, msg.target);
       return;
     }
   }
@@ -115,95 +116,103 @@ function parseId(
 }
 
 function resolveSelectMessage(
-  { attributes, elements }: X.Unit,
-  st: 'source' | 'target'
-): MF.Message {
-  if (!elements || elements.length === 0) {
-    throw new Error(
-      `Select ${prettyElement('unit', attributes.id)} cannot be empty`
-    );
-  }
-  let rd: X.ResourceData | null = null;
-  const variants: MF.Variant[] = [];
-  for (const el of elements) {
-    switch (el.name) {
-      case 'res:resourceData':
-        rd = el;
-        break;
-      case 'segment':
-        variants.push({
-          keys: parseId('s', el.attributes?.id).variant,
-          value: resolvePattern(rd, el, st)
-        });
-        break;
-    }
-  }
+  rd: X.ResourceData | undefined,
+  { attributes, elements }: X.Unit
+): { source: MF.SelectMessage; target: MF.SelectMessage } {
   if (!rd) {
     const el = prettyElement('unit', attributes.id);
-    throw new Error(`<mf:messageformat> not found in ${el}`);
+    throw new Error(`<res:resourceData> not found in ${el}`);
   }
-  const selIds = attributes['mf:select']?.trim().split(/\s+/) ?? [];
-  const selectors = selIds.map(selId => {
-    const ri = rd?.elements.find(exp => exp.attributes?.id === selId);
-    const mfElements = ri?.elements
-      ?.find(el => el.name === 'res:source')
-      ?.elements?.filter(
-        el => el.type === 'element' && el.name.startsWith('mf:')
-      ) as X.MessageElements | undefined;
-    if (!mfElements) {
-      const el = prettyElement('unit', attributes.id);
-      throw new Error(`Selector expression ${selId} not found in ${el}`);
+  const source: MF.SelectMessage = {
+    type: 'select',
+    declarations: [],
+    selectors: [],
+    variants: []
+  };
+  const target: MF.SelectMessage = {
+    type: 'select',
+    declarations: [],
+    selectors: [],
+    variants: []
+  };
+  for (const el of elements!) {
+    if (el.name === 'segment') {
+      const keys = parseId('s', el.attributes?.id).variant;
+      const pattern = resolvePattern(rd, el);
+      source.variants.push({ keys, value: pattern.source });
+      target.variants.push({ keys, value: pattern.target });
     }
-    return resolveExpression(mfElements);
-  });
-  return { type: 'select', declarations: [], selectors, variants };
+  }
+  if (!source.variants.length) {
+    const el = prettyElement('unit', attributes.id);
+    throw new Error(`No variant <segment> elements found in ${el}`);
+  }
+  for (const ref of attributes['mf:select']!.trim().split(/\s+/)) {
+    const srcElements = getMessageElements('source', rd!, ref);
+    source.selectors.push(resolveExpression(srcElements));
+    const tgtElements = getMessageElements('target', rd!, ref);
+    target.selectors.push(resolveExpression(tgtElements));
+  }
+  return { source, target };
 }
 
 function resolvePatternMessage(
-  { elements }: X.Unit,
-  st: 'source' | 'target'
-): MF.PatternMessage {
-  const pattern: MF.Pattern = [];
+  rd: X.ResourceData | undefined,
+  { elements }: X.Unit
+): { source: MF.PatternMessage; target: MF.PatternMessage } {
+  const source: MF.Pattern = [];
+  const target: MF.Pattern = [];
   if (elements) {
-    let rd: X.ResourceData | null = null;
     for (const el of elements) {
       switch (el.name) {
-        case 'res:resourceData':
-          rd = el;
-          break;
         case 'segment':
-        case 'ignorable':
-          pattern.push(...resolvePattern(rd, el, st));
+        case 'ignorable': {
+          const pattern = resolvePattern(rd, el);
+          source.push(...pattern.source);
+          target.push(...pattern.target);
           break;
+        }
       }
     }
   }
-  return { type: 'message', declarations: [], pattern };
+  return {
+    source: { type: 'message', declarations: [], pattern: source },
+    target: { type: 'message', declarations: [], pattern: target }
+  };
 }
 
 function resolvePattern(
-  rd: X.ResourceData | null,
-  { attributes, elements }: X.Segment | X.Ignorable,
-  st: 'source' | 'target'
-): MF.Pattern {
-  const stel = elements.filter(el => el.type === 'element')[
-    st === 'source' ? 0 : 1
-  ];
-  if ((stel && stel.name !== st) || (!stel && st === 'source')) {
-    const pe = prettyElement('segment', attributes?.id);
-    throw new Error(`Expected to find a <${st}> inside ${pe}`);
+  rd: X.ResourceData | undefined,
+  { name, attributes, elements }: X.Segment | X.Ignorable
+): { source: MF.Pattern; target: MF.Pattern } {
+  let source: MF.Pattern | undefined;
+  let target: MF.Pattern = [];
+  for (const el of elements) {
+    switch (el.name) {
+      case 'source':
+        source = resolvePatternElements('source', rd, el.elements);
+        break;
+      case 'target':
+        target = resolvePatternElements('target', rd, el.elements);
+        break;
+    }
   }
-  return stel ? resolvePatternElements(rd, stel.elements) : [];
+  if (!source) {
+    const pe = prettyElement(name, attributes?.id);
+    throw new Error(`Expected to find a <source> inside ${pe}`);
+  }
+  return { source, target };
 }
 
 function resolvePatternElements(
-  rd: X.ResourceData | null,
+  st: 'source' | 'target',
+  rd: X.ResourceData | undefined,
   elements: (X.Text | X.InlineElement)[]
 ): MF.Pattern {
   const pattern: MF.Pattern = [];
   for (const ie of elements) {
     const last = pattern.at(-1);
-    const next = resolveInlineElement(rd, ie);
+    const next = resolveInlineElement(st, rd, ie);
     if (typeof next === 'string') {
       if (typeof last === 'string') pattern[pattern.length - 1] += next;
       else pattern.push(next);
@@ -214,11 +223,9 @@ function resolvePatternElements(
   return pattern;
 }
 
-const resolveCharCode = (cc: X.CharCode) =>
-  String.fromCodePoint(Number(cc.attributes.hex));
-
 function resolveInlineElement(
-  rd: X.ResourceData | null,
+  st: 'source' | 'target',
+  rd: X.ResourceData | undefined,
   ie: X.Text | X.InlineElement
 ): string | Array<string | MF.Expression | MF.Markup> {
   switch (ie.type) {
@@ -232,57 +239,45 @@ function resolveInlineElement(
         case 'ph':
         case 'sc':
         case 'ec':
-          return [resolvePlaceholder(rd, ie)];
-        case 'pc':
-          return resolveSpanningCode(rd, ie);
+          return [resolvePlaceholder(st, rd, ie)];
+        case 'pc': {
+          const open = resolvePlaceholder(st, rd, ie);
+          return [
+            open,
+            ...resolvePatternElements(st, rd, ie.elements),
+            { type: 'markup', kind: 'close', name: open.name }
+          ];
+        }
       }
   }
   throw new Error(`Unsupported inline ${ie.type} <${ie.name}>`);
 }
 
-function resolveSpanningCode(
-  rd: X.ResourceData | null,
-  pc: X.CodeSpan
-): Array<string | MF.Expression | MF.Markup> {
-  const open = resolvePlaceholder(rd, pc);
-  return [
-    open,
-    ...resolvePatternElements(rd, pc.elements),
-    { type: 'markup', kind: 'close', name: open.name }
-  ];
-}
-
 function resolvePlaceholder(
-  rd: X.ResourceData | null,
+  st: 'source' | 'target',
+  rd: X.ResourceData | undefined,
   el: X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
 ): MF.Markup;
 function resolvePlaceholder(
-  rd: X.ResourceData | null,
+  st: 'source' | 'target',
+  rd: X.ResourceData | undefined,
   el: X.Placeholder | X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
 ): MF.Expression | MF.Markup;
 function resolvePlaceholder(
-  rd: X.ResourceData | null,
+  st: 'source' | 'target',
+  rd: X.ResourceData | undefined,
   el: X.Placeholder | X.CodeSpan | X.CodeSpanStart | X.CodeSpanEnd
 ): MF.Expression | MF.Markup {
   const { name } = el;
   const ref = el.attributes?.['mf:ref'];
   if (!ref) throw new Error(`Unsupported <${name}> without mf:ref attribute`);
   if (!rd) {
+    const el = `<${name} mf:ref=${JSON.stringify(ref)}>`;
     throw new Error(
-      `Inline <${name}> requires a preceding <mf:messageformat> in the same <unit>`
+      `Resolving ${el} requires <res:resourceData> in the same <unit>`
     );
   }
-  const ri = rd.elements.find(el => el.attributes?.id === ref);
-  const mfElements = ri?.elements
-    ?.find(el => el.name === 'res:source')
-    ?.elements?.filter(
-      el => el.type === 'element' && el.name.startsWith('mf:')
-    ) as X.MessageElements | undefined;
-  if (!mfElements) {
-    throw new Error(
-      `MessageFormat value not found for <${name} mf:ref="${ref}">`
-    );
-  }
+  const mfElements = getMessageElements(st, rd, String(ref));
   if (mfElements[0].name === 'mf:markup') {
     const kind =
       name === 'ph' ? 'standalone' : name === 'ec' ? 'close' : 'open';
@@ -294,8 +289,24 @@ function resolvePlaceholder(
   return resolveExpression(mfElements);
 }
 
-const resolveText = (text: (X.Text | X.CharCode)[]) =>
-  text.map(t => (t.type === 'element' ? resolveCharCode(t) : t.text)).join('');
+function getMessageElements(
+  st: 'source' | 'target',
+  rd: X.ResourceData,
+  ref: string
+) {
+  const ri = rd.elements.find(el => el.attributes?.id === ref);
+  if (ri?.elements) {
+    const parent =
+      (st === 'target'
+        ? ri.elements.find(el => el.name === 'res:target')
+        : null) ?? ri.elements.find(el => el.name === 'res:source');
+    const mfElements = parent?.elements?.filter(
+      el => el.type === 'element' && el.name.startsWith('mf:')
+    );
+    if (mfElements?.length) return mfElements as X.MessageElements;
+  }
+  throw new Error(`Unresolved MessageFormat reference: ${ref}`);
+}
 
 function resolveExpression(elements: X.MessageElements): MF.Expression {
   const xArg = elements[0];
@@ -371,3 +382,9 @@ function resolveValue(
 
   throw new Error(`Unsupported value: ${part}`);
 }
+
+const resolveText = (text: (X.Text | X.CharCode)[]) =>
+  text.map(t => (t.type === 'element' ? resolveCharCode(t) : t.text)).join('');
+
+const resolveCharCode = (cc: X.CharCode) =>
+  String.fromCodePoint(Number(cc.attributes.hex));
