@@ -1,11 +1,5 @@
 import { MessageDataModelError } from '../errors.js';
-import type {
-  Expression,
-  Message,
-  MessageNode,
-  VariableRef,
-  Variant
-} from './types.js';
+import type { Expression, Message, MessageNode, Variant } from './types.js';
 import { visit } from './visit.js';
 
 /**
@@ -55,18 +49,15 @@ export function validate(
   /** Tracks declared variables for `duplicate-declaration` */
   const declared = new Set<string>();
 
-  const declRefs = new Map<string, VariableRef[]>();
   const functions = new Set<string>();
   const localVars = new Set<string>();
   const variables = new Set<string>();
 
+  let setArgAsDeclared = true;
   visit(msg, {
     declaration(decl) {
       // Skip all ReservedStatement
       if (!decl.name) return undefined;
-
-      if (declared.has(decl.name)) onError('duplicate-declaration', decl);
-      else declared.add(decl.name);
 
       if (
         decl.value.annotation ||
@@ -79,12 +70,10 @@ export function validate(
 
       if (decl.type === 'local') localVars.add(decl.name);
 
+      setArgAsDeclared = decl.type === 'local';
       return () => {
-        for (const ref of declRefs.get(decl.name) ?? []) {
-          if (decl.type !== 'input' || ref !== decl.value.arg) {
-            onError('forward-reference', ref);
-          }
-        }
+        if (declared.has(decl.name)) onError('duplicate-declaration', decl);
+        else declared.add(decl.name);
       };
     },
 
@@ -112,13 +101,14 @@ export function validate(
       }
     },
 
-    value(value, context) {
+    value(value, context, position) {
       if (value.type === 'variable') {
         variables.add(value.name);
-        if (context === 'declaration') {
-          const prev = declRefs.get(value.name);
-          if (prev) prev.push(value);
-          else declRefs.set(value.name, [value]);
+        if (
+          context === 'declaration' &&
+          (position !== 'arg' || setArgAsDeclared)
+        ) {
+          declared.add(value.name);
         }
       }
     },

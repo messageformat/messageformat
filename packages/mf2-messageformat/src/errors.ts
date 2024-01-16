@@ -34,7 +34,6 @@ export class MessageSyntaxError extends MessageError {
     | 'duplicate-declaration'
     | 'duplicate-option'
     | 'extra-content'
-    | 'forward-reference'
     | 'key-mismatch'
     | 'parse-error'
     | 'missing-fallback'
@@ -65,7 +64,6 @@ export class MessageSyntaxError extends MessageError {
         break;
       case 'duplicate-declaration':
       case 'duplicate-option':
-      case 'forward-reference':
       case 'key-mismatch':
       case 'missing-fallback':
       case 'missing-selector-annotation':
@@ -97,7 +95,6 @@ export class MessageDataModelError extends MessageSyntaxError {
   declare type:
     | 'duplicate-declaration'
     | 'duplicate-option'
-    | 'forward-reference'
     | 'key-mismatch'
     | 'missing-fallback'
     | 'missing-selector-annotation';
