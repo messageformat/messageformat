@@ -9,7 +9,6 @@ import {
   stringifyMessage,
   visit
 } from '../index.js';
-import type { TestMessage } from '../messageformat.test.js';
 
 function trimCST(msg: Message) {
   delete msg[cst];
@@ -21,12 +20,11 @@ function trimCST(msg: Message) {
 }
 
 for (const [title, messages] of [
-  ['Stringify core messages', testCore],
-  ...Object.entries(testFunctions).map(x => [
-    `Stringify :${x[0]} messages`,
-    x[1]
-  ])
-] as Array<[string, TestMessage[]]>) {
+  ['Stringify core messages', testCore] as const,
+  ...Object.entries(testFunctions).map(
+    x => [`Stringify :${x[0]} messages`, x[1]] as const
+  )
+]) {
   describe(title, () => {
     for (const testMsg of messages) {
       if (!testMsg.errors?.length) {

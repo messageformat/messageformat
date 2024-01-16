@@ -5,17 +5,6 @@ import { testName } from './__fixtures/util-test-name.js';
 import { MessageSyntaxError } from './errors.js';
 import { MessageFormat } from './messageformat.js';
 
-export type TestMessage = {
-  src: string;
-  only?: boolean;
-  locale?: string;
-  params?: Record<string, string | number | null | undefined>;
-  exp: string;
-  parts?: Array<object>;
-  cleanSrc?: string;
-  errors?: Array<{ type: string }>;
-};
-
 describe('Syntax errors', () => {
   for (const src of syntaxErrors) {
     test(src, () => {
@@ -25,9 +14,11 @@ describe('Syntax errors', () => {
 });
 
 for (const [title, messages] of [
-  ['Core message syntax', testCore],
-  ...Object.entries(testFunctions).map(x => [`Messages using :${x[0]}`, x[1]])
-] as Array<[string, TestMessage[]]>) {
+  ['Core message syntax', testCore] as const,
+  ...Object.entries(testFunctions).map(
+    x => [`Messages using :${x[0]}`, x[1]] as const
+  )
+]) {
   describe(title, () => {
     for (const testMsg of messages) {
       const {
