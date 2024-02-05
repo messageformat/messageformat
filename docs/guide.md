@@ -93,7 +93,7 @@ The key that is chosen is generated from the specified input variable by a local
 
 The numeric input is mapped to a plural category, some subset of `zero`, `one`, `two`, `few`, `many`, and `other` depending on the locale and the type of plural.
 English, for instance, uses `one` and `other` for cardinal plurals (e.g. "one result", "many results") and `one`, `two`, `few`, and `other` for ordinal plurals (e.g. "1st result", "2nd result", etc).
-For information on which keys are used by your locale, please refer to the [CLDR table of plural rules](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html).
+For information on which keys are used by your locale, please refer to the [CLDR table of plural rules](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
 
 For some languages, the number of printed digits is significant (e.g. "1 meter", "1.0 meters"); to account for that you may pass in the number using its stringified representation of the number (as produced by `String(n)`).
 
