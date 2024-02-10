@@ -115,6 +115,19 @@
     ]
   },
   {
+    "src": "{#tag foo=bar/}",
+    "cleanSrc": "{#tag foo=bar /}",
+    "exp": "",
+    "parts": [
+      {
+        "type": "markup",
+        "kind": "standalone",
+        "name": "tag",
+        "options": { "foo": "bar" }
+      }
+    ]
+  },
+  {
     "src": "{#tag a:foo=|foo| b:bar=$bar}",
     "params": { "bar": "b a r" },
     "exp": "",
@@ -136,5 +149,32 @@
     "src": "{42 @foo=$bar}",
     "exp": "42",
     "parts": [{ "type": "string", "value": "42" }]
+  },
+  {
+    "src": "foo {+reserved}",
+    "exp": "foo {+}",
+    "parts": [
+      { "type": "literal", "value": "foo " },
+      { "type": "fallback", "source": "+" }
+    ],
+    "errors": [{ "type": "unsupported-annotation" }]
+  },
+  {
+    "src": "foo {&private}",
+    "exp": "foo {&}",
+    "parts": [
+      { "type": "literal", "value": "foo " },
+      { "type": "fallback", "source": "&" }
+    ],
+    "errors": [{ "type": "unsupported-annotation" }]
+  },
+  {
+    "src": "foo {?reserved @a @b=$c}",
+    "exp": "foo {?}",
+    "parts": [
+      { "type": "literal", "value": "foo " },
+      { "type": "fallback", "source": "?" }
+    ],
+    "errors": [{ "type": "unsupported-annotation" }]
   }
 ]

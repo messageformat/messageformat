@@ -259,6 +259,7 @@ export function parseReservedBody(
       case '|':
         pos = parseQuotedLiteral(ctx, pos).end;
         break;
+      case '@':
       case '}':
         break loop;
       default: {

@@ -151,7 +151,7 @@ export interface FunctionRef {
 /** @beta */
 export interface ReservedAnnotation {
   type: 'reserved-annotation';
-  open: Syntax<'!' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~'>;
+  open: Syntax<'!' | '%' | '^' | '&' | '*' | '+' | '<' | '>' | '?' | '~'>;
   source: Syntax<string>;
   start: number;
   end: number;

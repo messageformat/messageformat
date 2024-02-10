@@ -222,7 +222,7 @@ export interface FunctionAnnotation {
  */
 export interface UnsupportedAnnotation {
   type: 'unsupported-annotation';
-  sigil: '!' | '#' | '%' | '^' | '&' | '*' | '<' | '>' | '?' | '~' | '�';
+  sigil: '!' | '%' | '^' | '&' | '*' | '+' | '<' | '>' | '?' | '~' | '�';
   source: string;
   name?: never;
   options?: never;
