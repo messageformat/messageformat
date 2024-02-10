@@ -27,7 +27,7 @@ export function stringifyCST(cst: CST.Message): string {
         }
         case 'reserved-statement': {
           str += kw;
-          if (decl.body) str += ' ' + decl.body;
+          if (decl.body.value) str += ' ' + decl.body.value;
           for (const exp of decl.values) str += ' ' + stringifyExpression(exp);
           str += '\n';
           break;

@@ -260,6 +260,7 @@ export function parseReservedBody(
         pos = parseQuotedLiteral(ctx, pos).end;
         break;
       case '@':
+      case '{':
       case '}':
         break loop;
       default: {
@@ -273,7 +274,7 @@ export function parseReservedBody(
     }
   }
   let prev = ctx.source[pos - 1];
-  while (whitespaceChars.includes(prev)) {
+  while (pos > start && whitespaceChars.includes(prev)) {
     pos -= 1;
     prev = ctx.source[pos - 1];
   }

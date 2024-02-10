@@ -176,5 +176,25 @@
       { "type": "fallback", "source": "?" }
     ],
     "errors": [{ "type": "unsupported-annotation" }]
+  },
+  {
+    "src": ".foo {42} {{bar}}",
+    "exp": "bar",
+    "parts": [{ "type": "literal", "value": "bar" }],
+    "errors": [{ "type": "unsupported-statement" }]
+  },
+  {
+    "src": ".foo{42}{{bar}}",
+    "cleanSrc": ".foo {42} {{bar}}",
+    "exp": "bar",
+    "parts": [{ "type": "literal", "value": "bar" }],
+    "errors": [{ "type": "unsupported-statement" }]
+  },
+  {
+    "src": ".foo |}lit{| {42}{{bar}}",
+    "cleanSrc": ".foo |}lit{| {42} {{bar}}",
+    "exp": "bar",
+    "parts": [{ "type": "literal", "value": "bar" }],
+    "errors": [{ "type": "unsupported-statement" }]
   }
 ]
