@@ -1,5 +1,5 @@
-import { isValidUnquotedLiteral } from '../cst/names.js';
 import { MessageFormat } from '../messageformat.js';
+import { isValidUnquotedLiteral } from '../cst/names.js';
 import {
   isLiteral,
   isPatternMessage,

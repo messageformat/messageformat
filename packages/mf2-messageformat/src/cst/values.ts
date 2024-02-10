@@ -61,7 +61,7 @@ export function parseLiteral(
   required: boolean
 ): CST.Literal | undefined {
   if (ctx.source[start] === '|') return parseQuotedLiteral(ctx, start);
-  const value = parseUnquotedLiteralValue(ctx, start);
+  const value = parseUnquotedLiteralValue(ctx.source, start);
   if (!value) {
     if (required) ctx.onError('empty-token', start, start);
     else return undefined;

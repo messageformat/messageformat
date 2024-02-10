@@ -1,5 +1,3 @@
-import { parseCST } from './cst/parse-cst.js';
-import { messageFromCST } from './data-model/from-cst.js';
 import type { MessageFunctionContext } from './data-model/function-context.js';
 import { formatMarkup } from './data-model/format-markup.js';
 import { resolveExpression } from './data-model/resolve-expression.js';
@@ -22,6 +20,7 @@ import {
   plural,
   string
 } from './functions/index.js';
+import { parseMessage } from './data-model/parse.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({
@@ -87,8 +86,7 @@ export class MessageFormat {
       : locales
         ? [locales]
         : [];
-    this.#message =
-      typeof source === 'string' ? messageFromCST(parseCST(source)) : source;
+    this.#message = typeof source === 'string' ? parseMessage(source) : source;
     validate(this.#message, (type, node) => {
       throw new MessageDataModelError(type, node);
     });

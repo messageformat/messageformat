@@ -1,5 +1,5 @@
-import { parseExpression, parseReservedBody } from './expression.js';
 import { parseNameValue } from './names.js';
+import { parseExpression, parseReservedBody } from './expression.js';
 import type { ParseContext } from './parse-cst.js';
 import type * as CST from './types.js';
 import { whitespaces } from './util.js';
@@ -123,7 +123,7 @@ function parseReservedStatement(
   while (ctx.source[pos] === '{') {
     if (ctx.source.startsWith('{{', pos)) break;
     const value = parseExpression(ctx, pos);
-    values.push(value)
+    values.push(value);
     end = value.end;
     pos = end + whitespaces(ctx.source, end);
   }
