@@ -1,8 +1,4 @@
-import {
-  MessageDataModelError,
-  MessageSyntaxError,
-  MissingSyntaxError
-} from '../errors.js';
+import { MessageDataModelError, MessageSyntaxError } from '../errors.js';
 import { parseDeclarations } from './declarations.js';
 import { parseExpression } from './expression.js';
 import type * as CST from './types.js';
@@ -34,12 +30,11 @@ export class ParseContext {
     end: number | string
   ) {
     let err: MessageSyntaxError;
-    switch (type) {
-      case 'missing-syntax':
-        err = new MissingSyntaxError(start, String(end));
-        break;
-      default:
-        err = new MessageSyntaxError(type, start, Number(end));
+    if (type === 'missing-syntax') {
+      const exp = String(end);
+      err = new MessageSyntaxError(type, start, start + exp.length, exp);
+    } else {
+      err = new MessageSyntaxError(type, start, Number(end));
     }
     this.errors.push(err);
   }

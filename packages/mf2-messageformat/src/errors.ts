@@ -41,48 +41,18 @@ export class MessageSyntaxError extends MessageError {
     | 'missing-syntax';
   start: number;
   end: number;
-  expected?: string;
 
   constructor(
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
-    end: number,
+    end?: number,
     expected?: string
   ) {
-    let message: string;
-    switch (type) {
-      case 'empty-token':
-      case 'bad-escape':
-      case 'bad-input-expression':
-      case 'bad-selector':
-      case 'extra-content':
-      case 'parse-error':
-        message = `Syntax parse error: ${type} at ${start}`;
-        break;
-      case 'missing-syntax':
-        message = `Syntax parse error: Missing ${expected} at ${start}`;
-        break;
-      case 'duplicate-declaration':
-      case 'duplicate-option':
-      case 'key-mismatch':
-      case 'missing-fallback':
-      case 'missing-selector-annotation':
-        message = `Data model error: ${type}`;
-        if (start >= 0) message += ` at ${start}`;
-    }
+    let message = expected ? `Missing ${expected}` : type;
+    if (start >= 0) message += ` at ${start}`;
     super(type, message);
     this.start = start;
-    this.end = end;
-  }
-}
-
-/** @beta */
-export class MissingSyntaxError extends MessageSyntaxError {
-  expected: string;
-
-  constructor(pos: number, expected: string) {
-    super('missing-syntax', pos, pos + expected.length, expected);
-    this.expected = expected;
+    this.end = end ?? start + 1;
   }
 }
 
