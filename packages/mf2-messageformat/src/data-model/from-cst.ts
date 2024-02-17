@@ -126,8 +126,7 @@ function asExpression(
         case 'reserved-annotation':
           annotation = {
             type: 'unsupported-annotation',
-            sigil: ca.open.value,
-            source: ca.source.value
+            source: ca.open.value + ca.source.value
           };
           break;
         default:

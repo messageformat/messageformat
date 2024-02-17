@@ -1233,9 +1233,6 @@ export interface MessageOption extends Element {
 
 export interface MessageUnsupported extends Element {
   name: 'mf:unsupported';
-  attributes: {
-    sigil: '!' | '%' | '^' | '&' | '*' | '+' | '<' | '>' | '?' | '~' | '�';
-  };
   elements: (Text | CharCode)[];
 }
 

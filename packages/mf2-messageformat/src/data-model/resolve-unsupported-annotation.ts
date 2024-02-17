@@ -7,8 +7,9 @@ import type { Literal, UnsupportedAnnotation, VariableRef } from './types.js';
 export function resolveUnsupportedAnnotation(
   ctx: Context,
   operand: Literal | VariableRef | undefined,
-  { sigil = '�' }: UnsupportedAnnotation
+  { source = '�' }: UnsupportedAnnotation
 ) {
+  const sigil = source[0];
   const msg = `Reserved ${sigil} annotation is not supported`;
   ctx.onError(new MessageResolutionError('unsupported-annotation', msg, sigil));
   return fallback(getValueSource(operand) ?? sigil);

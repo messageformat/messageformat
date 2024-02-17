@@ -16,7 +16,6 @@ import type {
   Message,
   Option,
   Pattern,
-  UnsupportedAnnotation,
   VariableRef
 } from './types.js';
 
@@ -136,19 +135,12 @@ function stringifyExpression({ arg, annotation, attributes }: Expression) {
     res +=
       annotation.type === 'function'
         ? stringifyFunctionAnnotation(annotation)
-        : stringifyUnsupportedAnnotation(annotation);
+        : annotation.source ?? '�';
   }
   if (attributes) {
     for (const attr of attributes) res += ' ' + stringifyAttribute(attr);
   }
   return `{${res}}`;
-}
-
-function stringifyUnsupportedAnnotation({
-  sigil,
-  source = '�'
-}: UnsupportedAnnotation) {
-  return (sigil ?? '�') + source;
 }
 
 function stringifyVariableRef(ref: VariableRef) {
