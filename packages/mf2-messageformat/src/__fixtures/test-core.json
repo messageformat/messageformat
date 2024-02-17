@@ -141,6 +141,18 @@
     ]
   },
   {
+    "src": "{/tag foo=bar}",
+    "exp": "",
+    "parts": [
+      {
+        "type": "markup",
+        "kind": "close",
+        "name": "tag",
+        "options": { "foo": "bar" }
+      }
+    ]
+  },
+  {
     "src": "{42 @foo @bar=13}",
     "exp": "42",
     "parts": [{ "type": "string", "value": "42" }]

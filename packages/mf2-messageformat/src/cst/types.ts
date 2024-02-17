@@ -105,7 +105,7 @@ export interface Expression {
   braces: [Syntax<'{'>] | [Syntax<'{'>, Syntax<'}'>];
   arg?: Literal | VariableRef;
   annotation?: FunctionRef | ReservedAnnotation | Junk;
-  markup?: Markup | MarkupClose;
+  markup?: Markup;
   attributes: Attribute[];
 }
 
@@ -162,19 +162,10 @@ export interface Markup {
   type: 'markup';
   start: number;
   end: number;
-  open: Syntax<'#'>;
+  open: Syntax<'#' | '/'>;
   name: Identifier;
   options: Option[];
   close?: Syntax<'/'>;
-}
-
-/** @beta */
-export interface MarkupClose {
-  type: 'markup-close';
-  start: number;
-  end: number;
-  open: Syntax<'/'>;
-  name: Identifier;
 }
 
 /** @beta */

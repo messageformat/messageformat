@@ -123,7 +123,7 @@ function parseReservedStatement(
   while (ctx.source[pos] === '{') {
     if (ctx.source.startsWith('{{', pos)) break;
     const value = parseExpression(ctx, pos);
-    values.push(value)
+    values.push(value);
     end = value.end;
     pos = end + whitespaces(ctx.source, end);
   }

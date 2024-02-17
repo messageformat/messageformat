@@ -12,7 +12,10 @@ describe('Simple open/close', () => {
   });
 
   test('options', () => {
-    const mf = new MessageFormat('{#b foo=42 bar=$foo}foo{$foo}{/b}', 'en');
+    const mf = new MessageFormat(
+      '{#b foo=42 bar=$foo}foo{$foo}{/b foo=| bar 13 |}',
+      'en'
+    );
     const msg = mf.formatToParts({ foo: 'foo bar' });
     expect(msg).toEqual([
       {
@@ -24,7 +27,13 @@ describe('Simple open/close', () => {
       },
       { type: 'literal', value: 'foo' },
       { type: 'string', locale: 'en', source: '$foo', value: 'foo bar' },
-      { type: 'markup', kind: 'close', source: '/b', name: 'b' }
+      {
+        type: 'markup',
+        kind: 'close',
+        source: '/b',
+        name: 'b',
+        options: { foo: ' bar 13 ' }
+      }
     ]);
     expect(mf.format({ foo: 'foo bar' })).toBe('foofoo bar');
   });
@@ -45,25 +54,6 @@ describe('Simple open/close', () => {
         ]
       }
     });
-  });
-
-  test('do not allow options on close', () => {
-    const src = '{/b foo=13}';
-    expect(() => new MessageFormat(src, 'en')).toThrow();
-    const cst = parseCST(src);
-    expect(cst).toMatchObject({
-      type: 'simple',
-      errors: [{ type: 'extra-content' }],
-      pattern: {
-        body: [
-          {
-            type: 'expression',
-            markup: { type: 'markup-close', name: [{ value: 'b' }] }
-          }
-        ]
-      }
-    });
-    expect(cst).not.toHaveProperty('pattern.body.0.markup.options');
   });
 });
 

@@ -242,34 +242,11 @@ export interface UnsupportedAnnotation {
  *
  * @beta
  */
-export type Markup = MarkupOpen | MarkupStandalone | MarkupClose;
-
-/** @beta */
-export interface MarkupOpen {
+export interface Markup {
   type: 'markup';
-  kind: 'open';
+  kind: 'open' | 'standalone' | 'close';
   name: string;
   options?: Option[];
-  attributes?: Attribute[];
-  [cst]?: CST.Expression;
-}
-
-/** @beta */
-export interface MarkupStandalone {
-  type: 'markup';
-  kind: 'standalone';
-  name: string;
-  options?: Option[];
-  attributes?: Attribute[];
-  [cst]?: CST.Expression;
-}
-
-/** @beta */
-export interface MarkupClose {
-  type: 'markup';
-  kind: 'close';
-  name: string;
-  options?: never;
   attributes?: Attribute[];
   [cst]?: CST.Expression;
 }

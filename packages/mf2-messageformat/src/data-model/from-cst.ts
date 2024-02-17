@@ -101,14 +101,10 @@ function asExpression(
     if (allowMarkup && exp.markup) {
       const cm = exp.markup;
       const name = asName(cm.name);
-      let markup: Model.Markup;
-      if (cm.type === 'markup-close') {
-        markup = { type: 'markup', kind: 'close', name };
-      } else {
-        const kind = cm.close ? 'standalone' : 'open';
-        markup = { type: 'markup', kind, name };
-        if (cm.options.length) markup.options = cm.options.map(asOption);
-      }
+      const kind =
+        cm.open.value === '/' ? 'close' : cm.close ? 'standalone' : 'open';
+      const markup: Model.Markup = { type: 'markup', kind, name };
+      if (cm.options.length) markup.options = cm.options.map(asOption);
       if (attributes) markup.attributes = attributes;
       markup[cst] = exp;
       return markup;

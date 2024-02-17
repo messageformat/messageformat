@@ -75,8 +75,8 @@ function stringifyFunctionAnnotation({ name, options }: FunctionAnnotation) {
 }
 
 function stringifyMarkup({ kind, name, options, attributes }: Markup) {
-  if (kind === 'close') return `{/${name}}`;
-  let res = `{#${name}`;
+  let res = kind === 'close' ? '{/' : '{#';
+  res += name;
   if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
   if (attributes) {
     for (const attr of attributes) res += ' ' + stringifyAttribute(attr);
