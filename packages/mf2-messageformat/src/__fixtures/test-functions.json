@@ -194,44 +194,26 @@
     {
       "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
       "params": { "foo": 1 },
-      "exp": "st"
-    },
-    {
-      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
-      "params": { "foo": 2 },
-      "exp": "nd"
-    },
-    {
-      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
-      "params": { "foo": 3 },
-      "exp": "rd"
-    },
-    {
-      "src": ".match {$foo :ordinal} one {{st}} two {{nd}} few {{rd}} * {{th}}",
-      "params": { "foo": 4 },
-      "exp": "th"
+      "exp": "th",
+      "errors": [{ "type": "missing-func" }, { "type": "not-selectable" }]
     },
     {
       "src": "hello {42 :ordinal}",
       "exp": "hello {|42|}",
-      "errors": [{ "type": "not-formattable" }]
+      "errors": [{ "type": "missing-func" }]
     }
   ],
   "plural": [
     {
       "src": ".match {$foo :plural} one {{one}} * {{other}}",
       "params": { "foo": 1 },
-      "exp": "one"
-    },
-    {
-      "src": ".match {$foo :plural} one {{one}} * {{other}}",
-      "params": { "foo": 1.1 },
-      "exp": "other"
+      "exp": "other",
+      "errors": [{ "type": "missing-func" }, { "type": "not-selectable" }]
     },
     {
       "src": "hello {42 :plural}",
       "exp": "hello {|42|}",
-      "errors": [{ "type": "not-formattable" }]
+      "errors": [{ "type": "missing-func" }]
     }
   ],
   "string": [

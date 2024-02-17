@@ -18,8 +18,6 @@ import {
   datetime,
   integer,
   number,
-  ordinal,
-  plural,
   string
 } from './functions/index.js';
 import { selectPattern } from './select-pattern.js';
@@ -28,8 +26,6 @@ const defaultFunctions = Object.freeze({
   datetime,
   integer,
   number,
-  ordinal,
-  plural,
   string
 });
 

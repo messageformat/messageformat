@@ -182,39 +182,3 @@ export const integer = (
     { ...options, maximumFractionDigits: 0, style: 'decimal' },
     input
   );
-
-/**
- * `ordinal` accepts a number, BigInt or string representing a JSON number as input
- * and acts as a ordinal category selector on the value, using
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- *
- * `ordinal` cannot be used as a formatter.
- *
- * @beta
- */
-export const ordinal = (
-  ctx: MessageFunctionContext,
-  options: Record<string, unknown>,
-  input?: unknown
-) =>
-  number(ctx, { ...options, select: 'ordinal', [NotFormattable]: true }, input);
-
-/**
- * `plural` accepts a number, BigInt or string representing a JSON number as input
- * and acts as a cardinal plural selector on the value, using
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- *
- * `plural` cannot be used as a formatter.
- *
- * @beta
- */
-export const plural = (
-  ctx: MessageFunctionContext,
-  options: Record<string, unknown>,
-  input?: unknown
-) =>
-  number(
-    ctx,
-    { ...options, select: 'cardinal', [NotFormattable]: true },
-    input
-  );
