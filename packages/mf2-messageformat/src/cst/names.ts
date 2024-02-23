@@ -1,10 +1,3 @@
-import type { ParseContext } from './parse-cst.js';
-
-// name-start = ALPHA / "_"
-//            / %xC0-D6 / %xD8-F6 / %xF8-2FF
-//            / %x370-37D / %x37F-1FFF / %x200C-200D
-//            / %x2070-218F / %x2C00-2FEF / %x3001-D7FF
-//            / %xF900-FDCF / %xFDF0-FFFD / %x10000-EFFFF
 const isNameStartCode = (cc: number) =>
   (cc >= 0x41 && cc <= 0x5a) || // A-Z
   cc === 0x5f || // _
@@ -22,8 +15,6 @@ const isNameStartCode = (cc: number) =>
   (cc >= 0xfdf0 && cc <= 0xfffd) ||
   (cc >= 0x10000 && cc <= 0xeffff);
 
-// name-char = name-start / DIGIT / "-" / "."
-//           / %xB7 / %x300-36F / %x203F-2040
 const isNameCharCode = (cc: number) =>
   isNameStartCode(cc) ||
   cc === 0x2d || // -
@@ -58,7 +49,7 @@ export function isValidUnquotedLiteral(str: string): boolean {
 }
 
 export function parseUnquotedLiteralValue(
-  { source }: ParseContext,
+  source: string,
   start: number
 ): string {
   numberLiteral.lastIndex = start;

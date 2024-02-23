@@ -1,5 +1,5 @@
-import { parseExpression, parseReservedBody } from './expression.js';
 import { parseNameValue } from './names.js';
+import { parseExpression, parseReservedBody } from './expression.js';
 import type { ParseContext } from './parse-cst.js';
 import type * as CST from './types.js';
 import { whitespaces } from './util.js';
