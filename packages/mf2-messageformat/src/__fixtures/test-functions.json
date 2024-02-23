@@ -1,4 +1,85 @@
 {
+  "date": [
+    { "src": "{:date}", "exp": "{:date}", "errors": [{ "type": "bad-input" }] },
+    {
+      "src": "{horse :date}",
+      "exp": "{|horse|}",
+      "errors": [{ "name": "RangeError" }]
+    },
+    { "src": "{|2006-01-02| :date}", "exp": "1/2/06" },
+    { "src": "{|2006-01-02T15:04:06| :date}", "exp": "1/2/06" },
+    { "src": "{|2006-01-02| :date style=long}", "exp": "January 2, 2006" },
+    {
+      "src": ".local $d = {|2006-01-02| :date style=long} {{{$d :date}}}",
+      "exp": "January 2, 2006"
+    },
+    {
+      "src": ".local $t = {|2006-01-02T15:04:06| :time} {{{$t :date}}}",
+      "exp": "1/2/06"
+    }
+  ],
+  "time": [
+    { "src": "{:time}", "exp": "{:time}", "errors": [{ "type": "bad-input" }] },
+    {
+      "src": "{horse :time}",
+      "exp": "{|horse|}",
+      "errors": [{ "name": "RangeError" }]
+    },
+    { "src": "{|2006-01-02T15:04:06| :time}", "exp": "3:04 PM" },
+    {
+      "src": "{|2006-01-02T15:04:06| :time style=medium}",
+      "exp": "3:04:06 PM"
+    },
+    {
+      "src": ".local $t = {|2006-01-02T15:04:06| :time style=medium} {{{$t :time}}}",
+      "exp": "3:04:06 PM"
+    },
+    {
+      "src": ".local $d = {|2006-01-02T15:04:06| :date} {{{$d :time}}}",
+      "exp": "3:04 PM"
+    }
+  ],
+  "datetime": [
+    {
+      "src": "{:datetime}",
+      "exp": "{:datetime}",
+      "errors": [{ "type": "bad-input" }]
+    },
+    {
+      "src": "{$x :datetime}",
+      "exp": "{$x}",
+      "params": { "x": true },
+      "errors": [{ "type": "bad-input" }]
+    },
+    {
+      "src": "{horse :datetime}",
+      "exp": "{|horse|}",
+      "errors": [{ "name": "RangeError" }]
+    },
+    { "src": "{|2006-01-02T15:04:06| :datetime}", "exp": "1/2/06, 3:04 PM" },
+    {
+      "src": "{|2006-01-02T15:04:06| :datetime year=numeric month=|2-digit|}",
+      "exp": "01/2006"
+    },
+    {
+      "src": "{|2006-01-02T15:04:06| :datetime dateStyle=long}",
+      "exp": "January 2, 2006"
+    },
+    {
+      "src": "{|2006-01-02T15:04:06| :datetime timeStyle=medium}",
+      "exp": "3:04:06 PM"
+    },
+    {
+      "src": "{$dt :datetime}",
+      "params": { "dt": "2006-01-02T15:04:06" },
+      "exp": "1/2/06, 3:04 PM"
+    },
+    {
+      "src": ".input {$dt :time style=medium} {{{$dt :datetime dateStyle=long}}}",
+      "params": { "dt": "2006-01-02T15:04:06" },
+      "exp": "January 2, 2006 at 3:04:06 PM"
+    }
+  ],
   "integer": [
     { "src": "hello {4.2 :integer}", "exp": "hello 4" },
     { "src": "hello {-4.20 :integer}", "exp": "hello -4" },
