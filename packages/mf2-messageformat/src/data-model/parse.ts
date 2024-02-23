@@ -241,14 +241,10 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
     case '/': {
       if (arg || !allowMarkup) throw SyntaxError('parse-error', pos);
       pos += 1; // '#' or '/'
-      if (sigil === '#') {
-        markup = { type: 'markup', kind: 'open', name: identifier() };
-        const options_ = options();
-        if (options_.length) markup.options = options_;
-      } else {
-        markup = { type: 'markup', kind: 'close', name: identifier() };
-        ws('}');
-      }
+      const kind = sigil === '#' ? 'open' : 'close';
+      markup = { type: 'markup', kind, name: identifier() };
+      const options_ = options();
+      if (options_.length) markup.options = options_;
       break;
     }
     case '^':
@@ -271,7 +267,6 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
 
   while (source[pos] === '@') attribute();
   if (markup?.kind === 'open' && source[pos] === '/') {
-    // @ts-expect-error Yes, TS, this does become MarkupStandalone.
     markup.kind = 'standalone';
     pos += 1; // '/'
   }
@@ -327,12 +322,9 @@ function privateAnnotation(sigil: '^' | '&'): any {
   return unsupportedAnnotation(sigil);
 }
 
-function unsupportedAnnotation(
-  sigil: Model.UnsupportedAnnotation['sigil']
-): Model.UnsupportedAnnotation {
+function unsupportedAnnotation(sigil: string): Model.UnsupportedAnnotation {
   pos += 1; // sigil
-  const src = reservedBody();
-  return { type: 'unsupported-annotation', sigil, source: src };
+  return { type: 'unsupported-annotation', source: sigil + reservedBody() };
 }
 
 function reservedBody(): string {

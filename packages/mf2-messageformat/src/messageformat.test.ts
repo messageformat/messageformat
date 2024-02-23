@@ -6,8 +6,8 @@ import {
   MessageFormat,
   MessageSyntaxError,
   messageFromCST,
-  parseMessage,
-  parseCST
+  parseCST,
+  parseMessage
 } from './index.js';
 
 describe('Syntax errors', () => {
