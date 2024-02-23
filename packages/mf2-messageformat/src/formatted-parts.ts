@@ -22,24 +22,14 @@ export interface MessageLiteralPart {
 /** @beta */
 export interface MessageMarkupPart {
   type: 'markup';
-  kind: 'open' | 'standalone';
+  kind: 'open' | 'standalone' | 'close';
   source: string;
   name: string;
   options?: { [key: string]: unknown };
 }
 
 /** @beta */
-export interface MessageMarkupClosePart {
-  type: 'markup';
-  kind: 'close';
-  source: string;
-  name: string;
-  options?: never;
-}
-
-/** @beta */
 export type MessagePart =
   | MessageExpressionPart
   | MessageLiteralPart
-  | MessageMarkupClosePart
   | MessageMarkupPart;

@@ -27,18 +27,99 @@ export interface MessageDateTimePart extends MessageExpressionPart {
   parts: Intl.DateTimeFormatPart[];
 }
 
+const localeOptions = [
+  'calendar',
+  'localeMatcher',
+  'hour12',
+  'hourCycle',
+  'numberingSystem',
+  'timeZone'
+];
+
 /**
- * `datetime` accepts an optional Date, number or string as its input
+ * `datetime` accepts a Date, number or string as its input
  * and formats it with the same options as
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat | Intl.DateTimeFormat}.
- * If not given any argument, the current date/time is used.
  *
  * @beta
  */
-export function datetime(
-  { localeMatcher, locales, source }: MessageFunctionContext,
+export const datetime = (
+  ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
+): MessageDateTime =>
+  dateTimeImplementation(ctx, options, input, res => {
+    for (const [name, value] of Object.entries(options)) {
+      if (value === undefined) continue;
+      try {
+        switch (name) {
+          case 'locale':
+            break;
+          case 'fractionalSecondDigits':
+            res[name] = asPositiveInteger(value);
+            break;
+          case 'hour12':
+            res[name] = asBoolean(value);
+            break;
+          default:
+            res[name] = asString(value);
+        }
+      } catch {
+        const msg = `Value ${value} is not valid for :datetime option ${name}`;
+        throw new MessageResolutionError('bad-option', msg, ctx.source);
+      }
+    }
+
+    // Set defaults if localeMatcher is the only option
+    if (Object.keys(res).length <= 1) {
+      res.dateStyle = 'short';
+      res.timeStyle = 'short';
+    }
+  });
+
+/**
+ * `date` accepts a Date, number or string as its input
+ * and formats it according to a single "style" option.
+ *
+ * @beta
+ */
+export const date = (
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+): MessageDateTime =>
+  dateTimeImplementation(ctx, options, input, res => {
+    const ds = options.style ?? res.dateStyle ?? 'short';
+    for (const name of Object.keys(res)) {
+      if (!localeOptions.includes(name)) delete res[name];
+    }
+    res.dateStyle = asString(ds);
+  });
+
+/**
+ * `time` accepts a Date, number or string as its input
+ * and formats it according to a single "style" option.
+ *
+ * @beta
+ */
+export const time = (
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+): MessageDateTime =>
+  dateTimeImplementation(ctx, options, input, res => {
+    const ts = options.style ?? res.timeStyle ?? 'short';
+    for (const name of Object.keys(res)) {
+      if (!localeOptions.includes(name)) delete res[name];
+    }
+    res.timeStyle = asString(ts);
+  });
+
+function dateTimeImplementation(
+  { localeMatcher, locales, source }: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input: unknown,
+  parseOptions: (res: Record<string, unknown>) => void
 ): MessageDateTime {
   const lc = mergeLocales(locales, input, options);
   const opt: Intl.DateTimeFormatOptions = { localeMatcher };
@@ -58,37 +139,13 @@ export function datetime(
     case 'object':
       value = input;
       break;
-    case 'undefined':
-      value = new Date();
-      break;
   }
   if (!(value instanceof Date)) {
     const msg = 'Input is not a date';
     throw new MessageResolutionError('bad-input', msg, source);
   }
 
-  for (const [name, value] of Object.entries(options)) {
-    if (value === undefined) continue;
-    try {
-      switch (name) {
-        case 'locale':
-          break;
-        case 'fractionalSecondDigits':
-          // @ts-expect-error TS types don't know about fractionalSecondDigits
-          opt[name] = asPositiveInteger(value);
-          break;
-        case 'hour12':
-          opt[name] = asBoolean(value);
-          break;
-        default:
-          // @ts-expect-error Unknown options will be ignored
-          opt[name] = asString(value);
-      }
-    } catch {
-      const msg = `Value ${value} is not valid for :datetime option ${name}`;
-      throw new MessageResolutionError('bad-option', msg, source);
-    }
-  }
+  parseOptions(opt as Record<string, unknown>);
 
   const date = value;
   let locale: string | undefined;
@@ -104,13 +161,13 @@ export function datetime(
       return { ...opt };
     },
     toParts() {
-      dtf ??= new Intl.DateTimeFormat(lc, options);
+      dtf ??= new Intl.DateTimeFormat(lc, opt);
       const parts = dtf.formatToParts(date);
       locale ??= dtf.resolvedOptions().locale;
       return [{ type: 'datetime', source, locale, parts }];
     },
     toString() {
-      dtf ??= new Intl.DateTimeFormat(lc, options);
+      dtf ??= new Intl.DateTimeFormat(lc, opt);
       str ??= dtf.format(date);
       return str;
     },

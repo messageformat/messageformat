@@ -51,7 +51,8 @@ describe('messages in resources', () => {
               end: src.length - 1,
               value: '\t \n\r\t\x01\x02\x03'
             },
-            annotation: undefined
+            annotation: undefined,
+            attributes: []
           }
         ]
       }

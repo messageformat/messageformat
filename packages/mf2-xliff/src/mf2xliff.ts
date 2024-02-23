@@ -397,7 +397,6 @@ function resolveExpression({
       resFunc = {
         type: 'element',
         name: 'mf:unsupported',
-        attributes: { sigil: annotation.sigil ?? '�' },
         elements: [asText(annotation.source ?? '�')]
       };
     }

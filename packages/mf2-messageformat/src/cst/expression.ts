@@ -31,7 +31,7 @@ export function parseExpression(
     | CST.ReservedAnnotation
     | CST.Junk
     | undefined;
-  let markup: CST.Markup | CST.MarkupClose | undefined;
+  let markup: CST.Markup | undefined;
   let junkError: MessageSyntaxError | undefined;
   switch (source[pos]) {
     case ':':
@@ -39,13 +39,9 @@ export function parseExpression(
       pos = annotation.end;
       break;
     case '#':
-      if (arg) ctx.onError('extra-content', arg.start, arg.end);
-      markup = parseFunctionRefOrMarkup(ctx, pos, 'markup');
-      pos = markup.end;
-      break;
     case '/':
       if (arg) ctx.onError('extra-content', arg.start, arg.end);
-      markup = parseMarkupClose(ctx, pos);
+      markup = parseFunctionRefOrMarkup(ctx, pos, 'markup');
       pos = markup.end;
       break;
     case '!':
@@ -140,7 +136,7 @@ function parseFunctionRefOrMarkup(
     let ws = whitespaces(source, pos);
     const next = source[pos + ws];
     if (next === '@' || next === '}') break;
-    if (type === 'markup' && next === '/') {
+    if (next === '/' && source[start] === '#') {
       pos += ws + 1;
       close = { start: pos - 1, end: pos, value: '/' };
       ws = whitespaces(source, pos);
@@ -158,15 +154,9 @@ function parseFunctionRefOrMarkup(
     const open = { start, end: start + 1, value: ':' as const };
     return { type, start, end: pos, open, name: id.parts, options };
   } else {
-    const open = { start, end: start + 1, value: '#' as const };
+    const open = { start, end: start + 1, value: source[start] as '#' | '/' };
     return { type, start, end: pos, open, name: id.parts, options, close };
   }
-}
-
-function parseMarkupClose(ctx: ParseContext, start: number): CST.MarkupClose {
-  const id = parseIdentifier(ctx, start + 1);
-  const open = { start, end: start + 1, value: '/' as const };
-  return { type: 'markup-close', start, end: id.end, open, name: id.parts };
 }
 
 function parseOption(ctx: ParseContext, start: number): CST.Option {

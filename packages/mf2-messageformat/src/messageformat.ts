@@ -13,23 +13,23 @@ import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
   MessageValue,
+  date,
   datetime,
   integer,
   number,
-  ordinal,
-  plural,
-  string
+  string,
+  time
 } from './functions/index.js';
 import { parseMessage } from './data-model/parse.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({
+  date,
   datetime,
   integer,
   number,
-  ordinal,
-  plural,
-  string
+  string,
+  time
 });
 
 /**

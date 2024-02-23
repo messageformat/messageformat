@@ -337,7 +337,6 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
   } else {
     annotation = {
       type: 'unsupported-annotation',
-      sigil: xFunc.attributes.sigil ?? '�',
       source: resolveText(xFunc.elements)
     };
   }

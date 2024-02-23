@@ -7,7 +7,6 @@
   "{{}",
   "{{}}}",
   "{|foo| #markup}",
-  "{/tag foo=bar}",
   "{{missing end brace}",
   "{{missing end braces",
   "{{missing end {$braces",

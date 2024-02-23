@@ -1,15 +1,9 @@
 import type { MessageExpressionPart } from '../formatted-parts.js';
 
 export type { MessageFunctionContext } from '../data-model/function-context.js';
-export { type MessageDateTime, datetime } from './datetime.js';
+export { type MessageDateTime, date, datetime, time } from './datetime.js';
 export { type MessageFallback, fallback } from './fallback.js';
-export {
-  type MessageNumber,
-  integer,
-  number,
-  ordinal,
-  plural
-} from './number.js';
+export { type MessageNumber, integer, number } from './number.js';
 export { type MessageString, string } from './string.js';
 export { type MessageUnknownValue, unknown } from './unknown.js';
 
