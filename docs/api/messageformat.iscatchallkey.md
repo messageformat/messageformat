@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# isCatchallKey variable
+# isCatchallKey() function
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -19,3 +19,14 @@ grand_parent: API Reference
 ```typescript
 isCatchallKey: (key: any) => key is CatchallKey
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  key | any |  |
+
+**Returns:**
+
+key is [CatchallKey](./messageformat.catchallkey.md)
+

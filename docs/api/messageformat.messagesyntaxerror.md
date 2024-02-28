@@ -33,7 +33,6 @@ export declare class MessageSyntaxError extends MessageError
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [end](./messageformat.messagesyntaxerror.end.md) |  | number | **_(BETA)_** |
-|  [expected?](./messageformat.messagesyntaxerror.expected.md) |  | string | **_(BETA)_** _(Optional)_ |
 |  [start](./messageformat.messagesyntaxerror.start.md) |  | number | **_(BETA)_** |
-|  [type](./messageformat.messagesyntaxerror.type.md) |  | 'empty-token' \| 'bad-escape' \| 'bad-input-expression' \| 'bad-selector' \| 'duplicate-declaration' \| 'duplicate-option' \| 'extra-content' \| 'forward-reference' \| 'key-mismatch' \| 'parse-error' \| 'missing-fallback' \| 'missing-selector-annotation' \| 'missing-syntax' | **_(BETA)_** |
+|  [type](./messageformat.messagesyntaxerror.type.md) |  | 'empty-token' \| 'bad-escape' \| 'bad-input-expression' \| 'bad-selector' \| 'duplicate-declaration' \| 'duplicate-option' \| 'extra-content' \| 'key-mismatch' \| 'parse-error' \| 'missing-fallback' \| 'missing-selector-annotation' \| 'missing-syntax' | **_(BETA)_** |
 

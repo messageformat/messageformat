@@ -15,7 +15,7 @@ grand_parent: API Reference
 
 Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.messageformat.md) instance.
 
-A runtime provided by [getMF1Functions](./icu-messageformat-1.getmf1functions.md) is automatically used in these instances.
+A runtime provided by [getMF1Functions()](./icu-messageformat-1.getmf1functions.md) is automatically used in these instances.
 
 **Signature:**
 

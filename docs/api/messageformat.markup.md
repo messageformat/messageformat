@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# Markup type
+# Markup interface
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -18,13 +18,23 @@ Markup placeholders can span ranges of other pattern elements, or represent othe
 **Signature:**
 
 ```typescript
-export type Markup = MarkupOpen | MarkupStandalone | MarkupClose;
+export interface Markup 
 ```
-**References:** [MarkupOpen](./messageformat.markupopen.md)<!-- -->, [MarkupStandalone](./messageformat.markupstandalone.md)<!-- -->, [MarkupClose](./messageformat.markupclose.md)
 
 ## Remarks
 
 The `name` identifies the markup part, which will be included in the result along with any `options`<!-- -->.
 
 When formatted to string, all markup will format as an empty string. To use markup, format to parts and post-process the formatted results.
+
+## Properties
+
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [\[cst\]?](./messageformat.markup._cst_.md) |  | CST.Expression | **_(BETA)_** _(Optional)_ |
+|  [attributes?](./messageformat.markup.attributes.md) |  | [Attribute](./messageformat.attribute.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [kind](./messageformat.markup.kind.md) |  | 'open' \| 'standalone' \| 'close' | **_(BETA)_** |
+|  [name](./messageformat.markup.name.md) |  | string | **_(BETA)_** |
+|  [options?](./messageformat.markup.options.md) |  | [Option](./messageformat.option.md)<!-- -->\[\] | **_(BETA)_** _(Optional)_ |
+|  [type](./messageformat.markup.type.md) |  | 'markup' | **_(BETA)_** |
 

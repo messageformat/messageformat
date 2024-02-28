@@ -26,8 +26,19 @@ has_toc: false
 
 |  Function | Description |
 |  --- | --- |
+|  [isCatchallKey(key)](./messageformat.iscatchallkey.md) | **_(BETA)_** |
+|  [isExpression(part)](./messageformat.isexpression.md) | **_(BETA)_** |
+|  [isFunctionAnnotation(part)](./messageformat.isfunctionannotation.md) | **_(BETA)_** |
+|  [isLiteral(part)](./messageformat.isliteral.md) | **_(BETA)_** |
+|  [isMarkup(part)](./messageformat.ismarkup.md) | **_(BETA)_** |
+|  [isMessage(msg)](./messageformat.ismessage.md) | **_(BETA)_** |
+|  [isPatternMessage(msg)](./messageformat.ispatternmessage.md) | **_(BETA)_** |
+|  [isSelectMessage(msg)](./messageformat.isselectmessage.md) | **_(BETA)_** |
+|  [isUnsupportedAnnotation(part)](./messageformat.isunsupportedannotation.md) | **_(BETA)_** |
+|  [isVariableRef(part)](./messageformat.isvariableref.md) | **_(BETA)_** |
 |  [messageFromCST(msg)](./messageformat.messagefromcst.md) | **_(BETA)_** Convert a CST message structure into its data model representation. |
 |  [parseCST(source, opt)](./messageformat.parsecst.md) | **_(BETA)_** Parse the string syntax representation of a message into its corresponding CST representation. |
+|  [parseMessage(source, opt)](./messageformat.parsemessage.md) | <p>A MessageFormat 2 parser for message formatting.</p><p>Parses the <code>source</code> syntax representation of a message into its corresponding data model representation. Throws on syntax errors, but does not check for data model errors.</p> |
 |  [stringifyCST(cst)](./messageformat.stringifycst.md) | **_(BETA)_** Stringify a message CST. Does not perform any error checking or validation. |
 |  [stringifyMessage(msg)](./messageformat.stringifymessage.md) | **_(BETA)_** Stringify a message using its syntax representation. |
 |  [validate(msg, onError)](./messageformat.validate.md) | **_(BETA)_** Ensure that the <code>msg</code> data model is \_valid\_, calling <code>onError</code> on errors. |
@@ -37,27 +48,24 @@ has_toc: false
 
 |  Interface | Description |
 |  --- | --- |
+|  [Attribute](./messageformat.attribute.md) | **_(BETA)_** The attributes of [Expression](./messageformat.expression.md) and [Markup](./messageformat.markup.md) are expressed as <code>key</code>/<code>value</code> pairs to allow their order to be maintained. |
 |  [CatchallKey](./messageformat.catchallkey.md) | **_(BETA)_** The catch-all key matches all values. |
 |  [FunctionAnnotation](./messageformat.functionannotation.md) | **_(BETA)_** To resolve a FunctionAnnotation, an externally defined function is called. |
 |  [InputDeclaration](./messageformat.inputdeclaration.md) | **_(BETA)_** |
 |  [Literal](./messageformat.literal.md) | **_(BETA)_** An immediately defined value. |
 |  [LocalDeclaration](./messageformat.localdeclaration.md) | **_(BETA)_** |
-|  [MarkupClose](./messageformat.markupclose.md) | **_(BETA)_** |
-|  [MarkupOpen](./messageformat.markupopen.md) | **_(BETA)_** |
-|  [MarkupStandalone](./messageformat.markupstandalone.md) | **_(BETA)_** |
+|  [Markup](./messageformat.markup.md) | **_(BETA)_** Markup placeholders can span ranges of other pattern elements, or represent other inline elements. |
 |  [MessageDateTimePart](./messageformat.messagedatetimepart.md) | **_(BETA)_** |
 |  [MessageExpressionPart](./messageformat.messageexpressionpart.md) | **_(BETA)_** |
 |  [MessageFallbackPart](./messageformat.messagefallbackpart.md) | **_(BETA)_** |
 |  [MessageFormatOptions](./messageformat.messageformatoptions.md) | **_(BETA)_** |
 |  [MessageFunctions](./messageformat.messagefunctions.md) | **_(BETA)_** The runtime function registry available when resolving [FunctionAnnotation](./messageformat.functionannotation.md) elements. |
 |  [MessageLiteralPart](./messageformat.messageliteralpart.md) | **_(BETA)_** |
-|  [MessageMarkupClosePart](./messageformat.messagemarkupclosepart.md) | **_(BETA)_** |
 |  [MessageMarkupPart](./messageformat.messagemarkuppart.md) | **_(BETA)_** |
 |  [MessageNumberPart](./messageformat.messagenumberpart.md) | **_(BETA)_** |
 |  [MessageStringPart](./messageformat.messagestringpart.md) | **_(BETA)_** |
 |  [MessageUnknownPart](./messageformat.messageunknownpart.md) | **_(BETA)_** |
 |  [Option](./messageformat.option.md) | **_(BETA)_** The options of [FunctionAnnotation](./messageformat.functionannotation.md) and [Markup](./messageformat.markup.md) are expressed as <code>key</code>/<code>value</code> pairs to allow their order to be maintained. |
-|  [Pattern](./messageformat.pattern.md) | **_(BETA)_** The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data. |
 |  [PatternMessage](./messageformat.patternmessage.md) | **_(BETA)_** A single message with no variants. |
 |  [SelectMessage](./messageformat.selectmessage.md) | **_(BETA)_** SelectMessage generalises the plural, selectordinal and select argument types of MessageFormat 1. Each case is defined by a key of one or more string identifiers, and selection between them is made according to the values of a corresponding number of expressions. Selection iterates among the <code>variants</code> in order, and terminates when all of the Variant keys match. The result of the selection is always a single Pattern. |
 |  [UnsupportedAnnotation](./messageformat.unsupportedannotation.md) | **_(BETA)_** When the parser encounters an expression with reserved syntax, it emits an UnsupportedAnnotation to represent it. |
@@ -76,16 +84,6 @@ has_toc: false
 |  Variable | Description |
 |  --- | --- |
 |  [cst](./messageformat.cst.md) | **_(BETA)_** Shared symbol used as a key on message data model nodes to reference their CST source. |
-|  [isCatchallKey](./messageformat.iscatchallkey.md) | **_(BETA)_** |
-|  [isExpression](./messageformat.isexpression.md) | **_(BETA)_** |
-|  [isFunctionAnnotation](./messageformat.isfunctionannotation.md) | **_(BETA)_** |
-|  [isLiteral](./messageformat.isliteral.md) | **_(BETA)_** |
-|  [isMarkup](./messageformat.ismarkup.md) | **_(BETA)_** |
-|  [isMessage](./messageformat.ismessage.md) | **_(BETA)_** |
-|  [isPatternMessage](./messageformat.ispatternmessage.md) | **_(BETA)_** |
-|  [isSelectMessage](./messageformat.isselectmessage.md) | **_(BETA)_** |
-|  [isUnsupportedAnnotation](./messageformat.isunsupportedannotation.md) | **_(BETA)_** |
-|  [isVariableRef](./messageformat.isvariableref.md) | **_(BETA)_** |
 
 ## Type Aliases
 
@@ -93,8 +91,9 @@ has_toc: false
 |  --- | --- |
 |  [Declaration](./messageformat.declaration.md) | **_(BETA)_** A message may declare any number of input and local variables, each with a value defined by an expression. The variable name for each declaration must be unique. |
 |  [Expression](./messageformat.expression.md) | **_(BETA)_** Expressions are used in declarations, as selectors, and as placeholders. Each must include at least an <code>arg</code> or an <code>annotation</code>, or both. |
-|  [Markup](./messageformat.markup.md) | **_(BETA)_** Markup placeholders can span ranges of other pattern elements, or represent other inline elements. |
 |  [Message](./messageformat.message.md) | **_(BETA)_** The representation of a single message. The shape of the message is an implementation detail, and may vary for the same message in different languages. |
 |  [MessageNode](./messageformat.messagenode.md) | **_(BETA)_** A node in a message data model |
+|  [MessageParserOptions](./messageformat.messageparseroptions.md) |  |
 |  [MessagePart](./messageformat.messagepart.md) | **_(BETA)_** |
+|  [Pattern](./messageformat.pattern.md) | **_(BETA)_** The body of each message is composed of a sequence of parts, some of them fixed (Text), others placeholders for values depending on additional data. |
 

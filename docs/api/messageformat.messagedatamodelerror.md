@@ -32,5 +32,5 @@ export declare class MessageDataModelError extends MessageSyntaxError
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [type](./messageformat.messagedatamodelerror.type.md) |  | 'duplicate-declaration' \| 'duplicate-option' \| 'forward-reference' \| 'key-mismatch' \| 'missing-fallback' \| 'missing-selector-annotation' | **_(BETA)_** |
+|  [type](./messageformat.messagedatamodelerror.type.md) |  | 'duplicate-declaration' \| 'duplicate-option' \| 'key-mismatch' \| 'missing-fallback' \| 'missing-selector-annotation' | **_(BETA)_** |
 

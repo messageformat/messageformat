@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.7.0...@messageformat/fluent@0.8.0) (2024-02-28)
+
+* Flatten Pattern as per [unicode-org/message-format-wg#585](https://github.com/unicode-org/message-format-wg/issues/585) ([c388f5a](https://github.com/messageformat/messageformat/commit/c388f5a42b74c1e53d1ffaf1c2b3455a025e1c19))
+
 ## [0.7.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.6.0...@messageformat/fluent@0.7.0) (2024-01-07)
 
 ### ⚠ Breaking Changes

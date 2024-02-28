@@ -27,9 +27,10 @@ export interface Expression
 |  --- | --- | --- | --- |
 |  [annotation?](./messageformat.cst.expression.annotation.md) |  | [FunctionRef](./messageformat.cst.functionref.md) \| [ReservedAnnotation](./messageformat.cst.reservedannotation.md) \| [Junk](./messageformat.cst.junk.md) | **_(BETA)_** _(Optional)_ |
 |  [arg?](./messageformat.cst.expression.arg.md) |  | Literal \| VariableRef | **_(BETA)_** _(Optional)_ |
+|  [attributes](./messageformat.cst.expression.attributes.md) |  | Attribute\[\] | **_(BETA)_** |
 |  [braces](./messageformat.cst.expression.braces.md) |  | \[[Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'{'&gt;\] \| \[[Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'{'&gt;, [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'}'&gt;\] | **_(BETA)_** |
 |  [end](./messageformat.cst.expression.end.md) |  | number | **_(BETA)_** |
-|  [markup?](./messageformat.cst.expression.markup.md) |  | Markup \| MarkupClose | **_(BETA)_** _(Optional)_ |
+|  [markup?](./messageformat.cst.expression.markup.md) |  | Markup | **_(BETA)_** _(Optional)_ |
 |  [start](./messageformat.cst.expression.start.md) |  | number | **_(BETA)_** |
 |  [type](./messageformat.cst.expression.type.md) |  | 'expression' | **_(BETA)_** |
 

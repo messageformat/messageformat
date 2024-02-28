@@ -26,7 +26,7 @@ export interface ReservedAnnotation
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [end](./messageformat.cst.reservedannotation.end.md) |  | number | **_(BETA)_** |
-|  [open](./messageformat.cst.reservedannotation.open.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'!' \| '@' \| '\#' \| '%' \| '^' \| '&amp;' \| '\*' \| '&lt;' \| '&gt;' \| '?' \| '\~'&gt; | **_(BETA)_** |
+|  [open](./messageformat.cst.reservedannotation.open.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;'!' \| '%' \| '^' \| '&amp;' \| '\*' \| '+' \| '&lt;' \| '&gt;' \| '?' \| '\~'&gt; | **_(BETA)_** |
 |  [source](./messageformat.cst.reservedannotation.source.md) |  | [Syntax](./messageformat.cst.syntax.md)<!-- -->&lt;string&gt; | **_(BETA)_** |
 |  [start](./messageformat.cst.reservedannotation.start.md) |  | number | **_(BETA)_** |
 |  [type](./messageformat.cst.reservedannotation.type.md) |  | 'reserved-annotation' | **_(BETA)_** |

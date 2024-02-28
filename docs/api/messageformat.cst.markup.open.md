@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-open: Syntax<'#'>;
+open: Syntax<'#' | '/'>;
 ```

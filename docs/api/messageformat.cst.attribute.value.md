@@ -1,5 +1,5 @@
 ---
-title: "MarkupOpen / name"
+title: "CST / Attribute / value"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# MarkupOpen.name property
+# CST.Attribute.value property
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-name: string;
+value?: Literal | VariableRef;
 ```

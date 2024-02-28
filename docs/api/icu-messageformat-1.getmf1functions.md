@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# getMF1Functions variable
+# getMF1Functions() function
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -27,3 +27,7 @@ getMF1Functions: () => {
     time: typeof time;
 }
 ```
+**Returns:**
+
+{ date: typeof date; duration: typeof duration; number: typeof number; time: typeof time; }
+

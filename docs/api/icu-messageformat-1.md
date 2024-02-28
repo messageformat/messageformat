@@ -15,14 +15,9 @@ has_toc: false
 
 |  Function | Description |
 |  --- | --- |
-|  [mf1ToMessage(source, locales, { strict, ...opt })](./icu-messageformat-1.mf1tomessage.md) | <p>**_(BETA)_** Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.messageformat.md) instance.</p><p>A runtime provided by [getMF1Functions](./icu-messageformat-1.getmf1functions.md) is automatically used in these instances.</p> |
+|  [getMF1Functions()](./icu-messageformat-1.getmf1functions.md) | <p>**_(BETA)_** Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with ICU MessageFormat 1 messages.</p><p>The structure of this runtime and the options available for its formatters follow the MF1 specifications, rather than being based on the MF2 default runtime.</p> |
+|  [mf1ToMessage(source, locales, { strict, ...opt })](./icu-messageformat-1.mf1tomessage.md) | <p>**_(BETA)_** Compile an ICU MessageFormat 1 message into a [MessageFormat](./messageformat.messageformat.md) instance.</p><p>A runtime provided by [getMF1Functions()](./icu-messageformat-1.getmf1functions.md) is automatically used in these instances.</p> |
 |  [mf1ToMessageData(ast)](./icu-messageformat-1.mf1tomessagedata.md) | <p>**_(BETA)_** Convert an ICU MessageFormat 1 message into a [Message](./messageformat.message.md) data object.</p><p>If the source message contains any inner selectors, they will be lifted into a single top-level selector.</p><p>Only literal values are supported in formatter parameters. Any such value will be passed in as an option <code>{ param: string }</code>.</p> |
-
-## Variables
-
-|  Variable | Description |
-|  --- | --- |
-|  [getMF1Functions](./icu-messageformat-1.getmf1functions.md) | <p>**_(BETA)_** Build a [MessageFormat](./messageformat.messageformat.md) runtime to use with ICU MessageFormat 1 messages.</p><p>The structure of this runtime and the options available for its formatters follow the MF1 specifications, rather than being based on the MF2 default runtime.</p> |
 
 ## Type Aliases
 

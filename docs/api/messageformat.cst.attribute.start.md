@@ -1,5 +1,5 @@
 ---
-title: "MarkupStandalone / \\[cst\\]"
+title: "CST / Attribute / start"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,13 +9,15 @@ nav_exclude: true
 
 
 
-# MarkupStandalone.\[cst\] property
+# CST.Attribute.start property
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
 
+position at the start of the name
+
 **Signature:**
 
 ```typescript
-[cst]?: CST.Expression;
+start: number;
 ```

@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# isVariableRef variable
+# isVariableRef() function
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -19,3 +19,14 @@ grand_parent: API Reference
 ```typescript
 isVariableRef: (part: any) => part is VariableRef
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  part | any |  |
+
+**Returns:**
+
+part is [VariableRef](./messageformat.variableref.md)
+

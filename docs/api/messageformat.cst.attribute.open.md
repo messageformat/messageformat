@@ -1,5 +1,5 @@
 ---
-title: "MarkupClose / type"
+title: "CST / Attribute / open"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# MarkupClose.type property
+# CST.Attribute.open property
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-type: 'markup';
+open: Syntax<'@'>;
 ```

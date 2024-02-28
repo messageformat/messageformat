@@ -22,13 +22,15 @@ export type Expression<A extends Literal | VariableRef | undefined = Literal | V
     type: 'expression';
     arg: A;
     annotation?: FunctionAnnotation | UnsupportedAnnotation;
+    attributes?: Attribute[];
     [cst]?: CST.Expression;
 } : {
     type: 'expression';
     arg?: never;
     annotation: FunctionAnnotation | UnsupportedAnnotation;
+    attributes?: Attribute[];
     [cst]?: CST.Expression;
 };
 ```
-**References:** [Literal](./messageformat.literal.md)<!-- -->, [VariableRef](./messageformat.variableref.md)<!-- -->, [FunctionAnnotation](./messageformat.functionannotation.md)<!-- -->, [UnsupportedAnnotation](./messageformat.unsupportedannotation.md)<!-- -->, [cst](./messageformat.cst.md)
+**References:** [Literal](./messageformat.literal.md)<!-- -->, [VariableRef](./messageformat.variableref.md)<!-- -->, [FunctionAnnotation](./messageformat.functionannotation.md)<!-- -->, [UnsupportedAnnotation](./messageformat.unsupportedannotation.md)<!-- -->, [Attribute](./messageformat.attribute.md)<!-- -->, [cst](./messageformat.cst.md)
 

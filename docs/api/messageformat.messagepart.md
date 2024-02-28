@@ -17,7 +17,7 @@ grand_parent: API Reference
 **Signature:**
 
 ```typescript
-export type MessagePart = MessageExpressionPart | MessageLiteralPart | MessageMarkupClosePart | MessageMarkupPart;
+export type MessagePart = MessageExpressionPart | MessageLiteralPart | MessageMarkupPart;
 ```
-**References:** [MessageExpressionPart](./messageformat.messageexpressionpart.md)<!-- -->, [MessageLiteralPart](./messageformat.messageliteralpart.md)<!-- -->, [MessageMarkupClosePart](./messageformat.messagemarkupclosepart.md)<!-- -->, [MessageMarkupPart](./messageformat.messagemarkuppart.md)
+**References:** [MessageExpressionPart](./messageformat.messageexpressionpart.md)<!-- -->, [MessageLiteralPart](./messageformat.messageliteralpart.md)<!-- -->, [MessageMarkupPart](./messageformat.messagemarkuppart.md)
 

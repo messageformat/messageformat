@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-type: 'empty-token' | 'bad-escape' | 'bad-input-expression' | 'bad-selector' | 'duplicate-declaration' | 'duplicate-option' | 'extra-content' | 'forward-reference' | 'key-mismatch' | 'parse-error' | 'missing-fallback' | 'missing-selector-annotation' | 'missing-syntax';
+type: 'empty-token' | 'bad-escape' | 'bad-input-expression' | 'bad-selector' | 'duplicate-declaration' | 'duplicate-option' | 'extra-content' | 'key-mismatch' | 'parse-error' | 'missing-fallback' | 'missing-selector-annotation' | 'missing-syntax';
 ```

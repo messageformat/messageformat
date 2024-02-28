@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# Pattern interface
+# Pattern type
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -18,12 +18,7 @@ The body of each message is composed of a sequence of parts, some of them fixed 
 **Signature:**
 
 ```typescript
-export interface Pattern 
+export type Pattern = Array<string | Expression | Markup>;
 ```
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [body](./messageformat.pattern.body.md) |  | Array&lt;string \| [Expression](./messageformat.expression.md) \| [Markup](./messageformat.markup.md)<!-- -->&gt; | **_(BETA)_** |
+**References:** [Expression](./messageformat.expression.md)<!-- -->, [Markup](./messageformat.markup.md)
 

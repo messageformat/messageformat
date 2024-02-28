@@ -24,7 +24,7 @@ export interface MessageMarkupPart
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [kind](./messageformat.messagemarkuppart.kind.md) |  | 'open' \| 'standalone' | **_(BETA)_** |
+|  [kind](./messageformat.messagemarkuppart.kind.md) |  | 'open' \| 'standalone' \| 'close' | **_(BETA)_** |
 |  [name](./messageformat.messagemarkuppart.name.md) |  | string | **_(BETA)_** |
 |  [options?](./messageformat.messagemarkuppart.options.md) |  | { \[key: string\]: unknown; } | **_(BETA)_** _(Optional)_ |
 |  [source](./messageformat.messagemarkuppart.source.md) |  | string | **_(BETA)_** |

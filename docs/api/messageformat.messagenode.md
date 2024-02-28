@@ -18,7 +18,7 @@ A node in a message data model
 **Signature:**
 
 ```typescript
-export type MessageNode = Declaration | Variant | CatchallKey | Expression | Literal | VariableRef | FunctionAnnotation | UnsupportedAnnotation | Markup | Option;
+export type MessageNode = Declaration | Variant | CatchallKey | Expression | Literal | VariableRef | FunctionAnnotation | UnsupportedAnnotation | Markup | Option | Attribute;
 ```
-**References:** [Declaration](./messageformat.declaration.md)<!-- -->, [Variant](./messageformat.variant.md)<!-- -->, [CatchallKey](./messageformat.catchallkey.md)<!-- -->, [Expression](./messageformat.expression.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [VariableRef](./messageformat.variableref.md)<!-- -->, [FunctionAnnotation](./messageformat.functionannotation.md)<!-- -->, [UnsupportedAnnotation](./messageformat.unsupportedannotation.md)<!-- -->, [Markup](./messageformat.markup.md)<!-- -->, [Option](./messageformat.option.md)
+**References:** [Declaration](./messageformat.declaration.md)<!-- -->, [Variant](./messageformat.variant.md)<!-- -->, [CatchallKey](./messageformat.catchallkey.md)<!-- -->, [Expression](./messageformat.expression.md)<!-- -->, [Literal](./messageformat.literal.md)<!-- -->, [VariableRef](./messageformat.variableref.md)<!-- -->, [FunctionAnnotation](./messageformat.functionannotation.md)<!-- -->, [UnsupportedAnnotation](./messageformat.unsupportedannotation.md)<!-- -->, [Markup](./messageformat.markup.md)<!-- -->, [Option](./messageformat.option.md)<!-- -->, [Attribute](./messageformat.attribute.md)
 

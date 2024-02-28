@@ -8,7 +8,7 @@ grand_parent: API Reference
 
 
 
-# isMessage variable
+# isMessage() function
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -19,3 +19,14 @@ grand_parent: API Reference
 ```typescript
 isMessage: (msg: any) => msg is Message
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  msg | any |  |
+
+**Returns:**
+
+msg is [Message](./messageformat.message.md)
+

@@ -32,7 +32,6 @@ As the meaning of this syntax is not supported, it will always resolve with a fa
 |  [\[cst\]?](./messageformat.unsupportedannotation._cst_.md) |  | [CST.ReservedAnnotation](./messageformat.cst.reservedannotation.md) | **_(BETA)_** _(Optional)_ |
 |  [name?](./messageformat.unsupportedannotation.name.md) |  | never | **_(BETA)_** _(Optional)_ |
 |  [options?](./messageformat.unsupportedannotation.options.md) |  | never | **_(BETA)_** _(Optional)_ |
-|  [sigil](./messageformat.unsupportedannotation.sigil.md) |  | '!' \| '@' \| '\#' \| '%' \| '^' \| '&amp;' \| '\*' \| '&lt;' \| '&gt;' \| '?' \| '\~' \| '�' | **_(BETA)_** |
 |  [source](./messageformat.unsupportedannotation.source.md) |  | string | **_(BETA)_** |
 |  [type](./messageformat.unsupportedannotation.type.md) |  | 'unsupported-annotation' | **_(BETA)_** |
 

@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-type: 'duplicate-declaration' | 'duplicate-option' | 'forward-reference' | 'key-mismatch' | 'missing-fallback' | 'missing-selector-annotation';
+type: 'duplicate-declaration' | 'duplicate-option' | 'key-mismatch' | 'missing-fallback' | 'missing-selector-annotation';
 ```

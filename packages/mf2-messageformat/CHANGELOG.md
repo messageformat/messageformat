@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.0.0-7](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-6...messageformat@4.0.0-7) (2024-02-28)
+
+### Features
+
+* Add @attributes, with no formatting impact ([f9d96c6](https://github.com/messageformat/messageformat/commit/f9d96c63fa5e57e97b625391c99df64a414b36d6))
+* Allow options on close ([unicode-org/message-format-wg#649](https://github.com/unicode-org/message-format-wg/issues/649)) ([e54254f](https://github.com/messageformat/messageformat/commit/e54254f7c158ac73bbe2b466d2c0a07953e654ad))
+* Drop :plural and :ordinal functions ([unicode-org/message-format-wg#621](https://github.com/unicode-org/message-format-wg/issues/621)) ([4746620](https://github.com/messageformat/messageformat/commit/474662009a76606c7fc6f3bc60d7b33a76cbe814))
+* Merge the unsupported-annotation sigil into its source in the data model ([unicode-org/message-format-wg#655](https://github.com/unicode-org/message-format-wg/issues/655)) ([067fe2f](https://github.com/messageformat/messageformat/commit/067fe2f0e973e30b0bc6c5734417365eaf66a046))
+* Add :date and :time ([unicode-org/message-format-wg#659](https://github.com/unicode-org/message-format-wg/issues/659)) ([2f3f6a5](https://github.com/messageformat/messageformat/commit/2f3f6a5b9b29eab3113551b1372974c59f5b17eb))
+* Add a separate parser optimised for formatting ([#418](https://github.com/messageformat/messageformat/issues/418)) ([ee1bc08](https://github.com/messageformat/messageformat/commit/ee1bc08826f0855d00a9ace4db001c06a8679983))
+
+### Bug Fixes
+
+* Flatten Pattern as per [unicode-org/message-format-wg#585](https://github.com/unicode-org/message-format-wg/issues/585) ([c388f5a](https://github.com/messageformat/messageformat/commit/c388f5a42b74c1e53d1ffaf1c2b3455a025e1c19))
+* Drop forward-reference error, extend duplicate-declaration instead ([654693f](https://github.com/messageformat/messageformat/commit/654693f677f75530d6aaf5f68eb95e124390af71))
+* Fix attributes on reserved & private annotation expressions ([2ecf174](https://github.com/messageformat/messageformat/commit/2ecf17483925cf3416f13a83ce14b86bbe5b02ae))
+* Unsupported statement parsing ([86f4046](https://github.com/messageformat/messageformat/commit/86f40462c77d97bd44cb38ecd57e884094585044))
+
 ## [4.0.0-6](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-5...messageformat@4.0.0-6) (2024-01-07)
 
 ### Update MF2 to match upstream changes ([#414](https://github.com/messageformat/messageformat/pull/414))

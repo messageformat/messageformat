@@ -1,5 +1,5 @@
 ---
-title: "MessageMarkupClosePart / name"
+title: "Markup / type"
 parent: "messageformat"
 grand_parent: API Reference
 nav_exclude: true
@@ -9,7 +9,7 @@ nav_exclude: true
 
 
 
-# MessageMarkupClosePart.name property
+# Markup.type property
 
 > This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
 > 
@@ -17,5 +17,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-name: string;
+type: 'markup';
 ```
