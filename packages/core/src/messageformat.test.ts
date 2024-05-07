@@ -93,6 +93,30 @@ describe('new MessageFormat()', () => {
     expect(opt.locale).toBe('en');
     expect(opt.plurals.length).toBeGreaterThan(100);
   });
+
+  describe('options', () => {
+    test('should apply default currency', () => {
+      const mf = new MessageFormat('en', { currency: 'EUR' });
+      const src = '{value, number, currency}';
+      const opt = mf.resolvedOptions();
+      expect(opt.currency).toBe('EUR');
+      expect(mf.compile(src)({ value: 100 })).toBe('€100.00');
+    });
+
+    test('should override time zone', () => {
+      const date = new Date(2006, 0, 2, 15, 4, 5, 789);
+      const mf = new MessageFormat('en', { timeZone: 'CST' });
+      const src = '{value, date, ::hamszzz}';
+      const zoneOffset = date.getTimezoneOffset();
+      const cstOffset = -6 * 60;
+      const offsetDate = new Date(
+        date.getTime() - (zoneOffset + cstOffset) * 60 * 1000
+      );
+      const opt = mf.resolvedOptions();
+      expect(opt.timeZone).toBe('CST');
+      expect(mf.compile(src)({ value: offsetDate })).toBe('3:04:05 PM CST');
+    });
+  });
 });
 
 describe('compile() errors', () => {

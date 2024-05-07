@@ -11,7 +11,7 @@ import * as Runtime from '@messageformat/runtime';
 import * as Formatters from '@messageformat/runtime/lib/formatters';
 import { identifier, property } from 'safe-identifier';
 import { biDiMarkText } from './bidi-mark-text';
-import { MessageFormatOptions } from './messageformat';
+import { MessageFormatOptionsWithDefaults } from './messageformat';
 import { PluralObject } from './plurals';
 
 const RUNTIME_MODULE = '@messageformat/runtime';
@@ -45,11 +45,11 @@ export interface StringStructure {
 
 export default class Compiler {
   arguments: string[] = [];
-  options: Required<MessageFormatOptions>;
+  options: MessageFormatOptionsWithDefaults;
   declare plural: PluralObject; // Always set in compile()
   runtime: RuntimeMap = {};
 
-  constructor(options: Required<MessageFormatOptions>) {
+  constructor(options: MessageFormatOptionsWithDefaults) {
     this.options = options;
   }
 
@@ -367,11 +367,20 @@ export default class Compiler {
       const argSkeletonText = argStyle.value.trim().substr(2);
       const key = identifier(`date_${locale}_${argSkeletonText}`, true);
       if (!this.runtimeIncludes(key, 'formatter')) {
-        const fmt: RuntimeEntry = getDateFormatter(locale, argSkeletonText);
+        const fmt: RuntimeEntry = getDateFormatter(
+          locale,
+          argSkeletonText,
+          this.options.timeZone
+        );
         this.runtime[key] = Object.assign(fmt, {
           id: key,
           module: null,
-          toString: () => getDateFormatterSource(locale, argSkeletonText),
+          toString: () =>
+            getDateFormatterSource(
+              locale,
+              argSkeletonText,
+              this.options.timeZone
+            ),
           type: 'formatter'
         });
       }
