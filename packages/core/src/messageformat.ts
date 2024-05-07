@@ -55,6 +55,14 @@ export interface MessageFormatOptions<
   currency?: string;
 
   /**
+   * The time zone to use when formatting `{V, date}`
+   * instead of current machine time zone
+   *
+   * Default: `Intl.DateTimeFormat().resolvedOptions().timeZone`
+   */
+  // timeZone?: string;
+
+  /**
    * Map of custom formatting functions to include. See
    * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
    * for more details.
