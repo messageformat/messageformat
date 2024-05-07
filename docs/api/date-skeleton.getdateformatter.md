@@ -15,7 +15,7 @@ Returns a date formatter function for the given locales and date skeleton
 **Signature:**
 
 ```typescript
-export declare function getDateFormatter(locales: string | string[], tokens: string | DateToken[], onError?: (error: DateFormatError) => void): (date: Date | number) => string;
+export declare function getDateFormatter(locales: string | string[], tokens: string | DateToken[], timeZone?: string | ((error: DateFormatError) => void), onError?: (error: DateFormatError) => void): (date: Date | number) => string;
 ```
 
 ## Parameters
@@ -24,6 +24,7 @@ export declare function getDateFormatter(locales: string | string[], tokens: str
 |  --- | --- | --- |
 |  locales | string \| string\[\] | One or more valid BCP 47 language tags, e.g. <code>fr</code> or <code>en-CA</code> |
 |  tokens | string \| [DateToken](./date-skeleton.datetoken.md)<!-- -->\[\] | An ICU DateFormat skeleton string, or an array or parsed <code>DateToken</code> tokens |
+|  timeZone | string \| ((error: [DateFormatError](./date-skeleton.dateformaterror.md)<!-- -->) =&gt; void) | _(Optional)_ |
 |  onError | (error: [DateFormatError](./date-skeleton.dateformaterror.md)<!-- -->) =&gt; void | _(Optional)_ If defined, will be called separately for each encountered parsing error and unsupported feature. |
 
 **Returns:**
