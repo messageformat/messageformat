@@ -116,15 +116,19 @@ describe('Options', () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
+  test('Undefined timezone', () => {
+    const onError = jest.fn();
+    const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', undefined, onError);
+    expect(fmt(date)).toEqual('15:04:05');
+    expect(onError).not.toHaveBeenCalled();
+  });
+
   test('UTC timezone', () => {
     const onError = jest.fn();
     const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'UTC', onError);
-    // get target UTC time
-    const offset = date.getTimezoneOffset();
-    const targetTimestamp = new Date(date.toUTCString()).getTime();
-    const targetDate = new Date(targetTimestamp + offset * 60 * 1000);
-    const targetTimeString = targetDate.toTimeString().split(' ').shift();
-    expect(fmt(date)).toEqual(targetTimeString);
+    const zoneOffset = date.getTimezoneOffset();
+    const offsetDate = new Date(date.getTime() - zoneOffset * 60 * 1000);
+    expect(fmt(offsetDate)).toEqual('15:04:05');
     expect(onError).not.toHaveBeenCalled();
   });
 
@@ -133,12 +137,10 @@ describe('Options', () => {
     const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'CST', onError);
     const zoneOffset = date.getTimezoneOffset();
     const cstOffset = -6 * 60;
-    const targetTime = new Date(date.toUTCString()).getTime();
-    const targetDate = new Date(
-      targetTime + (zoneOffset + cstOffset) * 60 * 1000
+    const offsetDate = new Date(
+      date.getTime() - (zoneOffset + cstOffset) * 60 * 1000
     );
-    const targetTimeString = targetDate.toTimeString().split(' ').shift();
-    expect(fmt(date)).toEqual(targetTimeString);
+    expect(fmt(offsetDate)).toEqual('15:04:05');
     expect(onError).not.toHaveBeenCalled();
   });
 

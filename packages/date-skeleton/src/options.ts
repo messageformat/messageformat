@@ -168,16 +168,14 @@ function compileOptions(
 
 export function getDateFormatOptions(
   tokens: DateToken[],
-  timeZone?: string | null,
+  timeZone?: string,
   onError: (error: DateFormatError) => void = error => {
     throw error;
   }
 ) {
-  const options: Intl.DateTimeFormatOptions = timeZone
-    ? {
-        timeZone
-      }
-    : {};
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone
+  };
   const fields: string[] = [];
   for (const token of tokens) {
     const { error, field, str } = token;
