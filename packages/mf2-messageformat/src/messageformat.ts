@@ -62,6 +62,8 @@ export interface MessageFormatOptions {
    * Extends the default set of functions.
    */
   functions?: MessageFunctions;
+
+  strict?: boolean;
 }
 
 /**
@@ -86,7 +88,8 @@ export class MessageFormat {
       : locales
         ? [locales]
         : [];
-    this.#message = typeof source === 'string' ? parseMessage(source) : source;
+    this.#message =
+      typeof source === 'string' ? parseMessage(source, options) : source;
     validate(this.#message, (type, node) => {
       throw new MessageDataModelError(type, node);
     });

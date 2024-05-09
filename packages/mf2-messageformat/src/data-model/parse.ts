@@ -17,6 +17,8 @@ export type MessageParserOptions = {
     pos: number
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) => { pos: number; annotation: any };
+
+  strict?: boolean;
 };
 
 //// Parser State ////
@@ -26,6 +28,11 @@ let source: string;
 let opt: MessageParserOptions;
 
 //// Utilities & Error Wrappers ////
+
+const literalEsc = new Set(['\\', '|']);
+const reservedEsc = new Set(['\\', '{', '|', '}']);
+const textEsc = new Set(['\\', '{', '}']);
+const nonStrictEsc = new Set(['\\', '"', "'", '.', '{', '|', '}']);
 
 // These indirections allow for the function names to be mangled,
 // while keeping the error class name intact.
@@ -71,7 +78,7 @@ export function parseMessage(
   const decl = declarations();
   if (source.startsWith('.match', pos)) return selectMessage(decl);
 
-  const quoted = decl.length > 0 || source.startsWith('{{', pos);
+  const quoted = decl.length > 0 ? 2 : source.startsWith('{{', pos) ? 1 : 0;
   const pattern_ = pattern(quoted);
   if (quoted) {
     ws();
@@ -108,6 +115,12 @@ function variant(): Model.Variant {
     ws(keys.length ? '{' : false);
     const next = source[pos];
     if (next === '{') break;
+    if (next === ':') {
+      if (opt.strict) throw SyntaxError('parse-error', pos);
+      pos += 1;
+      ws();
+      break;
+    }
     if (next === '*') {
       keys.push({ type: '*' });
       pos += 1;
@@ -115,13 +128,24 @@ function variant(): Model.Variant {
       keys.push(literal(true));
     }
   }
-  return { keys, value: pattern(true) };
+  return { keys, value: pattern(2) };
 }
 
-function pattern(quoted: boolean): Model.Pattern {
+/** @param quoted 0: not quoted, 1: starts with {{, 2: quoted */
+function pattern(quoted: 0 | 1 | 2): Model.Pattern {
+  let end: '' | '"' | "'" | '}' = '';
   if (quoted) {
-    if (source.startsWith('{{', pos)) pos += 2;
-    else throw MissingSyntax(pos, '{{');
+    const q = source[pos];
+    if (quoted === 2 && !opt.strict && (q === '"' || q === "'")) {
+      pos += 1;
+      end = q;
+    } else if (source.startsWith('{{', pos)) {
+      pos += 2;
+      end = '}';
+    } else {
+      const exp = quoted === 1 || opt.strict ? '{{' : '{{ or " or \'';
+      throw MissingSyntax(pos, exp);
+    }
   }
 
   const pattern: Model.Pattern = [];
@@ -131,18 +155,22 @@ function pattern(quoted: boolean): Model.Pattern {
         pattern.push(expression(true));
         break;
       }
-      case '}':
+      case end:
         if (!quoted) throw SyntaxError('parse-error', pos);
         break loop;
-      default: {
-        pattern.push(text());
-      }
+      default:
+        pattern.push(text(end));
     }
   }
 
   if (quoted) {
-    if (source.startsWith('}}', pos)) pos += 2;
-    else throw MissingSyntax(pos, '}}');
+    if (end === '}') {
+      if (source.startsWith('}}', pos)) pos += 2;
+      else throw MissingSyntax(pos, '}}');
+    } else {
+      if (source[pos] === end) pos += 1;
+      else throw MissingSyntax(pos, end);
+    }
   }
   return pattern;
 }
@@ -328,26 +356,18 @@ function unsupportedAnnotation(sigil: string): Model.UnsupportedAnnotation {
 }
 
 function reservedBody(): string {
+  const escSet = opt.strict ? reservedEsc : nonStrictEsc;
   const start = pos;
   loop: while (pos < source.length) {
     const next = source[pos];
     switch (next) {
       case '\\': {
-        switch (source[pos + 1]) {
-          case '\\':
-          case '{':
-          case '|':
-          case '}':
-            break;
-          default:
-            throw SyntaxError('bad-escape', pos, pos + 2);
+        if (!escSet.has(source[pos + 1])) {
+          throw SyntaxError('bad-escape', pos, pos + 2);
         }
         pos += 2;
         break;
       }
-      case '|':
-        quotedLiteral();
-        break;
       case '@':
         pos -= 1;
         ws(true);
@@ -355,6 +375,16 @@ function reservedBody(): string {
       case '{':
       case '}':
         break loop;
+      case '|':
+        quotedLiteral('|');
+        break;
+      case '"':
+      case "'":
+        if (!opt.strict) {
+          quotedLiteral(next);
+          break;
+        }
+      // fallthrough
       default: {
         const cc = next.charCodeAt(0);
         if (cc >= 0xd800 && cc < 0xe000) {
@@ -368,23 +398,22 @@ function reservedBody(): string {
   return source.substring(start, pos).trimEnd();
 }
 
-function text(): string {
+function text(end: '' | '"' | "'" | '}'): string {
+  const escSet = opt.strict ? textEsc : nonStrictEsc;
   let value = '';
   let i = pos;
   loop: for (; i < source.length; ++i) {
     switch (source[i]) {
       case '\\': {
         const esc = source[i + 1];
-        if (esc !== '\\' && esc !== '{' && esc !== '}') {
-          throw SyntaxError('bad-escape', i, i + 2);
-        }
+        if (!escSet.has(esc)) throw SyntaxError('bad-escape', i, i + 2);
         value += source.substring(pos, i) + esc;
         i += 1;
         pos = i + 1;
         break;
       }
       case '{':
-      case '}':
+      case end:
         break loop;
     }
   }
@@ -411,7 +440,10 @@ function value(
 function literal(required: true): Model.Literal;
 function literal(required: boolean): Model.Literal | undefined;
 function literal(required: boolean): Model.Literal | undefined {
-  if (source[pos] === '|') return quotedLiteral();
+  const q = source[pos];
+  if (q === '|' || (!opt.strict && (q === '"' || q === "'"))) {
+    return quotedLiteral(q);
+  }
   const value = parseUnquotedLiteralValue(source, pos);
   if (!value) {
     if (required) throw SyntaxError('empty-token', pos);
@@ -421,28 +453,27 @@ function literal(required: boolean): Model.Literal | undefined {
   return { type: 'literal', value };
 }
 
-function quotedLiteral(): Model.Literal {
-  pos += 1; // '|'
+function quotedLiteral(quote: '|' | '"' | "'"): Model.Literal {
+  const escSet = opt.strict ? literalEsc : nonStrictEsc;
+  pos += 1; // quote start
   let value = '';
   for (let i = pos; i < source.length; ++i) {
     switch (source[i]) {
       case '\\': {
         const esc = source[i + 1];
-        if (esc !== '\\' && esc !== '|') {
-          throw SyntaxError('bad-escape', i, i + 2);
-        }
+        if (!escSet.has(esc)) throw SyntaxError('bad-escape', i, i + 2);
         value += source.substring(pos, i) + esc;
         i += 1;
         pos = i + 1;
         break;
       }
-      case '|':
+      case quote:
         value += source.substring(pos, i);
         pos = i + 1;
         return { type: 'literal', value };
     }
   }
-  throw MissingSyntax(source.length, '|');
+  throw MissingSyntax(source.length, quote);
 }
 
 function identifier(): string {
