@@ -116,6 +116,34 @@ describe('Options', () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
+  test('Undefined timezone', () => {
+    const onError = jest.fn();
+    const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', undefined, onError);
+    expect(fmt(date)).toEqual('15:04:05');
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  test('UTC timezone', () => {
+    const onError = jest.fn();
+    const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'UTC', onError);
+    const zoneOffset = date.getTimezoneOffset();
+    const offsetDate = new Date(date.getTime() - zoneOffset * 60 * 1000);
+    expect(fmt(offsetDate)).toEqual('15:04:05');
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  test('custom timezone', () => {
+    const onError = jest.fn();
+    const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'CST', onError);
+    const zoneOffset = date.getTimezoneOffset();
+    const cstOffset = -6 * 60;
+    const offsetDate = new Date(
+      date.getTime() - (zoneOffset + cstOffset) * 60 * 1000
+    );
+    expect(fmt(offsetDate)).toEqual('15:04:05');
+    expect(onError).not.toHaveBeenCalled();
+  });
+
   test('calendar locale subtag', () => {
     const onError = jest.fn();
     const fmt = getDateFormatter('en-GB-u-ca-islamic', 'yMMMMd', onError);

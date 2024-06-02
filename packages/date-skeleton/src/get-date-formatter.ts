@@ -30,10 +30,15 @@ import { DateToken, parseDateTokens } from './tokens.js';
 export function getDateFormatter(
   locales: string | string[],
   tokens: string | DateToken[],
+  timeZone?: string | ((error: DateFormatError) => void),
   onError?: (error: DateFormatError) => void
 ) {
   if (typeof tokens === 'string') tokens = parseDateTokens(tokens);
-  const opt = getDateFormatOptions(tokens, onError);
+  if (typeof timeZone === 'function') {
+    onError = timeZone;
+    timeZone = undefined;
+  }
+  const opt = getDateFormatOptions(tokens, timeZone, onError);
   const dtf = new Intl.DateTimeFormat(locales, opt);
   return (date: Date | number) => dtf.format(date);
 }
@@ -80,10 +85,15 @@ export function getDateFormatter(
 export function getDateFormatterSource(
   locales: string | string[],
   tokens: string | DateToken[],
+  timeZone?: string | ((err: DateFormatError) => void),
   onError?: (err: DateFormatError) => void
 ) {
   if (typeof tokens === 'string') tokens = parseDateTokens(tokens);
-  const opt = getDateFormatOptions(tokens, onError);
+  if (typeof timeZone === 'function') {
+    onError = timeZone;
+    timeZone = undefined;
+  }
+  const opt = getDateFormatOptions(tokens, timeZone, onError);
   const lines = [
     `(function() {`,
     `var opt = ${JSON.stringify(opt)};`,

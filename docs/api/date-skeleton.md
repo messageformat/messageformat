@@ -39,8 +39,8 @@ Uses [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScri
 
 |  Function | Description |
 |  --- | --- |
-|  [getDateFormatter(locales, tokens, onError)](./date-skeleton.getdateformatter.md) | Returns a date formatter function for the given locales and date skeleton |
-|  [getDateFormatterSource(locales, tokens, onError)](./date-skeleton.getdateformattersource.md) | Returns a string of JavaScript source that evaluates to a date formatter function with the same <code>(date: Date &#124; number) =&gt; string</code> signature as the function returned by [getDateFormatter()](./date-skeleton.getdateformatter.md)<!-- -->. |
+|  [getDateFormatter(locales, tokens, timeZone, onError)](./date-skeleton.getdateformatter.md) | Returns a date formatter function for the given locales and date skeleton |
+|  [getDateFormatterSource(locales, tokens, timeZone, onError)](./date-skeleton.getdateformattersource.md) | Returns a string of JavaScript source that evaluates to a date formatter function with the same <code>(date: Date &#124; number) =&gt; string</code> signature as the function returned by [getDateFormatter()](./date-skeleton.getdateformatter.md)<!-- -->. |
 |  [parseDateTokens(src)](./date-skeleton.parsedatetokens.md) | Parse an [ICU DateFormat skeleton](http://userguide.icu-project.org/formatparse/datetime) string into a [DateToken](./date-skeleton.datetoken.md) array. |
 
 ## Type Aliases

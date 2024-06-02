@@ -55,6 +55,15 @@ export interface MessageFormatOptions<
   currency?: string;
 
   /**
+   * The time zone to use when formatting `{V, date}`
+   * instead of current machine time zone.
+   * Defaults to current machine time zone.
+   *
+   * Default: `undefined`
+   */
+  timeZone?: string;
+
+  /**
    * Map of custom formatting functions to include. See
    * {@link https://messageformat.github.io/messageformat/custom-formatters/ | Custom Formatters}
    * for more details.
@@ -130,12 +139,25 @@ export interface MessageFormatOptions<
 }
 
 /**
+ * Options with default values applied
+ * @internal
+ */
+export interface MessageFormatOptionsWithDefaults<
+  ReturnType extends 'string' | 'values' = 'string' | 'values'
+> extends Required<Omit<MessageFormatOptions<ReturnType>, 'timeZone'>> {
+  /**
+   * Optional time zone override
+   */
+  timeZone?: string;
+}
+
+/**
  * Returned by {@link MessageFormat.resolvedOptions}
  * @public
  */
 export interface ResolvedMessageFormatOptions<
   ReturnType extends 'string' | 'values'
-> extends Required<MessageFormatOptions<ReturnType>> {
+> extends MessageFormatOptionsWithDefaults<ReturnType> {
   /** The default locale */
   locale: string;
   /** All of the supported plurals */
@@ -199,7 +221,7 @@ export default class MessageFormat<
   }
 
   /** @internal */
-  options: Required<MessageFormatOptions<ReturnType>>;
+  options: MessageFormatOptionsWithDefaults<ReturnType>;
 
   /** @internal */
   plurals: PluralObject[] = [];
