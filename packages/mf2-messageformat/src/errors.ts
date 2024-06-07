@@ -84,6 +84,7 @@ export class MessageDataModelError extends MessageSyntaxError {
  */
 export class MessageResolutionError extends MessageError {
   declare type:
+    | 'bad-function-result'
     | 'bad-input'
     | 'bad-option'
     | 'unresolved-var'

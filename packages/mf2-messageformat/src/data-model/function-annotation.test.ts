@@ -90,3 +90,31 @@ describe('Type casts based on runtime', () => {
     expect(mf.format({ var: 1234, useGrouping: false })).toBe('1234');
   });
 });
+
+describe('Function return is not a MessageValue', () => {
+  test('object with type, but no source', () => {
+    const functions = {
+      fail: () => ({ type: 'fail' }) as any
+    } satisfies MessageFunctions;
+    const mf = new MessageFormat('{:fail}', 'en', { functions });
+    const onError = jest.fn();
+    expect(mf.format(undefined, onError)).toEqual('{:fail}');
+    expect(mf.formatToParts(undefined, onError)).toEqual([
+      { type: 'fallback', source: ':fail' }
+    ]);
+    expect(onError).toHaveBeenCalledTimes(2);
+  });
+
+  test('null', () => {
+    const functions = {
+      fail: () => null as any
+    } satisfies MessageFunctions;
+    const mf = new MessageFormat('{42 :fail}', 'en', { functions });
+    const onError = jest.fn();
+    expect(mf.format(undefined, onError)).toEqual('{|42|}');
+    expect(mf.formatToParts(undefined, onError)).toEqual([
+      { type: 'fallback', source: '|42|' }
+    ]);
+    expect(onError).toHaveBeenCalledTimes(2);
+  });
+});

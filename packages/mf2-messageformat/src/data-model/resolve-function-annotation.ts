@@ -28,16 +28,22 @@ export function resolveFunctionAnnotation(
 
     const rf = ctx.functions[name];
     if (!rf) {
-      throw new MessageError('missing-func', `Unknown function ${name}`);
+      throw new MessageError('missing-func', `Unknown function :${name}`);
     }
     const msgCtx = new MessageFunctionContext(ctx, source);
     const opt = resolveOptions(ctx, options);
     const res = rf(msgCtx, opt, ...fnInput);
-    return res instanceof Object &&
-      typeof res.type === 'string' &&
-      typeof res.source === 'string'
-      ? res
-      : fallback(source);
+    if (
+      !(res instanceof Object) ||
+      typeof res.type !== 'string' ||
+      typeof res.source !== 'string'
+    ) {
+      throw new MessageError(
+        'bad-function-result',
+        `Function :${name} did not return a MessageValue`
+      );
+    }
+    return res;
   } catch (error) {
     ctx.onError(error);
     source ??= getValueSource(operand) ?? `:${name}`;
