@@ -1,7 +1,7 @@
-import syntaxErrors from './__fixtures/syntax-errors.json';
-import testCore from './__fixtures/test-core.json';
-import testFunctions from './__fixtures/test-functions.json';
-import { testName } from './__fixtures/util-test-name.js';
+import syntaxErrors from '~/test/messageformat-wg/test/syntax-errors.json';
+import testCore from '~/test/messageformat-wg/test/test-core.json';
+import testFunctions from '~/test/messageformat-wg/test/test-functions.json';
+import { testName } from '~/test/util-test-name.js';
 import {
   MessageFormat,
   MessageSyntaxError,

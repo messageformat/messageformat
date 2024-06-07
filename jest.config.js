@@ -10,6 +10,7 @@ module.exports = {
   ],
   moduleFileExtensions: ['mjs', ...defaults.moduleFileExtensions],
   moduleNameMapper: {
+    '^~/(.*)$': '<rootDir>/$1',
     '^messageformat$': '<rootDir>/packages/mf2-messageformat/src/index.ts',
     '^messageformat/functions$':
       '<rootDir>/packages/mf2-messageformat/src/functions/index.ts',

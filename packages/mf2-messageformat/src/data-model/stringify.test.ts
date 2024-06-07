@@ -1,6 +1,6 @@
-import testCore from '../__fixtures/test-core.json';
-import testFunctions from '../__fixtures/test-functions.json';
-import { testName } from '../__fixtures/util-test-name.js';
+import testCore from '~/test/messageformat-wg/test/test-core.json';
+import testFunctions from '~/test/messageformat-wg/test/test-functions.json';
+import { testName } from '~/test/util-test-name.js';
 import {
   type Message,
   cst,

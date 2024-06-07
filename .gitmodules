@@ -1,0 +1,4 @@
+[submodule "test/messageformat-wg"]
+	path = test/messageformat-wg
+	url = https://github.com/unicode-org/message-format-wg.git
+	shallow = true
