@@ -32,7 +32,12 @@ export function resolveFunctionAnnotation(
     }
     const msgCtx = new MessageFunctionContext(ctx, source);
     const opt = resolveOptions(ctx, options);
-    return rf(msgCtx, opt, ...fnInput);
+    const res = rf(msgCtx, opt, ...fnInput);
+    return res instanceof Object &&
+      typeof res.type === 'string' &&
+      typeof res.source === 'string'
+      ? res
+      : fallback(source);
   } catch (error) {
     ctx.onError(error);
     source ??= getValueSource(operand) ?? `:${name}`;
