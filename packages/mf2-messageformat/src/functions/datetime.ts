@@ -152,7 +152,7 @@ function dateTimeImplementation(
   }
   if (!(value instanceof Date) || isNaN(value.getTime())) {
     const msg = 'Input is not a date';
-    throw new MessageResolutionError('bad-input', msg, source);
+    throw new MessageResolutionError('bad-operand', msg, source);
   }
 
   parseOptions(opt as Record<string, unknown>);

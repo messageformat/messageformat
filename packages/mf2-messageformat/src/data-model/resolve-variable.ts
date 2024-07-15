@@ -60,7 +60,7 @@ export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
   if (value === undefined) {
     const source = '$' + name;
     const msg = `Variable not available: ${source}`;
-    ctx.onError(new MessageResolutionError('unresolved-var', msg, source));
+    ctx.onError(new MessageResolutionError('unresolved-variable', msg, source));
   } else if (value instanceof UnresolvedExpression) {
     const local = resolveExpression(
       value.scope ? { ...ctx, scope: value.scope } : ctx,
