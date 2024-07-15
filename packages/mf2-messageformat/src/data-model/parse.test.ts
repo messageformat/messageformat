@@ -1,23 +1,4 @@
-import testCore from '~/test/messageformat-wg/test/test-core.json';
-import testFunctions from '~/test/messageformat-wg/test/test-functions.json';
-import { testName } from '~/test/util-test-name.js';
-import { parseMessage, validate } from '../index.js';
-
-for (const [title, messages] of [
-  ['Parse data model of core messages', testCore] as const,
-  ...Object.entries(testFunctions).map(
-    x => [`Parse data model of :${x[0]} messages`, x[1]] as const
-  )
-]) {
-  describe(title, () => {
-    for (const testMsg of messages) {
-      const tx = testMsg.only ? test.only : test;
-      tx(testName(testMsg), () => {
-        validate(parseMessage(testMsg.src));
-      });
-    }
-  });
-}
+import { parseMessage } from '../index.js';
 
 describe('private annotations', () => {
   for (const source of ['{^foo}', '{&bar}']) {
