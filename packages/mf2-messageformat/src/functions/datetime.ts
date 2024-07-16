@@ -93,7 +93,12 @@ export const date = (
     for (const name of Object.keys(res)) {
       if (!localeOptions.includes(name)) delete res[name];
     }
-    res.dateStyle = asString(ds);
+    try {
+      res.dateStyle = asString(ds);
+    } catch {
+      const msg = `Value ${ds} is not valid for :date style option`;
+      throw new MessageResolutionError('bad-option', msg, ctx.source);
+    }
   });
 
 /**
@@ -112,7 +117,12 @@ export const time = (
     for (const name of Object.keys(res)) {
       if (!localeOptions.includes(name)) delete res[name];
     }
-    res.timeStyle = asString(ts);
+    try {
+      res.timeStyle = asString(ts);
+    } catch {
+      const msg = `Value ${ts} is not valid for :time style option`;
+      throw new MessageResolutionError('bad-option', msg, ctx.source);
+    }
   });
 
 function dateTimeImplementation(
@@ -140,9 +150,9 @@ function dateTimeImplementation(
       value = input;
       break;
   }
-  if (!(value instanceof Date)) {
+  if (!(value instanceof Date) || isNaN(value.getTime())) {
     const msg = 'Input is not a date';
-    throw new MessageResolutionError('bad-input', msg, source);
+    throw new MessageResolutionError('bad-operand', msg, source);
   }
 
   parseOptions(opt as Record<string, unknown>);

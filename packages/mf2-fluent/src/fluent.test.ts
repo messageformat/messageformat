@@ -272,7 +272,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'plural',
         scope: {},
         exp: 'B',
-        errors: ['$selector', 'bad-input', 'not-selectable']
+        errors: ['$selector', 'bad-operand', 'not-selectable']
       },
       { msg: 'plural', scope: { selector: 1 }, exp: 'A' },
       { msg: 'plural', scope: { selector: 2 }, exp: 'B' },
@@ -280,7 +280,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'plural',
         scope: { selector: 'one' },
         exp: 'B',
-        errors: ['bad-input', 'not-selectable']
+        errors: ['bad-operand', 'not-selectable']
       },
       {
         msg: 'default',
@@ -639,7 +639,7 @@ describe('formatToParts', () => {
       const msg = res.get('gender')?.get('')?.formatToParts(undefined, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'N' }]);
       expect(onError.mock.calls.map(args => args[0].type)).toEqual([
-        'unresolved-var'
+        'unresolved-variable'
       ]);
     });
 
@@ -666,7 +666,7 @@ describe('formatToParts', () => {
         ?.formatToParts({ num: 'NaN' }, onError);
       expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
       expect(onError.mock.calls.map(args => args[0].type)).toEqual([
-        'bad-input',
+        'bad-operand',
         'not-selectable'
       ]);
     });

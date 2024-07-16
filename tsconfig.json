@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "~/*": ["*"],
       "@messageformat/core": ["packages/core/src/messageformat"],
       "@messageformat/core/compile-module": [
         "packages/core/src/compile-module"

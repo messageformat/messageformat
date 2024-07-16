@@ -18,32 +18,32 @@ function resolve(
 
 describe('Reserved syntax', () => {
   test('empty', () => {
-    const msg = resolve('{!}', {}, [{ type: 'unsupported-annotation' }]);
+    const msg = resolve('{!}', {}, [{ type: 'unsupported-expression' }]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '!' }]);
   });
 
   test('argument', () => {
     const msg = resolve('{$foo ~bar}', { foo: 42 }, [
-      { type: 'unsupported-annotation' }
+      { type: 'unsupported-expression' }
     ]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '$foo' }]);
   });
 
   test('attribute', () => {
     const msg = resolve('{%bar @foo}', {}, [
-      { type: 'unsupported-annotation' }
+      { type: 'unsupported-expression' }
     ]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '%' }]);
   });
 
   test('old markup syntax', () => {
-    const msg = resolve('{+open}', {}, [{ type: 'unsupported-annotation' }]);
+    const msg = resolve('{+open}', {}, [{ type: 'unsupported-expression' }]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '+' }]);
   });
 
   test('whitespace', () => {
     const msg = resolve('{ + one\ntwo\rthree four }', {}, [
-      { type: 'unsupported-annotation' }
+      { type: 'unsupported-expression' }
     ]);
     expect(msg).toMatchObject([{ type: 'fallback', source: '+' }]);
   });

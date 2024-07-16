@@ -17,4 +17,5 @@ package-lock.json
 /packages/runtime/esm/
 /packages/runtime/lib/
 /packages/test-utils/lib/
+/test/messageformat-wg/
 /tmp/

@@ -60,7 +60,7 @@ function stringifyDeclaration(decl: Declaration) {
             : stringifyMarkup(exp)
         );
       }
-      return parts.join(' ');
+      return parts.join(' ') + '\n';
     }
   }
   // @ts-expect-error Guard against non-TS users with bad data

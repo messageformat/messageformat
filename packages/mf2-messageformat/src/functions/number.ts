@@ -81,7 +81,7 @@ export function number(
   }
   if (typeof value !== 'bigint' && typeof value !== 'number') {
     const msg = 'Input is not numeric';
-    throw new MessageResolutionError('bad-input', msg, source);
+    throw new MessageResolutionError('bad-operand', msg, source);
   }
 
   if (options) {

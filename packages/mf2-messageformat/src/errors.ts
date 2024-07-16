@@ -85,10 +85,10 @@ export class MessageDataModelError extends MessageSyntaxError {
 export class MessageResolutionError extends MessageError {
   declare type:
     | 'bad-function-result'
-    | 'bad-input'
+    | 'bad-operand'
     | 'bad-option'
-    | 'unresolved-var'
-    | 'unsupported-annotation'
+    | 'unresolved-variable'
+    | 'unsupported-expression'
     | 'unsupported-statement';
   source: string;
   constructor(

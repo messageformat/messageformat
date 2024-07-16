@@ -11,6 +11,6 @@ export function resolveUnsupportedAnnotation(
 ) {
   const sigil = source[0];
   const msg = `Reserved ${sigil} annotation is not supported`;
-  ctx.onError(new MessageResolutionError('unsupported-annotation', msg, sigil));
+  ctx.onError(new MessageResolutionError('unsupported-expression', msg, sigil));
   return fallback(getValueSource(operand) ?? sigil);
 }

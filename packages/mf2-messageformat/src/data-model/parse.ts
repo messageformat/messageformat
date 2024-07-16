@@ -199,7 +199,7 @@ function localDeclaration(): Model.LocalDeclaration {
 function unsupportedStatement(keyword: string): Model.UnsupportedStatement {
   pos += 1 + keyword.length; // '.' + keyword
   ws('{');
-  const body = reservedBody();
+  const body = reservedBody() || undefined;
   const expressions: (Model.Expression | Model.Markup)[] = [];
   while (source[pos] === '{') {
     if (source.startsWith('{{', pos)) break;

@@ -27,6 +27,12 @@ To run the browser tests locally, do one of the following:
 
 Due to relying on Intl.NumberFormat pretty heavily, not all tests will pass in all environments; some will be skipped.
 
+Some of the MessageFormat 2 tests rely on the conformance test data maintained in the [unicode-org/message-format-wg](https://github.com/unicode-org/message-format-wg/tree/main/test) repository. That's included here as a git submodule, which is required for the tests to pass:
+
+```
+git submodule update --init
+```
+
 [browserstack]: https://www.browserstack.com/open-source
 [chromedriver]: https://chromedriver.chromium.org
 [geckodriver]: https://firefox-source-docs.mozilla.org/testing/geckodriver/
