@@ -1,4 +1,3 @@
-import { MessageFormat } from '../messageformat.js';
 import { isValidUnquotedLiteral } from '../cst/names.js';
 import {
   isLiteral,
@@ -24,8 +23,7 @@ import type {
  *
  * @beta
  */
-export function stringifyMessage(msg: Message | MessageFormat) {
-  if (msg instanceof MessageFormat) msg = msg.resolvedOptions().message;
+export function stringifyMessage(msg: Message) {
   let res = '';
   for (const decl of msg.declarations) res += stringifyDeclaration(decl);
   if (isPatternMessage(msg)) {
