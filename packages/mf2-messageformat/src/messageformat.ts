@@ -156,9 +156,7 @@ export class MessageFormat {
   resolvedOptions() {
     return {
       functions: Object.freeze(this.#functions),
-      localeMatcher: this.#localeMatcher,
-      locales: this.#locales.slice(),
-      message: Object.freeze(this.#message)
+      localeMatcher: this.#localeMatcher
     };
   }
 
