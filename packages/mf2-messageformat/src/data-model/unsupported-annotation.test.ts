@@ -5,7 +5,7 @@ function resolve(
   params: Record<string, unknown>,
   errors: any[] = []
 ) {
-  const mf = new MessageFormat(source);
+  const mf = new MessageFormat(undefined, source);
   const onError = jest.fn();
   const res = mf.formatToParts(params, onError);
   expect(onError).toHaveBeenCalledTimes(errors.length);
@@ -49,6 +49,8 @@ describe('Reserved syntax', () => {
   });
 
   test('surrogates', () => {
-    expect(() => new MessageFormat('{ %invalid \ud900 surrogate }')).toThrow();
+    expect(
+      () => new MessageFormat(undefined, '{ %invalid \ud900 surrogate }')
+    ).toThrow();
   });
 });

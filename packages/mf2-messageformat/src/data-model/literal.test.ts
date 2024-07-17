@@ -1,7 +1,7 @@
 import { MessageFormat } from '../index.js';
 
 function resolve(source: string, errors: any[] = []) {
-  const mf = new MessageFormat(source);
+  const mf = new MessageFormat(undefined, source);
   const onError = jest.fn();
   const res = mf.formatToParts(undefined, onError);
   expect(onError).toHaveBeenCalledTimes(errors.length);
@@ -26,8 +26,12 @@ describe('quoted literals', () => {
   });
 
   test('invalid escapes', () => {
-    expect(() => new MessageFormat('{|quoted \\}iteral|}')).toThrow();
-    expect(() => new MessageFormat('{|quoted \\{iteral|}')).toThrow();
+    expect(
+      () => new MessageFormat(undefined, '{|quoted \\}iteral|}')
+    ).toThrow();
+    expect(
+      () => new MessageFormat(undefined, '{|quoted \\{iteral|}')
+    ).toThrow();
   });
 });
 

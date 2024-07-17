@@ -16,7 +16,7 @@ test('Custom function', () => {
       toString: () => `str:${input}`
     })
   } satisfies MessageFunctions;
-  const mf = new MessageFormat('{$var :custom}', 'en', { functions });
+  const mf = new MessageFormat('en', '{$var :custom}', { functions });
   expect(mf.format({ var: 42 })).toEqual('str:42');
   expect(mf.formatToParts({ var: 42 })).toEqual([
     { type: 'custom', source: '$var', locale: 'en', value: 'part:42' }
@@ -26,9 +26,9 @@ test('Custom function', () => {
 describe('inputs with options', () => {
   test('local variable with :number expression', () => {
     const mf = new MessageFormat(
+      'en',
       `.local $val = {12345678 :number useGrouping=false}
-      {{{$val :number minimumFractionDigits=2}}}`,
-      'en'
+      {{{$val :number minimumFractionDigits=2}}}`
     );
     //const val = new MessageNumber(null, BigInt(12345678), { options: { useGrouping: false } });
     const msg = mf.formatToParts();
@@ -43,8 +43,8 @@ describe('inputs with options', () => {
 
   test('value with options', () => {
     const mf = new MessageFormat(
-      '{$val :number minimumFractionDigits=2}',
-      'en'
+      'en',
+      '{$val :number minimumFractionDigits=2}'
     );
     const val = Object.assign(new Number(12345678), {
       options: { minimumFractionDigits: 4, useGrouping: false }
@@ -61,8 +61,8 @@ describe('inputs with options', () => {
 
   test('MessageValue locales take precedence', () => {
     const mf = new MessageFormat(
-      '{$val :number minimumFractionDigits=2}',
-      'en'
+      'en',
+      '{$val :number minimumFractionDigits=2}'
     );
     const val = Object.assign(new Number(12345), { locale: 'fi' });
     const msg = mf.formatToParts({ val });
@@ -75,16 +75,16 @@ describe('inputs with options', () => {
 
 describe('Type casts based on runtime', () => {
   test('boolean function option with literal value', () => {
-    const mfTrue = new MessageFormat('{$var :number useGrouping=true}', 'en');
+    const mfTrue = new MessageFormat('en', '{$var :number useGrouping=true}');
     expect(mfTrue.format({ var: 1234 })).toBe('1,234');
-    const mfFalse = new MessageFormat('{$var :number useGrouping=false}', 'en');
+    const mfFalse = new MessageFormat('en', '{$var :number useGrouping=false}');
     expect(mfFalse.format({ var: 1234 })).toBe('1234');
   });
 
   test('boolean function option with variable value', () => {
     const mf = new MessageFormat(
-      '{$var :number useGrouping=$useGrouping}',
-      'en'
+      'en',
+      '{$var :number useGrouping=$useGrouping}'
     );
     expect(mf.format({ var: 1234, useGrouping: 'false' })).toBe('1234');
     expect(mf.format({ var: 1234, useGrouping: false })).toBe('1234');
@@ -96,7 +96,7 @@ describe('Function return is not a MessageValue', () => {
     const functions = {
       fail: () => ({ type: 'fail' }) as any
     } satisfies MessageFunctions;
-    const mf = new MessageFormat('{:fail}', 'en', { functions });
+    const mf = new MessageFormat('en', '{:fail}', { functions });
     const onError = jest.fn();
     expect(mf.format(undefined, onError)).toEqual('{:fail}');
     expect(mf.formatToParts(undefined, onError)).toEqual([
@@ -109,7 +109,7 @@ describe('Function return is not a MessageValue', () => {
     const functions = {
       fail: () => null as any
     } satisfies MessageFunctions;
-    const mf = new MessageFormat('{42 :fail}', 'en', { functions });
+    const mf = new MessageFormat('en', '{42 :fail}', { functions });
     const onError = jest.fn();
     expect(mf.format(undefined, onError)).toEqual('{|42|}');
     expect(mf.formatToParts(undefined, onError)).toEqual([

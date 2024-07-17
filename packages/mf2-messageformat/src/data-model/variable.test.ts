@@ -3,7 +3,7 @@ import { MessageFormat } from '../index.js';
 describe('variables', () => {
   let mf: MessageFormat;
   beforeEach(() => {
-    mf = new MessageFormat('{$val}', 'en');
+    mf = new MessageFormat('en', '{$val}');
   });
 
   test('number', () => {
@@ -78,7 +78,7 @@ describe('variables', () => {
 describe('Variable paths', () => {
   let mf: MessageFormat;
   beforeEach(() => {
-    mf = new MessageFormat('{$user.name}', 'en');
+    mf = new MessageFormat('en', '{$user.name}');
   });
 
   test('top-level match', () => {

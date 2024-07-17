@@ -25,7 +25,9 @@ const tests = (tc: Test) => () => {
     case 'syntax-error':
       describe('syntax error', () => {
         test('MessageFormat(string)', () => {
-          expect(() => new MessageFormat(tc.src)).toThrow(MessageSyntaxError);
+          expect(() => new MessageFormat(undefined, tc.src)).toThrow(
+            MessageSyntaxError
+          );
         });
         test('parseCST(string)', () => {
           const cst = parseCST(tc.src);
@@ -39,7 +41,7 @@ const tests = (tc: Test) => () => {
     case 'data-model-error':
       describe('data model error', () => {
         test('MessageFormat(string)', () => {
-          expect(() => new MessageFormat(tc.src)).toThrow(
+          expect(() => new MessageFormat(undefined, tc.src)).toThrow(
             MessageDataModelError
           );
         });
@@ -56,7 +58,7 @@ const tests = (tc: Test) => () => {
     default:
       test('format', () => {
         let errors: any[] = [];
-        const mf = new MessageFormat(tc.src, tc.locale);
+        const mf = new MessageFormat(tc.locale, tc.src);
         const msg = mf.format(tc.params, err => errors.push(err));
         if (typeof tc.exp === 'string') expect(msg).toBe(tc.exp);
         if (Array.isArray(tc.expErrors)) {

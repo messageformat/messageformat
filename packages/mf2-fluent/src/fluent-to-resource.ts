@@ -46,7 +46,7 @@ export function fluentToResource(
       res.set(id, rg);
     }
     for (const [attr, msg] of group) {
-      rg.set(attr, new MessageFormat(msg, locales, opt));
+      rg.set(attr, new MessageFormat(locales, msg, opt));
     }
   }
 

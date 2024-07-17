@@ -76,8 +76,8 @@ export class MessageFormat {
   readonly #functions: Readonly<MessageFunctions>;
 
   constructor(
+    locales: string | string[] | undefined,
     source: string | Message,
-    locales?: string | string[],
     options?: MessageFormatOptions
   ) {
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
