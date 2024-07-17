@@ -2,7 +2,7 @@ import { MessageFormat, parseCST } from '../index.js';
 
 describe('Simple open/close', () => {
   test('no options, literal body', () => {
-    const mf = new MessageFormat('{#b}foo{/b}');
+    const mf = new MessageFormat(undefined, '{#b}foo{/b}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
       { type: 'literal', value: 'foo' },
@@ -13,8 +13,8 @@ describe('Simple open/close', () => {
 
   test('options', () => {
     const mf = new MessageFormat(
-      '{#b foo=42 bar=$foo}foo{$foo}{/b foo=| bar 13 |}',
-      'en'
+      'en',
+      '{#b foo=42 bar=$foo}foo{$foo}{/b foo=| bar 13 |}'
     );
     const msg = mf.formatToParts({ foo: 'foo bar' });
     expect(msg).toEqual([
@@ -40,7 +40,7 @@ describe('Simple open/close', () => {
 
   test('do not allow operands', () => {
     const src = '{x #b}';
-    expect(() => new MessageFormat(src, 'en')).toThrow();
+    expect(() => new MessageFormat('en', src)).toThrow();
     const cst = parseCST(src);
     expect(cst).toMatchObject({
       type: 'simple',
@@ -59,7 +59,7 @@ describe('Simple open/close', () => {
 
 describe('Multiple open/close', () => {
   test('adjacent', () => {
-    const mf = new MessageFormat('{#b}foo{/b}{#a}bar{/a}');
+    const mf = new MessageFormat(undefined, '{#b}foo{/b}{#a}bar{/a}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
       { type: 'literal', value: 'foo' },
@@ -72,7 +72,7 @@ describe('Multiple open/close', () => {
   });
 
   test('nested', () => {
-    const mf = new MessageFormat('{#b}foo{#a}bar{/a}{/b}');
+    const mf = new MessageFormat(undefined, '{#b}foo{#a}bar{/a}{/b}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
       { type: 'literal', value: 'foo' },
@@ -85,7 +85,7 @@ describe('Multiple open/close', () => {
   });
 
   test('overlapping', () => {
-    const mf = new MessageFormat('{#b}foo{#a}bar{/b}baz{/a}');
+    const mf = new MessageFormat(undefined, '{#b}foo{#a}bar{/b}baz{/a}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
       { type: 'literal', value: 'foo' },

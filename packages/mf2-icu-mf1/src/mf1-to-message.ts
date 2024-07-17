@@ -36,5 +36,5 @@ export function mf1ToMessage(
     msg = source;
   }
   opt.functions = Object.assign(getMF1Functions(), opt.functions);
-  return new MessageFormat(msg, locales, opt);
+  return new MessageFormat(locales, msg, opt);
 }
