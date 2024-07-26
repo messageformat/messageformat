@@ -1,4 +1,4 @@
 const { testBrowser } = require('../browserstack-runner');
 
-const version = '93.0';
+const version = '115.0';
 it(`Firefox ${version}`, () => testBrowser('Firefox', version));
