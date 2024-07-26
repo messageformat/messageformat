@@ -4,20 +4,19 @@
     <meta charset="utf-8" />
     <title>messageformat Test Suite</title>
     <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
-    <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/mocha-selenium-bridge/browser/reporter.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../packages/core/messageformat.js"></script>
-    <script>
+    <script type="module">
+      import * as chai from "../../node_modules/chai/chai.js";
+      window.chai = chai;
       if (navigator.webdriver) mocha.reporter(Bridge);
       mocha.setup('bdd');
+      await import("./dist/browser-tests.js");
+      mocha.run();
     </script>
-    <script src="dist/browser-tests.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
-    <script>
-      mocha.run();
-    </script>
   </body>
 </html>
