@@ -8,11 +8,11 @@
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../packages/core/messageformat.js"></script>
     <script type="module">
-      import * as chai from "../../node_modules/chai/chai.js";
+      import * as chai from '../../node_modules/chai/chai.js';
       window.chai = chai;
       if (navigator.webdriver) mocha.reporter(Bridge);
       mocha.setup('bdd');
-      await import("./dist/browser-tests.js");
+      await import('./dist/browser-tests.js');
       mocha.run();
     </script>
   </head>
