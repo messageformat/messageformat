@@ -56,20 +56,21 @@ export function number(
   options: Record<string | symbol, unknown>,
   input?: unknown
 ): MessageNumber {
-  let value: unknown;
   const opt: Intl.NumberFormatOptions &
     Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
     localeMatcher
   };
-  if (typeof input === 'object') {
-    if (typeof input?.valueOf === 'function') {
-      value = input.valueOf();
-      if ('options' in input) Object.assign(opt, input.options);
+  let value = input;
+  if (typeof value === 'object') {
+    const valueOf = value?.valueOf;
+    if (typeof valueOf === 'function') {
+      Object.assign(opt, (value as { options: unknown }).options);
+      value = valueOf.call(value);
     }
   }
-  if (typeof input === 'string') {
+  if (typeof value === 'string') {
     try {
-      value = JSON.parse(input);
+      value = JSON.parse(value);
     } catch {
       // handled below
     }
@@ -78,7 +79,6 @@ export function number(
     const msg = 'Input is not numeric';
     throw new MessageResolutionError('bad-operand', msg, source);
   }
-
   if (options) {
     for (const [name, value] of Object.entries(options)) {
       if (value === undefined) continue;

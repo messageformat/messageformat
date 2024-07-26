@@ -437,7 +437,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    const res = fluentToResource(src);
+    const res = fluentToResource(src, "en");
 
     test('defined formatted variable', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
@@ -446,7 +446,7 @@ describe('formatToParts', () => {
         {
           type: 'number',
           source: '$num',
-          locale: 'en-US',
+          locale: 'en',
           parts: [{ type: 'integer', value: '42' }]
         }
       ]);
