@@ -109,11 +109,16 @@ function stringifyPattern(pattern: Pattern, quoted: boolean) {
     quoted = true;
   }
   for (const el of pattern) {
-    if (typeof el === 'string') res += el;
+    if (typeof el === 'string') res += stringifyString(el, quoted);
     else if (el.type === 'markup') res += stringifyMarkup(el);
     else res += stringifyExpression(el);
   }
   return quoted ? `{{${res}}}` : res;
+}
+
+function stringifyString(str: string, quoted: boolean) {
+  const esc = quoted ? /[\\|]/g : /[\\{}]/g;
+  return str.replace(esc, '\\$&');
 }
 
 function stringifyExpression({ arg, annotation, attributes }: Expression) {
