@@ -105,7 +105,7 @@ function stringifyAttribute({ name, value }: Attribute) {
 
 function stringifyPattern(pattern: Pattern, quoted: boolean) {
   let res = '';
-  if (!quoted && typeof pattern[0] === 'string' && pattern[0][0] === '.') {
+  if (!quoted && typeof pattern[0] === 'string' && /^\s*\./.test(pattern[0])) {
     quoted = true;
   }
   for (const el of pattern) {

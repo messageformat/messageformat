@@ -72,6 +72,7 @@ export function parseMessage(
   if (source.startsWith('.match', pos)) return selectMessage(decl);
 
   const quoted = decl.length > 0 || source.startsWith('{{', pos);
+  if (!quoted && pos > 0) pos = 0;
   const pattern_ = pattern(quoted);
   if (quoted) {
     ws();
@@ -149,6 +150,7 @@ function pattern(quoted: boolean): Model.Pattern {
 
 function declarations(): Model.Declaration[] {
   const declarations: Model.Declaration[] = [];
+  ws();
   loop: while (source[pos] === '.') {
     const keyword = parseNameValue(source, pos + 1);
     switch (keyword) {
