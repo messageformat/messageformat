@@ -32,6 +32,7 @@ export class MessageSyntaxError extends MessageError {
     | 'bad-input-expression'
     | 'duplicate-declaration'
     | 'duplicate-option'
+    | 'duplicate-variant'
     | 'extra-content'
     | 'key-mismatch'
     | 'parse-error'
@@ -64,6 +65,7 @@ export class MessageDataModelError extends MessageSyntaxError {
   declare type:
     | 'duplicate-declaration'
     | 'duplicate-option'
+    | 'duplicate-variant'
     | 'key-mismatch'
     | 'missing-fallback'
     | 'missing-selector-annotation';
