@@ -28,7 +28,7 @@ export function resolveFunctionAnnotation(
 
     const rf = ctx.functions[name];
     if (!rf) {
-      throw new MessageError('missing-func', `Unknown function :${name}`);
+      throw new MessageError('unknown-function', `Unknown function :${name}`);
     }
     const msgCtx = new MessageFunctionContext(ctx, source);
     const opt = resolveOptions(ctx, options);

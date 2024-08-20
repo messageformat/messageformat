@@ -272,7 +272,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'plural',
         scope: {},
         exp: 'B',
-        errors: ['$selector', 'bad-operand', 'not-selectable']
+        errors: ['$selector', 'bad-operand', 'bad-selector']
       },
       { msg: 'plural', scope: { selector: 1 }, exp: 'A' },
       { msg: 'plural', scope: { selector: 2 }, exp: 'B' },
@@ -280,7 +280,7 @@ const testCases: Record<string, TestCase> = {
         msg: 'plural',
         scope: { selector: 'one' },
         exp: 'B',
-        errors: ['bad-operand', 'not-selectable']
+        errors: ['bad-operand', 'bad-selector']
       },
       {
         msg: 'default',
@@ -667,7 +667,7 @@ describe('formatToParts', () => {
       expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
       expect(onError.mock.calls.map(args => args[0].type)).toEqual([
         'bad-operand',
-        'not-selectable'
+        'bad-selector'
       ]);
     });
   });

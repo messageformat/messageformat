@@ -95,7 +95,7 @@ function parseSelectMessage(
     const sel = parseExpression(ctx, pos);
     const body = sel.markup ?? sel.annotation;
     if (body && body.type !== 'function') {
-      ctx.onError('bad-selector', body.start, body.end);
+      ctx.onError('parse-error', body.start, body.end);
     }
     selectors.push(sel);
     pos = sel.end;

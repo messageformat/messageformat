@@ -8,8 +8,8 @@ import { cst } from './data-model/from-cst.js';
  */
 export class MessageError extends Error {
   type:
-    | 'missing-func'
     | 'not-formattable'
+    | 'unknown-function'
     | typeof MessageResolutionError.prototype.type
     | typeof MessageSelectionError.prototype.type
     | typeof MessageSyntaxError.prototype.type;
@@ -30,7 +30,6 @@ export class MessageSyntaxError extends MessageError {
     | 'empty-token'
     | 'bad-escape'
     | 'bad-input-expression'
-    | 'bad-selector'
     | 'duplicate-declaration'
     | 'duplicate-option'
     | 'extra-content'
@@ -107,7 +106,7 @@ export class MessageResolutionError extends MessageError {
  * @beta
  */
 export class MessageSelectionError extends MessageError {
-  declare type: 'no-match' | 'not-selectable';
+  declare type: 'bad-selector' | 'no-match';
   constructor(type: typeof MessageSelectionError.prototype.type) {
     super(type, `Selection error: ${type}`);
   }

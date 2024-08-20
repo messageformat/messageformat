@@ -15,7 +15,7 @@ export function selectPattern(context: Context, message: Message): Pattern {
         if (typeof selector.selectKey === 'function') {
           selectKey = selector.selectKey.bind(selector);
         } else {
-          context.onError(new MessageSelectionError('not-selectable'));
+          context.onError(new MessageSelectionError('bad-selector'));
           selectKey = () => null;
         }
         return {
@@ -70,7 +70,7 @@ export function selectPattern(context: Context, message: Message): Pattern {
     }
 
     default:
-      context.onError(new MessageSelectionError('not-selectable'));
+      context.onError(new MessageSelectionError('bad-selector'));
       return [];
   }
 }
