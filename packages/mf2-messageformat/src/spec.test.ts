@@ -47,14 +47,18 @@ const tests = (tc: Test) => () => {
       describe('data model error', () => {
         test('MessageFormat(string)', () => {
           expect(() => new MessageFormat(undefined, tc.src)).toThrow(
-            MessageDataModelError
+            MessageSyntaxError
           );
         });
         test('parseCST(string)', () => {
           const cst = parseCST(tc.src);
-          const msg = messageFromCST(cst);
           const onError = jest.fn();
-          validate(msg, onError);
+          try {
+            const msg = messageFromCST(cst);
+            validate(msg, onError);
+          } catch (error) {
+            onError(error);
+          }
           expect(onError).toHaveBeenCalledTimes(1);
         });
       });
@@ -95,7 +99,6 @@ const tests = (tc: Test) => () => {
         visit(msg2, {
           node(node) {
             delete node[cst];
-            if ('attributes' in node) delete node.attributes;
           }
         });
 
@@ -123,6 +126,7 @@ for (const scenario of testScenarios('test/messageformat-wg/test/tests')) {
   describe(scenario.scenario, () => {
     for (const tc of testCases(scenario)) {
       (tc.only ? describe.only : describe)(testName(tc), tests(tc));
+      //if (tc.only) describe(testName(tc), tests(tc));
     }
   });
 }

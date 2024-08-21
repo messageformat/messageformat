@@ -30,8 +30,9 @@ export class MessageSyntaxError extends MessageError {
     | 'empty-token'
     | 'bad-escape'
     | 'bad-input-expression'
+    | 'duplicate-attribute'
     | 'duplicate-declaration'
-    | 'duplicate-option'
+    | 'duplicate-option-name'
     | 'duplicate-variant'
     | 'extra-content'
     | 'key-mismatch'
@@ -64,7 +65,6 @@ export class MessageSyntaxError extends MessageError {
 export class MessageDataModelError extends MessageSyntaxError {
   declare type:
     | 'duplicate-declaration'
-    | 'duplicate-option'
     | 'duplicate-variant'
     | 'key-mismatch'
     | 'missing-fallback'

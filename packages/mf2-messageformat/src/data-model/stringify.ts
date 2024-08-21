@@ -6,14 +6,12 @@ import {
   isVariableRef
 } from './type-guards.js';
 import type {
-  Attribute,
   Declaration,
   Expression,
   FunctionAnnotation,
   Literal,
   Markup,
   Message,
-  Option,
   Pattern,
   VariableRef
 } from './types.js';
@@ -67,16 +65,26 @@ function stringifyDeclaration(decl: Declaration) {
 
 function stringifyFunctionAnnotation({ name, options }: FunctionAnnotation) {
   let res = `:${name}`;
-  if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
+  if (options) {
+    for (const [key, value] of options) {
+      res += ' ' + stringifyOption(key, value);
+    }
+  }
   return res;
 }
 
 function stringifyMarkup({ kind, name, options, attributes }: Markup) {
   let res = kind === 'close' ? '{/' : '{#';
   res += name;
-  if (options) for (const opt of options) res += ' ' + stringifyOption(opt);
+  if (options) {
+    for (const [name, value] of options) {
+      res += ' ' + stringifyOption(name, value);
+    }
+  }
   if (attributes) {
-    for (const attr of attributes) res += ' ' + stringifyAttribute(attr);
+    for (const [name, value] of attributes) {
+      res += ' ' + stringifyAttribute(name, value);
+    }
   }
   res += kind === 'standalone' ? ' /}' : '}';
   return res;
@@ -88,19 +96,15 @@ function stringifyLiteral({ value }: Literal) {
   return `|${esc}|`;
 }
 
-function stringifyOption({ name, value }: Option) {
+function stringifyOption(name: string, value: Literal | VariableRef) {
   const valueStr = isVariableRef(value)
     ? stringifyVariableRef(value)
     : stringifyLiteral(value);
   return `${name}=${valueStr}`;
 }
 
-function stringifyAttribute({ name, value }: Attribute) {
-  if (!value) return `@${name}`;
-  const valueStr = isVariableRef(value)
-    ? stringifyVariableRef(value)
-    : stringifyLiteral(value);
-  return `@${name}=${valueStr}`;
+function stringifyAttribute(name: string, value: true | Literal) {
+  return value === true ? `@${name}` : `@${name}=${stringifyLiteral(value)}`;
 }
 
 function stringifyPattern(pattern: Pattern, quoted: boolean) {
@@ -141,7 +145,9 @@ function stringifyExpression({ arg, annotation, attributes }: Expression) {
         : annotation.source ?? '�';
   }
   if (attributes) {
-    for (const attr of attributes) res += ' ' + stringifyAttribute(attr);
+    for (const [name, value] of attributes) {
+      res += ' ' + stringifyAttribute(name, value);
+    }
   }
   return `{${res}}`;
 }

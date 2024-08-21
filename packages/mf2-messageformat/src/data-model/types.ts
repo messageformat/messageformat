@@ -15,9 +15,7 @@ export type MessageNode =
   | VariableRef
   | FunctionAnnotation
   | UnsupportedAnnotation
-  | Markup
-  | Option
-  | Attribute;
+  | Markup;
 
 /**
  * The representation of a single message.
@@ -140,21 +138,13 @@ export type Expression<
     | Literal
     | VariableRef
     | undefined
-> = A extends Literal | VariableRef
-  ? {
-      type: 'expression';
-      arg: A;
-      annotation?: FunctionAnnotation | UnsupportedAnnotation;
-      attributes?: Attribute[];
-      [cst]?: CST.Expression;
-    }
-  : {
-      type: 'expression';
-      arg?: never;
-      annotation: FunctionAnnotation | UnsupportedAnnotation;
-      attributes?: Attribute[];
-      [cst]?: CST.Expression;
-    };
+> = {
+  type: 'expression';
+  attributes?: Attributes;
+  [cst]?: CST.Expression;
+} & (A extends Literal | VariableRef
+  ? { arg: A; annotation?: FunctionAnnotation | UnsupportedAnnotation }
+  : { arg?: never; annotation: FunctionAnnotation | UnsupportedAnnotation });
 
 /**
  * An immediately defined value.
@@ -206,7 +196,7 @@ export interface VariableRef {
 export interface FunctionAnnotation {
   type: 'function';
   name: string;
-  options?: Option[];
+  options?: Options;
   [cst]?: CST.FunctionRef;
 }
 
@@ -245,33 +235,21 @@ export interface Markup {
   type: 'markup';
   kind: 'open' | 'standalone' | 'close';
   name: string;
-  options?: Option[];
-  attributes?: Attribute[];
+  options?: Options;
+  attributes?: Attributes;
   [cst]?: CST.Expression;
 }
 
 /**
- * The options of {@link FunctionAnnotation} and {@link Markup}
- * are expressed as `key`/`value` pairs to allow their order to be maintained.
+ * The options of {@link FunctionAnnotation} and {@link Markup}.
  *
  * @beta
  */
-export interface Option {
-  type?: never;
-  name: string;
-  value: Literal | VariableRef;
-  [cst]?: CST.Option;
-}
+export type Options = Map<string, Literal | VariableRef>;
 
 /**
- * The attributes of {@link Expression} and {@link Markup}
- * are expressed as `key`/`value` pairs to allow their order to be maintained.
+ * The attributes of {@link Expression} and {@link Markup}.
  *
  * @beta
  */
-export interface Attribute {
-  type?: never;
-  name: string;
-  value?: Literal | VariableRef;
-  [cst]?: CST.Attribute;
-}
+export type Attributes = Map<string, true | Literal>;

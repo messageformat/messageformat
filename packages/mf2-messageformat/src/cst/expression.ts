@@ -277,15 +277,12 @@ function parseAttribute(ctx: ParseContext, start: number): CST.Attribute {
   let pos = id.end;
   const ws = whitespaces(source, pos);
   let equals: CST.Syntax<'='> | undefined;
-  let value: CST.Literal | CST.VariableRef | undefined;
+  let value: CST.Literal | undefined;
   if (source[pos + ws] === '=') {
     pos += ws + 1;
     equals = { start: pos - 1, end: pos, value: '=' };
     pos += whitespaces(source, pos);
-    value =
-      source[pos] === '$'
-        ? parseVariable(ctx, pos)
-        : parseLiteral(ctx, pos, true);
+    value = parseLiteral(ctx, pos, true);
     pos = value.end;
   }
   return {

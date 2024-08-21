@@ -3,7 +3,7 @@ import type {
   Expression,
   FunctionAnnotation,
   Message,
-  Option,
+  Options,
   VariableRef,
   Variant
 } from 'messageformat';
@@ -76,9 +76,7 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        annotation.options = [
-          { name: 'param', value: { type: 'literal', value } }
-        ];
+        annotation.options = new Map([['param', { type: 'literal', value }]]);
       }
       return {
         type: 'expression',
@@ -93,12 +91,9 @@ function tokenToPart(
         name: 'number'
       };
       if (pluralOffset) {
-        annotation.options = [
-          {
-            name: 'pluralOffset',
-            value: { type: 'literal', value: String(pluralOffset) }
-          }
-        ];
+        annotation.options = new Map([
+          ['pluralOffset', { type: 'literal', value: String(pluralOffset) }]
+        ]);
       }
       return {
         type: 'expression',
@@ -126,22 +121,19 @@ function argToExpression({
     };
   }
 
-  const options: Option[] = [];
+  const options: Options = new Map();
   if (pluralOffset) {
-    options.push({
-      name: 'pluralOffset',
-      value: { type: 'literal', value: String(pluralOffset) }
+    options.set('pluralOffset', {
+      type: 'literal',
+      value: String(pluralOffset)
     });
   }
   if (type === 'selectordinal') {
-    options.push({
-      name: 'type',
-      value: { type: 'literal', value: 'ordinal' }
-    });
+    options.set('type', { type: 'literal', value: 'ordinal' });
   }
 
   const annotation: FunctionAnnotation = { type: 'function', name: 'number' };
-  if (options.length) annotation.options = options;
+  if (options.size) annotation.options = options;
 
   return { type: 'expression', arg, annotation };
 }

@@ -25,9 +25,6 @@ import { visit } from './visit.js';
  * - **Invalid Forward Reference**:
  *   A _declaration_ _expression_ refers to a _variable_ defined by a later _declaration_.
  *
- * - **Duplicate Option Name**:
- *   The same _identifier_ appears as the name of more than one _option_ in the same _expression_.
- *
  * - **Duplicate Variant**:
  *   The same list of _keys_ is used for more than one _variant_.
  *
@@ -92,15 +89,6 @@ export function validate(
           (arg?.type !== 'variable' || !annotated.has(arg.name))
         ) {
           onError('missing-selector-annotation', expression);
-        }
-      }
-    },
-
-    option({ name }, index, options) {
-      for (let j = index + 1; j < options.length; ++j) {
-        if (options[j].name === name) {
-          onError('duplicate-option', options[j]);
-          break;
         }
       }
     },
