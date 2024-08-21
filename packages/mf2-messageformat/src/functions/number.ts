@@ -40,8 +40,6 @@ export interface MessageNumberPart extends MessageExpressionPart {
   parts: Intl.NumberFormatPart[];
 }
 
-const NotFormattable = Symbol('not-formattable');
-
 /**
  * `number` accepts a number, BigInt or string representing a JSON number as input
  * and formats it with the same options as
@@ -110,7 +108,6 @@ export function number(
     }
   }
 
-  const formattable = !options[NotFormattable];
   const lc = mergeLocales(locales, input, options);
   const num = value;
   let locale: string | undefined;
@@ -137,21 +134,17 @@ export function number(
       cat ??= new Intl.PluralRules(lc, pluralOpt).select(Number(num));
       return keys.has(cat) ? cat : null;
     },
-    toParts: formattable
-      ? () => {
-          nf ??= new Intl.NumberFormat(lc, opt);
-          const parts = nf.formatToParts(num);
-          locale ??= nf.resolvedOptions().locale;
-          return [{ type: 'number', source, locale, parts }];
-        }
-      : undefined,
-    toString: formattable
-      ? () => {
-          nf ??= new Intl.NumberFormat(lc, opt);
-          str ??= nf.format(num);
-          return str;
-        }
-      : undefined,
+    toParts() {
+      nf ??= new Intl.NumberFormat(lc, opt);
+      const parts = nf.formatToParts(num);
+      locale ??= nf.resolvedOptions().locale;
+      return [{ type: 'number', source, locale, parts }];
+    },
+    toString() {
+      nf ??= new Intl.NumberFormat(lc, opt);
+      str ??= nf.format(num);
+      return str;
+    },
     valueOf: () => num
   };
 }
