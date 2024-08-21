@@ -36,7 +36,13 @@ export function selectPattern(context: Context, message: Message): Pattern {
             if (key.type !== '*') sc.keys.add(key.value);
           }
         }
-        sc.best = sc.keys.size ? sc.selectKey(sc.keys) : null;
+        try {
+          sc.best = sc.keys.size ? sc.selectKey(sc.keys) : null;
+        } catch (error) {
+          context.onError(new MessageSelectionError('bad-selector', error));
+          sc.selectKey = () => null;
+          sc.best = null;
+        }
 
         // Leave out all candidate variants that aren't the best,
         // or only the catchall ones, if nothing else matches.
