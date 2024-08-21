@@ -72,7 +72,7 @@ export const datetime = (
 
     // Set defaults if localeMatcher is the only option
     if (Object.keys(res).length <= 1) {
-      res.dateStyle = 'short';
+      res.dateStyle = 'medium';
       res.timeStyle = 'short';
     }
   });
@@ -89,7 +89,7 @@ export const date = (
   input?: unknown
 ): MessageDateTime =>
   dateTimeImplementation(ctx, options, input, res => {
-    const ds = options.style ?? res.dateStyle ?? 'short';
+    const ds = options.style ?? res.dateStyle ?? 'medium';
     for (const name of Object.keys(res)) {
       if (!localeOptions.includes(name)) delete res[name];
     }
