@@ -377,9 +377,7 @@ function text(): string {
     switch (source[i]) {
       case '\\': {
         const esc = source[i + 1];
-        if (esc !== '\\' && esc !== '{' && esc !== '}') {
-          throw SyntaxError('bad-escape', i, i + 2);
-        }
+        if (!'\\{|}'.includes(esc)) throw SyntaxError('bad-escape', i, i + 2);
         value += source.substring(pos, i) + esc;
         i += 1;
         pos = i + 1;
@@ -430,9 +428,7 @@ function quotedLiteral(): Model.Literal {
     switch (source[i]) {
       case '\\': {
         const esc = source[i + 1];
-        if (esc !== '\\' && esc !== '|') {
-          throw SyntaxError('bad-escape', i, i + 2);
-        }
+        if (!'\\{|}'.includes(esc)) throw SyntaxError('bad-escape', i, i + 2);
         value += source.substring(pos, i) + esc;
         i += 1;
         pos = i + 1;
