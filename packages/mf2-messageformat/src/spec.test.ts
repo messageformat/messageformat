@@ -9,6 +9,7 @@ import {
 import {
   MessageDataModelError,
   MessageFormat,
+  MessageFormatOptions,
   MessageSyntaxError,
   cst,
   messageFromCST,
@@ -19,6 +20,10 @@ import {
   validate,
   visit
 } from './index.js';
+
+import { testFunctions } from './functions/test-functions.js';
+
+const mfOpt: MessageFormatOptions = { functions: testFunctions };
 
 const tests = (tc: Test) => () => {
   switch (testType(tc)) {
@@ -58,7 +63,7 @@ const tests = (tc: Test) => () => {
     default:
       test('format', () => {
         let errors: any[] = [];
-        const mf = new MessageFormat(tc.locale, tc.src);
+        const mf = new MessageFormat(tc.locale, tc.src, mfOpt);
         const msg = mf.format(tc.params, err => errors.push(err));
         if (typeof tc.exp === 'string') expect(msg).toBe(tc.exp);
         if (Array.isArray(tc.expErrors)) {
