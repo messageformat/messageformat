@@ -24,7 +24,7 @@ export class UnresolvedExpression {
 }
 
 const isScope = (scope: unknown): scope is Record<string, unknown> =>
-  scope instanceof Object;
+  scope !== null && (typeof scope === 'object' || typeof scope === 'function');
 
 /**
  * Looks for the longest matching `.` delimited starting substring of name.

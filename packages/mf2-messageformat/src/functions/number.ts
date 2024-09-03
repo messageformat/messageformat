@@ -40,6 +40,8 @@ export interface MessageNumberPart extends MessageExpressionPart {
   parts: Intl.NumberFormatPart[];
 }
 
+const INT = Symbol('INT');
+
 /**
  * `number` accepts a number, BigInt or string representing a JSON number as input
  * and formats it with the same options as
@@ -77,39 +79,41 @@ export function number(
     const msg = 'Input is not numeric';
     throw new MessageResolutionError('bad-operand', msg, source);
   }
-  if (options) {
-    for (const [name, value] of Object.entries(options)) {
-      if (value === undefined) continue;
-      try {
-        switch (name) {
-          case 'locale':
-          case 'type': // used internally by Intl.PluralRules, but called 'select' here
-            break;
-          case 'minimumIntegerDigits':
-          case 'minimumFractionDigits':
-          case 'maximumFractionDigits':
-          case 'minimumSignificantDigits':
-          case 'maximumSignificantDigits':
-          case 'roundingIncrement':
-            // @ts-expect-error TS types don't know about roundingIncrement
-            opt[name] = asPositiveInteger(value);
-            break;
-          case 'useGrouping':
-            opt[name] = asBoolean(value);
-            break;
-          default:
-            // @ts-expect-error Unknown options will be ignored
-            opt[name] = asString(value);
-        }
-      } catch {
-        const msg = `Value ${value} is not valid for :number option ${name}`;
-        throw new MessageResolutionError('bad-option', msg, source);
+  for (const [name, optval] of Object.entries(options)) {
+    if (optval === undefined) continue;
+    try {
+      switch (name) {
+        case 'locale':
+        case 'type': // used internally by Intl.PluralRules, but called 'select' here
+          break;
+        case 'minimumIntegerDigits':
+        case 'minimumFractionDigits':
+        case 'maximumFractionDigits':
+        case 'minimumSignificantDigits':
+        case 'maximumSignificantDigits':
+        case 'roundingIncrement':
+          // @ts-expect-error TS types don't know about roundingIncrement
+          opt[name] = asPositiveInteger(optval);
+          break;
+        case 'useGrouping':
+          opt[name] = asBoolean(optval);
+          break;
+        default:
+          // @ts-expect-error Unknown options will be ignored
+          opt[name] = asString(optval);
       }
+    } catch {
+      const msg = `Value ${optval} is not valid for :number option ${name}`;
+      throw new MessageResolutionError('bad-option', msg, source);
     }
   }
 
+  const num =
+    Number.isFinite(value) && options[INT]
+      ? Math.round(value as number)
+      : value;
+
   const lc = mergeLocales(locales, input, options);
-  const num = value;
   let locale: string | undefined;
   let nf: Intl.NumberFormat | undefined;
   let cat: Intl.LDMLPluralRule | undefined;
@@ -167,6 +171,6 @@ export const integer = (
 ) =>
   number(
     ctx,
-    { ...options, maximumFractionDigits: 0, style: 'decimal' },
+    { ...options, maximumFractionDigits: 0, style: 'decimal', [INT]: true },
     input
   );

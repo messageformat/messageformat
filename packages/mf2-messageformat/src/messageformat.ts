@@ -175,7 +175,10 @@ export class MessageFormat {
     for (const decl of this.#message.declarations) {
       switch (decl.type) {
         case 'input':
-          scope[decl.name] = new UnresolvedExpression(decl.value, msgParams);
+          scope[decl.name] = new UnresolvedExpression(
+            decl.value,
+            msgParams ?? {}
+          );
           break;
         case 'local':
           scope[decl.name] = new UnresolvedExpression(decl.value);

@@ -24,7 +24,7 @@ export function messageFromCST(msg: CST.Message): Model.Message {
     return {
       type: 'select',
       declarations,
-      selectors: msg.selectors.map(sel => asExpression(sel, false)),
+      selectors: msg.selectors.map(sel => asValue(sel)),
       variants: msg.variants.map(variant => ({
         keys: variant.keys.map(key =>
           key.type === '*' ? { type: '*', [cst]: key } : asValue(key)

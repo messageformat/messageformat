@@ -1070,8 +1070,9 @@ export interface ResourceItem extends Element {
   name: 'res:resourceItem';
   attributes: {
     context?: YesNo;
-    id?: string;
+    id: string;
     mimeType?: string;
+    'mf:declaration'?: 'input' | 'local';
     [key: string]: string | number | undefined;
   };
   elements: (ResourceSource | ResourceTarget | ResourceReference)[];

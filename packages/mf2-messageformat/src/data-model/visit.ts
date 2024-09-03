@@ -36,17 +36,17 @@ export function visit(
   visitors: {
     annotation?: (
       annotation: FunctionAnnotation | UnsupportedAnnotation,
-      context: 'declaration' | 'selector' | 'placeholder',
+      context: 'declaration' | 'placeholder',
       argument: Literal | VariableRef | undefined
     ) => (() => void) | void;
     attributes?: (
       attributes: Attributes,
-      context: 'declaration' | 'selector' | 'placeholder'
+      context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
     declaration?: (declaration: Declaration) => (() => void) | void;
     expression?: (
       expression: Expression,
-      context: 'declaration' | 'selector' | 'placeholder'
+      context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
     key?: (
       key: Literal | CatchallKey,
@@ -60,7 +60,7 @@ export function visit(
     node?: (node: MessageNode, ...rest: unknown[]) => void;
     options?: (
       options: Options,
-      context: 'declaration' | 'selector' | 'placeholder'
+      context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
     pattern?: (pattern: Pattern) => (() => void) | void;
     value?: (
@@ -86,7 +86,7 @@ export function visit(
 
   const handleOptions = (
     options_: Options | undefined,
-    context: 'declaration' | 'selector' | 'placeholder'
+    context: 'declaration' | 'placeholder'
   ) => {
     if (options_) {
       const end = options?.(options_, context);
@@ -101,7 +101,7 @@ export function visit(
 
   const handleAttributes = (
     attributes_: Attributes | undefined,
-    context: 'declaration' | 'selector' | 'placeholder'
+    context: 'declaration' | 'placeholder'
   ) => {
     if (attributes_) {
       const end = attributes?.(attributes_, context);
@@ -116,7 +116,7 @@ export function visit(
 
   const handleElement = (
     exp: string | Expression | Markup,
-    context: 'declaration' | 'selector' | 'placeholder'
+    context: 'declaration' | 'placeholder'
   ) => {
     if (typeof exp === 'object') {
       let end: (() => void) | void | undefined;
@@ -133,7 +133,7 @@ export function visit(
           break;
         }
         case 'markup': {
-          end = context !== 'selector' ? markup?.(exp, context) : undefined;
+          end = markup?.(exp, context);
           handleOptions(exp.options, context);
           handleAttributes(exp.attributes, context);
           break;
@@ -159,7 +159,7 @@ export function visit(
   if (msg.type === 'message') {
     handlePattern(msg.pattern);
   } else {
-    for (const sel of msg.selectors) handleElement(sel, 'selector');
+    if (value) for (const sel of msg.selectors) value(sel, 'selector', 'arg');
     for (const vari of msg.variants) {
       const end = variant?.(vari);
       if (key) vari.keys.forEach(key);

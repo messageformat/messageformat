@@ -3,7 +3,9 @@ import deepEqual from 'fast-deep-equal';
 import {
   Expression,
   FunctionAnnotation,
+  InputDeclaration,
   Literal,
+  LocalDeclaration,
   PatternMessage,
   SelectMessage,
   VariableRef,
@@ -49,16 +51,21 @@ function findSelectArgs(pattern: Fluent.Pattern): SelectArg[] {
   return args;
 }
 
-function asSelectExpression(
+function asSelectorDeclaration(
   { selector, defaultName, keys }: SelectArg,
+  index: number,
   detectNumberSelection: boolean = true
-): Expression {
+): InputDeclaration | LocalDeclaration {
   switch (selector.type) {
     case 'StringLiteral':
       return {
-        type: 'expression',
-        arg: asValue(selector),
-        annotation: { type: 'function', name: 'string' }
+        type: 'local',
+        name: `_${index}`,
+        value: {
+          type: 'expression',
+          arg: asValue(selector),
+          annotation: { type: 'function', name: 'string' }
+        }
       };
     case 'VariableReference': {
       let name = detectNumberSelection ? 'number' : 'string';
@@ -74,15 +81,28 @@ function asSelectExpression(
         }
       }
       return {
-        type: 'expression',
-        arg: asValue(selector),
-        annotation: { type: 'function', name }
+        type: 'input',
+        name: selector.id.name,
+        value: {
+          type: 'expression',
+          arg: asValue(selector),
+          annotation: { type: 'function', name }
+        }
       };
     }
   }
-  return asExpression(selector);
+  const exp = asExpression(selector);
+  return exp.arg?.type === 'variable'
+    ? {
+        type: 'input',
+        name: exp.arg.name,
+        value: exp as Expression<VariableRef>
+      }
+    : { type: 'local', name: `_${index}`, value: exp };
 }
 
+function asValue(exp: Fluent.VariableReference): VariableRef;
+function asValue(exp: Fluent.InlineExpression): Literal | VariableRef;
 function asValue(exp: Fluent.InlineExpression): Literal | VariableRef {
   switch (exp.type) {
     case 'NumberLiteral':
@@ -248,7 +268,7 @@ export function fluentToMessage(
     keys: key.map((k, i) =>
       k === CATCHALL
         ? { type: '*', value: args[i].defaultName }
-        : { type: 'literal', quoted: false, value: String(k) }
+        : { type: 'literal', value: String(k) }
     ),
     value: []
   }));
@@ -299,10 +319,16 @@ export function fluentToMessage(
   }
   addParts(ast, []);
 
+  const declarations = args.map((arg, index) =>
+    asSelectorDeclaration(arg, index, detectNumberSelection)
+  );
   return {
     type: 'select',
-    declarations: [],
-    selectors: args.map(arg => asSelectExpression(arg, detectNumberSelection)),
+    declarations,
+    selectors: declarations.map(decl => ({
+      type: 'variable',
+      name: decl.name
+    })),
     variants
   };
 }

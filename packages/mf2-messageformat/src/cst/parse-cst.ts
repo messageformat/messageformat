@@ -3,7 +3,7 @@ import { parseDeclarations } from './declarations.js';
 import { parseExpression } from './expression.js';
 import type * as CST from './types.js';
 import { whitespaces } from './util.js';
-import { parseLiteral, parseText } from './values.js';
+import { parseLiteral, parseText, parseVariable } from './values.js';
 
 export class ParseContext {
   readonly errors: MessageSyntaxError[] = [];
@@ -91,29 +91,30 @@ function parseSelectMessage(
 ): CST.SelectMessage {
   let pos = start + 6; // '.match'
   const match: CST.Syntax<'.match'> = { start, end: pos, value: '.match' };
-  pos += whitespaces(ctx.source, pos);
+  let ws = whitespaces(ctx.source, pos);
+  if (ws === 0) ctx.onError('missing-syntax', pos, "' '");
+  pos += ws;
 
-  const selectors: CST.Expression[] = [];
-  while (ctx.source[pos] === '{') {
-    const sel = parseExpression(ctx, pos);
-    const body = sel.markup ?? sel.annotation;
-    if (body && body.type !== 'function') {
-      ctx.onError('parse-error', body.start, body.end);
-    }
+  const selectors: CST.VariableRef[] = [];
+  while (ctx.source[pos] === '$') {
+    const sel = parseVariable(ctx, pos);
     selectors.push(sel);
     pos = sel.end;
-    pos += whitespaces(ctx.source, pos);
+    ws = whitespaces(ctx.source, pos);
+    if (ws === 0) ctx.onError('missing-syntax', pos, "' '");
+    pos += ws;
   }
-  if (selectors.length === 0) {
-    ctx.onError('empty-token', pos, pos + 1);
-  }
+  if (selectors.length === 0) ctx.onError('empty-token', pos, pos + 1);
 
   const variants: CST.Variant[] = [];
-  pos += whitespaces(ctx.source, pos);
   while (pos < ctx.source.length) {
     const variant = parseVariant(ctx, pos);
-    variants.push(variant);
-    pos = variant.end;
+    if (variant.end > pos) {
+      variants.push(variant);
+      pos = variant.end;
+    } else {
+      pos += 1;
+    }
     pos += whitespaces(ctx.source, pos);
   }
 

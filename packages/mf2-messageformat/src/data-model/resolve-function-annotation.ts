@@ -34,7 +34,8 @@ export function resolveFunctionAnnotation(
     const opt = resolveOptions(ctx, options);
     const res = rf(msgCtx, opt, ...fnInput);
     if (
-      !(res instanceof Object) ||
+      res === null ||
+      (typeof res !== 'object' && typeof res !== 'function') ||
       typeof res.type !== 'string' ||
       typeof res.source !== 'string'
     ) {

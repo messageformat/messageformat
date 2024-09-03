@@ -85,12 +85,12 @@ export function parseMessage(
 
 function selectMessage(declarations: Model.Declaration[]): Model.SelectMessage {
   pos += 6; // '.match'
-  ws();
+  ws(true);
 
-  const selectors: Model.Expression[] = [];
-  while (source[pos] === '{') {
-    selectors.push(expression(false));
-    ws();
+  const selectors: Model.VariableRef[] = [];
+  while (source[pos] === '$') {
+    selectors.push(variable());
+    ws(true);
   }
   if (selectors.length === 0) throw SyntaxError('empty-token', pos);
 
@@ -425,12 +425,12 @@ function value(
 function value(
   required: boolean
 ): Model.Literal | Model.VariableRef | undefined {
-  if (source[pos] === '$') {
-    pos += 1; // '$'
-    return { type: 'variable', name: name() };
-  } else {
-    return literal(required);
-  }
+  return source[pos] === '$' ? variable() : literal(required);
+}
+
+function variable(): Model.VariableRef {
+  pos += 1; // '$'
+  return { type: 'variable', name: name() };
 }
 
 function literal(required: true): Model.Literal;

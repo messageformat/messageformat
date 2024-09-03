@@ -28,7 +28,7 @@ export function stringifyMessage(msg: Message) {
     res += stringifyPattern(msg.pattern, !!res);
   } else if (isSelectMessage(msg)) {
     res += '.match';
-    for (const sel of msg.selectors) res += ' ' + stringifyExpression(sel);
+    for (const sel of msg.selectors) res += ' ' + stringifyVariableRef(sel);
     for (const { keys, value } of msg.variants) {
       res += '\n';
       for (const key of keys) {

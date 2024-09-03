@@ -13,7 +13,7 @@ import type * as X from './xliff-spec';
 import { toNmtoken } from './nmtoken';
 
 let _id = 0;
-const nextId = () => `m${++_id}`;
+const nextId = () => String(++_id);
 
 const star = Symbol('*');
 
@@ -103,19 +103,8 @@ function resolveMessage(
   if (isSelectMessage(srcMsg) || (trgMsg && isSelectMessage(trgMsg))) {
     return resolveSelect(key, srcMsg, trgMsg);
   }
-  const rdElements: X.ResourceItem[] = [];
-  const addRef = (elements: X.MessageElements) => {
-    const id = nextId();
-    const ri: X.ResourceItem = {
-      type: 'element',
-      name: 'res:resourceItem',
-      attributes: { id },
-      elements: [{ type: 'element', name: 'res:source', elements }]
-    };
-    rdElements.push(ri);
-    return id;
-  };
-  const segment = resolvePattern(srcMsg.pattern, trgMsg?.pattern, addRef);
+  const rdElements = resolveDeclarations(srcMsg, trgMsg);
+  const segment = resolvePattern(srcMsg.pattern, trgMsg?.pattern, rdElements);
   return buildUnit(key, rdElements, [segment]);
 }
 
@@ -148,53 +137,34 @@ function resolveSelect(
   srcSel: MF.Message,
   trgSel: MF.Message | undefined
 ): X.Unit {
+  const rdElements = resolveDeclarations(srcSel, trgSel);
+
   // We might be combining a Pattern and a Select, so let's normalise
-  if (isSelectMessage(srcSel)) {
-    if (trgSel && !isSelectMessage(trgSel)) {
-      trgSel = {
-        type: 'select',
-        declarations: [],
-        selectors: srcSel.selectors,
-        variants: [{ keys: [], value: trgSel.pattern }]
-      };
-    }
-  } else {
-    if (!trgSel || !isSelectMessage(trgSel)) {
-      throw new Error(
-        `At least one of source & target at ${key.join('.')} must be a select`
-      );
-    }
+  if (!isSelectMessage(srcSel)) {
     srcSel = {
       type: 'select',
       declarations: [],
-      selectors: trgSel.selectors,
+      selectors: [],
       variants: [{ keys: [], value: srcSel.pattern }]
     };
   }
-
-  const select: { id: string; keys: (string | typeof star)[] }[] = [];
-  const rdElements: X.ResourceItem[] = [];
-  const addRef = (elements: X.MessageElements) => {
-    const id = nextId();
-    const ri: X.ResourceItem = {
-      type: 'element',
-      name: 'res:resourceItem',
-      attributes: { id },
-      elements: [{ type: 'element', name: 'res:source', elements }]
+  if (trgSel && !isSelectMessage(trgSel)) {
+    trgSel = {
+      type: 'select',
+      declarations: [],
+      selectors: [],
+      variants: [{ keys: [], value: trgSel.pattern }]
     };
-    rdElements.push(ri);
-    return id;
-  };
-  for (const sel of srcSel.selectors) {
-    const id = addRef(resolveExpression(sel));
-    select.push({ id, keys: [] });
   }
+
+  const select: { id: string; keys: (string | typeof star)[] }[] =
+    srcSel.selectors.map(sel => ({ id: sel.name, keys: [] }));
   const segments: X.Segment[] = [];
 
   if (!trgSel) {
     // If there's only a source, we use its cases directly
     for (const v of srcSel.variants) {
-      const segment = resolvePattern(v.value, undefined, addRef);
+      const segment = resolvePattern(v.value, undefined, rdElements);
       const vk = v.keys.map(k => (k.type === '*' ? star : k.value));
       segment.attributes = { id: msgId('s', key, vk) };
       segments.push(segment);
@@ -204,13 +174,12 @@ function resolveSelect(
     // First, let's make sure that `selIds` and `parts` includes all the selectors
     // and that we have mappings between the array indices.
     const trgSelMap: number[] = [];
-    for (const sel of trgSel.selectors) {
-      const prevIdx = srcSel.selectors.findIndex(prev => deepEqual(sel, prev));
+    for (const { name } of trgSel.selectors) {
+      const prevIdx = srcSel.selectors.findIndex(prev => prev.name === name);
       if (prevIdx !== -1) {
         trgSelMap.push(prevIdx);
       } else {
-        const id = addRef(resolveExpression(sel));
-        select.push({ id, keys: [] });
+        select.push({ id: name, keys: [] });
         trgSelMap.push(select.length - 1);
       }
     }
@@ -258,7 +227,7 @@ function resolveSelect(
       if (!srcCase || !trgCase) {
         throw new Error(`Case ${sk} not found‽ src:${srcCase} trg:${trgCase}`);
       }
-      const segment = resolvePattern(srcCase.value, trgCase.value, addRef);
+      const segment = resolvePattern(srcCase.value, trgCase.value, rdElements);
       segment.attributes = { id: msgId('s', key, sk) };
       segments.push(segment);
     }
@@ -268,6 +237,116 @@ function resolveSelect(
   unit.attributes.canResegment = 'no';
   unit.attributes['mf:select'] = select.map(s => s.id).join(' ');
   return unit;
+}
+
+function resolveDeclarations(
+  srcMsg: MF.Message,
+  trgMsg: MF.Message | undefined
+): X.ResourceItem[] {
+  const rdElements: X.ResourceItem[] = srcMsg.declarations.map(decl => {
+    const elements = resolveExpression(decl.value!);
+    return {
+      type: 'element',
+      name: 'res:resourceItem',
+      attributes: {
+        id: decl.name!,
+        'mf:declaration': decl.type as 'input' | 'local'
+      },
+      elements: [{ type: 'element', name: 'res:source', elements }]
+    };
+  });
+  for (const decl of trgMsg?.declarations ?? []) {
+    const rt: X.ResourceTarget = {
+      type: 'element',
+      name: 'res:target',
+      elements: resolveExpression(decl.value!)
+    };
+    const prev = rdElements.find(ri => ri.attributes.id === decl.name);
+    if (prev) {
+      if (prev.attributes['mf:declaration'] !== decl.type) {
+        throw new Error(`Cannot mix declaration types for $${decl.name}`);
+      }
+      prev.elements.push(rt);
+    } else {
+      rdElements.push({
+        type: 'element',
+        name: 'res:resourceItem',
+        attributes: {
+          id: decl.name!,
+          'mf:declaration': decl.type as 'input' | 'local'
+        },
+        elements: [rt]
+      });
+    }
+  }
+  return rdElements;
+}
+
+function addRef(
+  rdElements: X.ResourceItem[],
+  kind: 'source' | 'target',
+  exp: MF.Markup
+): { id: string; elements: [X.MessageMarkup, ...X.MessageAttribute[]] };
+function addRef(
+  rdElements: X.ResourceItem[],
+  kind: 'source' | 'target',
+  exp: MF.Expression | MF.Markup
+): { id: string; elements: X.MessageElements };
+function addRef(
+  rdElements: X.ResourceItem[],
+  kind: 'source' | 'target',
+  exp: MF.Expression | MF.Markup
+): { id: string; elements: X.MessageElements } {
+  const resName = kind === 'source' ? 'res:source' : 'res:target';
+
+  // For a bare variable reference, look for a matching declaration
+  if (
+    exp.type === 'expression' &&
+    exp.arg?.type === 'variable' &&
+    !exp.annotation
+  ) {
+    const name = exp.arg.name;
+    const prev = rdElements.find(ri => ri.attributes.id === name);
+    if (prev) {
+      const elements = (prev.elements.find(el => el.name === resName)
+        ?.elements ?? []) as X.MessageElements;
+      return { id: prev.attributes.id, elements };
+    }
+  }
+
+  const elements =
+    exp.type === 'expression' ? resolveExpression(exp) : resolveMarkup(exp);
+
+  // Reuse previous references
+  const prev = rdElements.find(ri =>
+    ri.elements.some(
+      el => el.name === resName && deepEqual(el.elements, elements)
+    )
+  );
+  if (prev) return { id: prev.attributes.id, elements };
+  if (kind === 'target') {
+    const prevSource = rdElements.find(
+      ri =>
+        ri.elements.length === 1 &&
+        ri.elements[0].name === 'res:source' &&
+        deepEqual(ri.elements[0].elements, elements)
+    );
+    if (prevSource) {
+      prevSource.elements.push({ type: 'element', name: resName, elements });
+      return { id: prevSource.attributes.id, elements };
+    }
+  }
+
+  // Add new reference with generated identifier
+  const id = `ph:${nextId()}`;
+  const ri: X.ResourceItem = {
+    type: 'element',
+    name: 'res:resourceItem',
+    attributes: { id },
+    elements: [{ type: 'element', name: resName, elements }]
+  };
+  rdElements.push(ri);
+  return { id, elements };
 }
 
 function everyKey(
@@ -296,10 +375,15 @@ function everyKey(
 function resolvePattern(
   srcPattern: MF.Pattern,
   trgPattern: MF.Pattern | undefined,
-  addRef: (elements: X.MessageElements) => string
+  rdElements: X.ResourceItem[]
 ): X.Segment {
-  const openMarkup: { id: string; markup: X.MessageMarkup }[] = [];
+  const openMarkup: {
+    id: string;
+    markup: X.MessageMarkup;
+    startRef: string;
+  }[] = [];
   const handlePart = (
+    kind: 'source' | 'target',
     p: string | MF.Expression | MF.Markup
   ): X.Text | X.InlineElement => {
     if (typeof p === 'string') return asText(p);
@@ -312,28 +396,36 @@ function resolvePattern(
         if (oi === -1) {
           isolated = 'yes';
         } else {
-          const [{ id }] = openMarkup.splice(oi, 1);
+          const [{ id, startRef }] = openMarkup.splice(oi, 1);
           return {
             type: 'element',
             name: 'ec',
-            attributes: { startRef: id.substring(1), 'mf:ref': id }
+            attributes: { startRef, 'mf:ref': id }
           };
         }
       }
-      const markup = resolveMarkup(p);
-      const id = addRef(markup);
-      openMarkup.unshift({ id, markup: markup[0] });
-      return {
-        type: 'element',
-        name: p.kind === 'open' ? 'sc' : p.kind === 'close' ? 'ec' : 'ph',
-        attributes: { id: id.substring(1), isolated, 'mf:ref': id }
-      };
+      const { id, elements } = addRef(rdElements, kind, p);
+      if (p.kind === 'open') {
+        const startRef = nextId();
+        openMarkup.unshift({ id, markup: elements[0], startRef });
+        return {
+          type: 'element',
+          name: 'sc',
+          attributes: { id: startRef, 'mf:ref': id }
+        };
+      } else {
+        return {
+          type: 'element',
+          name: p.kind === 'close' ? 'ec' : 'ph',
+          attributes: { id: nextId(), isolated, 'mf:ref': id }
+        };
+      }
     }
-    const id = addRef(resolveExpression(p));
+    const { id } = addRef(rdElements, kind, p);
     return {
       type: 'element',
       name: 'ph',
-      attributes: { id: id.substring(1), 'mf:ref': id }
+      attributes: { id: nextId(), 'mf:ref': id }
     };
   };
   const cleanMarkupSpans = (elements: (X.Text | X.InlineElement)[]) => {
@@ -357,12 +449,12 @@ function resolvePattern(
     }
   };
 
-  const se = srcPattern.map(handlePart);
+  const se = srcPattern.map(part => handlePart('source', part));
   cleanMarkupSpans(se);
   const source: X.Source = { type: 'element', name: 'source', elements: se };
   let ge: X.Segment['elements'];
   if (trgPattern) {
-    const te = trgPattern.map(handlePart);
+    const te = trgPattern.map(part => handlePart('target', part));
     cleanMarkupSpans(te);
     const target: X.Target = { type: 'element', name: 'target', elements: te };
     ge = [source, target];

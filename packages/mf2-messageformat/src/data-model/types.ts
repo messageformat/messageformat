@@ -93,7 +93,7 @@ export interface UnsupportedStatement {
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
-  selectors: Expression[];
+  selectors: VariableRef[];
   variants: Variant[];
   comment?: string;
   [cst]?: CST.SelectMessage;

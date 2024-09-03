@@ -24,7 +24,7 @@ export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
   match: Syntax<'.match'>;
-  selectors: Expression[];
+  selectors: VariableRef[];
   variants: Variant[];
   errors: MessageSyntaxError[];
 }

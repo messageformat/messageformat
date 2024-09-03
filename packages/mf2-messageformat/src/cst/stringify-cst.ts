@@ -38,7 +38,7 @@ export function stringifyCST(cst: CST.Message): string {
 
   if (cst.type === 'select') {
     str += cst.match.value;
-    for (const sel of cst.selectors) str += ' ' + stringifyExpression(sel);
+    for (const sel of cst.selectors) str += ' ' + stringifyValue(sel);
     for (const { keys, value } of cst.variants) {
       str += '\n';
       for (const key of keys) str += stringifyValue(key) + ' ';

@@ -45,7 +45,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       'nl',
       source`
         .input {$range :range}
-        .match {$range}
+        .match $range
         one {{{$range} dag}}
         * {{{$range} dagen}}
       `,
@@ -268,7 +268,8 @@ maybe('List formatting', () => {
     const mf = new MessageFormat(
       'ro',
       source`
-        .match {$count :number}
+        .input {$count :number}
+        .match $count
         one {{I-am dat cadouri {$list :list each=dative}.}}
         * {{Le-am dat cadouri {$list :list each=dative}.}}
       `,

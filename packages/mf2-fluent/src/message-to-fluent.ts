@@ -77,7 +77,7 @@ export function messageToFluent(
     }));
     const k0 = variants[0].keys;
     while (k0.length > 0) {
-      const sel = expressionToFluent(ctx, msg.selectors[k0.length - 1]);
+      const sel = variableRefToFluent(ctx, msg.selectors[k0.length - 1]);
       let baseKeys: (Literal | CatchallKey)[] = [];
       let exp: Fluent.SelectExpression | undefined;
       for (let i = 0; i < variants.length; ++i) {
@@ -273,7 +273,12 @@ function variableRefToFluent(
   { name }: VariableRef
 ): Fluent.InlineExpression {
   const local = ctx.declarations.find(decl => decl.name === name);
-  return local?.value
-    ? expressionToFluent(ctx, local.value)
-    : new Fluent.VariableReference(new Fluent.Identifier(name));
+  if (local?.value) {
+    const idx = ctx.declarations.indexOf(local);
+    return expressionToFluent(
+      { ...ctx, declarations: ctx.declarations.slice(0, idx) },
+      local.value
+    );
+  }
+  return new Fluent.VariableReference(new Fluent.Identifier(name));
 }
