@@ -72,6 +72,7 @@ export function parseMessage(
   if (source.startsWith('.match', pos)) return selectMessage(decl);
 
   const quoted = decl.length > 0 || source.startsWith('{{', pos);
+  if (!quoted && pos > 0) pos = 0;
   const pattern_ = pattern(quoted);
   if (quoted) {
     ws();
@@ -149,6 +150,7 @@ function pattern(quoted: boolean): Model.Pattern {
 
 function declarations(): Model.Declaration[] {
   const declarations: Model.Declaration[] = [];
+  ws();
   loop: while (source[pos] === '.') {
     const keyword = parseNameValue(source, pos + 1);
     switch (keyword) {
@@ -234,7 +236,7 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
       pos += 1; // ':'
       annotation = { type: 'function', name: identifier() };
       const options_ = options();
-      if (options_.length) annotation.options = options_;
+      if (options_) annotation.options = options_;
       break;
     }
     case '#':
@@ -244,7 +246,7 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
       const kind = sigil === '#' ? 'open' : 'close';
       markup = { type: 'markup', kind, name: identifier() };
       const options_ = options();
-      if (options_.length) markup.options = options_;
+      if (options_) markup.options = options_;
       break;
     }
     case '^':
@@ -265,7 +267,7 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
       throw SyntaxError('parse-error', pos);
   }
 
-  while (source[pos] === '@') attribute();
+  const attributes_ = attributes();
   if (markup?.kind === 'open' && source[pos] === '/') {
     markup.kind = 'standalone';
     pos += 1; // '/'
@@ -273,42 +275,67 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
   expect('}', true);
 
   if (annotation) {
-    return arg
+    const exp: Model.Expression = arg
       ? { type: 'expression', arg, annotation }
       : { type: 'expression', annotation };
+    if (attributes_) exp.attributes = attributes_;
+    return exp;
   }
-  if (markup) return markup;
+  if (markup) {
+    if (attributes_) markup.attributes = attributes_;
+    return markup;
+  }
   if (!arg) throw SyntaxError('empty-token', start, pos);
-  return { type: 'expression', arg };
+  return attributes_
+    ? { type: 'expression', arg, attributes: attributes_ }
+    : { type: 'expression', arg };
 }
 
 /** Requires and consumes leading and trailing whitespace. */
 function options() {
   ws('/}');
-  const options: Model.Option[] = [];
+  const options: Model.Options = new Map();
+  let isEmpty = true;
   while (pos < source.length) {
     const next = source[pos];
     if (next === '@' || next === '/' || next === '}') break;
+    const start = pos;
     const name_ = identifier();
+    if (options.has(name_)) {
+      throw SyntaxError('duplicate-option-name', start, pos);
+    }
     ws();
     expect('=', true);
     ws();
-    options.push({ name: name_, value: value(true) });
+    options.set(name_, value(true));
+    isEmpty = false;
     ws('/}');
   }
-  return options;
+  return isEmpty ? null : options;
 }
 
-function attribute() {
-  pos += 1; // '@'
-  identifier(); // name
-  ws('=/}');
-  if (source[pos] === '=') {
-    pos += 1; // '='
-    ws();
-    value(true); // value
-    ws('/}');
+function attributes() {
+  const attributes: Model.Attributes = new Map();
+  let isEmpty = true;
+  while (source[pos] === '@') {
+    const start = pos;
+    pos += 1; // '@'
+    const name_ = identifier();
+    if (attributes.has(name_)) {
+      throw SyntaxError('duplicate-attribute', start, pos);
+    }
+    ws('=/}');
+    if (source[pos] === '=') {
+      pos += 1; // '='
+      ws();
+      attributes.set(name_, literal(true));
+      ws('/}');
+    } else {
+      attributes.set(name_, true);
+    }
+    isEmpty = false;
   }
+  return isEmpty ? null : attributes;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -375,9 +402,7 @@ function text(): string {
     switch (source[i]) {
       case '\\': {
         const esc = source[i + 1];
-        if (esc !== '\\' && esc !== '{' && esc !== '}') {
-          throw SyntaxError('bad-escape', i, i + 2);
-        }
+        if (!'\\{|}'.includes(esc)) throw SyntaxError('bad-escape', i, i + 2);
         value += source.substring(pos, i) + esc;
         i += 1;
         pos = i + 1;
@@ -428,9 +453,7 @@ function quotedLiteral(): Model.Literal {
     switch (source[i]) {
       case '\\': {
         const esc = source[i + 1];
-        if (esc !== '\\' && esc !== '|') {
-          throw SyntaxError('bad-escape', i, i + 2);
-        }
+        if (!'\\{|}'.includes(esc)) throw SyntaxError('bad-escape', i, i + 2);
         value += source.substring(pos, i) + esc;
         i += 1;
         pos = i + 1;

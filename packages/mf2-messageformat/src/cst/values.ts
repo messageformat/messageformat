@@ -14,7 +14,7 @@ export function parseText(ctx: ParseContext, start: number): CST.Text {
   loop: for (; i < ctx.source.length; ++i) {
     switch (ctx.source[i]) {
       case '\\': {
-        const esc = parseEscape(ctx, 'text', i);
+        const esc = parseEscape(ctx, i);
         if (esc) {
           value += ctx.source.substring(pos, i) + esc.value;
           i += esc.length;
@@ -80,7 +80,7 @@ export function parseQuotedLiteral(
   for (let i = pos; i < ctx.source.length; ++i) {
     switch (ctx.source[i]) {
       case '\\': {
-        const esc = parseEscape(ctx, 'literal', i);
+        const esc = parseEscape(ctx, i);
         if (esc) {
           value += ctx.source.substring(pos, i) + esc.value;
           i += esc.length;
@@ -142,54 +142,42 @@ export function parseVariable(
 
 function parseEscape(
   ctx: ParseContext,
-  scope: 'text' | 'literal',
   start: number
 ): { value: string; length: number } | null {
   const raw = ctx.source[start + 1];
-  switch (raw) {
-    case '\\':
-      return { value: raw, length: 1 };
-    case '{':
-    case '}':
-      if (scope === 'text') return { value: raw, length: 1 };
-      break;
-    case '|':
-      if (scope === 'literal') return { value: raw, length: 1 };
-      break;
-    default:
-      if (ctx.resource) {
-        let hexLen = 0;
-        switch (raw) {
-          case '\t':
-          case ' ':
-            return { value: raw, length: 1 };
-          case 'n':
-            return { value: '\n', length: 1 };
-          case 'r':
-            return { value: '\r', length: 1 };
-          case 't':
-            return { value: '\t', length: 1 };
-          case 'u':
-            hexLen = 4;
-            break;
-          case 'U':
-            hexLen = 6;
-            break;
-          case 'x':
-            hexLen = 2;
-            break;
-        }
-        if (hexLen > 0) {
-          const h0 = start + 2;
-          const raw = ctx.source.substring(h0, h0 + hexLen);
-          if (raw.length === hexLen && /^[0-9A-Fa-f]+$/.test(raw)) {
-            return {
-              value: String.fromCharCode(parseInt(raw, 16)),
-              length: 1 + hexLen
-            };
-          }
-        }
+  if ('\\{|}'.includes(raw)) return { value: raw, length: 1 };
+  if (ctx.resource) {
+    let hexLen = 0;
+    switch (raw) {
+      case '\t':
+      case ' ':
+        return { value: raw, length: 1 };
+      case 'n':
+        return { value: '\n', length: 1 };
+      case 'r':
+        return { value: '\r', length: 1 };
+      case 't':
+        return { value: '\t', length: 1 };
+      case 'u':
+        hexLen = 4;
+        break;
+      case 'U':
+        hexLen = 6;
+        break;
+      case 'x':
+        hexLen = 2;
+        break;
+    }
+    if (hexLen > 0) {
+      const h0 = start + 2;
+      const raw = ctx.source.substring(h0, h0 + hexLen);
+      if (raw.length === hexLen && /^[0-9A-Fa-f]+$/.test(raw)) {
+        return {
+          value: String.fromCharCode(parseInt(raw, 16)),
+          length: 1 + hexLen
+        };
       }
+    }
   }
   ctx.onError('bad-escape', start, start + 2);
   return null;

@@ -1,5 +1,5 @@
 import type {
-  Attribute,
+  Attributes,
   CatchallKey,
   Declaration,
   Expression,
@@ -8,7 +8,7 @@ import type {
   Markup,
   Message,
   MessageNode,
-  Option,
+  Options,
   Pattern,
   UnsupportedAnnotation,
   VariableRef,
@@ -39,10 +39,8 @@ export function visit(
       context: 'declaration' | 'selector' | 'placeholder',
       argument: Literal | VariableRef | undefined
     ) => (() => void) | void;
-    attribute?: (
-      attr: Attribute,
-      index: number,
-      attributes: Attribute[],
+    attributes?: (
+      attributes: Attributes,
       context: 'declaration' | 'selector' | 'placeholder'
     ) => (() => void) | void;
     declaration?: (declaration: Declaration) => (() => void) | void;
@@ -60,10 +58,8 @@ export function visit(
       context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
     node?: (node: MessageNode, ...rest: unknown[]) => void;
-    option?: (
-      option: Option,
-      index: number,
-      options: Option[],
+    options?: (
+      options: Options,
       context: 'declaration' | 'selector' | 'placeholder'
     ) => (() => void) | void;
     pattern?: (pattern: Pattern) => (() => void) | void;
@@ -78,41 +74,43 @@ export function visit(
   const { node, pattern } = visitors;
   const {
     annotation = node,
-    attribute = node,
+    attributes = null,
     declaration = node,
     expression = node,
     key = node,
     markup = node,
-    option = node,
+    options = null,
     value = node,
     variant = node
   } = visitors;
 
   const handleOptions = (
-    options: Option[] | undefined,
+    options_: Options | undefined,
     context: 'declaration' | 'selector' | 'placeholder'
   ) => {
-    if (options) {
-      for (let i = 0; i < options.length; ++i) {
-        const opt = options[i];
-        const end = option?.(opt, i, options, context);
-        value?.(opt.value, context, 'option');
-        end?.();
+    if (options_) {
+      const end = options?.(options_, context);
+      if (value) {
+        for (const value_ of options_.values()) {
+          value(value_, context, 'option');
+        }
       }
+      end?.();
     }
   };
 
   const handleAttributes = (
-    attributes: Attribute[] | undefined,
+    attributes_: Attributes | undefined,
     context: 'declaration' | 'selector' | 'placeholder'
   ) => {
-    if (attributes) {
-      for (let i = 0; i < attributes.length; ++i) {
-        const attr = attributes[i];
-        const end = attribute?.(attr, i, attributes, context);
-        if (attr.value) value?.(attr.value, context, 'attribute');
-        end?.();
+    if (attributes_) {
+      const end = attributes?.(attributes_, context);
+      if (value) {
+        for (const value_ of attributes_.values()) {
+          if (value_ !== true) value(value_, context, 'attribute');
+        }
       }
+      end?.();
     }
   };
 

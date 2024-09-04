@@ -186,7 +186,7 @@ export interface Attribute {
   open: Syntax<'@'>;
   name: Identifier;
   equals?: Syntax<'='>;
-  value?: Literal | VariableRef;
+  value?: Literal;
 }
 
 /** @beta */

@@ -6,7 +6,7 @@ import { getValueSource, resolveValue } from './resolve-value.js';
 import type {
   FunctionAnnotation,
   Literal,
-  Option,
+  Options,
   VariableRef
 } from './types.js';
 
@@ -28,7 +28,7 @@ export function resolveFunctionAnnotation(
 
     const rf = ctx.functions[name];
     if (!rf) {
-      throw new MessageError('missing-func', `Unknown function :${name}`);
+      throw new MessageError('unknown-function', `Unknown function :${name}`);
     }
     const msgCtx = new MessageFunctionContext(ctx, source);
     const opt = resolveOptions(ctx, options);
@@ -51,10 +51,10 @@ export function resolveFunctionAnnotation(
   }
 }
 
-function resolveOptions(ctx: Context, options: Option[] | undefined) {
+function resolveOptions(ctx: Context, options: Options | undefined) {
   const opt: Record<string, unknown> = Object.create(null);
   if (options) {
-    for (const { name, value } of options) {
+    for (const [name, value] of options) {
       opt[name] = resolveValue(ctx, value);
     }
   }

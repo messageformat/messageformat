@@ -25,8 +25,8 @@ import { visit } from './visit.js';
  * - **Invalid Forward Reference**:
  *   A _declaration_ _expression_ refers to a _variable_ defined by a later _declaration_.
  *
- * - **Duplicate Option Name**:
- *   The same _identifier_ appears as the name of more than one _option_ in the same _expression_.
+ * - **Duplicate Variant**:
+ *   The same list of _keys_ is used for more than one _variant_.
  *
  * @returns The sets of runtime `functions` and `variables` used by the message.
  * @beta
@@ -52,6 +52,7 @@ export function validate(
   const functions = new Set<string>();
   const localVars = new Set<string>();
   const variables = new Set<string>();
+  const variants = new Set<string>();
 
   let setArgAsDeclared = true;
   visit(msg, {
@@ -92,15 +93,6 @@ export function validate(
       }
     },
 
-    option({ name }, index, options) {
-      for (let j = index + 1; j < options.length; ++j) {
-        if (options[j].name === name) {
-          onError('duplicate-option', options[j]);
-          break;
-        }
-      }
-    },
-
     value(value, context, position) {
       if (value.type === 'variable') {
         variables.add(value.name);
@@ -116,6 +108,11 @@ export function validate(
     variant(variant) {
       const { keys } = variant;
       if (keys.length !== selectorCount) onError('key-mismatch', variant);
+      const strKeys = JSON.stringify(
+        keys.map(key => (key.type === 'literal' ? key.value : 0))
+      );
+      if (variants.has(strKeys)) onError('duplicate-variant', variant);
+      else variants.add(strKeys);
       missingFallback &&= keys.every(key => key.type === '*') ? null : variant;
     }
   });

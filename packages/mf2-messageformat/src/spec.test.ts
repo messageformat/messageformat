@@ -9,6 +9,7 @@ import {
 import {
   MessageDataModelError,
   MessageFormat,
+  MessageFormatOptions,
   MessageSyntaxError,
   cst,
   messageFromCST,
@@ -19,6 +20,10 @@ import {
   validate,
   visit
 } from './index.js';
+
+import { testFunctions } from './functions/test-functions.js';
+
+const mfOpt: MessageFormatOptions = { functions: testFunctions };
 
 const tests = (tc: Test) => () => {
   switch (testType(tc)) {
@@ -42,14 +47,18 @@ const tests = (tc: Test) => () => {
       describe('data model error', () => {
         test('MessageFormat(string)', () => {
           expect(() => new MessageFormat(undefined, tc.src)).toThrow(
-            MessageDataModelError
+            MessageSyntaxError
           );
         });
         test('parseCST(string)', () => {
           const cst = parseCST(tc.src);
-          const msg = messageFromCST(cst);
           const onError = jest.fn();
-          validate(msg, onError);
+          try {
+            const msg = messageFromCST(cst);
+            validate(msg, onError);
+          } catch (error) {
+            onError(error);
+          }
           expect(onError).toHaveBeenCalledTimes(1);
         });
       });
@@ -58,7 +67,7 @@ const tests = (tc: Test) => () => {
     default:
       test('format', () => {
         let errors: any[] = [];
-        const mf = new MessageFormat(tc.locale, tc.src);
+        const mf = new MessageFormat(tc.locale, tc.src, mfOpt);
         const msg = mf.format(tc.params, err => errors.push(err));
         if (typeof tc.exp === 'string') expect(msg).toBe(tc.exp);
         if (Array.isArray(tc.expErrors)) {
@@ -90,7 +99,6 @@ const tests = (tc: Test) => () => {
         visit(msg2, {
           node(node) {
             delete node[cst];
-            if ('attributes' in node) delete node.attributes;
           }
         });
 
@@ -118,6 +126,7 @@ for (const scenario of testScenarios('test/messageformat-wg/test/tests')) {
   describe(scenario.scenario, () => {
     for (const tc of testCases(scenario)) {
       (tc.only ? describe.only : describe)(testName(tc), tests(tc));
+      //if (tc.only) describe(testName(tc), tests(tc));
     }
   });
 }

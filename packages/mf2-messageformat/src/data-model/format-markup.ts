@@ -10,9 +10,9 @@ export function formatMarkup(
   const source =
     kind === 'close' ? `/${name}` : kind === 'open' ? `#${name}` : `#${name}/`;
   const part: MessageMarkupPart = { type: 'markup', kind, source, name };
-  if (options?.length) {
+  if (options?.size) {
     part.options = {};
-    for (const { name, value } of options) {
+    for (const [name, value] of options) {
       let rv = resolveValue(ctx, value);
       if (typeof rv === 'object' && typeof rv?.valueOf === 'function') {
         const vv = rv.valueOf();

@@ -15,7 +15,7 @@ export function selectPattern(context: Context, message: Message): Pattern {
         if (typeof selector.selectKey === 'function') {
           selectKey = selector.selectKey.bind(selector);
         } else {
-          context.onError(new MessageSelectionError('not-selectable'));
+          context.onError(new MessageSelectionError('bad-selector'));
           selectKey = () => null;
         }
         return {
@@ -36,7 +36,13 @@ export function selectPattern(context: Context, message: Message): Pattern {
             if (key.type !== '*') sc.keys.add(key.value);
           }
         }
-        sc.best = sc.keys.size ? sc.selectKey(sc.keys) : null;
+        try {
+          sc.best = sc.keys.size ? sc.selectKey(sc.keys) : null;
+        } catch (error) {
+          context.onError(new MessageSelectionError('bad-selector', error));
+          sc.selectKey = () => null;
+          sc.best = null;
+        }
 
         // Leave out all candidate variants that aren't the best,
         // or only the catchall ones, if nothing else matches.
@@ -70,7 +76,7 @@ export function selectPattern(context: Context, message: Message): Pattern {
     }
 
     default:
-      context.onError(new MessageSelectionError('not-selectable'));
+      context.onError(new MessageSelectionError('bad-selector'));
       return [];
   }
 }

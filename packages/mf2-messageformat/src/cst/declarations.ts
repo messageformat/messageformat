@@ -5,12 +5,15 @@ import type * as CST from './types.js';
 import { whitespaces } from './util.js';
 import { parseVariable } from './values.js';
 
-export function parseDeclarations(ctx: ParseContext): {
+export function parseDeclarations(
+  ctx: ParseContext,
+  start: number
+): {
   declarations: CST.Declaration[];
   end: number;
 } {
   const { source } = ctx;
-  let pos = whitespaces(source, 0);
+  let pos = start;
   const declarations: CST.Declaration[] = [];
   loop: while (source[pos] === '.') {
     const keyword = parseNameValue(source, pos + 1);

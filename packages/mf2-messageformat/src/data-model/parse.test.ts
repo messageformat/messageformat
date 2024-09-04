@@ -35,7 +35,11 @@ describe('private annotations', () => {
       declarations: [],
       pattern: [
         'foo ',
-        { type: 'expression', annotation: { type: 'priv-bar' } }
+        {
+          type: 'expression',
+          annotation: { type: 'priv-bar' },
+          attributes: new Map([['baz', true]])
+        }
       ]
     });
   });

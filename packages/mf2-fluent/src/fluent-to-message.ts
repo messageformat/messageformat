@@ -119,13 +119,13 @@ function asExpression(exp: Fluent.Expression): Expression {
         throw new Error(`More than one positional argument is not supported.`);
       }
       if (named.length > 0) {
-        annotation.options = [];
+        annotation.options = new Map();
         for (const { name, value } of named) {
           const quoted = value.type !== 'NumberLiteral';
           const litValue = quoted ? value.parse().value : value.value;
-          annotation.options.push({
-            name: name.name,
-            value: { type: 'literal', value: litValue }
+          annotation.options.set(name.name, {
+            type: 'literal',
+            value: litValue
           });
         }
       }
@@ -152,13 +152,13 @@ function asExpression(exp: Fluent.Expression): Expression {
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
       if (exp.arguments?.named.length) {
-        annotation.options = [];
+        annotation.options = new Map();
         for (const { name, value } of exp.arguments.named) {
           const quoted = value.type !== 'NumberLiteral';
           const litValue = quoted ? value.parse().value : value.value;
-          annotation.options.push({
-            name: name.name,
-            value: { type: 'literal', value: litValue }
+          annotation.options.set(name.name, {
+            type: 'literal',
+            value: litValue
           });
         }
       }

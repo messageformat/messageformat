@@ -52,13 +52,16 @@ export function parseCST(
 ): CST.Message {
   const ctx = new ParseContext(source, opt);
 
-  if (source.startsWith('.')) {
-    const { declarations, end: pos } = parseDeclarations(ctx);
-    return source.startsWith('.match', pos)
-      ? parseSelectMessage(ctx, pos, declarations)
-      : parsePatternMessage(ctx, pos, declarations, true);
+  const pos = whitespaces(source, 0);
+  if (source.startsWith('.', pos)) {
+    const { declarations, end } = parseDeclarations(ctx, pos);
+    return source.startsWith('.match', end)
+      ? parseSelectMessage(ctx, end, declarations)
+      : parsePatternMessage(ctx, end, declarations, true);
   } else {
-    return parsePatternMessage(ctx, 0, [], source.startsWith('{{'));
+    return source.startsWith('{{', pos)
+      ? parsePatternMessage(ctx, pos, [], true)
+      : parsePatternMessage(ctx, 0, [], false);
   }
 }
 
@@ -95,7 +98,7 @@ function parseSelectMessage(
     const sel = parseExpression(ctx, pos);
     const body = sel.markup ?? sel.annotation;
     if (body && body.type !== 'function') {
-      ctx.onError('bad-selector', body.start, body.end);
+      ctx.onError('parse-error', body.start, body.end);
     }
     selectors.push(sel);
     pos = sel.end;

@@ -292,7 +292,7 @@ function getMessageElements(
 function resolveExpression(elements: X.MessageElements): MF.Expression {
   let xArg: X.MessageLiteral | X.MessageVariable | undefined;
   let xFunc: X.MessageFunction | X.MessageUnsupported | undefined;
-  const attributes: MF.Attribute[] = [];
+  const attributes: MF.Attributes = new Map();
   for (const el of elements) {
     switch (el.name) {
       case 'mf:literal':
@@ -308,11 +308,20 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
       case 'mf:markup':
         throw new Error('Cannot reference markup as expression');
       case 'mf:attribute': {
+        const aName = el.attributes.name;
+        if (attributes.has(aName)) {
+          throw new Error(`Duplicate attribute name: ${aName}`);
+        }
         const value = el.elements?.find(el => el.type === 'element');
-        attributes.push({
-          name: el.attributes.name,
-          value: value ? resolveValue(value) : undefined
-        });
+        if (value) {
+          const rv = resolveValue(value);
+          if (rv.type !== 'literal') {
+            throw new Error(`Unsupported attribute value: ${value}`);
+          }
+          attributes.set(aName, rv);
+        } else {
+          attributes.set(aName, true);
+        }
         break;
       }
     }
@@ -326,14 +335,11 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
 
   let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
   if (xFunc.name === 'mf:function') {
-    annotation = { type: 'function', name: xFunc.attributes.name };
-    const optEls = xFunc.elements?.filter(el => el.type === 'element');
-    if (optEls?.length) {
-      annotation.options = optEls.map(el => ({
-        name: el.attributes.name,
-        value: resolveValue(el.elements.find(el => el.type === 'element'))
-      }));
-    }
+    annotation = {
+      type: 'function',
+      name: xFunc.attributes.name,
+      options: resolveOptions(xFunc)
+    };
   } else {
     annotation = {
       type: 'unsupported-annotation',
@@ -349,22 +355,30 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
 function resolveMarkup(
   part: X.MessageMarkup,
   kind: 'open' | 'standalone' | 'close'
-) {
-  const markup: MF.Markup = {
+): MF.Markup {
+  return {
     type: 'markup',
     kind,
-    name: part.attributes.name
+    name: part.attributes.name,
+    options: kind !== 'close' ? resolveOptions(part) : undefined
   };
-  if (kind !== 'close') {
-    const optEls = part.elements?.filter(el => el.type === 'element');
-    if (optEls?.length) {
-      markup.options = optEls.map(el => ({
-        name: el.attributes.name,
-        value: resolveValue(el.elements.find(el => el.type === 'element'))
-      }));
-    }
+}
+
+function resolveOptions(
+  parent: X.MessageFunction | X.MessageMarkup
+): MF.Options | undefined {
+  const optEls = parent.elements?.filter(el => el.type === 'element');
+  if (!optEls?.length) return undefined;
+  const options: MF.Options = new Map();
+  for (const el of optEls) {
+    const name = el.attributes.name;
+    if (options.has(name)) throw new Error(`Duplicate option name: ${name}`);
+    options.set(
+      name,
+      resolveValue(el.elements.find(el => el.type === 'element'))
+    );
   }
-  return markup;
+  return options;
 }
 
 function resolveValue(

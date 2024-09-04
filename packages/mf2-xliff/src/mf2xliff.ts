@@ -382,7 +382,7 @@ function resolveExpression({
     if (isFunctionAnnotation(annotation)) {
       const elements: X.MessageFunction['elements'] = [];
       if (annotation.options) {
-        for (const { name, value } of annotation.options) {
+        for (const [name, value] of annotation.options) {
           elements.push({
             type: 'element',
             name: 'mf:option',
@@ -411,12 +411,12 @@ function resolveExpression({
     else throw new Error('Invalid empty expression');
   }
   if (attributes) {
-    for (const { name, value } of attributes) {
+    for (const [name, value] of attributes) {
       elements.push({
         type: 'element',
         name: 'mf:attribute',
         attributes: { name },
-        elements: value ? [resolveArgument(value)] : undefined
+        elements: value === true ? undefined : [resolveArgument(value)]
       });
     }
   }
@@ -426,7 +426,7 @@ function resolveExpression({
 function resolveMarkup({ name, options, attributes }: MF.Markup) {
   const elements: X.MessageOption[] = [];
   if (options) {
-    for (const { name, value } of options) {
+    for (const [name, value] of options) {
       elements.push({
         type: 'element',
         name: 'mf:option',
@@ -439,18 +439,22 @@ function resolveMarkup({ name, options, attributes }: MF.Markup) {
     { type: 'element', name: 'mf:markup', attributes: { name }, elements }
   ];
   if (attributes) {
-    for (const { name, value } of attributes) {
+    for (const [name, value] of attributes) {
       mfElements.push({
         type: 'element',
         name: 'mf:attribute',
         attributes: { name },
-        elements: value ? [resolveArgument(value)] : undefined
+        elements: value === true ? undefined : [resolveArgument(value)]
       });
     }
   }
   return mfElements;
 }
 
+function resolveArgument(part: MF.Literal): X.MessageLiteral;
+function resolveArgument(
+  part: MF.Literal | MF.VariableRef
+): X.MessageLiteral | X.MessageVariable;
 function resolveArgument(
   part: MF.Literal | MF.VariableRef
 ): X.MessageLiteral | X.MessageVariable {

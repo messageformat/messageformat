@@ -1248,5 +1248,5 @@ export interface MessageAttribute extends Element {
   attributes: {
     name: string;
   };
-  elements?: [] | [MessageLiteral | MessageVariable];
+  elements?: [] | [MessageLiteral];
 }

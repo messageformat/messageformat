@@ -165,17 +165,19 @@ function functionRefToFluent(
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (arg) args.positional[0] = arg;
-  if (options) {
-    args.named = options.map(opt => {
-      const va = valueToFluent(ctx, opt.value);
+  if (options?.size) {
+    args.named = [];
+    for (const [name, value] of options) {
+      const va = valueToFluent(ctx, value);
       if (va instanceof Fluent.BaseLiteral) {
-        const id = new Fluent.Identifier(opt.name);
-        return new Fluent.NamedArgument(id, va);
+        const id = new Fluent.Identifier(name);
+        args.named.push(new Fluent.NamedArgument(id, va));
+      } else {
+        throw new Error(
+          `Fluent options must have literal values (got ${va.type} for ${name})`
+        );
       }
-      throw new Error(
-        `Fluent options must have literal values (got ${va.type} for ${opt.name})`
-      );
-    });
+    }
   }
 
   const id = ctx.functionMap[name];

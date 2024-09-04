@@ -45,8 +45,10 @@ export function testName({ src, locale, params }: Test) {
 }
 
 const dataModelErrors = [
+  'duplicate-attribute',
   'duplicate-declaration',
   'duplicate-option-name',
+  'duplicate-variant',
   'missing-fallback-variant',
   'missing-selector-annotation',
   'variant-key-mismatch'

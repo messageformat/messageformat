@@ -95,17 +95,16 @@ function asExpression(
   allowMarkup: boolean
 ): Model.Expression | Model.Markup {
   if (exp.type === 'expression') {
-    const attributes = exp.attributes.length
-      ? exp.attributes.map(asAttribute)
-      : undefined;
     if (allowMarkup && exp.markup) {
       const cm = exp.markup;
       const name = asName(cm.name);
       const kind =
         cm.open.value === '/' ? 'close' : cm.close ? 'standalone' : 'open';
       const markup: Model.Markup = { type: 'markup', kind, name };
-      if (cm.options.length) markup.options = cm.options.map(asOption);
-      if (attributes) markup.attributes = attributes;
+      if (cm.options.length) markup.options = asOptions(cm.options);
+      if (exp.attributes.length) {
+        markup.attributes = asAttributes(exp.attributes);
+      }
       markup[cst] = exp;
       return markup;
     }
@@ -121,7 +120,7 @@ function asExpression(
       switch (ca.type) {
         case 'function':
           annotation = { type: 'function', name: asName(ca.name) };
-          if (ca.options.length) annotation.options = ca.options.map(asOption);
+          if (ca.options.length) annotation.options = asOptions(ca.options);
           break;
         case 'reserved-annotation':
           annotation = {
@@ -142,7 +141,9 @@ function asExpression(
       else expression = { type: 'expression', annotation };
     }
     if (expression) {
-      if (attributes) expression.attributes = attributes;
+      if (exp.attributes.length) {
+        expression.attributes = asAttributes(exp.attributes);
+      }
       expression[cst] = exp;
       return expression;
     }
@@ -150,17 +151,28 @@ function asExpression(
   throw new MessageSyntaxError('parse-error', exp.start, exp.end);
 }
 
-const asOption = (option: CST.Option): Model.Option => ({
-  name: asName(option.name),
-  value: asValue(option.value),
-  [cst]: option
-});
+function asOptions(options: CST.Option[]): Model.Options {
+  const map: Model.Options = new Map();
+  for (const opt of options) {
+    const name = asName(opt.name);
+    if (map.has(name)) {
+      throw new MessageSyntaxError('duplicate-option-name', opt.start, opt.end);
+    }
+    map.set(name, asValue(opt.value));
+  }
+  return map;
+}
 
-function asAttribute(attr: CST.Attribute): Model.Attribute {
-  const name = asName(attr.name);
-  return attr.value
-    ? { name, value: asValue(attr.value), [cst]: attr }
-    : { name, [cst]: attr };
+function asAttributes(attributes: CST.Attribute[]): Model.Attributes {
+  const map: Model.Attributes = new Map();
+  for (const attr of attributes) {
+    const name = asName(attr.name);
+    if (map.has(name)) {
+      throw new MessageSyntaxError('duplicate-attribute', attr.start, attr.end);
+    }
+    map.set(name, attr.value ? asValue(attr.value) : true);
+  }
+  return map;
 }
 
 function asName(id: CST.Identifier): string {

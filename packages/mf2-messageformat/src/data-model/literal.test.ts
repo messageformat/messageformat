@@ -19,19 +19,10 @@ describe('quoted literals', () => {
   });
 
   test('spaces, newlines and escapes', () => {
-    const res = resolve('{| quoted \n \\\\\\|literal\\\\\\||}');
+    const res = resolve('{| quoted \n \\\\\\|literal\\\\\\|\\{\\}|}');
     expect(res).toMatchObject([
-      { type: 'string', value: ' quoted \n \\|literal\\|' }
+      { type: 'string', value: ' quoted \n \\|literal\\|{}' }
     ]);
-  });
-
-  test('invalid escapes', () => {
-    expect(
-      () => new MessageFormat(undefined, '{|quoted \\}iteral|}')
-    ).toThrow();
-    expect(
-      () => new MessageFormat(undefined, '{|quoted \\{iteral|}')
-    ).toThrow();
   });
 });
 
