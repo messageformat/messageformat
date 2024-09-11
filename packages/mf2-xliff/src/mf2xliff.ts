@@ -1,7 +1,6 @@
 import deepEqual from 'fast-deep-equal';
 import {
   MessageFormat,
-  isFunctionAnnotation,
   isLiteral,
   isMessage,
   isSelectMessage,
@@ -303,7 +302,7 @@ function addRef(
   if (
     exp.type === 'expression' &&
     exp.arg?.type === 'variable' &&
-    !exp.annotation
+    !exp.functionRef
   ) {
     const name = exp.arg.name;
     const prev = rdElements.find(ri => ri.attributes.id === name);
@@ -466,32 +465,24 @@ function resolvePattern(
 
 function resolveExpression({
   arg,
-  annotation,
+  functionRef,
   attributes
 }: MF.Expression): X.MessageElements {
-  let resFunc: X.MessageFunction | X.MessageUnsupported | undefined;
-  if (annotation) {
-    if (isFunctionAnnotation(annotation)) {
-      const elements: X.MessageFunction['elements'] = [];
-      if (annotation.options) {
-        for (const [name, value] of annotation.options) {
-          elements.push({
-            type: 'element',
-            name: 'mf:option',
-            attributes: { name },
-            elements: [resolveArgument(value)]
-          });
-        }
+  let resFunc: X.MessageFunction | undefined;
+  if (functionRef) {
+    const elements: X.MessageFunction['elements'] = [];
+    if (functionRef.options) {
+      for (const [name, value] of functionRef.options) {
+        elements.push({
+          type: 'element',
+          name: 'mf:option',
+          attributes: { name },
+          elements: [resolveArgument(value)]
+        });
       }
-      const attributes = { name: annotation.name };
-      resFunc = { type: 'element', name: 'mf:function', attributes, elements };
-    } else {
-      resFunc = {
-        type: 'element',
-        name: 'mf:unsupported',
-        elements: [asText(annotation.source ?? '�')]
-      };
     }
+    const attributes = { name: functionRef.name };
+    resFunc = { type: 'element', name: 'mf:function', attributes, elements };
   }
 
   let elements: X.MessageElements;

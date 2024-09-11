@@ -15,9 +15,8 @@ import { visit } from './visit.js';
  *   The message does not include a _variant_ with only catch-all keys.
  *
  * - **Missing Selector Annotation**:
- *   A _selector_ does not have an _annotation_,
- *   or contains a _variable_ that does not directly or indirectly
- *   reference a _declaration_ with an _annotation_.
+ *   A _selector_ does not contains a _variable_ that directly or indirectly
+ *   reference a _declaration_ with a _function_.
  *
  * - **Duplicate Declaration**:
  *   A _variable_ appears in two _declarations_.
@@ -61,7 +60,7 @@ export function validate(
       if (!decl.name) return undefined;
 
       if (
-        decl.value.annotation ||
+        decl.value.functionRef ||
         (decl.type === 'local' &&
           decl.value.arg?.type === 'variable' &&
           annotated.has(decl.value.arg.name))
@@ -78,8 +77,8 @@ export function validate(
       };
     },
 
-    expression({ annotation }) {
-      if (annotation?.type === 'function') functions.add(annotation.name);
+    expression({ functionRef }) {
+      if (functionRef) functions.add(functionRef.name);
     },
 
     value(value, context, position) {

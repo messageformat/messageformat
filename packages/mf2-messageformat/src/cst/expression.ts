@@ -2,8 +2,8 @@ import { MessageSyntaxError } from '../errors.js';
 import { parseNameValue } from './names.js';
 import type { ParseContext } from './parse-cst.js';
 import type * as CST from './types.js';
-import { whitespaceChars, whitespaces } from './util.js';
-import { parseLiteral, parseQuotedLiteral, parseVariable } from './values.js';
+import { whitespaces } from './util.js';
+import { parseLiteral, parseVariable } from './values.js';
 
 export function parseExpression(
   ctx: ParseContext,
@@ -26,36 +26,19 @@ export function parseExpression(
     pos += ws;
   }
 
-  let annotation:
-    | CST.FunctionRef
-    | CST.ReservedAnnotation
-    | CST.Junk
-    | undefined;
+  let functionRef: CST.FunctionRef | CST.Junk | undefined;
   let markup: CST.Markup | undefined;
   let junkError: MessageSyntaxError | undefined;
   switch (source[pos]) {
     case ':':
-      annotation = parseFunctionRefOrMarkup(ctx, pos, 'function');
-      pos = annotation.end;
+      functionRef = parseFunctionRefOrMarkup(ctx, pos, 'function');
+      pos = functionRef.end;
       break;
     case '#':
     case '/':
       if (arg) ctx.onError('extra-content', arg.start, arg.end);
       markup = parseFunctionRefOrMarkup(ctx, pos, 'markup');
       pos = markup.end;
-      break;
-    case '!':
-    case '%':
-    case '^':
-    case '&':
-    case '*':
-    case '+':
-    case '<':
-    case '>':
-    case '?':
-    case '~':
-      annotation = parseReservedAnnotation(ctx, pos);
-      pos = annotation.end;
       break;
     case '@':
     case '}':
@@ -64,14 +47,14 @@ export function parseExpression(
     default:
       if (!arg) {
         const end = pos + 1;
-        annotation = { type: 'junk', start: pos, end, source: source[pos] };
+        functionRef = { type: 'junk', start: pos, end, source: source[pos] };
         junkError = new MessageSyntaxError('parse-error', start, end);
         ctx.errors.push(junkError);
       }
   }
 
   const attributes: CST.Attribute[] = [];
-  let reqWS = Boolean(annotation || markup);
+  let reqWS = Boolean(functionRef || markup);
   let ws = whitespaces(source, pos);
   while (source[pos + ws] === '@') {
     if (reqWS && ws === 0) ctx.onError('missing-syntax', pos, ' ');
@@ -92,9 +75,9 @@ export function parseExpression(
     if (source[pos] !== '}') {
       const errStart = pos;
       while (pos < source.length && source[pos] !== '}') pos += 1;
-      if (annotation?.type === 'junk') {
-        annotation.end = pos;
-        annotation.source = source.substring(annotation.start, pos);
+      if (functionRef?.type === 'junk') {
+        functionRef.end = pos;
+        functionRef.source = source.substring(functionRef.start, pos);
         if (junkError) junkError.end = pos;
       } else {
         ctx.onError('extra-content', errStart, pos);
@@ -109,7 +92,15 @@ export function parseExpression(
   const end = pos;
   return markup
     ? { type: 'expression', start, end, braces, markup, attributes }
-    : { type: 'expression', start, end, braces, arg, annotation, attributes };
+    : {
+        type: 'expression',
+        start,
+        end,
+        braces,
+        arg,
+        functionRef,
+        attributes
+      };
 }
 
 function parseFunctionRefOrMarkup(
@@ -204,71 +195,6 @@ function parseIdentifier(
     ctx.onError('empty-token', pos, pos + 1);
     return { parts: [id0, sep], end: pos };
   }
-}
-
-function parseReservedAnnotation(
-  ctx: ParseContext,
-  start: number
-): CST.ReservedAnnotation {
-  const open = {
-    start,
-    end: start + 1,
-    value: ctx.source[start]
-  } as CST.ReservedAnnotation['open'];
-  const source = parseReservedBody(ctx, start + 1); // skip sigil
-  return {
-    type: 'reserved-annotation',
-    start,
-    end: source.end,
-    open,
-    source
-  };
-}
-
-export function parseReservedBody(
-  ctx: ParseContext,
-  start: number
-): CST.Syntax<string> {
-  let pos = start;
-  loop: while (pos < ctx.source.length) {
-    const ch = ctx.source[pos];
-    switch (ch) {
-      case '\\': {
-        switch (ctx.source[pos + 1]) {
-          case '\\':
-          case '{':
-          case '|':
-          case '}':
-            break;
-          default:
-            ctx.onError('bad-escape', pos, pos + 2);
-        }
-        pos += 2;
-        break;
-      }
-      case '|':
-        pos = parseQuotedLiteral(ctx, pos).end;
-        break;
-      case '@':
-      case '{':
-      case '}':
-        break loop;
-      default: {
-        const cc = ch.charCodeAt(0);
-        if (cc >= 0xd800 && cc < 0xe000) {
-          // surrogates are invalid here
-          ctx.onError('parse-error', pos, pos + 1);
-        }
-        pos += 1;
-      }
-    }
-  }
-  let prev = ctx.source[pos - 1];
-  while (pos > start && whitespaceChars.includes(prev)) {
-    pos -= 1;
-    prev = ctx.source[pos - 1];
-  }
-  return { start, end: pos, value: ctx.source.substring(start, pos) };
 }
 
 function parseAttribute(ctx: ParseContext, start: number): CST.Attribute {

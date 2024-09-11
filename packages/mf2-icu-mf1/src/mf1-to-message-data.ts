@@ -1,7 +1,7 @@
 import type * as AST from '@messageformat/parser';
 import type {
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   InputDeclaration,
   Message,
   Options,
@@ -65,7 +65,7 @@ function tokenToPart(
         arg: { type: 'variable', name: token.arg }
       };
     case 'function': {
-      const annotation: FunctionAnnotation = {
+      const functionRef: FunctionRef = {
         type: 'function',
         name: token.key
       };
@@ -75,12 +75,12 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        annotation.options = new Map([['param', { type: 'literal', value }]]);
+        functionRef.options = new Map([['param', { type: 'literal', value }]]);
       }
       return {
         type: 'expression',
         arg: { type: 'variable', name: token.arg },
-        annotation
+        functionRef
       };
     }
     case 'octothorpe':
@@ -98,9 +98,9 @@ function argToInputDeclaration({
   pluralOffset,
   type
 }: SelectArg): InputDeclaration {
-  let annotation: FunctionAnnotation;
+  let functionRef: FunctionRef;
   if (type === 'select') {
-    annotation = { type: 'function', name: 'string' };
+    functionRef = { type: 'function', name: 'string' };
   } else {
     const options: Options = new Map();
     if (pluralOffset) {
@@ -113,8 +113,8 @@ function argToInputDeclaration({
       options.set('type', { type: 'literal', value: 'ordinal' });
     }
 
-    annotation = { type: 'function', name: 'number' };
-    if (options.size) annotation.options = options;
+    functionRef = { type: 'function', name: 'number' };
+    if (options.size) functionRef.options = options;
   }
   return {
     type: 'input',
@@ -122,7 +122,7 @@ function argToInputDeclaration({
     value: {
       type: 'expression',
       arg: { type: 'variable', name: selName },
-      annotation
+      functionRef
     }
   };
 }

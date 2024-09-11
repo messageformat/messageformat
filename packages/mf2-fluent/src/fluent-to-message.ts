@@ -2,7 +2,7 @@ import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
 import {
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   InputDeclaration,
   Literal,
   LocalDeclaration,
@@ -64,7 +64,7 @@ function asSelectorDeclaration(
         value: {
           type: 'expression',
           arg: asValue(selector),
-          annotation: { type: 'function', name: 'string' }
+          functionRef: { type: 'function', name: 'string' }
         }
       };
     case 'VariableReference': {
@@ -86,7 +86,7 @@ function asSelectorDeclaration(
         value: {
           type: 'expression',
           arg: asValue(selector),
-          annotation: { type: 'function', name }
+          functionRef: { type: 'function', name }
         }
       };
     }
@@ -122,14 +122,14 @@ function asExpression(exp: Fluent.Expression): Expression {
       return {
         type: 'expression',
         arg: asValue(exp),
-        annotation: { type: 'function', name: 'number' }
+        functionRef: { type: 'function', name: 'number' }
       };
     case 'StringLiteral':
     case 'VariableReference': {
       return { type: 'expression', arg: asValue(exp) };
     }
     case 'FunctionReference': {
-      const annotation: FunctionAnnotation = {
+      const annotation: FunctionRef = {
         type: 'function',
         name: exp.id.name.toLowerCase()
       };
@@ -150,8 +150,8 @@ function asExpression(exp: Fluent.Expression): Expression {
         }
       }
       return args.length > 0
-        ? { type: 'expression', arg: args[0], annotation }
-        : { type: 'expression', annotation };
+        ? { type: 'expression', arg: args[0], functionRef: annotation }
+        : { type: 'expression', functionRef: annotation };
     }
     case 'MessageReference': {
       const msgId = exp.attribute
@@ -160,11 +160,11 @@ function asExpression(exp: Fluent.Expression): Expression {
       return {
         type: 'expression',
         arg: { type: 'literal', value: msgId },
-        annotation: { type: 'function', name: 'message' }
+        functionRef: { type: 'function', name: 'message' }
       };
     }
     case 'TermReference': {
-      const annotation: FunctionAnnotation = {
+      const annotation: FunctionRef = {
         type: 'function',
         name: 'message'
       };
@@ -185,7 +185,7 @@ function asExpression(exp: Fluent.Expression): Expression {
       return {
         type: 'expression',
         arg: { type: 'literal', value: msgId },
-        annotation
+        functionRef: annotation
       };
     }
 

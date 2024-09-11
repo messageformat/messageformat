@@ -779,7 +779,7 @@ describe('messagetoFluent', () => {
           value: {
             type: 'expression',
             arg: { type: 'variable', name: 'num' },
-            annotation: { type: 'function', name: 'number' }
+            functionRef: { type: 'function', name: 'number' }
           }
         }
       ],
@@ -847,12 +847,12 @@ describe('messagetoFluent', () => {
         {
           type: 'expression',
           arg: { type: 'literal', value: 'msg' },
-          annotation: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'message' }
         },
         {
           type: 'expression',
           arg: { type: 'variable', name: 'local' },
-          annotation: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'message' }
         }
       ]
     };
@@ -889,7 +889,7 @@ describe('messagetoFluent', () => {
         {
           type: 'expression',
           arg: { type: 'variable', name: 'input' },
-          annotation: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'message' }
         }
       ]
     };

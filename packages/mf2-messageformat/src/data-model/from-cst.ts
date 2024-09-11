@@ -67,13 +67,7 @@ function asDeclaration(decl: CST.Declaration): Model.Declaration {
         [cst]: decl
       };
     default:
-      return {
-        type: 'unsupported-statement',
-        keyword: (decl.keyword?.value ?? '').substring(1),
-        body: decl.body?.value || undefined,
-        expressions: decl.values?.map(dv => asExpression(dv, true)) ?? [],
-        [cst]: decl
-      };
+      throw new MessageSyntaxError('parse-error', decl.start, decl.end);
   }
 }
 
@@ -110,35 +104,24 @@ function asExpression(
     }
 
     const arg = exp.arg ? asValue(exp.arg) : undefined;
-    let annotation:
-      | Model.FunctionAnnotation
-      | Model.UnsupportedAnnotation
-      | undefined;
+    let functionRef: Model.FunctionRef | undefined;
 
-    const ca = exp.annotation;
+    const ca = exp.functionRef;
     if (ca) {
-      switch (ca.type) {
-        case 'function':
-          annotation = { type: 'function', name: asName(ca.name) };
-          if (ca.options.length) annotation.options = asOptions(ca.options);
-          break;
-        case 'reserved-annotation':
-          annotation = {
-            type: 'unsupported-annotation',
-            source: ca.open.value + ca.source.value
-          };
-          break;
-        default:
-          throw new MessageSyntaxError('parse-error', exp.start, exp.end);
+      if (ca.type === 'function') {
+        functionRef = { type: 'function', name: asName(ca.name) };
+        if (ca.options.length) functionRef.options = asOptions(ca.options);
+      } else {
+        throw new MessageSyntaxError('parse-error', exp.start, exp.end);
       }
     }
     let expression: Model.Expression | undefined = arg
       ? { type: 'expression', arg }
       : undefined;
-    if (annotation) {
-      annotation[cst] = ca;
-      if (expression) expression.annotation = annotation;
-      else expression = { type: 'expression', annotation };
+    if (functionRef) {
+      functionRef[cst] = ca;
+      if (expression) expression.functionRef = functionRef;
+      else expression = { type: 'expression', functionRef: functionRef };
     }
     if (expression) {
       if (exp.attributes.length) {

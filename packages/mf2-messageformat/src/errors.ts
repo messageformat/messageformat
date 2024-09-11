@@ -88,9 +88,7 @@ export class MessageResolutionError extends MessageError {
     | 'bad-function-result'
     | 'bad-operand'
     | 'bad-option'
-    | 'unresolved-variable'
-    | 'unsupported-expression'
-    | 'unsupported-statement';
+    | 'unresolved-variable';
   source: string;
   constructor(
     type: typeof MessageResolutionError.prototype.type,

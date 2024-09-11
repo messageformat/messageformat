@@ -1171,20 +1171,10 @@ export interface ValidationRule extends Element {
 
 export type MessageElements =
   | [
-      (
-        | MessageLiteral
-        | MessageVariable
-        | MessageMarkup
-        | MessageFunction
-        | MessageUnsupported
-      ),
+      MessageLiteral | MessageVariable | MessageMarkup | MessageFunction,
       ...MessageAttribute[]
     ]
-  | [
-      MessageLiteral | MessageVariable,
-      MessageFunction | MessageUnsupported,
-      ...MessageAttribute[]
-    ];
+  | [MessageLiteral | MessageVariable, MessageFunction, ...MessageAttribute[]];
 
 export interface MessageMarkup extends Element {
   name: 'mf:markup';
@@ -1230,11 +1220,6 @@ export interface MessageOption extends Element {
     name: string;
   };
   elements: [MessageLiteral | MessageVariable];
-}
-
-export interface MessageUnsupported extends Element {
-  name: 'mf:unsupported';
-  elements: (Text | CharCode)[];
 }
 
 export interface MessageVariable extends Element {

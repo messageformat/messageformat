@@ -4,26 +4,10 @@ import type * as Model from './types.js';
 
 const whitespaceChars = ['\t', '\n', '\r', ' ', '\u3000'];
 
-export type MessageParserOptions = {
-  /**
-   * Parse a private annotation starting with `^` or `&`.
-   * By default, private annotations are parsed as unsupported annotations.
-   *
-   * @returns `pos` as the position at the end of the `annotation`,
-   *   not including any trailing whitespace.
-   */
-  privateAnnotation?: (
-    source: string,
-    pos: number
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ) => { pos: number; annotation: any };
-};
-
 //// Parser State ////
 
 let pos: number;
 let source: string;
-let opt: MessageParserOptions;
 
 //// Utilities & Error Wrappers ////
 
@@ -56,17 +40,10 @@ function expect(searchString: string, consume: boolean) {
  * its corresponding data model representation.
  * Throws on syntax errors, but does not check for data model errors.
  */
-export function parseMessage(
-  source: string,
-  opt?: MessageParserOptions
-): Model.Message;
-export function parseMessage(
-  source_: string,
-  opt_: MessageParserOptions = {}
-): Model.Message {
+export function parseMessage(source: string): Model.Message;
+export function parseMessage(source_: string): Model.Message {
   pos = 0;
   source = source_;
-  opt = opt_;
 
   const decl = declarations();
   if (source.startsWith('.match', pos)) return selectMessage(decl);
@@ -162,10 +139,8 @@ function declarations(): Model.Declaration[] {
         break;
       case 'match':
         break loop;
-      case '':
-        throw SyntaxError('parse-error', pos);
       default:
-        declarations.push(unsupportedStatement(keyword));
+        throw SyntaxError('parse-error', pos);
     }
     ws();
   }
@@ -198,20 +173,6 @@ function localDeclaration(): Model.LocalDeclaration {
   return { type: 'local', name: name_, value };
 }
 
-function unsupportedStatement(keyword: string): Model.UnsupportedStatement {
-  pos += 1 + keyword.length; // '.' + keyword
-  ws('{');
-  const body = reservedBody() || undefined;
-  const expressions: (Model.Expression | Model.Markup)[] = [];
-  while (source[pos] === '{') {
-    if (source.startsWith('{{', pos)) break;
-    expressions.push(expression(false));
-    ws();
-  }
-  if (expressions.length === 0) throw SyntaxError('empty-token', pos);
-  return { type: 'unsupported-statement', keyword, body, expressions };
-}
-
 function expression(allowMarkup: false): Model.Expression;
 function expression(allowMarkup: boolean): Model.Expression | Model.Markup;
 function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
@@ -223,10 +184,7 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
   if (arg) ws('}');
 
   const sigil = source[pos];
-  let annotation:
-    | Model.FunctionAnnotation
-    | Model.UnsupportedAnnotation
-    | undefined;
+  let functionRef: Model.FunctionRef | undefined;
   let markup: Model.Markup | undefined;
   switch (sigil) {
     case '@':
@@ -234,9 +192,9 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
       break;
     case ':': {
       pos += 1; // ':'
-      annotation = { type: 'function', name: identifier() };
+      functionRef = { type: 'function', name: identifier() };
       const options_ = options();
-      if (options_) annotation.options = options_;
+      if (options_) functionRef.options = options_;
       break;
     }
     case '#':
@@ -249,20 +207,6 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
       if (options_) markup.options = options_;
       break;
     }
-    case '^':
-    case '&':
-      annotation = privateAnnotation(sigil);
-      break;
-    case '!':
-    case '%':
-    case '*':
-    case '+':
-    case '<':
-    case '>':
-    case '?':
-    case '~':
-      annotation = unsupportedAnnotation(sigil);
-      break;
     default:
       throw SyntaxError('parse-error', pos);
   }
@@ -274,10 +218,10 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
   }
   expect('}', true);
 
-  if (annotation) {
+  if (functionRef) {
     const exp: Model.Expression = arg
-      ? { type: 'expression', arg, annotation }
-      : { type: 'expression', annotation };
+      ? { type: 'expression', arg, functionRef: functionRef }
+      : { type: 'expression', functionRef: functionRef };
     if (attributes_) exp.attributes = attributes_;
     return exp;
   }
@@ -336,63 +280,6 @@ function attributes() {
     isEmpty = false;
   }
   return isEmpty ? null : attributes;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function privateAnnotation(sigil: '^' | '&'): any {
-  if (opt.privateAnnotation) {
-    const res = opt.privateAnnotation(source, pos);
-    pos = res.pos;
-    ws('}');
-    return res.annotation;
-  }
-  return unsupportedAnnotation(sigil);
-}
-
-function unsupportedAnnotation(sigil: string): Model.UnsupportedAnnotation {
-  pos += 1; // sigil
-  return { type: 'unsupported-annotation', source: sigil + reservedBody() };
-}
-
-function reservedBody(): string {
-  const start = pos;
-  loop: while (pos < source.length) {
-    const next = source[pos];
-    switch (next) {
-      case '\\': {
-        switch (source[pos + 1]) {
-          case '\\':
-          case '{':
-          case '|':
-          case '}':
-            break;
-          default:
-            throw SyntaxError('bad-escape', pos, pos + 2);
-        }
-        pos += 2;
-        break;
-      }
-      case '|':
-        quotedLiteral();
-        break;
-      case '@':
-        pos -= 1;
-        ws(true);
-        break loop;
-      case '{':
-      case '}':
-        break loop;
-      default: {
-        const cc = next.charCodeAt(0);
-        if (cc >= 0xd800 && cc < 0xe000) {
-          // surrogates are invalid here
-          throw SyntaxError('parse-error', pos);
-        }
-        pos += 1;
-      }
-    }
-  }
-  return source.substring(start, pos).trimEnd();
 }
 
 function text(): string {

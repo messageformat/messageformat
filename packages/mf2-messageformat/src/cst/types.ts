@@ -30,10 +30,7 @@ export interface SelectMessage {
 }
 
 /** @beta */
-export type Declaration =
-  | InputDeclaration
-  | LocalDeclaration
-  | ReservedStatement;
+export type Declaration = InputDeclaration | LocalDeclaration | Junk;
 
 /** @beta */
 export interface InputDeclaration {
@@ -53,16 +50,6 @@ export interface LocalDeclaration {
   target: VariableRef | Junk;
   equals?: Syntax<'='>;
   value: Expression | Junk;
-}
-
-/** @beta */
-export interface ReservedStatement {
-  type: 'reserved-statement';
-  start: number;
-  end: number;
-  keyword: Syntax<string>;
-  body: Syntax<string>;
-  values: Expression[];
 }
 
 /** @beta */
@@ -104,7 +91,7 @@ export interface Expression {
   end: number;
   braces: [Syntax<'{'>] | [Syntax<'{'>, Syntax<'}'>];
   arg?: Literal | VariableRef;
-  annotation?: FunctionRef | ReservedAnnotation | Junk;
+  functionRef?: FunctionRef | Junk;
   markup?: Markup;
   attributes: Attribute[];
 }
@@ -146,15 +133,6 @@ export interface FunctionRef {
   open: Syntax<':'>;
   name: Identifier;
   options: Option[];
-}
-
-/** @beta */
-export interface ReservedAnnotation {
-  type: 'reserved-annotation';
-  open: Syntax<'!' | '%' | '^' | '&' | '*' | '+' | '<' | '>' | '?' | '~'>;
-  source: Syntax<string>;
-  start: number;
-  end: number;
 }
 
 /** @beta */

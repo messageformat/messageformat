@@ -4,11 +4,7 @@ import { resolveExpression } from './data-model/resolve-expression.js';
 import { UnresolvedExpression } from './data-model/resolve-variable.js';
 import type { Message } from './data-model/types.js';
 import { validate } from './data-model/validate.js';
-import {
-  MessageDataModelError,
-  MessageError,
-  MessageResolutionError
-} from './errors.js';
+import { MessageDataModelError, MessageError } from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
@@ -33,7 +29,7 @@ const defaultFunctions = Object.freeze({
 });
 
 /**
- * The runtime function registry available when resolving {@link FunctionAnnotation} elements.
+ * The runtime function registry available when resolving {@link FunctionRef} elements.
  *
  * @beta
  */
@@ -173,24 +169,10 @@ export class MessageFormat {
   ) {
     const scope = { ...msgParams };
     for (const decl of this.#message.declarations) {
-      switch (decl.type) {
-        case 'input':
-          scope[decl.name] = new UnresolvedExpression(
-            decl.value,
-            msgParams ?? {}
-          );
-          break;
-        case 'local':
-          scope[decl.name] = new UnresolvedExpression(decl.value);
-          break;
-        default: {
-          const source = decl.keyword ?? '�';
-          const msg = `Reserved ${source} annotation is not supported`;
-          onError(
-            new MessageResolutionError('unsupported-statement', msg, source)
-          );
-        }
-      }
+      scope[decl.name] = new UnresolvedExpression(
+        decl.value,
+        decl.type === 'input' ? msgParams ?? {} : undefined
+      );
     }
     const ctx: Context = {
       onError,

@@ -3,7 +3,7 @@ import {
   CatchallKey,
   Declaration,
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   Literal,
   Message,
   Pattern,
@@ -161,7 +161,7 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
 function functionRefToFluent(
   ctx: MsgContext,
   arg: Fluent.InlineExpression | null,
-  { name, options }: FunctionAnnotation
+  { name, options }: FunctionRef
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (arg) args.positional[0] = arg;
@@ -236,18 +236,10 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  { arg, annotation }: Expression
+  { arg, functionRef }: Expression
 ): Fluent.InlineExpression {
   const fluentArg = arg ? valueToFluent(ctx, arg) : null;
-  if (annotation) {
-    if (annotation.type === 'function') {
-      return functionRefToFluent(ctx, fluentArg, annotation);
-    } else {
-      throw new Error(
-        `Conversion of ${annotation.type} annotation to Fluent is not supported`
-      );
-    }
-  }
+  if (functionRef) return functionRefToFluent(ctx, fluentArg, functionRef);
   if (fluentArg) return fluentArg;
   throw new Error('Invalid empty expression');
 }

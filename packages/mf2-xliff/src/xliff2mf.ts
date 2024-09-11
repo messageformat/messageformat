@@ -380,7 +380,7 @@ function getMessageElements(
 
 function resolveExpression(elements: X.MessageElements): MF.Expression {
   let xArg: X.MessageLiteral | X.MessageVariable | undefined;
-  let xFunc: X.MessageFunction | X.MessageUnsupported | undefined;
+  let xFunc: X.MessageFunction | undefined;
   const attributes: MF.Attributes = new Map();
   for (const el of elements) {
     switch (el.name) {
@@ -390,8 +390,7 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
         xArg = el;
         break;
       case 'mf:function':
-      case 'mf:unsupported':
-        if (xFunc) throw new Error('More than one annotation in an expression');
+        if (xFunc) throw new Error('More than one function in an expression');
         xFunc = el;
         break;
       case 'mf:markup':
@@ -422,23 +421,15 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
     return { type: 'expression', arg, attributes };
   }
 
-  let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
-  if (xFunc.name === 'mf:function') {
-    annotation = {
-      type: 'function',
-      name: xFunc.attributes.name,
-      options: resolveOptions(xFunc)
-    };
-  } else {
-    annotation = {
-      type: 'unsupported-annotation',
-      source: resolveText(xFunc.elements)
-    };
-  }
+  const functionRef: MF.FunctionRef = {
+    type: 'function',
+    name: xFunc.attributes.name,
+    options: resolveOptions(xFunc)
+  };
 
   return arg
-    ? { type: 'expression', arg, annotation, attributes }
-    : { type: 'expression', annotation, attributes };
+    ? { type: 'expression', arg, functionRef, attributes }
+    : { type: 'expression', functionRef, attributes };
 }
 
 function resolveMarkup(

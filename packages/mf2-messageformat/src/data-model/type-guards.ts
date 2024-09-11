@@ -3,13 +3,12 @@
 import type {
   CatchallKey,
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   Literal,
   Markup,
   Message,
   PatternMessage,
   SelectMessage,
-  UnsupportedAnnotation,
   VariableRef
 } from './types.js';
 
@@ -22,7 +21,7 @@ export const isExpression = (part: any): part is Expression =>
   !!part && typeof part === 'object' && part.type === 'expression';
 
 /** @beta */
-export const isFunctionAnnotation = (part: any): part is FunctionAnnotation =>
+export const isFunctionRef = (part: any): part is FunctionRef =>
   !!part && typeof part === 'object' && part.type === 'function';
 
 /** @beta */
@@ -46,12 +45,6 @@ export const isPatternMessage = (msg: Message): msg is PatternMessage =>
 /** @beta */
 export const isSelectMessage = (msg: Message): msg is SelectMessage =>
   msg.type === 'select';
-
-/** @beta */
-export const isUnsupportedAnnotation = (
-  part: any
-): part is UnsupportedAnnotation =>
-  !!part && typeof part === 'object' && part.type === 'unsupported-annotation';
 
 /** @beta */
 export const isVariableRef = (part: any): part is VariableRef =>

@@ -70,10 +70,7 @@ export function parseLiteral(
   return { type: 'literal', quoted: false, start, end, value };
 }
 
-export function parseQuotedLiteral(
-  ctx: ParseContext,
-  start: number
-): CST.Literal {
+function parseQuotedLiteral(ctx: ParseContext, start: number): CST.Literal {
   let value = '';
   let pos = start + 1;
   const open = { start, end: pos, value: '|' as const };

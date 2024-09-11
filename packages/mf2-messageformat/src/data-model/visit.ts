@@ -3,14 +3,13 @@ import type {
   CatchallKey,
   Declaration,
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   Literal,
   Markup,
   Message,
   MessageNode,
   Options,
   Pattern,
-  UnsupportedAnnotation,
   VariableRef,
   Variant
 } from './types.js';
@@ -34,11 +33,6 @@ import type {
 export function visit(
   msg: Message,
   visitors: {
-    annotation?: (
-      annotation: FunctionAnnotation | UnsupportedAnnotation,
-      context: 'declaration' | 'placeholder',
-      argument: Literal | VariableRef | undefined
-    ) => (() => void) | void;
     attributes?: (
       attributes: Attributes,
       context: 'declaration' | 'placeholder'
@@ -47,6 +41,11 @@ export function visit(
     expression?: (
       expression: Expression,
       context: 'declaration' | 'placeholder'
+    ) => (() => void) | void;
+    functionRef?: (
+      functionRef: FunctionRef,
+      context: 'declaration' | 'placeholder',
+      argument: Literal | VariableRef | undefined
     ) => (() => void) | void;
     key?: (
       key: Literal | CatchallKey,
@@ -73,7 +72,7 @@ export function visit(
 ) {
   const { node, pattern } = visitors;
   const {
-    annotation = node,
+    functionRef = node,
     attributes = null,
     declaration = node,
     expression = node,
@@ -124,9 +123,9 @@ export function visit(
         case 'expression': {
           end = expression?.(exp, context);
           if (exp.arg) value?.(exp.arg, context, 'arg');
-          if (exp.annotation) {
-            const endA = annotation?.(exp.annotation, context, exp.arg);
-            handleOptions(exp.annotation.options, context);
+          if (exp.functionRef) {
+            const endA = functionRef?.(exp.functionRef, context, exp.arg);
+            handleOptions(exp.functionRef.options, context);
             endA?.();
           }
           handleAttributes(exp.attributes, context);
@@ -152,7 +151,6 @@ export function visit(
   for (const decl of msg.declarations) {
     const end = declaration?.(decl);
     if (decl.value) handleElement(decl.value, 'declaration');
-    else for (const exp of decl.expressions) handleElement(exp, 'declaration');
     end?.();
   }
 
