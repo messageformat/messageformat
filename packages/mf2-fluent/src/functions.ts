@@ -48,5 +48,5 @@ export function getFluentFunctions(res: FluentMessageResource) {
   }
   Object.freeze(message);
 
-  return { message };
+  return { 'fluent:message': message };
 }

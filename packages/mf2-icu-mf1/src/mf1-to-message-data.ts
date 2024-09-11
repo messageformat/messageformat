@@ -67,7 +67,7 @@ function tokenToPart(
     case 'function': {
       const functionRef: FunctionRef = {
         type: 'function',
-        name: token.key
+        name: `mf1:${token.key}`
       };
       if (token.param && token.param.length > 0) {
         let value = '';
@@ -113,7 +113,7 @@ function argToInputDeclaration({
       options.set('type', { type: 'literal', value: 'ordinal' });
     }
 
-    functionRef = { type: 'function', name: 'number' };
+    functionRef = { type: 'function', name: 'mf1:number' };
     if (options.size) functionRef.options = options;
   }
   return {

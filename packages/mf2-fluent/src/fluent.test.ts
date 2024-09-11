@@ -847,12 +847,12 @@ describe('messagetoFluent', () => {
         {
           type: 'expression',
           arg: { type: 'literal', value: 'msg' },
-          functionRef: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'fluent:message' }
         },
         {
           type: 'expression',
           arg: { type: 'variable', name: 'local' },
-          functionRef: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'fluent:message' }
         }
       ]
     };
@@ -889,7 +889,7 @@ describe('messagetoFluent', () => {
         {
           type: 'expression',
           arg: { type: 'variable', name: 'input' },
-          functionRef: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'fluent:message' }
         }
       ]
     };

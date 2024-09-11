@@ -160,13 +160,13 @@ function asExpression(exp: Fluent.Expression): Expression {
       return {
         type: 'expression',
         arg: { type: 'literal', value: msgId },
-        functionRef: { type: 'function', name: 'message' }
+        functionRef: { type: 'function', name: 'fluent:message' }
       };
     }
     case 'TermReference': {
       const annotation: FunctionRef = {
         type: 'function',
-        name: 'message'
+        name: 'fluent:message'
       };
       const msgId = exp.attribute
         ? `-${exp.id.name}.${exp.attribute.name}`

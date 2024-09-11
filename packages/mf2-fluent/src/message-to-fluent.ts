@@ -34,7 +34,7 @@ export type FunctionMap = Record<string, string | symbol | null>;
  */
 export const defaultFunctionMap: FunctionMap = {
   datetime: 'DATETIME',
-  message: FluentMessageRef,
+  'fluent:message': FluentMessageRef,
   number: 'NUMBER',
   plural: 'NUMBER',
   string: null
