@@ -2,7 +2,8 @@ import { parseNameValue, parseUnquotedLiteralValue } from '../cst/names.js';
 import { MessageSyntaxError } from '../errors.js';
 import type * as Model from './types.js';
 
-const whitespaceChars = ['\t', '\n', '\r', ' ', '\u3000'];
+const bidiChars = new Set('\u061C\u200E\u200F\u2066\u2067\u2068\u2069');
+const whitespaceChars = new Set('\t\n\r \u3000');
 
 //// Parser State ////
 
@@ -129,15 +130,15 @@ function declarations(): Model.Declaration[] {
   const declarations: Model.Declaration[] = [];
   ws();
   loop: while (source[pos] === '.') {
-    const keyword = parseNameValue(source, pos + 1);
+    const keyword = source.substr(pos, 6);
     switch (keyword) {
-      case 'input':
+      case '.input':
         declarations.push(inputDeclaration());
         break;
-      case 'local':
+      case '.local':
         declarations.push(localDeclaration());
         break;
-      case 'match':
+      case '.match':
         break loop;
       default:
         throw SyntaxError('parse-error', pos);
@@ -367,22 +368,25 @@ function identifier(): string {
 function name(): string {
   const name = parseNameValue(source, pos);
   if (!name) throw SyntaxError('empty-token', pos);
-  pos += name.length;
-  return name;
+  pos = name.end;
+  return name.value;
 }
 
 function ws(required?: boolean): void;
 function ws(requiredIfNotFollowedBy: string): void;
-function ws(req: string | boolean): void;
+function ws(required: string | boolean): void;
 function ws(req: string | boolean = false): void {
-  let length = 0;
   let next = source[pos];
-  while (whitespaceChars.includes(next)) {
-    length += 1;
-    next = source[pos + length];
+  let hasWS = false;
+  if (req) {
+    while (bidiChars.has(next)) next = source[++pos];
+    while (whitespaceChars.has(next)) {
+      next = source[++pos];
+      hasWS = true;
+    }
   }
-  pos += length;
-  if (req && !length && (req === true || !req.includes(source[pos]))) {
+  while (bidiChars.has(next) || whitespaceChars.has(next)) next = source[++pos];
+  if (req && !hasWS && (req === true || !req.includes(source[pos]))) {
     throw MissingSyntax(pos, "' '");
   }
 }

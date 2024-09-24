@@ -11,7 +11,7 @@ export function parseExpression(
 ): CST.Expression {
   const { source } = ctx;
   let pos = start + 1; // '{'
-  pos += whitespaces(source, pos);
+  pos = whitespaces(source, pos).end;
 
   const arg =
     source[pos] === '$'
@@ -20,10 +20,10 @@ export function parseExpression(
   if (arg) {
     pos = arg.end;
     const ws = whitespaces(source, pos);
-    if (ws === 0 && source[pos] !== '}') {
+    if (!ws.hasWS && source[pos] !== '}') {
       ctx.onError('missing-syntax', pos, ' ');
     }
-    pos += ws;
+    pos = ws.end;
   }
 
   let functionRef: CST.FunctionRef | CST.Junk | undefined;
@@ -56,16 +56,16 @@ export function parseExpression(
   const attributes: CST.Attribute[] = [];
   let reqWS = Boolean(functionRef || markup);
   let ws = whitespaces(source, pos);
-  while (source[pos + ws] === '@') {
-    if (reqWS && ws === 0) ctx.onError('missing-syntax', pos, ' ');
-    pos += ws;
+  while (source[ws.end] === '@') {
+    if (reqWS && !ws.hasWS) ctx.onError('missing-syntax', pos, ' ');
+    pos = ws.end;
     const attr = parseAttribute(ctx, pos);
     attributes.push(attr);
     pos = attr.end;
     reqWS = true;
     ws = whitespaces(source, pos);
   }
-  pos += ws;
+  pos = ws.end;
 
   const open: CST.Syntax<'{'> = { start, end: start + 1, value: '{' };
   let close: CST.Syntax<'}'> | undefined;
@@ -125,17 +125,17 @@ function parseFunctionRefOrMarkup(
   let close: CST.Syntax<'/'> | undefined;
   while (pos < source.length) {
     let ws = whitespaces(source, pos);
-    const next = source[pos + ws];
+    const next = source[ws.end];
     if (next === '@' || next === '}') break;
     if (next === '/' && source[start] === '#') {
-      pos += ws + 1;
+      pos = ws.end + 1;
       close = { start: pos - 1, end: pos, value: '/' };
       ws = whitespaces(source, pos);
-      if (ws > 0) ctx.onError('extra-content', pos, pos + ws);
+      if (ws.hasWS) ctx.onError('extra-content', pos, ws.end);
       break;
     }
-    if (ws === 0) ctx.onError('missing-syntax', pos, ' ');
-    pos += ws;
+    if (!ws.hasWS) ctx.onError('missing-syntax', pos, ' ');
+    pos = ws.end;
     const opt = parseOption(ctx, pos);
     if (opt.end === pos) break; // error
     options.push(opt);
@@ -152,8 +152,7 @@ function parseFunctionRefOrMarkup(
 
 function parseOption(ctx: ParseContext, start: number): CST.Option {
   const id = parseIdentifier(ctx, start);
-  let pos = id.end;
-  pos += whitespaces(ctx.source, pos);
+  let pos = whitespaces(ctx.source, id.end).end;
   let equals: CST.Syntax<'='> | undefined;
   if (ctx.source[pos] === '=') {
     equals = { start: pos, end: pos + 1, value: '=' };
@@ -161,7 +160,7 @@ function parseOption(ctx: ParseContext, start: number): CST.Option {
   } else {
     ctx.onError('missing-syntax', pos, '=');
   }
-  pos += whitespaces(ctx.source, pos);
+  pos = whitespaces(ctx.source, pos).end;
   const value =
     ctx.source[pos] === '$'
       ? parseVariable(ctx, pos)
@@ -174,23 +173,22 @@ function parseIdentifier(
   start: number
 ): { parts: CST.Identifier; end: number } {
   const { source } = ctx;
-  const str0 = parseNameValue(source, start);
-  if (!str0) {
+  const name0 = parseNameValue(source, start);
+  if (!name0) {
     ctx.onError('empty-token', start, start + 1);
     return { parts: [{ start, end: start, value: '' }], end: start };
   }
-  let pos = start + str0.length;
-  const id0 = { start, end: pos, value: str0 };
+  let pos = name0.end;
+  const id0 = { start, end: pos, value: name0.value };
   if (source[pos] !== ':') return { parts: [id0], end: pos };
 
   const sep = { start: pos, end: pos + 1, value: ':' as const };
   pos += 1;
 
-  const str1 = parseNameValue(source, pos);
-  if (str1) {
-    const end = pos + str1.length;
-    const id1 = { start: pos, end, value: str1 };
-    return { parts: [id0, sep, id1], end };
+  const name1 = parseNameValue(source, pos);
+  if (name1) {
+    const id1 = { start: pos, end: name1.end, value: name1.value };
+    return { parts: [id0, sep, id1], end: name1.end };
   } else {
     ctx.onError('empty-token', pos, pos + 1);
     return { parts: [id0, sep], end: pos };
@@ -204,10 +202,10 @@ function parseAttribute(ctx: ParseContext, start: number): CST.Attribute {
   const ws = whitespaces(source, pos);
   let equals: CST.Syntax<'='> | undefined;
   let value: CST.Literal | undefined;
-  if (source[pos + ws] === '=') {
-    pos += ws + 1;
+  if (source[ws.end] === '=') {
+    pos = ws.end + 1;
     equals = { start: pos - 1, end: pos, value: '=' };
-    pos += whitespaces(source, pos);
+    pos = whitespaces(source, pos).end;
     value = parseLiteral(ctx, pos, true);
     pos = value.end;
   }

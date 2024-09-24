@@ -52,7 +52,7 @@ export function parseCST(
 ): CST.Message {
   const ctx = new ParseContext(source, opt);
 
-  const pos = whitespaces(source, 0);
+  const pos = whitespaces(source, 0).end;
   if (source.startsWith('.', pos)) {
     const { declarations, end } = parseDeclarations(ctx, pos);
     return source.startsWith('.match', end)
@@ -72,8 +72,7 @@ function parsePatternMessage(
   complex: boolean
 ): CST.SimpleMessage | CST.ComplexMessage {
   const pattern = parsePattern(ctx, start, complex);
-  let pos = pattern.end;
-  pos += whitespaces(ctx.source, pos);
+  const pos = whitespaces(ctx.source, pattern.end).end;
 
   if (pos < ctx.source.length) {
     ctx.onError('extra-content', pos, ctx.source.length);
@@ -92,8 +91,8 @@ function parseSelectMessage(
   let pos = start + 6; // '.match'
   const match: CST.Syntax<'.match'> = { start, end: pos, value: '.match' };
   let ws = whitespaces(ctx.source, pos);
-  if (ws === 0) ctx.onError('missing-syntax', pos, "' '");
-  pos += ws;
+  if (!ws.hasWS) ctx.onError('missing-syntax', pos, "' '");
+  pos = ws.end;
 
   const selectors: CST.VariableRef[] = [];
   while (ctx.source[pos] === '$') {
@@ -101,8 +100,8 @@ function parseSelectMessage(
     selectors.push(sel);
     pos = sel.end;
     ws = whitespaces(ctx.source, pos);
-    if (ws === 0) ctx.onError('missing-syntax', pos, "' '");
-    pos += ws;
+    if (!ws.hasWS) ctx.onError('missing-syntax', pos, "' '");
+    pos = ws.end;
   }
   if (selectors.length === 0) ctx.onError('empty-token', pos, pos + 1);
 
@@ -115,7 +114,7 @@ function parseSelectMessage(
     } else {
       pos += 1;
     }
-    pos += whitespaces(ctx.source, pos);
+    pos = whitespaces(ctx.source, pos).end;
   }
 
   if (pos < ctx.source.length) {
@@ -137,11 +136,11 @@ function parseVariant(ctx: ParseContext, start: number): CST.Variant {
   const keys: Array<CST.Literal | CST.CatchallKey> = [];
   while (pos < ctx.source.length) {
     const ws = whitespaces(ctx.source, pos);
-    pos += ws;
+    pos = ws.end;
     const ch = ctx.source[pos];
     if (ch === '{') break;
 
-    if (pos > start && ws === 0) ctx.onError('missing-syntax', pos, "' '");
+    if (pos > start && !ws.hasWS) ctx.onError('missing-syntax', pos, "' '");
 
     const key =
       ch === '*'

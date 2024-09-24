@@ -1,4 +1,3 @@
-import { parseNameValue } from './names.js';
 import { parseExpression } from './expression.js';
 import type { ParseContext } from './parse-cst.js';
 import type * as CST from './types.js';
@@ -16,24 +15,22 @@ export function parseDeclarations(
   let pos = start;
   const declarations: CST.Declaration[] = [];
   loop: while (source[pos] === '.') {
-    const keyword = parseNameValue(source, pos + 1);
+    const keyword = source.substr(pos, 6);
     let decl;
     switch (keyword) {
-      case '':
-      case 'match':
+      case '.match':
         break loop;
-      case 'input':
+      case '.input':
         decl = parseInputDeclaration(ctx, pos);
         break;
-      case 'local':
+      case '.local':
         decl = parseLocalDeclaration(ctx, pos);
         break;
       default:
         decl = parseDeclarationJunk(ctx, pos);
     }
     declarations.push(decl);
-    pos = decl.end;
-    pos += whitespaces(source, pos);
+    pos = whitespaces(source, decl.end).end;
   }
   return { declarations, end: pos };
 }
@@ -45,7 +42,7 @@ function parseInputDeclaration(
   //
   let pos = start + 6; // '.input'
   const keyword: CST.Syntax<'.input'> = { start, end: pos, value: '.input' };
-  pos += whitespaces(ctx.source, pos);
+  pos = whitespaces(ctx.source, pos).end;
 
   const value = parseDeclarationValue(ctx, pos);
   if (value.type === 'expression') {
@@ -66,9 +63,9 @@ function parseLocalDeclaration(
   let pos = start + 6; // '.local'
   const keyword: CST.Syntax<'.local'> = { start, end: pos, value: '.local' };
   const ws = whitespaces(source, pos);
-  pos += ws;
+  pos = ws.end;
 
-  if (ws === 0) ctx.onError('missing-syntax', pos, ' ');
+  if (!ws.hasWS) ctx.onError('missing-syntax', pos, ' ');
 
   let target: CST.VariableRef | CST.Junk;
   if (source[pos] === '$') {
@@ -87,7 +84,7 @@ function parseLocalDeclaration(
     ctx.onError('missing-syntax', junkStart, '$');
   }
 
-  pos += whitespaces(source, pos);
+  pos = whitespaces(source, pos).end;
   let equals: CST.Syntax<'='> | undefined;
   if (source[pos] === '=') {
     equals = { start: pos, end: pos + 1, value: '=' };
@@ -96,7 +93,7 @@ function parseLocalDeclaration(
     ctx.onError('missing-syntax', pos, '=');
   }
 
-  pos += whitespaces(source, pos);
+  pos = whitespaces(source, pos).end;
   const value = parseDeclarationValue(ctx, pos);
 
   return {

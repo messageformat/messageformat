@@ -132,9 +132,11 @@ export function parseVariable(
   const pos = start + 1;
   const open = { start, end: pos, value: '$' as const };
   const name = parseNameValue(ctx.source, pos);
-  const end = pos + name.length;
-  if (!name) ctx.onError('empty-token', pos, pos + 1);
-  return { type: 'variable', start, end, open, name };
+  if (!name) {
+    ctx.onError('empty-token', pos, pos + 1);
+    return { type: 'variable', start, end: pos, open, name: '' };
+  }
+  return { type: 'variable', start, end: name.end, open, name: name.value };
 }
 
 function parseEscape(
