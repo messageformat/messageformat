@@ -1,19 +1,16 @@
 import type { Context } from '../format-context.js';
 import type { MessageValue } from '../functions/index.js';
-import { resolveFunctionAnnotation } from './resolve-function-annotation.js';
+import { resolveFunctionRef } from './resolve-function-ref.js';
 import { resolveLiteral } from './resolve-literal.js';
-import { resolveUnsupportedAnnotation } from './resolve-unsupported-annotation.js';
 import { resolveVariableRef } from './resolve-variable.js';
 import type { Expression } from './types.js';
 
 export function resolveExpression(
   ctx: Context,
-  { arg, annotation }: Expression
+  { arg, functionRef }: Expression
 ): MessageValue {
-  if (annotation) {
-    return annotation.type === 'function'
-      ? resolveFunctionAnnotation(ctx, arg, annotation)
-      : resolveUnsupportedAnnotation(ctx, arg, annotation);
+  if (functionRef) {
+    return resolveFunctionRef(ctx, arg, functionRef);
   }
   switch (arg?.type) {
     case 'literal':

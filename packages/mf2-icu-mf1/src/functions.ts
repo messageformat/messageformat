@@ -180,4 +180,9 @@ function number(
  *
  * @beta
  */
-export const getMF1Functions = () => ({ date, duration, number, time });
+export const getMF1Functions = () => ({
+  'mf1:date': date,
+  'mf1:duration': duration,
+  'mf1:number': number,
+  'mf1:time': time
+});

@@ -1,3 +1,4 @@
+import deepEqual from 'fast-deep-equal';
 import type * as MF from 'messageformat';
 import type * as X from './xliff-spec';
 import { parse } from './xliff';
@@ -97,13 +98,13 @@ function resolveSelectMessage(
   }
   const source: MF.SelectMessage = {
     type: 'select',
-    declarations: [],
+    declarations: resolveDeclarations('source', rd),
     selectors: [],
     variants: []
   };
   const target: MF.SelectMessage = {
     type: 'select',
-    declarations: [],
+    declarations: resolveDeclarations('target', rd),
     selectors: [],
     variants: []
   };
@@ -112,7 +113,9 @@ function resolveSelectMessage(
       const keys = parseId('s', el.attributes?.id).variant;
       const pattern = resolvePattern(rd, el);
       source.variants.push({ keys, value: pattern.source });
-      if (pattern.target) target.variants.push({ keys, value: pattern.target });
+      if (pattern.target) {
+        target.variants.push({ keys: keys.slice(), value: pattern.target });
+      }
     }
   }
   if (!source.variants.length) {
@@ -120,14 +123,62 @@ function resolveSelectMessage(
     throw new Error(`No variant <segment> elements found in ${el}`);
   }
   const hasTarget = !!target.variants.length;
+  const srcSelectors: boolean[] = [];
+  const tgtSelectors: boolean[] = [];
   for (const ref of attributes['mf:select']!.trim().split(/\s+/)) {
-    const srcElements = getMessageElements('source', rd!, ref);
-    source.selectors.push(resolveExpression(srcElements));
-    if (hasTarget) {
-      const tgtElements = getMessageElements('target', rd!, ref);
-      target.selectors.push(resolveExpression(tgtElements));
+    const ri = rd.elements.find(
+      ri =>
+        ri.name === 'res:resourceItem' &&
+        ri.attributes?.id === ref &&
+        ri.attributes['mf:declaration']
+    ) as X.ResourceItem | undefined;
+    if (!ri) throw new Error(`Unresolved MessageFormat reference: ${ref}`);
+    let srcSel = false;
+    let tgtSel = false;
+    for (const el of ri.elements) {
+      if (el.name === 'res:source') {
+        source.selectors.push({ type: 'variable', name: ref });
+        srcSel = true;
+      } else if (hasTarget && el.name === 'res:target') {
+        target.selectors.push({ type: 'variable', name: ref });
+        tgtSel = true;
+      }
+    }
+    srcSelectors.push(srcSel);
+    tgtSelectors.push(tgtSel);
+  }
+
+  if (srcSelectors.some(s => !s)) {
+    for (const { keys } of source.variants) {
+      for (let i = srcSelectors.length - 1; i >= 0; --i) {
+        if (!srcSelectors[i]) keys.splice(i, 1);
+      }
+    }
+    for (let i = 0; i < source.variants.length - 1; ++i) {
+      const { keys } = source.variants[i];
+      for (let j = source.variants.length - 1; j > i; --j) {
+        if (deepEqual(keys, source.variants[j].keys)) {
+          source.variants.splice(j, 1);
+        }
+      }
     }
   }
+  if (tgtSelectors.some(s => !s)) {
+    for (const { keys } of target.variants) {
+      for (let i = tgtSelectors.length - 1; i >= 0; --i) {
+        if (!tgtSelectors[i]) keys.splice(i, 1);
+      }
+    }
+    for (let i = 0; i < target.variants.length - 1; ++i) {
+      const { keys } = target.variants[i];
+      for (let j = target.variants.length - 1; j > i; --j) {
+        if (deepEqual(keys, target.variants[j].keys)) {
+          target.variants.splice(j, 1);
+        }
+      }
+    }
+  }
+
   return { source, target: hasTarget ? target : undefined };
 }
 
@@ -155,11 +206,42 @@ function resolvePatternMessage(
     }
   }
   return {
-    source: { type: 'message', declarations: [], pattern: source },
+    source: {
+      type: 'message',
+      declarations: resolveDeclarations('source', rd),
+      pattern: source
+    },
     target: hasTarget
-      ? { type: 'message', declarations: [], pattern: target }
+      ? {
+          type: 'message',
+          declarations: resolveDeclarations('target', rd),
+          pattern: target
+        }
       : undefined
   };
+}
+
+function resolveDeclarations(
+  st: 'source' | 'target',
+  rd: X.ResourceData | undefined
+): MF.Declaration[] {
+  const declarations: MF.Declaration[] = [];
+  for (const ri of rd?.elements ?? []) {
+    if (ri.name === 'res:resourceItem' && ri.attributes['mf:declaration']) {
+      const mfElements = getMessageElements(st, ri);
+      if (mfElements.length) {
+        const type = ri.attributes['mf:declaration'];
+        const name = ri.attributes.id;
+        const exp = resolveExpression(mfElements);
+        if (type === 'input' && exp.arg?.type !== 'variable') {
+          throw new Error(`Invalid .input declaration: ${name}`);
+        }
+        const value = exp as MF.Expression<MF.VariableRef>;
+        declarations.push({ type, name, value });
+      }
+    }
+  }
+  return declarations;
 }
 
 function resolvePattern(
@@ -258,40 +340,47 @@ function resolvePlaceholder(
       `Resolving ${el} requires <res:resourceData> in the same <unit>`
     );
   }
-  const mfElements = getMessageElements(st, rd, String(ref));
+  const ri = rd.elements.find(
+    ri => ri.name === 'res:resourceItem' && ri.attributes?.id === ref
+  ) as X.ResourceItem | undefined;
+
+  if (ri?.attributes['mf:declaration']) {
+    return { type: 'expression', arg: { type: 'variable', name: String(ref) } };
+  }
+
+  const mfElements = getMessageElements(st, ri);
+  if (!mfElements.length) {
+    throw new Error(`Unresolved MessageFormat reference: ${ref}`);
+  }
+
   if (mfElements[0].name === 'mf:markup') {
     const kind =
       name === 'ph' ? 'standalone' : name === 'ec' ? 'close' : 'open';
     return resolveMarkup(mfElements[0], kind);
   }
-  if (name !== 'ph') {
-    throw new Error('Only <ph> elements may refer to expression values');
-  }
-  return resolveExpression(mfElements);
+  if (name === 'ph') return resolveExpression(mfElements);
+  throw new Error(`Only <ph> elements may refer to expression values (${ref})`);
 }
 
 function getMessageElements(
   st: 'source' | 'target',
-  rd: X.ResourceData,
-  ref: string
+  ri: X.ResourceItem | undefined
 ) {
-  const ri = rd.elements.find(el => el.attributes?.id === ref);
-  if (ri?.elements) {
-    const parent =
-      (st === 'target'
-        ? ri.elements.find(el => el.name === 'res:target')
-        : null) ?? ri.elements.find(el => el.name === 'res:source');
-    const mfElements = parent?.elements?.filter(
-      el => el.type === 'element' && el.name.startsWith('mf:')
-    );
-    if (mfElements?.length) return mfElements as X.MessageElements;
+  let src: X.ResourceSource | undefined;
+  let tgt: X.ResourceTarget | undefined;
+  for (const el of ri?.elements ?? []) {
+    if (el.name === 'res:source') src = el;
+    else if (el.name === 'res:target') tgt = el;
   }
-  throw new Error(`Unresolved MessageFormat reference: ${ref}`);
+  const parent = st === 'target' ? tgt ?? src : src;
+  return (parent?.elements?.filter(
+    el => el.type === 'element' && el.name.startsWith('mf:')
+  ) ?? []) as X.MessageElements;
 }
 
 function resolveExpression(elements: X.MessageElements): MF.Expression {
   let xArg: X.MessageLiteral | X.MessageVariable | undefined;
-  let xFunc: X.MessageFunction | X.MessageUnsupported | undefined;
+  let xFunc: X.MessageFunction | undefined;
   const attributes: MF.Attributes = new Map();
   for (const el of elements) {
     switch (el.name) {
@@ -301,8 +390,7 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
         xArg = el;
         break;
       case 'mf:function':
-      case 'mf:unsupported':
-        if (xFunc) throw new Error('More than one annotation in an expression');
+        if (xFunc) throw new Error('More than one function in an expression');
         xFunc = el;
         break;
       case 'mf:markup':
@@ -333,23 +421,15 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
     return { type: 'expression', arg, attributes };
   }
 
-  let annotation: MF.FunctionAnnotation | MF.UnsupportedAnnotation;
-  if (xFunc.name === 'mf:function') {
-    annotation = {
-      type: 'function',
-      name: xFunc.attributes.name,
-      options: resolveOptions(xFunc)
-    };
-  } else {
-    annotation = {
-      type: 'unsupported-annotation',
-      source: resolveText(xFunc.elements)
-    };
-  }
+  const functionRef: MF.FunctionRef = {
+    type: 'function',
+    name: xFunc.attributes.name,
+    options: resolveOptions(xFunc)
+  };
 
   return arg
-    ? { type: 'expression', arg, annotation, attributes }
-    : { type: 'expression', annotation, attributes };
+    ? { type: 'expression', arg, functionRef, attributes }
+    : { type: 'expression', functionRef, attributes };
 }
 
 function resolveMarkup(

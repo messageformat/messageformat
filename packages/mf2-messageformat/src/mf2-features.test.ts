@@ -1,5 +1,6 @@
 import { fluentToResource } from '@messageformat/fluent';
 import {
+  getMF1Functions,
   mf1ToMessage,
   mf1ToMessageData
 } from '@messageformat/icu-messageformat-1';
@@ -45,7 +46,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
       'nl',
       source`
         .input {$range :range}
-        .match {$range}
+        .match $range
         one {{{$range} dag}}
         * {{{$range} dagen}}
       `,
@@ -134,7 +135,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     expect(msg.selectors).toHaveLength(6);
     expect(msg.variants).toHaveLength(64);
 
-    const mf = new MessageFormat('en', msg);
+    const mf = new MessageFormat('en', msg, { functions: getMF1Functions() });
 
     const one = mf.format({
       N: 1,
@@ -268,7 +269,8 @@ maybe('List formatting', () => {
     const mf = new MessageFormat(
       'ro',
       source`
-        .match {$count :number}
+        .input {$count :number}
+        .match $count
         one {{I-am dat cadouri {$list :list each=dative}.}}
         * {{Le-am dat cadouri {$list :list each=dative}.}}
       `,

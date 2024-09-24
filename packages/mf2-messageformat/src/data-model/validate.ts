@@ -1,5 +1,5 @@
 import { MessageDataModelError } from '../errors.js';
-import type { Expression, Message, MessageNode, Variant } from './types.js';
+import type { Message, MessageNode, VariableRef, Variant } from './types.js';
 import { visit } from './visit.js';
 
 /**
@@ -15,9 +15,8 @@ import { visit } from './visit.js';
  *   The message does not include a _variant_ with only catch-all keys.
  *
  * - **Missing Selector Annotation**:
- *   A _selector_ does not have an _annotation_,
- *   or contains a _variable_ that does not directly or indirectly
- *   reference a _declaration_ with an _annotation_.
+ *   A _selector_ does not contains a _variable_ that directly or indirectly
+ *   reference a _declaration_ with a _function_.
  *
  * - **Duplicate Declaration**:
  *   A _variable_ appears in two _declarations_.
@@ -41,7 +40,7 @@ export function validate(
   }
 ) {
   let selectorCount = 0;
-  let missingFallback: Expression | Variant | null = null;
+  let missingFallback: VariableRef | Variant | null = null;
 
   /** Tracks directly & indirectly annotated variables for `missing-selector-annotation` */
   const annotated = new Set<string>();
@@ -61,7 +60,7 @@ export function validate(
       if (!decl.name) return undefined;
 
       if (
-        decl.value.annotation ||
+        decl.value.functionRef ||
         (decl.type === 'local' &&
           decl.value.arg?.type === 'variable' &&
           annotated.has(decl.value.arg.name))
@@ -78,30 +77,25 @@ export function validate(
       };
     },
 
-    expression(expression, context) {
-      const { arg, annotation } = expression;
-      if (annotation?.type === 'function') functions.add(annotation.name);
-      if (context === 'selector') {
-        selectorCount += 1;
-        missingFallback = expression;
-        if (
-          !annotation &&
-          (arg?.type !== 'variable' || !annotated.has(arg.name))
-        ) {
-          onError('missing-selector-annotation', expression);
-        }
-      }
+    expression({ functionRef }) {
+      if (functionRef) functions.add(functionRef.name);
     },
 
     value(value, context, position) {
-      if (value.type === 'variable') {
-        variables.add(value.name);
-        if (
-          context === 'declaration' &&
-          (position !== 'arg' || setArgAsDeclared)
-        ) {
-          declared.add(value.name);
-        }
+      if (value.type !== 'variable') return;
+      variables.add(value.name);
+      switch (context) {
+        case 'declaration':
+          if (position !== 'arg' || setArgAsDeclared) {
+            declared.add(value.name);
+          }
+          break;
+        case 'selector':
+          selectorCount += 1;
+          missingFallback = value;
+          if (!annotated.has(value.name)) {
+            onError('missing-selector-annotation', value);
+          }
       }
     },
 

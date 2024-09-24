@@ -1,10 +1,10 @@
 import type * as AST from '@messageformat/parser';
 import type {
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
+  InputDeclaration,
   Message,
   Options,
-  VariableRef,
   Variant
 } from 'messageformat';
 
@@ -54,8 +54,7 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
 
 function tokenToPart(
   token: AST.Token,
-  pluralArg: string | null,
-  pluralOffset: number | null
+  pluralArg: string | null
 ): string | Expression {
   switch (token.type) {
     case 'content':
@@ -66,9 +65,9 @@ function tokenToPart(
         arg: { type: 'variable', name: token.arg }
       };
     case 'function': {
-      const annotation: FunctionAnnotation = {
+      const functionRef: FunctionRef = {
         type: 'function',
-        name: token.key
+        name: `mf1:${token.key}`
       };
       if (token.param && token.param.length > 0) {
         let value = '';
@@ -76,66 +75,56 @@ function tokenToPart(
           if (pt.type === 'content') value += pt.value;
           else throw new Error(`Unsupported param type: ${pt.type}`);
         }
-        annotation.options = new Map([['param', { type: 'literal', value }]]);
+        functionRef.options = new Map([['param', { type: 'literal', value }]]);
       }
       return {
         type: 'expression',
         arg: { type: 'variable', name: token.arg },
-        annotation
+        functionRef
       };
     }
-    case 'octothorpe': {
-      if (!pluralArg) return '#';
-      const annotation: FunctionAnnotation = {
-        type: 'function',
-        name: 'number'
-      };
-      if (pluralOffset) {
-        annotation.options = new Map([
-          ['pluralOffset', { type: 'literal', value: String(pluralOffset) }]
-        ]);
-      }
-      return {
-        type: 'expression',
-        arg: { type: 'variable', name: pluralArg },
-        annotation
-      };
-    }
+    case 'octothorpe':
+      return pluralArg
+        ? { type: 'expression', arg: { type: 'variable', name: pluralArg } }
+        : '#';
     /* istanbul ignore next - never happens */
     default:
       throw new Error(`Unsupported token type: ${token.type}`);
   }
 }
 
-function argToExpression({
+function argToInputDeclaration({
   arg: selName,
   pluralOffset,
   type
-}: SelectArg): Expression {
-  const arg: VariableRef = { type: 'variable', name: selName };
+}: SelectArg): InputDeclaration {
+  let functionRef: FunctionRef;
   if (type === 'select') {
-    return {
+    functionRef = { type: 'function', name: 'string' };
+  } else {
+    const options: Options = new Map();
+    if (pluralOffset) {
+      options.set('pluralOffset', {
+        type: 'literal',
+        value: String(pluralOffset)
+      });
+    }
+    if (type === 'selectordinal') {
+      options.set('type', { type: 'literal', value: 'ordinal' });
+    }
+
+    functionRef = { type: 'function', name: 'mf1:number' };
+    if (options.size) functionRef.options = options;
+  }
+  return {
+    type: 'input',
+    name: selName,
+    value: {
       type: 'expression',
-      arg,
-      annotation: { type: 'function', name: 'string' }
-    };
-  }
-
-  const options: Options = new Map();
-  if (pluralOffset) {
-    options.set('pluralOffset', {
-      type: 'literal',
-      value: String(pluralOffset)
-    });
-  }
-  if (type === 'selectordinal') {
-    options.set('type', { type: 'literal', value: 'ordinal' });
-  }
-
-  const annotation: FunctionAnnotation = { type: 'function', name: 'number' };
-  if (options.size) annotation.options = options;
-
-  return { type: 'expression', arg, annotation };
+      arg: { type: 'variable', name: selName },
+      functionRef
+    }
+  };
 }
 
 /**
@@ -157,7 +146,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
     return {
       type: 'message',
       declarations: [],
-      pattern: ast.map(token => tokenToPart(token, null, null))
+      pattern: ast.map(token => tokenToPart(token, null))
     };
   }
 
@@ -221,7 +210,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
             })
           ) {
             const i = vp.length - 1;
-            const part = tokenToPart(token, pluralArg, pluralOffset);
+            const part = tokenToPart(token, pluralArg);
             if (typeof vp[i] === 'string' && typeof part === 'string') {
               vp[i] += part;
             } else {
@@ -236,8 +225,8 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
 
   return {
     type: 'select',
-    declarations: [],
-    selectors: args.map(argToExpression),
+    declarations: args.map(argToInputDeclaration),
+    selectors: args.map(arg => ({ type: 'variable', name: arg.arg })),
     variants
   };
 }

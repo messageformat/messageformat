@@ -3,17 +3,12 @@ import type { Context } from '../format-context.js';
 import { fallback } from '../functions/fallback.js';
 import { MessageFunctionContext } from './function-context.js';
 import { getValueSource, resolveValue } from './resolve-value.js';
-import type {
-  FunctionAnnotation,
-  Literal,
-  Options,
-  VariableRef
-} from './types.js';
+import type { FunctionRef, Literal, Options, VariableRef } from './types.js';
 
-export function resolveFunctionAnnotation(
+export function resolveFunctionRef(
   ctx: Context,
   operand: Literal | VariableRef | undefined,
-  { name, options }: FunctionAnnotation
+  { name, options }: FunctionRef
 ) {
   let source: string | undefined;
   try {
@@ -34,7 +29,8 @@ export function resolveFunctionAnnotation(
     const opt = resolveOptions(ctx, options);
     const res = rf(msgCtx, opt, ...fnInput);
     if (
-      !(res instanceof Object) ||
+      res === null ||
+      (typeof res !== 'object' && typeof res !== 'function') ||
       typeof res.type !== 'string' ||
       typeof res.source !== 'string'
     ) {

@@ -3,7 +3,7 @@ import {
   CatchallKey,
   Declaration,
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   Literal,
   Message,
   Pattern,
@@ -34,7 +34,7 @@ export type FunctionMap = Record<string, string | symbol | null>;
  */
 export const defaultFunctionMap: FunctionMap = {
   datetime: 'DATETIME',
-  message: FluentMessageRef,
+  'fluent:message': FluentMessageRef,
   number: 'NUMBER',
   plural: 'NUMBER',
   string: null
@@ -77,7 +77,7 @@ export function messageToFluent(
     }));
     const k0 = variants[0].keys;
     while (k0.length > 0) {
-      const sel = expressionToFluent(ctx, msg.selectors[k0.length - 1]);
+      const sel = variableRefToFluent(ctx, msg.selectors[k0.length - 1]);
       let baseKeys: (Literal | CatchallKey)[] = [];
       let exp: Fluent.SelectExpression | undefined;
       for (let i = 0; i < variants.length; ++i) {
@@ -161,7 +161,7 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
 function functionRefToFluent(
   ctx: MsgContext,
   arg: Fluent.InlineExpression | null,
-  { name, options }: FunctionAnnotation
+  { name, options }: FunctionRef
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (arg) args.positional[0] = arg;
@@ -236,18 +236,10 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  { arg, annotation }: Expression
+  { arg, functionRef }: Expression
 ): Fluent.InlineExpression {
   const fluentArg = arg ? valueToFluent(ctx, arg) : null;
-  if (annotation) {
-    if (annotation.type === 'function') {
-      return functionRefToFluent(ctx, fluentArg, annotation);
-    } else {
-      throw new Error(
-        `Conversion of ${annotation.type} annotation to Fluent is not supported`
-      );
-    }
-  }
+  if (functionRef) return functionRefToFluent(ctx, fluentArg, functionRef);
   if (fluentArg) return fluentArg;
   throw new Error('Invalid empty expression');
 }
@@ -273,7 +265,12 @@ function variableRefToFluent(
   { name }: VariableRef
 ): Fluent.InlineExpression {
   const local = ctx.declarations.find(decl => decl.name === name);
-  return local?.value
-    ? expressionToFluent(ctx, local.value)
-    : new Fluent.VariableReference(new Fluent.Identifier(name));
+  if (local?.value) {
+    const idx = ctx.declarations.indexOf(local);
+    return expressionToFluent(
+      { ...ctx, declarations: ctx.declarations.slice(0, idx) },
+      local.value
+    );
+  }
+  return new Fluent.VariableReference(new Fluent.Identifier(name));
 }

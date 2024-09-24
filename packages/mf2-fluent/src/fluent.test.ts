@@ -715,24 +715,24 @@ describe('fluentToResourceData', () => {
     const msg = data.get('multi')?.get('') as SelectMessage;
     expect(msg.variants.map(v => v.keys)).toMatchObject([
       [
-        { type: 'literal', quoted: false, value: '0' },
-        { type: 'literal', quoted: false, value: 'feminine' }
+        { type: 'literal', value: '0' },
+        { type: 'literal', value: 'feminine' }
       ],
       [
-        { type: 'literal', quoted: false, value: '0' },
-        { type: 'literal', quoted: false, value: 'masculine' }
+        { type: 'literal', value: '0' },
+        { type: 'literal', value: 'masculine' }
       ],
       [
-        { type: 'literal', quoted: false, value: '0' },
+        { type: 'literal', value: '0' },
         { type: '*', value: 'neuter' }
       ],
       [
         { type: '*', value: 'other' },
-        { type: 'literal', quoted: false, value: 'feminine' }
+        { type: 'literal', value: 'feminine' }
       ],
       [
         { type: '*', value: 'other' },
-        { type: 'literal', quoted: false, value: 'masculine' }
+        { type: 'literal', value: 'masculine' }
       ],
       [
         { type: '*', value: 'other' },
@@ -779,13 +779,11 @@ describe('messagetoFluent', () => {
           value: {
             type: 'expression',
             arg: { type: 'variable', name: 'num' },
-            annotation: { type: 'function', name: 'number' }
+            functionRef: { type: 'function', name: 'number' }
           }
         }
       ],
-      selectors: [
-        { type: 'expression', arg: { type: 'variable', name: 'local' } }
-      ],
+      selectors: [{ type: 'variable', name: 'local' }],
       variants: [
         {
           keys: [{ type: '*' }],
@@ -849,12 +847,12 @@ describe('messagetoFluent', () => {
         {
           type: 'expression',
           arg: { type: 'literal', value: 'msg' },
-          annotation: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'fluent:message' }
         },
         {
           type: 'expression',
           arg: { type: 'variable', name: 'local' },
-          annotation: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'fluent:message' }
         }
       ]
     };
@@ -891,7 +889,7 @@ describe('messagetoFluent', () => {
         {
           type: 'expression',
           arg: { type: 'variable', name: 'input' },
-          annotation: { type: 'function', name: 'message' }
+          functionRef: { type: 'function', name: 'fluent:message' }
         }
       ]
     };

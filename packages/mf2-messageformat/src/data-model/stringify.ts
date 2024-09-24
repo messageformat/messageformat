@@ -8,7 +8,7 @@ import {
 import type {
   Declaration,
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   Literal,
   Markup,
   Message,
@@ -28,7 +28,7 @@ export function stringifyMessage(msg: Message) {
     res += stringifyPattern(msg.pattern, !!res);
   } else if (isSelectMessage(msg)) {
     res += '.match';
-    for (const sel of msg.selectors) res += ' ' + stringifyExpression(sel);
+    for (const sel of msg.selectors) res += ' ' + stringifyVariableRef(sel);
     for (const { keys, value } of msg.variants) {
       res += '\n';
       for (const key of keys) {
@@ -46,24 +46,12 @@ function stringifyDeclaration(decl: Declaration) {
       return `.input ${stringifyExpression(decl.value)}\n`;
     case 'local':
       return `.local $${decl.name} = ${stringifyExpression(decl.value)}\n`;
-    case 'unsupported-statement': {
-      const parts = [`.${decl.keyword}`];
-      if (decl.body) parts.push(decl.body);
-      for (const exp of decl.expressions) {
-        parts.push(
-          exp.type === 'expression'
-            ? stringifyExpression(exp)
-            : stringifyMarkup(exp)
-        );
-      }
-      return parts.join(' ') + '\n';
-    }
   }
   // @ts-expect-error Guard against non-TS users with bad data
   throw new Error(`Unsupported ${decl.type} declaration`);
 }
 
-function stringifyFunctionAnnotation({ name, options }: FunctionAnnotation) {
+function stringifyFunctionRef({ name, options }: FunctionRef) {
   let res = `:${name}`;
   if (options) {
     for (const [key, value] of options) {
@@ -125,7 +113,7 @@ function stringifyString(str: string, quoted: boolean) {
   return str.replace(esc, '\\$&');
 }
 
-function stringifyExpression({ arg, annotation, attributes }: Expression) {
+function stringifyExpression({ arg, attributes, functionRef }: Expression) {
   let res: string;
   switch (arg?.type) {
     case 'literal':
@@ -137,12 +125,9 @@ function stringifyExpression({ arg, annotation, attributes }: Expression) {
     default:
       res = '';
   }
-  if (annotation) {
+  if (functionRef) {
     if (res) res += ' ';
-    res +=
-      annotation.type === 'function'
-        ? stringifyFunctionAnnotation(annotation)
-        : annotation.source ?? '�';
+    res += stringifyFunctionRef(functionRef);
   }
   if (attributes) {
     for (const [name, value] of attributes) {

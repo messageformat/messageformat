@@ -1,21 +1,18 @@
 import { fluentToResourceData } from '@messageformat/fluent';
 import { source } from '@messageformat/test-utils';
 import { mf2xliff, stringify, xliff2mf } from './index';
-import {
-  Message,
-  messageFromCST,
-  parseCST,
-  stringifyMessage
-} from 'messageformat';
+import { Message, parseMessage, stringifyMessage } from 'messageformat';
 
 test('source only', () => {
   const data = new Map<string, Message>([
-    ['msg', messageFromCST(parseCST('Message'))],
-    ['var', messageFromCST(parseCST('Foo {$num}'))],
-    ['ref', messageFromCST(parseCST('This is the {msg :message @attr}'))],
+    ['msg', parseMessage('Message')],
+    ['var', parseMessage('Foo {$num}')],
+    ['ref', parseMessage('This is the {msg :message @attr}')],
     [
       'select',
-      messageFromCST(parseCST('.match {$selector :string} a {{A}} * {{B}}'))
+      parseMessage(
+        '.input {$selector :string} .match $selector a {{A}} * {{B}}'
+      )
     ]
   ]);
   const xliff = stringify(mf2xliff({ data, id: 'res', locale: 'en' }));
@@ -30,19 +27,19 @@ test('source only', () => {
         </unit>
         <unit id="u:var" name="var">
           <res:resourceData>
-            <res:resourceItem id="m1">
+            <res:resourceItem id="ph:1">
               <res:source>
                 <mf:variable name="num"/>
               </res:source>
             </res:resourceItem>
           </res:resourceData>
           <segment>
-            <source xml:space="preserve">Foo <ph id="1" mf:ref="m1"/></source>
+            <source xml:space="preserve">Foo <ph id="2" mf:ref="ph:1"/></source>
           </segment>
         </unit>
         <unit id="u:ref" name="ref">
           <res:resourceData>
-            <res:resourceItem id="m2">
+            <res:resourceItem id="ph:3">
               <res:source>
                 <mf:literal>msg</mf:literal>
                 <mf:function name="message"/>
@@ -51,12 +48,12 @@ test('source only', () => {
             </res:resourceItem>
           </res:resourceData>
           <segment>
-            <source xml:space="preserve">This is the <ph id="2" mf:ref="m2"/></source>
+            <source xml:space="preserve">This is the <ph id="4" mf:ref="ph:3"/></source>
           </segment>
         </unit>
-        <unit id="u:select" name="select" canResegment="no" mf:select="m3">
+        <unit id="u:select" name="select" canResegment="no" mf:select="selector">
           <res:resourceData>
-            <res:resourceItem id="m3">
+            <res:resourceItem id="selector" mf:declaration="input">
               <res:source>
                 <mf:variable name="selector"/>
                 <mf:function name="string"/>
@@ -94,7 +91,11 @@ test('source only', () => {
     [['msg'], 'Message', undefined],
     [['var'], 'Foo {$num}', undefined],
     [['ref'], 'This is the {msg :message @attr}', undefined],
-    [['select'], '.match {$selector :string}\na {{A}}\n* {{B}}', undefined]
+    [
+      ['select'],
+      '.input {$selector :string}\n.match $selector\na {{A}}\n* {{B}}',
+      undefined
+    ]
   ]);
 });
 
@@ -138,31 +139,33 @@ test('combine source & target', () => {
         <group id="g:var" name="var">
           <unit id="u:var" name="var">
             <res:resourceData>
-              <res:resourceItem id="m1">
+              <res:resourceItem id="ph:1">
                 <res:source>
                   <mf:variable name="num"/>
                 </res:source>
-              </res:resourceItem>
-              <res:resourceItem id="m2">
-                <res:source>
+                <res:target>
                   <mf:variable name="num"/>
-                </res:source>
+                </res:target>
               </res:resourceItem>
             </res:resourceData>
             <segment>
-              <source xml:space="preserve">Foo <ph id="1" mf:ref="m1"/></source>
-              <target xml:space="preserve">Föö <ph id="2" mf:ref="m2"/></target>
+              <source xml:space="preserve">Foo <ph id="2" mf:ref="ph:1"/></source>
+              <target xml:space="preserve">Föö <ph id="3" mf:ref="ph:1"/></target>
             </segment>
           </unit>
         </group>
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" canResegment="no" mf:select="m3">
+          <unit id="u:select" name="select" canResegment="no" mf:select="selector">
             <res:resourceData>
-              <res:resourceItem id="m3">
+              <res:resourceItem id="selector" mf:declaration="input">
                 <res:source>
                   <mf:variable name="selector"/>
                   <mf:function name="string"/>
                 </res:source>
+                <res:target>
+                  <mf:variable name="selector"/>
+                  <mf:function name="string"/>
+                </res:target>
               </res:resourceItem>
             </res:resourceData>
             <segment id="s:select:a">
@@ -190,8 +193,8 @@ test('combine source & target', () => {
     [['var'], 'Foo {$num}', 'Föö {$num}'],
     [
       ['select'],
-      '.match {$selector :string}\na {{A}}\n* {{B}}',
-      '.match {$selector :string}\na {{Ä}}\n* {{B}}'
+      '.input {$selector :string}\n.match $selector\na {{A}}\n* {{B}}',
+      '.input {$selector :string}\n.match $selector\na {{Ä}}\n* {{B}}'
     ]
   ]);
 });
@@ -223,19 +226,19 @@ test('selector mismatch between source & target languages', () => {
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
       <file id="f:res">
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" canResegment="no" mf:select="m1 m2">
+          <unit id="u:select" name="select" canResegment="no" mf:select="gender case">
             <res:resourceData>
-              <res:resourceItem id="m1">
+              <res:resourceItem id="gender" mf:declaration="input">
                 <res:source>
                   <mf:variable name="gender"/>
                   <mf:function name="string"/>
                 </res:source>
               </res:resourceItem>
-              <res:resourceItem id="m2">
-                <res:source>
+              <res:resourceItem id="case" mf:declaration="input">
+                <res:target>
                   <mf:variable name="case"/>
                   <mf:function name="string"/>
-                </res:source>
+                </res:target>
               </res:resourceItem>
             </res:resourceData>
             <segment id="s:select:masculine.allative">
@@ -278,21 +281,17 @@ test('selector mismatch between source & target languages', () => {
     [
       ['select'],
       source`
-        .match {$gender :string} {$case :string}
-        masculine allative {{his house}}
-        masculine * {{his house}}
-        feminine allative {{her house}}
-        feminine * {{her house}}
-        * allative {{their house}}
-        * * {{their house}}`,
+        .input {$gender :string}
+        .match $gender
+        masculine {{his house}}
+        feminine {{her house}}
+        * {{their house}}`,
       source`
-        .match {$gender :string} {$case :string}
-        masculine allative {{hänen talolle}}
-        masculine * {{hänen talo}}
-        feminine allative {{hänen talolle}}
-        feminine * {{hänen talo}}
-        * allative {{hänen talolle}}
-        * * {{hänen talo}}`
+        .input {$gender :string}
+        .input {$case :string}
+        .match $case
+        allative {{hänen talolle}}
+        * {{hänen talo}}`
     ]
   ]);
 });
@@ -346,7 +345,7 @@ describe('Parsing xml:space in parent elements', () => {
       <file id="f:res">
         <unit id="u:key" xml:space="preserve">
           <res:resourceData>
-            <res:resourceItem id="m1">
+            <res:resourceItem id="ph:1">
               <res:source>
                 <mf:literal>msg</mf:literal>
                 <mf:function name="message"/>
@@ -354,7 +353,7 @@ describe('Parsing xml:space in parent elements', () => {
             </res:resourceItem>
           </res:resourceData>
           <segment>
-            <source> Message <ph id="1" mf:ref="m1"/> </source>
+            <source> Message <ph id="1" mf:ref="ph:1"/> </source>
           </segment>
         </unit>
       </file>
@@ -372,9 +371,9 @@ describe('Parsing xml:space in parent elements', () => {
     const xliff = source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
       <file id="f:res">
-        <unit id="u:key" canResegment="no" mf:select="m3" xml:space="preserve">
+        <unit id="u:key" canResegment="no" mf:select="sel" xml:space="preserve">
           <res:resourceData>
-            <res:resourceItem id="m3">
+            <res:resourceItem id="sel" mf:declaration="input">
               <res:source>
                 <mf:variable name="sel"/>
                 <mf:function name="string"/>
@@ -397,7 +396,11 @@ describe('Parsing xml:space in parent elements', () => {
         target && stringifyMessage(target)
       ])
     ).toEqual([
-      [['key'], '.match {$sel :string}\na {{ A }}\n* {{ B }}', undefined]
+      [
+        ['key'],
+        '.input {$sel :string}\n.match $sel\na {{ A }}\n* {{ B }}',
+        undefined
+      ]
     ]);
   });
 });
@@ -432,13 +435,17 @@ test('variably available targets', () => {
             <target></target>
           </segment>
         </unit>
-        <unit id="u:five" canResegment="no" mf:select="m1">
+        <unit id="u:five" canResegment="no" mf:select="x">
           <res:resourceData>
-            <res:resourceItem id="m1">
+            <res:resourceItem id="x" mf:declaration="input">
               <res:source>
                 <mf:variable name="x"/>
                 <mf:function name="number"/>
               </res:source>
+              <res:target>
+                <mf:variable name="x"/>
+                <mf:function name="number"/>
+              </res:target>
             </res:resourceItem>
           </res:resourceData>
           <segment id="s:select:0">
@@ -469,12 +476,14 @@ test('variably available targets', () => {
     [
       ['five'],
       source`
-        .match {$x :number}
+        .input {$x :number}
+        .match $x
         0 {{A}}
         one {{B}}
         * {{C}}`,
       source`
-        .match {$x :number}
+        .input {$x :number}
+        .match $x
         0 {{Ä}}
         * {{C}}`
     ]

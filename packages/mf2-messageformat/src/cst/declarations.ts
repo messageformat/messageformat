@@ -1,5 +1,4 @@
-import { parseNameValue } from './names.js';
-import { parseExpression, parseReservedBody } from './expression.js';
+import { parseExpression } from './expression.js';
 import type { ParseContext } from './parse-cst.js';
 import type * as CST from './types.js';
 import { whitespaces } from './util.js';
@@ -16,24 +15,22 @@ export function parseDeclarations(
   let pos = start;
   const declarations: CST.Declaration[] = [];
   loop: while (source[pos] === '.') {
-    const keyword = parseNameValue(source, pos + 1);
+    const keyword = source.substr(pos, 6);
     let decl;
     switch (keyword) {
-      case '':
-      case 'match':
+      case '.match':
         break loop;
-      case 'input':
+      case '.input':
         decl = parseInputDeclaration(ctx, pos);
         break;
-      case 'local':
+      case '.local':
         decl = parseLocalDeclaration(ctx, pos);
         break;
       default:
-        decl = parseReservedStatement(ctx, pos, '.' + keyword);
+        decl = parseDeclarationJunk(ctx, pos);
     }
     declarations.push(decl);
-    pos = decl.end;
-    pos += whitespaces(source, pos);
+    pos = whitespaces(source, decl.end).end;
   }
   return { declarations, end: pos };
 }
@@ -45,7 +42,7 @@ function parseInputDeclaration(
   //
   let pos = start + 6; // '.input'
   const keyword: CST.Syntax<'.input'> = { start, end: pos, value: '.input' };
-  pos += whitespaces(ctx.source, pos);
+  pos = whitespaces(ctx.source, pos).end;
 
   const value = parseDeclarationValue(ctx, pos);
   if (value.type === 'expression') {
@@ -66,9 +63,9 @@ function parseLocalDeclaration(
   let pos = start + 6; // '.local'
   const keyword: CST.Syntax<'.local'> = { start, end: pos, value: '.local' };
   const ws = whitespaces(source, pos);
-  pos += ws;
+  pos = ws.end;
 
-  if (ws === 0) ctx.onError('missing-syntax', pos, ' ');
+  if (!ws.hasWS) ctx.onError('missing-syntax', pos, ' ');
 
   let target: CST.VariableRef | CST.Junk;
   if (source[pos] === '$') {
@@ -87,7 +84,7 @@ function parseLocalDeclaration(
     ctx.onError('missing-syntax', junkStart, '$');
   }
 
-  pos += whitespaces(source, pos);
+  pos = whitespaces(source, pos).end;
   let equals: CST.Syntax<'='> | undefined;
   if (source[pos] === '=') {
     equals = { start: pos, end: pos + 1, value: '=' };
@@ -96,7 +93,7 @@ function parseLocalDeclaration(
     ctx.onError('missing-syntax', pos, '=');
   }
 
-  pos += whitespaces(source, pos);
+  pos = whitespaces(source, pos).end;
   const value = parseDeclarationValue(ctx, pos);
 
   return {
@@ -110,47 +107,25 @@ function parseLocalDeclaration(
   };
 }
 
-function parseReservedStatement(
-  ctx: ParseContext,
-  start: number,
-  keyword: string
-): CST.ReservedStatement {
-  let pos = start + keyword.length;
-  pos += whitespaces(ctx.source, pos);
-
-  const body = parseReservedBody(ctx, pos);
-  let end = body.end;
-  pos = end + whitespaces(ctx.source, end);
-
-  const values: CST.Expression[] = [];
-  while (ctx.source[pos] === '{') {
-    if (ctx.source.startsWith('{{', pos)) break;
-    const value = parseExpression(ctx, pos);
-    values.push(value);
-    end = value.end;
-    pos = end + whitespaces(ctx.source, end);
-  }
-  if (values.length === 0) ctx.onError('missing-syntax', end, '{');
-
-  return {
-    type: 'reserved-statement',
-    start,
-    end,
-    keyword: { start, end: keyword.length, value: keyword },
-    body,
-    values
-  };
-}
-
 function parseDeclarationValue(
   ctx: ParseContext,
   start: number
 ): CST.Expression | CST.Junk {
-  const { source } = ctx;
-  if (source[start] === '{') return parseExpression(ctx, start);
+  return ctx.source[start] === '{'
+    ? parseExpression(ctx, start)
+    : parseDeclarationJunk(ctx, start);
+}
 
-  const junkEndOffset = source.substring(start).search(/\.[a-z]|{{/);
-  const end = junkEndOffset === -1 ? source.length : start + junkEndOffset;
+function parseDeclarationJunk(ctx: ParseContext, start: number): CST.Junk {
+  const { source } = ctx;
+  const junkEndOffset = source.substring(start + 1).search(/\.[a-z]|{{/);
+  let end: number;
+  if (junkEndOffset === -1) {
+    end = source.length;
+  } else {
+    end = start + 1 + junkEndOffset;
+    while (/\s/.test(source[end - 1])) end -= 1;
+  }
   ctx.onError('missing-syntax', start, '{');
   return { type: 'junk', start, end, source: source.substring(start, end) };
 }

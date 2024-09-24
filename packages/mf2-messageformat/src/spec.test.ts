@@ -126,7 +126,6 @@ for (const scenario of testScenarios('test/messageformat-wg/test/tests')) {
   describe(scenario.scenario, () => {
     for (const tc of testCases(scenario)) {
       (tc.only ? describe.only : describe)(testName(tc), tests(tc));
-      //if (tc.only) describe(testName(tc), tests(tc));
     }
   });
 }

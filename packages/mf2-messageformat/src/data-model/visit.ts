@@ -3,14 +3,13 @@ import type {
   CatchallKey,
   Declaration,
   Expression,
-  FunctionAnnotation,
+  FunctionRef,
   Literal,
   Markup,
   Message,
   MessageNode,
   Options,
   Pattern,
-  UnsupportedAnnotation,
   VariableRef,
   Variant
 } from './types.js';
@@ -34,19 +33,19 @@ import type {
 export function visit(
   msg: Message,
   visitors: {
-    annotation?: (
-      annotation: FunctionAnnotation | UnsupportedAnnotation,
-      context: 'declaration' | 'selector' | 'placeholder',
-      argument: Literal | VariableRef | undefined
-    ) => (() => void) | void;
     attributes?: (
       attributes: Attributes,
-      context: 'declaration' | 'selector' | 'placeholder'
+      context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
     declaration?: (declaration: Declaration) => (() => void) | void;
     expression?: (
       expression: Expression,
-      context: 'declaration' | 'selector' | 'placeholder'
+      context: 'declaration' | 'placeholder'
+    ) => (() => void) | void;
+    functionRef?: (
+      functionRef: FunctionRef,
+      context: 'declaration' | 'placeholder',
+      argument: Literal | VariableRef | undefined
     ) => (() => void) | void;
     key?: (
       key: Literal | CatchallKey,
@@ -60,7 +59,7 @@ export function visit(
     node?: (node: MessageNode, ...rest: unknown[]) => void;
     options?: (
       options: Options,
-      context: 'declaration' | 'selector' | 'placeholder'
+      context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
     pattern?: (pattern: Pattern) => (() => void) | void;
     value?: (
@@ -73,7 +72,7 @@ export function visit(
 ) {
   const { node, pattern } = visitors;
   const {
-    annotation = node,
+    functionRef = node,
     attributes = null,
     declaration = node,
     expression = node,
@@ -86,7 +85,7 @@ export function visit(
 
   const handleOptions = (
     options_: Options | undefined,
-    context: 'declaration' | 'selector' | 'placeholder'
+    context: 'declaration' | 'placeholder'
   ) => {
     if (options_) {
       const end = options?.(options_, context);
@@ -101,7 +100,7 @@ export function visit(
 
   const handleAttributes = (
     attributes_: Attributes | undefined,
-    context: 'declaration' | 'selector' | 'placeholder'
+    context: 'declaration' | 'placeholder'
   ) => {
     if (attributes_) {
       const end = attributes?.(attributes_, context);
@@ -116,7 +115,7 @@ export function visit(
 
   const handleElement = (
     exp: string | Expression | Markup,
-    context: 'declaration' | 'selector' | 'placeholder'
+    context: 'declaration' | 'placeholder'
   ) => {
     if (typeof exp === 'object') {
       let end: (() => void) | void | undefined;
@@ -124,16 +123,16 @@ export function visit(
         case 'expression': {
           end = expression?.(exp, context);
           if (exp.arg) value?.(exp.arg, context, 'arg');
-          if (exp.annotation) {
-            const endA = annotation?.(exp.annotation, context, exp.arg);
-            handleOptions(exp.annotation.options, context);
+          if (exp.functionRef) {
+            const endA = functionRef?.(exp.functionRef, context, exp.arg);
+            handleOptions(exp.functionRef.options, context);
             endA?.();
           }
           handleAttributes(exp.attributes, context);
           break;
         }
         case 'markup': {
-          end = context !== 'selector' ? markup?.(exp, context) : undefined;
+          end = markup?.(exp, context);
           handleOptions(exp.options, context);
           handleAttributes(exp.attributes, context);
           break;
@@ -152,14 +151,13 @@ export function visit(
   for (const decl of msg.declarations) {
     const end = declaration?.(decl);
     if (decl.value) handleElement(decl.value, 'declaration');
-    else for (const exp of decl.expressions) handleElement(exp, 'declaration');
     end?.();
   }
 
   if (msg.type === 'message') {
     handlePattern(msg.pattern);
   } else {
-    for (const sel of msg.selectors) handleElement(sel, 'selector');
+    if (value) for (const sel of msg.selectors) value(sel, 'selector', 'arg');
     for (const vari of msg.variants) {
       const end = variant?.(vari);
       if (key) vari.keys.forEach(key);

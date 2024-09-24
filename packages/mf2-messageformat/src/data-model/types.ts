@@ -13,8 +13,7 @@ export type MessageNode =
   | Expression
   | Literal
   | VariableRef
-  | FunctionAnnotation
-  | UnsupportedAnnotation
+  | FunctionRef
   | Markup;
 
 /**
@@ -46,10 +45,7 @@ export interface PatternMessage {
  *
  * @beta
  */
-export type Declaration =
-  | InputDeclaration
-  | LocalDeclaration
-  | UnsupportedStatement;
+export type Declaration = InputDeclaration | LocalDeclaration;
 
 /** @beta */
 export interface InputDeclaration {
@@ -64,17 +60,6 @@ export interface LocalDeclaration {
   type: 'local';
   name: string;
   value: Expression;
-  [cst]?: CST.Declaration;
-}
-
-/** @beta */
-export interface UnsupportedStatement {
-  type: 'unsupported-statement';
-  keyword: string;
-  name?: never;
-  value?: never;
-  body?: string;
-  expressions: (Expression | Markup)[];
   [cst]?: CST.Declaration;
 }
 
@@ -93,7 +78,7 @@ export interface UnsupportedStatement {
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
-  selectors: Expression[];
+  selectors: VariableRef[];
   variants: Variant[];
   comment?: string;
   [cst]?: CST.SelectMessage;
@@ -129,7 +114,7 @@ export type Pattern = Array<string | Expression | Markup>;
 
 /**
  * Expressions are used in declarations, as selectors, and as placeholders.
- * Each must include at least an `arg` or an `annotation`, or both.
+ * Each must include at least an `arg` or a `functionRef`, or both.
  *
  * @beta
  */
@@ -143,8 +128,8 @@ export type Expression<
   attributes?: Attributes;
   [cst]?: CST.Expression;
 } & (A extends Literal | VariableRef
-  ? { arg: A; annotation?: FunctionAnnotation | UnsupportedAnnotation }
-  : { arg?: never; annotation: FunctionAnnotation | UnsupportedAnnotation });
+  ? { arg: A; functionRef?: FunctionRef }
+  : { arg?: never; functionRef: FunctionRef });
 
 /**
  * An immediately defined value.
@@ -182,7 +167,7 @@ export interface VariableRef {
 }
 
 /**
- * To resolve a FunctionAnnotation, an externally defined function is called.
+ * To resolve a FunctionRef, an externally defined function is called.
  *
  * @remarks
  * The `name` identifies a function that takes in the arguments `args`, the
@@ -193,29 +178,11 @@ export interface VariableRef {
  *
  * @beta
  */
-export interface FunctionAnnotation {
+export interface FunctionRef {
   type: 'function';
   name: string;
   options?: Options;
   [cst]?: CST.FunctionRef;
-}
-
-/**
- * When the parser encounters an expression with reserved syntax,
- * it emits an UnsupportedAnnotation to represent it.
- *
- * @remarks
- * As the meaning of this syntax is not supported,
- * it will always resolve with a fallback representation and emit an error.
- *
- * @beta
- */
-export interface UnsupportedAnnotation {
-  type: 'unsupported-annotation';
-  source: string;
-  name?: never;
-  options?: never;
-  [cst]?: CST.ReservedAnnotation;
 }
 
 /**
@@ -241,7 +208,7 @@ export interface Markup {
 }
 
 /**
- * The options of {@link FunctionAnnotation} and {@link Markup}.
+ * The options of {@link FunctionRef} and {@link Markup}.
  *
  * @beta
  */

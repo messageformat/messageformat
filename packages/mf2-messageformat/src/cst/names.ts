@@ -1,3 +1,13 @@
+const bidiChars = new Set([
+  0x061c, // ALM
+  0x200e, // LRM
+  0x200f, // RLM
+  0x2066, // LRI
+  0x2067, // RLI
+  0x2068, // FSI
+  0x2069 // PDI
+]);
+
 const isNameStartCode = (cc: number) =>
   (cc >= 0x41 && cc <= 0x5a) || // A-Z
   cc === 0x5f || // _
@@ -28,11 +38,24 @@ const isNameCharCode = (cc: number) =>
 // This is sticky so that parsing doesn't need to substring the source
 const numberLiteral = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][-+]?\d+)?/y;
 
-export function parseNameValue(src: string, start: number): string {
-  if (!isNameStartCode(src.charCodeAt(start))) return '';
-  let pos = start + 1;
-  while (isNameCharCode(src.charCodeAt(pos))) pos += 1;
-  return src.substring(start, pos);
+export function parseNameValue(
+  src: string,
+  start: number
+): { value: string; end: number } | null {
+  let pos = start;
+  let nameStart = start;
+  let cc = src.charCodeAt(start);
+  if (bidiChars.has(cc)) {
+    pos += 1;
+    nameStart += 1;
+    cc = src.charCodeAt(pos);
+  }
+  if (!isNameStartCode(cc)) return null;
+  cc = src.charCodeAt(++pos);
+  while (isNameCharCode(cc)) cc = src.charCodeAt(++pos);
+  const name = src.substring(nameStart, pos);
+  if (bidiChars.has(cc)) pos += 1;
+  return { value: name, end: pos };
 }
 
 export function isValidUnquotedLiteral(str: string): boolean {
