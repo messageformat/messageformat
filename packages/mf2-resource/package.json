@@ -18,7 +18,7 @@
   "homepage": "http://messageformat.github.io/messageformat/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/messageformat/messageformat.git",
+    "url": "git+https://github.com/messageformat/messageformat.git",
     "directory": "packages/mf2-resource"
   },
   "main": "lib/index.js",

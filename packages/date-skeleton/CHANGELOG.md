@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/date-skeleton@1.0.1...@messageformat/date-skeleton@1.1.0) (2024-09-24)
+
+### Features
+
+* Add timezone to date formatter ([#420](https://github.com/messageformat/messageformat/issues/420))
+
 ## [1.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/date-skeleton@1.0.0...@messageformat/date-skeleton@1.0.1) (2022-07-16)
 
 ### Bug Fixes

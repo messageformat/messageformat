@@ -18,7 +18,7 @@
   "homepage": "http://messageformat.github.io/messageformat/api/xliff/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/messageformat/messageformat.git",
+    "url": "git+https://github.com/messageformat/messageformat.git",
     "directory": "packages/xliff"
   },
   "main": "lib/index.js",

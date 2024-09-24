@@ -1,5 +1,34 @@
 # Changelog
 
+## [4.0.0-8](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-7...messageformat@4.0.0-8) (2024-09-24)
+
+### ⚠ Breaking Changes
+
+* Flip constructor args from `(source, locales, options)` to `(locales, source, options)` ([#423](https://github.com/messageformat/messageformat/issues/423))
+* Drop locales & message from `resolvedOptions()` ([#424](https://github.com/messageformat/messageformat/issues/424))
+* Remove all reserved & private syntax ([unicode-org/message-format-wg#883](https://github.com/unicode-org/message-format-wg/issues/883)) ([429bd81](https://github.com/messageformat/messageformat/commit/429bd81ddfdca5d4c3532802e2439bc515a7b4f3))
+* Match on variables instead of expressions ([unicode-org/message-format-wg#877](https://github.com/unicode-org/message-format-wg/issues/877)) ([653d2df](https://github.com/messageformat/messageformat/commit/653d2df3e13b6732316c790feb6dd7de0eb7c9e6))
+
+### Features
+
+* Support leading whitespace for complex messages ([unicode-org/message-format-wg#854](https://github.com/unicode-org/message-format-wg/issues/854)) ([714e024](https://github.com/messageformat/messageformat/commit/714e0243df7013add4823c0ffcf7f0e6e12088b5))
+* Add duplicate-variant error ([unicode-org/message-format-wg#853](https://github.com/unicode-org/message-format-wg/issues/853)) ([0fb7b0c](https://github.com/messageformat/messageformat/commit/0fb7b0c3c6589fe491b7f94a4de997f9daee54a1))
+* Support escapes for all of `{|}` in text and literals ([unicode-org/message-format-wg#743](https://github.com/unicode-org/message-format-wg/issues/743)) ([b011b5e](https://github.com/messageformat/messageformat/commit/b011b5e380b2c22595e3325d940dbe9deb2b4c11))
+* Default to `medium` rather than `short` `dateStyle` ([unicode-org/message-format-wg#813](https://github.com/unicode-org/message-format-wg/issues/813)) ([3d1481e](https://github.com/messageformat/messageformat/commit/3d1481e3c3cc511f103d597594d4172ee85319a3))
+* Keep attributes in data model, use Map for options & attributes ([unicode-org/message-format-wg#845](https://github.com/unicode-org/message-format-wg/issues/845)) ([215fdf9](https://github.com/messageformat/messageformat/commit/215fdf9d4e82779b82668dd0917adfb39274b178))
+* Allow bidi controls (ALM/LRM/RLM/LRI/RLI/FSI/PDI) in whitespace & around names ([unicode-org/message-format-wg#884](https://github.com/unicode-org/message-format-wg/issues/884)) ([865ad04](https://github.com/messageformat/messageformat/commit/865ad04a7852a9363c164f651d56db2a15683e3a))
+
+### Bug Fixes
+
+* Verify that functions return a MessageValue ([#421](https://github.com/messageformat/messageformat/issues/421))
+* Use MessageFormat WG test suite, apply upstream updates ([#422](https://github.com/messageformat/messageformat/issues/422))
+* Align `:number` function to spec ([#425](https://github.com/messageformat/messageformat/issues/425))
+* Use correct error codes ([db82cce](https://github.com/messageformat/messageformat/commit/db82cceddda0cf0c5f92910957720c4ff8925651))
+* Escape `\{|}` when stringifying messages ([c0ee956](https://github.com/messageformat/messageformat/commit/c0ee956c7278b0bdc4ac85d1a7b12d6df20a4d83))
+* Drop unused/obsolete non-formattable symbol from `:number` ([b85d17b](https://github.com/messageformat/messageformat/commit/b85d17b26f1661b0f0146a55166de41deec87626))
+* Catch errors thrown during MatchSelectorKeys ([unicode-org/message-format-wg#828](https://github.com/unicode-org/message-format-wg/issues/828)) ([10e7b50](https://github.com/messageformat/messageformat/commit/10e7b50c951ca2f63545f1a0917713628fc217f5))
+* Reduce regex complexity in declaration junk content parsing ([e46818d](https://github.com/messageformat/messageformat/commit/e46818d624cb8c97f434bedec7c68d3deffbd862))
+
 ## [4.0.0-7](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-6...messageformat@4.0.0-7) (2024-02-28)
 
 ### Features

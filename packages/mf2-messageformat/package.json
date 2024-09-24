@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "4.0.0-7",
+  "version": "4.0.0-8",
   "description": "Intl.MessageFormat / Unicode MessageFormat 2 parser, runtime and polyfill",
   "keywords": [
     "messageformat",
@@ -18,7 +18,7 @@
   "homepage": "http://messageformat.github.io/messageformat/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/messageformat/messageformat.git",
+    "url": "git+https://github.com/messageformat/messageformat.git",
     "directory": "packages/mf2-messageformat"
   },
   "main": "lib/index.js",

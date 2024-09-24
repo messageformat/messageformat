@@ -4,7 +4,10 @@
   "private": true,
   "license": "MIT",
   "homepage": "https://messageformat.github.io/",
-  "repository": "messageformat/messageformat",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/messageformat/messageformat.git"
+  },
   "directories": {
     "doc": "docs",
     "example": "example"
