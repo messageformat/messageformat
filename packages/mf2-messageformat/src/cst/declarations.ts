@@ -118,8 +118,14 @@ function parseDeclarationValue(
 
 function parseDeclarationJunk(ctx: ParseContext, start: number): CST.Junk {
   const { source } = ctx;
-  const junkEndOffset = source.substring(start + 1).search(/\s*(\.[a-z]|{{)/);
-  const end = junkEndOffset === -1 ? source.length : start + 1 + junkEndOffset;
+  const junkEndOffset = source.substring(start + 1).search(/\.[a-z]|{{/);
+  let end: number;
+  if (junkEndOffset === -1) {
+    end = source.length;
+  } else {
+    end = start + 1 + junkEndOffset;
+    while (/\s/.test(source[end - 1])) end -= 1;
+  }
   ctx.onError('missing-syntax', start, '{');
   return { type: 'junk', start, end, source: source.substring(start, end) };
 }
