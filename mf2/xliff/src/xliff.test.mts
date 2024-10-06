@@ -1,6 +1,6 @@
 import { fluentToResourceData } from '@messageformat/fluent';
-import { source } from '~/test/utils/source';
-import { mf2xliff, stringify, xliff2mf } from './index';
+import { source } from '~/test/utils/source.js';
+import { mf2xliff, stringify, xliff2mf } from './index.js';
 import { Message, parseMessage, stringifyMessage } from 'messageformat';
 
 test('source only', () => {

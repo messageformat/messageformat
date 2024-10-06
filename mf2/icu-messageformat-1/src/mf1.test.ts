@@ -365,7 +365,7 @@ for (const [title, cases] of Object.entries(testCases)) {
       const _describe = only ? describe.only : describe;
       _describe(name, () => {
         for (const [param, res] of exp) {
-          const strParam = [];
+          const strParam: string[] = [];
           if (param && typeof param === 'object') {
             for (const [key, value] of Object.entries(param)) {
               strParam.push(`${key}: ${value}`);

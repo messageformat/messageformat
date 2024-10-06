@@ -222,13 +222,13 @@ maybe('List formatting', () => {
         list = list.map(value => each(locales, value));
       }
 
-      // @ts-expect-error TS2020 doesn't know about ListFormat
       const lf = new Intl.ListFormat(locales, options);
       return {
         type: 'list',
         source,
         locale: lf.resolvedOptions().locale,
-        toParts: () => lf.formatToParts(list),
+        toParts: () =>
+          lf.formatToParts(list).map(part => Object.assign(part, { source })),
         toString: () => lf.format(list)
       };
     };

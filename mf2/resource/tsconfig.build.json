@@ -1,11 +1,8 @@
 {
-  "extends": "../../config/tsconfig.mf2-base.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "declaration": true,
-    "lib": ["ES2022"],
-    "outDir": "lib",
-    "target": "ES2022"
+    "outDir": "lib"
   },
   "include": ["src/*"],
-  "exclude": ["**/*.test.ts"]
+  "exclude": ["**/*.test.*"]
 }
