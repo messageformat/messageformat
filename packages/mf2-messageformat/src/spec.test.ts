@@ -4,7 +4,7 @@ import {
   testName,
   testScenarios,
   testType
-} from '~/test/mfwg-test-utils.js';
+} from '~/test/utils/mfwg-test-utils.js';
 
 import {
   MessageDataModelError,

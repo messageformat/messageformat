@@ -5,7 +5,7 @@ import {
   mf1ToMessageData
 } from '@messageformat/icu-messageformat-1';
 import { parse } from '@messageformat/parser';
-import { source } from '@messageformat/test-utils';
+import { source } from '~/test/utils/source.js';
 
 import {
   MessageExpressionPart,

@@ -1,5 +1,5 @@
 import { fluentToResourceData } from '@messageformat/fluent';
-import { source } from '@messageformat/test-utils';
+import { source } from '~/test/utils/source';
 import { mf2xliff, stringify, xliff2mf } from './index';
 import { Message, parseMessage, stringifyMessage } from 'messageformat';
 

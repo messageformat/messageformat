@@ -13,7 +13,6 @@
     "example": "example"
   },
   "workspaces": [
-    "packages/test-utils",
     "packages/cli",
     "packages/convert",
     "packages/date-skeleton",

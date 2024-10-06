@@ -16,7 +16,6 @@
       "@messageformat/react": ["packages/react/src/index"],
       "@messageformat/runtime": ["packages/runtime/src/runtime"],
       "@messageformat/runtime/lib/*": ["packages/runtime/src/*"],
-      "@messageformat/test-utils": ["packages/test-utils/src/index.ts"],
       "messageformat": ["packages/mf2-messageformat/src/index.ts"],
       "messageformat/functions": [
         "packages/mf2-messageformat/src/functions/index.ts"

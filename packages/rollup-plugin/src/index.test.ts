@@ -2,7 +2,7 @@
 jest.mock('fs', () => require('memfs').fs);
 
 import { fs } from 'memfs';
-import { source } from '@messageformat/test-utils';
+import { source } from '~/test/utils/source';
 import { messageformat } from './index';
 
 const jsonSrc = '{"key":{"inner":"value {foo}"}}';
