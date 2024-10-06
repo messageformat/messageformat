@@ -55,7 +55,7 @@ function stringifyPattern(
   { body, braces }: CST.Pattern,
   braced: boolean
 ): string {
-  let str = braced ? braces?.[0]?.value ?? '{{' : '';
+  let str = braced ? (braces?.[0]?.value ?? '{{') : '';
   for (const el of body) {
     str +=
       el.type === 'text'

@@ -171,7 +171,7 @@ export class MessageFormat {
     for (const decl of this.#message.declarations) {
       scope[decl.name] = new UnresolvedExpression(
         decl.value,
-        decl.type === 'input' ? msgParams ?? {} : undefined
+        decl.type === 'input' ? (msgParams ?? {}) : undefined
       );
     }
     const ctx: Context = {

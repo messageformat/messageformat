@@ -372,7 +372,7 @@ function getMessageElements(
     if (el.name === 'res:source') src = el;
     else if (el.name === 'res:target') tgt = el;
   }
-  const parent = st === 'target' ? tgt ?? src : src;
+  const parent = st === 'target' ? (tgt ?? src) : src;
   return (parent?.elements?.filter(
     el => el.type === 'element' && el.name.startsWith('mf:')
   ) ?? []) as X.MessageElements;
