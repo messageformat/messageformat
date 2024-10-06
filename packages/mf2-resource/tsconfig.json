@@ -1,8 +1,0 @@
-{
-  "extends": "../../config/tsconfig.mf2-base.json",
-  "compilerOptions": {
-    "target": "ES2022",
-    "types": ["jest", "node"]
-  },
-  "include": ["src/*"]
-}

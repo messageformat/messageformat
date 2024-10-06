@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./packages",
+    "paths": {
+      "~/*": ["../*"],
+      "@messageformat/core": ["core/src/messageformat"],
+      "@messageformat/core/compile-module": ["core/src/compile-module"],
+      "@messageformat/date-skeleton": ["date-skeleton/src/index"],
+      "@messageformat/number-skeleton": ["number-skeleton/src/index"],
+      "@messageformat/parser": ["parser/src/parser"],
+      "@messageformat/react": ["react/src/index"],
+      "@messageformat/runtime": ["runtime/src/runtime"],
+      "@messageformat/runtime/lib/*": ["runtime/src/*"]
+    }
+  }
+}

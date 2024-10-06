@@ -11,29 +11,29 @@ module.exports = {
   moduleFileExtensions: ['mjs', ...defaults.moduleFileExtensions],
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/$1',
-    '^messageformat$': '<rootDir>/packages/mf2-messageformat/src/index.ts',
+    '^messageformat$': '<rootDir>/mf2/messageformat/src/index.ts',
     '^messageformat/functions$':
-      '<rootDir>/packages/mf2-messageformat/src/functions/index.ts',
+      '<rootDir>/mf2/messageformat/src/functions/index.ts',
     '^messageformat/functions/utils$':
-      '<rootDir>/packages/mf2-messageformat/src/functions/utils.ts',
-    '^@messageformat/core$': '<rootDir>/packages/core/src/messageformat.ts',
+      '<rootDir>/mf2/messageformat/src/functions/utils.ts',
+    '^@messageformat/core$': '<rootDir>/mf1/packages/core/src/messageformat.ts',
     '^@messageformat/core/compile-module$':
-      '<rootDir>/packages/core/src/compile-module.ts',
+      '<rootDir>/mf1/packages/core/src/compile-module.ts',
     '^@messageformat/date-skeleton$':
-      '<rootDir>/packages/date-skeleton/src/index.ts',
-    '^@messageformat/fluent$': '<rootDir>/packages/mf2-fluent/src/index.ts',
+      '<rootDir>/mf1/packages/date-skeleton/src/index.ts',
+    '^@messageformat/fluent$': '<rootDir>/mf2/fluent/src/index.ts',
     '^@messageformat/icu-messageformat-1$':
-      '<rootDir>/packages/mf2-icu-mf1/src/index.ts',
+      '<rootDir>/mf2/icu-messageformat-1/src/index.ts',
     '^@messageformat/number-skeleton$':
-      '<rootDir>/packages/number-skeleton/src/index.ts',
-    '^@messageformat/parser$': '<rootDir>/packages/parser/src/parser.ts',
-    '^@messageformat/react$': '<rootDir>/packages/react/src/index.ts',
-    '^@messageformat/runtime$': '<rootDir>/packages/runtime/src/runtime.ts',
-    '^@messageformat/runtime/lib/(.*)$': '<rootDir>/packages/runtime/src/$1.ts',
-    '^@messageformat/test-utils$': '<rootDir>/packages/test-utils/src/index.ts'
+      '<rootDir>/mf1/packages/number-skeleton/src/index.ts',
+    '^@messageformat/parser$': '<rootDir>/mf1/packages/parser/src/parser.ts',
+    '^@messageformat/react$': '<rootDir>/mf1/packages/react/src/index.ts',
+    '^@messageformat/runtime$': '<rootDir>/mf1/packages/runtime/src/runtime.ts',
+    '^@messageformat/runtime/lib/(.*)$':
+      '<rootDir>/mf1/packages/runtime/src/$1.ts'
   },
   resolver: 'jest-ts-webcompat-resolver',
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/examples/react/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/mf1/examples/react/'],
   transform: { '\\.(js|mjs|ts|tsx)$': 'babel-jest' },
   transformIgnorePatterns: [
     '/node_modules/(?!make-plural|messageformat-(date|number)-skeleton)'

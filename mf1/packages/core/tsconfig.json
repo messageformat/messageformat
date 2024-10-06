@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "removeComments": true
+  },
+  "include": ["src/*"],
+  "exclude": ["**/*.test.ts"]
+}

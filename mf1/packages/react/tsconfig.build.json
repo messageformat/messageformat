@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "jsx": "react",
+    "outDir": "lib"
+  },
+  "include": ["src/*"],
+  "exclude": ["**/*.test.tsx"]
+}
