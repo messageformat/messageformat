@@ -11,22 +11,22 @@ This monorepo provides packages supporting JS implementations of both [ICU Messa
 
 ## ICU MessageFormat 1 Packages
 
-- [@messageformat/cli](packages/cli/) - A command-line client for the library
-- [@messageformat/convert](packages/convert/) - Converts other localization formats into ICU MessageFormat
-- [@messageformat/core](packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
-- [@messageformat/date-skeleton](packages/date-skeleton) - Tools for working with [ICU DateFormat skeletons]
-- [@messageformat/loader](packages/webpack-loader/) - Webpack loader for JSON, YAML, & .properties message files
-- [@messageformat/number-skeleton](packages/number-skeleton) - Tools for working with [ICU NumberFormat skeletons]
-- [@messageformat/parser](packages/parser/) - Parses MessageFormat source strings into an AST
-- [@messageformat/react](packages/react/) - React hooks and other bindings for messages
-- [@messageformat/runtime](packages/runtime/) - Runtime dependencies of compiled message modules
-- [rollup-plugin-messageformat](packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
+- [@messageformat/cli](mf1/packages/cli/) - A command-line client for the library
+- [@messageformat/convert](mf1/packages/convert/) - Converts other localization formats into ICU MessageFormat
+- [@messageformat/core](mf1/packages/core/) - The core library that transpiles MessageFormat strings into JavaScript functions
+- [@messageformat/date-skeleton](mf1/packages/date-skeleton) - Tools for working with [ICU DateFormat skeletons]
+- [@messageformat/loader](mf1/packages/webpack-loader/) - Webpack loader for JSON, YAML, & .properties message files
+- [@messageformat/number-skeleton](mf1/packages/number-skeleton) - Tools for working with [ICU NumberFormat skeletons]
+- [@messageformat/parser](mf1/packages/parser/) - Parses MessageFormat source strings into an AST
+- [@messageformat/react](mf1/packages/react/) - React hooks and other bindings for messages
+- [@messageformat/runtime](mf1/packages/runtime/) - Runtime dependencies of compiled message modules
+- [rollup-plugin-messageformat](mf1/packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
 ## Unicode MessageFormat 2 Packages
 
-- [messageformat](packages/mf2-messageformat/) - **_(BETA)_** Intl.MessageFormat / MF2 parser, runtime and polyfill
-- [@messageformat/fluent](packages/mf2-fluent) - **_(BETA)_** Compile Fluent sources into MF2 resources
-- [@messageformat/icu-messageformat-1](packages/mf2-icu-mf1) - **_(BETA)_** Compile MF1 sources into MF2 formatters
+- [messageformat](mf2/messageformat/) - **_(BETA)_** Intl.MessageFormat / MF2 parser, runtime and polyfill
+- [@messageformat/fluent](mf2/fluent) - **_(BETA)_** Compile Fluent sources into MF2 resources
+- [@messageformat/icu-messageformat-1](mf2/icu-messageformat-1) - **_(BETA)_** Compile MF1 sources into MF2 formatters
 
 [all the languages]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [unicode cldr]: http://cldr.unicode.org/

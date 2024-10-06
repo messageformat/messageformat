@@ -32,7 +32,7 @@ jobs:
       - run: npm run lint
       - run: npx prettier --check .
 
-  examples:
+  mf1-examples:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +40,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm install
-        working-directory: ./examples
+        working-directory: ./mf1/examples
       - run: npm run build
-        working-directory: ./examples
+        working-directory: ./mf1/examples

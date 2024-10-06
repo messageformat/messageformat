@@ -1,4 +1,4 @@
-import { getTestCases } from '../../../test/fixtures/messageformat';
+import { getTestCases } from '~/test/fixtures/messageformat';
 import MessageFormat from './messageformat';
 import { PluralFunction } from './plurals';
 
