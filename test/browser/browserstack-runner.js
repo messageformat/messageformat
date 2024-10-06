@@ -14,7 +14,6 @@ const bsConfig = {
 const PORT = 3000;
 const url = `http://localhost:${PORT}/test/browser/test.html`;
 
-/* eslint-disable camelcase */
 exports.testBrowser = async function (browserName, browser_version) {
   const cap = Object.assign({ browserName, browser_version }, bsConfig);
   const driver = new Builder()

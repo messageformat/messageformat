@@ -29,7 +29,6 @@ export function time(
     minute: 'numeric',
     hour: 'numeric'
   };
-  /* eslint-disable no-fallthrough */
   switch (size) {
     case 'full':
     case 'long':

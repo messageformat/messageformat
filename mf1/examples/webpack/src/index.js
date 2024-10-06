@@ -1,4 +1,4 @@
-/* eslint-env browser */
+/* global document */
 
 import messages from './messages.yaml';
 

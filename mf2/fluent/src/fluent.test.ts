@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 /**
  * The test cases included in this file have been extracted from the
  * @fluent/bundle 0.16.1 test files available at:

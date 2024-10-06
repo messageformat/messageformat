@@ -20,7 +20,7 @@ module.exports = function getOptions() {
         cfg = YAML.parse(src);
       }
       break;
-    } catch (e) {
+    } catch {
       /* ignore errors */
     }
   }
