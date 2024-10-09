@@ -16,7 +16,8 @@ const isNameStartCode = (cc: number) =>
   (cc >= 0xd8 && cc <= 0xf6) || // Ø-ö
   (cc >= 0xf8 && cc <= 0x2ff) ||
   (cc >= 0x370 && cc <= 0x37d) ||
-  (cc >= 0x37f && cc <= 0x1fff) ||
+  (cc >= 0x37f && cc <= 0x61b) ||
+  (cc >= 0x61d && cc <= 0x1fff) ||
   (cc >= 0x200c && cc <= 0x200d) ||
   (cc >= 0x2070 && cc <= 0x2187) ||
   (cc >= 0x2c00 && cc <= 0x2fef) ||
