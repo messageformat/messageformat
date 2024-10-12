@@ -42,6 +42,10 @@ function getValue(scope: unknown, name: string): unknown {
         return getValue(scope[head], tail);
       }
     }
+
+    for (const [key, value] of Object.entries(scope)) {
+      if (key.normalize() === name) return value;
+    }
   }
 
   return undefined;

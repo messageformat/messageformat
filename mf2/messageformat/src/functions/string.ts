@@ -33,12 +33,13 @@ export function string(
   input?: unknown
 ): MessageString {
   const str = input === undefined ? '' : String(input);
+  const selStr = str.normalize();
   const [locale] = mergeLocales(locales, input, options);
   return {
     type: 'string',
     source,
     locale,
-    selectKey: keys => (keys.has(str) ? str : null),
+    selectKey: keys => (keys.has(selStr) ? selStr : null),
     toParts: () => [{ type: 'string', source, locale, value: str }],
     toString: () => str,
     valueOf: () => str
