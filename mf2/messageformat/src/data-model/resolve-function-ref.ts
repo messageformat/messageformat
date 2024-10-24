@@ -25,7 +25,7 @@ export function resolveFunctionRef(
     if (!rf) {
       throw new MessageError('unknown-function', `Unknown function :${name}`);
     }
-    const msgCtx = new MessageFunctionContext(ctx, source);
+    const msgCtx = new MessageFunctionContext(ctx, source, options);
     const opt = resolveOptions(ctx, options);
     const res = rf(msgCtx, opt, ...fnInput);
     if (
@@ -51,7 +51,9 @@ function resolveOptions(ctx: Context, options: Options | undefined) {
   const opt: Record<string, unknown> = Object.create(null);
   if (options) {
     for (const [name, value] of options) {
-      opt[name] = resolveValue(ctx, value);
+      if (name !== 'u:locale') {
+        opt[name] = resolveValue(ctx, value);
+      }
     }
   }
   return opt;
