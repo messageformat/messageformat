@@ -23,7 +23,8 @@ export function formatMarkup(
         if (typeof rv === 'object' && typeof rv?.valueOf === 'function') {
           rv = rv.valueOf();
         }
-        part.options[name] = rv;
+        if (name === 'u:id') part.id = String(rv);
+        else part.options[name] = rv;
       }
     }
   }

@@ -39,6 +39,16 @@ export function resolveFunctionRef(
         `Function :${name} did not return a MessageValue`
       );
     }
+    if (msgCtx.id && typeof res.toParts === 'function') {
+      return {
+        ...res,
+        toParts() {
+          const parts = res.toParts!();
+          for (const part of parts) part.id = msgCtx.id;
+          return parts;
+        }
+      };
+    }
     return res;
   } catch (error) {
     ctx.onError(error);
@@ -51,7 +61,7 @@ function resolveOptions(ctx: Context, options: Options | undefined) {
   const opt: Record<string, unknown> = Object.create(null);
   if (options) {
     for (const [name, value] of options) {
-      if (name !== 'u:dir' && name !== 'u:locale') {
+      if (name !== 'u:dir' && name !== 'u:id' && name !== 'u:locale') {
         opt[name] = resolveValue(ctx, value);
       }
     }

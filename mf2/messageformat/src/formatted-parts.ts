@@ -16,6 +16,7 @@ export interface MessageExpressionPart {
   source: string;
   dir?: 'ltr' | 'rtl';
   locale?: string;
+  id?: string;
   parts?: Array<{ type: string; source?: string; value?: unknown }>;
   value?: unknown;
 }
@@ -32,6 +33,7 @@ export interface MessageMarkupPart {
   kind: 'open' | 'standalone' | 'close';
   source: string;
   name: string;
+  id?: string;
   options?: { [key: string]: unknown };
 }
 

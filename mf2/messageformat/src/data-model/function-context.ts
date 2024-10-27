@@ -7,6 +7,7 @@ export class MessageFunctionContext {
   #ctx: Context;
   #locales: Intl.Locale[];
   readonly dir: 'ltr' | 'rtl' | 'auto' | undefined;
+  readonly id: string | undefined;
   readonly source: string;
   constructor(ctx: Context, source: string, options?: Options) {
     this.#ctx = ctx;
@@ -41,6 +42,9 @@ export class MessageFunctionContext {
         ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
       }
     }
+
+    const idOpt = options?.get('u:id');
+    this.id = idOpt ? String(resolveValue(ctx, idOpt)) : undefined;
 
     this.source = source;
   }
