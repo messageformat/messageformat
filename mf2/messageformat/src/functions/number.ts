@@ -2,12 +2,7 @@ import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
 import { getLocaleDir } from '../dir-utils.js';
 import type { MessageFunctionContext, MessageValue } from './index.js';
-import {
-  asBoolean,
-  asPositiveInteger,
-  asString,
-  mergeLocales
-} from './utils.js';
+import { asPositiveInteger, asString, mergeLocales } from './utils.js';
 
 /** @beta */
 export interface MessageNumber extends MessageValue {
@@ -98,9 +93,12 @@ export function number(
           // @ts-expect-error TS types don't know about roundingIncrement
           opt[name] = asPositiveInteger(optval);
           break;
-        case 'useGrouping':
-          opt[name] = asBoolean(optval);
+        case 'useGrouping': {
+          const strval = asString(optval);
+          // @ts-expect-error TS type is wrong
+          opt[name] = strval === 'never' ? false : strval;
           break;
+        }
         default:
           // @ts-expect-error Unknown options will be ignored
           opt[name] = asString(optval);

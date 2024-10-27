@@ -30,7 +30,7 @@ describe('inputs with options', () => {
   test('local variable with :number expression', () => {
     const mf = new MessageFormat(
       'en',
-      `.local $val = {12345678 :number useGrouping=false}
+      `.local $val = {12345678 :number useGrouping=never}
       {{{$val :number minimumFractionDigits=2}}}`
     );
     //const val = new MessageNumber(null, BigInt(12345678), { options: { useGrouping: false } });
@@ -77,20 +77,28 @@ describe('inputs with options', () => {
 });
 
 describe('Type casts based on runtime', () => {
+  const date = '2000-01-01T15:00:00';
+
   test('boolean function option with literal value', () => {
-    const mfTrue = new MessageFormat('en', '{$var :number useGrouping=true}');
-    expect(mfTrue.format({ var: 1234 })).toBe('1,234');
-    const mfFalse = new MessageFormat('en', '{$var :number useGrouping=false}');
-    expect(mfFalse.format({ var: 1234 })).toBe('1234');
+    const mfTrue = new MessageFormat(
+      'en',
+      '{$date :datetime timeStyle=short hour12=true}'
+    );
+    expect(mfTrue.format({ date })).toMatch(/3:00/);
+    const mfFalse = new MessageFormat(
+      'en',
+      '{$date :datetime timeStyle=short hour12=false}'
+    );
+    expect(mfFalse.format({ date })).toMatch(/15:00/);
   });
 
   test('boolean function option with variable value', () => {
     const mf = new MessageFormat(
       'en',
-      '{$var :number useGrouping=$useGrouping}'
+      '{$date :datetime timeStyle=short hour12=$hour12}'
     );
-    expect(mf.format({ var: 1234, useGrouping: 'false' })).toBe('1234');
-    expect(mf.format({ var: 1234, useGrouping: false })).toBe('1234');
+    expect(mf.format({ date, hour12: 'false' })).toMatch(/15:00/);
+    expect(mf.format({ date, hour12: false })).toMatch(/15:00/);
   });
 });
 
