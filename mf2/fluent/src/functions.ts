@@ -1,7 +1,9 @@
+import type { MessagePart } from 'messageformat';
 import type {
   MessageFunctionContext,
   MessageValue
 } from 'messageformat/functions';
+import { getLocaleDir } from 'messageformat/functions/utils';
 import type { FluentMessageResource } from './index.js';
 import { valueToMessageRef } from './message-to-fluent.js';
 
@@ -20,10 +22,13 @@ import { valueToMessageRef } from './message-to-fluent.js';
  */
 export function getFluentFunctions(res: FluentMessageResource) {
   function message(
-    { locales, onError, source }: MessageFunctionContext,
+    ctx: MessageFunctionContext,
     options: Record<string, unknown>,
     input?: unknown
   ) {
+    const { onError, source } = ctx;
+    const locale = ctx.locales[0];
+    const dir = ctx.dir ?? getLocaleDir(locale);
     const { msgId, msgAttr } = valueToMessageRef(input ? String(input) : '');
     const mf = res.get(msgId)?.get(msgAttr ?? '');
     if (!mf) throw new Error(`Message not available: ${msgId}`);
@@ -31,16 +36,27 @@ export function getFluentFunctions(res: FluentMessageResource) {
     let str: string | undefined;
     return {
       type: 'fluent-message' as const,
-      locale: locales[0],
       source,
+      dir,
+      locale,
       selectKey(keys) {
         str ??= mf.format(options, onError);
         return keys.has(str) ? str : null;
       },
-      toParts() {
+      toParts(): [
+        {
+          type: 'fluent-message';
+          source: string;
+          dir?: 'ltr' | 'rtl';
+          parts: MessagePart[];
+        }
+      ] {
         const parts = mf.formatToParts(options, onError);
-        const res = { type: 'fluent-message' as const, source, parts };
-        return [res] as [typeof res];
+        const res =
+          dir === 'ltr' || dir === 'rtl'
+            ? { type: 'fluent-message' as const, source, dir, locale, parts }
+            : { type: 'fluent-message' as const, source, locale, parts };
+        return [res];
       },
       toString: () => (str ??= mf.format(options, onError)),
       valueOf: () => (str ??= mf.format(options, onError))

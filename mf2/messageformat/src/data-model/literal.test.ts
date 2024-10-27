@@ -15,13 +15,19 @@ function resolve(source: string, errors: any[] = []) {
 describe('quoted literals', () => {
   test('simple', () => {
     const res = resolve('{|quoted literal|}');
-    expect(res).toMatchObject([{ type: 'string', value: 'quoted literal' }]);
+    expect(res).toMatchObject([
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'string', value: 'quoted literal' },
+      { type: 'bidiIsolation', value: '\u2069' }
+    ]);
   });
 
   test('spaces, newlines and escapes', () => {
     const res = resolve('{| quoted \n \\\\\\|literal\\\\\\|\\{\\}|}');
     expect(res).toMatchObject([
-      { type: 'string', value: ' quoted \n \\|literal\\|{}' }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'string', value: ' quoted \n \\|literal\\|{}' },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
   });
 });
@@ -39,7 +45,11 @@ describe('unquoted numbers', () => {
   ]) {
     test(value, () => {
       const res = resolve(`{${value}}`);
-      expect(res).toMatchObject([{ type: 'string', value }]);
+      expect(res).toMatchObject([
+        { type: 'bidiIsolation', value: '\u2068' },
+        { type: 'string', value },
+        { type: 'bidiIsolation', value: '\u2069' }
+      ]);
     });
   }
 });

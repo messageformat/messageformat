@@ -51,7 +51,7 @@ function resolveOptions(ctx: Context, options: Options | undefined) {
   const opt: Record<string, unknown> = Object.create(null);
   if (options) {
     for (const [name, value] of options) {
-      if (name !== 'u:locale') {
+      if (name !== 'u:dir' && name !== 'u:locale') {
         opt[name] = resolveValue(ctx, value);
       }
     }

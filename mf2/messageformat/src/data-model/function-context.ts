@@ -1,31 +1,58 @@
+import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
-import { resolveValue } from './resolve-value.js';
+import { getValueSource, resolveValue } from './resolve-value.js';
 import { Options } from './types.js';
 
 export class MessageFunctionContext {
   #ctx: Context;
-  #locales: string[];
+  #locales: Intl.Locale[];
+  readonly dir: 'ltr' | 'rtl' | 'auto' | undefined;
   readonly source: string;
-  constructor(ctx: Context, source: string, options: Options | undefined) {
+  constructor(ctx: Context, source: string, options?: Options) {
     this.#ctx = ctx;
-    const lc = options?.get('u:locale');
-    if (lc) {
-      let rl = resolveValue(ctx, lc);
-      if (typeof rl === 'object' && typeof rl?.valueOf === 'function') {
-        rl = rl.valueOf();
+
+    this.#locales = ctx.locales;
+    const localeOpt = options?.get('u:locale');
+    if (localeOpt) {
+      let rl = resolveValue(ctx, localeOpt);
+      try {
+        if (typeof rl === 'object' && typeof rl?.valueOf === 'function') {
+          rl = rl.valueOf();
+        }
+        this.#locales = Array.isArray(rl)
+          ? rl.map(lc => new Intl.Locale(lc))
+          : [new Intl.Locale(String(rl))];
+      } catch {
+        const msg = 'Unsupported value for u:locale option';
+        const optSource = getValueSource(localeOpt);
+        ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
       }
-      this.#locales = Array.isArray(rl) ? rl.map(String) : [String(rl)];
-    } else {
-      this.#locales = ctx.locales;
     }
+
+    this.dir = undefined;
+    const dirOpt = options?.get('u:dir');
+    if (dirOpt) {
+      const dir = String(resolveValue(ctx, dirOpt));
+      if (dir === 'ltr' || dir === 'rtl' || dir === 'auto') {
+        this.dir = dir;
+      } else {
+        const msg = 'Unsupported value for u:dir option';
+        const optSource = getValueSource(dirOpt);
+        ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
+      }
+    }
+
     this.source = source;
   }
+
   get localeMatcher() {
     return this.#ctx.localeMatcher;
   }
+
   get locales() {
-    return this.#locales.slice();
+    return this.#locales.map(String);
   }
+
   get onError() {
     return this.#ctx.onError;
   }

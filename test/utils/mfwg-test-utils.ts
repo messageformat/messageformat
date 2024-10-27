@@ -84,6 +84,9 @@ type DefaultTestProperties = {
   /** The MF2 syntax source. */
   src?: string;
 
+  /** The bidi isolation strategy. */
+  bidiIsolation?: 'default' | 'none';
+
   /** Parameters to pass in to the formatter for resolving external variables. */
   params?: Array<
     | { name: string; value: unknown }

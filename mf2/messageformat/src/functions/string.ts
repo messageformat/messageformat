@@ -6,6 +6,7 @@ import { mergeLocales } from './utils.js';
 export interface MessageString extends MessageValue {
   readonly type: 'string';
   readonly source: string;
+  readonly dir: 'ltr' | 'rtl' | 'auto';
   readonly locale: string;
   selectKey(keys: Set<string>): string | null;
   toParts(): [MessageStringPart];
@@ -28,19 +29,25 @@ export interface MessageStringPart extends MessageExpressionPart {
  *
  * @beta */
 export function string(
-  { locales, source }: Pick<MessageFunctionContext, 'locales' | 'source'>,
+  ctx: Pick<MessageFunctionContext, 'dir' | 'locales' | 'source'>,
   options: Record<string, unknown>,
   input?: unknown
 ): MessageString {
   const str = input === undefined ? '' : String(input);
   const selStr = str.normalize();
-  const [locale] = mergeLocales(locales, input, options);
+  const [locale] = mergeLocales(ctx.locales, input, options);
   return {
     type: 'string',
-    source,
+    source: ctx.source,
+    dir: ctx.dir ?? 'auto',
     locale,
     selectKey: keys => (keys.has(selStr) ? selStr : null),
-    toParts: () => [{ type: 'string', source, locale, value: str }],
+    toParts() {
+      const { dir, source } = ctx;
+      return dir === 'ltr' || dir === 'rtl'
+        ? [{ type: 'string', source, dir, locale, value: str }]
+        : [{ type: 'string', source, locale, value: str }];
+    },
     toString: () => str,
     valueOf: () => str
   };

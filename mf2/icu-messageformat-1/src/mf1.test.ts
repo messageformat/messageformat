@@ -376,7 +376,7 @@ for (const [title, cases] of Object.entries(testCases)) {
 
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));
-            const mf = mf1ToMessage(data, locale);
+            const mf = mf1ToMessage(data, locale, { bidiIsolation: 'none' });
             const req = validate(data, type => {
               throw new Error(`Validation failed: ${type}`);
             });

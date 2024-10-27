@@ -6,9 +6,10 @@ import {
 
 test('Custom function', () => {
   const functions = {
-    custom: ({ source, locales: [locale] }, _opt, input) => ({
+    custom: ({ dir, source, locales: [locale] }, _opt, input) => ({
       type: 'custom',
       source,
+      dir: dir ?? 'auto',
       locale,
       toParts: () => [
         { type: 'custom', source, locale, value: `part:${input}` }
@@ -17,9 +18,11 @@ test('Custom function', () => {
     })
   } satisfies MessageFunctions;
   const mf = new MessageFormat('en', '{$var :custom}', { functions });
-  expect(mf.format({ var: 42 })).toEqual('str:42');
+  expect(mf.format({ var: 42 })).toEqual('\u2068str:42\u2069');
   expect(mf.formatToParts({ var: 42 })).toEqual([
-    { type: 'custom', source: '$var', locale: 'en', value: 'part:42' }
+    { type: 'bidiIsolation', value: '\u2068' },
+    { type: 'custom', source: '$var', locale: 'en', value: 'part:42' },
+    { type: 'bidiIsolation', value: '\u2069' }
   ]);
 });
 
@@ -98,9 +101,11 @@ describe('Function return is not a MessageValue', () => {
     } satisfies MessageFunctions;
     const mf = new MessageFormat('en', '{:fail}', { functions });
     const onError = jest.fn();
-    expect(mf.format(undefined, onError)).toEqual('{:fail}');
+    expect(mf.format(undefined, onError)).toEqual('\u2068{:fail}\u2069');
     expect(mf.formatToParts(undefined, onError)).toEqual([
-      { type: 'fallback', source: ':fail' }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'fallback', source: ':fail' },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
     expect(onError).toHaveBeenCalledTimes(2);
   });
@@ -111,9 +116,11 @@ describe('Function return is not a MessageValue', () => {
     } satisfies MessageFunctions;
     const mf = new MessageFormat('en', '{42 :fail}', { functions });
     const onError = jest.fn();
-    expect(mf.format(undefined, onError)).toEqual('{|42|}');
+    expect(mf.format(undefined, onError)).toEqual('\u2068{|42|}\u2069');
     expect(mf.formatToParts(undefined, onError)).toEqual([
-      { type: 'fallback', source: '|42|' }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'fallback', source: '|42|' },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
     expect(onError).toHaveBeenCalledTimes(2);
   });
