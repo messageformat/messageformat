@@ -142,10 +142,13 @@ function parseVariant(ctx: ParseContext, start: number): CST.Variant {
 
     if (pos > start && !ws.hasWS) ctx.onError('missing-syntax', pos, "' '");
 
-    const key =
-      ch === '*'
-        ? ({ type: '*', start: pos, end: pos + 1 } satisfies CST.CatchallKey)
-        : parseLiteral(ctx, pos, true);
+    let key: CST.CatchallKey | CST.Literal;
+    if (ch === '*') {
+      key = { type: '*', start: pos, end: pos + 1 };
+    } else {
+      key = parseLiteral(ctx, pos, true);
+      key.value = key.value.normalize();
+    }
     if (key.end === pos) break; // error; reported in pattern.errors
     keys.push(key);
     pos = key.end;

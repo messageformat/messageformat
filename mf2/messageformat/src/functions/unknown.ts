@@ -5,6 +5,7 @@ import type { MessageValue } from './index.js';
 export interface MessageUnknownValue extends MessageValue {
   readonly type: 'unknown';
   readonly source: string;
+  readonly dir: 'auto';
   readonly locale: 'und';
   toParts(): [MessageUnknownPart];
   toString(): string;
@@ -25,6 +26,7 @@ export const unknown = (
 ): MessageUnknownValue => ({
   type: 'unknown',
   source,
+  dir: 'auto',
   locale: 'und',
   toParts: () => [{ type: 'unknown', source, value: input }],
   toString: () => String(input),

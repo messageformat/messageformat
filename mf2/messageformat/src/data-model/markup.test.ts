@@ -26,7 +26,9 @@ describe('Simple open/close', () => {
         name: 'b'
       },
       { type: 'literal', value: 'foo' },
-      { type: 'string', locale: 'en', source: '$foo', value: 'foo bar' },
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'string', source: '$foo', locale: 'en', value: 'foo bar' },
+      { type: 'bidiIsolation', value: '\u2069' },
       {
         type: 'markup',
         kind: 'close',
@@ -35,7 +37,7 @@ describe('Simple open/close', () => {
         options: { foo: ' bar 13 ' }
       }
     ]);
-    expect(mf.format({ foo: 'foo bar' })).toBe('foofoo bar');
+    expect(mf.format({ foo: 'foo bar' })).toBe('foo\u2068foo bar\u2069');
   });
 
   test('do not allow operands', () => {

@@ -11,8 +11,9 @@ describe('variables', () => {
     expect(mf.formatToParts({ val: 42 })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$val',
+        dir: 'ltr',
+        locale: 'en',
         parts: [{ type: 'integer', value: '42' }]
       }
     ]);
@@ -24,8 +25,9 @@ describe('variables', () => {
     expect(mf.formatToParts({ val })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$val',
+        dir: 'ltr',
+        locale: 'en',
         parts: [{ type: 'integer', value: '42' }]
       }
     ]);
@@ -37,8 +39,9 @@ describe('variables', () => {
     expect(mf.formatToParts({ val })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$val',
+        dir: 'ltr',
+        locale: 'en',
         parts: [{ type: 'integer', value: '42' }]
       }
     ]);
@@ -47,11 +50,9 @@ describe('variables', () => {
   test('wrapped number', () => {
     const val = { valueOf: () => BigInt(42) };
     expect(mf.formatToParts({ val })).toEqual([
-      {
-        type: 'unknown',
-        source: '$val',
-        value: val
-      }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'unknown', source: '$val', value: val },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
   });
 
@@ -63,8 +64,9 @@ describe('variables', () => {
     expect(mf.formatToParts({ val })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$val',
+        dir: 'ltr',
+        locale: 'en',
         parts: [
           { type: 'integer', value: '42' },
           { type: 'decimal', value: '.' },
@@ -85,8 +87,9 @@ describe('Variable paths', () => {
     expect(mf.formatToParts({ 'user.name': 42 })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$user.name',
+        dir: 'ltr',
+        locale: 'en',
         parts: [{ type: 'integer', value: '42' }]
       }
     ]);
@@ -96,8 +99,9 @@ describe('Variable paths', () => {
     expect(mf.formatToParts({ user: { name: 42 } })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$user.name',
+        dir: 'ltr',
+        locale: 'en',
         parts: [{ type: 'integer', value: '42' }]
       }
     ]);
@@ -107,8 +111,9 @@ describe('Variable paths', () => {
     expect(mf.formatToParts({ user: { name: 13 }, 'user.name': 42 })).toEqual([
       {
         type: 'number',
-        locale: 'en',
         source: '$user.name',
+        dir: 'ltr',
+        locale: 'en',
         parts: [{ type: 'integer', value: '42' }]
       }
     ]);

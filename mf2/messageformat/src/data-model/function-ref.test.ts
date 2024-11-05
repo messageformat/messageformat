@@ -6,9 +6,10 @@ import {
 
 test('Custom function', () => {
   const functions = {
-    custom: ({ source, locales: [locale] }, _opt, input) => ({
+    custom: ({ dir, source, locales: [locale] }, _opt, input) => ({
       type: 'custom',
       source,
+      dir: dir ?? 'auto',
       locale,
       toParts: () => [
         { type: 'custom', source, locale, value: `part:${input}` }
@@ -17,9 +18,11 @@ test('Custom function', () => {
     })
   } satisfies MessageFunctions;
   const mf = new MessageFormat('en', '{$var :custom}', { functions });
-  expect(mf.format({ var: 42 })).toEqual('str:42');
+  expect(mf.format({ var: 42 })).toEqual('\u2068str:42\u2069');
   expect(mf.formatToParts({ var: 42 })).toEqual([
-    { type: 'custom', source: '$var', locale: 'en', value: 'part:42' }
+    { type: 'bidiIsolation', value: '\u2068' },
+    { type: 'custom', source: '$var', locale: 'en', value: 'part:42' },
+    { type: 'bidiIsolation', value: '\u2069' }
   ]);
 });
 
@@ -27,7 +30,7 @@ describe('inputs with options', () => {
   test('local variable with :number expression', () => {
     const mf = new MessageFormat(
       'en',
-      `.local $val = {12345678 :number useGrouping=false}
+      `.local $val = {12345678 :number useGrouping=never}
       {{{$val :number minimumFractionDigits=2}}}`
     );
     //const val = new MessageNumber(null, BigInt(12345678), { options: { useGrouping: false } });
@@ -74,20 +77,28 @@ describe('inputs with options', () => {
 });
 
 describe('Type casts based on runtime', () => {
+  const date = '2000-01-01T15:00:00';
+
   test('boolean function option with literal value', () => {
-    const mfTrue = new MessageFormat('en', '{$var :number useGrouping=true}');
-    expect(mfTrue.format({ var: 1234 })).toBe('1,234');
-    const mfFalse = new MessageFormat('en', '{$var :number useGrouping=false}');
-    expect(mfFalse.format({ var: 1234 })).toBe('1234');
+    const mfTrue = new MessageFormat(
+      'en',
+      '{$date :datetime timeStyle=short hour12=true}'
+    );
+    expect(mfTrue.format({ date })).toMatch(/3:00/);
+    const mfFalse = new MessageFormat(
+      'en',
+      '{$date :datetime timeStyle=short hour12=false}'
+    );
+    expect(mfFalse.format({ date })).toMatch(/15:00/);
   });
 
   test('boolean function option with variable value', () => {
     const mf = new MessageFormat(
       'en',
-      '{$var :number useGrouping=$useGrouping}'
+      '{$date :datetime timeStyle=short hour12=$hour12}'
     );
-    expect(mf.format({ var: 1234, useGrouping: 'false' })).toBe('1234');
-    expect(mf.format({ var: 1234, useGrouping: false })).toBe('1234');
+    expect(mf.format({ date, hour12: 'false' })).toMatch(/15:00/);
+    expect(mf.format({ date, hour12: false })).toMatch(/15:00/);
   });
 });
 
@@ -98,9 +109,11 @@ describe('Function return is not a MessageValue', () => {
     } satisfies MessageFunctions;
     const mf = new MessageFormat('en', '{:fail}', { functions });
     const onError = jest.fn();
-    expect(mf.format(undefined, onError)).toEqual('{:fail}');
+    expect(mf.format(undefined, onError)).toEqual('\u2068{:fail}\u2069');
     expect(mf.formatToParts(undefined, onError)).toEqual([
-      { type: 'fallback', source: ':fail' }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'fallback', source: ':fail' },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
     expect(onError).toHaveBeenCalledTimes(2);
   });
@@ -111,9 +124,11 @@ describe('Function return is not a MessageValue', () => {
     } satisfies MessageFunctions;
     const mf = new MessageFormat('en', '{42 :fail}', { functions });
     const onError = jest.fn();
-    expect(mf.format(undefined, onError)).toEqual('{|42|}');
+    expect(mf.format(undefined, onError)).toEqual('\u2068{|42|}\u2069');
     expect(mf.formatToParts(undefined, onError)).toEqual([
-      { type: 'fallback', source: '|42|' }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'fallback', source: '|42|' },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
     expect(onError).toHaveBeenCalledTimes(2);
   });

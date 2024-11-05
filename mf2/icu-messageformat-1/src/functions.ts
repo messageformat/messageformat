@@ -5,6 +5,7 @@ import {
   type MessageValue,
   datetime
 } from 'messageformat/functions';
+import { getLocaleDir } from 'messageformat/functions/utils';
 
 function getParam(options: Record<string, unknown>) {
   if (options.param) {
@@ -107,10 +108,11 @@ function duration(
 }
 
 function number(
-  { localeMatcher, locales, source }: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
 ): MessageNumber {
+  const { locales, source } = ctx;
   const origNum = typeof input === 'bigint' ? input : Number(input);
   let num = origNum;
   const offset = Number(options.pluralOffset);
@@ -120,7 +122,7 @@ function number(
   }
 
   const opt: Intl.NumberFormatOptions & Intl.PluralRulesOptions = {
-    localeMatcher
+    localeMatcher: ctx.localeMatcher
   };
   switch (getParam(options)) {
     case 'integer':
@@ -138,12 +140,17 @@ function number(
   if (options.type === 'ordinal') opt.type = 'ordinal';
 
   let locale: string | undefined;
+  let dir = ctx.dir;
   let nf: Intl.NumberFormat | undefined;
   let cat: Intl.LDMLPluralRule | undefined;
   let str: string | undefined;
   return {
     type: 'number',
     source,
+    get dir() {
+      dir ??= getLocaleDir(this.locale);
+      return dir;
+    },
     get locale() {
       return (locale ??= Intl.NumberFormat.supportedLocalesOf(locales, opt)[0]);
     },
@@ -161,7 +168,10 @@ function number(
       nf ??= new Intl.NumberFormat(locales, opt);
       const parts = nf.formatToParts(num);
       locale ??= nf.resolvedOptions().locale;
-      return [{ type: 'number', source, locale, parts }];
+      dir ??= getLocaleDir(locale);
+      return dir === 'ltr' || dir === 'rtl'
+        ? [{ type: 'number', source, dir, locale, parts }]
+        : [{ type: 'number', source, locale, parts }];
     },
     toString() {
       nf ??= new Intl.NumberFormat(locales, opt);

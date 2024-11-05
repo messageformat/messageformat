@@ -331,7 +331,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 )) {
   describe(title, () => {
     const data = fluentToResourceData(src).data;
-    const res = fluentToResource(data, locale);
+    const res = fluentToResource(data, locale, { bidiIsolation: 'none' });
 
     test('validate', () => {
       for (const [id, group] of res) {
@@ -444,6 +444,7 @@ describe('formatToParts', () => {
         {
           type: 'number',
           source: '$num',
+          dir: 'ltr',
           locale: 'en',
           parts: [{ type: 'integer', value: '42' }]
         }
@@ -455,7 +456,9 @@ describe('formatToParts', () => {
       const foo = res.get('foo')?.get('')?.formatToParts(undefined, onError);
       expect(foo).toEqual([
         { type: 'literal', value: 'Foo ' },
-        { type: 'fallback', source: '$num' }
+        { type: 'bidiIsolation', value: '\u2068' },
+        { type: 'fallback', source: '$num' },
+        { type: 'bidiIsolation', value: '\u2069' }
       ]);
       expect(onError).toHaveBeenCalledTimes(1);
     });
@@ -469,7 +472,9 @@ describe('formatToParts', () => {
           source: '|foo|',
           parts: [
             { type: 'literal', value: 'Foo ' },
-            { type: 'fallback', source: '$num' }
+            { type: 'bidiIsolation', value: '\u2068' },
+            { type: 'fallback', source: '$num' },
+            { type: 'bidiIsolation', value: '\u2069' }
           ]
         }
       ]);
@@ -572,6 +577,7 @@ describe('formatToParts', () => {
         {
           type: 'number',
           source: '$num',
+          dir: 'ltr',
           locale: 'en',
           parts: [{ type: 'integer', value: '42' }]
         }

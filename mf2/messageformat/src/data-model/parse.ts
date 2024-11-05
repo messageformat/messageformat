@@ -91,7 +91,9 @@ function variant(): Model.Variant {
       keys.push({ type: '*' });
       pos += 1;
     } else {
-      keys.push(literal(true));
+      const key = literal(true);
+      key.value = key.value.normalize();
+      keys.push(key);
     }
   }
   return { keys, value: pattern(true) };

@@ -1,17 +1,14 @@
 import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
+import { getLocaleDir } from '../dir-utils.js';
 import type { MessageFunctionContext, MessageValue } from './index.js';
-import {
-  asBoolean,
-  asPositiveInteger,
-  asString,
-  mergeLocales
-} from './utils.js';
+import { asPositiveInteger, asString, mergeLocales } from './utils.js';
 
 /** @beta */
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';
   readonly source: string;
+  readonly dir: 'ltr' | 'rtl' | 'auto';
   readonly locale: string;
   readonly options: Readonly<
     Intl.NumberFormatOptions & Intl.PluralRulesOptions
@@ -52,13 +49,14 @@ const INT = Symbol('INT');
  * @beta
  */
 export function number(
-  { localeMatcher, locales, source }: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   options: Record<string | symbol, unknown>,
   input?: unknown
 ): MessageNumber {
+  const { source } = ctx;
   const opt: Intl.NumberFormatOptions &
     Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
-    localeMatcher
+    localeMatcher: ctx.localeMatcher
   };
   let value = input;
   if (typeof value === 'object') {
@@ -95,9 +93,12 @@ export function number(
           // @ts-expect-error TS types don't know about roundingIncrement
           opt[name] = asPositiveInteger(optval);
           break;
-        case 'useGrouping':
-          opt[name] = asBoolean(optval);
+        case 'useGrouping': {
+          const strval = asString(optval);
+          // @ts-expect-error TS type is wrong
+          opt[name] = strval === 'never' ? false : strval;
           break;
+        }
         default:
           // @ts-expect-error Unknown options will be ignored
           opt[name] = asString(optval);
@@ -113,14 +114,19 @@ export function number(
       ? Math.round(value as number)
       : value;
 
-  const lc = mergeLocales(locales, input, options);
+  const lc = mergeLocales(ctx.locales, input, options);
   let locale: string | undefined;
+  let dir = ctx.dir;
   let nf: Intl.NumberFormat | undefined;
   let cat: Intl.LDMLPluralRule | undefined;
   let str: string | undefined;
   return {
     type: 'number',
     source,
+    get dir() {
+      dir ??= getLocaleDir(this.locale);
+      return dir;
+    },
     get locale() {
       return (locale ??= Intl.NumberFormat.supportedLocalesOf(lc, opt)[0]);
     },
@@ -142,7 +148,10 @@ export function number(
       nf ??= new Intl.NumberFormat(lc, opt);
       const parts = nf.formatToParts(num);
       locale ??= nf.resolvedOptions().locale;
-      return [{ type: 'number', source, locale, parts }];
+      dir ??= getLocaleDir(locale);
+      return dir === 'ltr' || dir === 'rtl'
+        ? [{ type: 'number', source, dir, locale, parts }]
+        : [{ type: 'number', source, locale, parts }];
     },
     toString() {
       nf ??= new Intl.NumberFormat(lc, opt);

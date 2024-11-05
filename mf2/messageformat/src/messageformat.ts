@@ -1,9 +1,11 @@
-import type { MessageFunctionContext } from './data-model/function-context.js';
 import { formatMarkup } from './data-model/format-markup.js';
+import type { MessageFunctionContext } from './data-model/function-context.js';
+import { parseMessage } from './data-model/parse.js';
 import { resolveExpression } from './data-model/resolve-expression.js';
 import { UnresolvedExpression } from './data-model/resolve-variable.js';
 import type { Message } from './data-model/types.js';
 import { validate } from './data-model/validate.js';
+import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.js';
 import { MessageDataModelError, MessageError } from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
@@ -16,7 +18,6 @@ import {
   string,
   time
 } from './functions/index.js';
-import { parseMessage } from './data-model/parse.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({
@@ -44,6 +45,23 @@ export interface MessageFunctions {
 /** @beta */
 export interface MessageFormatOptions {
   /**
+   * The bidi isolation strategy for messages,
+   * i.e. how parts with different or unknown directionalities are isolated from each other.
+   *
+   * The default `'default'` strategy isolates all placeholders,
+   * except when both the message and the placeholder are known to be left-to-right.
+   *
+   * The `'none'` strategy applies no isolation at all.
+   */
+  bidiIsolation?: 'default' | 'none';
+
+  /**
+   * Explicitly set the message's base direction.
+   * If not set, the direction is detected from the primary locale.
+   */
+  dir?: 'ltr' | 'rtl' | 'auto';
+
+  /**
    * If given multiple locales,
    * determines which algorithm to use when selecting between them;
    * the default for `Intl` formatters is `'best fit'`.
@@ -66,8 +84,10 @@ export interface MessageFormatOptions {
  * @beta
  */
 export class MessageFormat {
+  readonly #bidiIsolation: boolean;
+  readonly #dir: 'ltr' | 'rtl' | 'auto';
   readonly #localeMatcher: 'best fit' | 'lookup';
-  readonly #locales: string[];
+  readonly #locales: Intl.Locale[];
   readonly #message: Message;
   readonly #functions: Readonly<MessageFunctions>;
 
@@ -76,12 +96,14 @@ export class MessageFormat {
     source: string | Message,
     options?: MessageFormatOptions
   ) {
+    this.#bidiIsolation = options?.bidiIsolation !== 'none';
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
     this.#locales = Array.isArray(locales)
-      ? locales.slice()
+      ? locales.map(lc => new Intl.Locale(lc))
       : locales
-        ? [locales]
+        ? [new Intl.Locale(locales)]
         : [];
+    this.#dir = options?.dir ?? getLocaleDir(this.#locales[0]);
     this.#message = typeof source === 'string' ? parseMessage(source) : source;
     validate(this.#message, (type, node) => {
       throw new MessageDataModelError(type, node);
@@ -100,19 +122,31 @@ export class MessageFormat {
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
         res += elem;
-      } else if (elem.type !== 'markup') {
+      } else if (elem.type === 'markup') {
+        // Handle errors, but discard results
+        formatMarkup(ctx, elem);
+      } else {
         let mv: MessageValue | undefined;
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toString === 'function') {
-            res += mv.toString();
+            if (
+              this.#bidiIsolation &&
+              (this.#dir !== 'ltr' || mv.dir !== 'ltr')
+            ) {
+              const pre = mv.dir === 'ltr' ? LRI : mv.dir === 'rtl' ? RLI : FSI;
+              res += pre + mv.toString() + PDI;
+            } else {
+              res += mv.toString();
+            }
           } else {
             const msg = 'Message part is not formattable';
             throw new MessageError('not-formattable', msg);
           }
         } catch (error) {
           ctx.onError(error);
-          res += `{${mv?.source ?? '�'}}`;
+          const errStr = `{${mv?.source ?? '�'}}`;
+          res += this.#bidiIsolation ? FSI + errStr + PDI : errStr;
         }
       }
     }
@@ -135,14 +169,34 @@ export class MessageFormat {
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toParts === 'function') {
-            parts.push(...mv.toParts());
+            const mp = mv.toParts();
+            if (
+              this.#bidiIsolation &&
+              (this.#dir !== 'ltr' || mv.dir !== 'ltr')
+            ) {
+              const pre = mv.dir === 'ltr' ? LRI : mv.dir === 'rtl' ? RLI : FSI;
+              parts.push({ type: 'bidiIsolation', value: pre }, ...mp, {
+                type: 'bidiIsolation',
+                value: PDI
+              });
+            } else {
+              parts.push(...mp);
+            }
           } else {
             const msg = 'Message part is not formattable';
             throw new MessageError('not-formattable', msg);
           }
         } catch (error) {
           ctx.onError(error);
-          parts.push({ type: 'fallback', source: mv?.source ?? '�' });
+          const fb = { type: 'fallback', source: mv?.source ?? '�' };
+          if (this.#bidiIsolation) {
+            parts.push({ type: 'bidiIsolation', value: FSI }, fb, {
+              type: 'bidiIsolation',
+              value: PDI
+            });
+          } else {
+            parts.push(fb);
+          }
         }
       }
     }
@@ -151,6 +205,8 @@ export class MessageFormat {
 
   resolvedOptions() {
     return {
+      bidiIsolation: this.#bidiIsolation,
+      dir: this.#dir,
       functions: Object.freeze(this.#functions),
       localeMatcher: this.#localeMatcher
     };

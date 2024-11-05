@@ -9,8 +9,9 @@ export { type MessageUnknownValue, unknown } from './unknown.js';
 
 export interface MessageValue {
   readonly type: string;
-  readonly locale: string;
   readonly source: string;
+  readonly locale: string;
+  readonly dir?: 'ltr' | 'rtl' | 'auto';
   readonly options?: Readonly<object>;
   selectKey?: (keys: Set<string>) => string | null;
   toParts?: () => MessageExpressionPart[];

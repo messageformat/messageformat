@@ -19,6 +19,10 @@ export function resolveValue(
 }
 
 /** @internal */
+export function getValueSource(value: Literal | VariableRef): string;
+export function getValueSource(
+  value: Literal | VariableRef | undefined
+): string | undefined;
 export function getValueSource(value: Literal | VariableRef | undefined) {
   switch (value?.type) {
     case 'literal':

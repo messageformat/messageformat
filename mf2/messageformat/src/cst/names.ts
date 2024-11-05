@@ -54,9 +54,9 @@ export function parseNameValue(
   if (!isNameStartCode(cc)) return null;
   cc = src.charCodeAt(++pos);
   while (isNameCharCode(cc)) cc = src.charCodeAt(++pos);
-  const name = src.substring(nameStart, pos);
+  const value = src.substring(nameStart, pos).normalize();
   if (bidiChars.has(cc)) pos += 1;
-  return { value: name, end: pos };
+  return { value, end: pos };
 }
 
 export function isValidUnquotedLiteral(str: string): boolean {

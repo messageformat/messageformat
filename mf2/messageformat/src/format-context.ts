@@ -5,7 +5,7 @@ export interface Context {
   functions: MessageFunctions;
   onError(error: unknown): void;
   localeMatcher: 'best fit' | 'lookup';
-  locales: string[];
+  locales: Intl.Locale[];
   /** Cache for local variables */
   localVars: WeakSet<MessageValue>;
   /**

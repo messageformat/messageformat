@@ -23,8 +23,6 @@ import {
 
 import { testFunctions } from './functions/test-functions.js';
 
-const mfOpt: MessageFormatOptions = { functions: testFunctions };
-
 const tests = (tc: Test) => () => {
   switch (testType(tc)) {
     case 'syntax-error':
@@ -67,6 +65,8 @@ const tests = (tc: Test) => () => {
     default:
       test('format', () => {
         let errors: any[] = [];
+        const mfOpt: MessageFormatOptions = { functions: testFunctions };
+        if (tc.bidiIsolation) mfOpt.bidiIsolation = tc.bidiIsolation;
         const mf = new MessageFormat(tc.locale, tc.src, mfOpt);
         const msg = mf.format(tc.params, err => errors.push(err));
         if (typeof tc.exp === 'string') expect(msg).toBe(tc.exp);

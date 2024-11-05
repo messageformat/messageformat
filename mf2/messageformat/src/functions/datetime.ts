@@ -1,5 +1,6 @@
 import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
+import { getLocaleDir } from '../dir-utils.js';
 import type { MessageFunctionContext, MessageValue } from './index.js';
 import {
   asBoolean,
@@ -12,6 +13,7 @@ import {
 export interface MessageDateTime extends MessageValue {
   readonly type: 'datetime';
   readonly source: string;
+  readonly dir: 'ltr' | 'rtl' | 'auto';
   readonly locale: string;
   readonly options: Readonly<Intl.DateTimeFormatOptions>;
   toParts(): [MessageDateTimePart];
@@ -126,11 +128,12 @@ export const time = (
   });
 
 function dateTimeImplementation(
-  { localeMatcher, locales, source }: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   input: unknown,
   parseOptions: (res: Record<string, unknown>) => void
 ): MessageDateTime {
+  const { localeMatcher, locales, source } = ctx;
   const lc = mergeLocales(locales, input, options);
   const opt: Intl.DateTimeFormatOptions = { localeMatcher };
   if (input && typeof input === 'object') {
@@ -159,11 +162,16 @@ function dateTimeImplementation(
 
   const date = value;
   let locale: string | undefined;
+  let dir = ctx.dir;
   let dtf: Intl.DateTimeFormat | undefined;
   let str: string | undefined;
   return {
     type: 'datetime',
     source,
+    get dir() {
+      dir ??= getLocaleDir(this.locale);
+      return dir;
+    },
     get locale() {
       return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(lc, opt)[0]);
     },
@@ -174,7 +182,10 @@ function dateTimeImplementation(
       dtf ??= new Intl.DateTimeFormat(lc, opt);
       const parts = dtf.formatToParts(date);
       locale ??= dtf.resolvedOptions().locale;
-      return [{ type: 'datetime', source, locale, parts }];
+      dir ??= getLocaleDir(locale);
+      return dir === 'ltr' || dir === 'rtl'
+        ? [{ type: 'datetime', source, dir, locale, parts }]
+        : [{ type: 'datetime', source, locale, parts }];
     },
     toString() {
       dtf ??= new Intl.DateTimeFormat(lc, opt);
