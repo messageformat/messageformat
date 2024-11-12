@@ -5,7 +5,7 @@ import { MessageValue } from '../functions/index.js';
 import { unknown } from '../functions/unknown.js';
 import { MessageFunctionContext } from './function-context.js';
 import { resolveExpression } from './resolve-expression.js';
-import type { Expression, VariableRef } from './types.js';
+import type { Expression, VariableRef } from '../data-model/types.js';
 
 /**
  * Declarations aren't resolved until they're requierd,

@@ -1,6 +1,6 @@
 import type { Context } from '../format-context';
 import { lookupVariableRef } from './resolve-variable.js';
-import type { Literal, VariableRef } from './types.js';
+import type { Literal, VariableRef } from '../data-model/types.js';
 
 /** @internal */
 export function resolveValue(

@@ -1,7 +1,7 @@
 import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
 import { getValueSource, resolveValue } from './resolve-value.js';
-import { Options } from './types.js';
+import { Options } from '../data-model/types.js';
 
 export class MessageFunctionContext {
   #ctx: Context;

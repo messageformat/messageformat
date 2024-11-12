@@ -3,7 +3,12 @@ import type { Context } from '../format-context.js';
 import { fallback } from '../functions/fallback.js';
 import { MessageFunctionContext } from './function-context.js';
 import { getValueSource, resolveValue } from './resolve-value.js';
-import type { FunctionRef, Literal, Options, VariableRef } from './types.js';
+import type {
+  FunctionRef,
+  Literal,
+  Options,
+  VariableRef
+} from '../data-model/types.js';
 
 export function resolveFunctionRef(
   ctx: Context,

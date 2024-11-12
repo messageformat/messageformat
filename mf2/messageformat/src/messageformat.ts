@@ -1,8 +1,4 @@
-import { formatMarkup } from './data-model/format-markup.js';
-import type { MessageFunctionContext } from './data-model/function-context.js';
 import { parseMessage } from './data-model/parse.js';
-import { resolveExpression } from './data-model/resolve-expression.js';
-import { UnresolvedExpression } from './data-model/resolve-variable.js';
 import type { Message } from './data-model/types.js';
 import { validate } from './data-model/validate.js';
 import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.js';
@@ -18,6 +14,10 @@ import {
   string,
   time
 } from './functions/index.js';
+import { formatMarkup } from './resolve/format-markup.js';
+import type { MessageFunctionContext } from './resolve/function-context.js';
+import { resolveExpression } from './resolve/resolve-expression.js';
+import { UnresolvedExpression } from './resolve/resolve-variable.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({

@@ -2,7 +2,7 @@ import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
 import type { MessageMarkupPart } from '../formatted-parts.js';
 import { getValueSource, resolveValue } from './resolve-value.js';
-import type { Markup } from './types.js';
+import type { Markup } from '../data-model/types.js';
 
 export function formatMarkup(
   ctx: Context,
