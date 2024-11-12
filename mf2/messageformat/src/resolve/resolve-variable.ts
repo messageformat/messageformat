@@ -84,6 +84,7 @@ export function resolveVariableRef(ctx: Context, ref: VariableRef) {
   let type = typeof value;
   if (type === 'object') {
     const mv = value as MessageValue;
+    if (mv.type === 'fallback') return fallback(source);
     if (ctx.localVars.has(mv)) return mv;
     if (value instanceof Number) type = 'number';
     else if (value instanceof String) type = 'string';

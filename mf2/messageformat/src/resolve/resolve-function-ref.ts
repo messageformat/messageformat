@@ -15,17 +15,9 @@ export function resolveFunctionRef(
   operand: Literal | VariableRef | undefined,
   { name, options }: FunctionRef
 ) {
-  let source: string | undefined;
+  const source = getValueSource(operand) ?? `:${name}`;
   try {
-    let fnInput: [unknown] | [];
-    if (operand) {
-      fnInput = [resolveValue(ctx, operand)];
-      source = getValueSource(operand);
-    } else {
-      fnInput = [];
-    }
-    source ??= `:${name}`;
-
+    const fnInput = operand ? [resolveValue(ctx, operand)] : [];
     const rf = ctx.functions[name];
     if (!rf) {
       throw new MessageError('unknown-function', `Unknown function :${name}`);
@@ -57,7 +49,6 @@ export function resolveFunctionRef(
     return res;
   } catch (error) {
     ctx.onError(error);
-    source ??= getValueSource(operand) ?? `:${name}`;
     return fallback(source);
   }
 }
