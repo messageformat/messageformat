@@ -10,6 +10,7 @@ import {
   date,
   datetime,
   integer,
+  math,
   number,
   string,
   time
@@ -24,6 +25,7 @@ const defaultFunctions = Object.freeze({
   date,
   datetime,
   integer,
+  math,
   number,
   string,
   time

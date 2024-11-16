@@ -3,6 +3,7 @@ import type { MessageExpressionPart } from '../formatted-parts.js';
 export type { MessageFunctionContext } from '../resolve/function-context.js';
 export { type MessageDateTime, date, datetime, time } from './datetime.js';
 export { type MessageFallback, fallback } from './fallback.js';
+export { math } from './math.js';
 export { type MessageNumber, integer, number } from './number.js';
 export { type MessageString, string } from './string.js';
 export { type MessageUnknownValue, unknown } from './unknown.js';
