@@ -68,7 +68,7 @@ export const datetime = (
         }
       } catch {
         const msg = `Value ${value} is not valid for :datetime option ${name}`;
-        throw new MessageResolutionError('bad-option', msg, ctx.source);
+        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
       }
     }
 

@@ -105,7 +105,7 @@ export function number(
       }
     } catch {
       const msg = `Value ${optval} is not valid for :number option ${name}`;
-      throw new MessageResolutionError('bad-option', msg, source);
+      ctx.onError(new MessageResolutionError('bad-option', msg, source));
     }
   }
 
