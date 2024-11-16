@@ -10,7 +10,7 @@ export { getLocaleDir } from '../dir-utils.js';
  * @beta
  */
 export function asBoolean(value: unknown): boolean {
-  if (value instanceof Boolean) value = value.valueOf();
+  if (value && typeof value === 'object') value = value.valueOf();
   if (typeof value === 'boolean') return value;
   if (value && typeof value === 'object') value = String(value);
   if (value === 'true') return true;
@@ -28,8 +28,8 @@ export function asBoolean(value: unknown): boolean {
  * @beta
  */
 export function asPositiveInteger(value: unknown): number {
-  if (value instanceof Number) value = Number(value);
-  if (typeof value === 'object' && value) value = String(value);
+  if (value && typeof value === 'object') value = value.valueOf();
+  if (value && typeof value === 'object') value = String(value);
   if (typeof value === 'string' && /^(0|[1-9][0-9]*)$/.test(value)) {
     value = Number(value);
   }
@@ -48,6 +48,7 @@ export function asPositiveInteger(value: unknown): number {
  * @beta
  */
 export function asString(value: unknown): string {
+  if (value && typeof value === 'object') value = value.valueOf();
   if (typeof value === 'string') return value;
   if (value && typeof value === 'object') return String(value);
   throw new RangeError('Not a string');
