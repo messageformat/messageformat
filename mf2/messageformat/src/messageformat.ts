@@ -7,6 +7,7 @@ import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
   MessageValue,
+  currency,
   date,
   datetime,
   integer,
@@ -22,6 +23,7 @@ import { UnresolvedExpression } from './resolve/resolve-variable.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({
+  currency,
   date,
   datetime,
   integer,

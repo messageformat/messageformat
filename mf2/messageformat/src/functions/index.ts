@@ -1,6 +1,7 @@
 import type { MessageExpressionPart } from '../formatted-parts.js';
 
 export type { MessageFunctionContext } from '../resolve/function-context.js';
+export { currency } from './currency.js';
 export { type MessageDateTime, date, datetime, time } from './datetime.js';
 export { type MessageFallback, fallback } from './fallback.js';
 export { math } from './math.js';
