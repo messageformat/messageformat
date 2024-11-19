@@ -10,7 +10,6 @@ export interface MessageDateTime extends MessageValue {
   readonly type: 'datetime';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
-  readonly locale: string;
   readonly options: Readonly<Intl.DateTimeFormatOptions>;
   toParts(): [MessageDateTimePart];
   toString(): string;
@@ -163,14 +162,11 @@ function dateTimeImplementation(
     type: 'datetime',
     source,
     get dir() {
-      dir ??= getLocaleDir(this.locale);
+      if (dir == null) {
+        locale ??= Intl.DateTimeFormat.supportedLocalesOf(locales, opt)[0];
+        dir = getLocaleDir(locale);
+      }
       return dir;
-    },
-    get locale() {
-      return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(
-        locales,
-        opt
-      )[0]);
     },
     get options() {
       return { ...opt };

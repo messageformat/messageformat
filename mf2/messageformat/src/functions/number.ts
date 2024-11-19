@@ -10,7 +10,6 @@ export interface MessageNumber extends MessageValue {
   readonly type: 'number';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
-  readonly locale: string;
   readonly options: Readonly<
     Intl.NumberFormatOptions & Intl.PluralRulesOptions
   >;
@@ -135,14 +134,11 @@ export function number(
     type: 'number',
     source,
     get dir() {
-      dir ??= getLocaleDir(this.locale);
+      if (dir == null) {
+        locale ??= Intl.NumberFormat.supportedLocalesOf(locales, options)[0];
+        dir = getLocaleDir(locale);
+      }
       return dir;
-    },
-    get locale() {
-      return (locale ??= Intl.NumberFormat.supportedLocalesOf(
-        locales,
-        options
-      )[0]);
     },
     get options() {
       return { ...options };

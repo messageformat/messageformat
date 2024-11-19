@@ -7,7 +7,6 @@ export interface MessageString extends MessageValue {
   readonly type: 'string';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
-  readonly locale: string;
   selectKey(keys: Set<string>): string | null;
   toParts(): [MessageStringPart];
   toString(): string;
@@ -35,15 +34,14 @@ export function string(
 ): MessageString {
   const str = input === undefined ? '' : String(input);
   const selStr = str.normalize();
-  const locale = ctx.locales[0];
   return {
     type: 'string',
     source: ctx.source,
     dir: ctx.dir ?? 'auto',
-    locale,
     selectKey: keys => (keys.has(selStr) ? selStr : null),
     toParts() {
       const { dir, source } = ctx;
+      const locale = ctx.locales[0];
       return dir === 'ltr' || dir === 'rtl'
         ? [{ type: 'string', source, dir, locale, value: str }]
         : [{ type: 'string', source, locale, value: str }];

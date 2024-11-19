@@ -60,7 +60,7 @@ function time(
  *   trailing `.sss` part for non-integer input
  */
 function duration(
-  { locales, source }: MessageFunctionContext,
+  { source }: MessageFunctionContext,
   _options: unknown,
   input?: unknown
 ) {
@@ -96,7 +96,6 @@ function duration(
 
   return {
     type: 'mf1-duration' as const,
-    locale: locales[0],
     source,
     toParts() {
       const res = { type: 'mf1-duration' as const, source, value: str };
@@ -148,11 +147,11 @@ function number(
     type: 'number',
     source,
     get dir() {
-      dir ??= getLocaleDir(this.locale);
+      if (dir == null) {
+        locale ??= Intl.NumberFormat.supportedLocalesOf(locales, opt)[0];
+        dir = getLocaleDir(locale);
+      }
       return dir;
-    },
-    get locale() {
-      return (locale ??= Intl.NumberFormat.supportedLocalesOf(locales, opt)[0]);
     },
     get options() {
       return { ...opt };
