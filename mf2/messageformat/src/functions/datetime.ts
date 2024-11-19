@@ -24,14 +24,19 @@ export interface MessageDateTimePart extends MessageExpressionPart {
   parts: Intl.DateTimeFormatPart[];
 }
 
-const localeOptions = [
-  'calendar',
-  'localeMatcher',
-  'hour12',
-  'hourCycle',
-  'numberingSystem',
-  'timeZone'
-];
+const styleOptions = new Set(['dateStyle', 'timeStyle']);
+const fieldOptions = new Set([
+  'weekday',
+  'era',
+  'year',
+  'month',
+  'day',
+  'hour',
+  'minute',
+  'second',
+  'fractionalSecondDigits',
+  'timeZoneName'
+]);
 
 /**
  * `datetime` accepts a Date, number or string as its input
@@ -46,6 +51,8 @@ export const datetime = (
   input?: unknown
 ): MessageDateTime =>
   dateTimeImplementation(ctx, input, res => {
+    let hasStyle = false;
+    let hasFields = false;
     for (const [name, value] of Object.entries(options)) {
       if (value === undefined) continue;
       try {
@@ -54,23 +61,27 @@ export const datetime = (
             break;
           case 'fractionalSecondDigits':
             res[name] = asPositiveInteger(value);
+            hasFields = true;
             break;
           case 'hour12':
             res[name] = asBoolean(value);
             break;
           default:
             res[name] = asString(value);
+            if (!hasStyle && styleOptions.has(name)) hasStyle = true;
+            if (!hasFields && fieldOptions.has(name)) hasFields = true;
         }
       } catch {
-        const msg = `Value ${value} is not valid for :datetime option ${name}`;
+        const msg = `Value ${value} is not valid for :datetime ${name} option`;
         ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
       }
     }
-
-    // Set defaults if localeMatcher is the only option
-    if (Object.keys(res).length <= 1) {
+    if (!hasStyle && !hasFields) {
       res.dateStyle = 'medium';
       res.timeStyle = 'short';
+    } else if (hasStyle && hasFields) {
+      const msg = 'Style and field options cannot be both set for :datetime';
+      throw new MessageResolutionError('bad-option', msg, ctx.source);
     }
   });
 
@@ -86,16 +97,30 @@ export const date = (
   input?: unknown
 ): MessageDateTime =>
   dateTimeImplementation(ctx, input, res => {
-    const ds = options.style ?? res.dateStyle ?? 'medium';
     for (const name of Object.keys(res)) {
-      if (!localeOptions.includes(name)) delete res[name];
+      if (styleOptions.has(name) || fieldOptions.has(name)) delete res[name];
     }
-    try {
-      res.dateStyle = asString(ds);
-    } catch {
-      const msg = `Value ${ds} is not valid for :date style option`;
-      throw new MessageResolutionError('bad-option', msg, ctx.source);
+    for (const [name, value] of Object.entries(options)) {
+      if (value === undefined) continue;
+      try {
+        switch (name) {
+          case 'style':
+            res.dateStyle = asString(value);
+            break;
+          case 'hour12':
+            res[name] = asBoolean(value);
+            break;
+          case 'calendar':
+          case 'numberingSystem':
+          case 'timeZone':
+            res[name] = asString(value);
+        }
+      } catch {
+        const msg = `Value ${value} is not valid for :date ${name} option`;
+        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+      }
     }
+    res.dateStyle ??= 'medium';
   });
 
 /**
@@ -110,16 +135,30 @@ export const time = (
   input?: unknown
 ): MessageDateTime =>
   dateTimeImplementation(ctx, input, res => {
-    const ts = options.style ?? res.timeStyle ?? 'short';
     for (const name of Object.keys(res)) {
-      if (!localeOptions.includes(name)) delete res[name];
+      if (styleOptions.has(name) || fieldOptions.has(name)) delete res[name];
     }
-    try {
-      res.timeStyle = asString(ts);
-    } catch {
-      const msg = `Value ${ts} is not valid for :time style option`;
-      throw new MessageResolutionError('bad-option', msg, ctx.source);
+    for (const [name, value] of Object.entries(options)) {
+      if (value === undefined) continue;
+      try {
+        switch (name) {
+          case 'style':
+            res.timeStyle = asString(value);
+            break;
+          case 'hour12':
+            res[name] = asBoolean(value);
+            break;
+          case 'calendar':
+          case 'numberingSystem':
+          case 'timeZone':
+            res[name] = asString(value);
+        }
+      } catch {
+        const msg = `Value ${value} is not valid for :time ${name} option`;
+        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+      }
     }
+    res.timeStyle ??= 'short';
   });
 
 function dateTimeImplementation(
