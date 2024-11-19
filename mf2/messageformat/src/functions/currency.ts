@@ -1,6 +1,6 @@
 import { MessageError, MessageResolutionError } from '../errors.js';
 import type { MessageFunctionContext } from './index.js';
-import { type MessageNumber, number } from './number.js';
+import { type MessageNumber, number, readNumericOperand } from './number.js';
 import { asPositiveInteger, asString } from './utils.js';
 
 /**
@@ -12,32 +12,16 @@ import { asPositiveInteger, asString } from './utils.js';
 export function currency(
   ctx: MessageFunctionContext,
   exprOpt: Record<string | symbol, unknown>,
-  input?: unknown
+  operand?: unknown
 ): MessageNumber {
   const { source } = ctx;
+  const input = readNumericOperand(operand, source);
+  const value = input.value;
   const options: Intl.NumberFormatOptions &
-    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' } = {
-    localeMatcher: ctx.localeMatcher
-  };
-  let value = input;
-  if (typeof value === 'object') {
-    const valueOf = value?.valueOf;
-    if (typeof valueOf === 'function') {
-      Object.assign(options, (value as { options: unknown }).options);
-      value = valueOf.call(value);
-    }
-  }
-  if (typeof value === 'string') {
-    try {
-      value = JSON.parse(value);
-    } catch {
-      // handled below
-    }
-  }
-  if (typeof value !== 'bigint' && typeof value !== 'number') {
-    const msg = 'Input is not numeric';
-    throw new MessageResolutionError('bad-operand', msg, source);
-  }
+    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' } = Object.assign(
+    {},
+    input.options
+  );
 
   options.style = 'currency';
   for (const [name, optval] of Object.entries(exprOpt)) {

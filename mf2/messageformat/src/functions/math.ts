@@ -1,6 +1,6 @@
 import { MessageResolutionError } from '../errors.js';
 import type { MessageFunctionContext } from './index.js';
-import { MessageNumber, number } from './number.js';
+import { MessageNumber, number, readNumericOperand } from './number.js';
 import { asPositiveInteger } from './utils.js';
 
 /**
@@ -10,36 +10,17 @@ import { asPositiveInteger } from './utils.js';
  */
 export function math(
   ctx: MessageFunctionContext,
-  mathOpt: Record<string | symbol, unknown>,
-  input?: unknown
+  exprOpt: Record<string | symbol, unknown>,
+  operand?: unknown
 ): MessageNumber {
   const { source } = ctx;
-  let options: unknown = undefined;
-  let value = input;
-  if (typeof value === 'object') {
-    const valueOf = value?.valueOf;
-    if (typeof valueOf === 'function') {
-      options = (value as { options: unknown }).options;
-      value = valueOf.call(value);
-    }
-  }
-  if (typeof value === 'string') {
-    try {
-      value = JSON.parse(value);
-    } catch {
-      // handled below
-    }
-  }
-  if (typeof value !== 'bigint' && typeof value !== 'number') {
-    const msg = 'Input is not numeric';
-    throw new MessageResolutionError('bad-operand', msg, source);
-  }
+  let { value, options } = readNumericOperand(operand, source);
 
   let add: number;
   let sub: number;
   try {
-    add = 'add' in mathOpt ? asPositiveInteger(mathOpt.add) : -1;
-    sub = 'subtract' in mathOpt ? asPositiveInteger(mathOpt.subtract) : -1;
+    add = 'add' in exprOpt ? asPositiveInteger(exprOpt.add) : -1;
+    sub = 'subtract' in exprOpt ? asPositiveInteger(exprOpt.subtract) : -1;
   } catch (error) {
     throw new MessageResolutionError('bad-option', String(error), source);
   }
