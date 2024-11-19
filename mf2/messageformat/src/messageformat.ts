@@ -6,7 +6,6 @@ import { MessageDataModelError, MessageError } from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
-  MessageValue,
   currency,
   date,
   datetime,
@@ -16,6 +15,7 @@ import {
   string,
   time
 } from './functions/index.js';
+import type { MessageValue } from './message-value.js';
 import { formatMarkup } from './resolve/format-markup.js';
 import type { MessageFunctionContext } from './resolve/function-context.js';
 import { resolveExpression } from './resolve/resolve-expression.js';

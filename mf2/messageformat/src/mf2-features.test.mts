@@ -7,16 +7,17 @@ import {
 import { parse } from '@messageformat/parser';
 import { source } from '~/test/utils/source.js';
 
+import type {
+  MessageFunctionContext,
+  MessageValue
+} from './functions/index.js';
 import {
+  MessageBiDiIsolationPart,
   MessageExpressionPart,
   MessageFormat,
   MessageLiteralPart,
   SelectMessage
 } from './index.js';
-import type {
-  MessageFunctionContext,
-  MessageValue
-} from './functions/index.js';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function range(
@@ -288,7 +289,9 @@ maybe('List formatting', () => {
 describe('Neighbouring text transformations (unicode-org/message-format-wg#160)', () => {
   function hackyFixArticles(
     locales: string[],
-    parts: Array<MessageExpressionPart | MessageLiteralPart>
+    parts: Array<
+      MessageExpressionPart | MessageLiteralPart | MessageBiDiIsolationPart
+    >
   ) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
     if (!parts) return;

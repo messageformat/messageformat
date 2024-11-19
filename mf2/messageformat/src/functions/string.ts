@@ -1,5 +1,6 @@
 import type { MessageExpressionPart } from '../formatted-parts.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
+import type { MessageValue } from '../message-value.js';
+import type { MessageFunctionContext } from '../resolve/function-context.js';
 import { mergeLocales } from './utils.js';
 
 /** @beta */

@@ -1,7 +1,8 @@
+import { getLocaleDir } from '../dir-utils.js';
 import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
-import { getLocaleDir } from '../dir-utils.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
+import type { MessageValue } from '../message-value.js';
+import type { MessageFunctionContext } from '../resolve/function-context.js';
 import {
   asBoolean,
   asPositiveInteger,

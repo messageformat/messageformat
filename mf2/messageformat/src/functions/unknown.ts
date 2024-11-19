@@ -1,5 +1,5 @@
 import type { MessageExpressionPart } from '../formatted-parts.js';
-import type { MessageValue } from './index.js';
+import type { MessageValue } from '../message-value.js';
 
 /** @beta */
 export interface MessageUnknownValue extends MessageValue {

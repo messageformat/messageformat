@@ -1,9 +1,9 @@
+import type { Expression } from '../data-model/types.js';
 import type { Context } from '../format-context.js';
-import type { MessageValue } from '../functions/index.js';
+import type { MessageValue } from '../message-value.js';
 import { resolveFunctionRef } from './resolve-function-ref.js';
 import { resolveLiteral } from './resolve-literal.js';
 import { resolveVariableRef } from './resolve-variable.js';
-import type { Expression } from '../data-model/types.js';
 
 export function resolveExpression(
   ctx: Context,
