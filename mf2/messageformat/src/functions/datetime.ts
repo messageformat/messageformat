@@ -3,12 +3,7 @@ import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
 import type { MessageValue } from '../message-value.js';
 import type { MessageFunctionContext } from '../resolve/function-context.js';
-import {
-  asBoolean,
-  asPositiveInteger,
-  asString,
-  mergeLocales
-} from './utils.js';
+import { asBoolean, asPositiveInteger, asString } from './utils.js';
 
 /** @beta */
 export interface MessageDateTime extends MessageValue {
@@ -51,7 +46,7 @@ export const datetime = (
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, options, input, res => {
+  dateTimeImplementation(ctx, input, res => {
     for (const [name, value] of Object.entries(options)) {
       if (value === undefined) continue;
       try {
@@ -91,7 +86,7 @@ export const date = (
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, options, input, res => {
+  dateTimeImplementation(ctx, input, res => {
     const ds = options.style ?? res.dateStyle ?? 'medium';
     for (const name of Object.keys(res)) {
       if (!localeOptions.includes(name)) delete res[name];
@@ -115,7 +110,7 @@ export const time = (
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, options, input, res => {
+  dateTimeImplementation(ctx, input, res => {
     const ts = options.style ?? res.timeStyle ?? 'short';
     for (const name of Object.keys(res)) {
       if (!localeOptions.includes(name)) delete res[name];
@@ -130,12 +125,10 @@ export const time = (
 
 function dateTimeImplementation(
   ctx: MessageFunctionContext,
-  options: Record<string, unknown>,
   input: unknown,
   parseOptions: (res: Record<string, unknown>) => void
 ): MessageDateTime {
   const { localeMatcher, locales, source } = ctx;
-  const lc = mergeLocales(locales, input, options);
   const opt: Intl.DateTimeFormatOptions = { localeMatcher };
   if (input && typeof input === 'object') {
     if (input && 'options' in input) Object.assign(opt, input.options);
@@ -174,13 +167,16 @@ function dateTimeImplementation(
       return dir;
     },
     get locale() {
-      return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(lc, opt)[0]);
+      return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(
+        locales,
+        opt
+      )[0]);
     },
     get options() {
       return { ...opt };
     },
     toParts() {
-      dtf ??= new Intl.DateTimeFormat(lc, opt);
+      dtf ??= new Intl.DateTimeFormat(locales, opt);
       const parts = dtf.formatToParts(date);
       locale ??= dtf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
@@ -189,7 +185,7 @@ function dateTimeImplementation(
         : [{ type: 'datetime', source, locale, parts }];
     },
     toString() {
-      dtf ??= new Intl.DateTimeFormat(lc, opt);
+      dtf ??= new Intl.DateTimeFormat(locales, opt);
       str ??= dtf.format(date);
       return str;
     },

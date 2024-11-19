@@ -1,7 +1,6 @@
 import type { MessageExpressionPart } from '../formatted-parts.js';
 import type { MessageValue } from '../message-value.js';
 import type { MessageFunctionContext } from '../resolve/function-context.js';
-import { mergeLocales } from './utils.js';
 
 /** @beta */
 export interface MessageString extends MessageValue {
@@ -31,12 +30,12 @@ export interface MessageStringPart extends MessageExpressionPart {
  * @beta */
 export function string(
   ctx: Pick<MessageFunctionContext, 'dir' | 'locales' | 'source'>,
-  options: Record<string, unknown>,
+  _options: Record<string, unknown>,
   input?: unknown
 ): MessageString {
   const str = input === undefined ? '' : String(input);
   const selStr = str.normalize();
-  const [locale] = mergeLocales(ctx.locales, input, options);
+  const locale = ctx.locales[0];
   return {
     type: 'string',
     source: ctx.source,

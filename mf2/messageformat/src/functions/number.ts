@@ -3,7 +3,7 @@ import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
 import type { MessageValue } from '../message-value.js';
 import type { MessageFunctionContext } from '../resolve/function-context.js';
-import { asPositiveInteger, asString, mergeLocales } from './utils.js';
+import { asPositiveInteger, asString } from './utils.js';
 
 /** @beta */
 export interface MessageNumber extends MessageValue {
@@ -80,7 +80,7 @@ export function number(
   exprOpt: Record<string | symbol, unknown>,
   operand?: unknown
 ): MessageNumber {
-  const { source } = ctx;
+  const { locales, source } = ctx;
   const options: Intl.NumberFormatOptions &
     Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
     localeMatcher: ctx.localeMatcher
@@ -126,7 +126,6 @@ export function number(
       ? Math.round(value as number)
       : value;
 
-  const lc = mergeLocales(ctx.locales, operand, exprOpt);
   let locale: string | undefined;
   let dir = ctx.dir;
   let nf: Intl.NumberFormat | undefined;
@@ -140,7 +139,10 @@ export function number(
       return dir;
     },
     get locale() {
-      return (locale ??= Intl.NumberFormat.supportedLocalesOf(lc, options)[0]);
+      return (locale ??= Intl.NumberFormat.supportedLocalesOf(
+        locales,
+        options
+      )[0]);
     },
     get options() {
       return { ...options };
@@ -153,11 +155,11 @@ export function number(
         ? { ...options, select: undefined, type: options.select }
         : options;
       // Intl.PluralRules needs a number, not bigint
-      cat ??= new Intl.PluralRules(lc, pluralOpt).select(Number(num));
+      cat ??= new Intl.PluralRules(locales, pluralOpt).select(Number(num));
       return keys.has(cat) ? cat : null;
     },
     toParts() {
-      nf ??= new Intl.NumberFormat(lc, options);
+      nf ??= new Intl.NumberFormat(locales, options);
       const parts = nf.formatToParts(num);
       locale ??= nf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
@@ -166,7 +168,7 @@ export function number(
         : [{ type: 'number', source, locale, parts }];
     },
     toString() {
-      nf ??= new Intl.NumberFormat(lc, options);
+      nf ??= new Intl.NumberFormat(locales, options);
       str ??= nf.format(num);
       return str;
     },
