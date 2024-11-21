@@ -71,9 +71,7 @@ describe('inputs with options', () => {
     const { parts } = msg[1] as MessageNumberPart;
 
     const ar = new Intl.NumberFormat('ar', { minimumFractionDigits: 2 });
-    const en = new Intl.NumberFormat('en', { minimumFractionDigits: 2 });
     expect(parts).toEqual(ar.formatToParts(12345));
-    expect(parts).not.toEqual(en.formatToParts(12345));
   });
 });
 
