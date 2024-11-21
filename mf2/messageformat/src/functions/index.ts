@@ -1,20 +1,9 @@
-import type { MessageExpressionPart } from '../formatted-parts.js';
-
+export type { MessageValue } from '../message-value.js';
 export type { MessageFunctionContext } from '../resolve/function-context.js';
-export { type MessageDateTime, date, datetime, time } from './datetime.js';
-export { type MessageFallback, fallback } from './fallback.js';
-export { type MessageNumber, integer, number } from './number.js';
-export { type MessageString, string } from './string.js';
-export { type MessageUnknownValue, unknown } from './unknown.js';
-
-export interface MessageValue {
-  readonly type: string;
-  readonly source: string;
-  readonly locale: string;
-  readonly dir?: 'ltr' | 'rtl' | 'auto';
-  readonly options?: Readonly<object>;
-  selectKey?: (keys: Set<string>) => string | null;
-  toParts?: () => MessageExpressionPart[];
-  toString?: () => string;
-  valueOf?: () => unknown;
-}
+export { currency } from './currency.js';
+export { date, datetime, time, type MessageDateTime } from './datetime.js';
+export { fallback, type MessageFallback } from './fallback.js';
+export { math } from './math.js';
+export { integer, number, type MessageNumber } from './number.js';
+export { string, type MessageString } from './string.js';
+export { unknown, type MessageUnknownValue } from './unknown.js';

@@ -6,7 +6,8 @@
  */
 
 import { MessageResolutionError } from '../errors.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
+import type { MessageValue } from '../message-value.js';
+import type { MessageFunctionContext } from '../resolve/function-context.js';
 import { asPositiveInteger, asString } from './utils.js';
 
 interface TestValue extends MessageValue {

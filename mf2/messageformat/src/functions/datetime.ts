@@ -1,20 +1,15 @@
+import { getLocaleDir } from '../dir-utils.js';
 import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
-import { getLocaleDir } from '../dir-utils.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
-import {
-  asBoolean,
-  asPositiveInteger,
-  asString,
-  mergeLocales
-} from './utils.js';
+import type { MessageValue } from '../message-value.js';
+import type { MessageFunctionContext } from '../resolve/function-context.js';
+import { asBoolean, asPositiveInteger, asString } from './utils.js';
 
 /** @beta */
 export interface MessageDateTime extends MessageValue {
   readonly type: 'datetime';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
-  readonly locale: string;
   readonly options: Readonly<Intl.DateTimeFormatOptions>;
   toParts(): [MessageDateTimePart];
   toString(): string;
@@ -29,14 +24,19 @@ export interface MessageDateTimePart extends MessageExpressionPart {
   parts: Intl.DateTimeFormatPart[];
 }
 
-const localeOptions = [
-  'calendar',
-  'localeMatcher',
-  'hour12',
-  'hourCycle',
-  'numberingSystem',
-  'timeZone'
-];
+const styleOptions = new Set(['dateStyle', 'timeStyle']);
+const fieldOptions = new Set([
+  'weekday',
+  'era',
+  'year',
+  'month',
+  'day',
+  'hour',
+  'minute',
+  'second',
+  'fractionalSecondDigits',
+  'timeZoneName'
+]);
 
 /**
  * `datetime` accepts a Date, number or string as its input
@@ -50,7 +50,9 @@ export const datetime = (
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, options, input, res => {
+  dateTimeImplementation(ctx, input, res => {
+    let hasStyle = false;
+    let hasFields = false;
     for (const [name, value] of Object.entries(options)) {
       if (value === undefined) continue;
       try {
@@ -59,23 +61,27 @@ export const datetime = (
             break;
           case 'fractionalSecondDigits':
             res[name] = asPositiveInteger(value);
+            hasFields = true;
             break;
           case 'hour12':
             res[name] = asBoolean(value);
             break;
           default:
             res[name] = asString(value);
+            if (!hasStyle && styleOptions.has(name)) hasStyle = true;
+            if (!hasFields && fieldOptions.has(name)) hasFields = true;
         }
       } catch {
-        const msg = `Value ${value} is not valid for :datetime option ${name}`;
-        throw new MessageResolutionError('bad-option', msg, ctx.source);
+        const msg = `Value ${value} is not valid for :datetime ${name} option`;
+        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
       }
     }
-
-    // Set defaults if localeMatcher is the only option
-    if (Object.keys(res).length <= 1) {
+    if (!hasStyle && !hasFields) {
       res.dateStyle = 'medium';
       res.timeStyle = 'short';
+    } else if (hasStyle && hasFields) {
+      const msg = 'Style and field options cannot be both set for :datetime';
+      throw new MessageResolutionError('bad-option', msg, ctx.source);
     }
   });
 
@@ -90,17 +96,31 @@ export const date = (
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, options, input, res => {
-    const ds = options.style ?? res.dateStyle ?? 'medium';
+  dateTimeImplementation(ctx, input, res => {
     for (const name of Object.keys(res)) {
-      if (!localeOptions.includes(name)) delete res[name];
+      if (styleOptions.has(name) || fieldOptions.has(name)) delete res[name];
     }
-    try {
-      res.dateStyle = asString(ds);
-    } catch {
-      const msg = `Value ${ds} is not valid for :date style option`;
-      throw new MessageResolutionError('bad-option', msg, ctx.source);
+    for (const [name, value] of Object.entries(options)) {
+      if (value === undefined) continue;
+      try {
+        switch (name) {
+          case 'style':
+            res.dateStyle = asString(value);
+            break;
+          case 'hour12':
+            res[name] = asBoolean(value);
+            break;
+          case 'calendar':
+          case 'numberingSystem':
+          case 'timeZone':
+            res[name] = asString(value);
+        }
+      } catch {
+        const msg = `Value ${value} is not valid for :date ${name} option`;
+        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+      }
     }
+    res.dateStyle ??= 'medium';
   });
 
 /**
@@ -114,27 +134,39 @@ export const time = (
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, options, input, res => {
-    const ts = options.style ?? res.timeStyle ?? 'short';
+  dateTimeImplementation(ctx, input, res => {
     for (const name of Object.keys(res)) {
-      if (!localeOptions.includes(name)) delete res[name];
+      if (styleOptions.has(name) || fieldOptions.has(name)) delete res[name];
     }
-    try {
-      res.timeStyle = asString(ts);
-    } catch {
-      const msg = `Value ${ts} is not valid for :time style option`;
-      throw new MessageResolutionError('bad-option', msg, ctx.source);
+    for (const [name, value] of Object.entries(options)) {
+      if (value === undefined) continue;
+      try {
+        switch (name) {
+          case 'style':
+            res.timeStyle = asString(value);
+            break;
+          case 'hour12':
+            res[name] = asBoolean(value);
+            break;
+          case 'calendar':
+          case 'numberingSystem':
+          case 'timeZone':
+            res[name] = asString(value);
+        }
+      } catch {
+        const msg = `Value ${value} is not valid for :time ${name} option`;
+        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+      }
     }
+    res.timeStyle ??= 'short';
   });
 
 function dateTimeImplementation(
   ctx: MessageFunctionContext,
-  options: Record<string, unknown>,
   input: unknown,
   parseOptions: (res: Record<string, unknown>) => void
 ): MessageDateTime {
   const { localeMatcher, locales, source } = ctx;
-  const lc = mergeLocales(locales, input, options);
   const opt: Intl.DateTimeFormatOptions = { localeMatcher };
   if (input && typeof input === 'object') {
     if (input && 'options' in input) Object.assign(opt, input.options);
@@ -169,17 +201,17 @@ function dateTimeImplementation(
     type: 'datetime',
     source,
     get dir() {
-      dir ??= getLocaleDir(this.locale);
+      if (dir == null) {
+        locale ??= Intl.DateTimeFormat.supportedLocalesOf(locales, opt)[0];
+        dir = getLocaleDir(locale);
+      }
       return dir;
-    },
-    get locale() {
-      return (locale ??= Intl.DateTimeFormat.supportedLocalesOf(lc, opt)[0]);
     },
     get options() {
       return { ...opt };
     },
     toParts() {
-      dtf ??= new Intl.DateTimeFormat(lc, opt);
+      dtf ??= new Intl.DateTimeFormat(locales, opt);
       const parts = dtf.formatToParts(date);
       locale ??= dtf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
@@ -188,7 +220,7 @@ function dateTimeImplementation(
         : [{ type: 'datetime', source, locale, parts }];
     },
     toString() {
-      dtf ??= new Intl.DateTimeFormat(lc, opt);
+      dtf ??= new Intl.DateTimeFormat(locales, opt);
       str ??= dtf.format(date);
       return str;
     },

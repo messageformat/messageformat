@@ -26,7 +26,9 @@ export function getValueSource(
 export function getValueSource(value: Literal | VariableRef | undefined) {
   switch (value?.type) {
     case 'literal':
-      return '|' + value.value + '|';
+      return (
+        '|' + value.value.replaceAll('\\', '\\\\').replaceAll('|', '\\|') + '|'
+      );
     case 'variable':
       return '$' + value.name;
     default:

@@ -62,17 +62,18 @@ describe('inputs with options', () => {
     expect(parts).toEqual(nf.formatToParts(12345678));
   });
 
-  test('MessageValue locales take precedence', () => {
+  test('u:locale value take precedence', () => {
     const mf = new MessageFormat(
       'en',
-      '{$val :number minimumFractionDigits=2}'
+      '{$val :number minimumFractionDigits=2 u:locale=ar}'
     );
-    const val = Object.assign(new Number(12345), { locale: 'fi' });
-    const msg = mf.formatToParts({ val });
-    const { parts } = msg[0] as MessageNumberPart;
+    const msg = mf.formatToParts({ val: 12345 });
+    const { parts } = msg[1] as MessageNumberPart;
 
-    const nf = new Intl.NumberFormat('fi', { minimumFractionDigits: 2 });
-    expect(parts).toEqual(nf.formatToParts(12345));
+    const ar = new Intl.NumberFormat('ar', { minimumFractionDigits: 2 });
+    const en = new Intl.NumberFormat('en', { minimumFractionDigits: 2 });
+    expect(parts).toEqual(ar.formatToParts(12345));
+    expect(parts).not.toEqual(en.formatToParts(12345));
   });
 });
 

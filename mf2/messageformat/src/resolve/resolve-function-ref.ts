@@ -1,38 +1,31 @@
-import { MessageError } from '../errors.js';
-import type { Context } from '../format-context.js';
-import { fallback } from '../functions/fallback.js';
-import { MessageFunctionContext } from './function-context.js';
-import { getValueSource, resolveValue } from './resolve-value.js';
 import type {
   FunctionRef,
   Literal,
   Options,
   VariableRef
 } from '../data-model/types.js';
+import { MessageError } from '../errors.js';
+import type { Context } from '../format-context.js';
+import { fallback } from '../functions/fallback.js';
+import { BIDI_ISOLATE } from '../message-value.js';
+import { MessageFunctionContext } from './function-context.js';
+import { getValueSource, resolveValue } from './resolve-value.js';
 
 export function resolveFunctionRef(
   ctx: Context,
   operand: Literal | VariableRef | undefined,
   { name, options }: FunctionRef
 ) {
-  let source: string | undefined;
+  const source = getValueSource(operand) ?? `:${name}`;
   try {
-    let fnInput: [unknown] | [];
-    if (operand) {
-      fnInput = [resolveValue(ctx, operand)];
-      source = getValueSource(operand);
-    } else {
-      fnInput = [];
-    }
-    source ??= `:${name}`;
-
+    const fnInput = operand ? [resolveValue(ctx, operand)] : [];
     const rf = ctx.functions[name];
     if (!rf) {
       throw new MessageError('unknown-function', `Unknown function :${name}`);
     }
     const msgCtx = new MessageFunctionContext(ctx, source, options);
     const opt = resolveOptions(ctx, options);
-    const res = rf(msgCtx, opt, ...fnInput);
+    let res = rf(msgCtx, opt, ...fnInput);
     if (
       res === null ||
       (typeof res !== 'object' && typeof res !== 'function') ||
@@ -44,6 +37,7 @@ export function resolveFunctionRef(
         `Function :${name} did not return a MessageValue`
       );
     }
+    if (msgCtx.dir) res = { ...res, dir: msgCtx.dir, [BIDI_ISOLATE]: true };
     if (msgCtx.id && typeof res.toParts === 'function') {
       return {
         ...res,
@@ -57,7 +51,6 @@ export function resolveFunctionRef(
     return res;
   } catch (error) {
     ctx.onError(error);
-    source ??= getValueSource(operand) ?? `:${name}`;
     return fallback(source);
   }
 }

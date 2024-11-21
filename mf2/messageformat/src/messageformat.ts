@@ -6,14 +6,16 @@ import { MessageDataModelError, MessageError } from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
 import {
-  MessageValue,
+  currency,
   date,
   datetime,
   integer,
+  math,
   number,
   string,
   time
 } from './functions/index.js';
+import { BIDI_ISOLATE, type MessageValue } from './message-value.js';
 import { formatMarkup } from './resolve/format-markup.js';
 import type { MessageFunctionContext } from './resolve/function-context.js';
 import { resolveExpression } from './resolve/resolve-expression.js';
@@ -21,9 +23,11 @@ import { UnresolvedExpression } from './resolve/resolve-variable.js';
 import { selectPattern } from './select-pattern.js';
 
 const defaultFunctions = Object.freeze({
+  currency,
   date,
   datetime,
   integer,
+  math,
   number,
   string,
   time
@@ -132,7 +136,7 @@ export class MessageFormat {
           if (typeof mv.toString === 'function') {
             if (
               this.#bidiIsolation &&
-              (this.#dir !== 'ltr' || mv.dir !== 'ltr')
+              (this.#dir !== 'ltr' || mv.dir !== 'ltr' || mv[BIDI_ISOLATE])
             ) {
               const pre = mv.dir === 'ltr' ? LRI : mv.dir === 'rtl' ? RLI : FSI;
               res += pre + mv.toString() + PDI;
@@ -172,7 +176,7 @@ export class MessageFormat {
             const mp = mv.toParts();
             if (
               this.#bidiIsolation &&
-              (this.#dir !== 'ltr' || mv.dir !== 'ltr')
+              (this.#dir !== 'ltr' || mv.dir !== 'ltr' || mv[BIDI_ISOLATE])
             ) {
               const pre = mv.dir === 'ltr' ? LRI : mv.dir === 'rtl' ? RLI : FSI;
               parts.push({ type: 'bidiIsolation', value: pre }, ...mp, {

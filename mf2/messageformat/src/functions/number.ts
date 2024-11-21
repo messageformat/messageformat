@@ -1,15 +1,15 @@
+import { getLocaleDir } from '../dir-utils.js';
 import { MessageResolutionError } from '../errors.js';
 import type { MessageExpressionPart } from '../formatted-parts.js';
-import { getLocaleDir } from '../dir-utils.js';
-import type { MessageFunctionContext, MessageValue } from './index.js';
-import { asPositiveInteger, asString, mergeLocales } from './utils.js';
+import type { MessageValue } from '../message-value.js';
+import type { MessageFunctionContext } from '../resolve/function-context.js';
+import { asPositiveInteger, asString } from './utils.js';
 
 /** @beta */
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
-  readonly locale: string;
   readonly options: Readonly<
     Intl.NumberFormatOptions & Intl.PluralRulesOptions
   >;
@@ -39,30 +39,15 @@ export interface MessageNumberPart extends MessageExpressionPart {
 
 const INT = Symbol('INT');
 
-/**
- * `number` accepts a number, BigInt or string representing a JSON number as input
- * and formats it with the same options as
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
- * It also supports plural category selection via
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- *
- * @beta
- */
-export function number(
-  ctx: MessageFunctionContext,
-  options: Record<string | symbol, unknown>,
-  input?: unknown
-): MessageNumber {
-  const { source } = ctx;
-  const opt: Intl.NumberFormatOptions &
-    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
-    localeMatcher: ctx.localeMatcher
-  };
-  let value = input;
+export function readNumericOperand(
+  value: unknown,
+  source: string
+): { value: number | bigint; options: unknown } {
+  let options: unknown = undefined;
   if (typeof value === 'object') {
     const valueOf = value?.valueOf;
     if (typeof valueOf === 'function') {
-      Object.assign(opt, (value as { options: unknown }).options);
+      options = (value as { options: unknown }).options;
       value = valueOf.call(value);
     }
   }
@@ -77,7 +62,33 @@ export function number(
     const msg = 'Input is not numeric';
     throw new MessageResolutionError('bad-operand', msg, source);
   }
-  for (const [name, optval] of Object.entries(options)) {
+  return { value, options };
+}
+
+/**
+ * `number` accepts a number, BigInt or string representing a JSON number as input
+ * and formats it with the same options as
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
+ * It also supports plural category selection via
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
+ *
+ * @beta
+ */
+export function number(
+  ctx: MessageFunctionContext,
+  exprOpt: Record<string | symbol, unknown>,
+  operand?: unknown
+): MessageNumber {
+  const { locales, source } = ctx;
+  const options: Intl.NumberFormatOptions &
+    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
+    localeMatcher: ctx.localeMatcher
+  };
+  const input = readNumericOperand(operand, source);
+  const value = input.value;
+  Object.assign(options, input.options);
+
+  for (const [name, optval] of Object.entries(exprOpt)) {
     if (optval === undefined) continue;
     try {
       switch (name) {
@@ -91,30 +102,29 @@ export function number(
         case 'maximumSignificantDigits':
         case 'roundingIncrement':
           // @ts-expect-error TS types don't know about roundingIncrement
-          opt[name] = asPositiveInteger(optval);
+          options[name] = asPositiveInteger(optval);
           break;
         case 'useGrouping': {
           const strval = asString(optval);
           // @ts-expect-error TS type is wrong
-          opt[name] = strval === 'never' ? false : strval;
+          options[name] = strval === 'never' ? false : strval;
           break;
         }
         default:
           // @ts-expect-error Unknown options will be ignored
-          opt[name] = asString(optval);
+          options[name] = asString(optval);
       }
     } catch {
       const msg = `Value ${optval} is not valid for :number option ${name}`;
-      throw new MessageResolutionError('bad-option', msg, source);
+      ctx.onError(new MessageResolutionError('bad-option', msg, source));
     }
   }
 
   const num =
-    Number.isFinite(value) && options[INT]
+    Number.isFinite(value) && exprOpt[INT]
       ? Math.round(value as number)
       : value;
 
-  const lc = mergeLocales(ctx.locales, input, options);
   let locale: string | undefined;
   let dir = ctx.dir;
   let nf: Intl.NumberFormat | undefined;
@@ -124,28 +134,28 @@ export function number(
     type: 'number',
     source,
     get dir() {
-      dir ??= getLocaleDir(this.locale);
+      if (dir == null) {
+        locale ??= Intl.NumberFormat.supportedLocalesOf(locales, options)[0];
+        dir = getLocaleDir(locale);
+      }
       return dir;
     },
-    get locale() {
-      return (locale ??= Intl.NumberFormat.supportedLocalesOf(lc, opt)[0]);
-    },
     get options() {
-      return { ...opt };
+      return { ...options };
     },
     selectKey(keys) {
       const str = String(num);
       if (keys.has(str)) return str;
-      if (opt.select === 'exact') return null;
-      const pluralOpt = opt.select
-        ? { ...opt, select: undefined, type: opt.select }
-        : opt;
+      if (options.select === 'exact') return null;
+      const pluralOpt = options.select
+        ? { ...options, select: undefined, type: options.select }
+        : options;
       // Intl.PluralRules needs a number, not bigint
-      cat ??= new Intl.PluralRules(lc, pluralOpt).select(Number(num));
+      cat ??= new Intl.PluralRules(locales, pluralOpt).select(Number(num));
       return keys.has(cat) ? cat : null;
     },
     toParts() {
-      nf ??= new Intl.NumberFormat(lc, opt);
+      nf ??= new Intl.NumberFormat(locales, options);
       const parts = nf.formatToParts(num);
       locale ??= nf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
@@ -154,7 +164,7 @@ export function number(
         : [{ type: 'number', source, locale, parts }];
     },
     toString() {
-      nf ??= new Intl.NumberFormat(lc, opt);
+      nf ??= new Intl.NumberFormat(locales, options);
       str ??= nf.format(num);
       return str;
     },

@@ -38,7 +38,6 @@ export function getFluentFunctions(res: FluentMessageResource) {
       type: 'fluent-message' as const,
       source,
       dir,
-      locale,
       selectKey(keys) {
         str ??= mf.format(options, onError);
         return keys.has(str) ? str : null;

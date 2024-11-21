@@ -91,7 +91,7 @@ const testCases: Record<string, TestCase> = {
       {
         msg: 'num-fraction-bad',
         scope: { arg: 1234 },
-        exp: '{$arg}',
+        exp: '1,234',
         errors: ['bad-option']
       },
       { msg: 'num-style', scope: { arg: 1234 }, exp: '123,400%' },

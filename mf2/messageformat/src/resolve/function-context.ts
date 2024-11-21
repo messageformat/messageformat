@@ -36,7 +36,7 @@ export class MessageFunctionContext {
       const dir = String(resolveValue(ctx, dirOpt));
       if (dir === 'ltr' || dir === 'rtl' || dir === 'auto') {
         this.dir = dir;
-      } else {
+      } else if (dir !== 'inherit') {
         const msg = 'Unsupported value for u:dir option';
         const optSource = getValueSource(dirOpt);
         ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
