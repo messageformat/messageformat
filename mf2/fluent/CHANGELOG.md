@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.9.0...@messageformat/fluent@0.10.0) (2024-11-21)
+
+### Features
+
+* Add bidirectional isolation for formatted messages ([529bf87](https://github.com/messageformat/messageformat/commit/529bf879ff99b77766693d9e0a059d37df30250b))
+
+### Bug Fixes
+
+* Do not fallback on all `:number` and `:datetime` option resolution errors ([674f96b](https://github.com/messageformat/messageformat/commit/674f96b3ebed1ea3f645c302db878a74652ab2c0))
+
 ## [0.9.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.8.0...@messageformat/fluent@0.9.0) (2024-09-24)
 
 * Prefix custom functions: fluent:message, mf1:date, mf1:number, ... ([030d00f](https://github.com/messageformat/messageformat/commit/030d00f5450632184913c098342169ed50ef4a77))

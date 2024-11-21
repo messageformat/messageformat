@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.8.0...@messageformat/icu-messageformat-1@0.9.0) (2024-11-21)
+
+### Features
+
+* Add bidirectional isolation for formatted messages ([529bf87](https://github.com/messageformat/messageformat/commit/529bf879ff99b77766693d9e0a059d37df30250b))
+
 ## [0.8.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.7.0...@messageformat/icu-messageformat-1@0.8.0) (2024-09-24)
 
 * Prefix custom functions: fluent:message, mf1:date, mf1:number, ... ([030d00f](https://github.com/messageformat/messageformat/commit/030d00f5450632184913c098342169ed50ef4a77))

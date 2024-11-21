@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.0.0-9](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-8...messageformat@4.0.0-9) (2024-11-21)
+
+### Features
+
+* Apply NFC normalization to names and keys ([unicode-org/message-format-wg#885](https://github.com/unicode-org/message-format-wg/issues/885)) ([95afa46](https://github.com/messageformat/messageformat/commit/95afa46b63ba7a65af174d12e1a366f4925508bc))
+* Support `u:locale` option ([unicode-org/message-format-wg#846](https://github.com/unicode-org/message-format-wg/issues/846)) ([35ab407](https://github.com/messageformat/messageformat/commit/35ab4076a95b5361595f94fdf77154dd38cb4826))
+* Add bidirectional isolation for formatted messages ([529bf87](https://github.com/messageformat/messageformat/commit/529bf879ff99b77766693d9e0a059d37df30250b))
+* Support `u:id` option ([unicode-org/message-format-wg#846](https://github.com/unicode-org/message-format-wg/issues/846)) ([d86b1c1](https://github.com/messageformat/messageformat/commit/d86b1c1d22379f9c83f54bd964e7addc04ad2778))
+* Add `:math` function ([unicode-org/message-format-wg#932](https://github.com/unicode-org/message-format-wg/issues/932)) ([3f913fd](https://github.com/messageformat/messageformat/commit/3f913fdcab9005a9f4b36c39c080e0d11145f5e9))
+* Add `:currency` function ([unicode-org/message-format-wg#915](https://github.com/unicode-org/message-format-wg/issues/915)) ([2359d3a](https://github.com/messageformat/messageformat/commit/2359d3a31524fa505ec571f7c6d94616a4a127ea))
+* Always isolate when `u:dir` is set ([unicode-org/message-format-wg#942](https://github.com/unicode-org/message-format-wg/issues/942)) ([aaba7bb](https://github.com/messageformat/messageformat/commit/aaba7bb0fe177df76a5c71c422b96d194999adc9))
+* Support datetime override options ([unicode-org/message-format-wg#911](https://github.com/unicode-org/message-format-wg/issues/911)) ([3622b9c](https://github.com/messageformat/messageformat/commit/3622b9c53fe259ccee4e57a8bd2d2b962a665164))
+
+### Bug Fixes
+
+* Exclude ALM U+061C from `name-start` ([unicode-org/message-format-wg#884](https://github.com/unicode-org/message-format-wg/issues/884)) ([da76eeb](https://github.com/messageformat/messageformat/commit/da76eebd7c322ae547b8d6b7aaeaa8efc2fcf565))
+* Use spec values for `:number useGrouping` ([addb0a5](https://github.com/messageformat/messageformat/commit/addb0a5fadff57505c333a8027fb0745566a5e13))
+* Use last rather than first variable name for fallback ([unicode-org/message-format-wg#903](https://github.com/unicode-org/message-format-wg/issues/903)) ([bbc7483](https://github.com/messageformat/messageformat/commit/bbc748363f9e7db04077a3a613374b29662e9256))
+* Call `valueOf()` from option value utility getters ([aa3dce8](https://github.com/messageformat/messageformat/commit/aa3dce81339b5d403126209ae8c8c7b98ad0149b))
+* Do not fallback on all `:number` and `:datetime` option resolution errors ([674f96b](https://github.com/messageformat/messageformat/commit/674f96b3ebed1ea3f645c302db878a74652ab2c0))
+* Always use locale set in function context ([38efd20](https://github.com/messageformat/messageformat/commit/38efd2003b50da0a1af08984ddee720d6bce0a80))
+
 ## [4.0.0-8](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-7...messageformat@4.0.0-8) (2024-09-24)
 
 ### ⚠ Breaking Changes
