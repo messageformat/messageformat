@@ -77,6 +77,15 @@ export default [
     }
   },
   {
+    files: ['mf2/messageformat/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        { patterns: [{ regex: '^\\..*(?<!\\.ts)$' }] }
+      ]
+    }
+  },
+  {
     files: ['test/browser/tests/*.js'],
     languageOptions: { globals: { ...globals.mocha } }
   },
