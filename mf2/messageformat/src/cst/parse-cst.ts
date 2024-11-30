@@ -1,4 +1,5 @@
-import { MessageDataModelError, MessageSyntaxError } from '../errors.js';
+import type { MessageDataModelError } from '../errors.js';
+import { MessageSyntaxError } from '../errors.js';
 import { parseDeclarations } from './declarations.js';
 import { parseExpression } from './expression.js';
 import type * as CST from './types.js';

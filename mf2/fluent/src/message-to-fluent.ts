@@ -1,5 +1,5 @@
 import * as Fluent from '@fluent/syntax';
-import {
+import type {
   CatchallKey,
   Declaration,
   Expression,
@@ -8,7 +8,9 @@ import {
   Message,
   Pattern,
   VariableRef,
-  Variant,
+  Variant
+} from 'messageformat';
+import {
   isCatchallKey,
   isLiteral,
   isPatternMessage,

@@ -1,9 +1,8 @@
 import * as Fluent from '@fluent/syntax';
-import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
-import {
-  FluentToMessageOptions,
-  fluentToMessage
-} from './fluent-to-message.js';
+import type { Message, MessageFormatOptions } from 'messageformat';
+import { MessageFormat } from 'messageformat';
+import type { FluentToMessageOptions } from './fluent-to-message.js';
+import { fluentToMessage } from './fluent-to-message.js';
 import { getFluentFunctions } from './functions.js';
 import type {
   FluentMessageResource,

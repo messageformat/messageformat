@@ -3,7 +3,7 @@ import { MessageResolutionError } from '../errors.js';
 import type { Context } from '../format-context.js';
 import { fallback } from '../functions/fallback.js';
 import { unknown } from '../functions/unknown.js';
-import { MessageValue } from '../message-value.js';
+import type { MessageValue } from '../message-value.js';
 import { MessageFunctionContext } from './function-context.js';
 import { resolveExpression } from './resolve-expression.js';
 

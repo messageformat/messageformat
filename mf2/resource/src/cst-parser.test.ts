@@ -1,5 +1,6 @@
 //import { describe, expect, test, vi as jest } from 'vitest'
-import { CST, parseCST } from './cst-parser';
+import type { CST } from './cst-parser';
+import { parseCST } from './cst-parser';
 
 const nodeVersion = process.versions?.node?.split('.');
 if (nodeVersion && Number(nodeVersion[0]) < 16) test = test.skip;

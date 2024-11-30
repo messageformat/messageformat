@@ -69,6 +69,14 @@ export default [
     }
   },
   {
+    files: ['mf2/**/*.ts'],
+    languageOptions: { parserOptions: { projectService: true } },
+    rules: {
+      '@typescript-eslint/consistent-type-exports': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error'
+    }
+  },
+  {
     files: ['test/browser/tests/*.js'],
     languageOptions: { globals: { ...globals.mocha } }
   },

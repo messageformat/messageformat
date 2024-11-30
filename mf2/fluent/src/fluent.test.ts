@@ -23,7 +23,8 @@
 
 import * as Fluent from '@fluent/syntax';
 import { source } from '~/test/utils/source.js';
-import { PatternMessage, SelectMessage, validate } from 'messageformat';
+import type { PatternMessage, SelectMessage } from 'messageformat';
+import { validate } from 'messageformat';
 import { fluentToResource, fluentToResourceData } from './index.js';
 import { messageToFluent } from './message-to-fluent.js';
 import { resourceToFluent } from './resource-to-fluent.js';

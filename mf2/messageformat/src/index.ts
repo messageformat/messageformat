@@ -28,8 +28,8 @@ export {
   MessageSelectionError,
   MessageSyntaxError
 } from './errors.js';
-export {
-  MessageFormat,
+export type {
   MessageFormatOptions,
   MessageFunctions
 } from './messageformat.js';
+export { MessageFormat } from './messageformat.js';

@@ -1,7 +1,8 @@
 import * as Fluent from '@fluent/syntax';
 import type { Message } from 'messageformat';
 import type { FluentMessageResourceData } from './index.js';
-import { FunctionMap, messageToFluent } from './message-to-fluent.js';
+import type { FunctionMap } from './message-to-fluent.js';
+import { messageToFluent } from './message-to-fluent.js';
 
 /**
  * Convert a Map of {@link messageformat#Message} data objects into a

@@ -1,6 +1,7 @@
 import { MessageResolutionError } from '../errors.js';
 import type { MessageFunctionContext } from './index.js';
-import { MessageNumber, number, readNumericOperand } from './number.js';
+import type { MessageNumber } from './number.js';
+import { number, readNumericOperand } from './number.js';
 import { asPositiveInteger } from './utils.js';
 
 /**

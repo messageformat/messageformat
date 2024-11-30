@@ -1,6 +1,6 @@
-import * as Fluent from '@fluent/syntax';
+import type * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
-import {
+import type {
   Expression,
   FunctionRef,
   InputDeclaration,

@@ -1,15 +1,15 @@
+import type { Test } from '~/test/utils/mfwg-test-utils.js';
 import {
-  Test,
   testCases,
   testName,
   testScenarios,
   testType
 } from '~/test/utils/mfwg-test-utils.js';
 
+import type { MessageFormatOptions } from './index.js';
 import {
   MessageDataModelError,
   MessageFormat,
-  MessageFormatOptions,
   MessageSyntaxError,
   cst,
   messageFromCST,

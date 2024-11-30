@@ -1,5 +1,7 @@
-import { Token, parse } from '@messageformat/parser';
-import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
+import type { Token } from '@messageformat/parser';
+import { parse } from '@messageformat/parser';
+import type { Message, MessageFormatOptions } from 'messageformat';
+import { MessageFormat } from 'messageformat';
 import { getMF1Functions } from './functions.js';
 import { mf1ToMessageData } from './mf1-to-message-data.js';
 
