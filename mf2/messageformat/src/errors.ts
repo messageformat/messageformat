@@ -108,7 +108,6 @@ export class MessageResolutionError extends MessageError {
  */
 export class MessageSelectionError extends MessageError {
   declare type: 'bad-selector' | 'no-match';
-  cause?: unknown;
   constructor(
     type: typeof MessageSelectionError.prototype.type,
     cause?: unknown

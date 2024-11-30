@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 import { fluentToResource } from '@messageformat/fluent';
 import {
   getMF1Functions,
@@ -29,7 +31,6 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     const value = `${start} - ${end}`;
     return {
       type: 'range',
-      locale,
       source,
       selectKey(keys) {
         if (locale !== 'nl') throw new Error('Only Dutch supported');
@@ -227,7 +228,6 @@ maybe('List formatting', () => {
       return {
         type: 'list',
         source,
-        locale: lf.resolvedOptions().locale,
         toParts: () =>
           lf.formatToParts(list).map(part => Object.assign(part, { source })),
         toString: () => lf.format(list)

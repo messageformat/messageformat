@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// deno-lint-ignore-file no-explicit-any
 
 /**
  * These functions are used only in the MF2 test suite,
@@ -101,7 +102,6 @@ function testFunction(
   return {
     type: 'test',
     source,
-    locale: 'und',
     get options() {
       return { ...opt };
     },

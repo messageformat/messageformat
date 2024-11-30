@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { parseMessage } from './data-model/parse.ts';
 import type { Message } from './data-model/types.ts';
 import { validate } from './data-model/validate.ts';

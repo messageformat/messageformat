@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 import type { MessageFunctions, MessageNumberPart } from '../index.ts';
 import { MessageFormat } from '../index.ts';
 

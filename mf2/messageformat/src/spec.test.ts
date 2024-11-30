@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 import type { Test } from '~/test/utils/mfwg-test-utils.js';
 import {
   testCases,

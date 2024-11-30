@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+
 import { MessageFormat } from '../index.ts';
 
 function resolve(source: string, errors: any[] = []) {
