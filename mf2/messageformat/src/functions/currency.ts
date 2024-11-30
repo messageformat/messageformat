@@ -55,6 +55,7 @@ export function currency(
               source
             );
           }
+          // @ts-expect-error Let Intl.NumberFormat construction fail
           options[name] = strval;
           break;
         }

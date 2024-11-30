@@ -68,15 +68,19 @@ export function getPlural(
   const lc = normalize(locale);
   const id = identifier(lc);
   if (isPluralId(id)) {
+    const pc = PluralCategories[id] as {
+      cardinal: Plurals.PluralCategory[];
+      ordinal: Plurals.PluralCategory[];
+    };
     return {
       isDefault: true,
       id,
       lc,
       locale,
-      getCardinal: Cardinals[id],
-      getPlural: Plurals[id],
-      cardinals: PluralCategories[id].cardinal,
-      ordinals: PluralCategories[id].ordinal
+      getCardinal: Cardinals[id] as PluralObject['getCardinal'],
+      getPlural: Plurals[id] as PluralObject['getPlural'],
+      cardinals: pc.cardinal,
+      ordinals: pc.ordinal
     };
   }
   return null;
