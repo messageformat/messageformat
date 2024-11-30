@@ -1,6 +1,6 @@
-import type { Context } from '../format-context';
-import { lookupVariableRef } from './resolve-variable.js';
-import type { Literal, VariableRef } from '../data-model/types.js';
+import type { Context } from '../format-context.ts';
+import { lookupVariableRef } from './resolve-variable.ts';
+import type { Literal, VariableRef } from '../data-model/types.ts';
 
 /** @internal */
 export function resolveValue(

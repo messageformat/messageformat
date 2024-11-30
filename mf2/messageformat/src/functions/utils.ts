@@ -1,4 +1,4 @@
-export { getLocaleDir } from '../dir-utils.js';
+export { getLocaleDir } from '../dir-utils.ts';
 
 /**
  * Utility function for custom functions.

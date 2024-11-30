@@ -1,10 +1,10 @@
-import type { MessageDataModelError } from '../errors.js';
-import { MessageSyntaxError } from '../errors.js';
-import { parseDeclarations } from './declarations.js';
-import { parseExpression } from './expression.js';
-import type * as CST from './types.js';
-import { whitespaces } from './util.js';
-import { parseLiteral, parseText, parseVariable } from './values.js';
+import type { MessageDataModelError } from '../errors.ts';
+import { MessageSyntaxError } from '../errors.ts';
+import { parseDeclarations } from './declarations.ts';
+import { parseExpression } from './expression.ts';
+import type * as CST from './types.ts';
+import { whitespaces } from './util.ts';
+import { parseLiteral, parseText, parseVariable } from './values.ts';
 
 export class ParseContext {
   readonly errors: MessageSyntaxError[] = [];

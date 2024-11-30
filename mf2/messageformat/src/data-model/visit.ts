@@ -12,7 +12,7 @@ import type {
   Pattern,
   VariableRef,
   Variant
-} from './types.js';
+} from './types.ts';
 
 /**
  * Apply visitor functions to message nodes.

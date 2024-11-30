@@ -5,10 +5,10 @@
  * and are not a part of the library's public API.
  */
 
-import { MessageResolutionError } from '../errors.js';
-import type { MessageValue } from '../message-value.js';
-import type { MessageFunctionContext } from '../resolve/function-context.js';
-import { asPositiveInteger, asString } from './utils.js';
+import { MessageResolutionError } from '../errors.ts';
+import type { MessageValue } from '../message-value.ts';
+import type { MessageFunctionContext } from '../resolve/function-context.ts';
+import { asPositiveInteger, asString } from './utils.ts';
 
 interface TestValue extends MessageValue {
   readonly type: 'test';

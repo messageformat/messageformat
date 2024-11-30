@@ -3,13 +3,13 @@ import type {
   Literal,
   Options,
   VariableRef
-} from '../data-model/types.js';
-import { MessageError } from '../errors.js';
-import type { Context } from '../format-context.js';
-import { fallback } from '../functions/fallback.js';
-import { BIDI_ISOLATE } from '../message-value.js';
-import { MessageFunctionContext } from './function-context.js';
-import { getValueSource, resolveValue } from './resolve-value.js';
+} from '../data-model/types.ts';
+import { MessageError } from '../errors.ts';
+import type { Context } from '../format-context.ts';
+import { fallback } from '../functions/fallback.ts';
+import { BIDI_ISOLATE } from '../message-value.ts';
+import { MessageFunctionContext } from './function-context.ts';
+import { getValueSource, resolveValue } from './resolve-value.ts';
 
 export function resolveFunctionRef(
   ctx: Context,

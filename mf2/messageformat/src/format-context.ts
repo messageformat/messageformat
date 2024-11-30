@@ -1,5 +1,5 @@
-import type { MessageValue } from './message-value.js';
-import type { MessageFunctions } from './messageformat.js';
+import type { MessageValue } from './message-value.ts';
+import type { MessageFunctions } from './messageformat.ts';
 
 export interface Context {
   functions: MessageFunctions;

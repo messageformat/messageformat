@@ -6,7 +6,7 @@ import {
   testType
 } from '~/test/utils/mfwg-test-utils.js';
 
-import type { MessageFormatOptions } from './index.js';
+import type { MessageFormatOptions } from './index.ts';
 import {
   MessageDataModelError,
   MessageFormat,
@@ -19,9 +19,9 @@ import {
   stringifyMessage,
   validate,
   visit
-} from './index.js';
+} from './index.ts';
 
-import { testFunctions } from './functions/test-functions.js';
+import { testFunctions } from './functions/test-functions.ts';
 
 const tests = (tc: Test) => () => {
   switch (testType(tc)) {

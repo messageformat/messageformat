@@ -1,4 +1,4 @@
-import { MessageFormat } from '../index.js';
+import { MessageFormat } from '../index.ts';
 
 describe('variables', () => {
   let mf: MessageFormat;

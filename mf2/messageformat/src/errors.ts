@@ -1,5 +1,5 @@
-import { type MessageNode } from './data-model/types.js';
-import { cst } from './data-model/from-cst.js';
+import { type MessageNode } from './data-model/types.ts';
+import { cst } from './data-model/from-cst.ts';
 
 /**
  * Base error class used by MessageFormat

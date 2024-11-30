@@ -1,13 +1,13 @@
-import type * as CST from './cst/types.js';
+import type * as CST from './cst/types.ts';
 export type { CST };
-export type * from './data-model/types.js';
-export type * from './formatted-parts.js';
+export type * from './data-model/types.ts';
+export type * from './formatted-parts.ts';
 
-export { parseCST } from './cst/parse-cst.js';
-export { stringifyCST } from './cst/stringify-cst.js';
-export { messageFromCST, cst } from './data-model/from-cst.js';
-export { parseMessage } from './data-model/parse.js';
-export { stringifyMessage } from './data-model/stringify.js';
+export { parseCST } from './cst/parse-cst.ts';
+export { stringifyCST } from './cst/stringify-cst.ts';
+export { messageFromCST, cst } from './data-model/from-cst.ts';
+export { parseMessage } from './data-model/parse.ts';
+export { stringifyMessage } from './data-model/stringify.ts';
 export {
   isCatchallKey,
   isExpression,
@@ -18,18 +18,18 @@ export {
   isPatternMessage,
   isSelectMessage,
   isVariableRef
-} from './data-model/type-guards.js';
-export { validate } from './data-model/validate.js';
-export { visit } from './data-model/visit.js';
+} from './data-model/type-guards.ts';
+export { validate } from './data-model/validate.ts';
+export { visit } from './data-model/visit.ts';
 export {
   MessageDataModelError,
   MessageError,
   MessageResolutionError,
   MessageSelectionError,
   MessageSyntaxError
-} from './errors.js';
+} from './errors.ts';
 export type {
   MessageFormatOptions,
   MessageFunctions
-} from './messageformat.js';
-export { MessageFormat } from './messageformat.js';
+} from './messageformat.ts';
+export { MessageFormat } from './messageformat.ts';

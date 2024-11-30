@@ -1,7 +1,7 @@
-import type { Message, Pattern } from './data-model/types.js';
-import { MessageSelectionError } from './errors.js';
-import type { Context } from './format-context.js';
-import { resolveVariableRef } from './resolve/resolve-variable.js';
+import type { Message, Pattern } from './data-model/types.ts';
+import { MessageSelectionError } from './errors.ts';
+import type { Context } from './format-context.ts';
+import { resolveVariableRef } from './resolve/resolve-variable.ts';
 
 export function selectPattern(context: Context, message: Message): Pattern {
   switch (message.type) {

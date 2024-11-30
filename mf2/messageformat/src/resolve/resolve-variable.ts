@@ -1,11 +1,11 @@
-import type { Expression, VariableRef } from '../data-model/types.js';
-import { MessageResolutionError } from '../errors.js';
-import type { Context } from '../format-context.js';
-import { fallback } from '../functions/fallback.js';
-import { unknown } from '../functions/unknown.js';
-import type { MessageValue } from '../message-value.js';
-import { MessageFunctionContext } from './function-context.js';
-import { resolveExpression } from './resolve-expression.js';
+import type { Expression, VariableRef } from '../data-model/types.ts';
+import { MessageResolutionError } from '../errors.ts';
+import type { Context } from '../format-context.ts';
+import { fallback } from '../functions/fallback.ts';
+import { unknown } from '../functions/unknown.ts';
+import type { MessageValue } from '../message-value.ts';
+import { MessageFunctionContext } from './function-context.ts';
+import { resolveExpression } from './resolve-expression.ts';
 
 /**
  * Declarations aren't resolved until they're requierd,

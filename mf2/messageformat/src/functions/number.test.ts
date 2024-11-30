@@ -1,4 +1,4 @@
-import { MessageFormat } from '../index.js';
+import { MessageFormat } from '../index.ts';
 
 test('soft fail for integer options', () => {
   const mf = new MessageFormat('en', '{42 :number minimumFractionDigits=foo}');

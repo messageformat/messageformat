@@ -1,7 +1,7 @@
-import { MessageError, MessageResolutionError } from '../errors.js';
-import type { MessageFunctionContext } from './index.js';
-import { type MessageNumber, number, readNumericOperand } from './number.js';
-import { asPositiveInteger, asString } from './utils.js';
+import { MessageError, MessageResolutionError } from '../errors.ts';
+import type { MessageFunctionContext } from './index.ts';
+import { type MessageNumber, number, readNumericOperand } from './number.ts';
+import { asPositiveInteger, asString } from './utils.ts';
 
 /**
  * `currency` accepts as input numerical values as well as

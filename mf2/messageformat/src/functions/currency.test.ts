@@ -1,4 +1,4 @@
-import { MessageFormat } from '../index.js';
+import { MessageFormat } from '../index.ts';
 
 describe('fractionDigits', () => {
   for (const fd of [0, 2, 'auto' as const]) {

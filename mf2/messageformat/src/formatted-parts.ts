@@ -1,8 +1,8 @@
-export type { MessageDateTimePart } from './functions/datetime.js';
-export type { MessageFallbackPart } from './functions/fallback.js';
-export type { MessageNumberPart } from './functions/number.js';
-export type { MessageStringPart } from './functions/string.js';
-export type { MessageUnknownPart } from './functions/unknown.js';
+export type { MessageDateTimePart } from './functions/datetime.ts';
+export type { MessageFallbackPart } from './functions/fallback.ts';
+export type { MessageNumberPart } from './functions/number.ts';
+export type { MessageStringPart } from './functions/string.ts';
+export type { MessageUnknownPart } from './functions/unknown.ts';
 
 /** @beta */
 export interface MessageBiDiIsolationPart {

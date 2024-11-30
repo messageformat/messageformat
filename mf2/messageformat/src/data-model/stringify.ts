@@ -1,10 +1,10 @@
-import { isValidUnquotedLiteral } from '../cst/names.js';
+import { isValidUnquotedLiteral } from '../cst/names.ts';
 import {
   isLiteral,
   isPatternMessage,
   isSelectMessage,
   isVariableRef
-} from './type-guards.js';
+} from './type-guards.ts';
 import type {
   Declaration,
   Expression,
@@ -14,7 +14,7 @@ import type {
   Message,
   Pattern,
   VariableRef
-} from './types.js';
+} from './types.ts';
 
 /**
  * Stringify a message using its syntax representation.

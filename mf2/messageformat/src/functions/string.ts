@@ -1,6 +1,6 @@
-import type { MessageExpressionPart } from '../formatted-parts.js';
-import type { MessageValue } from '../message-value.js';
-import type { MessageFunctionContext } from '../resolve/function-context.js';
+import type { MessageExpressionPart } from '../formatted-parts.ts';
+import type { MessageValue } from '../message-value.ts';
+import type { MessageFunctionContext } from '../resolve/function-context.ts';
 
 /** @beta */
 export interface MessageString extends MessageValue {

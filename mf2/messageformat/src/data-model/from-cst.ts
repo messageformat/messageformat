@@ -1,6 +1,6 @@
-import type * as Model from './types.js';
-import { MessageSyntaxError } from '../errors.js';
-import type * as CST from '../cst/types.js';
+import type * as Model from './types.ts';
+import { MessageSyntaxError } from '../errors.ts';
+import type * as CST from '../cst/types.ts';
 
 /**
  * Shared symbol used as a key on message data model nodes
