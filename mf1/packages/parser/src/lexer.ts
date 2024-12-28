@@ -5,7 +5,7 @@ export const states: { [state: string]: Rules } = {
     doubleapos: { match: "''", value: () => "'" },
     quoted: {
       lineBreaks: true,
-      match: /'[{}#](?:[^]*?[^'])?'(?!')/u,
+      match: /'[{}#](?:[^']|'')*'(?!')/u,
       value: src => src.slice(1, -1).replace(/''/g, "'")
     },
     argument: {

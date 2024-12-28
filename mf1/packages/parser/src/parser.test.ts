@@ -26,7 +26,7 @@ function run(shape: Record<string, any>) {
   }
 }
 
-const trimCtx = obj =>
+const trimCtx = (obj: any) =>
   JSON.parse(
     JSON.stringify(obj, (key, value) => (key === 'ctx' ? undefined : value))
   );
@@ -296,6 +296,23 @@ describe('Plurals', () => {
     ).toMatchObject([
       { type: 'content', value: 'one' },
       { type: 'octothorpe' }
+    ]);
+    expect(parse("'{' {S, plural, other{# is a '#'}} '}'")).toMatchObject([
+      { type: 'content', value: '{ ' },
+      {
+        type: 'plural',
+        arg: 'S',
+        cases: [
+          {
+            key: 'other',
+            tokens: [
+              { type: 'octothorpe' },
+              { type: 'content', value: ' is a #' }
+            ]
+          }
+        ]
+      },
+      { type: 'content', value: ' }' }
     ]);
   });
 
