@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/messageformat/messageformat/compare/@messageformat/parser@5.1.0...@messageformat/parser@5.1.1) (2024-12-28)
+
+* Use correct regexp for 'quoted' escapes ([#436](https://github.com/messageformat/messageformat/issues/436))
+
 ## [5.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/parser@5.0.0...@messageformat/parser@5.1.0) (2023-06-08)
 
 ### Features

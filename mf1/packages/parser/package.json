@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/parser",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "An AST parser for ICU MessageFormat strings",
   "keywords": [
     "icu",
