@@ -1,0 +1,182 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@std/assert@^1.0.8": "1.0.8",
+    "jsr:@std/expect@*": "1.0.8",
+    "jsr:@std/internal@^1.0.5": "1.0.5",
+    "jsr:@std/testing@*": "1.0.5"
+  },
+  "jsr": {
+    "@std/assert@1.0.8": {
+      "integrity": "ebe0bd7eb488ee39686f77003992f389a06c3da1bbd8022184804852b2fa641b",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/expect@1.0.8": {
+      "integrity": "27e40d8f3aefb372fc6a703fb0b69e34560e72a2f78705178babdffa00119a5f",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.5": {
+      "integrity": "54a546004f769c1ac9e025abd15a76b6671ddc9687e2313b67376125650dc7ba"
+    },
+    "@std/testing@1.0.5": {
+      "integrity": "6e693cbec94c81a1ad3df668685c7ba8e20742bb10305bc7137faa5cf16d2ec4",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/internal"
+      ]
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@babel/cli@^7.12.8",
+        "npm:@babel/core@^7.12.9",
+        "npm:@babel/preset-env@^7.12.7",
+        "npm:@babel/preset-react@^7.12.7",
+        "npm:@babel/preset-typescript@^7.12.7",
+        "npm:@eslint/js@^9.12.0",
+        "npm:@microsoft/api-documenter@^7.11.0",
+        "npm:@microsoft/api-extractor@^7.12.0",
+        "npm:@rollup/plugin-alias@^5.0.1",
+        "npm:@rollup/plugin-babel@6",
+        "npm:@rollup/plugin-commonjs@28",
+        "npm:@rollup/plugin-node-resolve@15",
+        "npm:@rollup/plugin-typescript@^12.1.0",
+        "npm:@types/chai@^5.0.1",
+        "npm:@types/jest@^29.2.0",
+        "npm:@types/moo@~0.5.3",
+        "npm:@types/node@^20.14.12",
+        "npm:@types/react-test-renderer@18",
+        "npm:@types/react@18",
+        "npm:babel-eslint@^10.0.2",
+        "npm:babel-jest@^29.2.1",
+        "npm:browserstack-local@^1.4.8",
+        "npm:chai@^5.1.0",
+        "npm:eslint-config-prettier@9",
+        "npm:eslint@^9.12.0",
+        "npm:globals@^15.10.0",
+        "npm:intl-list-format@^1.0.3",
+        "npm:jest-config@^29.7.0",
+        "npm:jest-ts-webcompat-resolver@1",
+        "npm:jest@^29.2.1",
+        "npm:lodash.merge@^4.6.2",
+        "npm:memfs@^4.6.0",
+        "npm:mocha-selenium-bridge@0.3",
+        "npm:mocha@^10.1.0",
+        "npm:prettier@^3.0.1",
+        "npm:react-dom@18",
+        "npm:react-test-renderer@18",
+        "npm:react@18",
+        "npm:rollup@^4.1.5",
+        "npm:selenium-webdriver@4.4.0",
+        "npm:serve-handler@^6.1.3",
+        "npm:serve@^14.0.1",
+        "npm:tmp-promise@^3.0.2",
+        "npm:tslib@^2.8.1",
+        "npm:typescript-eslint@^8.8.0",
+        "npm:typescript@^5.7.2"
+      ]
+    },
+    "members": {
+      "mf1/packages/cli": {
+        "packageJson": {
+          "dependencies": [
+            "npm:dot-properties@^1.0.1",
+            "npm:glob@^8.0.1",
+            "npm:json5@^2.2.0",
+            "npm:uv@^1.3.1",
+            "npm:yaml@2",
+            "npm:yargs@^17.0.1"
+          ]
+        }
+      },
+      "mf1/packages/convert": {
+        "packageJson": {
+          "dependencies": [
+            "npm:make-plural@7"
+          ]
+        }
+      },
+      "mf1/packages/core": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@messageformat/date-skeleton@1",
+            "npm:@messageformat/number-skeleton@1",
+            "npm:@messageformat/parser@^5.1.0",
+            "npm:@messageformat/runtime@^3.0.1",
+            "npm:make-plural@7",
+            "npm:safe-identifier@~0.4.1"
+          ]
+        }
+      },
+      "mf1/packages/parser": {
+        "packageJson": {
+          "dependencies": [
+            "npm:moo@~0.5.1"
+          ]
+        }
+      },
+      "mf1/packages/rollup-plugin": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@messageformat/convert@1",
+            "npm:@messageformat/core@^3.0.1",
+            "npm:@rollup/pluginutils@^5.0.1",
+            "npm:dot-properties@^1.0.1",
+            "npm:uv@^1.3.1",
+            "npm:yaml@2"
+          ]
+        }
+      },
+      "mf1/packages/runtime": {
+        "packageJson": {
+          "dependencies": [
+            "npm:make-plural@7"
+          ]
+        }
+      },
+      "mf1/packages/webpack-loader": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@messageformat/convert@1",
+            "npm:dot-properties@^1.0.1",
+            "npm:loader-utils@2",
+            "npm:uv@^1.3.1",
+            "npm:yaml@2"
+          ]
+        }
+      },
+      "mf2/fluent": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@fluent/syntax@0.19",
+            "npm:fast-deep-equal@^3.1.3",
+            "npm:messageformat@4.0.0-9"
+          ]
+        }
+      },
+      "mf2/icu-messageformat-1": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@messageformat/parser@5",
+            "npm:messageformat@4.0.0-9"
+          ]
+        }
+      },
+      "mf2/xliff": {
+        "packageJson": {
+          "dependencies": [
+            "npm:fast-deep-equal@^3.1.3",
+            "npm:messageformat@^4.0.0-1",
+            "npm:saxes@6"
+          ]
+        }
+      }
+    }
+  }
+}

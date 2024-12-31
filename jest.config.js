@@ -33,7 +33,11 @@ module.exports = {
       '<rootDir>/mf1/packages/runtime/src/$1.ts'
   },
   resolver: 'jest-ts-webcompat-resolver',
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/mf1/examples/react/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/mf1/examples/react/',
+    '/node_modules/',
+    '/deno.test.ts$'
+  ],
   transform: { '\\.(js|mjs|ts|tsx)$': 'babel-jest' },
   transformIgnorePatterns: [
     '/node_modules/(?!make-plural|messageformat-(date|number)-skeleton)'

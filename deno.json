@@ -1,0 +1,13 @@
+{
+  "lint": {
+    "include": ["mf2/messageformat/"],
+    "exclude": ["**/*.test.ts", "!**/deno.test.ts"],
+    "rules": { "tags": ["recommended"] }
+  },
+  "test": {
+    "include": ["**/deno.test.ts"]
+  },
+  "tasks": {
+    "test": "deno test --allow-read --reporter=dot"
+  }
+}

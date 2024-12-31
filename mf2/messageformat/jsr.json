@@ -1,0 +1,17 @@
+{
+  "name": "@messageformat/messageformat",
+  "version": "4.0.0-9",
+  "exports": {
+    ".": "./src/index.ts",
+    "./functions": "./src/functions/index.ts",
+    "./functions/utils": "./src/functions/utils.ts"
+  },
+  "package": {
+    "include": [
+      "LICENSE",
+      "README.md",
+      "jsr.json",
+      "src/"
+    ]
+  }
+}
