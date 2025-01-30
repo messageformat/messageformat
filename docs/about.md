@@ -79,5 +79,8 @@ See [CONTRIBUTING.md](https://github.com/messageformat/messageformat/blob/main/C
 
 ## Core Contributors
 
+- Eemeli Aro - [@eemeli@mefi.social ](https://mefi.social/@eemeli) - [github.com/eemeli](https://github.com/eemeli)
+
+## Former Contributors
+
 - Alex Sexton - [@SlexAxton](http://twitter.com/SlexAxton) - [alexsexton.com](http://alexsexton.com/)
-- Eemeli Aro - [@eemeli_aro](http://twitter.com/eemeli_aro) - [github.com/eemeli](https://github.com/eemeli)
