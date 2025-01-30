@@ -10,11 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with: { node-version: 18 }
       - name: Cache BrowserStackLocal
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ~/.browserstack
           key: bsl-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
