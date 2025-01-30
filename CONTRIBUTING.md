@@ -5,7 +5,9 @@ If something is not clear and you have looked at our [documentation site](https:
 
 Messageformat is an [OpenJS Foundation](https://openjsf.org) project, and we follow its [Code of Conduct](https://code-of-conduct.openjsf.org/).
 
-Our current governance is pretty straightforward; our core contributors [Alex Sexton](https://github.com/SlexAxton) and [Eemeli Aro](https://github.com/eemeli) are in charge. If you'd like to have a say too, active participation is a really good way forward.
+Our current governance is pretty straightforward;
+our core contributor [Eemeli Aro](https://github.com/eemeli) is in charge.
+If you'd like to have a say too, active participation is a really good way forward.
 
 ## Getting Started
 
