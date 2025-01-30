@@ -20,7 +20,7 @@ export function* testCases(scenario: TestScenario): Iterable<Test> {
   const defaults = scenario.defaultTestProperties;
   for (const test of scenario.tests) {
     const td = Object.assign({}, defaults, test);
-    const tt = td as Test;
+    const tt = td as unknown as Test;
     if (td.params) {
       const pr: Record<string, unknown> = {};
       for (const p of td.params) {
