@@ -4,7 +4,7 @@ This library provides an implementation of the [ECMA-402 Intl.MessageFormat prop
 which is built on top of the [Unicode MessageFormat 2.0 specification] (MF2),
 developed by the [MessageFormat Working Group].
 
-The API provided by this library is current as of the [LDML 46.1] (December 2024)G
+The API provided by this library is current as of the [LDML 46.1] (December 2024)
 version of the MF2 specification.
 
 [ecma-402 intl.messageformat proposal]: https://github.com/dminor/proposal-intl-messageformat/
@@ -56,7 +56,7 @@ For more information on additional types and functions provided by this package,
 see the [API documentation site](https://messageformat.github.io/messageformat/api/).
 
 > [!IMPORTANT]
-> This means that the v4 release of the `messageformat` package has
+> The v4 release of the `messageformat` package has
 > an entirely different API compared to its earlier major releases,
 > which were built on top of ICU MessageFormat, aka "MF1".
 > For that,
