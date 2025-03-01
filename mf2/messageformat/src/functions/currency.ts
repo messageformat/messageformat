@@ -21,10 +21,11 @@ export function currency(
 ): MessageNumber {
   const { source } = ctx;
   const input = readNumericOperand(operand, source);
-  const value = input.value;
-  const options: MessageNumberOptions = Object.assign({}, input.options);
+  const options: MessageNumberOptions = Object.assign({}, input.options, {
+    localeMatcher: ctx.localeMatcher,
+    style: 'currency'
+  } as const);
 
-  options.style = 'currency';
   for (const [name, optval] of Object.entries(exprOpt)) {
     if (optval === undefined) continue;
     try {
@@ -34,6 +35,7 @@ export function currency(
         case 'roundingMode':
         case 'roundingPriority':
         case 'trailingZeroDisplay':
+        case 'useGrouping':
           // @ts-expect-error Let Intl.NumberFormat construction fail
           options[name] = asString(optval);
           break;
@@ -85,12 +87,6 @@ export function currency(
           options[name] = strval;
           break;
         }
-        case 'useGrouping': {
-          const strval = asString(optval);
-          // @ts-expect-error TS type is wrong
-          options[name] = strval === 'never' ? false : strval;
-          break;
-        }
       }
     } catch (error) {
       if (error instanceof MessageError) {
@@ -107,5 +103,5 @@ export function currency(
     throw new MessageResolutionError('bad-operand', msg, source);
   }
 
-  return getMessageNumber(ctx, value, options);
+  return getMessageNumber(ctx, input.value, options);
 }
