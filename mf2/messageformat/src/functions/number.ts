@@ -23,7 +23,7 @@ export interface MessageNumber extends MessageValue {
    * For example, cardinal English plurals only use `one` and `other`,
    * so a key `zero` will never be matched for that locale.
    */
-  selectKey(keys: Set<string>): string | null;
+  selectKey?: (keys: Set<string>) => string | null;
   toParts?: () => [MessageNumberPart];
   toString?: () => string;
   valueOf(): number | bigint;
@@ -69,7 +69,8 @@ export function readNumericOperand(
 export function getMessageNumber(
   { dir, locales, source }: MessageFunctionContext,
   value: number | bigint,
-  options: MessageNumberOptions
+  options: MessageNumberOptions,
+  canSelect: boolean
 ): MessageNumber {
   // @ts-expect-error We may have been a bit naughty earlier.
   if (options.useGrouping === 'never') options.useGrouping = false;
@@ -91,17 +92,21 @@ export function getMessageNumber(
     get options() {
       return { ...options };
     },
-    selectKey(keys) {
-      const str = String(value);
-      if (keys.has(str)) return str;
-      if (options.select === 'exact') return null;
-      const pluralOpt = options.select
-        ? { ...options, select: undefined, type: options.select }
-        : options;
-      // Intl.PluralRules needs a number, not bigint
-      cat ??= new Intl.PluralRules(locales, pluralOpt).select(Number(value));
-      return keys.has(cat) ? cat : null;
-    },
+    selectKey: canSelect
+      ? keys => {
+          const str = String(value);
+          if (keys.has(str)) return str;
+          if (options.select === 'exact') return null;
+          const pluralOpt = options.select
+            ? { ...options, select: undefined, type: options.select }
+            : options;
+          // Intl.PluralRules needs a number, not bigint
+          cat ??= new Intl.PluralRules(locales, pluralOpt).select(
+            Number(value)
+          );
+          return keys.has(cat) ? cat : null;
+        }
+      : undefined,
     toParts() {
       nf ??= new Intl.NumberFormat(locales, options);
       const parts = nf.formatToParts(value);
@@ -169,7 +174,7 @@ export function number(
     }
   }
 
-  return getMessageNumber(ctx, value, options);
+  return getMessageNumber(ctx, value, options, true);
 }
 
 /**
@@ -218,5 +223,5 @@ export function integer(
     }
   }
 
-  return getMessageNumber(ctx, value, options);
+  return getMessageNumber(ctx, value, options, true);
 }

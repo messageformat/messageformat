@@ -56,14 +56,14 @@ describe('currencyDisplay', () => {
   }
 });
 
-test('select=ordinal', () => {
+test('selection', () => {
   const mf = new MessageFormat(
     'en',
-    '.local $n = {42 :currency currency=EUR select=ordinal} .match $n * {{res}}'
+    '.local $n = {42 :currency currency=EUR} .match $n 42 {{exact}} * {{other}}'
   );
   const onError = jest.fn();
-  expect(mf.format(undefined, onError)).toEqual('res');
-  expect(onError.mock.calls).toMatchObject([[{ type: 'bad-option' }]]);
+  expect(mf.format(undefined, onError)).toEqual('other');
+  expect(onError.mock.calls).toMatchObject([[{ type: 'bad-selector' }]]);
 });
 
 describe('complex operand', () => {

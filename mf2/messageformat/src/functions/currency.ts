@@ -1,11 +1,7 @@
 import { MessageError, MessageResolutionError } from '../errors.js';
 import type { MessageFunctionContext } from './index.js';
-import {
-  type MessageNumber,
-  type MessageNumberOptions,
-  getMessageNumber,
-  readNumericOperand
-} from './number.js';
+import type { MessageNumber, MessageNumberOptions } from './number.js';
+import { getMessageNumber, readNumericOperand } from './number.js';
 import { asPositiveInteger, asString } from './utils.js';
 
 /**
@@ -74,19 +70,6 @@ export function currency(
           }
           break;
         }
-        case 'select': {
-          const strval = asString(optval);
-          if (strval === 'ordinal') {
-            throw new MessageResolutionError(
-              'bad-option',
-              'Ordinal selection is not supported on :currency',
-              source
-            );
-          }
-          // @ts-expect-error Let Intl.NumberFormat construction fail
-          options[name] = strval;
-          break;
-        }
       }
     } catch (error) {
       if (error instanceof MessageError) {
@@ -103,5 +86,5 @@ export function currency(
     throw new MessageResolutionError('bad-operand', msg, source);
   }
 
-  return getMessageNumber(ctx, input.value, options);
+  return getMessageNumber(ctx, input.value, options, false);
 }
