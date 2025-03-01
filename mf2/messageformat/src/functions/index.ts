@@ -6,4 +6,5 @@ export { fallback, type MessageFallback } from './fallback.js';
 export { math } from './math.js';
 export { integer, number, type MessageNumber } from './number.js';
 export { string, type MessageString } from './string.js';
+export { unit } from './unit.js';
 export { unknown, type MessageUnknownValue } from './unknown.js';

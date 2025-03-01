@@ -13,7 +13,8 @@ import {
   math,
   number,
   string,
-  time
+  time,
+  unit
 } from './functions/index.js';
 import { BIDI_ISOLATE, type MessageValue } from './message-value.js';
 import { formatMarkup } from './resolve/format-markup.js';
@@ -30,7 +31,8 @@ const defaultFunctions = Object.freeze({
   math,
   number,
   string,
-  time
+  time,
+  unit
 });
 
 /**

@@ -83,7 +83,7 @@ const testCases: Record<string, TestCase> = {
       num-fraction-bad = { NUMBER($arg, minimumFractionDigits: "oops") }
       num-currency = { NUMBER($arg, style: "currency", currency: "EUR") }
       # TODO: num-percent = { NUMBER($arg, style: "percent") }
-      # TODO: num-unit = { NUMBER($arg, style: "unit", unit: "meter") }
+      num-unit = { NUMBER($arg, style: "unit", unit: "meter") }
       num-unknown = { NUMBER($arg, unknown: "unknown") }
     `,
     tests: [
@@ -97,7 +97,7 @@ const testCases: Record<string, TestCase> = {
       },
       { msg: 'num-currency', scope: { arg: 1234 }, exp: '€1,234.00' },
       // TODO: { msg: 'num-percent', scope: { arg: 1234 }, exp: '123,400%' },
-      // TODO: { msg: 'num-unit', scope: { arg: 1234 }, exp: '1,234 m' },
+      { msg: 'num-unit', scope: { arg: 1234 }, exp: '1,234 m' },
       { msg: 'num-unknown', scope: { arg: 1234 }, exp: '1,234' }
     ]
   },
