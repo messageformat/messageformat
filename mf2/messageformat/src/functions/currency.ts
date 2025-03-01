@@ -1,6 +1,11 @@
 import { MessageError, MessageResolutionError } from '../errors.js';
 import type { MessageFunctionContext } from './index.js';
-import { type MessageNumber, number, readNumericOperand } from './number.js';
+import {
+  type MessageNumber,
+  type MessageNumberOptions,
+  getMessageNumber,
+  readNumericOperand
+} from './number.js';
 import { asPositiveInteger, asString } from './utils.js';
 
 /**
@@ -17,22 +22,15 @@ export function currency(
   const { source } = ctx;
   const input = readNumericOperand(operand, source);
   const value = input.value;
-  const options: Intl.NumberFormatOptions &
-    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' } = Object.assign(
-    {},
-    input.options
-  );
+  const options: MessageNumberOptions = Object.assign({}, input.options);
 
   options.style = 'currency';
   for (const [name, optval] of Object.entries(exprOpt)) {
     if (optval === undefined) continue;
     try {
       switch (name) {
-        case 'compactDisplay':
         case 'currency':
         case 'currencySign':
-        case 'notation':
-        case 'numberingSystem':
         case 'roundingMode':
         case 'roundingPriority':
         case 'trailingZeroDisplay':
@@ -109,5 +107,5 @@ export function currency(
     throw new MessageResolutionError('bad-operand', msg, source);
   }
 
-  return number(ctx, {}, { valueOf: () => value, options });
+  return getMessageNumber(ctx, value, options);
 }

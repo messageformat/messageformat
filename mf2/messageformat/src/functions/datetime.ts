@@ -111,7 +111,6 @@ export const date = (
             res[name] = asBoolean(value);
             break;
           case 'calendar':
-          case 'numberingSystem':
           case 'timeZone':
             res[name] = asString(value);
         }
@@ -149,7 +148,6 @@ export const time = (
             res[name] = asBoolean(value);
             break;
           case 'calendar':
-          case 'numberingSystem':
           case 'timeZone':
             res[name] = asString(value);
         }
