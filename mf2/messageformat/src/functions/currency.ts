@@ -48,15 +48,18 @@ export function currency(
           break;
         case 'currencyDisplay': {
           const strval = asString(optval);
-          if (strval === 'formalSymbol' || strval === 'never') {
-            throw new MessageResolutionError(
-              'unsupported-operation',
-              `Currency display "${strval}" is not supported on :currency`,
-              source
+          if (strval === 'never') {
+            ctx.onError(
+              new MessageResolutionError(
+                'unsupported-operation',
+                'Currency display "never" is not yet supported',
+                source
+              )
             );
+          } else {
+            // @ts-expect-error Let Intl.NumberFormat construction fail
+            options[name] = strval;
           }
-          // @ts-expect-error Let Intl.NumberFormat construction fail
-          options[name] = strval;
           break;
         }
         case 'fractionDigits': {

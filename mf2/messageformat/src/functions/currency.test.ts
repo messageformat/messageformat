@@ -27,9 +27,8 @@ describe('currencyDisplay', () => {
     'symbol',
     'name',
     'code',
-    'formalSymbol',
     'never'
-  ]) {
+  ] as const) {
     test(`currencyDisplay=${cd}`, () => {
       const mf = new MessageFormat(
         'en',
@@ -38,15 +37,14 @@ describe('currencyDisplay', () => {
       const nf = new Intl.NumberFormat('en', {
         style: 'currency',
         currency: 'EUR',
-        currencyDisplay:
-          cd === 'formalSymbol' || cd === 'never' ? undefined : cd
+        currencyDisplay: cd === 'never' ? undefined : cd
       });
       const onError = jest.fn();
       expect(mf.format(undefined, onError)).toEqual(nf.format(42));
       expect(mf.formatToParts(undefined, onError)).toMatchObject([
         { parts: nf.formatToParts(42) }
       ]);
-      if (cd === 'formalSymbol' || cd === 'never') {
+      if (cd === 'never') {
         expect(onError.mock.calls).toMatchObject([
           [{ type: 'unsupported-operation' }],
           [{ type: 'unsupported-operation' }]
