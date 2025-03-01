@@ -67,13 +67,23 @@ export function readNumericOperand(
 }
 
 export function getMessageNumber(
-  { dir, locales, source }: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   value: number | bigint,
   options: MessageNumberOptions,
   canSelect: boolean
 ): MessageNumber {
+  let { dir, locales, source } = ctx;
   // @ts-expect-error We may have been a bit naughty earlier.
   if (options.useGrouping === 'never') options.useGrouping = false;
+  if (
+    canSelect &&
+    'select' in options &&
+    !ctx.literalOptionKeys.has('select')
+  ) {
+    const msg = 'The option select may only be set by a literal value';
+    ctx.onError(new MessageResolutionError('bad-option', msg, source));
+    canSelect = false;
+  }
 
   let locale: string | undefined;
   let nf: Intl.NumberFormat | undefined;

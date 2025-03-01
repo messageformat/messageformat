@@ -5,6 +5,7 @@ import { Options } from '../data-model/types.js';
 
 export class MessageFunctionContext {
   #ctx: Context;
+  #litKeys: Set<string> | undefined;
   #locales: Intl.Locale[];
   readonly dir: 'ltr' | 'rtl' | 'auto' | undefined;
   readonly id: string | undefined;
@@ -46,7 +47,18 @@ export class MessageFunctionContext {
     const idOpt = options?.get('u:id');
     this.id = idOpt ? String(resolveValue(ctx, idOpt)) : undefined;
 
+    if (options) {
+      this.#litKeys = new Set();
+      for (const [key, value] of options) {
+        if (value.type === 'literal') this.#litKeys.add(key);
+      }
+    }
+
     this.source = source;
+  }
+
+  get literalOptionKeys() {
+    return new Set(this.#litKeys);
   }
 
   get localeMatcher() {
