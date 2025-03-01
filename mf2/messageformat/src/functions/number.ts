@@ -93,6 +93,7 @@ export function number(
     try {
       switch (name) {
         case 'locale':
+        case 'style': // https://github.com/unicode-org/message-format-wg/pull/988
         case 'type': // used internally by Intl.PluralRules, but called 'select' here
           break;
         case 'minimumIntegerDigits':
