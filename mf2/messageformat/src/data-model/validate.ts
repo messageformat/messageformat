@@ -1,6 +1,6 @@
-import { MessageDataModelError } from '../errors.js';
-import type { Message, MessageNode, VariableRef, Variant } from './types.js';
-import { visit } from './visit.js';
+import { MessageDataModelError } from '../errors.ts';
+import type { Message, MessageNode, VariableRef, Variant } from './types.ts';
+import { visit } from './visit.ts';
 
 /**
  * Ensure that the `msg` data model is _valid_, calling `onError` on errors.

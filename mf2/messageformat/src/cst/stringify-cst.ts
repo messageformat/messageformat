@@ -1,4 +1,4 @@
-import type * as CST from './types.js';
+import type * as CST from './types.ts';
 
 /**
  * Stringify a message CST.

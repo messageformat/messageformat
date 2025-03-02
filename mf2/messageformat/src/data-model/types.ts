@@ -1,5 +1,5 @@
-import type * as CST from '../cst/types.js';
-import { cst } from './from-cst.js';
+import type * as CST from '../cst/types.ts';
+import { cst } from './from-cst.ts';
 
 /**
  * A node in a message data model

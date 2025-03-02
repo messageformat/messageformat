@@ -1,6 +1,6 @@
-import { parseNameValue, parseUnquotedLiteralValue } from '../cst/names.js';
-import { MessageSyntaxError } from '../errors.js';
-import type * as Model from './types.js';
+import { parseNameValue, parseUnquotedLiteralValue } from '../cst/names.ts';
+import { MessageSyntaxError } from '../errors.ts';
+import type * as Model from './types.ts';
 
 const bidiChars = new Set('\u061C\u200E\u200F\u2066\u2067\u2068\u2069');
 const whitespaceChars = new Set('\t\n\r \u3000');

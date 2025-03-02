@@ -24,9 +24,9 @@
 import * as Fluent from '@fluent/syntax';
 import { source } from '~/test/utils/source.js';
 import { PatternMessage, SelectMessage, validate } from 'messageformat';
-import { fluentToResource, fluentToResourceData } from './index.js';
-import { messageToFluent } from './message-to-fluent.js';
-import { resourceToFluent } from './resource-to-fluent.js';
+import { fluentToResource, fluentToResourceData } from './index.ts';
+import { messageToFluent } from './message-to-fluent.ts';
+import { resourceToFluent } from './resource-to-fluent.ts';
 
 type TestCase = {
   locale?: string;

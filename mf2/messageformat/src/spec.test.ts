@@ -19,10 +19,10 @@ import {
   stringifyMessage,
   validate,
   visit
-} from './index.js';
+} from './index.ts';
 
-import { DraftFunctions } from './functions/index.js';
-import { TestFunctions } from './functions/test-functions.js';
+import { DraftFunctions } from './functions/index.ts';
+import { TestFunctions } from './functions/test-functions.ts';
 
 const tests = (tc: Test) => () => {
   const mfOpt: MessageFormatOptions = {

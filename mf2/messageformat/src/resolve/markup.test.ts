@@ -1,4 +1,4 @@
-import { MessageFormat, parseCST } from '../index.js';
+import { MessageFormat, parseCST } from '../index.ts';
 
 describe('Simple open/close', () => {
   test('no options, literal body', () => {

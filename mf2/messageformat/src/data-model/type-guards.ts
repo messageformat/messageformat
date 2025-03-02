@@ -10,7 +10,7 @@ import type {
   PatternMessage,
   SelectMessage,
   VariableRef
-} from './types.js';
+} from './types.ts';
 
 /** @beta */
 export const isCatchallKey = (key: any): key is CatchallKey =>

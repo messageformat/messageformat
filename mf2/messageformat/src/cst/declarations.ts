@@ -1,8 +1,8 @@
-import { parseExpression } from './expression.js';
-import type { ParseContext } from './parse-cst.js';
-import type * as CST from './types.js';
-import { whitespaces } from './util.js';
-import { parseVariable } from './values.js';
+import { parseExpression } from './expression.ts';
+import type { ParseContext } from './parse-cst.ts';
+import type * as CST from './types.ts';
+import { whitespaces } from './util.ts';
+import { parseVariable } from './values.ts';
 
 export function parseDeclarations(
   ctx: ParseContext,

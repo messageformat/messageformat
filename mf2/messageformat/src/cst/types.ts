@@ -1,4 +1,4 @@
-import type { MessageSyntaxError } from '../errors.js';
+import type { MessageSyntaxError } from '../errors.ts';
 
 /** @beta */
 export type Message = SimpleMessage | ComplexMessage | SelectMessage;

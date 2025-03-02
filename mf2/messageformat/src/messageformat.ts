@@ -1,17 +1,17 @@
-import { parseMessage } from './data-model/parse.js';
-import type { Message } from './data-model/types.js';
-import { validate } from './data-model/validate.js';
-import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.js';
-import { MessageDataModelError, MessageError } from './errors.js';
-import type { Context } from './format-context.js';
-import type { MessagePart } from './formatted-parts.js';
-import { DefaultFunctions } from './functions/index.js';
-import { BIDI_ISOLATE, type MessageValue } from './message-value.js';
-import { formatMarkup } from './resolve/format-markup.js';
-import type { MessageFunctionContext } from './resolve/function-context.js';
-import { resolveExpression } from './resolve/resolve-expression.js';
-import { UnresolvedExpression } from './resolve/resolve-variable.js';
-import { selectPattern } from './select-pattern.js';
+import { parseMessage } from './data-model/parse.ts';
+import type { Message } from './data-model/types.ts';
+import { validate } from './data-model/validate.ts';
+import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.ts';
+import { MessageDataModelError, MessageError } from './errors.ts';
+import type { Context } from './format-context.ts';
+import type { MessagePart } from './formatted-parts.ts';
+import { DefaultFunctions } from './functions/index.ts';
+import { BIDI_ISOLATE, type MessageValue } from './message-value.ts';
+import { formatMarkup } from './resolve/format-markup.ts';
+import type { MessageFunctionContext } from './resolve/function-context.ts';
+import { resolveExpression } from './resolve/resolve-expression.ts';
+import { UnresolvedExpression } from './resolve/resolve-variable.ts';
+import { selectPattern } from './select-pattern.ts';
 
 /**
  * The runtime function registry available when resolving {@link FunctionRef} elements.

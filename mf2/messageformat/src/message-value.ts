@@ -1,4 +1,4 @@
-import type { MessageExpressionPart } from './formatted-parts.js';
+import type { MessageExpressionPart } from './formatted-parts.ts';
 
 export const BIDI_ISOLATE = Symbol('bidi-isolate');
 

@@ -1,9 +1,9 @@
-import { getLocaleDir } from '../dir-utils.js';
-import { MessageResolutionError } from '../errors.js';
-import type { MessageExpressionPart } from '../formatted-parts.js';
-import type { MessageValue } from '../message-value.js';
-import type { MessageFunctionContext } from '../resolve/function-context.js';
-import { asBoolean, asPositiveInteger, asString } from './utils.js';
+import { getLocaleDir } from '../dir-utils.ts';
+import { MessageResolutionError } from '../errors.ts';
+import type { MessageExpressionPart } from '../formatted-parts.ts';
+import type { MessageValue } from '../message-value.ts';
+import type { MessageFunctionContext } from '../resolve/function-context.ts';
+import { asBoolean, asPositiveInteger, asString } from './utils.ts';
 
 /** @beta */
 export interface MessageDateTime extends MessageValue {

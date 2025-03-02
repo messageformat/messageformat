@@ -1,7 +1,7 @@
-import { MessageResolutionError } from '../errors.js';
-import type { MessageFunctionContext } from './index.js';
-import { MessageNumber, number, readNumericOperand } from './number.js';
-import { asPositiveInteger } from './utils.js';
+import { MessageResolutionError } from '../errors.ts';
+import type { MessageFunctionContext } from './index.ts';
+import { MessageNumber, number, readNumericOperand } from './number.ts';
+import { asPositiveInteger } from './utils.ts';
 
 /**
  * `math` accepts a numeric value as input and adds or subtracts an integer value from it

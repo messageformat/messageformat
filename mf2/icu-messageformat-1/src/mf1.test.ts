@@ -1,6 +1,6 @@
 import { parse } from '@messageformat/parser';
 import { validate } from 'messageformat';
-import { mf1ToMessage, mf1ToMessageData } from './index.js';
+import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
 export type TestCase = {
   locale?: string;

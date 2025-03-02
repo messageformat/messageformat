@@ -5,22 +5,22 @@
  * along with some utilities for building custom function handlers.
  */
 
-export { getLocaleDir } from '../dir-utils.js';
-export { asBoolean, asPositiveInteger, asString } from './utils.js';
+export { getLocaleDir } from '../dir-utils.ts';
+export { asBoolean, asPositiveInteger, asString } from './utils.ts';
 
-export type { MessageValue } from '../message-value.js';
-export type { MessageFunctionContext } from '../resolve/function-context.js';
-export type { MessageDateTime } from './datetime.js';
-export type { MessageFallback } from './fallback.js';
-export type { MessageNumber } from './number.js';
-export type { MessageString } from './string.js';
+export type { MessageValue } from '../message-value.ts';
+export type { MessageFunctionContext } from '../resolve/function-context.ts';
+export type { MessageDateTime } from './datetime.ts';
+export type { MessageFallback } from './fallback.ts';
+export type { MessageNumber } from './number.ts';
+export type { MessageString } from './string.ts';
 
-import { currency } from './currency.js';
-import { date, datetime, time } from './datetime.js';
-import { math } from './math.js';
-import { integer, number } from './number.js';
-import { string } from './string.js';
-import { unit } from './unit.js';
+import { currency } from './currency.ts';
+import { date, datetime, time } from './datetime.ts';
+import { math } from './math.ts';
+import { integer, number } from './number.ts';
+import { string } from './string.ts';
+import { unit } from './unit.ts';
 
 /**
  * Functions classified as REQUIRED by the MessageFormat 2 specification.

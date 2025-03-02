@@ -7,9 +7,9 @@ import {
   isVariableRef
 } from 'messageformat';
 import type * as MF from 'messageformat';
-import type { MessageFormatInfo, MessageResourceData } from './index.js';
-import type * as X from './xliff-spec.js';
-import { toNmtoken } from './nmtoken.js';
+import type { MessageFormatInfo, MessageResourceData } from './index.ts';
+import type * as X from './xliff-spec.ts';
+import { toNmtoken } from './nmtoken.ts';
 
 let _id = 0;
 const nextId = () => String(++_id);

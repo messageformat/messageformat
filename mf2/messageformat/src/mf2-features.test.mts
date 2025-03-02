@@ -10,14 +10,14 @@ import { source } from '~/test/utils/source.js';
 import type {
   MessageFunctionContext,
   MessageValue
-} from './functions/index.js';
+} from './functions/index.ts';
 import {
   MessageBiDiIsolationPart,
   MessageExpressionPart,
   MessageFormat,
   MessageLiteralPart,
   SelectMessage
-} from './index.js';
+} from './index.ts';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function range(

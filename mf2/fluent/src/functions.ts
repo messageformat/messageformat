@@ -4,8 +4,8 @@ import type {
   MessageValue
 } from 'messageformat/functions';
 import { DraftFunctions, getLocaleDir } from 'messageformat/functions';
-import type { FluentMessageResource } from './index.js';
-import { valueToMessageRef } from './message-to-fluent.js';
+import type { FluentMessageResource } from './index.ts';
+import { valueToMessageRef } from './message-to-fluent.ts';
 
 /**
  * Build a {@link messageformat#MessageFormat} runtime to use with Fluent messages.

@@ -1,9 +1,9 @@
-import { datetime } from '../functions/datetime.js';
+import { datetime } from '../functions/datetime.ts';
 import {
   MessageFormat,
   MessageFunctions,
   MessageNumberPart
-} from '../index.js';
+} from '../index.ts';
 
 test('Custom function', () => {
   const functions = {

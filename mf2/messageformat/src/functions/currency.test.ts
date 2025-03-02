@@ -1,5 +1,5 @@
-import { MessageFormat } from '../index.js';
-import { currency } from './currency.js';
+import { MessageFormat } from '../index.ts';
+import { currency } from './currency.ts';
 
 describe('fractionDigits', () => {
   for (const fd of [0, 2, 'auto' as const]) {

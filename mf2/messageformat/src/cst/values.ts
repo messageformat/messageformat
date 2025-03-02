@@ -1,6 +1,6 @@
-import { parseNameValue, parseUnquotedLiteralValue } from './names.js';
-import type { ParseContext } from './parse-cst.js';
-import type * as CST from './types.js';
+import { parseNameValue, parseUnquotedLiteralValue } from './names.ts';
+import type { ParseContext } from './parse-cst.ts';
+import type * as CST from './types.ts';
 
 // Text ::= (TextChar | TextEscape)+
 // TextChar ::= AnyChar - ('{' | '}' | Esc)

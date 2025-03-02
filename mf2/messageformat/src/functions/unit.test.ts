@@ -1,5 +1,5 @@
-import { MessageFormat } from '../index.js';
-import { unit } from './unit.js';
+import { MessageFormat } from '../index.ts';
+import { unit } from './unit.ts';
 
 test('selection', () => {
   const mf = new MessageFormat(
