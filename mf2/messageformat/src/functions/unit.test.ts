@@ -1,9 +1,11 @@
 import { MessageFormat } from '../index.js';
+import { unit } from './unit.js';
 
 test('selection', () => {
   const mf = new MessageFormat(
     'en',
-    '.local $n = {42 :unit unit=meter} .match $n 42 {{exact}} * {{other}}'
+    '.local $n = {42 :unit unit=meter} .match $n 42 {{exact}} * {{other}}',
+    { functions: { unit } }
   );
   const onError = jest.fn();
   expect(mf.format(undefined, onError)).toEqual('other');
@@ -14,7 +16,8 @@ describe('complex operand', () => {
   test(':currency result', () => {
     const mf = new MessageFormat(
       'en',
-      '.local $n = {42 :unit unit=meter trailingZeroDisplay=stripIfInteger} {{{$n :unit signDisplay=always}}}'
+      '.local $n = {42 :unit unit=meter trailingZeroDisplay=stripIfInteger} {{{$n :unit signDisplay=always}}}',
+      { functions: { unit } }
     );
     const nf = new Intl.NumberFormat('en', {
       signDisplay: 'always',
@@ -28,7 +31,7 @@ describe('complex operand', () => {
   });
 
   test('external variable', () => {
-    const mf = new MessageFormat('en', '{$n :unit}');
+    const mf = new MessageFormat('en', '{$n :unit}', { functions: { unit } });
     const nf = new Intl.NumberFormat('en', { style: 'unit', unit: 'meter' });
     const n = { valueOf: () => 42, options: { unit: 'meter' } };
     expect(mf.format({ n })).toEqual(nf.format(42));

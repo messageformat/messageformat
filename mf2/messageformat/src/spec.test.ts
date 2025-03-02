@@ -21,14 +21,18 @@ import {
   visit
 } from './index.js';
 
-import { testFunctions } from './functions/test-functions.js';
+import { DraftFunctions } from './functions/index.js';
+import { TestFunctions } from './functions/test-functions.js';
 
 const tests = (tc: Test) => () => {
+  const mfOpt: MessageFormatOptions = {
+    functions: { ...DraftFunctions, ...TestFunctions }
+  };
   switch (testType(tc)) {
     case 'syntax-error':
       describe('syntax error', () => {
         test('MessageFormat(string)', () => {
-          expect(() => new MessageFormat(undefined, tc.src)).toThrow(
+          expect(() => new MessageFormat(undefined, tc.src, mfOpt)).toThrow(
             MessageSyntaxError
           );
         });
@@ -44,7 +48,7 @@ const tests = (tc: Test) => () => {
     case 'data-model-error':
       describe('data model error', () => {
         test('MessageFormat(string)', () => {
-          expect(() => new MessageFormat(undefined, tc.src)).toThrow(
+          expect(() => new MessageFormat(undefined, tc.src, mfOpt)).toThrow(
             MessageSyntaxError
           );
         });
@@ -65,7 +69,6 @@ const tests = (tc: Test) => () => {
     default:
       test('format', () => {
         let errors: any[] = [];
-        const mfOpt: MessageFormatOptions = { functions: testFunctions };
         if (tc.bidiIsolation) mfOpt.bidiIsolation = tc.bidiIsolation;
         const mf = new MessageFormat(tc.locale, tc.src, mfOpt);
         const msg = mf.format(tc.params, err => errors.push(err));

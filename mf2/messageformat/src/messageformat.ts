@@ -5,35 +5,13 @@ import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.js';
 import { MessageDataModelError, MessageError } from './errors.js';
 import type { Context } from './format-context.js';
 import type { MessagePart } from './formatted-parts.js';
-import {
-  currency,
-  date,
-  datetime,
-  integer,
-  math,
-  number,
-  string,
-  time,
-  unit
-} from './functions/index.js';
+import { DefaultFunctions } from './functions/index.js';
 import { BIDI_ISOLATE, type MessageValue } from './message-value.js';
 import { formatMarkup } from './resolve/format-markup.js';
 import type { MessageFunctionContext } from './resolve/function-context.js';
 import { resolveExpression } from './resolve/resolve-expression.js';
 import { UnresolvedExpression } from './resolve/resolve-variable.js';
 import { selectPattern } from './select-pattern.js';
-
-const defaultFunctions = Object.freeze({
-  currency,
-  date,
-  datetime,
-  integer,
-  math,
-  number,
-  string,
-  time,
-  unit
-});
 
 /**
  * The runtime function registry available when resolving {@link FunctionRef} elements.
@@ -115,8 +93,8 @@ export class MessageFormat {
       throw new MessageDataModelError(type, node);
     });
     this.#functions = options?.functions
-      ? { ...defaultFunctions, ...options.functions }
-      : defaultFunctions;
+      ? { ...DefaultFunctions, ...options.functions }
+      : DefaultFunctions;
   }
 
   format(

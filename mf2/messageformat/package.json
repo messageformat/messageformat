@@ -32,9 +32,6 @@
     "./functions": {
       "default": "./lib/functions/index.js"
     },
-    "./functions/utils": {
-      "default": "./lib/functions/utils.js"
-    },
     "./package.json": "./package.json"
   },
   "scripts": {

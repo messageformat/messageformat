@@ -1,3 +1,4 @@
+import { datetime } from '../functions/datetime.js';
 import {
   MessageFormat,
   MessageFunctions,
@@ -81,12 +82,14 @@ describe('Type casts based on runtime', () => {
   test('boolean function option with literal value', () => {
     const mfTrue = new MessageFormat(
       'en',
-      '{$date :datetime timeStyle=short hour12=true}'
+      '{$date :datetime timeStyle=short hour12=true}',
+      { functions: { datetime } }
     );
     expect(mfTrue.format({ date })).toMatch(/3:00/);
     const mfFalse = new MessageFormat(
       'en',
-      '{$date :datetime timeStyle=short hour12=false}'
+      '{$date :datetime timeStyle=short hour12=false}',
+      { functions: { datetime } }
     );
     expect(mfFalse.format({ date })).toMatch(/15:00/);
   });
@@ -94,7 +97,8 @@ describe('Type casts based on runtime', () => {
   test('boolean function option with variable value', () => {
     const mf = new MessageFormat(
       'en',
-      '{$date :datetime timeStyle=short hour12=$hour12}'
+      '{$date :datetime timeStyle=short hour12=$hour12}',
+      { functions: { datetime } }
     );
     expect(mf.format({ date, hour12: 'false' })).toMatch(/15:00/);
     expect(mf.format({ date, hour12: false })).toMatch(/15:00/);

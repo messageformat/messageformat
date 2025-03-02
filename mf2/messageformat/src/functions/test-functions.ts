@@ -21,7 +21,7 @@ interface TestValue extends MessageValue {
   };
 }
 
-export const testFunctions: Record<string, typeof testFunction> = {
+export const TestFunctions: Record<string, typeof testFunction> = {
   'test:format': (ctx, options, input) =>
     testFunction(ctx, { ...options, canFormat: true, canSelect: false }, input),
   'test:function': (ctx, options, input) =>
@@ -101,7 +101,6 @@ function testFunction(
   return {
     type: 'test',
     source,
-    locale: 'und',
     get options() {
       return { ...opt };
     },

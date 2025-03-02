@@ -1,11 +1,13 @@
 import { MessageFormat } from '../index.js';
+import { currency } from './currency.js';
 
 describe('fractionDigits', () => {
   for (const fd of [0, 2, 'auto' as const]) {
     test(`fractionDigits=${fd}`, () => {
       const mf = new MessageFormat(
         'en',
-        `{42 :currency currency=EUR fractionDigits=${fd}}`
+        `{42 :currency currency=EUR fractionDigits=${fd}}`,
+        { functions: { currency } }
       );
       const nf = new Intl.NumberFormat('en', {
         style: 'currency',
@@ -32,7 +34,8 @@ describe('currencyDisplay', () => {
     test(`currencyDisplay=${cd}`, () => {
       const mf = new MessageFormat(
         'en',
-        `{42 :currency currency=EUR currencyDisplay=${cd}}`
+        `{42 :currency currency=EUR currencyDisplay=${cd}}`,
+        { functions: { currency } }
       );
       const nf = new Intl.NumberFormat('en', {
         style: 'currency',
@@ -59,7 +62,8 @@ describe('currencyDisplay', () => {
 test('selection', () => {
   const mf = new MessageFormat(
     'en',
-    '.local $n = {42 :currency currency=EUR} .match $n 42 {{exact}} * {{other}}'
+    '.local $n = {42 :currency currency=EUR} .match $n 42 {{exact}} * {{other}}',
+    { functions: { currency } }
   );
   const onError = jest.fn();
   expect(mf.format(undefined, onError)).toEqual('other');
@@ -70,7 +74,8 @@ describe('complex operand', () => {
   test(':currency result', () => {
     const mf = new MessageFormat(
       'en',
-      '.local $n = {-42 :currency currency=USD trailingZeroDisplay=stripIfInteger} {{{$n :currency currencySign=accounting}}}'
+      '.local $n = {-42 :currency currency=USD trailingZeroDisplay=stripIfInteger} {{{$n :currency currencySign=accounting}}}',
+      { functions: { currency } }
     );
     const nf = new Intl.NumberFormat('en', {
       style: 'currency',
@@ -86,7 +91,9 @@ describe('complex operand', () => {
   });
 
   test('external variable', () => {
-    const mf = new MessageFormat('en', '{$n :currency}');
+    const mf = new MessageFormat('en', '{$n :currency}', {
+      functions: { currency }
+    });
     const nf = new Intl.NumberFormat('en', {
       style: 'currency',
       currency: 'EUR'
