@@ -1,4 +1,4 @@
-import type { Context } from '../format-context';
+import type { Context } from '../format-context.js';
 import { lookupVariableRef } from './resolve-variable.js';
 import type { Literal, VariableRef } from '../data-model/types.js';
 

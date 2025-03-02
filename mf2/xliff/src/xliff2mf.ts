@@ -1,8 +1,8 @@
 import deepEqual from 'fast-deep-equal';
 import type * as MF from 'messageformat';
-import type * as X from './xliff-spec';
-import { parse } from './xliff';
-import { fromNmtoken } from './nmtoken';
+import type * as X from './xliff-spec.js';
+import { parse } from './xliff.js';
+import { fromNmtoken } from './nmtoken.js';
 
 export type ParsedUnit = {
   /** The same `file` object is used for all units in the same file. */

@@ -1,9 +1,9 @@
 import type { Message } from 'messageformat';
 
-export { mf2xliff } from './mf2xliff';
-export { parse, stringify } from './xliff';
-export { xliff2mf } from './xliff2mf';
-export * from './xliff-spec';
+export { mf2xliff } from './mf2xliff.js';
+export { parse, stringify } from './xliff.js';
+export { xliff2mf } from './xliff2mf.js';
+export * from './xliff-spec.js';
 
 export type MessageResourceData = Map<string, Message | MessageResourceData>;
 
