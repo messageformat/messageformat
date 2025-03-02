@@ -29,7 +29,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     const value = `${start} - ${end}`;
     return {
       type: 'range',
-      locale,
+      dir: 'ltr',
       source,
       selectKey(keys) {
         if (locale !== 'nl') throw new Error('Only Dutch supported');
@@ -147,7 +147,9 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       AREA: String(undefined),
       Q: String(undefined)
     });
-    expect(one.replace(/\s+/g, ' ').trim()).toBe('Listing one foo item');
+    expect(one.replace(/\s+/g, ' ').trim()).toBe(
+      'Listing one \u2068foo\u2069 item'
+    );
 
     const two = mf.format({
       N: 2,
@@ -159,7 +161,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       Q: '"bar"'
     });
     expect(two.replace(/\s+/g, ' ').trim()).toBe(
-      'Listing 2 current and future foo items in there matching the query "bar"'
+      'Listing 2 current and future \u2068foo\u2069 items in \u2068there\u2069 matching the query \u2068"bar"\u2069'
     );
   });
 
@@ -227,7 +229,7 @@ maybe('List formatting', () => {
       return {
         type: 'list',
         source,
-        locale: lf.resolvedOptions().locale,
+        dir: 'ltr',
         toParts: () =>
           lf.formatToParts(list).map(part => Object.assign(part, { source })),
         toString: () => lf.format(list)
@@ -325,14 +327,20 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'literal', value: 'A ' },
+      { type: 'bidiIsolation', value: '\u2068' },
       { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
+      { type: 'bidiIsolation', value: '\u2069' },
       { type: 'literal', value: ' and an ' },
-      { type: 'string', locale: 'en', source: '$other', value: 'other' }
+      { type: 'bidiIsolation', value: '\u2068' },
+      { type: 'string', locale: 'en', source: '$other', value: 'other' },
+      { type: 'bidiIsolation', value: '\u2069' }
     ]);
   });
 
   test('Match, changed', () => {
-    const mf = new MessageFormat('en', 'A {$foo} and an {$other}');
+    const mf = new MessageFormat('en', 'A {$foo} and an {$other}', {
+      bidiIsolation: 'none'
+    });
     const parts = mf.formatToParts({ foo: 'other', other: 'foo' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
@@ -344,7 +352,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('No match, no change', () => {
-    const mf = new MessageFormat('en', 'The {$foo} and lotsa {$other}');
+    const mf = new MessageFormat('en', 'The {$foo} and lotsa {$other}', {
+      bidiIsolation: 'none'
+    });
     const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
@@ -356,7 +366,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   });
 
   test('Articles across non-wordy content', () => {
-    const mf = new MessageFormat('en', '{$foo} foo and a {|...|} {$other}');
+    const mf = new MessageFormat('en', '{$foo} foo and a {|...|} {$other}', {
+      bidiIsolation: 'none'
+    });
     const parts = mf.formatToParts({ foo: 'An', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
