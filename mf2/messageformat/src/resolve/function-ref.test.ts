@@ -62,18 +62,6 @@ describe('inputs with options', () => {
     });
     expect(parts).toEqual(nf.formatToParts(12345678));
   });
-
-  test('u:locale value take precedence', () => {
-    const mf = new MessageFormat(
-      'en',
-      '{$val :number minimumFractionDigits=2 u:locale=ar}'
-    );
-    const msg = mf.formatToParts({ val: 12345 });
-    const { parts } = msg[1] as MessageNumberPart;
-
-    const ar = new Intl.NumberFormat('ar', { minimumFractionDigits: 2 });
-    expect(parts).toEqual(ar.formatToParts(12345));
-  });
 });
 
 describe('Type casts based on runtime', () => {

@@ -14,7 +14,7 @@ export function formatMarkup(
   if (options?.size) {
     part.options = {};
     for (const [name, value] of options) {
-      if (name === 'u:dir' || name === 'u:locale') {
+      if (name === 'u:dir') {
         const msg = `The option ${name} is not valid for markup`;
         const optSource = getValueSource(value);
         ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
