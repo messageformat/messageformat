@@ -22,6 +22,7 @@
     "directory": "packages/mf2-messageformat"
   },
   "main": "lib/index.js",
+  "type": "module",
   "files": [
     "lib/"
   ],
@@ -31,9 +32,6 @@
     },
     "./functions": {
       "default": "./lib/functions/index.js"
-    },
-    "./functions/utils": {
-      "default": "./lib/functions/utils.js"
     },
     "./package.json": "./package.json"
   },

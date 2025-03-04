@@ -1,9 +1,9 @@
-import { MessageSyntaxError } from '../errors.js';
-import { parseNameValue } from './names.js';
-import type { ParseContext } from './parse-cst.js';
-import type * as CST from './types.js';
-import { whitespaces } from './util.js';
-import { parseLiteral, parseVariable } from './values.js';
+import { MessageSyntaxError } from '../errors.ts';
+import { parseNameValue } from './names.ts';
+import type { ParseContext } from './parse-cst.ts';
+import type * as CST from './types.ts';
+import { whitespaces } from './util.ts';
+import { parseLiteral, parseVariable } from './values.ts';
 
 export function parseExpression(
   ctx: ParseContext,

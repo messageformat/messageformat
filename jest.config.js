@@ -14,8 +14,6 @@ module.exports = {
     '^messageformat$': '<rootDir>/mf2/messageformat/src/index.ts',
     '^messageformat/functions$':
       '<rootDir>/mf2/messageformat/src/functions/index.ts',
-    '^messageformat/functions/utils$':
-      '<rootDir>/mf2/messageformat/src/functions/utils.ts',
     '^@messageformat/core$': '<rootDir>/mf1/packages/core/src/messageformat.ts',
     '^@messageformat/core/compile-module$':
       '<rootDir>/mf1/packages/core/src/compile-module.ts',

@@ -1,5 +1,3 @@
-export { getLocaleDir } from '../dir-utils.js';
-
 /**
  * Utility function for custom functions.
  * Cast a value as a Boolean,

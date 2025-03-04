@@ -1,9 +1,9 @@
-import { getLocaleDir } from '../dir-utils.js';
-import { MessageResolutionError } from '../errors.js';
-import type { MessageExpressionPart } from '../formatted-parts.js';
-import type { MessageValue } from '../message-value.js';
-import type { MessageFunctionContext } from '../resolve/function-context.js';
-import { asPositiveInteger, asString } from './utils.js';
+import { getLocaleDir } from '../dir-utils.ts';
+import { MessageResolutionError } from '../errors.ts';
+import type { MessageExpressionPart } from '../formatted-parts.ts';
+import type { MessageValue } from '../message-value.ts';
+import type { MessageFunctionContext } from '../resolve/function-context.ts';
+import { asPositiveInteger, asString } from './utils.ts';
 
 /** @beta */
 export interface MessageNumber extends MessageValue {
@@ -23,7 +23,7 @@ export interface MessageNumber extends MessageValue {
    * For example, cardinal English plurals only use `one` and `other`,
    * so a key `zero` will never be matched for that locale.
    */
-  selectKey(keys: Set<string>): string | null;
+  selectKey?: (keys: Set<string>) => string | null;
   toParts?: () => [MessageNumberPart];
   toString?: () => string;
   valueOf(): number | bigint;
@@ -37,7 +37,8 @@ export interface MessageNumberPart extends MessageExpressionPart {
   parts: Intl.NumberFormatPart[];
 }
 
-const INT = Symbol('INT');
+export type MessageNumberOptions = Intl.NumberFormatOptions &
+  Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' };
 
 export function readNumericOperand(
   value: unknown,
@@ -65,68 +66,26 @@ export function readNumericOperand(
   return { value, options };
 }
 
-/**
- * `number` accepts a number, BigInt or string representing a JSON number as input
- * and formats it with the same options as
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
- * It also supports plural category selection via
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- *
- * @beta
- */
-export function number(
+export function getMessageNumber(
   ctx: MessageFunctionContext,
-  exprOpt: Record<string | symbol, unknown>,
-  operand?: unknown
+  value: number | bigint,
+  options: MessageNumberOptions,
+  canSelect: boolean
 ): MessageNumber {
-  const { locales, source } = ctx;
-  const options: Intl.NumberFormatOptions &
-    Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' } = {
-    localeMatcher: ctx.localeMatcher
-  };
-  const input = readNumericOperand(operand, source);
-  const value = input.value;
-  Object.assign(options, input.options);
-
-  for (const [name, optval] of Object.entries(exprOpt)) {
-    if (optval === undefined) continue;
-    try {
-      switch (name) {
-        case 'locale':
-        case 'type': // used internally by Intl.PluralRules, but called 'select' here
-          break;
-        case 'minimumIntegerDigits':
-        case 'minimumFractionDigits':
-        case 'maximumFractionDigits':
-        case 'minimumSignificantDigits':
-        case 'maximumSignificantDigits':
-        case 'roundingIncrement':
-          // @ts-expect-error TS types don't know about roundingIncrement
-          options[name] = asPositiveInteger(optval);
-          break;
-        case 'useGrouping': {
-          const strval = asString(optval);
-          // @ts-expect-error TS type is wrong
-          options[name] = strval === 'never' ? false : strval;
-          break;
-        }
-        default:
-          // @ts-expect-error Unknown options will be ignored
-          options[name] = asString(optval);
-      }
-    } catch {
-      const msg = `Value ${optval} is not valid for :number option ${name}`;
-      ctx.onError(new MessageResolutionError('bad-option', msg, source));
-    }
+  let { dir, locales, source } = ctx;
+  // @ts-expect-error We may have been a bit naughty earlier.
+  if (options.useGrouping === 'never') options.useGrouping = false;
+  if (
+    canSelect &&
+    'select' in options &&
+    !ctx.literalOptionKeys.has('select')
+  ) {
+    const msg = 'The option select may only be set by a literal value';
+    ctx.onError(new MessageResolutionError('bad-option', msg, source));
+    canSelect = false;
   }
 
-  const num =
-    Number.isFinite(value) && exprOpt[INT]
-      ? Math.round(value as number)
-      : value;
-
   let locale: string | undefined;
-  let dir = ctx.dir;
   let nf: Intl.NumberFormat | undefined;
   let cat: Intl.LDMLPluralRule | undefined;
   let str: string | undefined;
@@ -143,20 +102,24 @@ export function number(
     get options() {
       return { ...options };
     },
-    selectKey(keys) {
-      const str = String(num);
-      if (keys.has(str)) return str;
-      if (options.select === 'exact') return null;
-      const pluralOpt = options.select
-        ? { ...options, select: undefined, type: options.select }
-        : options;
-      // Intl.PluralRules needs a number, not bigint
-      cat ??= new Intl.PluralRules(locales, pluralOpt).select(Number(num));
-      return keys.has(cat) ? cat : null;
-    },
+    selectKey: canSelect
+      ? keys => {
+          const str = String(value);
+          if (keys.has(str)) return str;
+          if (options.select === 'exact') return null;
+          const pluralOpt = options.select
+            ? { ...options, select: undefined, type: options.select }
+            : options;
+          // Intl.PluralRules needs a number, not bigint
+          cat ??= new Intl.PluralRules(locales, pluralOpt).select(
+            Number(value)
+          );
+          return keys.has(cat) ? cat : null;
+        }
+      : undefined,
     toParts() {
       nf ??= new Intl.NumberFormat(locales, options);
-      const parts = nf.formatToParts(num);
+      const parts = nf.formatToParts(value);
       locale ??= nf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
       return dir === 'ltr' || dir === 'rtl'
@@ -165,31 +128,110 @@ export function number(
     },
     toString() {
       nf ??= new Intl.NumberFormat(locales, options);
-      str ??= nf.format(num);
+      str ??= nf.format(value);
       return str;
     },
-    valueOf: () => num
+    valueOf: () => value
   };
 }
 
 /**
- * `integer` accepts a number, BigInt or string representing a JSON number as input
- * and formats it with the same options as
+ * `number` accepts a number, BigInt or string representing a JSON number as input
+ * and formats it with a subset of the options of
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
  * It also supports plural category selection via
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
  *
- * The `maximumFractionDigits=0` and `style='decimal'` options are fixed for `:integer`.
+ * @beta
+ */
+export function number(
+  ctx: MessageFunctionContext,
+  exprOpt: Record<string, unknown>,
+  operand?: unknown
+): MessageNumber {
+  const input = readNumericOperand(operand, ctx.source);
+  const value = input.value;
+  const options: MessageNumberOptions = Object.assign({}, input.options, {
+    localeMatcher: ctx.localeMatcher,
+    style: 'decimal'
+  } as const);
+
+  for (const [name, optval] of Object.entries(exprOpt)) {
+    if (optval === undefined) continue;
+    try {
+      switch (name) {
+        case 'minimumIntegerDigits':
+        case 'minimumFractionDigits':
+        case 'maximumFractionDigits':
+        case 'minimumSignificantDigits':
+        case 'maximumSignificantDigits':
+        case 'roundingIncrement':
+          // @ts-expect-error TS types don't know about roundingIncrement
+          options[name] = asPositiveInteger(optval);
+          break;
+        case 'roundingMode':
+        case 'roundingPriority':
+        case 'select': // Called 'type' in Intl.PluralRules
+        case 'signDisplay':
+        case 'trailingZeroDisplay':
+        case 'useGrouping':
+          // @ts-expect-error Let Intl.NumberFormat construction fail
+          options[name] = asString(optval);
+      }
+    } catch {
+      const msg = `Value ${optval} is not valid for :number option ${name}`;
+      ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+    }
+  }
+
+  return getMessageNumber(ctx, value, options, true);
+}
+
+/**
+ * `integer` accepts a number, BigInt or string representing a JSON number as input
+ * and formats it with a subset of the options of
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
+ * It also supports plural category selection via
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
  *
  * @beta
  */
-export const integer = (
+export function integer(
   ctx: MessageFunctionContext,
-  options: Record<string, unknown>,
-  input?: unknown
-) =>
-  number(
-    ctx,
-    { ...options, maximumFractionDigits: 0, style: 'decimal', [INT]: true },
-    input
-  );
+  exprOpt: Record<string, unknown>,
+  operand?: unknown
+) {
+  const input = readNumericOperand(operand, ctx.source);
+  const value = Number.isFinite(input.value)
+    ? Math.round(input.value as number)
+    : input.value;
+  const options: MessageNumberOptions = Object.assign({}, input.options, {
+    //localeMatcher: ctx.localeMatcher,
+    maximumFractionDigits: 0,
+    minimumFractionDigits: undefined,
+    minimumSignificantDigits: undefined,
+    style: 'decimal'
+  } as const);
+
+  for (const [name, optval] of Object.entries(exprOpt)) {
+    if (optval === undefined) continue;
+    try {
+      switch (name) {
+        case 'minimumIntegerDigits':
+        case 'maximumSignificantDigits':
+          options[name] = asPositiveInteger(optval);
+          break;
+        case 'select': // Called 'type' in Intl.PluralRules
+        case 'signDisplay':
+        case 'useGrouping':
+          // @ts-expect-error Let Intl.NumberFormat construction fail
+          options[name] = asString(optval);
+      }
+    } catch {
+      const msg = `Value ${optval} is not valid for :integer option ${name}`;
+      ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+    }
+  }
+
+  return getMessageNumber(ctx, value, options, true);
+}

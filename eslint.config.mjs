@@ -69,6 +69,22 @@ export default [
     }
   },
   {
+    files: ['mf2/**/*ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^\\..*(?<!\\.ts)$',
+              message: 'Relative imports must use .ts extension.'
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     files: ['test/browser/tests/*.js'],
     languageOptions: { globals: { ...globals.mocha } }
   },

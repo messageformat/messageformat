@@ -22,6 +22,7 @@
     "directory": "packages/xliff"
   },
   "main": "lib/index.js",
+  "type": "module",
   "files": [
     "lib/"
   ],

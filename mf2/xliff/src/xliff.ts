@@ -1,5 +1,5 @@
-import type { Xliff, XliffDoc } from './xliff-spec';
-import { parseXML, stringifyXML } from './xml';
+import type { Xliff, XliffDoc } from './xliff-spec.ts';
+import { parseXML, stringifyXML } from './xml.ts';
 
 export function parse(src: string) {
   const doc = parseXML(src);

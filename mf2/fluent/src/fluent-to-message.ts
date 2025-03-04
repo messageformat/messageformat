@@ -149,6 +149,24 @@ function asExpression(exp: Fluent.Expression): Expression {
           });
         }
       }
+      if (annotation.name === 'number') {
+        const style = annotation.options?.get('style');
+        if (style?.type === 'literal') {
+          switch (style.value) {
+            case 'decimal':
+              break;
+            case 'currency':
+            case 'unit':
+              annotation.name = style.value;
+              break;
+            default:
+              throw new Error(
+                `Unsupported NUMBER(..., style=${JSON.stringify(style.value)})`
+              );
+          }
+          annotation.options!.delete('style');
+        }
+      }
       return args.length > 0
         ? { type: 'expression', arg: args[0], functionRef: annotation }
         : { type: 'expression', functionRef: annotation };

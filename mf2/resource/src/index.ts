@@ -1,1 +1,1 @@
-export { CST, parseCST } from './cst-parser.js';
+export { CST, parseCST } from './cst-parser.ts';

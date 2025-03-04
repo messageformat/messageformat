@@ -3,12 +3,12 @@ import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import {
   FluentToMessageOptions,
   fluentToMessage
-} from './fluent-to-message.js';
-import { getFluentFunctions } from './functions.js';
+} from './fluent-to-message.ts';
+import { getFluentFunctions } from './functions.ts';
 import type {
   FluentMessageResource,
   FluentMessageResourceData
-} from './index.js';
+} from './index.ts';
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of

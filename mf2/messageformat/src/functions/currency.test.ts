@@ -1,11 +1,13 @@
-import { MessageFormat } from '../index.js';
+import { MessageFormat } from '../index.ts';
+import { currency } from './currency.ts';
 
 describe('fractionDigits', () => {
   for (const fd of [0, 2, 'auto' as const]) {
     test(`fractionDigits=${fd}`, () => {
       const mf = new MessageFormat(
         'en',
-        `{42 :currency currency=EUR fractionDigits=${fd}}`
+        `{42 :currency currency=EUR fractionDigits=${fd}}`,
+        { functions: { currency } }
       );
       const nf = new Intl.NumberFormat('en', {
         style: 'currency',
@@ -27,26 +29,25 @@ describe('currencyDisplay', () => {
     'symbol',
     'name',
     'code',
-    'formalSymbol',
     'never'
-  ]) {
+  ] as const) {
     test(`currencyDisplay=${cd}`, () => {
       const mf = new MessageFormat(
         'en',
-        `{42 :currency currency=EUR currencyDisplay=${cd}}`
+        `{42 :currency currency=EUR currencyDisplay=${cd}}`,
+        { functions: { currency } }
       );
       const nf = new Intl.NumberFormat('en', {
         style: 'currency',
         currency: 'EUR',
-        currencyDisplay:
-          cd === 'formalSymbol' || cd === 'never' ? undefined : cd
+        currencyDisplay: cd === 'never' ? undefined : cd
       });
       const onError = jest.fn();
       expect(mf.format(undefined, onError)).toEqual(nf.format(42));
       expect(mf.formatToParts(undefined, onError)).toMatchObject([
         { parts: nf.formatToParts(42) }
       ]);
-      if (cd === 'formalSymbol' || cd === 'never') {
+      if (cd === 'never') {
         expect(onError.mock.calls).toMatchObject([
           [{ type: 'unsupported-operation' }],
           [{ type: 'unsupported-operation' }]
@@ -58,21 +59,23 @@ describe('currencyDisplay', () => {
   }
 });
 
-test('select=ordinal', () => {
+test('selection', () => {
   const mf = new MessageFormat(
     'en',
-    '.local $n = {42 :currency currency=EUR select=ordinal} .match $n * {{res}}'
+    '.local $n = {42 :currency currency=EUR} .match $n 42 {{exact}} * {{other}}',
+    { functions: { currency } }
   );
   const onError = jest.fn();
-  expect(mf.format(undefined, onError)).toEqual('res');
-  expect(onError.mock.calls).toMatchObject([[{ type: 'bad-option' }]]);
+  expect(mf.format(undefined, onError)).toEqual('other');
+  expect(onError.mock.calls).toMatchObject([[{ type: 'bad-selector' }]]);
 });
 
 describe('complex operand', () => {
   test(':currency result', () => {
     const mf = new MessageFormat(
       'en',
-      '.local $n = {-42 :currency currency=USD trailingZeroDisplay=stripIfInteger} {{{$n :currency currencySign=accounting}}}'
+      '.local $n = {-42 :currency currency=USD trailingZeroDisplay=stripIfInteger} {{{$n :currency currencySign=accounting}}}',
+      { functions: { currency } }
     );
     const nf = new Intl.NumberFormat('en', {
       style: 'currency',
@@ -88,7 +91,9 @@ describe('complex operand', () => {
   });
 
   test('external variable', () => {
-    const mf = new MessageFormat('en', '{$n :currency}');
+    const mf = new MessageFormat('en', '{$n :currency}', {
+      functions: { currency }
+    });
     const nf = new Intl.NumberFormat('en', {
       style: 'currency',
       currency: 'EUR'

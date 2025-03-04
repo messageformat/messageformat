@@ -1,8 +1,8 @@
-import { MessageResolutionError } from '../errors.js';
-import type { Context } from '../format-context.js';
-import type { MessageMarkupPart } from '../formatted-parts.js';
-import { getValueSource, resolveValue } from './resolve-value.js';
-import type { Markup } from '../data-model/types.js';
+import { MessageResolutionError } from '../errors.ts';
+import type { Context } from '../format-context.ts';
+import type { MessageMarkupPart } from '../formatted-parts.ts';
+import { getValueSource, resolveValue } from './resolve-value.ts';
+import type { Markup } from '../data-model/types.ts';
 
 export function formatMarkup(
   ctx: Context,
@@ -14,7 +14,7 @@ export function formatMarkup(
   if (options?.size) {
     part.options = {};
     for (const [name, value] of options) {
-      if (name === 'u:dir' || name === 'u:locale') {
+      if (name === 'u:dir') {
         const msg = `The option ${name} is not valid for markup`;
         const optSource = getValueSource(value);
         ctx.onError(new MessageResolutionError('bad-option', msg, optSource));

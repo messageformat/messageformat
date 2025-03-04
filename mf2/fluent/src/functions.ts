@@ -1,11 +1,11 @@
-import type { MessagePart } from 'messageformat';
+import type { MessageFunctions, MessagePart } from 'messageformat';
 import type {
   MessageFunctionContext,
   MessageValue
 } from 'messageformat/functions';
-import { getLocaleDir } from 'messageformat/functions/utils';
-import type { FluentMessageResource } from './index.js';
-import { valueToMessageRef } from './message-to-fluent.js';
+import { DraftFunctions, getLocaleDir } from 'messageformat/functions';
+import type { FluentMessageResource } from './index.ts';
+import { valueToMessageRef } from './message-to-fluent.ts';
 
 /**
  * Build a {@link messageformat#MessageFormat} runtime to use with Fluent messages.
@@ -20,7 +20,9 @@ import { valueToMessageRef } from './message-to-fluent.js';
  * @param res - A Map of MessageFormat instances, for use by `MESSAGE`.
  *   This Map may be passed in as initially empty, and later filled out by the caller.
  */
-export function getFluentFunctions(res: FluentMessageResource) {
+export function getFluentFunctions(
+  res: FluentMessageResource
+): MessageFunctions {
   function message(
     ctx: MessageFunctionContext,
     options: Record<string, unknown>,
@@ -63,5 +65,9 @@ export function getFluentFunctions(res: FluentMessageResource) {
   }
   Object.freeze(message);
 
-  return { 'fluent:message': message };
+  return {
+    currency: DraftFunctions.currency,
+    unit: DraftFunctions.unit,
+    'fluent:message': message
+  };
 }

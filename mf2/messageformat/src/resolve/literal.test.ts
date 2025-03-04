@@ -1,4 +1,4 @@
-import { MessageFormat } from '../index.js';
+import { MessageFormat } from '../index.ts';
 
 function resolve(source: string, errors: any[] = []) {
   const mf = new MessageFormat(undefined, source);

@@ -1,8 +1,9 @@
+import { datetime } from '../functions/datetime.ts';
 import {
   MessageFormat,
   MessageFunctions,
   MessageNumberPart
-} from '../index.js';
+} from '../index.ts';
 
 test('Custom function', () => {
   const functions = {
@@ -61,18 +62,6 @@ describe('inputs with options', () => {
     });
     expect(parts).toEqual(nf.formatToParts(12345678));
   });
-
-  test('u:locale value take precedence', () => {
-    const mf = new MessageFormat(
-      'en',
-      '{$val :number minimumFractionDigits=2 u:locale=ar}'
-    );
-    const msg = mf.formatToParts({ val: 12345 });
-    const { parts } = msg[1] as MessageNumberPart;
-
-    const ar = new Intl.NumberFormat('ar', { minimumFractionDigits: 2 });
-    expect(parts).toEqual(ar.formatToParts(12345));
-  });
 });
 
 describe('Type casts based on runtime', () => {
@@ -81,12 +70,14 @@ describe('Type casts based on runtime', () => {
   test('boolean function option with literal value', () => {
     const mfTrue = new MessageFormat(
       'en',
-      '{$date :datetime timeStyle=short hour12=true}'
+      '{$date :datetime timeStyle=short hour12=true}',
+      { functions: { datetime } }
     );
     expect(mfTrue.format({ date })).toMatch(/3:00/);
     const mfFalse = new MessageFormat(
       'en',
-      '{$date :datetime timeStyle=short hour12=false}'
+      '{$date :datetime timeStyle=short hour12=false}',
+      { functions: { datetime } }
     );
     expect(mfFalse.format({ date })).toMatch(/15:00/);
   });
@@ -94,7 +85,8 @@ describe('Type casts based on runtime', () => {
   test('boolean function option with variable value', () => {
     const mf = new MessageFormat(
       'en',
-      '{$date :datetime timeStyle=short hour12=$hour12}'
+      '{$date :datetime timeStyle=short hour12=$hour12}',
+      { functions: { datetime } }
     );
     expect(mf.format({ date, hour12: 'false' })).toMatch(/15:00/);
     expect(mf.format({ date, hour12: false })).toMatch(/15:00/);

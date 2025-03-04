@@ -1,89 +1,34 @@
-const bidiChars = new Set([
-  0x061c, // ALM
-  0x200e, // LRM
-  0x200f, // RLM
-  0x2066, // LRI
-  0x2067, // RLI
-  0x2068, // FSI
-  0x2069 // PDI
-]);
-
-const isNameStartCode = (cc: number) =>
-  (cc >= 0x41 && cc <= 0x5a) || // A-Z
-  cc === 0x5f || // _
-  (cc >= 0x61 && cc <= 0x7a) || // a-z
-  (cc >= 0xc0 && cc <= 0xd6) || // À-Ö
-  (cc >= 0xd8 && cc <= 0xf6) || // Ø-ö
-  (cc >= 0xf8 && cc <= 0x2ff) ||
-  (cc >= 0x370 && cc <= 0x37d) ||
-  (cc >= 0x37f && cc <= 0x61b) ||
-  (cc >= 0x61d && cc <= 0x1fff) ||
-  (cc >= 0x200c && cc <= 0x200d) ||
-  (cc >= 0x2070 && cc <= 0x2187) ||
-  (cc >= 0x2c00 && cc <= 0x2fef) ||
-  (cc >= 0x3001 && cc <= 0xd7ff) ||
-  (cc >= 0xf900 && cc <= 0xfdcf) ||
-  (cc >= 0xfdf0 && cc <= 0xfffd) ||
-  (cc >= 0x10000 && cc <= 0xeffff);
-
-const isNameCharCode = (cc: number) =>
-  isNameStartCode(cc) ||
-  cc === 0x2d || // -
-  cc === 0x2e || // .
-  (cc >= 0x30 && cc <= 0x39) || // 0-9
-  cc === 0xb7 || // ·
-  (cc >= 0x300 && cc <= 0x36f) ||
-  cc === 0x203f || // ‿
-  cc === 0x2040; // ⁀
-
-// This is sticky so that parsing doesn't need to substring the source
-const numberLiteral = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][-+]?\d+)?/y;
+const bidiChars = /^[\u061c\u200e\u200f\u2066-\u2069]+/;
+const nameChars =
+  /^[-.+0-9A-Z_a-z\u{a1}-\u{61b}\u{61d}-\u{167f}\u{1681}-\u{1fff}\u{200b}-\u{200d}\u{2010}-\u{2027}\u{2030}-\u{205e}\u{2060}-\u{2065}\u{206a}-\u{2fff}\u{3001}-\u{d7ff}\u{e000}-\u{fdcf}\u{fdf0}-\u{fffd}\u{10000}-\u{1fffd}\u{20000}-\u{2fffd}\u{30000}-\u{3fffd}\u{40000}-\u{4fffd}\u{50000}-\u{5fffd}\u{60000}-\u{6fffd}\u{70000}-\u{7fffd}\u{80000}-\u{8fffd}\u{90000}-\u{9fffd}\u{a0000}-\u{afffd}\u{b0000}-\u{bfffd}\u{c0000}-\u{cfffd}\u{d0000}-\u{dfffd}\u{e0000}-\u{efffd}\u{f0000}-\u{ffffd}\u{100000}-\u{10fffd}]+/u;
+const notNameStart = /^[-.0-9]/;
 
 export function parseNameValue(
-  src: string,
+  source: string,
   start: number
 ): { value: string; end: number } | null {
   let pos = start;
-  let nameStart = start;
-  let cc = src.charCodeAt(start);
-  if (bidiChars.has(cc)) {
-    pos += 1;
-    nameStart += 1;
-    cc = src.charCodeAt(pos);
-  }
-  if (!isNameStartCode(cc)) return null;
-  cc = src.charCodeAt(++pos);
-  while (isNameCharCode(cc)) cc = src.charCodeAt(++pos);
-  const value = src.substring(nameStart, pos).normalize();
-  if (bidiChars.has(cc)) pos += 1;
-  return { value, end: pos };
+  const startBidi = source.slice(pos).match(bidiChars);
+  if (startBidi) pos += startBidi[0].length;
+
+  const match = source.slice(pos).match(nameChars);
+  if (!match) return null;
+  const name = match[0];
+  if (notNameStart.test(name)) return null;
+  pos += name.length;
+
+  const endBidi = source.slice(pos).match(bidiChars);
+  if (endBidi) pos += endBidi[0].length;
+
+  return { value: name.normalize(), end: pos };
 }
 
 export function isValidUnquotedLiteral(str: string): boolean {
-  numberLiteral.lastIndex = 0;
-  const num = numberLiteral.exec(str);
-  if (num && num[0].length === str.length) return true;
-
-  if (!isNameStartCode(str.charCodeAt(0))) return false;
-  for (let i = 1; i < str.length; ++i) {
-    const cc = str.charCodeAt(i);
-    if (!isNameCharCode(cc)) return false;
-  }
-  return str.length > 0;
+  const match = str.match(nameChars);
+  return !!match && match[0].length === str.length;
 }
 
-export function parseUnquotedLiteralValue(
+export const parseUnquotedLiteralValue = (
   source: string,
   start: number
-): string {
-  numberLiteral.lastIndex = start;
-  const num = numberLiteral.exec(source);
-  if (num) return num[0];
-
-  let pos = start;
-  if (isNameStartCode(source.charCodeAt(pos))) {
-    pos += 1;
-    while (isNameCharCode(source.charCodeAt(pos))) pos += 1;
-  }
-  return source.substring(start, pos);
-}
+): string => source.slice(start).match(nameChars)?.[0] ?? '';

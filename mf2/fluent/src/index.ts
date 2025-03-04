@@ -25,15 +25,15 @@ export type FluentMessageResourceData = Map<string, Map<string, Message>>;
 export {
   type FluentToMessageOptions,
   fluentToMessage
-} from './fluent-to-message.js';
+} from './fluent-to-message.ts';
 export {
   fluentToResource,
   fluentToResourceData
-} from './fluent-to-resource.js';
+} from './fluent-to-resource.ts';
 export {
   defaultFunctionMap,
   FluentMessageRef,
   messageToFluent
-} from './message-to-fluent.js';
-export { resourceToFluent } from './resource-to-fluent.js';
-export { getFluentFunctions } from './functions.js';
+} from './message-to-fluent.ts';
+export { resourceToFluent } from './resource-to-fluent.ts';
+export { getFluentFunctions } from './functions.ts';

@@ -200,6 +200,22 @@ function functionRefToFluent(
     return new Fluent.FunctionReference(new Fluent.Identifier(id), args);
   }
 
+  if (
+    (name === 'currency' || name === 'unit') &&
+    typeof ctx.functionMap.number === 'string'
+  ) {
+    args.named.unshift(
+      new Fluent.NamedArgument(
+        new Fluent.Identifier('style'),
+        new Fluent.StringLiteral(name)
+      )
+    );
+    return new Fluent.FunctionReference(
+      new Fluent.Identifier(ctx.functionMap.number),
+      args
+    );
+  }
+
   if (id === FluentMessageRef) {
     const lit = args.positional[0];
     if (!(lit instanceof Fluent.BaseLiteral)) {

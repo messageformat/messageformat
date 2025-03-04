@@ -1,11 +1,11 @@
 import {
+  DraftFunctions,
   type MessageDateTime,
   type MessageFunctionContext,
   type MessageNumber,
   type MessageValue,
-  datetime
+  getLocaleDir
 } from 'messageformat/functions';
-import { getLocaleDir } from 'messageformat/functions/utils';
 
 function getParam(options: Record<string, unknown>) {
   if (options.param) {
@@ -34,7 +34,7 @@ function date(
           : 'short',
     year: 'numeric'
   };
-  return datetime(msgCtx, opt, input);
+  return DraftFunctions.datetime(msgCtx, opt, input);
 }
 
 function time(
@@ -49,7 +49,7 @@ function time(
     hour: 'numeric',
     timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
   };
-  return datetime(msgCtx, opt, input);
+  return DraftFunctions.datetime(msgCtx, opt, input);
 }
 
 /**
