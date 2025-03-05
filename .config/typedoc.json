@@ -15,6 +15,11 @@
     "MF1 (v3) docs": "https://messageformat.github.io/mf1/",
     "GitHub": "https://github.com/messageformat/messageformat"
   },
+  "plugin": ["typedoc-plugin-redirect"],
   "projectDocuments": ["../mf2/docs/project.md", "../mf2/docs/contributing.md"],
-  "readme": "../mf2/README.md"
+  "readme": "../mf2/README.md",
+  "redirects": {
+    "_": "/messageformat/",
+    "mf1/": "/messageformat/"
+  }
 }
