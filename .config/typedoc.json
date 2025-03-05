@@ -7,6 +7,7 @@
     "../mf2/fluent/",
     "../mf2/icu-messageformat-1/"
   ],
+  "favicon": "../docs/logo/messageformat.svg",
   "hideGenerator": true,
   "navigation": {
     "includeFolders": false
