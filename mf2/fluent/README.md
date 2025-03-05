@@ -63,4 +63,4 @@ import type {
 } from '@messageformat/fluent';
 ```
 
-For more information, see the [API documentation site](http://messageformat.github.io/messageformat/api/fluent/).
+For more information, see the [documentation site](http://messageformat.github.io/).

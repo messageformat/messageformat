@@ -5,15 +5,11 @@ import type * as CST from '../cst/types.ts';
 /**
  * Shared symbol used as a key on message data model nodes
  * to reference their CST source.
- *
- * @beta
  */
 export const cst = Symbol.for('CST');
 
 /**
  * Convert a CST message structure into its data model representation.
- *
- * @beta
  */
 export function messageFromCST(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;

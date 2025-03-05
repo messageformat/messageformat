@@ -15,8 +15,6 @@ import { selectPattern } from './select-pattern.ts';
 
 /**
  * The runtime function registry available when resolving {@link FunctionRef} elements.
- *
- * @beta
  */
 export interface MessageFunctions {
   [key: string]: (
@@ -26,7 +24,6 @@ export interface MessageFunctions {
   ) => MessageValue;
 }
 
-/** @beta */
 export interface MessageFormatOptions {
   /**
    * The bidi isolation strategy for messages,
@@ -50,7 +47,6 @@ export interface MessageFormatOptions {
    * determines which algorithm to use when selecting between them;
    * the default for `Intl` formatters is `'best fit'`.
    *
-   * @remarks
    * See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_negotiation
    */
   localeMatcher?: 'best fit' | 'lookup';
@@ -63,9 +59,7 @@ export interface MessageFormatOptions {
 }
 
 /**
- * Create a new message formatter.
- *
- * @beta
+ * Creates a new message formatter.
  */
 export class MessageFormat {
   readonly #bidiIsolation: boolean;

@@ -3,23 +3,21 @@ import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import { getMF1Functions } from './functions.ts';
 import { mf1ToMessageData } from './mf1-to-message-data.ts';
 
-/** @beta */
 export type MF1Options = {
-  /** See {@link @messageformat/parser#ParseOptions.strict} */
+  /** See {@link https://messageformat.github.io/messageformat/api/parser.parseoptions/ ParseOptions.strict} in @messageformat/parser */
   strict?: boolean;
 };
 
 /**
- * Compile an ICU MessageFormat 1 message into a {@link messageformat#MessageFormat} instance.
+ * Compile an ICU MessageFormat 1 message into a {@link MessageFormat} instance.
  *
  * A runtime provided by {@link getMF1Functions} is automatically used in these instances.
  *
- * @beta
  * @param source - An ICU MessageFormat message, either in its syntax representation,
- *   as an array of `@messageformat/parser` {@link @messageformat/parser#parse | AST tokens},
- *   or as a {@link messageformat#Message} data structure.
+ *   as an array of `@messageformat/parser` {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens},
+ *   or as a {@link Message} data structure.
  * @param locales - The locale to use for the message.
- * @param options - See {@link MF1Options} and {@link messageformat#MessageFormatOptions}
+ * @param options - See {@link MF1Options} and {@link MessageFormatOptions}
  */
 export function mf1ToMessage(
   source: string | Token[] | Message,

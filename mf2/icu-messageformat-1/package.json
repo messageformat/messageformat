@@ -26,12 +26,15 @@
   "files": [
     "lib/"
   ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
   "dependencies": {
     "@messageformat/parser": "^5.0.0",
     "messageformat": "4.0.0-9"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "extract-api": "api-extractor run --local --verbose"
+    "build": "tsc --project tsconfig.build.json"
   }
 }

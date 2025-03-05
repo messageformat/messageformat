@@ -1,16 +1,12 @@
-# MessageFormat 2 for JavaScript
+This library provides a formatter and other tools for [Unicode MessageFormat 2.0] (MF2),
+the new standard for localization developed by the [MessageFormat Working Group].
 
-This library provides an implementation of the [ECMA-402 Intl.MessageFormat proposal],
-which is built on top of the [Unicode MessageFormat 2.0 specification] (MF2),
-developed by the [MessageFormat Working Group].
+This includes a formatter that can be used as a polyfill for
+the proposed [ECMA-402 Intl.MessageFormat] formatter.
 
-The API provided by this library is current as of the [LDML 47] (March 2025)
-Final version of the MF2 specification.
-
-[ecma-402 intl.messageformat proposal]: https://github.com/dminor/proposal-intl-messageformat/
-[unicode messageformat 2.0 specification]: https://unicode.org/reports/tr35/tr35-messageFormat.html
+[unicode messageformat 2.0]: https://unicode.org/reports/tr35/tr35-messageFormat.html
 [messageformat working group]: https://github.com/unicode-org/message-format-wg
-[ldml 47]: https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html
+[ecma-402 intl.messageformat ]: https://github.com/dminor/proposal-intl-messageformat/
 
 ```sh
 npm install --save-exact messageformat@next

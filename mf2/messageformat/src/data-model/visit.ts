@@ -17,7 +17,6 @@ import type {
 /**
  * Apply visitor functions to message nodes.
  *
- * @remarks
  * The visitors are applied in source order, starting from the root.
  * Visitors for nodes that contain other nodes may return a callback function
  * that will be called with no arguments when exiting the node.
@@ -27,8 +26,6 @@ import type {
  *
  * Many visitors will be called with additional arguments
  * identifying some of the context for the visited node.
- *
- * @beta
  */
 export function visit(
   msg: Message,

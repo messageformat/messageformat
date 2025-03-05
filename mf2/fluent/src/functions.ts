@@ -1,4 +1,9 @@
-import type { MessageFunctions, MessagePart } from 'messageformat';
+import type {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  MessageFormat,
+  MessageFunctions,
+  MessagePart
+} from 'messageformat';
 import type {
   MessageFunctionContext,
   MessageValue
@@ -8,15 +13,13 @@ import type { FluentMessageResource } from './index.ts';
 import { valueToMessageRef } from './message-to-fluent.ts';
 
 /**
- * Build a {@link messageformat#MessageFormat} runtime to use with Fluent messages.
+ * Build a {@link MessageFormat} runtime to use with Fluent messages.
  *
- * @remarks
  * This builds on top of the default runtime, but uses all-caps names for the
  * `DATETIME` and `NUMBER` message formatters.
  * A custom function `MESSAGE` is also included to support
  * Fluent term and message references.
  *
- * @beta
  * @param res - A Map of MessageFormat instances, for use by `MESSAGE`.
  *   This Map may be passed in as initially empty, and later filled out by the caller.
  */

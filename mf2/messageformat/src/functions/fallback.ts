@@ -3,8 +3,6 @@ import type { MessageValue } from '../message-value.ts';
 
 /**
  * Used to represent runtime/formatting errors.
- *
- * @beta
  */
 export interface MessageFallback extends MessageValue {
   readonly type: 'fallback';
@@ -13,7 +11,6 @@ export interface MessageFallback extends MessageValue {
   toString(): string;
 }
 
-/** @beta */
 export interface MessageFallbackPart extends MessageExpressionPart {
   type: 'fallback';
   source: string;

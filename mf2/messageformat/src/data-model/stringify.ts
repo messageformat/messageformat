@@ -18,8 +18,6 @@ import type {
 
 /**
  * Stringify a message using its syntax representation.
- *
- * @beta
  */
 export function stringifyMessage(msg: Message) {
   let res = '';

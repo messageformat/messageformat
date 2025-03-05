@@ -12,12 +12,10 @@ import type {
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
- * {@link messageformat#MessageFormat} instances.
+ * {@link MessageFormat} instances.
  *
- * @remarks
  * A runtime provided by {@link getFluentFunctions} is automatically used in these instances.
  *
- * @beta
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file,
  *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource},
@@ -55,9 +53,8 @@ export function fluentToResource(
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
- * {@link messageformat#Message} data objects.
+ * {@link Message} data objects.
  *
- * @beta
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file or
  *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}

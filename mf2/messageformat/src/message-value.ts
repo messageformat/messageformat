@@ -11,5 +11,6 @@ export interface MessageValue {
   toParts?: () => MessageExpressionPart[];
   toString?: () => string;
   valueOf?: () => unknown;
+  /** @private */
   [BIDI_ISOLATE]?: boolean;
 }

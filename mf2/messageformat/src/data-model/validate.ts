@@ -5,7 +5,6 @@ import { visit } from './visit.ts';
 /**
  * Ensure that the `msg` data model is _valid_, calling `onError` on errors.
  *
- * @remarks
  * Detects the following errors:
  *
  * - **Variant Key Mismatch**:
@@ -28,7 +27,6 @@ import { visit } from './visit.ts';
  *   The same list of _keys_ is used for more than one _variant_.
  *
  * @returns The sets of runtime `functions` and `variables` used by the message.
- * @beta
  */
 export function validate(
   msg: Message,

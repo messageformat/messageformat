@@ -26,7 +26,6 @@
     "lib/"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "extract-api": "api-extractor run --local --verbose"
+    "build": "tsc --project tsconfig.build.json"
   }
 }

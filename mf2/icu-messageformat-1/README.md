@@ -34,4 +34,4 @@ import {
 } from '@messageformat/icu-messageformat-1';
 ```
 
-For more information, see the [API documentation site](https://messageformat.github.io/messageformat/api/).
+For more information, see the [documentation site](https://messageformat.github.io/).

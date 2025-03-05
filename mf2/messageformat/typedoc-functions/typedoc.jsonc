@@ -1,0 +1,17 @@
+{
+  // This is required to present the entry points as a separate
+  // top-level module in the API documentation.
+  "name": "messageformat/functions",
+  "entryPoints": ["../src/functions/index.ts"],
+  "intentionallyNotExported": [
+    "Context",
+    "MessageDateTimePart",
+    "MessageExpressionPart",
+    "MessageFallbackPart",
+    "MessageNumberPart",
+    "MessageStringPart",
+    "Options"
+  ],
+
+  "readme": "none"
+}

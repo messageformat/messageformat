@@ -4,8 +4,6 @@
  * unwrapping objects using their `valueOf()` methods.
  * Also accepts `'true'` and `'false'`.
  * Throws a `RangeError` for invalid inputs.
- *
- * @beta
  */
 export function asBoolean(value: unknown): boolean {
   if (value && typeof value === 'object') value = value.valueOf();
@@ -22,8 +20,6 @@ export function asBoolean(value: unknown): boolean {
  * unwrapping objects using their `valueOf()` methods.
  * Also accepts JSON string reprentations of integers.
  * Throws a `RangeError` for invalid inputs.
- *
- * @beta
  */
 export function asPositiveInteger(value: unknown): number {
   if (value && typeof value === 'object') value = value.valueOf();
@@ -42,8 +38,6 @@ export function asPositiveInteger(value: unknown): number {
  * Cast a value as a string,
  * unwrapping objects using their `valueOf()` methods.
  * Throws a `RangeError` for invalid inputs.
- *
- * @beta
  */
 export function asString(value: unknown): string {
   if (value && typeof value === 'object') value = value.valueOf();
