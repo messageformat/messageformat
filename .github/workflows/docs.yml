@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  mf1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,6 +20,12 @@ jobs:
           working-directory: ./docs
       - run: npm ci
       - run: npm run build
-      - run: npm run docs
+      - run: npm run docs:mf1
       - run: bundle exec jekyll build
         working-directory: ./docs
+  mf2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run docs:mf2

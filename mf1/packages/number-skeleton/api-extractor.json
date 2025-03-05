@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "extends": "../../../config/api-extractor-base.json",
+  "extends": "../../../.config/api-extractor-base.json",
   "projectFolder": ".",
   "mainEntryPointFilePath": "<projectFolder>/lib/index.d.ts",
   "compiler": { "tsconfigFilePath": "<projectFolder>/tsconfig.build.json" }

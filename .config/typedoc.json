@@ -1,0 +1,18 @@
+{
+  "name": "MessageFormat 2 for JavaScript",
+  "entryPointStrategy": "packages",
+  "entryPoints": [
+    "../mf2/messageformat/",
+    "../mf2/messageformat/typedoc-functions/",
+    "../mf2/fluent/",
+    "../mf2/icu-messageformat-1/"
+  ],
+  "hideGenerator": true,
+  "navigation": {
+    "includeFolders": false
+  },
+  "navigationLinks": {
+    "MF1 (v3) docs": "https://messageformat.github.io/mf1/",
+    "GitHub": "https://github.com/messageformat/messageformat"
+  }
+}

@@ -27,16 +27,11 @@
     "lib/"
   ],
   "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    },
-    "./functions": {
-      "default": "./lib/functions/index.js"
-    },
+    ".": "./lib/index.js",
+    "./functions": "./lib/functions/index.js",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "extract-api": "api-extractor run --local --verbose"
+    "build": "tsc --project tsconfig.build.json"
   }
 }
