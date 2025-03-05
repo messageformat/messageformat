@@ -1,3 +1,8 @@
+/**
+ * @module
+ * @showGroups
+ */
+
 import type * as CST from './cst/types.ts';
 export type { CST };
 export type * from './data-model/types.ts';

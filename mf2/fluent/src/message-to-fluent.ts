@@ -17,7 +17,6 @@ import {
 
 /**
  * Symbol used to identify a custom function for Fluent message/term references.
- * @beta
  */
 export const FluentMessageRef = Symbol.for('Fluent message ref');
 
@@ -30,7 +29,6 @@ export type FunctionMap = Record<string, string | symbol | null>;
 
 /**
  * Default value for the {@link messageToFluent} `functionMap` option.
- * @beta
  */
 export const defaultFunctionMap: FunctionMap = {
   datetime: 'DATETIME',
@@ -49,7 +47,6 @@ const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
  * {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute).
  *
- * @beta
  * @param defaultKey - The Fluent identifier or numeric literal to use for the
  *   default/fallback variant, which is labelled as `*` in MessageFormat 2,
  *   when not explicitly defined in the data.

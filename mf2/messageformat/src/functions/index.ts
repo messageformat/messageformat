@@ -1,8 +1,15 @@
 /**
- * `messageformat/functions`
- *
  * Implementations for :number, :string, and other default functions,
  * along with some utilities for building custom function handlers.
+ *
+ * ```js
+ * import { MessageFormat } from 'messageformat';
+ * import { DraftFunctions } from 'messageformat/functions';
+ *
+ * const mf = new MessageFormat(locale, msgSrc, { functions: DraftFunctions });
+ * ```
+ *
+ * @module
  */
 
 export { getLocaleDir } from '../dir-utils.ts';
@@ -24,8 +31,6 @@ import { unit } from './unit.ts';
 
 /**
  * Functions classified as REQUIRED by the MessageFormat 2 specification.
- *
- * @beta
  */
 export const DefaultFunctions = Object.freeze({
   integer,

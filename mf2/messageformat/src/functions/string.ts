@@ -2,7 +2,6 @@ import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
 
-/** @beta */
 export interface MessageString extends MessageValue {
   readonly type: 'string';
   readonly source: string;
@@ -13,7 +12,6 @@ export interface MessageString extends MessageValue {
   valueOf(): string;
 }
 
-/** @beta */
 export interface MessageStringPart extends MessageExpressionPart {
   type: 'string';
   source: string;
@@ -25,8 +23,7 @@ export interface MessageStringPart extends MessageExpressionPart {
  * Accepts any input, and parses any non-string value using `String()`.
  * For no input, resolves its value to an empty string.
  * On error, resolves to a fallback value.
- *
- * @beta */
+ */
 export function string(
   ctx: Pick<MessageFunctionContext, 'dir' | 'locales' | 'source'>,
   _options: Record<string, unknown>,

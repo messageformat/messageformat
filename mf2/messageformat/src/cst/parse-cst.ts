@@ -43,8 +43,6 @@ export class ParseContext {
 /**
  * Parse the string syntax representation of a message into
  * its corresponding CST representation.
- *
- * @beta
  */
 export function parseCST(
   source: string,

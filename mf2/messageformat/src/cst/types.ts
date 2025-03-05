@@ -1,9 +1,7 @@
 import type { MessageSyntaxError } from '../errors.ts';
 
-/** @beta */
 export type Message = SimpleMessage | ComplexMessage | SelectMessage;
 
-/** @beta */
 export interface SimpleMessage {
   type: 'simple';
   declarations?: never;
@@ -11,7 +9,6 @@ export interface SimpleMessage {
   errors: MessageSyntaxError[];
 }
 
-/** @beta */
 export interface ComplexMessage {
   type: 'complex';
   declarations: Declaration[];
@@ -19,7 +16,6 @@ export interface ComplexMessage {
   errors: MessageSyntaxError[];
 }
 
-/** @beta */
 export interface SelectMessage {
   type: 'select';
   declarations: Declaration[];
@@ -29,10 +25,8 @@ export interface SelectMessage {
   errors: MessageSyntaxError[];
 }
 
-/** @beta */
 export type Declaration = InputDeclaration | LocalDeclaration | Junk;
 
-/** @beta */
 export interface InputDeclaration {
   type: 'input';
   start: number;
@@ -41,7 +35,6 @@ export interface InputDeclaration {
   value: Expression | Junk;
 }
 
-/** @beta */
 export interface LocalDeclaration {
   type: 'local';
   start: number;
@@ -52,7 +45,6 @@ export interface LocalDeclaration {
   value: Expression | Junk;
 }
 
-/** @beta */
 export interface Variant {
   start: number;
   end: number;
@@ -60,7 +52,6 @@ export interface Variant {
   value: Pattern;
 }
 
-/** @beta */
 export interface CatchallKey {
   type: '*';
   /** position of the `*` */
@@ -68,7 +59,6 @@ export interface CatchallKey {
   end: number;
 }
 
-/** @beta */
 export interface Pattern {
   start: number;
   end: number;
@@ -76,7 +66,6 @@ export interface Pattern {
   braces?: [Syntax<'{{'>] | [Syntax<'{{'>, Syntax<'}}'>];
 }
 
-/** @beta */
 export interface Text {
   type: 'text';
   start: number;
@@ -84,7 +73,6 @@ export interface Text {
   value: string;
 }
 
-/** @beta */
 export interface Expression {
   type: 'expression';
   start: number;
@@ -96,7 +84,6 @@ export interface Expression {
   attributes: Attribute[];
 }
 
-/** @beta */
 export interface Junk {
   type: 'junk';
   start: number;
@@ -105,7 +92,6 @@ export interface Junk {
   name?: never;
 }
 
-/** @beta */
 export interface Literal {
   type: 'literal';
   quoted: boolean;
@@ -116,7 +102,6 @@ export interface Literal {
   close?: Syntax<'|'>;
 }
 
-/** @beta */
 export interface VariableRef {
   type: 'variable';
   start: number;
@@ -125,7 +110,6 @@ export interface VariableRef {
   name: string;
 }
 
-/** @beta */
 export interface FunctionRef {
   type: 'function';
   start: number;
@@ -135,7 +119,6 @@ export interface FunctionRef {
   options: Option[];
 }
 
-/** @beta */
 export interface Markup {
   type: 'markup';
   start: number;
@@ -146,7 +129,6 @@ export interface Markup {
   close?: Syntax<'/'>;
 }
 
-/** @beta */
 export interface Option {
   /** position at the start of the name */
   start: number;
@@ -156,7 +138,6 @@ export interface Option {
   value: Literal | VariableRef;
 }
 
-/** @beta */
 export interface Attribute {
   /** position at the start of the name */
   start: number;
@@ -167,13 +148,11 @@ export interface Attribute {
   value?: Literal;
 }
 
-/** @beta */
 export type Identifier =
   | [name: Syntax<string>]
   | [namespace: Syntax<string>, separator: Syntax<':'>]
   | [namespace: Syntax<string>, separator: Syntax<':'>, name: Syntax<string>];
 
-/** @beta */
 export interface Syntax<T extends string> {
   start: number;
   end: number;

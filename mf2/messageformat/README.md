@@ -4,13 +4,13 @@ This library provides an implementation of the [ECMA-402 Intl.MessageFormat prop
 which is built on top of the [Unicode MessageFormat 2.0 specification] (MF2),
 developed by the [MessageFormat Working Group].
 
-The API provided by this library is current as of the [LDML 46.1] (December 2024)
-version of the MF2 specification.
+The API provided by this library is current as of the [LDML 47] (March 2025)
+Final version of the MF2 specification.
 
 [ecma-402 intl.messageformat proposal]: https://github.com/dminor/proposal-intl-messageformat/
 [unicode messageformat 2.0 specification]: https://unicode.org/reports/tr35/tr35-messageFormat.html
 [messageformat working group]: https://github.com/unicode-org/message-format-wg
-[LDML 46.1]: https://www.unicode.org/reports/tr35/tr35-74/tr35-messageFormat.html
+[ldml 47]: https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html
 
 ```sh
 npm install --save-exact messageformat@next

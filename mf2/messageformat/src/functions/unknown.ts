@@ -1,7 +1,6 @@
 import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 
-/** @beta */
 export interface MessageUnknownValue extends MessageValue {
   readonly type: 'unknown';
   readonly source: string;
@@ -11,14 +10,12 @@ export interface MessageUnknownValue extends MessageValue {
   valueOf(): unknown;
 }
 
-/** @beta */
 export interface MessageUnknownPart extends MessageExpressionPart {
   type: 'unknown';
   source: string;
   value: unknown;
 }
 
-/** @beta */
 export const unknown = (
   source: string,
   input: unknown

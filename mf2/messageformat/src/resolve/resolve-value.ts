@@ -2,7 +2,6 @@ import type { Context } from '../format-context.ts';
 import { lookupVariableRef } from './resolve-variable.ts';
 import type { Literal, VariableRef } from '../data-model/types.ts';
 
-/** @internal */
 export function resolveValue(
   ctx: Context,
   value: Literal | VariableRef
@@ -18,7 +17,6 @@ export function resolveValue(
   }
 }
 
-/** @internal */
 export function getValueSource(value: Literal | VariableRef): string;
 export function getValueSource(
   value: Literal | VariableRef | undefined

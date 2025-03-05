@@ -5,7 +5,6 @@ import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
 import { asPositiveInteger, asString } from './utils.ts';
 
-/** @beta */
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';
   readonly source: string;
@@ -18,7 +17,6 @@ export interface MessageNumber extends MessageValue {
    * numerical values may also match keys with the same plural rule category,
    * i.e. one of `zero`, `one`, `two`, `few`, `many`, and `other`.
    *
-   * @remarks
    * Different languages use different subset of plural rule categories.
    * For example, cardinal English plurals only use `one` and `other`,
    * so a key `zero` will never be matched for that locale.
@@ -29,7 +27,6 @@ export interface MessageNumber extends MessageValue {
   valueOf(): number | bigint;
 }
 
-/** @beta */
 export interface MessageNumberPart extends MessageExpressionPart {
   type: 'number';
   source: string;
@@ -141,8 +138,6 @@ export function getMessageNumber(
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
  * It also supports plural category selection via
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- *
- * @beta
  */
 export function number(
   ctx: MessageFunctionContext,
@@ -193,8 +188,6 @@ export function number(
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
  * It also supports plural category selection via
  * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- *
- * @beta
  */
 export function integer(
   ctx: MessageFunctionContext,

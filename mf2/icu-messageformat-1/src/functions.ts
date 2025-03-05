@@ -186,8 +186,6 @@ function number(
  *
  * The structure of this runtime and the options available for its formatters
  * follow the MF1 specifications, rather than being based on the MF2 default runtime.
- *
- * @beta
  */
 export const getMF1Functions = () => ({
   'mf1:date': date,

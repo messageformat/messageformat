@@ -3,8 +3,6 @@ import { cst } from './data-model/from-cst.ts';
 
 /**
  * Base error class used by MessageFormat
- *
- * @beta
  */
 export class MessageError extends Error {
   type:
@@ -22,8 +20,6 @@ export class MessageError extends Error {
 
 /**
  * Errors in the message syntax.
- *
- * @beta
  */
 export class MessageSyntaxError extends MessageError {
   declare type:
@@ -59,8 +55,6 @@ export class MessageSyntaxError extends MessageError {
 
 /**
  * Errors in the message data model.
- *
- * @beta
  */
 export class MessageDataModelError extends MessageSyntaxError {
   declare type:
@@ -80,8 +74,6 @@ export class MessageDataModelError extends MessageSyntaxError {
 
 /**
  * Message runtime resolution errors
- *
- * @beta
  */
 export class MessageResolutionError extends MessageError {
   declare type:
@@ -103,8 +95,6 @@ export class MessageResolutionError extends MessageError {
 
 /**
  * Errors in message selection.
- *
- * @beta
  */
 export class MessageSelectionError extends MessageError {
   declare type: 'bad-selector' | 'no-match';

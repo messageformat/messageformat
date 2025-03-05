@@ -3,7 +3,6 @@ import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
 import { getMF1Functions } from './functions.ts';
 import { mf1ToMessageData } from './mf1-to-message-data.ts';
 
-/** @beta */
 export type MF1Options = {
   /** See {@link @messageformat/parser#ParseOptions.strict} */
   strict?: boolean;
@@ -14,7 +13,6 @@ export type MF1Options = {
  *
  * A runtime provided by {@link getMF1Functions} is automatically used in these instances.
  *
- * @beta
  * @param source - An ICU MessageFormat message, either in its syntax representation,
  *   as an array of `@messageformat/parser` {@link @messageformat/parser#parse | AST tokens},
  *   or as a {@link messageformat#Message} data structure.

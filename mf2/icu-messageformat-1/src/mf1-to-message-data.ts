@@ -136,7 +136,6 @@ function argToInputDeclaration({
  * Only literal values are supported in formatter parameters. Any
  * such value will be passed in as an option `{ param: string }`.
  *
- * @beta
  * @param ast - An ICU MessageFormat message as an array of `@messageformat/parser`
  *   {@link @messageformat/parser#parse | AST tokens}.
  */

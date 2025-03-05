@@ -12,7 +12,8 @@ import { resolveExpression } from './resolve-expression.ts';
  * and their resolution order matters for variable resolution.
  * This internal class is used to store any required data,
  * and to allow for `instanceof` detection.
- * @private
+ *
+ * @internal
  */
 export class UnresolvedExpression {
   expression: Expression;
