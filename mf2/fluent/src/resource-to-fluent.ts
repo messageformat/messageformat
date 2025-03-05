@@ -4,7 +4,7 @@ import type { FluentMessageResourceData } from './index.ts';
 import { FunctionMap, messageToFluent } from './message-to-fluent.ts';
 
 /**
- * Convert a Map of {@link messageformat#Message} data objects into a
+ * Convert a Map of {@link Message} data objects into a
  * {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}.
  *
  * @param template - If set, defines the resource-level comments, message order,

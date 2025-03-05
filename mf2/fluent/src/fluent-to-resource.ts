@@ -12,7 +12,7 @@ import type {
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
- * {@link messageformat#MessageFormat} instances.
+ * {@link MessageFormat} instances.
  *
  * A runtime provided by {@link getFluentFunctions} is automatically used in these instances.
  *
@@ -53,7 +53,7 @@ export function fluentToResource(
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
- * {@link messageformat#Message} data objects.
+ * {@link Message} data objects.
  *
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file or

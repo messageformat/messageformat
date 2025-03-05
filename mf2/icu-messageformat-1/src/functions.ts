@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { MessageFormat } from 'messageformat';
 import {
   DraftFunctions,
   type MessageDateTime,
@@ -182,7 +184,7 @@ function number(
 }
 
 /**
- * Build a {@link messageformat#MessageFormat} runtime to use with ICU MessageFormat 1 messages.
+ * Build a {@link MessageFormat} runtime to use with ICU MessageFormat 1 messages.
  *
  * The structure of this runtime and the options available for its formatters
  * follow the MF1 specifications, rather than being based on the MF2 default runtime.

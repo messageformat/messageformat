@@ -128,7 +128,7 @@ function argToInputDeclaration({
 }
 
 /**
- * Convert an ICU MessageFormat 1 message into a {@link messageformat#Message} data object.
+ * Convert an ICU MessageFormat 1 message into a {@link Message} data object.
  *
  * If the source message contains any inner selectors, they will be
  * lifted into a single top-level selector.
@@ -137,7 +137,7 @@ function argToInputDeclaration({
  * such value will be passed in as an option `{ param: string }`.
  *
  * @param ast - An ICU MessageFormat message as an array of `@messageformat/parser`
- *   {@link @messageformat/parser#parse | AST tokens}.
+ *   {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens}.
  */
 export function mf1ToMessageData(ast: AST.Token[]): Message {
   const args = findSelectArgs(ast);

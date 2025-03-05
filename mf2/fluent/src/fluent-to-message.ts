@@ -1,11 +1,13 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
-import {
+import type {
   Expression,
   FunctionRef,
   InputDeclaration,
   Literal,
   LocalDeclaration,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Message,
   PatternMessage,
   SelectMessage,
   VariableRef,
@@ -245,7 +247,7 @@ export type FluentToMessageOptions = {
 /**
  * Compile a {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute) into a
- * {@link messageformat#Message} data object.
+ * {@link Message} data object.
  */
 export function fluentToMessage(
   ast: Fluent.Pattern,
