@@ -40,6 +40,8 @@ function expect(searchString: string, consume: boolean) {
  * Parses the `source` syntax representation of a message into
  * its corresponding data model representation.
  * Throws on syntax errors, but does not check for data model errors.
+ *
+ * @category Message Data Model
  */
 export function parseMessage(source: string): Model.Message;
 export function parseMessage(source_: string): Model.Message {

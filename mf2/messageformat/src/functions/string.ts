@@ -12,6 +12,7 @@ export interface MessageString extends MessageValue {
   valueOf(): string;
 }
 
+/** @category Formatted Parts */
 export interface MessageStringPart extends MessageExpressionPart {
   type: 'string';
   source: string;

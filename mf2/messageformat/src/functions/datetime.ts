@@ -16,7 +16,10 @@ export interface MessageDateTime extends MessageValue {
   valueOf(): Date;
 }
 
-/** @beta */
+/**
+ * @beta
+ * @category Formatted Parts
+ */
 export interface MessageDateTimePart extends MessageExpressionPart {
   type: 'datetime';
   source: string;

@@ -26,6 +26,8 @@ import type {
  *
  * Many visitors will be called with additional arguments
  * identifying some of the context for the visited node.
+ *
+ * @category Message Data Model
  */
 export function visit(
   msg: Message,

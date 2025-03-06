@@ -26,6 +26,7 @@ import { visit } from './visit.ts';
  * - **Duplicate Variant**:
  *   The same list of _keys_ is used for more than one _variant_.
  *
+ * @category Message Data Model
  * @returns The sets of runtime `functions` and `variables` used by the message.
  */
 export function validate(

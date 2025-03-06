@@ -27,6 +27,7 @@ export interface MessageNumber extends MessageValue {
   valueOf(): number | bigint;
 }
 
+/** @category Formatted Parts */
 export interface MessageNumberPart extends MessageExpressionPart {
   type: 'number';
   source: string;

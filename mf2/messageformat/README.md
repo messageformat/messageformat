@@ -7,7 +7,7 @@ developed by the [MessageFormat Working Group].
 The API provided by this library is current as of the [LDML 47] (March 2025)
 Final version of the MF2 specification.
 
-[ecma-402 intl.messageformat proposal]: https://github.com/dminor/proposal-intl-messageformat/
+[ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat/
 [unicode messageformat 2.0 specification]: https://unicode.org/reports/tr35/tr35-messageFormat.html
 [messageformat working group]: https://github.com/unicode-org/message-format-wg
 [ldml 47]: https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html

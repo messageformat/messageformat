@@ -1,4 +1,10 @@
 {
   "entryPoints": ["src/index.ts"],
-  "intentionallyNotExported": ["MessageFunction"]
+  "intentionallyNotExported": ["MessageFunction"],
+  "categoryOrder": [
+    "Formatting",
+    "Formatted Parts",
+    "Message Data Model",
+    "Errors"
+  ]
 }

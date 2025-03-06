@@ -6,7 +6,7 @@ the proposed [ECMA-402 Intl.MessageFormat] formatter.
 
 [unicode messageformat 2.0]: https://unicode.org/reports/tr35/tr35-messageFormat.html
 [messageformat working group]: https://github.com/unicode-org/message-format-wg
-[ecma-402 intl.messageformat ]: https://github.com/dminor/proposal-intl-messageformat/
+[ecma-402 intl.messageformat ]: https://github.com/tc39/proposal-intl-messageformat/
 
 ```sh
 npm install --save-exact messageformat@next

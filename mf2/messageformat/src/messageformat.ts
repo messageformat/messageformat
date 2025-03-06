@@ -13,13 +13,18 @@ import { resolveExpression } from './resolve/resolve-expression.ts';
 import { UnresolvedExpression } from './resolve/resolve-variable.ts';
 import { selectPattern } from './select-pattern.ts';
 
-/** An MF2 function handler. */
+/**
+ * An MF2 function handler, for use in {@link MessageFormatOptions.functions}.
+ *
+ * @category Formatting
+ */
 export type MessageFunction = (
   context: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
 ) => MessageValue;
 
+/** @category Formatting */
 export interface MessageFormatOptions {
   /**
    * The bidi isolation strategy for messages,
@@ -55,7 +60,11 @@ export interface MessageFormatOptions {
 }
 
 /**
- * Creates a new message formatter.
+ * A message formatter that implements the [ECMA-402 Intl.MessageFormat proposal].
+ *
+ * [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat/
+ *
+ * @category Formatting
  */
 export class MessageFormat {
   readonly #bidiIsolation: boolean;
