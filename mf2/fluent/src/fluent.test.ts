@@ -333,7 +333,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 )) {
   describe(title, () => {
     const data = fluentToResourceData(src).data;
-    const res = fluentToResource(data, locale, { bidiIsolation: 'none' });
+    const res = fluentToResource(locale, data, { bidiIsolation: 'none' });
 
     test('validate', () => {
       for (const [id, group] of res) {
@@ -437,7 +437,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     test('defined formatted variable', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
@@ -516,7 +516,7 @@ describe('formatToParts', () => {
       ### Other resource comment
     `;
 
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     test('Data model comments', () => {
       const { comments, data } = fluentToResourceData(src);
@@ -615,7 +615,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     test('case with match', () => {
       const msg = res.get('case')?.get('')?.formatToParts({ case: 'genitive' });

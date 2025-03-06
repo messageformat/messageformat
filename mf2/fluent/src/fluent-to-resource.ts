@@ -24,8 +24,8 @@ import type {
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
  */
 export function fluentToResource(
+  locales: string | string[] | undefined,
   source: string | Fluent.Resource | FluentMessageResourceData,
-  locales?: string | string[],
   options?: MessageFormatOptions & FluentToMessageOptions
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();

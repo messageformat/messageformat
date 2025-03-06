@@ -181,7 +181,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         *[other] {$clipsPerDay} clips
       } a day.
     `;
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     const one = res.get('activity-needed-calculation-plural')?.get('')?.format({
       totalHours: 1,
