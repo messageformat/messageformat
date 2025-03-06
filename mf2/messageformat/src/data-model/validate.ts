@@ -1,5 +1,5 @@
 import { MessageDataModelError } from '../errors.ts';
-import type { Message, MessageNode, VariableRef, Variant } from './types.ts';
+import type { Message, Node, VariableRef, Variant } from './types.ts';
 import { visit } from './visit.ts';
 
 /**
@@ -31,7 +31,7 @@ import { visit } from './visit.ts';
  */
 export function validate(
   msg: Message,
-  onError: (type: MessageDataModelError['type'], node: MessageNode) => void = (
+  onError: (type: MessageDataModelError['type'], node: Node) => void = (
     type,
     node
   ) => {

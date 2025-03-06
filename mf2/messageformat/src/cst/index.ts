@@ -1,5 +1,5 @@
 /**
- * Tools for working with a concrete syntax tree (CST) representation of MF2 messages.
+ * Tools for working with a concrete syntax tree ({@link CST}) representation of MF2 messages.
  *
  * @module
  */

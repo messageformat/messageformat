@@ -4,10 +4,18 @@ export type { MessageNumberPart } from './functions/number.ts';
 export type { MessageStringPart } from './functions/string.ts';
 export type { MessageUnknownPart } from './functions/unknown.ts';
 
-/** @category Formatted Parts */
+/**
+ * These are always paired in the output.
+ * The first part has U+2066 LEFT-TO-RIGHT ISOLATE, U+2067 RIGHT-TO-LEFT ISOLATE,
+ * or U+2068 FIRST STRONG ISOLATE as its `value`,
+ * and an ending isolation part has U+2069 POP DIRECTIONAL ISOLATE as its `value`.
+ *
+ * @category Formatted Parts
+ */
 export interface MessageBiDiIsolationPart {
   type: 'bidiIsolation';
-  value: '\u2066' | '\u2067' | '\u2068' | '\u2069'; // LRI | RLI | FSI | PDI
+  /** LRI | RLI | FSI | PDI */
+  value: '\u2066' | '\u2067' | '\u2068' | '\u2069';
 }
 
 /** @category Formatted Parts */

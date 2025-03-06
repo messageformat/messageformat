@@ -1,4 +1,4 @@
-import { type MessageNode } from './data-model/types.ts';
+import type { Node } from './data-model/types.ts';
 import { cstKey } from './data-model/from-cst.ts';
 
 /**
@@ -43,6 +43,7 @@ export class MessageSyntaxError extends MessageError {
   start: number;
   end: number;
 
+  /** @private */
   constructor(
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
@@ -69,10 +70,9 @@ export class MessageDataModelError extends MessageSyntaxError {
     | 'key-mismatch'
     | 'missing-fallback'
     | 'missing-selector-annotation';
-  constructor(
-    type: typeof MessageDataModelError.prototype.type,
-    node: MessageNode
-  ) {
+
+  /** @private */
+  constructor(type: typeof MessageDataModelError.prototype.type, node: Node) {
     const { start, end } = node[cstKey] ?? { start: -1, end: -1 };
     super(type, start, end);
   }

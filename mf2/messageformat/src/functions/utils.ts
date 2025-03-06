@@ -20,6 +20,8 @@ export function asBoolean(value: unknown): boolean {
  * unwrapping objects using their `valueOf()` methods.
  * Also accepts JSON string reprentations of integers.
  * Throws a `RangeError` for invalid inputs.
+ *
+ * The default functions use this to validate _digit size options_.
  */
 export function asPositiveInteger(value: unknown): number {
   if (value && typeof value === 'object') value = value.valueOf();

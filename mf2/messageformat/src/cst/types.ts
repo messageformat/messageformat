@@ -1,3 +1,13 @@
+/**
+ * The CST root is always a {@link CST.Message}.
+ *
+ * ```ts
+ * import type { CST } from 'messageformat/cst';
+ * ```
+ *
+ * @module
+ */
+
 import type { MessageSyntaxError } from '../errors.ts';
 
 export type Message = SimpleMessage | ComplexMessage | SelectMessage;

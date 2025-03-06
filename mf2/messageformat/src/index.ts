@@ -5,7 +5,6 @@
  */
 
 import type * as Model from './data-model/types.ts';
-/** @category Message Data Model */
 export type { Model };
 export type * from './formatted-parts.ts';
 

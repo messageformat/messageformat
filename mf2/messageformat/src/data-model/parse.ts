@@ -35,11 +35,24 @@ function expect(searchString: string, consume: boolean) {
 }
 
 /**
- * A MessageFormat 2 parser for message formatting.
- *
- * Parses the `source` syntax representation of a message into
+ * Parse the `source` syntax representation of an MF2 message into
  * its corresponding data model representation.
  * Throws on syntax errors, but does not check for data model errors.
+ * To check for data model errors, use {@link validate}:
+ *
+ * ```js
+ * import { MessageSyntaxError, parseMessage, validate } from 'messageformat';
+ *
+ * try {
+ *   const msg = parseMessage('Hello {$world}');
+ *   validate(msg);
+ * } catch (error) {
+ *   if (error instanceof MessageSyntaxError) {
+ *     // MessageDataModelError extends MessageSyntaxError
+ *     ...
+ *   }
+ * }
+ * ```
  *
  * @category Message Data Model
  */
