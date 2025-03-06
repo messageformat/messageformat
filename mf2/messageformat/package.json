@@ -28,6 +28,7 @@
   ],
   "exports": {
     ".": "./lib/index.js",
+    "./cst": "./lib/cst/index.js",
     "./functions": "./lib/functions/index.js",
     "./package.json": "./package.json"
   },

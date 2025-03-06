@@ -1,5 +1,5 @@
 import type * as CST from '../cst/types.ts';
-import { cst } from './from-cst.ts';
+import { cstKey } from './from-cst.ts';
 
 /**
  * A node in a message data model
@@ -29,7 +29,8 @@ export interface PatternMessage {
   declarations: Declaration[];
   pattern: Pattern;
   comment?: string;
-  [cst]?: CST.SimpleMessage | CST.ComplexMessage;
+  /** @private */
+  [cstKey]?: CST.SimpleMessage | CST.ComplexMessage;
 }
 
 /**
@@ -43,14 +44,16 @@ export interface InputDeclaration {
   type: 'input';
   name: string;
   value: Expression<VariableRef>;
-  [cst]?: CST.Declaration;
+  /** @private */
+  [cstKey]?: CST.Declaration;
 }
 
 export interface LocalDeclaration {
   type: 'local';
   name: string;
   value: Expression;
-  [cst]?: CST.Declaration;
+  /** @private */
+  [cstKey]?: CST.Declaration;
 }
 
 /**
@@ -69,14 +72,16 @@ export interface SelectMessage {
   selectors: VariableRef[];
   variants: Variant[];
   comment?: string;
-  [cst]?: CST.SelectMessage;
+  /** @private */
+  [cstKey]?: CST.SelectMessage;
 }
 
 export interface Variant {
   type?: never;
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
-  [cst]?: CST.Variant;
+  /** @private */
+  [cstKey]?: CST.Variant;
 }
 
 /**
@@ -85,7 +90,8 @@ export interface Variant {
 export interface CatchallKey {
   type: '*';
   value?: string;
-  [cst]?: CST.CatchallKey;
+  /** @private */
+  [cstKey]?: CST.CatchallKey;
 }
 
 /**
@@ -107,7 +113,8 @@ export type Expression<
 > = {
   type: 'expression';
   attributes?: Attributes;
-  [cst]?: CST.Expression;
+  /** @private */
+  [cstKey]?: CST.Expression;
 } & (A extends Literal | VariableRef
   ? { arg: A; functionRef?: FunctionRef }
   : { arg?: never; functionRef: FunctionRef });
@@ -122,7 +129,8 @@ export type Expression<
 export interface Literal {
   type: 'literal';
   value: string;
-  [cst]?: CST.Literal;
+  /** @private */
+  [cstKey]?: CST.Literal;
 }
 
 /**
@@ -138,7 +146,8 @@ export interface Literal {
 export interface VariableRef {
   type: 'variable';
   name: string;
-  [cst]?: CST.VariableRef;
+  /** @private */
+  [cstKey]?: CST.VariableRef;
 }
 
 /**
@@ -154,7 +163,8 @@ export interface FunctionRef {
   type: 'function';
   name: string;
   options?: Options;
-  [cst]?: CST.FunctionRef;
+  /** @private */
+  [cstKey]?: CST.FunctionRef;
 }
 
 /**
@@ -173,7 +183,8 @@ export interface Markup {
   name: string;
   options?: Options;
   attributes?: Attributes;
-  [cst]?: CST.Expression;
+  /** @private */
+  [cstKey]?: CST.Expression;
 }
 
 /**

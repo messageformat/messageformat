@@ -38,7 +38,7 @@ The library also provides a number of other tools and utilities for MF2, such as
 
 - Concreate Syntax Tree (CST) tools for MF2
   ```js
-  import { parseCST, messageFromCST, stringifyCST } from 'messageformat';
+  import { parseCST, messageFromCST, stringifyCST } from 'messageformat/cst';
   ```
 
 In addition to supporting MF2 syntax,

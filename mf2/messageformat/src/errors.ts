@@ -1,5 +1,5 @@
 import { type MessageNode } from './data-model/types.ts';
-import { cst } from './data-model/from-cst.ts';
+import { cstKey } from './data-model/from-cst.ts';
 
 /**
  * Base error class used by MessageFormat
@@ -67,7 +67,7 @@ export class MessageDataModelError extends MessageSyntaxError {
     type: typeof MessageDataModelError.prototype.type,
     node: MessageNode
   ) {
-    const { start, end } = node[cst] ?? { start: -1, end: -1 };
+    const { start, end } = node[cstKey] ?? { start: -1, end: -1 };
     super(type, start, end);
   }
 }

@@ -5,11 +5,17 @@ import type * as CST from '../cst/types.ts';
 /**
  * Shared symbol used as a key on message data model nodes
  * to reference their CST source.
+ *
+ * Only set on message data model nodes when parsed by {@link messageFromCST}.
  */
-export const cst = Symbol.for('CST');
+export const cstKey = Symbol.for('CST');
 
 /**
  * Convert a CST message structure into its data model representation.
+ *
+ * In the returned {@link Model.Message},
+ * all nodes include a reference to their source {@link CST} node
+ * as a {@link cstKey} symbol-keyed property.
  */
 export function messageFromCST(msg: CST.Message): Model.Message {
   for (const error of msg.errors) throw error;
@@ -23,19 +29,19 @@ export function messageFromCST(msg: CST.Message): Model.Message {
       selectors: msg.selectors.map(sel => asValue(sel)),
       variants: msg.variants.map(variant => ({
         keys: variant.keys.map(key =>
-          key.type === '*' ? { type: '*', [cst]: key } : asValue(key)
+          key.type === '*' ? { type: '*', [cstKey]: key } : asValue(key)
         ),
         value: asPattern(variant.value),
-        [cst]: variant
+        [cstKey]: variant
       })),
-      [cst]: msg
+      [cstKey]: msg
     };
   } else {
     return {
       type: 'message',
       declarations,
       pattern: asPattern(msg.pattern),
-      [cst]: msg
+      [cstKey]: msg
     };
   }
 }
@@ -52,7 +58,7 @@ function asDeclaration(decl: CST.Declaration): Model.Declaration {
         type: 'input',
         name: value.arg.name,
         value: value as Model.Expression<Model.VariableRef>,
-        [cst]: decl
+        [cstKey]: decl
       };
     }
     case 'local':
@@ -60,7 +66,7 @@ function asDeclaration(decl: CST.Declaration): Model.Declaration {
         type: 'local',
         name: asValue(decl.target).name,
         value: asExpression(decl.value, false),
-        [cst]: decl
+        [cstKey]: decl
       };
     default:
       throw new MessageSyntaxError('parse-error', decl.start, decl.end);
@@ -95,7 +101,7 @@ function asExpression(
       if (exp.attributes.length) {
         markup.attributes = asAttributes(exp.attributes);
       }
-      markup[cst] = exp;
+      markup[cstKey] = exp;
       return markup;
     }
 
@@ -115,7 +121,7 @@ function asExpression(
       ? { type: 'expression', arg }
       : undefined;
     if (functionRef) {
-      functionRef[cst] = ca;
+      functionRef[cstKey] = ca;
       if (expression) expression.functionRef = functionRef;
       else expression = { type: 'expression', functionRef: functionRef };
     }
@@ -123,7 +129,7 @@ function asExpression(
       if (exp.attributes.length) {
         expression.attributes = asAttributes(exp.attributes);
       }
-      expression[cst] = exp;
+      expression[cstKey] = exp;
       return expression;
     }
   }
@@ -179,9 +185,9 @@ function asValue(
 ): Model.Literal | Model.VariableRef {
   switch (value.type) {
     case 'literal':
-      return { type: 'literal', value: value.value, [cst]: value };
+      return { type: 'literal', value: value.value, [cstKey]: value };
     case 'variable':
-      return { type: 'variable', name: value.name, [cst]: value };
+      return { type: 'variable', name: value.name, [cstKey]: value };
     default:
       throw new MessageSyntaxError('parse-error', value.start, value.end);
   }

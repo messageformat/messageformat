@@ -3,6 +3,7 @@
   "entryPointStrategy": "packages",
   "entryPoints": [
     "../mf2/messageformat/",
+    "../mf2/messageformat/typedoc-cst/",
     "../mf2/messageformat/typedoc-functions/",
     "../mf2/fluent/",
     "../mf2/icu-messageformat-1/"

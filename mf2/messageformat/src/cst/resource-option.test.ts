@@ -1,4 +1,4 @@
-import { type CST, parseCST } from '../index.ts';
+import { type CST, parseCST } from './index.ts';
 
 describe('messages in resources', () => {
   test('text character escapes', () => {

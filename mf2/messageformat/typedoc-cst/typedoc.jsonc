@@ -1,0 +1,8 @@
+{
+  // This is required to present the entry points as a separate
+  // top-level module in the API documentation.
+  "name": "messageformat/cst",
+  "entryPoints": ["../src/cst/index.ts"],
+  "intentionallyNotExported": ["Message", "MessageSyntaxError"],
+  "readme": "none"
+}
