@@ -27,15 +27,15 @@ export type MF1Options = {
  * 'The total is ¤4.20.' // 'XXX' is used as the default currency code.
  * ```
  *
+ * @param locales - The locale to use for the message.
  * @param source - An ICU MessageFormat message, either in its syntax representation,
  *   as an array of `@messageformat/parser` {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens},
  *   or as a {@link MF.Message | Model.Message} data structure.
- * @param locales - The locale to use for the message.
  * @param options - See {@link MF1Options} and {@link MessageFormatOptions}
  */
 export function mf1ToMessage(
+  locales: string | string[] | undefined,
   source: string | Token[] | MF.Message,
-  locales?: string | string[],
   { strict, ...opt }: MF1Options & MessageFormatOptions = {}
 ): MessageFormat {
   let msg: MF.Message;
