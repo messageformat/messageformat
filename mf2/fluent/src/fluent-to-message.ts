@@ -1,18 +1,6 @@
 import * as Fluent from '@fluent/syntax';
 import deepEqual from 'fast-deep-equal';
-import type {
-  Expression,
-  FunctionRef,
-  InputDeclaration,
-  Literal,
-  LocalDeclaration,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Message,
-  PatternMessage,
-  SelectMessage,
-  VariableRef,
-  Variant
-} from 'messageformat';
+import type { Model as MF } from 'messageformat';
 
 const CATCHALL = Symbol('catchall');
 
@@ -57,7 +45,7 @@ function asSelectorDeclaration(
   { selector, defaultName, keys }: SelectArg,
   index: number,
   detectNumberSelection: boolean = true
-): InputDeclaration | LocalDeclaration {
+): MF.InputDeclaration | MF.LocalDeclaration {
   switch (selector.type) {
     case 'StringLiteral':
       return {
@@ -98,14 +86,14 @@ function asSelectorDeclaration(
     ? {
         type: 'input',
         name: exp.arg.name,
-        value: exp as Expression<VariableRef>
+        value: exp as MF.Expression<MF.VariableRef>
       }
     : { type: 'local', name: `_${index}`, value: exp };
 }
 
-function asValue(exp: Fluent.VariableReference): VariableRef;
-function asValue(exp: Fluent.InlineExpression): Literal | VariableRef;
-function asValue(exp: Fluent.InlineExpression): Literal | VariableRef {
+function asValue(exp: Fluent.VariableReference): MF.VariableRef;
+function asValue(exp: Fluent.InlineExpression): MF.Literal | MF.VariableRef;
+function asValue(exp: Fluent.InlineExpression): MF.Literal | MF.VariableRef {
   switch (exp.type) {
     case 'NumberLiteral':
       return { type: 'literal', value: exp.value };
@@ -118,7 +106,7 @@ function asValue(exp: Fluent.InlineExpression): Literal | VariableRef {
   }
 }
 
-function asExpression(exp: Fluent.Expression): Expression {
+function asExpression(exp: Fluent.Expression): MF.Expression {
   switch (exp.type) {
     case 'NumberLiteral':
       return {
@@ -131,7 +119,7 @@ function asExpression(exp: Fluent.Expression): Expression {
       return { type: 'expression', arg: asValue(exp) };
     }
     case 'FunctionReference': {
-      const annotation: FunctionRef = {
+      const annotation: MF.FunctionRef = {
         type: 'function',
         name: exp.id.name.toLowerCase()
       };
@@ -184,7 +172,7 @@ function asExpression(exp: Fluent.Expression): Expression {
       };
     }
     case 'TermReference': {
-      const annotation: FunctionRef = {
+      const annotation: MF.FunctionRef = {
         type: 'function',
         name: 'fluent:message'
       };
@@ -219,7 +207,7 @@ function asExpression(exp: Fluent.Expression): Expression {
   }
 }
 
-const elementToPart = (el: Fluent.PatternElement): string | Expression =>
+const elementToPart = (el: Fluent.PatternElement): string | MF.Expression =>
   el.type === 'TextElement' ? el.value : asExpression(el.expression);
 
 function asFluentSelect(
@@ -247,12 +235,12 @@ export type FluentToMessageOptions = {
 /**
  * Compile a {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute) into a
- * {@link Message} data object.
+ * {@link MF.Message} data object.
  */
 export function fluentToMessage(
   ast: Fluent.Pattern,
   { detectNumberSelection }: FluentToMessageOptions = {}
-): PatternMessage | SelectMessage {
+): MF.PatternMessage | MF.SelectMessage {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
     return {
@@ -281,7 +269,7 @@ export function fluentToMessage(
       }
     }
   }
-  const variants: Variant[] = keys.map(key => ({
+  const variants: MF.Variant[] = keys.map(key => ({
     keys: key.map((k, i) =>
       k === CATCHALL
         ? { type: '*', value: args[i].defaultName }

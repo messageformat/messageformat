@@ -1,12 +1,5 @@
 import type * as AST from '@messageformat/parser';
-import type {
-  Expression,
-  FunctionRef,
-  InputDeclaration,
-  Message,
-  Options,
-  Variant
-} from 'messageformat';
+import type { Model as MF } from 'messageformat';
 
 const isAstSelect = (token: AST.Token): token is AST.Select =>
   token.type === 'plural' ||
@@ -55,7 +48,7 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
 function tokenToPart(
   token: AST.Token,
   pluralArg: string | null
-): string | Expression {
+): string | MF.Expression {
   switch (token.type) {
     case 'content':
       return token.value;
@@ -65,7 +58,7 @@ function tokenToPart(
         arg: { type: 'variable', name: token.arg }
       };
     case 'function': {
-      const functionRef: FunctionRef = {
+      const functionRef: MF.FunctionRef = {
         type: 'function',
         name: `mf1:${token.key}`
       };
@@ -97,12 +90,12 @@ function argToInputDeclaration({
   arg: selName,
   pluralOffset,
   type
-}: SelectArg): InputDeclaration {
-  let functionRef: FunctionRef;
+}: SelectArg): MF.InputDeclaration {
+  let functionRef: MF.FunctionRef;
   if (type === 'select') {
     functionRef = { type: 'function', name: 'string' };
   } else {
-    const options: Options = new Map();
+    const options: MF.Options = new Map();
     if (pluralOffset) {
       options.set('pluralOffset', {
         type: 'literal',
@@ -128,7 +121,7 @@ function argToInputDeclaration({
 }
 
 /**
- * Convert an ICU MessageFormat 1 message into a {@link Message} data object.
+ * Convert an ICU MessageFormat 1 message into a {@link MF.Message} data object.
  *
  * If the source message contains any inner selectors, they will be
  * lifted into a single top-level selector.
@@ -139,7 +132,7 @@ function argToInputDeclaration({
  * @param ast - An ICU MessageFormat message as an array of `@messageformat/parser`
  *   {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens}.
  */
-export function mf1ToMessageData(ast: AST.Token[]): Message {
+export function mf1ToMessageData(ast: AST.Token[]): MF.Message {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
     return {
@@ -166,7 +159,7 @@ export function mf1ToMessageData(ast: AST.Token[]): Message {
       }
     }
   }
-  const variants: Variant[] = keys.map(key => ({
+  const variants: MF.Variant[] = keys.map(key => ({
     keys: key.map(k =>
       k === 'other'
         ? { type: '*' }

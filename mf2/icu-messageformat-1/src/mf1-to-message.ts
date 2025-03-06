@@ -1,5 +1,9 @@
 import { Token, parse } from '@messageformat/parser';
-import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
+import {
+  type Model as MF,
+  MessageFormat,
+  MessageFormatOptions
+} from 'messageformat';
 import { getMF1Functions } from './functions.ts';
 import { mf1ToMessageData } from './mf1-to-message-data.ts';
 
@@ -15,16 +19,16 @@ export type MF1Options = {
  *
  * @param source - An ICU MessageFormat message, either in its syntax representation,
  *   as an array of `@messageformat/parser` {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens},
- *   or as a {@link Message} data structure.
+ *   or as a {@link MF.Message} data structure.
  * @param locales - The locale to use for the message.
  * @param options - See {@link MF1Options} and {@link MessageFormatOptions}
  */
 export function mf1ToMessage(
-  source: string | Token[] | Message,
+  source: string | Token[] | MF.Message,
   locales?: string | string[],
   { strict, ...opt }: MF1Options & MessageFormatOptions = {}
 ): MessageFormat {
-  let msg: Message;
+  let msg: MF.Message;
   if (typeof source === 'string') {
     const ast = parse(source, { strict });
     msg = mf1ToMessageData(ast);

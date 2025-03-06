@@ -3,7 +3,8 @@
  * @showGroups
  */
 
-export type * from './data-model/types.ts';
+import type * as Model from './data-model/types.ts';
+export type { Model };
 export type * from './formatted-parts.ts';
 
 export { parseMessage } from './data-model/parse.ts';
