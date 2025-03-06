@@ -1,5 +1,5 @@
-import { datetime } from '../functions/datetime.ts';
-import { MessageFormat, MessageFunction, MessageNumberPart } from '../index.ts';
+import { MessageFormat, MessageNumberPart } from 'messageformat';
+import { DraftFunctions, MessageFunction } from 'messageformat/functions';
 
 test('Custom function', () => {
   const custom: MessageFunction = (
@@ -69,13 +69,13 @@ describe('Type casts based on runtime', () => {
     const mfTrue = new MessageFormat(
       'en',
       '{$date :datetime timeStyle=short hour12=true}',
-      { functions: { datetime } }
+      { functions: DraftFunctions }
     );
     expect(mfTrue.format({ date })).toMatch(/3:00/);
     const mfFalse = new MessageFormat(
       'en',
       '{$date :datetime timeStyle=short hour12=false}',
-      { functions: { datetime } }
+      { functions: DraftFunctions }
     );
     expect(mfFalse.format({ date })).toMatch(/15:00/);
   });
@@ -84,7 +84,7 @@ describe('Type casts based on runtime', () => {
     const mf = new MessageFormat(
       'en',
       '{$date :datetime timeStyle=short hour12=$hour12}',
-      { functions: { datetime } }
+      { functions: DraftFunctions }
     );
     expect(mf.format({ date, hour12: 'false' })).toMatch(/15:00/);
     expect(mf.format({ date, hour12: false })).toMatch(/15:00/);

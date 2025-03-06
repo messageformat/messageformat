@@ -29,8 +29,4 @@ export {
   MessageSelectionError,
   MessageSyntaxError
 } from './errors.ts';
-export {
-  MessageFormat,
-  MessageFormatOptions,
-  MessageFunction
-} from './messageformat.ts';
+export { MessageFormat, MessageFormatOptions } from './messageformat.ts';

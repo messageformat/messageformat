@@ -1,10 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { MessageFormat, MessagePart } from 'messageformat';
 import type {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  MessageFormat,
   MessageFunction,
-  MessagePart
-} from 'messageformat';
-import type {
   MessageFunctionContext,
   MessageValue
 } from 'messageformat/functions';

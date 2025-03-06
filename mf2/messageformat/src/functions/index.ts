@@ -15,6 +15,7 @@
 export { getLocaleDir } from '../dir-utils.ts';
 export { asBoolean, asPositiveInteger, asString } from './utils.ts';
 
+export type { MessageFunction } from '../messageformat.ts';
 export type { MessageValue } from '../message-value.ts';
 export type { MessageFunctionContext } from '../resolve/function-context.ts';
 export type { MessageDateTime } from './datetime.ts';

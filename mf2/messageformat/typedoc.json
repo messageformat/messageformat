@@ -1,4 +1,4 @@
 {
   "entryPoints": ["src/index.ts"],
-  "intentionallyNotExported": ["MessageFunctionContext", "MessageValue"]
+  "intentionallyNotExported": ["MessageFunction"]
 }
