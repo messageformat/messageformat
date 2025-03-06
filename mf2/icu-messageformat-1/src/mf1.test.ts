@@ -411,7 +411,7 @@ for (const [title, cases] of Object.entries(testCases)) {
             if (typeof res === 'string' || res instanceof RegExp) {
               errors = [];
             } else if ('compileError' in res) {
-              expect(() => mf1ToMessage(data, locale)).toThrow(
+              expect(() => mf1ToMessage(locale, data)).toThrow(
                 res.compileError
               );
               return;
@@ -420,7 +420,7 @@ for (const [title, cases] of Object.entries(testCases)) {
               res = res.res;
             }
 
-            const mf = mf1ToMessage(data, locale, { bidiIsolation: 'none' });
+            const mf = mf1ToMessage(locale, data, { bidiIsolation: 'none' });
             const onError = jest.fn();
             const msg = mf.format(
               param as Record<string, string | number | Date>,

@@ -88,7 +88,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     expect(msg.selectors).toHaveLength(4);
     expect(msg.variants).toHaveLength(81);
 
-    const mf = mf1ToMessage(msg, 'en');
+    const mf = mf1ToMessage('en', msg);
 
     const none = mf.format({
       poolCount: 0,
