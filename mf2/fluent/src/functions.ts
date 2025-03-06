@@ -1,7 +1,7 @@
 import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   MessageFormat,
-  MessageFunctions,
+  MessageFunction,
   MessagePart
 } from 'messageformat';
 import type {
@@ -67,7 +67,7 @@ const getMessageFunction = (res: FluentMessageResource) =>
  */
 export const getFluentFunctions = (
   res: FluentMessageResource
-): MessageFunctions => ({
+): Record<string, MessageFunction> => ({
   currency: DraftFunctions.currency,
   unit: DraftFunctions.unit,
   'fluent:message': getMessageFunction(res)

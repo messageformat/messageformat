@@ -13,16 +13,12 @@ import { resolveExpression } from './resolve/resolve-expression.ts';
 import { UnresolvedExpression } from './resolve/resolve-variable.ts';
 import { selectPattern } from './select-pattern.ts';
 
-/**
- * The runtime function registry available when resolving {@link FunctionRef} elements.
- */
-export interface MessageFunctions {
-  [key: string]: (
-    context: MessageFunctionContext,
-    options: Record<string, unknown>,
-    input?: unknown
-  ) => MessageValue;
-}
+/** An MF2 function handler. */
+export type MessageFunction = (
+  context: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+) => MessageValue;
 
 export interface MessageFormatOptions {
   /**
@@ -55,7 +51,7 @@ export interface MessageFormatOptions {
    * The set of custom functions available during message resolution.
    * Extends the default set of functions.
    */
-  functions?: MessageFunctions;
+  functions?: Record<string, MessageFunction>;
 }
 
 /**
@@ -67,7 +63,7 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: Intl.Locale[];
   readonly #message: Message;
-  readonly #functions: Readonly<MessageFunctions>;
+  readonly #functions: Record<string, MessageFunction>;
 
   constructor(
     locales: string | string[] | undefined,

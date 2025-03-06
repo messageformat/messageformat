@@ -1,24 +1,22 @@
 import { datetime } from '../functions/datetime.ts';
-import {
-  MessageFormat,
-  MessageFunctions,
-  MessageNumberPart
-} from '../index.ts';
+import { MessageFormat, MessageFunction, MessageNumberPart } from '../index.ts';
 
 test('Custom function', () => {
-  const functions = {
-    custom: ({ dir, source, locales: [locale] }, _opt, input) => ({
-      type: 'custom',
-      source,
-      dir: dir ?? 'auto',
-      locale,
-      toParts: () => [
-        { type: 'custom', source, locale, value: `part:${input}` }
-      ],
-      toString: () => `str:${input}`
-    })
-  } satisfies MessageFunctions;
-  const mf = new MessageFormat('en', '{$var :custom}', { functions });
+  const custom: MessageFunction = (
+    { dir, source, locales: [locale] },
+    _opt,
+    input
+  ) => ({
+    type: 'custom',
+    source,
+    dir: dir ?? 'auto',
+    locale,
+    toParts: () => [{ type: 'custom', source, locale, value: `part:${input}` }],
+    toString: () => `str:${input}`
+  });
+  const mf = new MessageFormat('en', '{$var :custom}', {
+    functions: { custom }
+  });
   expect(mf.format({ var: 42 })).toEqual('\u2068str:42\u2069');
   expect(mf.formatToParts({ var: 42 })).toEqual([
     { type: 'bidiIsolation', value: '\u2068' },
@@ -95,9 +93,7 @@ describe('Type casts based on runtime', () => {
 
 describe('Function return is not a MessageValue', () => {
   test('object with type, but no source', () => {
-    const functions = {
-      fail: () => ({ type: 'fail' }) as any
-    } satisfies MessageFunctions;
+    const functions = { fail: () => ({ type: 'fail' }) as any };
     const mf = new MessageFormat('en', '{:fail}', { functions });
     const onError = jest.fn();
     expect(mf.format(undefined, onError)).toEqual('\u2068{:fail}\u2069');
@@ -110,9 +106,7 @@ describe('Function return is not a MessageValue', () => {
   });
 
   test('null', () => {
-    const functions = {
-      fail: () => null as any
-    } satisfies MessageFunctions;
+    const functions = { fail: () => null as any };
     const mf = new MessageFormat('en', '{42 :fail}', { functions });
     const onError = jest.fn();
     expect(mf.format(undefined, onError)).toEqual('\u2068{|42|}\u2069');

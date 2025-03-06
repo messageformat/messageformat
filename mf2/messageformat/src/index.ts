@@ -36,5 +36,5 @@ export {
 export {
   MessageFormat,
   MessageFormatOptions,
-  MessageFunctions
+  MessageFunction
 } from './messageformat.ts';
