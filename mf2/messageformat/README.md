@@ -13,7 +13,7 @@ Final version of the MF2 specification.
 [ldml 47]: https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html
 
 ```sh
-npm install --save-exact messageformat@next
+npm install --save messageformat
 ```
 
 ```js

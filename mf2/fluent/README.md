@@ -4,7 +4,7 @@ This library provides conversion and compatibility tools for using [Fluent] reso
 with the [Unicode MessageFormat 2.0] -based [ECMA-402 Intl.MessageFormat proposal].
 
 The Fluent message representation relies on [`@fluent/syntax`],
-while the MessageFormat 2 representation uses [`messageformat@next`].
+while the MessageFormat 2 representation uses [`messageformat`].
 
 This package is distributed only as an ES module.
 
@@ -12,7 +12,7 @@ This package is distributed only as an ES module.
 [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat
 [unicode messageformat 2.0]: https://github.com/unicode-org/message-format-wg
 [`@fluent/syntax`]: https://www.npmjs.com/package/@fluent/syntax
-[`messageformat@next`]: https://www.npmjs.com/package/messageformat/v/next
+[`messageformat`]: https://www.npmjs.com/package/messageformat
 
 ## Usage
 
