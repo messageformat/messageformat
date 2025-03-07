@@ -1,12 +1,12 @@
 import deepEqual from 'fast-deep-equal';
 import {
+  type Model as MF,
   MessageFormat,
   isLiteral,
   isMessage,
   isSelectMessage,
   isVariableRef
 } from 'messageformat';
-import type * as MF from 'messageformat';
 import type { MessageFormatInfo, MessageResourceData } from './index.ts';
 import type * as X from './xliff-spec.ts';
 import { toNmtoken } from './nmtoken.ts';

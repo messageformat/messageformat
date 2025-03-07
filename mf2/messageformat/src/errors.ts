@@ -1,8 +1,10 @@
-import { type MessageNode } from './data-model/types.ts';
-import { cst } from './data-model/from-cst.ts';
+import type { Node } from './data-model/types.ts';
+import { cstKey } from './data-model/from-cst.ts';
 
 /**
  * Base error class used by MessageFormat
+ *
+ * @category Errors
  */
 export class MessageError extends Error {
   type:
@@ -20,6 +22,8 @@ export class MessageError extends Error {
 
 /**
  * Errors in the message syntax.
+ *
+ * @category Errors
  */
 export class MessageSyntaxError extends MessageError {
   declare type:
@@ -39,6 +43,7 @@ export class MessageSyntaxError extends MessageError {
   start: number;
   end: number;
 
+  /** @private */
   constructor(
     type: typeof MessageSyntaxError.prototype.type,
     start: number,
@@ -55,6 +60,8 @@ export class MessageSyntaxError extends MessageError {
 
 /**
  * Errors in the message data model.
+ *
+ * @category Errors
  */
 export class MessageDataModelError extends MessageSyntaxError {
   declare type:
@@ -63,17 +70,18 @@ export class MessageDataModelError extends MessageSyntaxError {
     | 'key-mismatch'
     | 'missing-fallback'
     | 'missing-selector-annotation';
-  constructor(
-    type: typeof MessageDataModelError.prototype.type,
-    node: MessageNode
-  ) {
-    const { start, end } = node[cst] ?? { start: -1, end: -1 };
+
+  /** @private */
+  constructor(type: typeof MessageDataModelError.prototype.type, node: Node) {
+    const { start, end } = node[cstKey] ?? { start: -1, end: -1 };
     super(type, start, end);
   }
 }
 
 /**
  * Message runtime resolution errors
+ *
+ * @category Errors
  */
 export class MessageResolutionError extends MessageError {
   declare type:
@@ -95,6 +103,8 @@ export class MessageResolutionError extends MessageError {
 
 /**
  * Errors in message selection.
+ *
+ * @category Errors
  */
 export class MessageSelectionError extends MessageError {
   declare type: 'bad-selector' | 'no-match';

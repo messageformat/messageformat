@@ -14,16 +14,17 @@ import { UnresolvedExpression } from './resolve/resolve-variable.ts';
 import { selectPattern } from './select-pattern.ts';
 
 /**
- * The runtime function registry available when resolving {@link FunctionRef} elements.
+ * An MF2 function handler, for use in {@link MessageFormatOptions.functions}.
+ *
+ * @category Formatting
  */
-export interface MessageFunctions {
-  [key: string]: (
-    context: MessageFunctionContext,
-    options: Record<string, unknown>,
-    input?: unknown
-  ) => MessageValue;
-}
+export type MessageFunction = (
+  context: MessageFunctionContext,
+  options: Record<string, unknown>,
+  input?: unknown
+) => MessageValue;
 
+/** @category Formatting */
 export interface MessageFormatOptions {
   /**
    * The bidi isolation strategy for messages,
@@ -55,11 +56,15 @@ export interface MessageFormatOptions {
    * The set of custom functions available during message resolution.
    * Extends the default set of functions.
    */
-  functions?: MessageFunctions;
+  functions?: Record<string, MessageFunction>;
 }
 
 /**
- * Creates a new message formatter.
+ * A message formatter that implements the [ECMA-402 Intl.MessageFormat proposal].
+ *
+ * [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat/
+ *
+ * @category Formatting
  */
 export class MessageFormat {
   readonly #bidiIsolation: boolean;
@@ -67,7 +72,7 @@ export class MessageFormat {
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: Intl.Locale[];
   readonly #message: Message;
-  readonly #functions: Readonly<MessageFunctions>;
+  readonly #functions: Record<string, MessageFunction>;
 
   constructor(
     locales: string | string[] | undefined,
@@ -91,6 +96,27 @@ export class MessageFormat {
       : DefaultFunctions;
   }
 
+  /**
+   * Format a message to a string.
+   *
+   * ```js
+   * import { MessageFormat } from 'messageformat';
+   * import { DraftFunctions } from 'messageformat/functions';
+   *
+   * const msg = 'Hello {$user.name}, today is {$date :date}';
+   * const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
+   * mf.format({ user: { name: 'Kat' }, date: new Date('2025-03-01') });
+   * ```
+   *
+   * ```js
+   * 'Hello Kat, today is Mar 1, 2025'
+   * ```
+   *
+   * @param msgParams - To refer to an inner property of an object value,
+   *   use `.` as a separator; in case of conflict, the longest starting substring wins.
+   * @param onError - Called in case of error.
+   *   If not set, errors are by default logged as warnings.
+   */
   format(
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void
@@ -131,6 +157,46 @@ export class MessageFormat {
     return res;
   }
 
+  /**
+   * Format a message to a sequence of parts.
+   *
+   * ```js
+   * import { MessageFormat } from 'messageformat';
+   * import { DraftFunctions } from 'messageformat/functions';
+   *
+   * const msg = 'Hello {$user.name}, today is {$date :date}';
+   * const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
+   * mf.formatToParts({ user: { name: 'Kat' }, date: new Date('2025-03-01') });
+   * ```
+   *
+   * ```js
+   * [
+   *   { type: 'literal', value: 'Hello ' },
+   *   { type: 'bidiIsolation', value: '\u2068' },
+   *   { type: 'string', source: '$user.name', locale: 'en', value: 'Kat' },
+   *   { type: 'bidiIsolation', value: '\u2069' },
+   *   { type: 'literal', value: ', today is ' },
+   *   {
+   *     type: 'datetime',
+   *     source: '$date',
+   *     dir: 'ltr',
+   *     locale: 'en',
+   *     parts: [
+   *       { type: 'month', value: 'Mar' },
+   *       { type: 'literal', value: ' ' },
+   *       { type: 'day', value: '1' },
+   *       { type: 'literal', value: ', ' },
+   *       { type: 'year', value: '2025' }
+   *     ]
+   *   }
+   * ]
+   * ```
+   *
+   * @param msgParams - To refer to an inner property of an object value,
+   *   use `.` as a separator; in case of conflict, the longest starting substring wins.
+   * @param onError - Called in case of error.
+   *   If not set, errors are by default logged as warnings.
+   */
   formatToParts(
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void

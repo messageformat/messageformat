@@ -15,6 +15,7 @@
 export { getLocaleDir } from '../dir-utils.ts';
 export { asBoolean, asPositiveInteger, asString } from './utils.ts';
 
+export type { MessageFunction } from '../messageformat.ts';
 export type { MessageValue } from '../message-value.ts';
 export type { MessageFunctionContext } from '../resolve/function-context.ts';
 export type { MessageDateTime } from './datetime.ts';
@@ -43,7 +44,14 @@ export const DefaultFunctions = Object.freeze({
  *
  * These are liable to change, and are not covered by any stability guarantee.
  *
- * @alpha
+ * ```js
+ * import { MessageFormat } from 'messageformat';
+ * import { DraftFunctions } from 'messageformat/functions';
+ *
+ * const mf = new MessageFormat(locale, msgsrc, { functions: DraftFunctions });
+ * ```
+ *
+ * @beta
  */
 export const DraftFunctions = Object.freeze({
   currency,

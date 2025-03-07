@@ -11,6 +11,7 @@ export interface MessageFallback extends MessageValue {
   toString(): string;
 }
 
+/** @category Formatted Parts */
 export interface MessageFallbackPart extends MessageExpressionPart {
   type: 'fallback';
   source: string;

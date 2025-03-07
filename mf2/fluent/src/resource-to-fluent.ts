@@ -1,10 +1,10 @@
 import * as Fluent from '@fluent/syntax';
-import type { Message } from 'messageformat';
+import type { Model as MF } from 'messageformat';
 import type { FluentMessageResourceData } from './index.ts';
 import { FunctionMap, messageToFluent } from './message-to-fluent.ts';
 
 /**
- * Convert a Map of {@link Message} data objects into a
+ * Convert a Map of {@link MF.Message} data objects into a
  * {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}.
  *
  * @param template - If set, defines the resource-level comments, message order,
@@ -18,7 +18,7 @@ export function resourceToFluent(
   functionMap?: FunctionMap
 ): Fluent.Resource {
   const body: Fluent.Entry[] = [];
-  let res: Map<string, Map<string, Message> | null>;
+  let res: Map<string, Map<string, MF.Message> | null>;
   if (template) {
     res = new Map(resource); // Should not modify argument
     for (const entry of template.body) {
@@ -61,7 +61,7 @@ export function resourceToFluent(
 
 function messageGroupToFluent(
   msgId: string,
-  messages: Map<string, Message>,
+  messages: Map<string, MF.Message>,
   template: Fluent.Message | Fluent.Term | null,
   functionMap: FunctionMap | undefined
 ): Fluent.Message | Fluent.Term {

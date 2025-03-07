@@ -1,8 +1,8 @@
 import type { MessageValue } from './message-value.ts';
-import type { MessageFunctions } from './messageformat.ts';
+import type { MessageFunction } from './messageformat.ts';
 
 export interface Context {
-  functions: MessageFunctions;
+  functions: Record<string, MessageFunction>;
   onError(error: unknown): void;
   localeMatcher: 'best fit' | 'lookup';
   locales: Intl.Locale[];

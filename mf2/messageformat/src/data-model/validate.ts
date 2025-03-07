@@ -1,5 +1,5 @@
 import { MessageDataModelError } from '../errors.ts';
-import type { Message, MessageNode, VariableRef, Variant } from './types.ts';
+import type { Message, Node, VariableRef, Variant } from './types.ts';
 import { visit } from './visit.ts';
 
 /**
@@ -26,11 +26,12 @@ import { visit } from './visit.ts';
  * - **Duplicate Variant**:
  *   The same list of _keys_ is used for more than one _variant_.
  *
+ * @category Message Data Model
  * @returns The sets of runtime `functions` and `variables` used by the message.
  */
 export function validate(
   msg: Message,
-  onError: (type: MessageDataModelError['type'], node: MessageNode) => void = (
+  onError: (type: MessageDataModelError['type'], node: Node) => void = (
     type,
     node
   ) => {

@@ -10,6 +10,7 @@ export interface MessageUnknownValue extends MessageValue {
   valueOf(): unknown;
 }
 
+/** @category Formatted Parts */
 export interface MessageUnknownPart extends MessageExpressionPart {
   type: 'unknown';
   source: string;

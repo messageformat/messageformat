@@ -7,6 +7,7 @@ export const PDI = '\u2069';
 // https://github.com/unicode-org/cldr/blob/1a914d1/common/properties/scriptMetadata.txt
 const RTL = 'Adlm,Arab,Hebr,Mand,Nkoo,Rohg,Syrc,Thaa';
 
+/** Get a default text direction for `locale`. */
 export function getLocaleDir(
   locale: Intl.Locale | string | undefined
 ): 'ltr' | 'rtl' | 'auto' {

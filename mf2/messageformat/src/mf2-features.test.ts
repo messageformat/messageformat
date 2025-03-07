@@ -16,7 +16,7 @@ import {
   MessageExpressionPart,
   MessageFormat,
   MessageLiteralPart,
-  SelectMessage
+  type Model
 } from './index.ts';
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
@@ -84,7 +84,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       } and {golfCount, plural,
         =0 {no golf courses} one {# golf course} other {# golf courses}
       }.`;
-    const msg = mf1ToMessageData(parse(src)) as SelectMessage;
+    const msg = mf1ToMessageData(parse(src)) as Model.SelectMessage;
     expect(msg.selectors).toHaveLength(4);
     expect(msg.variants).toHaveLength(81);
 
@@ -132,7 +132,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
       {AREA, select, undefined{} other{in {AREA}}}
       {Q, select, undefined{} other{matching the query {Q}}}
     `;
-    const msg = mf1ToMessageData(parse(src)) as SelectMessage;
+    const msg = mf1ToMessageData(parse(src)) as Model.SelectMessage;
     expect(msg.selectors).toHaveLength(6);
     expect(msg.variants).toHaveLength(64);
 
@@ -181,7 +181,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
         *[other] {$clipsPerDay} clips
       } a day.
     `;
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     const one = res.get('activity-needed-calculation-plural')?.get('')?.format({
       totalHours: 1,

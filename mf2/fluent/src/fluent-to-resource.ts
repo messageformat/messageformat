@@ -1,5 +1,9 @@
 import * as Fluent from '@fluent/syntax';
-import { Message, MessageFormat, MessageFormatOptions } from 'messageformat';
+import {
+  type Model as MF,
+  MessageFormat,
+  MessageFormatOptions
+} from 'messageformat';
 import {
   FluentToMessageOptions,
   fluentToMessage
@@ -24,8 +28,8 @@ import type {
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
  */
 export function fluentToResource(
+  locales: string | string[] | undefined,
   source: string | Fluent.Resource | FluentMessageResourceData,
-  locales?: string | string[],
   options?: MessageFormatOptions & FluentToMessageOptions
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();
@@ -53,7 +57,7 @@ export function fluentToResource(
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
- * {@link Message} data objects.
+ * {@link MF.Message} data objects.
  *
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file or
@@ -80,7 +84,7 @@ export function fluentToResourceData(
       case 'Message':
       case 'Term': {
         const id = msg.type === 'Term' ? `-${msg.id.name}` : msg.id.name;
-        const group: Map<string, Message> = new Map();
+        const group: Map<string, MF.Message> = new Map();
         if (msg.value) {
           const entry = fluentToMessage(msg.value, options);
           if (msg.comment) entry.comment = msg.comment.content;

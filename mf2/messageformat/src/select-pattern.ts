@@ -69,6 +69,7 @@ export function selectPattern(context: Context, message: Message): Pattern {
 
       const res = candidates[0];
       if (!res) {
+        // This should not be possible with a valid message.
         context.onError(new MessageSelectionError('no-match'));
         return [];
       }

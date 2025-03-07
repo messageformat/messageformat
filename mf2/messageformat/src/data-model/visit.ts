@@ -7,7 +7,7 @@ import type {
   Literal,
   Markup,
   Message,
-  MessageNode,
+  Node,
   Options,
   Pattern,
   VariableRef,
@@ -21,11 +21,13 @@ import type {
  * Visitors for nodes that contain other nodes may return a callback function
  * that will be called with no arguments when exiting the node.
  *
- * If set, the `node` visitor is called for all {@link MessageNode} values
+ * If set, the `node` visitor is called for all {@link Model.Node} values
  * for which an explicit visitor is not defined.
  *
  * Many visitors will be called with additional arguments
  * identifying some of the context for the visited node.
+ *
+ * @category Message Data Model
  */
 export function visit(
   msg: Message,
@@ -53,7 +55,7 @@ export function visit(
       markup: Markup,
       context: 'declaration' | 'placeholder'
     ) => (() => void) | void;
-    node?: (node: MessageNode, ...rest: unknown[]) => void;
+    node?: (node: Node, ...rest: unknown[]) => void;
     options?: (
       options: Options,
       context: 'declaration' | 'placeholder'

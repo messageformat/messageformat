@@ -42,7 +42,7 @@ export class ParseContext {
 
 /**
  * Parse the string syntax representation of a message into
- * its corresponding CST representation.
+ * its corresponding {@link CST} representation.
  */
 export function parseCST(
   source: string,

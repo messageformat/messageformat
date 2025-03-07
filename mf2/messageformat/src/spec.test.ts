@@ -6,23 +6,19 @@ import {
   testType
 } from '~/test/utils/mfwg-test-utils.js';
 
+import { cstKey, messageFromCST, parseCST, stringifyCST } from './cst/index.ts';
+import { DraftFunctions } from './functions/index.ts';
+import { TestFunctions } from './functions/test-functions.ts';
 import {
   MessageDataModelError,
   MessageFormat,
   MessageFormatOptions,
   MessageSyntaxError,
-  cst,
-  messageFromCST,
-  parseCST,
   parseMessage,
-  stringifyCST,
   stringifyMessage,
   validate,
   visit
 } from './index.ts';
-
-import { DraftFunctions } from './functions/index.ts';
-import { TestFunctions } from './functions/test-functions.ts';
 
 const tests = (tc: Test) => () => {
   const mfOpt: MessageFormatOptions = {
@@ -98,10 +94,10 @@ const tests = (tc: Test) => () => {
         const msg1 = parseMessage(tc.src);
 
         const msg2 = messageFromCST(parseCST(tc.src));
-        delete msg2[cst];
+        delete msg2[cstKey];
         visit(msg2, {
           node(node) {
-            delete node[cst];
+            delete node[cstKey];
           }
         });
 

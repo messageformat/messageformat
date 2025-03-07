@@ -23,7 +23,7 @@
 
 import * as Fluent from '@fluent/syntax';
 import { source } from '~/test/utils/source.js';
-import { PatternMessage, SelectMessage, validate } from 'messageformat';
+import { type Model as MF, validate } from 'messageformat';
 import { fluentToResource, fluentToResourceData } from './index.ts';
 import { messageToFluent } from './message-to-fluent.ts';
 import { resourceToFluent } from './resource-to-fluent.ts';
@@ -333,7 +333,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 )) {
   describe(title, () => {
     const data = fluentToResourceData(src).data;
-    const res = fluentToResource(data, locale, { bidiIsolation: 'none' });
+    const res = fluentToResource(locale, data, { bidiIsolation: 'none' });
 
     test('validate', () => {
       for (const [id, group] of res) {
@@ -437,7 +437,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     test('defined formatted variable', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
@@ -516,7 +516,7 @@ describe('formatToParts', () => {
       ### Other resource comment
     `;
 
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     test('Data model comments', () => {
       const { comments, data } = fluentToResourceData(src);
@@ -615,7 +615,7 @@ describe('formatToParts', () => {
       }
     `;
 
-    const res = fluentToResource(src, 'en');
+    const res = fluentToResource('en', src);
 
     test('case with match', () => {
       const msg = res.get('case')?.get('')?.formatToParts({ case: 'genitive' });
@@ -698,7 +698,7 @@ describe('fluentToResourceData', () => {
   const { data } = fluentToResourceData(src);
 
   test('Merge adjacent text elements for one selector', () => {
-    const msg = data.get('single')?.get('') as SelectMessage;
+    const msg = data.get('single')?.get('') as MF.SelectMessage;
     expect(msg.variants.map(v => v.value)).toMatchObject([
       ['One Zero selector.'],
       ['One Other selector.']
@@ -706,7 +706,7 @@ describe('fluentToResourceData', () => {
   });
 
   test('Merge adjacent text elements for multiple selectors', () => {
-    const msg = data.get('multi')?.get('') as SelectMessage;
+    const msg = data.get('multi')?.get('') as MF.SelectMessage;
     expect(msg.variants.map(v => v.value)).toMatchObject([
       ['Combine Zero multiple F selectors.'],
       ['Combine Zero multiple M selectors.'],
@@ -718,7 +718,7 @@ describe('fluentToResourceData', () => {
   });
 
   test('Select catchall keys', () => {
-    const msg = data.get('multi')?.get('') as SelectMessage;
+    const msg = data.get('multi')?.get('') as MF.SelectMessage;
     expect(msg.variants.map(v => v.keys)).toMatchObject([
       [
         { type: 'literal', value: '0' },
@@ -776,7 +776,7 @@ describe('fluentToResourceData', () => {
 
 describe('messagetoFluent', () => {
   test('SelectMessage with one variant & local var selector', () => {
-    const msg: SelectMessage = {
+    const msg: MF.SelectMessage = {
       type: 'select',
       declarations: [
         {
@@ -837,7 +837,7 @@ describe('messagetoFluent', () => {
   });
 
   test('Message & term references with local var operand', () => {
-    const msg: PatternMessage = {
+    const msg: MF.PatternMessage = {
       type: 'message',
       declarations: [
         {
@@ -888,7 +888,7 @@ describe('messagetoFluent', () => {
   });
 
   test('Message references with input var operand', () => {
-    const msg: PatternMessage = {
+    const msg: MF.PatternMessage = {
       type: 'message',
       declarations: [],
       pattern: [

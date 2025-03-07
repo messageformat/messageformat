@@ -1,10 +1,23 @@
+/**
+ * The Model root is always a {@link Model.Message}.
+ *
+ * ```ts
+ * import type { Model } from 'messageformat';
+ * ```
+ *
+ * @module
+ * @category Message Data Model
+ */
+
 import type * as CST from '../cst/types.ts';
-import { cst } from './from-cst.ts';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { DefaultFunctions, MessageFunction } from '../functions/index.ts';
+import { cstKey } from './from-cst.ts';
 
 /**
  * A node in a message data model
  */
-export type MessageNode =
+export type Node =
   | Declaration
   | Variant
   | CatchallKey
@@ -16,8 +29,6 @@ export type MessageNode =
 
 /**
  * The representation of a single message.
- * The shape of the message is an implementation detail,
- * and may vary for the same message in different languages.
  */
 export type Message = PatternMessage | SelectMessage;
 
@@ -29,13 +40,14 @@ export interface PatternMessage {
   declarations: Declaration[];
   pattern: Pattern;
   comment?: string;
-  [cst]?: CST.SimpleMessage | CST.ComplexMessage;
+  /** @private */
+  [cstKey]?: CST.SimpleMessage | CST.ComplexMessage;
 }
 
 /**
  * A message may declare any number of input and local variables,
- * each with a value defined by an expression.
- * The variable name for each declaration must be unique.
+ * each with a value defined by an {@link Expression}.
+ * The `name` of each declaration must be unique within the {@link Message}.
  */
 export type Declaration = InputDeclaration | LocalDeclaration;
 
@@ -43,14 +55,16 @@ export interface InputDeclaration {
   type: 'input';
   name: string;
   value: Expression<VariableRef>;
-  [cst]?: CST.Declaration;
+  /** @private */
+  [cstKey]?: CST.Declaration;
 }
 
 export interface LocalDeclaration {
   type: 'local';
   name: string;
   value: Expression;
-  [cst]?: CST.Declaration;
+  /** @private */
+  [cstKey]?: CST.Declaration;
 }
 
 /**
@@ -58,9 +72,9 @@ export interface LocalDeclaration {
  * argument types of MessageFormat 1.
  * Each case is defined by a key of one or more string identifiers,
  * and selection between them is made according to
- * the values of a corresponding number of expressions.
- * Selection iterates among the `variants` in order,
- * and terminates when all of the Variant keys match.
+ * the values of a corresponding number of `selectors`.
+ *
+ * Pattern Selection picks the best match among the `variants`.
  * The result of the selection is always a single Pattern.
  */
 export interface SelectMessage {
@@ -69,14 +83,16 @@ export interface SelectMessage {
   selectors: VariableRef[];
   variants: Variant[];
   comment?: string;
-  [cst]?: CST.SelectMessage;
+  /** @private */
+  [cstKey]?: CST.SelectMessage;
 }
 
 export interface Variant {
   type?: never;
   keys: Array<Literal | CatchallKey>;
   value: Pattern;
-  [cst]?: CST.Variant;
+  /** @private */
+  [cstKey]?: CST.Variant;
 }
 
 /**
@@ -85,18 +101,20 @@ export interface Variant {
 export interface CatchallKey {
   type: '*';
   value?: string;
-  [cst]?: CST.CatchallKey;
+  /** @private */
+  [cstKey]?: CST.CatchallKey;
 }
 
 /**
- * The body of each message is composed of a sequence of parts, some of them
- * fixed (Text), others placeholders for values depending on additional
- * data.
+ * The body of each {@link Message} is composed of a sequence of parts,
+ * some of them fixed (Text),
+ * others {@link Expression} and {@link Markup} placeholders
+ * for values depending on additional data.
  */
 export type Pattern = Array<string | Expression | Markup>;
 
 /**
- * Expressions are used in declarations, as selectors, and as placeholders.
+ * Expressions are used in declarations and as placeholders.
  * Each must include at least an `arg` or a `functionRef`, or both.
  */
 export type Expression<
@@ -107,54 +125,51 @@ export type Expression<
 > = {
   type: 'expression';
   attributes?: Attributes;
-  [cst]?: CST.Expression;
+  /** @private */
+  [cstKey]?: CST.Expression;
 } & (A extends Literal | VariableRef
   ? { arg: A; functionRef?: FunctionRef }
   : { arg?: never; functionRef: FunctionRef });
 
 /**
- * An immediately defined value.
+ * An immediately defined literal value.
  *
- * Always contains a string value. In Function arguments and options,
- * the expeted type of the value may result in the value being
- * further parsed as a boolean or a number.
+ * Always contains a string value.
+ * In {@link FunctionRef} arguments and options,
+ * the expected type of the value may result in the value being
+ * further parsed as a boolean or a number by the function handler.
  */
 export interface Literal {
   type: 'literal';
   value: string;
-  [cst]?: CST.Literal;
+  /** @private */
+  [cstKey]?: CST.Literal;
 }
 
 /**
- * The value of a VariableRef is defined by the current Scope.
- *
- * To refer to an inner property of an object value, use `.` as a separator;
- * in case of conflict, the longest starting substring wins.
- * For example, `'user.name'` would be first matched by an exactly matching top-level key,
- * and in case that fails, with the `'name'` property of the `'user'` object:
- * The runtime scopes `{ 'user.name': 'Kat' }` and `{ user: { name: 'Kat' } }`
- * would both resolve a `'user.name'` VariableRef as the string `'Kat'`.
+ * The value of a VariableRef is defined by a declaration,
+ * or by the `msgParams` argument of a {@link MessageFormat.format} or
+ * {@link MessageFormat.formatToParts} call.
  */
 export interface VariableRef {
   type: 'variable';
   name: string;
-  [cst]?: CST.VariableRef;
+  /** @private */
+  [cstKey]?: CST.VariableRef;
 }
 
 /**
- * To resolve a FunctionRef, an externally defined function is called.
+ * To resolve a FunctionRef, a {@link MessageFunction} is called.
  *
- * The `name` identifies a function that takes in the arguments `args`, the
- * current locale, as well as any `options`, and returns some corresponding
- * output. Likely functions available by default would include `'plural'` for
- * determining the plural category of a numeric value, as well as `'number'`
- * and `'date'` for formatting values.
+ * The `name` identifies one of the {@link DefaultFunctions},
+ * or a function included in the {@link MessageFormatOptions.functions}.
  */
 export interface FunctionRef {
   type: 'function';
   name: string;
   options?: Options;
-  [cst]?: CST.FunctionRef;
+  /** @private */
+  [cstKey]?: CST.FunctionRef;
 }
 
 /**
@@ -173,7 +188,8 @@ export interface Markup {
   name: string;
   options?: Options;
   attributes?: Attributes;
-  [cst]?: CST.Expression;
+  /** @private */
+  [cstKey]?: CST.Expression;
 }
 
 /**

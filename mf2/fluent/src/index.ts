@@ -1,4 +1,4 @@
-import type { Message, MessageFormat } from 'messageformat';
+import type { Model as MF, MessageFormat } from 'messageformat';
 
 /**
  * A Map of {@link MessageFormat} instances.
@@ -9,12 +9,12 @@ import type { Message, MessageFormat } from 'messageformat';
 export type FluentMessageResource = Map<string, Map<string, MessageFormat>>;
 
 /**
- * A Map of {@link Message} data structures.
+ * A Map of {@link MF.Message} data structures.
  *
  * As each Fluent message and term may consist of a value and attributes,
  * the inner Map of this structure uses `''` as the key for the value.
  */
-export type FluentMessageResourceData = Map<string, Map<string, Message>>;
+export type FluentMessageResourceData = Map<string, Map<string, MF.Message>>;
 
 export {
   fluentToMessage,

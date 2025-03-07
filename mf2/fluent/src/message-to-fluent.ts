@@ -1,14 +1,6 @@
 import * as Fluent from '@fluent/syntax';
 import {
-  CatchallKey,
-  Declaration,
-  Expression,
-  FunctionRef,
-  Literal,
-  Message,
-  Pattern,
-  VariableRef,
-  Variant,
+  type Model as MF,
   isCatchallKey,
   isLiteral,
   isPatternMessage,
@@ -21,7 +13,7 @@ import {
 export const FluentMessageRef = Symbol.for('Fluent message ref');
 
 type MsgContext = {
-  declarations: Declaration[];
+  declarations: MF.Declaration[];
   functionMap: FunctionMap;
 };
 
@@ -43,7 +35,7 @@ const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
 const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
 
 /**
- * Convert a {@link Message} data object into a
+ * Convert a {@link MF.Message} data object into a
  * {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute).
  *
@@ -54,7 +46,7 @@ const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
  *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
  */
 export function messageToFluent(
-  msg: Message,
+  msg: MF.Message,
   defaultKey = 'other',
   functionMap = defaultFunctionMap
 ): Fluent.Pattern {
@@ -75,7 +67,7 @@ export function messageToFluent(
     const k0 = variants[0].keys;
     while (k0.length > 0) {
       const sel = variableRefToFluent(ctx, msg.selectors[k0.length - 1]);
-      let baseKeys: (Literal | CatchallKey)[] = [];
+      let baseKeys: (MF.Literal | MF.CatchallKey)[] = [];
       let exp: Fluent.SelectExpression | undefined;
       for (let i = 0; i < variants.length; ++i) {
         const { keys, pattern } = variants[i];
@@ -109,7 +101,7 @@ export function messageToFluent(
   throw new Error('Unsupported message type');
 }
 
-function findDefaultKey(variants: Variant[], root: string) {
+function findDefaultKey(variants: MF.Variant[], root: string) {
   let i = 0;
   let defKey = root;
   while (
@@ -123,14 +115,17 @@ function findDefaultKey(variants: Variant[], root: string) {
   return defKey;
 }
 
-function keyToIdentifier(key: Literal | CatchallKey, defKey: string) {
+function keyToIdentifier(key: MF.Literal | MF.CatchallKey, defKey: string) {
   const kv = isCatchallKey(key) ? key.value || defKey : key.value;
   if (isNumberLiteral(kv)) return new Fluent.NumberLiteral(kv);
   if (isIdentifier(kv)) return new Fluent.Identifier(kv);
   throw new Error(`Invalid variant key for Fluent: ${kv}`);
 }
 
-function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
+function keysMatch(
+  a: (MF.Literal | MF.CatchallKey)[],
+  b: (MF.Literal | MF.CatchallKey)[]
+) {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; ++i) {
     const aa = a[i];
@@ -144,7 +139,7 @@ function keysMatch(a: (Literal | CatchallKey)[], b: (Literal | CatchallKey)[]) {
   return true;
 }
 
-function patternToFluent(ctx: MsgContext, pattern: Pattern) {
+function patternToFluent(ctx: MsgContext, pattern: MF.Pattern) {
   const elements = pattern.map(el => {
     if (typeof el === 'string') return new Fluent.TextElement(el);
     if (el.type === 'expression') {
@@ -158,7 +153,7 @@ function patternToFluent(ctx: MsgContext, pattern: Pattern) {
 function functionRefToFluent(
   ctx: MsgContext,
   arg: Fluent.InlineExpression | null,
-  { name, options }: FunctionRef
+  { name, options }: MF.FunctionRef
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (arg) args.positional[0] = arg;
@@ -241,7 +236,7 @@ function functionRefToFluent(
   throw new Error(`No Fluent equivalent found for "${name}" function`);
 }
 
-function literalToFluent({ value }: Literal) {
+function literalToFluent({ value }: MF.Literal) {
   return isNumberLiteral(value)
     ? new Fluent.NumberLiteral(value)
     : new Fluent.StringLiteral(value);
@@ -249,7 +244,7 @@ function literalToFluent({ value }: Literal) {
 
 function expressionToFluent(
   ctx: MsgContext,
-  { arg, functionRef }: Expression
+  { arg, functionRef }: MF.Expression
 ): Fluent.InlineExpression {
   const fluentArg = arg ? valueToFluent(ctx, arg) : null;
   if (functionRef) return functionRefToFluent(ctx, fluentArg, functionRef);
@@ -259,7 +254,7 @@ function expressionToFluent(
 
 function valueToFluent(
   ctx: MsgContext,
-  val: Literal | VariableRef
+  val: MF.Literal | MF.VariableRef
 ): Fluent.InlineExpression {
   return isLiteral(val) ? literalToFluent(val) : variableRefToFluent(ctx, val);
 }
@@ -275,7 +270,7 @@ export function valueToMessageRef(value: string): {
 
 function variableRefToFluent(
   ctx: MsgContext,
-  { name }: VariableRef
+  { name }: MF.VariableRef
 ): Fluent.InlineExpression {
   const local = ctx.declarations.find(decl => decl.name === name);
   if (local?.value) {
