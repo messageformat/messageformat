@@ -18,7 +18,11 @@ export interface MessageBiDiIsolationPart {
   value: '\u2066' | '\u2067' | '\u2068' | '\u2069';
 }
 
-/** @category Formatted Parts */
+/**
+ * The base formatted part for all expressions.
+ *
+ * @category Formatted Parts
+ */
 export interface MessageExpressionPart {
   type: string;
   source: string;
@@ -35,7 +39,11 @@ export interface MessageLiteralPart {
   value: string;
 }
 
-/** @category Formatted Parts */
+/**
+ * The formatted part for a markup placeholder.
+ *
+ * @category Formatted Parts
+ */
 export interface MessageMarkupPart {
   type: 'markup';
   kind: 'open' | 'standalone' | 'close';
