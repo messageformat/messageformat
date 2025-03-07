@@ -27,10 +27,11 @@ export type MessageFunction = (
 /** @category Formatting */
 export interface MessageFormatOptions {
   /**
-   * The bidi isolation strategy for messages,
-   * i.e. how parts with different or unknown directionalities are isolated from each other.
+   * The bidi isolation strategy for message formatting,
+   * i.e. how expression placeholders with different or unknown directionalities
+   * are isolated from the rest of the formatted message.
    *
-   * The default `'default'` strategy isolates all placeholders,
+   * The default `'default'` strategy isolates all expression placeholders,
    * except when both the message and the placeholder are known to be left-to-right.
    *
    * The `'none'` strategy applies no isolation at all.
@@ -48,13 +49,15 @@ export interface MessageFormatOptions {
    * determines which algorithm to use when selecting between them;
    * the default for `Intl` formatters is `'best fit'`.
    *
+   * The locale is resolved separately by each message function handler call.
+   *
    * See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_negotiation
    */
   localeMatcher?: 'best fit' | 'lookup';
 
   /**
-   * The set of custom functions available during message resolution.
-   * Extends the default set of functions.
+   * A set of custom functions to make available during message resolution.
+   * Extends the {@link DefaultFunctions} set of functions.
    */
   functions?: Record<string, MessageFunction>;
 }
@@ -103,16 +106,17 @@ export class MessageFormat {
    * import { MessageFormat } from 'messageformat';
    * import { DraftFunctions } from 'messageformat/functions';
    *
-   * const msg = 'Hello {$user.name}, today is {$date :date}';
+   * const msg = 'Hello {$user.name}, today is {$date :date style=long}';
    * const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
    * mf.format({ user: { name: 'Kat' }, date: new Date('2025-03-01') });
    * ```
    *
    * ```js
-   * 'Hello Kat, today is Mar 1, 2025'
+   * 'Hello Kat, today is March 1, 2025'
    * ```
    *
-   * @param msgParams - To refer to an inner property of an object value,
+   * @param msgParams - Values that may be referenced by `$`-prefixed variable references.
+   *   To refer to an inner property of an object value,
    *   use `.` as a separator; in case of conflict, the longest starting substring wins.
    * @param onError - Called in case of error.
    *   If not set, errors are by default logged as warnings.
@@ -164,7 +168,7 @@ export class MessageFormat {
    * import { MessageFormat } from 'messageformat';
    * import { DraftFunctions } from 'messageformat/functions';
    *
-   * const msg = 'Hello {$user.name}, today is {$date :date}';
+   * const msg = 'Hello {$user.name}, today is {$date :date style=long}';
    * const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
    * mf.formatToParts({ user: { name: 'Kat' }, date: new Date('2025-03-01') });
    * ```
@@ -182,7 +186,7 @@ export class MessageFormat {
    *     dir: 'ltr',
    *     locale: 'en',
    *     parts: [
-   *       { type: 'month', value: 'Mar' },
+   *       { type: 'month', value: 'March' },
    *       { type: 'literal', value: ' ' },
    *       { type: 'day', value: '1' },
    *       { type: 'literal', value: ', ' },
@@ -192,7 +196,8 @@ export class MessageFormat {
    * ]
    * ```
    *
-   * @param msgParams - To refer to an inner property of an object value,
+   * @param msgParams - Values that may be referenced by `$`-prefixed variable references.
+   *   To refer to an inner property of an object value,
    *   use `.` as a separator; in case of conflict, the longest starting substring wins.
    * @param onError - Called in case of error.
    *   If not set, errors are by default logged as warnings.

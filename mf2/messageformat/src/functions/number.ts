@@ -3,8 +3,15 @@ import { MessageResolutionError } from '../errors.ts';
 import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { DefaultFunctions, DraftFunctions } from './index.ts';
 import { asPositiveInteger, asString } from './utils.ts';
 
+/**
+ * The resolved value of a {@link DraftFunctions.currency | :currency},
+ * {@link DefaultFunctions.integer | :integer}, {@link DraftFunctions.math | :math},
+ * {@link DefaultFunctions.number | :number}, or {@link DraftFunctions.unit | :unit} expression.
+ */
 export interface MessageNumber extends MessageValue {
   readonly type: 'number';
   readonly source: string;
@@ -12,6 +19,7 @@ export interface MessageNumber extends MessageValue {
   readonly options: Readonly<
     Intl.NumberFormatOptions & Intl.PluralRulesOptions
   >;
+
   /**
    * In addition to matching exact values,
    * numerical values may also match keys with the same plural rule category,
@@ -27,7 +35,11 @@ export interface MessageNumber extends MessageValue {
   valueOf(): number | bigint;
 }
 
-/** @category Formatted Parts */
+/**
+ * The formatted part for a {@link MessageNumber} value.
+ *
+ * @category Formatted Parts
+ */
 export interface MessageNumberPart extends MessageExpressionPart {
   type: 'number';
   source: string;
@@ -133,13 +145,6 @@ export function getMessageNumber(
   };
 }
 
-/**
- * `number` accepts a number, BigInt or string representing a JSON number as input
- * and formats it with a subset of the options of
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
- * It also supports plural category selection via
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- */
 export function number(
   ctx: MessageFunctionContext,
   exprOpt: Record<string, unknown>,
@@ -183,13 +188,6 @@ export function number(
   return getMessageNumber(ctx, value, options, true);
 }
 
-/**
- * `integer` accepts a number, BigInt or string representing a JSON number as input
- * and formats it with a subset of the options of
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat | Intl.NumberFormat}.
- * It also supports plural category selection via
- * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules | Intl.PluralRules}.
- */
 export function integer(
   ctx: MessageFunctionContext,
   exprOpt: Record<string, unknown>,

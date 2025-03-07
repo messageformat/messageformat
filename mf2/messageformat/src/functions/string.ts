@@ -2,6 +2,10 @@ import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
 
+/**
+ * The resolved value of a {@link DefaultFunctions.string | :string} expression,
+ * or of an expression with a literal operand and no function.
+ */
 export interface MessageString extends MessageValue {
   readonly type: 'string';
   readonly source: string;
@@ -12,7 +16,11 @@ export interface MessageString extends MessageValue {
   valueOf(): string;
 }
 
-/** @category Formatted Parts */
+/**
+ * The formatted part for a {@link MessageString} value.
+ *
+ * @category Formatted Parts
+ */
 export interface MessageStringPart extends MessageExpressionPart {
   type: 'string';
   source: string;
@@ -20,17 +28,12 @@ export interface MessageStringPart extends MessageExpressionPart {
   value: string;
 }
 
-/**
- * Accepts any input, and parses any non-string value using `String()`.
- * For no input, resolves its value to an empty string.
- * On error, resolves to a fallback value.
- */
 export function string(
   ctx: Pick<MessageFunctionContext, 'dir' | 'locales' | 'source'>,
   _options: Record<string, unknown>,
-  input?: unknown
+  operand?: unknown
 ): MessageString {
-  const str = input === undefined ? '' : String(input);
+  const str = operand === undefined ? '' : String(operand);
   const selStr = str.normalize();
   return {
     type: 'string',

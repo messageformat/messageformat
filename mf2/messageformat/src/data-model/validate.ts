@@ -4,26 +4,24 @@ import { visit } from './visit.ts';
 
 /**
  * Ensure that the `msg` data model is _valid_, calling `onError` on errors.
+ * If `onError` is not defined, a {@link MessageDataModelError} will be thrown on error.
  *
  * Detects the following errors:
  *
- * - **Variant Key Mismatch**:
+ * - `'key-mismatch'`: **Variant Key Mismatch**<br>
  *   The number of keys on a _variant_ does not equal the number of _selectors_.
  *
- * - **Missing Fallback Variant**:
+ * - `'missing-fallback'`: **Missing Fallback Variant**<br>
  *   The message does not include a _variant_ with only catch-all keys.
  *
- * - **Missing Selector Annotation**:
+ * - `'missing-selector-annotation'`: **Missing Selector Annotation**<br>
  *   A _selector_ does not contains a _variable_ that directly or indirectly
  *   reference a _declaration_ with a _function_.
  *
- * - **Duplicate Declaration**:
+ * - `'duplicate-declaration'`: **Duplicate Declaration**<br>
  *   A _variable_ appears in two _declarations_.
  *
- * - **Invalid Forward Reference**:
- *   A _declaration_ _expression_ refers to a _variable_ defined by a later _declaration_.
- *
- * - **Duplicate Variant**:
+ * - `'duplicate-variant'`: **Duplicate Variant**<br>
  *   The same list of _keys_ is used for more than one _variant_.
  *
  * @category Message Data Model
