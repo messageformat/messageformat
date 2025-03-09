@@ -27,6 +27,7 @@ import { type Model as MF, validate } from 'messageformat';
 import { fluentToResource, fluentToResourceData } from './index.ts';
 import { messageToFluent } from './message-to-fluent.ts';
 import { resourceToFluent } from './resource-to-fluent.ts';
+import { DefaultFunctions } from 'messageformat/functions';
 
 type TestCase = {
   locale?: string;
@@ -328,6 +329,13 @@ const testCases: Record<string, TestCase> = {
   }
 };
 
+const fluentFunctionNames = new Set([
+  ...Object.keys(DefaultFunctions),
+  'currency',
+  'unit',
+  'fluent:message'
+]);
+
 for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
@@ -337,14 +345,12 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
     test('validate', () => {
       for (const [id, group] of res) {
-        for (const [attr, mf] of group) {
-          const { functions } = mf.resolvedOptions();
-          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-          const req = validate(data.get(id)?.get(attr ?? '')!, type => {
+        for (const attr of group.keys()) {
+          const req = validate(data.get(id)!.get(attr)!, type => {
             throw new Error(`Validation failed: ${type}`);
           });
           for (const fn of req.functions) {
-            if (typeof functions[fn] !== 'function') {
+            if (!fluentFunctionNames.has(fn)) {
               throw new Error(`Unknown message function: ${fn}`);
             }
           }
@@ -369,8 +375,6 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
         if (errors?.length) {
-          //console.dir(mf?.resolvedOptions().message,{depth:null});
-          //console.dir(onError.mock.calls, { depth: null });
           expect(onError).toHaveBeenCalledTimes(errors.length);
           for (let i = 0; i < errors.length; ++i) {
             const [err] = onError.mock.calls[i];
