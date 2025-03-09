@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/messageformat/messageformat.git",
-    "directory": "packages/convert"
+    "directory": "mf1/packages/convert"
   },
   "main": "index.js",
   "engines": {
