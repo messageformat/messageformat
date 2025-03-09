@@ -34,7 +34,7 @@ import { unit } from './unit.ts';
  * Functions classified as REQUIRED by the
  * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 47 MessageFormat specification}.
  */
-export const DefaultFunctions = Object.freeze({
+export let DefaultFunctions = {
   /**
    * Supports formatting and selection as defined in LDML 47 for the
    * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-integer-function | :integer function}.
@@ -61,7 +61,10 @@ export const DefaultFunctions = Object.freeze({
    * An `undefined` value is resolved as an empty string.
    */
   string
-});
+};
+DefaultFunctions = Object.freeze(
+  Object.assign(Object.create(null), DefaultFunctions)
+);
 
 /**
  * Functions classified as DRAFT by the
@@ -78,7 +81,7 @@ export const DefaultFunctions = Object.freeze({
  *
  * @beta
  */
-export const DraftFunctions = Object.freeze({
+export let DraftFunctions = {
   /**
    * Supports formatting as defined in LDML 47 for the
    * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-currency-function | :currency function}.
@@ -136,4 +139,7 @@ export const DraftFunctions = Object.freeze({
    * The `unit` option must be provided by either the operand's `options` or the `exprOpt` expression options.
    */
   unit
-});
+};
+DraftFunctions = Object.freeze(
+  Object.assign(Object.create(null), DraftFunctions)
+);
