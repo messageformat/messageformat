@@ -1,5 +1,6 @@
 import { parse } from '@messageformat/parser';
 import { validate } from 'messageformat';
+import { DefaultFunctions } from 'messageformat/functions';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
 export type TestCase = {
@@ -350,6 +351,14 @@ export const testCases: Record<string, TestCase[]> = {
   ]
 };
 
+const mf1FunctionNames = new Set([
+  ...Object.keys(DefaultFunctions),
+  'mf1:date',
+  'mf1:duration',
+  'mf1:number',
+  'mf1:time'
+]);
+
 for (const [title, cases] of Object.entries(testCases)) {
   describe(title, () => {
     for (const { locale = 'en', options, src, exp, only } of cases) {
@@ -380,9 +389,8 @@ for (const [title, cases] of Object.entries(testCases)) {
             const req = validate(data, type => {
               throw new Error(`Validation failed: ${type}`);
             });
-            const { functions } = mf.resolvedOptions();
             for (const fn of req.functions) {
-              if (typeof functions[fn] !== 'function') {
+              if (!mf1FunctionNames.has(fn)) {
                 throw new Error(`Unknown message function: ${fn}`);
               }
             }

@@ -252,15 +252,6 @@ export class MessageFormat {
     return parts;
   }
 
-  resolvedOptions() {
-    return {
-      bidiIsolation: this.#bidiIsolation,
-      dir: this.#dir,
-      functions: Object.freeze(this.#functions),
-      localeMatcher: this.#localeMatcher
-    };
-  }
-
   private createContext(
     msgParams?: Record<string, unknown>,
     onError: Context['onError'] = (error: Error) => {
