@@ -21,7 +21,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/messageformat/messageformat.git",
-    "directory": "packages/rollup-plugin"
+    "directory": "mf1/packages/rollup-plugin"
   },
   "main": "lib/index.js",
   "files": [
