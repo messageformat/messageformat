@@ -1,15 +1,22 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { MessageFormat, MessagePart } from 'messageformat';
+import type { MessagePart } from 'messageformat';
 import type {
-  MessageFunction,
   MessageFunctionContext,
   MessageValue
 } from 'messageformat/functions';
-import { DraftFunctions, getLocaleDir } from 'messageformat/functions';
+import { getLocaleDir } from 'messageformat/functions';
 import type { FluentMessageResource } from './index.ts';
 import { valueToMessageRef } from './message-to-fluent.ts';
 
-const getMessageFunction = (res: FluentMessageResource) =>
+/**
+ * Build a custom function for Fluent message and term references.
+ *
+ * By default, {@link fluentToResource} uses this with the id `fluent:message`.
+ *
+ * @param res - A Map of {@link MessageFormat} instances,
+ *   one for each referrable message and term.
+ *   This Map may be passed in as initially empty, and later filled out by the caller.
+ */
+export const getMessageFunction = (res: FluentMessageResource) =>
   function message(
     ctx: MessageFunctionContext,
     options: Record<string, unknown>,
@@ -50,22 +57,3 @@ const getMessageFunction = (res: FluentMessageResource) =>
       valueOf: () => (str ??= mf.format(options, onError))
     } satisfies MessageValue;
   };
-
-/**
- * Build a {@link MessageFormat} runtime to use with Fluent messages.
- *
- * This builds on top of the default runtime, but uses all-caps names for the
- * `DATETIME` and `NUMBER` message formatters.
- * A custom function `MESSAGE` is also included to support
- * Fluent term and message references.
- *
- * @param res - A Map of MessageFormat instances, for use by `MESSAGE`.
- *   This Map may be passed in as initially empty, and later filled out by the caller.
- */
-export const getFluentFunctions = (
-  res: FluentMessageResource
-): Record<string, MessageFunction> => ({
-  currency: DraftFunctions.currency,
-  unit: DraftFunctions.unit,
-  'fluent:message': getMessageFunction(res)
-});

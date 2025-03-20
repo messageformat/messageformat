@@ -7,49 +7,34 @@ import {
   isSelectMessage
 } from 'messageformat';
 
-/**
- * Symbol used to identify a custom function for Fluent message/term references.
- */
-export const FluentMessageRef = Symbol.for('Fluent message ref');
-
 type MsgContext = {
   declarations: MF.Declaration[];
-  functionMap: FunctionMap;
+  functionMap: Record<string, string>;
 };
 
-export type FunctionMap = Record<string, string | symbol | null>;
+const reIdentifier = /^[a-zA-Z][\w-]*$/;
+const reNumberLiteral = /^-?[0-9]+(\.[0-9]+)?$/;
 
 /**
- * Default value for the {@link messageToFluent} `functionMap` option.
- */
-export const defaultFunctionMap: FunctionMap = {
-  datetime: 'DATETIME',
-  'fluent:message': FluentMessageRef,
-  number: 'NUMBER',
-  plural: 'NUMBER',
-  string: null
-};
-
-const isIdentifier = (value: string) => /^[a-zA-Z][\w-]*$/.test(value);
-
-const isNumberLiteral = (value: string) => /^-?[0-9]+(\.[0-9]+)?$/.test(value);
-
-/**
- * Convert a {@link MF.Message} data object into a
+ * Convert a {@link MF.Message | Model.Message} data object into a
  * {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute).
  *
- * @param defaultKey - The Fluent identifier or numeric literal to use for the
+ * @param options.defaultKey - The Fluent identifier or numeric literal to use for the
  *   default/fallback variant, which is labelled as `*` in MessageFormat 2,
  *   when not explicitly defined in the data.
- * @param functionMap - A mapping of MessageFormat 2 → Fluent function names.
- *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
+ *   Defaults to `other`.
+ * @param options.functionMap - A mapping of custom MessageFormat 2 → Fluent function names.
  */
 export function messageToFluent(
   msg: MF.Message,
-  defaultKey = 'other',
-  functionMap = defaultFunctionMap
+  options?: {
+    defaultKey?: string;
+    functionMap?: Record<string, string>;
+  }
 ): Fluent.Pattern {
+  const defaultKey = options?.defaultKey ?? 'other';
+  const functionMap = options?.functionMap ?? {};
   const ctx: MsgContext = {
     declarations: msg.declarations,
     functionMap
@@ -117,8 +102,8 @@ function findDefaultKey(variants: MF.Variant[], root: string) {
 
 function keyToIdentifier(key: MF.Literal | MF.CatchallKey, defKey: string) {
   const kv = isCatchallKey(key) ? key.value || defKey : key.value;
-  if (isNumberLiteral(kv)) return new Fluent.NumberLiteral(kv);
-  if (isIdentifier(kv)) return new Fluent.Identifier(kv);
+  if (reNumberLiteral.test(kv)) return new Fluent.NumberLiteral(kv);
+  if (reIdentifier.test(kv)) return new Fluent.Identifier(kv);
   throw new Error(`Invalid variant key for Fluent: ${kv}`);
 }
 
@@ -160,6 +145,9 @@ function functionRefToFluent(
   if (options?.size) {
     args.named = [];
     for (const [name, value] of options) {
+      if (name === 'u:dir' || name === 'u:locale') {
+        throw new Error(`The option "${name}" is not supported in Fluent`);
+      }
       const va = valueToFluent(ctx, value);
       if (va instanceof Fluent.BaseLiteral) {
         const id = new Fluent.Identifier(name);
@@ -172,72 +160,127 @@ function functionRefToFluent(
     }
   }
 
-  const id = ctx.functionMap[name];
-  if (id === null) {
-    if (args.named.length > 0) {
-      throw new Error(
-        `The function :${name} is dropped in Fluent, so cannot have options.`
+  let id: string | undefined;
+  switch (name) {
+    case 'string':
+      return args.positional[0];
+
+    case 'integer':
+      args.named.unshift(
+        new Fluent.NamedArgument(
+          new Fluent.Identifier('maximumFractionDigits'),
+          new Fluent.NumberLiteral('0')
+        )
       );
+      id = 'NUMBER';
+      break;
+
+    case 'number':
+      if (
+        args.positional[0] instanceof Fluent.NumberLiteral &&
+        args.named.length === 0
+      ) {
+        return args.positional[0];
+      }
+      id = 'NUMBER';
+      break;
+
+    case 'datetime':
+      id = 'DATETIME';
+      break;
+
+    case 'date': {
+      let hasStyle = false;
+      for (const arg of args.named) {
+        if (arg.name.id === 'style') {
+          arg.name.id = 'dateStyle';
+          hasStyle = true;
+          break;
+        }
+      }
+      if (!hasStyle) {
+        args.named.unshift(
+          new Fluent.NamedArgument(
+            new Fluent.Identifier('dateStyle'),
+            new Fluent.StringLiteral('medium')
+          )
+        );
+      }
+      id = 'DATETIME';
+      break;
     }
-    return args.positional[0];
-  }
-  if (
-    id === 'NUMBER' &&
-    args.positional[0] instanceof Fluent.NumberLiteral &&
-    args.named.length === 0
-  ) {
-    return args.positional[0];
-  }
-  if (typeof id === 'string') {
-    return new Fluent.FunctionReference(new Fluent.Identifier(id), args);
-  }
 
-  if (
-    (name === 'currency' || name === 'unit') &&
-    typeof ctx.functionMap.number === 'string'
-  ) {
-    args.named.unshift(
-      new Fluent.NamedArgument(
-        new Fluent.Identifier('style'),
-        new Fluent.StringLiteral(name)
-      )
-    );
-    return new Fluent.FunctionReference(
-      new Fluent.Identifier(ctx.functionMap.number),
-      args
-    );
-  }
+    case 'time': {
+      let hasStyle = false;
+      for (const arg of args.named) {
+        if (arg.name.id === 'style') {
+          arg.name.id = 'timeStyle';
+          hasStyle = true;
+          break;
+        }
+      }
+      if (!hasStyle) {
+        args.named.unshift(
+          new Fluent.NamedArgument(
+            new Fluent.Identifier('timeStyle'),
+            new Fluent.StringLiteral('short')
+          )
+        );
+      }
+      id = 'DATETIME';
+      break;
+    }
 
-  if (id === FluentMessageRef) {
-    const lit = args.positional[0];
-    if (!(lit instanceof Fluent.BaseLiteral)) {
-      throw new Error(
-        `Fluent message and term references must have a literal message identifier`
+    case 'currency':
+    case 'unit':
+      args.named.unshift(
+        new Fluent.NamedArgument(
+          new Fluent.Identifier('style'),
+          new Fluent.StringLiteral(name)
+        )
       );
-    }
-    const { msgId, msgAttr } = valueToMessageRef(lit.value);
-    const attr = msgAttr ? new Fluent.Identifier(msgAttr) : null;
+      id = 'NUMBER';
+      break;
 
-    if (msgId[0] === '-') {
-      args.positional = [];
-      return new Fluent.TermReference(
-        new Fluent.Identifier(msgId.substring(1)),
-        attr,
-        args.named.length > 0 ? args : null
-      );
+    case 'fluent:message': {
+      const lit = args.positional[0];
+      if (!(lit instanceof Fluent.BaseLiteral)) {
+        throw new Error(
+          `Fluent message and term references must have a literal message identifier`
+        );
+      }
+      const { msgId, msgAttr } = valueToMessageRef(lit.value);
+      const attr = msgAttr ? new Fluent.Identifier(msgAttr) : null;
+
+      if (msgId[0] === '-') {
+        args.positional = [];
+        return new Fluent.TermReference(
+          new Fluent.Identifier(msgId.substring(1)),
+          attr,
+          args.named.length > 0 ? args : null
+        );
+      }
+
+      if (args.named.length > 0) {
+        throw new Error(
+          `Options are not allowed for Fluent message references`
+        );
+      }
+      return new Fluent.MessageReference(new Fluent.Identifier(msgId), attr);
     }
 
-    if (args.named.length > 0) {
-      throw new Error(`Options are not allowed for Fluent message references`);
-    }
-    return new Fluent.MessageReference(new Fluent.Identifier(msgId), attr);
+    default:
+      id = ctx.functionMap[name];
+      if (typeof id !== 'string') {
+        throw new Error(`No Fluent equivalent found for "${name}" function`);
+      }
   }
 
-  throw new Error(`No Fluent equivalent found for "${name}" function`);
+  return new Fluent.FunctionReference(new Fluent.Identifier(id), args);
 }
 
 function literalToFluent({ value }: MF.Literal) {
-  return isNumberLiteral(value)
+  return reNumberLiteral.test(value)
     ? new Fluent.NumberLiteral(value)
     : new Fluent.StringLiteral(value);
 }
