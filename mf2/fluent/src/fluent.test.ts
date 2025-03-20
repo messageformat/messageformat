@@ -393,7 +393,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
     test('resourceToFluent', () => {
       const template = Fluent.parse(src, { withSpans: false });
-      const res = resourceToFluent(data, template);
+      const res = resourceToFluent(data, { template });
 
       class FixResult extends Fluent.Transformer {
         // When converting to MF2, number wrappers are added
