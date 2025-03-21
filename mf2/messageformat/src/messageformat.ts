@@ -4,7 +4,7 @@ import { validate } from './data-model/validate.ts';
 import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.ts';
 import { MessageDataModelError, MessageError } from './errors.ts';
 import type { Context } from './format-context.ts';
-import type { MessagePart } from './formatted-parts.ts';
+import type { MessageFallbackPart, MessagePart } from './formatted-parts.ts';
 import { DefaultFunctions } from './functions/index.ts';
 import { BIDI_ISOLATE, type MessageValue } from './message-value.ts';
 import { formatMarkup } from './resolve/format-markup.ts';
@@ -13,19 +13,26 @@ import { resolveExpression } from './resolve/resolve-expression.ts';
 import { UnresolvedExpression } from './resolve/resolve-variable.ts';
 import { selectPattern } from './select-pattern.ts';
 
+type DefaultFunctionTypes = ReturnType<
+  (typeof DefaultFunctions)[keyof typeof DefaultFunctions]
+>['type'];
+
 /**
  * An MF2 function handler, for use in {@link MessageFormatOptions.functions}.
  *
  * @category Formatting
  */
-export type MessageFunction = (
+export type MessageFunction<T extends string, P extends string = T> = (
   context: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
-) => MessageValue;
+) => MessageValue<T, P>;
 
 /** @category Formatting */
-export interface MessageFormatOptions {
+export interface MessageFormatOptions<
+  T extends string = never,
+  P extends string = T
+> {
   /**
    * The bidi isolation strategy for message formatting,
    * i.e. how expression placeholders with different or unknown directionalities
@@ -59,7 +66,7 @@ export interface MessageFormatOptions {
    * A set of custom functions to make available during message resolution.
    * Extends the {@link DefaultFunctions} set of functions.
    */
-  functions?: Record<string, MessageFunction>;
+  functions?: Record<string, MessageFunction<T, P>>;
 }
 
 /**
@@ -69,18 +76,21 @@ export interface MessageFormatOptions {
  *
  * @category Formatting
  */
-export class MessageFormat {
+export class MessageFormat<T extends string = never, P extends string = T> {
   readonly #bidiIsolation: boolean;
   readonly #dir: 'ltr' | 'rtl' | 'auto';
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: Intl.Locale[];
   readonly #message: Message;
-  readonly #functions: Record<string, MessageFunction>;
+  readonly #functions: Record<
+    string,
+    MessageFunction<T | DefaultFunctionTypes, P | DefaultFunctionTypes>
+  >;
 
   constructor(
     locales: string | string[] | undefined,
     source: string | Message,
-    options?: MessageFormatOptions
+    options?: MessageFormatOptions<T, P>
   ) {
     this.#bidiIsolation = options?.bidiIsolation !== 'none';
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
@@ -134,7 +144,7 @@ export class MessageFormat {
         // Handle errors, but discard results
         formatMarkup(ctx, elem);
       } else {
-        let mv: MessageValue | undefined;
+        let mv: MessageValue<string> | undefined;
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toString === 'function') {
@@ -205,20 +215,21 @@ export class MessageFormat {
   formatToParts(
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void
-  ): MessagePart[] {
+  ): MessagePart<P>[] {
     const ctx = this.createContext(msgParams, onError);
-    const parts: MessagePart[] = [];
+    const parts: MessagePart<P>[] = [];
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
         parts.push({ type: 'literal', value: elem });
       } else if (elem.type === 'markup') {
         parts.push(formatMarkup(ctx, elem));
       } else {
-        let mv: MessageValue | undefined;
+        let mv;
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toParts === 'function') {
-            const mp = mv.toParts();
+            // Let's presume that parts that look like MessageNumberPart or MessageStringPart are such.
+            const mp = mv.toParts() as typeof parts;
             if (
               this.#bidiIsolation &&
               (this.#dir !== 'ltr' || mv.dir !== 'ltr' || mv[BIDI_ISOLATE])
@@ -237,7 +248,10 @@ export class MessageFormat {
           }
         } catch (error) {
           ctx.onError(error);
-          const fb = { type: 'fallback', source: mv?.source ?? '�' };
+          const fb: MessageFallbackPart = {
+            type: 'fallback',
+            source: mv?.source ?? '�'
+          };
           if (this.#bidiIsolation) {
             parts.push({ type: 'bidiIsolation', value: FSI }, fb, {
               type: 'bidiIsolation',
@@ -270,7 +284,7 @@ export class MessageFormat {
         decl.type === 'input' ? (msgParams ?? {}) : undefined
       );
     }
-    const ctx: Context = {
+    const ctx: Context<T | DefaultFunctionTypes, P | DefaultFunctionTypes> = {
       onError,
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,

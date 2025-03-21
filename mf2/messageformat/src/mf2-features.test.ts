@@ -24,7 +24,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     { source, locales: [locale] }: MessageFunctionContext,
     options: Record<string, unknown>,
     input: unknown
-  ): MessageValue {
+  ): MessageValue<'range'> {
     const { start, end } = input as { start: number; end: number };
     const value = `${start} - ${end}`;
     return {
@@ -213,7 +213,7 @@ maybe('List formatting', () => {
       { locales, source }: MessageFunctionContext,
       options: Record<string, unknown>,
       input?: unknown
-    ): MessageValue => {
+    ): MessageValue<'list', 'element' | 'literal'> => {
       let list = Array.isArray(input)
         ? input.map(String)
         : input === undefined
@@ -292,7 +292,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   function hackyFixArticles(
     locales: string[],
     parts: Array<
-      MessageExpressionPart | MessageLiteralPart | MessageBiDiIsolationPart
+      | MessageExpressionPart<string>
+      | MessageLiteralPart
+      | MessageBiDiIsolationPart
     >
   ) {
     if (locales[0] !== 'en') throw new Error('Only English supported');

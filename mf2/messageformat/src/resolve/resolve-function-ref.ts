@@ -7,15 +7,16 @@ import type {
 import { MessageError } from '../errors.ts';
 import type { Context } from '../format-context.ts';
 import { fallback } from '../functions/fallback.ts';
-import { BIDI_ISOLATE } from '../message-value.ts';
+import type { MessageFallback } from '../functions/index.ts';
+import { BIDI_ISOLATE, type MessageValue } from '../message-value.ts';
 import { MessageFunctionContext } from './function-context.ts';
 import { getValueSource, resolveValue } from './resolve-value.ts';
 
-export function resolveFunctionRef(
-  ctx: Context,
+export function resolveFunctionRef<T extends string, P extends string>(
+  ctx: Context<T, P>,
   operand: Literal | VariableRef | undefined,
   { name, options }: FunctionRef
-) {
+): MessageValue<T, P> | MessageFallback {
   const source = getValueSource(operand) ?? `:${name}`;
   try {
     const fnInput = operand ? [resolveValue(ctx, operand)] : [];

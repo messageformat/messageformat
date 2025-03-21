@@ -78,13 +78,16 @@ export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
   return value;
 }
 
-export function resolveVariableRef(ctx: Context, ref: VariableRef) {
+export function resolveVariableRef<T extends string, P extends string>(
+  ctx: Context<T, P>,
+  ref: VariableRef
+) {
   const source = '$' + ref.name;
   const value = lookupVariableRef(ctx, ref);
 
   let type = typeof value;
   if (type === 'object') {
-    const mv = value as MessageValue;
+    const mv = value as MessageValue<T, P>;
     if (mv.type === 'fallback') return fallback(source);
     if (ctx.localVars.has(mv)) return mv;
     if (value instanceof Number) type = 'number';
