@@ -12,7 +12,7 @@ import { asPositiveInteger, asString } from './utils.ts';
  * {@link DefaultFunctions.integer | :integer}, {@link DraftFunctions.math | :math},
  * {@link DefaultFunctions.number | :number}, or {@link DraftFunctions.unit | :unit} expression.
  */
-export interface MessageNumber extends MessageValue {
+export interface MessageNumber extends MessageValue<'number'> {
   readonly type: 'number';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
@@ -40,7 +40,7 @@ export interface MessageNumber extends MessageValue {
  *
  * @category Formatted Parts
  */
-export interface MessageNumberPart extends MessageExpressionPart {
+export interface MessageNumberPart extends MessageExpressionPart<'number'> {
   type: 'number';
   source: string;
   locale: string;

@@ -13,7 +13,7 @@ import { asBoolean, asPositiveInteger, asString } from './utils.ts';
  *
  * @beta
  */
-export interface MessageDateTime extends MessageValue {
+export interface MessageDateTime extends MessageValue<'datetime'> {
   readonly type: 'datetime';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
@@ -29,7 +29,7 @@ export interface MessageDateTime extends MessageValue {
  * @beta
  * @category Formatted Parts
  */
-export interface MessageDateTimePart extends MessageExpressionPart {
+export interface MessageDateTimePart extends MessageExpressionPart<'datetime'> {
   type: 'datetime';
   source: string;
   locale: string;

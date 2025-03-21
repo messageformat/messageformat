@@ -4,7 +4,7 @@ import type { MessageValue } from '../message-value.ts';
 /**
  * Used to represent runtime/formatting errors.
  */
-export interface MessageFallback extends MessageValue {
+export interface MessageFallback extends MessageValue<'fallback'> {
   readonly type: 'fallback';
   readonly source: string;
   toParts(): [MessageFallbackPart];
@@ -12,7 +12,7 @@ export interface MessageFallback extends MessageValue {
 }
 
 /** @category Formatted Parts */
-export interface MessageFallbackPart extends MessageExpressionPart {
+export interface MessageFallbackPart extends MessageExpressionPart<'fallback'> {
   type: 'fallback';
   source: string;
 }

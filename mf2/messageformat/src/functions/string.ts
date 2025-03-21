@@ -6,7 +6,7 @@ import type { MessageFunctionContext } from '../resolve/function-context.ts';
  * The resolved value of a {@link DefaultFunctions.string | :string} expression,
  * or of an expression with a literal operand and no function.
  */
-export interface MessageString extends MessageValue {
+export interface MessageString extends MessageValue<'string'> {
   readonly type: 'string';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
@@ -21,7 +21,7 @@ export interface MessageString extends MessageValue {
  *
  * @category Formatted Parts
  */
-export interface MessageStringPart extends MessageExpressionPart {
+export interface MessageStringPart extends MessageExpressionPart<'string'> {
   type: 'string';
   source: string;
   locale: string;

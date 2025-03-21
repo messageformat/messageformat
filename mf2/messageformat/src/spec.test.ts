@@ -12,7 +12,6 @@ import { TestFunctions } from './functions/test-functions.ts';
 import {
   MessageDataModelError,
   MessageFormat,
-  MessageFormatOptions,
   MessageSyntaxError,
   parseMessage,
   stringifyMessage,
@@ -21,16 +20,14 @@ import {
 } from './index.ts';
 
 const tests = (tc: Test) => () => {
-  const mfOpt: MessageFormatOptions = {
-    functions: { ...DraftFunctions, ...TestFunctions }
-  };
+  const functions = { ...DraftFunctions, ...TestFunctions };
   switch (testType(tc)) {
     case 'syntax-error':
       describe('syntax error', () => {
         test('MessageFormat(string)', () => {
-          expect(() => new MessageFormat(undefined, tc.src, mfOpt)).toThrow(
-            MessageSyntaxError
-          );
+          expect(
+            () => new MessageFormat(undefined, tc.src, { functions })
+          ).toThrow(MessageSyntaxError);
         });
         test('parseCST(string)', () => {
           const cst = parseCST(tc.src);
@@ -44,9 +41,9 @@ const tests = (tc: Test) => () => {
     case 'data-model-error':
       describe('data model error', () => {
         test('MessageFormat(string)', () => {
-          expect(() => new MessageFormat(undefined, tc.src, mfOpt)).toThrow(
-            MessageSyntaxError
-          );
+          expect(
+            () => new MessageFormat(undefined, tc.src, { functions })
+          ).toThrow(MessageSyntaxError);
         });
         test('parseCST(string)', () => {
           const cst = parseCST(tc.src);
@@ -65,7 +62,7 @@ const tests = (tc: Test) => () => {
     default:
       test('format', () => {
         let errors: any[] = [];
-        if (tc.bidiIsolation) mfOpt.bidiIsolation = tc.bidiIsolation;
+        const mfOpt = { bidiIsolation: tc.bidiIsolation, functions };
         const mf = new MessageFormat(tc.locale, tc.src, mfOpt);
         const msg = mf.format(tc.params, err => errors.push(err));
         if (typeof tc.exp === 'string') expect(msg).toBe(tc.exp);

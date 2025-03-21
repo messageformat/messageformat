@@ -1,4 +1,4 @@
-import type { MessagePart } from 'messageformat';
+import type { MessageFormat } from 'messageformat';
 import type {
   MessageFunctionContext,
   MessageValue
@@ -6,6 +6,23 @@ import type {
 import { getLocaleDir } from 'messageformat/functions';
 import type { FluentMessageResource } from './index.ts';
 import { valueToMessageRef } from './message-to-fluent.ts';
+
+export interface MessageReferenceValue extends MessageValue<'fluent-message'> {
+  readonly type: 'fluent-message';
+  readonly source: string;
+  readonly dir: 'ltr' | 'rtl' | 'auto';
+  selectKey(keys: Set<string>): string | null;
+  toParts(): [
+    {
+      type: 'fluent-message';
+      source: string;
+      dir?: 'ltr' | 'rtl';
+      parts: ReturnType<MessageFormat['formatToParts']>;
+    }
+  ];
+  toString(): string;
+  valueOf(): string;
+}
 
 /**
  * Build a custom function for Fluent message and term references.
@@ -21,7 +38,7 @@ export const getMessageFunction = (res: FluentMessageResource) =>
     ctx: MessageFunctionContext,
     options: Record<string, unknown>,
     input?: unknown
-  ) {
+  ): MessageReferenceValue {
     const { onError, source } = ctx;
     const locale = ctx.locales[0];
     const dir = ctx.dir ?? getLocaleDir(locale);
@@ -31,21 +48,14 @@ export const getMessageFunction = (res: FluentMessageResource) =>
 
     let str: string | undefined;
     return {
-      type: 'fluent-message' as const,
+      type: 'fluent-message',
       source,
       dir,
       selectKey(keys) {
         str ??= mf.format(options, onError);
         return keys.has(str) ? str : null;
       },
-      toParts(): [
-        {
-          type: 'fluent-message';
-          source: string;
-          dir?: 'ltr' | 'rtl';
-          parts: MessagePart[];
-        }
-      ] {
+      toParts() {
         const parts = mf.formatToParts(options, onError);
         const res =
           dir === 'ltr' || dir === 'rtl'
@@ -55,5 +65,5 @@ export const getMessageFunction = (res: FluentMessageResource) =>
       },
       toString: () => (str ??= mf.format(options, onError)),
       valueOf: () => (str ??= mf.format(options, onError))
-    } satisfies MessageValue;
+    };
   };

@@ -2,7 +2,7 @@ import { MessageFormat, MessageNumberPart } from 'messageformat';
 import { DraftFunctions, MessageFunction } from 'messageformat/functions';
 
 test('Custom function', () => {
-  const custom: MessageFunction = (
+  const custom: MessageFunction<'custom'> = (
     { dir, source, locales: [locale] },
     _opt,
     input
