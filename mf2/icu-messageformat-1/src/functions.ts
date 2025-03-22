@@ -1,63 +1,31 @@
+import { MessageResolutionError } from 'messageformat';
 import {
+  DefaultFunctions,
   DraftFunctions,
   type MessageDateTime,
   type MessageFunctionContext,
   type MessageNumber,
-  type MessageValue,
-  getLocaleDir
+  type MessageValue
 } from 'messageformat/functions';
 
-function getParam(options: Record<string, unknown>) {
-  if (options.param) {
-    const param = String(options.param).trim();
-    if (param) return param;
-  }
-  return undefined;
-}
-
-type DateTimeSize = 'short' | 'default' | 'long' | 'full';
-
-function date(
+const currency: (
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
-  input?: unknown
-): MessageDateTime {
-  const size = getParam(options) as DateTimeSize;
-  const opt = {
-    weekday: size === 'full' ? 'long' : undefined,
-    day: 'numeric',
-    month:
-      size === 'short'
-        ? 'numeric'
-        : size === 'full' || size === 'long'
-          ? 'long'
-          : 'short',
-    year: 'numeric'
-  };
-  return DraftFunctions.datetime(ctx, opt, input);
-}
+  operand?: unknown
+) => MessageNumber = DraftFunctions.currency;
 
-function time(
+const datetime: (
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
-  input?: unknown
-): MessageDateTime {
-  const size = getParam(options) as DateTimeSize;
-  const opt = {
-    second: size === 'short' ? undefined : 'numeric',
-    minute: 'numeric',
-    hour: 'numeric',
-    timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
-  };
-  return DraftFunctions.datetime(ctx, opt, input);
-}
+  operand?: unknown
+) => MessageDateTime = DraftFunctions.datetime;
 
 function duration(
   ctx: MessageFunctionContext,
   _options: unknown,
-  input?: unknown
+  operand?: unknown
 ) {
-  let value = Number(input);
+  let value = Number(operand);
   let str: string;
   if (!isFinite(value)) {
     str = String(value);
@@ -89,87 +57,55 @@ function duration(
 
   const { source } = ctx;
   return {
-    type: 'mf1-duration',
+    type: 'mf1:duration',
     source,
-    toParts: () => [{ type: 'mf1-duration', source, value: str }] as const,
+    toParts: () => [{ type: 'mf1:duration', source, value: str }] as const,
     toString: () => str,
     valueOf: () => value
-  } satisfies MessageValue<'mf1-duration'>;
+  } satisfies MessageValue<'mf1:duration'>;
 }
 
-function number(
+function percent(
+  ctx: MessageFunctionContext,
+  _options: Record<string, unknown>,
+  operand?: unknown
+): MessageNumber {
+  return DraftFunctions.unit(ctx, { unit: 'percent' }, 100 * Number(operand));
+}
+
+function plural(
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
-  input?: unknown
+  operand?: unknown
 ): MessageNumber {
-  const { locales, source } = ctx;
-  const origNum = typeof input === 'bigint' ? input : Number(input);
+  const origNum = typeof operand === 'bigint' ? operand : Number(operand);
   let num = origNum;
-  const offset = Number(options.pluralOffset);
+  const offset = Number(options.offset);
   if (Number.isInteger(offset)) {
     if (typeof num === 'number') num -= offset;
     else if (typeof num === 'bigint') num -= BigInt(offset);
+  } else {
+    ctx.onError(
+      new MessageResolutionError(
+        'bad-option',
+        `Plural offset must be an integer: ${options.offset}`,
+        ctx.source
+      )
+    );
   }
 
-  const opt: Intl.NumberFormatOptions & Intl.PluralRulesOptions = {
-    localeMatcher: ctx.localeMatcher
+  const mv = DefaultFunctions.number(ctx, options, num);
+  mv.selectKey = keys => {
+    const str = String(origNum);
+    if (keys.has(str)) return str;
+    // Intl.PluralRules needs a number, not bigint
+    const cat = new Intl.PluralRules(ctx.locales, {
+      localeMatcher: ctx.localeMatcher,
+      type: options.select === 'ordinal' ? 'ordinal' : 'cardinal'
+    }).select(Number(num));
+    return keys.has(cat) ? cat : null;
   };
-  switch (getParam(options)) {
-    case 'integer':
-      opt.maximumFractionDigits = 0;
-      break;
-    case 'percent':
-      opt.style = 'percent';
-      break;
-    case 'currency': {
-      opt.style = 'currency';
-      opt.currency = 'USD';
-      break;
-    }
-  }
-  if (options.type === 'ordinal') opt.type = 'ordinal';
-
-  let locale: string | undefined;
-  let dir = ctx.dir;
-  let nf: Intl.NumberFormat | undefined;
-  let cat: Intl.LDMLPluralRule | undefined;
-  let str: string | undefined;
-  return {
-    type: 'number',
-    source,
-    get dir() {
-      if (dir == null) {
-        locale ??= Intl.NumberFormat.supportedLocalesOf(locales, opt)[0];
-        dir = getLocaleDir(locale);
-      }
-      return dir;
-    },
-    get options() {
-      return { ...opt };
-    },
-    selectKey(keys) {
-      const str = String(origNum);
-      if (keys.has(str)) return str;
-      // Intl.PluralRules needs a number, not bigint
-      cat ??= new Intl.PluralRules(locales, opt).select(Number(num));
-      return keys.has(cat) ? cat : null;
-    },
-    toParts() {
-      nf ??= new Intl.NumberFormat(locales, opt);
-      const parts = nf.formatToParts(num);
-      locale ??= nf.resolvedOptions().locale;
-      dir ??= getLocaleDir(locale);
-      return dir === 'ltr' || dir === 'rtl'
-        ? [{ type: 'number', source, dir, locale, parts }]
-        : [{ type: 'number', source, locale, parts }];
-    },
-    toString() {
-      nf ??= new Intl.NumberFormat(locales, opt);
-      str ??= nf.format(num);
-      return str;
-    },
-    valueOf: () => num
-  };
+  return mv;
 }
 
 /**
@@ -178,17 +114,40 @@ function number(
  * Used by {@link mf1ToMessage}.
  */
 export let MF1Functions = {
-  'mf1:date': date,
+  /**
+   * A re-export of {@link DraftFunctions.currency},
+   * used for formatting a `number, currency` placeholder.
+   *
+   * Note that the currency code is set to `"XXX"`.
+   */
+  currency,
 
   /**
-   * Represent a duration in seconds as a string
+   * A re-export of {@link DraftFunctions.datetime},
+   * used for formatting `date` and `time` placeholders.
+   */
+  datetime,
+
+  /**
+   * Formats a duration expressed as seconds.
    *
    * The formatted value includes one or two `:` separators,
    * matching the pattern `hhhh:mm:ss`,
    * possibly with a leading `-` for negative values and a trailing `.sss` part for non-integer input.
    */
   'mf1:duration': duration,
-  'mf1:number': number,
-  'mf1:time': time
+
+  /**
+   * A wrapper around {@link DraftFunctions.unit},
+   * used for formatting a `number, percent` placeholder.
+   */
+  'mf1:percent': percent,
+
+  /**
+   * A plural or selectordinal selector that includes an `offset`.
+   *
+   * Selectors without an offset are represented by `:number`.
+   */
+  'mf1:plural': plural
 };
 MF1Functions = Object.freeze(Object.assign(Object.create(null), MF1Functions));

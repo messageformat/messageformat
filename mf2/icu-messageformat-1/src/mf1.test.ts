@@ -1,6 +1,4 @@
 import { parse } from '@messageformat/parser';
-import { validate } from 'messageformat';
-import { DefaultFunctions } from 'messageformat/functions';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
 export type TestCase = {
@@ -9,7 +7,12 @@ export type TestCase = {
   src: string;
   exp: [
     Record<string, string | number | Date> | (string | number)[] | undefined,
-    string | RegExp
+    (
+      | string
+      | RegExp
+      | { compileError: RegExp }
+      | { res: string | RegExp; errors: string[] }
+    )
   ][];
   only?: boolean;
 };
@@ -198,7 +201,15 @@ export const testCases: Record<string, TestCase[]> = {
     },
     {
       src: 'I have {FRIENDS, plural, one{one friend} other{friends}}.',
-      exp: [[{ FRIENDS: 'toString' }, 'I have friends.']]
+      exp: [
+        [
+          { FRIENDS: 'toString' },
+          {
+            res: 'I have friends.',
+            errors: ['bad-operand', 'bad-selector']
+          }
+        ]
+      ]
     }
   ],
 
@@ -329,12 +340,19 @@ export const testCases: Record<string, TestCase[]> = {
     },
     {
       src: '{P, number, percent} complete',
-      exp: [[{ P: 0.99 }, /99( |\xa0)?% complete/]]
+      exp: [
+        [{ P: 1 }, /^100( |\xa0)?% complete$/],
+        [{ P: 0.99 }, /^99( |\xa0)?% complete$/]
+      ]
       // IE 11 may insert a space or non-breaking space before the % char
     },
     {
       src: 'The total is {V, number, currency}.',
-      exp: [[{ V: 5.5 }, 'The total is $5.50.']]
+      exp: [[{ V: 5.5 }, 'The total is ¤5.50.']]
+    },
+    {
+      src: '{N, number, ::currency/GBP}',
+      exp: [[{ N: 42 }, { compileError: /argStyle/ }]]
     }
   ],
 
@@ -348,16 +366,19 @@ export const testCases: Record<string, TestCase[]> = {
       src: 'Kello on nyt {T, time}',
       exp: [[{ T: 978384385000 }, /^Kello on nyt \d\d?.\d\d.25/]]
     }
+  ],
+
+  'Unsupported formatters': [
+    {
+      src: '{N, spellout}',
+      exp: [[{ N: 42 }, { compileError: /argType/ }]]
+    },
+    {
+      src: '{N, ordinal}',
+      exp: [[{ N: 42 }, { compileError: /argType/ }]]
+    }
   ]
 };
-
-const mf1FunctionNames = new Set([
-  ...Object.keys(DefaultFunctions),
-  'mf1:date',
-  'mf1:duration',
-  'mf1:number',
-  'mf1:time'
-]);
 
 for (const [title, cases] of Object.entries(testCases)) {
   describe(title, () => {
@@ -373,7 +394,7 @@ for (const [title, cases] of Object.entries(testCases)) {
 
       const _describe = only ? describe.only : describe;
       _describe(name, () => {
-        for (const [param, res] of exp) {
+        for (let [param, res] of exp) {
           const strParam: string[] = [];
           if (param && typeof param === 'object') {
             for (const [key, value] of Object.entries(param)) {
@@ -385,20 +406,29 @@ for (const [title, cases] of Object.entries(testCases)) {
 
           test(strParam.join(', '), () => {
             const data = mf1ToMessageData(parse(src));
-            const mf = mf1ToMessage(data, locale, { bidiIsolation: 'none' });
-            const req = validate(data, type => {
-              throw new Error(`Validation failed: ${type}`);
-            });
-            for (const fn of req.functions) {
-              if (!mf1FunctionNames.has(fn)) {
-                throw new Error(`Unknown message function: ${fn}`);
-              }
+
+            let errors: [{ type: string }][];
+            if (typeof res === 'string' || res instanceof RegExp) {
+              errors = [];
+            } else if ('compileError' in res) {
+              expect(() => mf1ToMessage(data, locale)).toThrow(
+                res.compileError
+              );
+              return;
+            } else {
+              errors = res.errors.map(type => [{ type }]);
+              res = res.res;
             }
+
+            const mf = mf1ToMessage(data, locale, { bidiIsolation: 'none' });
+            const onError = jest.fn();
             const msg = mf.format(
-              param as Record<string, string | number | Date>
+              param as Record<string, string | number | Date>,
+              onError
             );
             if (res instanceof RegExp) expect(msg).toMatch(res);
             else expect(msg).toBe(res);
+            expect(onError.mock.calls).toMatchObject(errors);
           });
         }
       });
