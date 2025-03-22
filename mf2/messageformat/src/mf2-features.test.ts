@@ -15,7 +15,7 @@ import {
   MessageBiDiIsolationPart,
   MessageExpressionPart,
   MessageFormat,
-  MessageLiteralPart,
+  MessageTextPart,
   type Model
 } from './index.ts';
 
@@ -59,7 +59,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     const parts1 = mf.formatToParts({ range: { start: 0, end: 1 } });
     expect(parts1).toEqual([
       { type: 'range', source: '$range', value: '0 - 1' },
-      { type: 'literal', value: ' dag' }
+      { type: 'text', value: ' dag' }
     ]);
 
     const msg2 = mf.format({ range: { start: 1, end: 2 } });
@@ -67,7 +67,7 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     const parts2 = mf.formatToParts({ range: { start: 1, end: 2 } });
     expect(parts2).toEqual([
       { type: 'range', source: '$range', value: '1 - 2' },
-      { type: 'literal', value: ' dagen' }
+      { type: 'text', value: ' dagen' }
     ]);
   });
 });
@@ -292,9 +292,7 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
   function hackyFixArticles(
     locales: string[],
     parts: Array<
-      | MessageExpressionPart<string>
-      | MessageLiteralPart
-      | MessageBiDiIsolationPart
+      MessageExpressionPart<string> | MessageBiDiIsolationPart | MessageTextPart
     >
   ) {
     if (locales[0] !== 'en') throw new Error('Only English supported');
@@ -328,11 +326,11 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
-      { type: 'literal', value: 'A ' },
+      { type: 'text', value: 'A ' },
       { type: 'bidiIsolation', value: '\u2068' },
       { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
       { type: 'bidiIsolation', value: '\u2069' },
-      { type: 'literal', value: ' and an ' },
+      { type: 'text', value: ' and an ' },
       { type: 'bidiIsolation', value: '\u2068' },
       { type: 'string', locale: 'en', source: '$other', value: 'other' },
       { type: 'bidiIsolation', value: '\u2069' }
@@ -346,9 +344,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     const parts = mf.formatToParts({ foo: 'other', other: 'foo' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
-      { type: 'literal', value: 'An ' },
+      { type: 'text', value: 'An ' },
       { type: 'string', locale: 'en', source: '$foo', value: 'other' },
-      { type: 'literal', value: ' and a ' },
+      { type: 'text', value: ' and a ' },
       { type: 'string', locale: 'en', source: '$other', value: 'foo' }
     ]);
   });
@@ -360,9 +358,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     const parts = mf.formatToParts({ foo: 'foo', other: 'other' });
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
-      { type: 'literal', value: 'The ' },
+      { type: 'text', value: 'The ' },
       { type: 'string', locale: 'en', source: '$foo', value: 'foo' },
-      { type: 'literal', value: ' and lotsa ' },
+      { type: 'text', value: ' and lotsa ' },
       { type: 'string', locale: 'en', source: '$other', value: 'other' }
     ]);
   });
@@ -375,9 +373,9 @@ describe('Neighbouring text transformations (unicode-org/message-format-wg#160)'
     hackyFixArticles(['en'], parts);
     expect(parts).toEqual([
       { type: 'string', locale: 'en', source: '$foo', value: 'A' },
-      { type: 'literal', value: ' foo and an ' },
+      { type: 'text', value: ' foo and an ' },
       { type: 'string', locale: 'en', source: '|...|', value: '...' },
-      { type: 'literal', value: ' ' },
+      { type: 'text', value: ' ' },
       { type: 'string', locale: 'en', source: '$other', value: 'other' }
     ]);
   });
