@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { MessageFormat } from 'messageformat';
 import {
   DraftFunctions,
   type MessageDateTime,
@@ -20,7 +18,7 @@ function getParam(options: Record<string, unknown>) {
 type DateTimeSize = 'short' | 'default' | 'long' | 'full';
 
 function date(
-  msgCtx: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime {
@@ -36,11 +34,11 @@ function date(
           : 'short',
     year: 'numeric'
   };
-  return DraftFunctions.datetime(msgCtx, opt, input);
+  return DraftFunctions.datetime(ctx, opt, input);
 }
 
 function time(
-  msgCtx: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
 ): MessageDateTime {
@@ -51,18 +49,11 @@ function time(
     hour: 'numeric',
     timeZoneName: size === 'full' || size === 'long' ? 'short' : undefined
   };
-  return DraftFunctions.datetime(msgCtx, opt, input);
+  return DraftFunctions.datetime(ctx, opt, input);
 }
 
-/**
- * Represent a duration in seconds as a string
- *
- * @returns Includes one or two `:` separators, and matches the pattern
- *   `hhhh:mm:ss`, possibly with a leading `-` for negative values and a
- *   trailing `.sss` part for non-integer input
- */
 function duration(
-  { source }: MessageFunctionContext,
+  ctx: MessageFunctionContext,
   _options: unknown,
   input?: unknown
 ) {
@@ -96,10 +87,11 @@ function duration(
       parts.map(n => (Number(n) < 10 ? '0' + String(n) : String(n))).join(':');
   }
 
+  const { source } = ctx;
   return {
     type: 'mf1-duration',
     source,
-    toParts: () => [{ type: 'mf1-duration', source, value: str }],
+    toParts: () => [{ type: 'mf1-duration', source, value: str }] as const,
     toString: () => str,
     valueOf: () => value
   } satisfies MessageValue<'mf1-duration'>;
@@ -181,14 +173,22 @@ function number(
 }
 
 /**
- * Build a {@link MessageFormat} runtime to use with ICU MessageFormat 1 messages.
+ * Function handlers for ICU MessageFormat 1.
  *
- * The structure of this runtime and the options available for its formatters
- * follow the MF1 specifications, rather than being based on the MF2 default runtime.
+ * Used by {@link mf1ToMessage}.
  */
-export const getMF1Functions = () => ({
+export let MF1Functions = {
   'mf1:date': date,
+
+  /**
+   * Represent a duration in seconds as a string
+   *
+   * The formatted value includes one or two `:` separators,
+   * matching the pattern `hhhh:mm:ss`,
+   * possibly with a leading `-` for negative values and a trailing `.sss` part for non-integer input.
+   */
   'mf1:duration': duration,
   'mf1:number': number,
   'mf1:time': time
-});
+};
+MF1Functions = Object.freeze(Object.assign(Object.create(null), MF1Functions));
