@@ -46,8 +46,8 @@ export interface MessageExpressionPart<P extends string> {
 }
 
 /** @category Formatted Parts */
-export interface MessageLiteralPart {
-  type: 'literal';
+export interface MessageTextPart {
+  type: 'text';
   value: string;
 }
 
@@ -73,10 +73,10 @@ export interface MessageMarkupPart {
 export type MessagePart<P extends string> =
   | MessageBiDiIsolationPart
   | MessageFallbackPart
-  | MessageLiteralPart
   | MessageMarkupPart
   | MessageNumberPart
   | MessageStringPart
+  | MessageTextPart
   | MessageUnknownPart
   | MessageExpressionPart<
       Exclude<
@@ -84,10 +84,10 @@ export type MessagePart<P extends string> =
         (
           | MessageBiDiIsolationPart
           | MessageFallbackPart
-          | MessageLiteralPart
           | MessageMarkupPart
           | MessageNumberPart
           | MessageStringPart
+          | MessageTextPart
           | MessageUnknownPart
         )['type']
       >

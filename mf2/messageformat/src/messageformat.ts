@@ -185,11 +185,11 @@ export class MessageFormat<T extends string = never, P extends string = T> {
    *
    * ```js
    * [
-   *   { type: 'literal', value: 'Hello ' },
+   *   { type: 'text', value: 'Hello ' },
    *   { type: 'bidiIsolation', value: '\u2068' },
    *   { type: 'string', source: '$user.name', locale: 'en', value: 'Kat' },
    *   { type: 'bidiIsolation', value: '\u2069' },
-   *   { type: 'literal', value: ', today is ' },
+   *   { type: 'text', value: ', today is ' },
    *   {
    *     type: 'datetime',
    *     source: '$date',
@@ -220,7 +220,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
     const parts: MessagePart<P>[] = [];
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
-        parts.push({ type: 'literal', value: elem });
+        parts.push({ type: 'text', value: elem });
       } else if (elem.type === 'markup') {
         parts.push(formatMarkup(ctx, elem));
       } else {
