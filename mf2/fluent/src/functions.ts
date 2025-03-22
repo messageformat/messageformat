@@ -1,4 +1,9 @@
-import type { MessageFormat } from 'messageformat';
+import type {
+  MessageExpressionPart,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  MessageFormat,
+  MessagePart
+} from 'messageformat';
 import type {
   MessageFunctionContext,
   MessageValue
@@ -7,21 +12,30 @@ import { getLocaleDir } from 'messageformat/functions';
 import type { FluentMessageResource } from './index.ts';
 import { valueToMessageRef } from './message-to-fluent.ts';
 
+/**
+ * The resolved value of a Fluent message or term reference.
+ *
+ * See {@link getMessageFunction}.
+ */
 export interface MessageReferenceValue extends MessageValue<'fluent-message'> {
   readonly type: 'fluent-message';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
   selectKey(keys: Set<string>): string | null;
-  toParts(): [
-    {
-      type: 'fluent-message';
-      source: string;
-      dir?: 'ltr' | 'rtl';
-      parts: ReturnType<MessageFormat['formatToParts']>;
-    }
-  ];
+  toParts(): [MessageReferencePart];
   toString(): string;
   valueOf(): string;
+}
+
+/**
+ * The formatted part for a {@link MessageReferenceValue}.
+ */
+export interface MessageReferencePart
+  extends MessageExpressionPart<'fluent-message'> {
+  type: 'fluent-message';
+  source: string;
+  dir?: 'ltr' | 'rtl';
+  parts: MessagePart<string>[];
 }
 
 /**

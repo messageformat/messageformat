@@ -28,7 +28,12 @@ export type MessageFunction<T extends string, P extends string = T> = (
   input?: unknown
 ) => MessageValue<T, P>;
 
-/** @category Formatting */
+/**
+ * @category Formatting
+ * @typeParam T - The `type` used by custom message functions, if any.
+ *   These extend the {@link DefaultFunctions | default functions}.
+ * @typeParam P - The formatted-parts `type` used by any custom message values.
+ */
 export interface MessageFormatOptions<
   T extends string = never,
   P extends string = T
@@ -64,17 +69,20 @@ export interface MessageFormatOptions<
 
   /**
    * A set of custom functions to make available during message resolution.
-   * Extends the {@link DefaultFunctions} set of functions.
+   * Extends the {@link DefaultFunctions | default functions}.
    */
   functions?: Record<string, MessageFunction<T, P>>;
 }
 
 /**
- * A message formatter that implements the [ECMA-402 Intl.MessageFormat proposal].
- *
- * [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat/
+ * A message formatter for that implements the
+ * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 47 MessageFormat}
+ * specification as well as the {@link https://github.com/tc39/proposal-intl-messageformat/ | TC39 Intl.MessageFormat proposal}.
  *
  * @category Formatting
+ * @typeParam T - The `type` used by custom message functions, if any.
+ *   These extend the {@link DefaultFunctions | default functions}.
+ * @typeParam P - The formatted-parts `type` used by any custom message values.
  */
 export class MessageFormat<T extends string = never, P extends string = T> {
   readonly #bidiIsolation: boolean;

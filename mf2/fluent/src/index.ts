@@ -21,6 +21,10 @@ export {
   fluentToResource,
   fluentToResourceData
 } from './fluent-to-resource.ts';
-export { getMessageFunction, type MessageReferenceValue } from './functions.ts';
+export {
+  getMessageFunction,
+  type MessageReferencePart,
+  type MessageReferenceValue
+} from './functions.ts';
 export { messageToFluent } from './message-to-fluent.ts';
 export { resourceToFluent } from './resource-to-fluent.ts';
