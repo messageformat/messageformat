@@ -34,6 +34,7 @@ export interface MessageBiDiIsolationPart {
  * The base formatted part for all expressions.
  *
  * @category Formatted Parts
+ * @typeParam P - The `"type"` of the formatted part
  */
 export interface MessageExpressionPart<P extends string> {
   type: P;
