@@ -1,6 +1,6 @@
 /**
  * Tools for working with
- * {@link https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md | ICU NumberFormat skeletons}
+ * {@link https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html | ICU NumberFormat skeletons}
  * and {@link http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns | patterns}.
  *
  * @remarks

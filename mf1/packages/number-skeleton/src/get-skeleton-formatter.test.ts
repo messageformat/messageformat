@@ -97,8 +97,8 @@ const tests: {
       42,
       '42',
       [
-        { code: 'TOO_MANY_OPTIONS', stem: '.00' },
-        { stem: 'precision-fraction', source: '.00/@@' }
+        { code: 'BAD_OPTION', stem: '.00' },
+        { stem: 'precision-fraction', source: '.00/@@/@@' }
       ]
     ],
     'notation-simple/foo': [

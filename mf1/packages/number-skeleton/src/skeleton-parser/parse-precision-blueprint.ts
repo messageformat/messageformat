@@ -5,22 +5,57 @@ import {
 } from '../errors.js';
 import { Skeleton } from '../types/skeleton.js';
 
-function parseBlueprintDigits(src: string, style: 'fraction' | 'significant') {
-  const re = style === 'fraction' ? /^\.(0*)(\+|#*)$/ : /^(@+)(\+|#*)$/;
-  const match = src && src.match(re);
-  if (match) {
-    const min = match[1].length;
-    switch (match[2].charAt(0)) {
-      case '':
-        return { min, max: min };
-      case '+':
-        return { min, max: null };
-      case '#': {
-        return { min, max: min + match[2].length };
+function parseFractionDigits(
+  src: string
+): { minFraction: number; maxFraction?: number } | null {
+  const match = src?.match(/^\.(0*)([+*]|#*)$/);
+  if (!match) return null;
+  const min = match[1].length;
+  switch (match[2].charAt(0)) {
+    case '+':
+    case '*':
+      return { minFraction: min };
+    case '#':
+      return { minFraction: min, maxFraction: min + match[2].length };
+    default:
+      return { minFraction: min, maxFraction: min };
+  }
+}
+
+function parseSignificantDigits(src: string): {
+  minSignificant: number;
+  maxSignificant?: number;
+  roundingPriority?: 'relaxed' | 'strict';
+} | null {
+  const match = src?.match(/^(@+)([+*]|#*([sr]?))$/);
+  if (!match) return null;
+  const min = match[1].length;
+  switch (match[2].charAt(0)) {
+    case '+':
+    case '*':
+      return { minSignificant: min };
+    case '#': {
+      const max = min + match[2].length;
+      switch (match[3]) {
+        case 'r':
+          return {
+            minSignificant: min,
+            maxSignificant: max - 1,
+            roundingPriority: 'relaxed'
+          };
+        case 's':
+          return {
+            minSignificant: min,
+            maxSignificant: max - 1,
+            roundingPriority: 'strict'
+          };
+        default:
+          return { minSignificant: min, maxSignificant: max };
       }
     }
+    default:
+      return { minSignificant: min, maxSignificant: min };
   }
-  return null;
 }
 
 export function parsePrecisionBlueprint(
@@ -28,37 +63,37 @@ export function parsePrecisionBlueprint(
   options: string[],
   onError: (err: NumberFormatError) => void
 ) {
-  const fd = parseBlueprintDigits(stem, 'fraction');
-  if (fd) {
-    if (options.length > 1) onError(new TooManyOptionsError(stem, options, 1));
-    const res: Skeleton['precision'] = {
-      style: 'precision-fraction',
-      source: stem,
-      minFraction: fd.min
-    };
-    if (fd.max != null) res.maxFraction = fd.max;
+  const res: Skeleton['precision'] = {
+    style: 'precision-fraction',
+    source: [stem, ...options].join('/')
+  };
 
-    const option = options[0];
-    const sd = parseBlueprintDigits(option, 'significant');
-    if (sd) {
-      res.source = `${stem}/${option}`;
-      res.minSignificant = sd.min;
-      if (sd.max != null) res.maxSignificant = sd.max;
-    } else if (option) {
-      onError(new BadOptionError(stem, option));
+  const fd = parseFractionDigits(stem);
+  if (fd) {
+    Object.assign(res, fd);
+    if (options.length > 2) onError(new TooManyOptionsError(stem, options, 2));
+    for (const option of options) {
+      if (option === 'w') {
+        if (res.trailingZero) onError(new BadOptionError(stem, option));
+        else res.trailingZero = 'stripIfInteger';
+      } else {
+        const sd = parseSignificantDigits(option);
+        if (sd && !('minSignificant' in res)) Object.assign(res, sd);
+        else onError(new BadOptionError(stem, option));
+      }
     }
     return res;
   }
 
-  const sd = parseBlueprintDigits(stem, 'significant');
+  const sd = parseSignificantDigits(stem);
   if (sd) {
-    for (const opt of options) onError(new BadOptionError(stem, opt));
-    const res: Skeleton['precision'] = {
-      style: 'precision-fraction',
-      source: stem,
-      minSignificant: sd.min
-    };
-    if (sd.max != null) res.maxSignificant = sd.max;
+    Object.assign(res, sd);
+    if (options.length > 1) {
+      onError(new TooManyOptionsError(stem, options, 1));
+    } else if (options.length === 1) {
+      if (options[0] === 'w') res.trailingZero = 'stripIfInteger';
+      else onError(new BadOptionError(stem, options[0]));
+    }
     return res;
   }
 

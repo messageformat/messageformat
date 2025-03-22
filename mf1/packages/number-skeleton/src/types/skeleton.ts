@@ -61,19 +61,23 @@ export interface Skeleton {
         style:
           | 'precision-integer'
           | 'precision-unlimited'
-          | 'precision-currency-cash';
+          | 'precision-currency-cash'
+          | 'precision-currency-standard';
+        trailingZero?: 'auto' | 'stripIfInteger';
       }
     | {
-        style: 'precision-currency-standard';
-        trailingZero?: 'auto' | 'stripIfInteger' | undefined;
+        style: 'precision-increment';
+        increment: number;
+        trailingZero?: 'auto' | 'stripIfInteger';
       }
-    | { style: 'precision-increment'; increment: number }
     | {
         style: 'precision-fraction';
         minFraction?: number;
         maxFraction?: number;
         minSignificant?: number;
         maxSignificant?: number;
+        roundingPriority?: 'relaxed' | 'strict';
+        trailingZero?: 'auto' | 'stripIfInteger';
         source?: string;
       };
   roundingMode?:
@@ -96,11 +100,14 @@ export interface Skeleton {
     | 'sign-accounting'
     | 'sign-accounting-always'
     | 'sign-except-zero'
-    | 'sign-accounting-except-zero';
+    | 'sign-accounting-except-zero'
+    | 'sign-negative'
+    | 'sign-accounting-negative';
   unit?:
     | { style: 'percent' | 'permille' | 'base-unit' }
     | { style: 'currency'; currency: string }
-    | { style: 'measure-unit'; unit: Unit };
+    | { style: 'measure-unit'; unit: Unit }
+    | { style: 'concise-unit'; unit: string };
   unitPer?: Unit;
   unitWidth?:
     | 'unit-width-narrow'
