@@ -117,4 +117,11 @@ describe('Function return is not a MessageValue', () => {
     ]);
     expect(onError).toHaveBeenCalledTimes(2);
   });
+
+  test('Object.p.toString used as function', () => {
+    const mf = new MessageFormat('en', '{13 :toString}', { functions: {} });
+    const onError = jest.fn();
+    expect(mf.format(undefined, onError)).toEqual('\u2068{|13|}\u2069');
+    expect(onError.mock.calls).toMatchObject([[{ type: 'unknown-function' }]]);
+  });
 });

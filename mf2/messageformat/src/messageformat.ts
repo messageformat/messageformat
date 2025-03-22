@@ -105,7 +105,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
       throw new MessageDataModelError(type, node);
     });
     this.#functions = options?.functions
-      ? { ...DefaultFunctions, ...options.functions }
+      ? Object.assign(Object.create(null), DefaultFunctions, options.functions)
       : DefaultFunctions;
   }
 
@@ -135,7 +135,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void
   ): string {
-    const ctx = this.createContext(msgParams, onError);
+    const ctx = this.#createContext(msgParams, onError);
     let res = '';
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
@@ -216,7 +216,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void
   ): MessagePart<P>[] {
-    const ctx = this.createContext(msgParams, onError);
+    const ctx = this.#createContext(msgParams, onError);
     const parts: MessagePart<P>[] = [];
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
@@ -266,7 +266,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
     return parts;
   }
 
-  private createContext(
+  #createContext(
     msgParams?: Record<string, unknown>,
     onError: Context['onError'] = (error: Error) => {
       // Emit warning for errors by default
