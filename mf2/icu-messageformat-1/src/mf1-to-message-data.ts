@@ -45,6 +45,137 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
   return args;
 }
 
+function tokenToFunctionRef(token: AST.FunctionArg): {
+  functionRef: MF.FunctionRef;
+  attributes: MF.Attributes;
+} {
+  const attributes: MF.Attributes = new Map([
+    ['mf1:argType', { type: 'literal', value: token.key }]
+  ]);
+  let argStyle = '';
+  if (token.param) {
+    for (const pt of token.param) {
+      if (pt.type === 'content') argStyle += pt.value;
+      else throw new Error(`Unsupported param type: ${pt.type}`);
+    }
+    argStyle = argStyle.trim();
+    attributes.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  }
+
+  switch (token.key) {
+    case 'date': {
+      const month: MF.Literal = { type: 'literal', value: 'short' };
+      const options: MF.Options = new Map([
+        ['day', { type: 'literal', value: 'numeric' }],
+        ['month', month],
+        ['year', { type: 'literal', value: 'numeric' }]
+      ]);
+      switch (argStyle) {
+        case 'full':
+          month.value = 'long';
+          options.set('weekday', { type: 'literal', value: 'long' });
+          break;
+        case 'long':
+          month.value = 'long';
+          break;
+        case 'short':
+          month.value = 'numeric';
+          break;
+        case '':
+        case 'medium':
+          break;
+        default:
+          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+      }
+      return {
+        functionRef: { type: 'function', name: 'datetime', options },
+        attributes
+      };
+    }
+
+    case 'number':
+      switch (argStyle) {
+        case 'currency':
+          return {
+            functionRef: {
+              type: 'function',
+              name: 'currency',
+              options: new Map([
+                ['currency', { type: 'literal', value: 'XXX' }]
+              ])
+            },
+            attributes
+          };
+        case 'integer':
+          return {
+            functionRef: { type: 'function', name: 'integer' },
+            attributes
+          };
+        case 'percent':
+          return {
+            functionRef: { type: 'function', name: 'mf1:percent' },
+            attributes
+          };
+        case '':
+          return {
+            functionRef: { type: 'function', name: 'number' },
+            attributes
+          };
+        default:
+          return {
+            functionRef: {
+              type: 'function',
+              name: 'number',
+              options: new Map([
+                ['mf1:argStyle', { type: 'literal', value: argStyle }]
+              ])
+            },
+            attributes
+          };
+      }
+
+    case 'time': {
+      const options: MF.Options = new Map([
+        ['second', { type: 'literal', value: 'numeric' }],
+        ['minute', { type: 'literal', value: 'numeric' }],
+        ['hour', { type: 'literal', value: 'numeric' }]
+      ]);
+      switch (argStyle) {
+        case 'full':
+        case 'long':
+          options.set('second', { type: 'literal', value: 'numeric' });
+          options.set('timeZoneName', { type: 'literal', value: 'short' });
+          break;
+        case 'short':
+          options.delete('second');
+          break;
+        case '':
+        case 'medium':
+          break;
+        default:
+          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+      }
+      return {
+        functionRef: { type: 'function', name: 'datetime', options },
+        attributes
+      };
+    }
+
+    default: {
+      const functionRef: MF.FunctionRef = {
+        type: 'function',
+        name: `mf1:${token.key}`
+      };
+      if (argStyle) {
+        functionRef.options = new Map([
+          ['mf1:argStyle', { type: 'literal', value: argStyle }]
+        ]);
+      }
+      return { functionRef, attributes };
+    }
+  }
+}
+
 function tokenToPart(
   token: AST.Token,
   pluralArg: string | null
@@ -57,25 +188,12 @@ function tokenToPart(
         type: 'expression',
         arg: { type: 'variable', name: token.arg }
       };
-    case 'function': {
-      const functionRef: MF.FunctionRef = {
-        type: 'function',
-        name: `mf1:${token.key}`
-      };
-      if (token.param && token.param.length > 0) {
-        let value = '';
-        for (const pt of token.param) {
-          if (pt.type === 'content') value += pt.value;
-          else throw new Error(`Unsupported param type: ${pt.type}`);
-        }
-        functionRef.options = new Map([['param', { type: 'literal', value }]]);
-      }
+    case 'function':
       return {
         type: 'expression',
         arg: { type: 'variable', name: token.arg },
-        functionRef
+        ...tokenToFunctionRef(token)
       };
-    }
     case 'octothorpe':
       return pluralArg
         ? { type: 'expression', arg: { type: 'variable', name: pluralArg } }
@@ -87,7 +205,7 @@ function tokenToPart(
 }
 
 function argToInputDeclaration({
-  arg: selName,
+  arg: name,
   pluralOffset,
   type
 }: SelectArg): MF.InputDeclaration {
@@ -96,38 +214,70 @@ function argToInputDeclaration({
     functionRef = { type: 'function', name: 'string' };
   } else {
     const options: MF.Options = new Map();
-    if (pluralOffset) {
-      options.set('pluralOffset', {
-        type: 'literal',
-        value: String(pluralOffset)
-      });
-    }
     if (type === 'selectordinal') {
-      options.set('type', { type: 'literal', value: 'ordinal' });
+      options.set('select', { type: 'literal', value: 'ordinal' });
     }
-
-    functionRef = { type: 'function', name: 'mf1:number' };
-    if (options.size) functionRef.options = options;
+    if (pluralOffset) {
+      options.set('offset', { type: 'literal', value: String(pluralOffset) });
+      functionRef = { type: 'function', name: 'mf1:plural', options };
+    } else {
+      functionRef = { type: 'function', name: 'number' };
+      if (options.size) functionRef.options = options;
+    }
   }
   return {
     type: 'input',
-    name: selName,
+    name,
     value: {
       type: 'expression',
-      arg: { type: 'variable', name: selName },
+      arg: { type: 'variable', name },
       functionRef
     }
   };
 }
 
 /**
- * Convert an ICU MessageFormat 1 message into a {@link MF.Message} data object.
+ * Convert an ICU MessageFormat 1 message into a {@link MF.Message | Model.Message} data object.
  *
  * If the source message contains any inner selectors, they will be
  * lifted into a single top-level selector.
  *
- * Only literal values are supported in formatter parameters. Any
- * such value will be passed in as an option `{ param: string }`.
+ * Only literal values are supported in formatter parameters.
+ * Any unsupported `argStyle` value will be included as a {@link MF.Options | Model.Options} value.
+ *
+ * ```js
+ * import { mf1ToMessageData, mf1Validate } from '@messageformat/icu-messageformat-1';
+ * import { parse } from '@messageformat/parser';
+ *
+ * const mf1Msg = parse('The total is {V, number, currency}.');
+ * const mf2Msg = mf1ToMessageData(mf1Msg);
+ * mf1Validate(mf2Msg);
+ * mf2msg;
+ * ```
+ *
+ * ```js
+ * {
+ *   type: 'message',
+ *   declarations: [],
+ *   pattern: [
+ *     'The total is ',
+ *     {
+ *       type: 'expression',
+ *       arg: { type: 'variable', name: 'V' },
+ *       functionRef: {
+ *         type: 'function',
+ *         name: 'currency',
+ *         options: Map(1) { 'currency' => { type: 'literal', value: 'XXX' } }
+ *       },
+ *       attributes: Map(2) {
+ *         'mf1:argType' => { type: 'literal', value: 'number' },
+ *         'mf1:argStyle' => { type: 'literal', value: 'currency' }
+ *       }
+ *     },
+ *     '.'
+ *   ]
+ * }
+ * ```
  *
  * @param ast - An ICU MessageFormat message as an array of `@messageformat/parser`
  *   {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens}.
