@@ -1,14 +1,17 @@
 import type { Expression } from '../data-model/types.ts';
 import type { Context } from '../format-context.ts';
+import type { MessageFallback } from '../functions/fallback.ts';
+import type { MessageString } from '../functions/string.ts';
+import type { MessageUnknownValue } from '../functions/unknown.ts';
 import type { MessageValue } from '../message-value.ts';
 import { resolveFunctionRef } from './resolve-function-ref.ts';
 import { resolveLiteral } from './resolve-literal.ts';
 import { resolveVariableRef } from './resolve-variable.ts';
 
-export function resolveExpression(
-  ctx: Context,
+export function resolveExpression<T extends string, P extends string>(
+  ctx: Context<T, P>,
   { arg, functionRef }: Expression
-): MessageValue {
+): MessageFallback | MessageString | MessageUnknownValue | MessageValue<T, P> {
   if (functionRef) {
     return resolveFunctionRef(ctx, arg, functionRef);
   }

@@ -29,6 +29,7 @@ export type Node =
 
 /**
  * The representation of a single message.
+ * See {@link parseMessage}.
  */
 export type Message = PatternMessage | SelectMessage;
 

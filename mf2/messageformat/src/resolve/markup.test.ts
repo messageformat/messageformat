@@ -6,7 +6,7 @@ describe('Simple open/close', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{/b}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
-      { type: 'literal', value: 'foo' },
+      { type: 'text', value: 'foo' },
       { type: 'markup', kind: 'close', source: '/b', name: 'b' }
     ]);
     expect(mf.format()).toBe('foo');
@@ -26,7 +26,7 @@ describe('Simple open/close', () => {
         source: '#b',
         name: 'b'
       },
-      { type: 'literal', value: 'foo' },
+      { type: 'text', value: 'foo' },
       { type: 'bidiIsolation', value: '\u2068' },
       { type: 'string', source: '$foo', locale: 'en', value: 'foo bar' },
       { type: 'bidiIsolation', value: '\u2069' },
@@ -65,10 +65,10 @@ describe('Multiple open/close', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{/b}{#a}bar{/a}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
-      { type: 'literal', value: 'foo' },
+      { type: 'text', value: 'foo' },
       { type: 'markup', kind: 'close', source: '/b', name: 'b' },
       { type: 'markup', kind: 'open', source: '#a', name: 'a' },
-      { type: 'literal', value: 'bar' },
+      { type: 'text', value: 'bar' },
       { type: 'markup', kind: 'close', source: '/a', name: 'a' }
     ]);
     expect(mf.format()).toBe('foobar');
@@ -78,9 +78,9 @@ describe('Multiple open/close', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{#a}bar{/a}{/b}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
-      { type: 'literal', value: 'foo' },
+      { type: 'text', value: 'foo' },
       { type: 'markup', kind: 'open', source: '#a', name: 'a' },
-      { type: 'literal', value: 'bar' },
+      { type: 'text', value: 'bar' },
       { type: 'markup', kind: 'close', source: '/a', name: 'a' },
       { type: 'markup', kind: 'close', source: '/b', name: 'b' }
     ]);
@@ -91,11 +91,11 @@ describe('Multiple open/close', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{#a}bar{/b}baz{/a}');
     expect(mf.formatToParts()).toEqual([
       { type: 'markup', kind: 'open', source: '#b', name: 'b' },
-      { type: 'literal', value: 'foo' },
+      { type: 'text', value: 'foo' },
       { type: 'markup', kind: 'open', source: '#a', name: 'a' },
-      { type: 'literal', value: 'bar' },
+      { type: 'text', value: 'bar' },
       { type: 'markup', kind: 'close', source: '/b', name: 'b' },
-      { type: 'literal', value: 'baz' },
+      { type: 'text', value: 'baz' },
       { type: 'markup', kind: 'close', source: '/a', name: 'a' }
     ]);
     expect(mf.format()).toBe('foobarbaz');

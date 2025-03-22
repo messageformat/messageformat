@@ -4,11 +4,9 @@ import {
   MessageFormat,
   MessageFormatOptions
 } from 'messageformat';
-import {
-  FluentToMessageOptions,
-  fluentToMessage
-} from './fluent-to-message.ts';
-import { getFluentFunctions } from './functions.ts';
+import { DraftFunctions } from 'messageformat/functions';
+import { fluentToMessage } from './fluent-to-message.ts';
+import { getMessageFunction } from './functions.ts';
 import type {
   FluentMessageResource,
   FluentMessageResourceData
@@ -18,7 +16,8 @@ import type {
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
  * {@link MessageFormat} instances.
  *
- * A runtime provided by {@link getFluentFunctions} is automatically used in these instances.
+ * Uses {@link DraftFunctions.currency}, {@link DraftFunctions.unit}, as well as
+ * a custom `fluent:message` function provided by {@link getMessageFunction}.
  *
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file,
@@ -26,16 +25,24 @@ import type {
  *   or in the shape output by {@link fluentToResourceData} as `data`.
  * @param locales - The locale code or codes to use for all of the resource's messages.
  * @param options - The MessageFormat constructor options to use for all of the resource's messages.
+ * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  */
 export function fluentToResource(
   locales: string | string[] | undefined,
   source: string | Fluent.Resource | FluentMessageResourceData,
-  options?: MessageFormatOptions & FluentToMessageOptions
+  options?: MessageFormatOptions & { detectNumberSelection?: boolean }
 ): FluentMessageResource {
   const res: FluentMessageResource = new Map();
 
   const { detectNumberSelection, ...opt } = options ?? {};
-  opt.functions = Object.assign(getFluentFunctions(res), options?.functions);
+  opt.functions = Object.assign(
+    {
+      currency: DraftFunctions.currency,
+      unit: DraftFunctions.unit,
+      'fluent:message': getMessageFunction(res)
+    },
+    options?.functions
+  );
 
   const data =
     typeof source === 'string' || source instanceof Fluent.Resource
@@ -57,17 +64,18 @@ export function fluentToResource(
 
 /**
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
- * {@link MF.Message} data objects.
+ * {@link MF.Message | Model.Message} data objects.
  *
  * @param source - A Fluent resource,
  *   as the string contents of an FTL file or
  *   as a {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}
+ * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  * @returns An object containing the messages as `data` and any resource-level
  *   `comments` of the resource.
  */
 export function fluentToResourceData(
   source: string | Fluent.Resource,
-  options?: FluentToMessageOptions
+  options?: { detectNumberSelection?: boolean }
 ): {
   data: FluentMessageResourceData;
   comments: string;

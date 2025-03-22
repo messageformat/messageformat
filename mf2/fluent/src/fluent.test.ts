@@ -27,6 +27,7 @@ import { type Model as MF, validate } from 'messageformat';
 import { fluentToResource, fluentToResourceData } from './index.ts';
 import { messageToFluent } from './message-to-fluent.ts';
 import { resourceToFluent } from './resource-to-fluent.ts';
+import { DefaultFunctions } from 'messageformat/functions';
 
 type TestCase = {
   locale?: string;
@@ -328,6 +329,13 @@ const testCases: Record<string, TestCase> = {
   }
 };
 
+const fluentFunctionNames = new Set([
+  ...Object.keys(DefaultFunctions),
+  'currency',
+  'unit',
+  'fluent:message'
+]);
+
 for (const [title, { locale = 'en', src, tests }] of Object.entries(
   testCases
 )) {
@@ -337,14 +345,12 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
     test('validate', () => {
       for (const [id, group] of res) {
-        for (const [attr, mf] of group) {
-          const { functions } = mf.resolvedOptions();
-          // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-          const req = validate(data.get(id)?.get(attr ?? '')!, type => {
+        for (const attr of group.keys()) {
+          const req = validate(data.get(id)!.get(attr)!, type => {
             throw new Error(`Validation failed: ${type}`);
           });
           for (const fn of req.functions) {
-            if (typeof functions[fn] !== 'function') {
+            if (!fluentFunctionNames.has(fn)) {
               throw new Error(`Unknown message function: ${fn}`);
             }
           }
@@ -369,8 +375,6 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
         if (exp instanceof RegExp) expect(str).toMatch(exp);
         else expect(str).toBe(exp);
         if (errors?.length) {
-          //console.dir(mf?.resolvedOptions().message,{depth:null});
-          //console.dir(onError.mock.calls, { depth: null });
           expect(onError).toHaveBeenCalledTimes(errors.length);
           for (let i = 0; i < errors.length; ++i) {
             const [err] = onError.mock.calls[i];
@@ -389,7 +393,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
     test('resourceToFluent', () => {
       const template = Fluent.parse(src, { withSpans: false });
-      const res = resourceToFluent(data, template);
+      const res = resourceToFluent(data, { template });
 
       class FixResult extends Fluent.Transformer {
         // When converting to MF2, number wrappers are added
@@ -442,7 +446,7 @@ describe('formatToParts', () => {
     test('defined formatted variable', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
       expect(foo).toEqual([
-        { type: 'literal', value: 'Foo ' },
+        { type: 'text', value: 'Foo ' },
         {
           type: 'number',
           source: '$num',
@@ -457,7 +461,7 @@ describe('formatToParts', () => {
       const onError = jest.fn();
       const foo = res.get('foo')?.get('')?.formatToParts(undefined, onError);
       expect(foo).toEqual([
-        { type: 'literal', value: 'Foo ' },
+        { type: 'text', value: 'Foo ' },
         { type: 'bidiIsolation', value: '\u2068' },
         { type: 'fallback', source: '$num' },
         { type: 'bidiIsolation', value: '\u2069' }
@@ -473,7 +477,7 @@ describe('formatToParts', () => {
           type: 'fluent-message',
           source: '|foo|',
           parts: [
-            { type: 'literal', value: 'Foo ' },
+            { type: 'text', value: 'Foo ' },
             { type: 'bidiIsolation', value: '\u2068' },
             { type: 'fallback', source: '$num' },
             { type: 'bidiIsolation', value: '\u2069' }
@@ -485,13 +489,13 @@ describe('formatToParts', () => {
 
     test('defined selector', () => {
       const sel = res.get('sel')?.get('')?.formatToParts({ selector: 'a' });
-      expect(sel).toEqual([{ type: 'literal', value: 'A' }]);
+      expect(sel).toEqual([{ type: 'text', value: 'A' }]);
     });
 
     test('undefined selector', () => {
       const onError = jest.fn();
       const sel = res.get('sel')?.get('')?.formatToParts(undefined, onError);
-      expect(sel).toEqual([{ type: 'literal', value: 'B' }]);
+      expect(sel).toEqual([{ type: 'text', value: 'B' }]);
       expect(onError).toHaveBeenCalledTimes(1);
     });
   });
@@ -575,7 +579,7 @@ describe('formatToParts', () => {
     test('foo', () => {
       const foo = res.get('foo')?.get('')?.formatToParts({ num: 42 });
       expect(foo).toEqual([
-        { type: 'literal', value: 'Foo ' },
+        { type: 'text', value: 'Foo ' },
         {
           type: 'number',
           source: '$num',
@@ -588,12 +592,12 @@ describe('formatToParts', () => {
 
     test('bar', () => {
       const bar = res.get('bar')?.get('')?.formatToParts();
-      expect(bar).toEqual([{ type: 'literal', value: 'Bar' }]);
+      expect(bar).toEqual([{ type: 'text', value: 'Bar' }]);
     });
 
     test('qux', () => {
       const qux = res.get('qux')?.get('')?.formatToParts();
-      expect(qux).toEqual([{ type: 'literal', value: 'Qux' }]);
+      expect(qux).toEqual([{ type: 'text', value: 'Qux' }]);
     });
   });
 
@@ -619,7 +623,7 @@ describe('formatToParts', () => {
 
     test('case with match', () => {
       const msg = res.get('case')?.get('')?.formatToParts({ case: 'genitive' });
-      expect(msg).toEqual([{ type: 'literal', value: 'GEN' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'GEN' }]);
     });
 
     test('case with fallback', () => {
@@ -628,7 +632,7 @@ describe('formatToParts', () => {
         .get('case')
         ?.get('')
         ?.formatToParts({ case: 'oblique' }, onError);
-      expect(msg).toEqual([{ type: 'literal', value: 'NOM' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'NOM' }]);
       expect(onError).not.toHaveBeenCalled();
     });
 
@@ -637,13 +641,13 @@ describe('formatToParts', () => {
         .get('gender')
         ?.get('')
         ?.formatToParts({ gender: 'feminine' });
-      expect(msg).toEqual([{ type: 'literal', value: 'F' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'F' }]);
     });
 
     test('gender with fallback', () => {
       const onError = jest.fn();
       const msg = res.get('gender')?.get('')?.formatToParts(undefined, onError);
-      expect(msg).toEqual([{ type: 'literal', value: 'N' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'N' }]);
       expect(onError.mock.calls.map(args => args[0].type)).toEqual([
         'unresolved-variable'
       ]);
@@ -651,7 +655,7 @@ describe('formatToParts', () => {
 
     test('plural with match', () => {
       const msg = res.get('plural')?.get('')?.formatToParts({ num: 2 });
-      expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'Other' }]);
     });
 
     test('plural with fallback', () => {
@@ -660,7 +664,7 @@ describe('formatToParts', () => {
         .get('plural')
         ?.get('')
         ?.formatToParts({ num: 1 }, onError);
-      expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'Other' }]);
       expect(onError).not.toHaveBeenCalled();
     });
 
@@ -670,7 +674,7 @@ describe('formatToParts', () => {
         .get('plural')
         ?.get('')
         ?.formatToParts({ num: 'NaN' }, onError);
-      expect(msg).toEqual([{ type: 'literal', value: 'Other' }]);
+      expect(msg).toEqual([{ type: 'text', value: 'Other' }]);
       expect(onError.mock.calls.map(args => args[0].type)).toEqual([
         'bad-operand',
         'bad-selector'

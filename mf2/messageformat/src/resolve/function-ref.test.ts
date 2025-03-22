@@ -2,7 +2,7 @@ import { MessageFormat, MessageNumberPart } from 'messageformat';
 import { DraftFunctions, MessageFunction } from 'messageformat/functions';
 
 test('Custom function', () => {
-  const custom: MessageFunction = (
+  const custom: MessageFunction<'custom'> = (
     { dir, source, locales: [locale] },
     _opt,
     input
@@ -116,5 +116,12 @@ describe('Function return is not a MessageValue', () => {
       { type: 'bidiIsolation', value: '\u2069' }
     ]);
     expect(onError).toHaveBeenCalledTimes(2);
+  });
+
+  test('Object.p.toString used as function', () => {
+    const mf = new MessageFormat('en', '{13 :toString}', { functions: {} });
+    const onError = jest.fn();
+    expect(mf.format(undefined, onError)).toEqual('\u2068{|13|}\u2069');
+    expect(onError.mock.calls).toMatchObject([[{ type: 'unknown-function' }]]);
   });
 });

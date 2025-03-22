@@ -17,7 +17,9 @@ import type {
 } from './types.ts';
 
 /**
- * Stringify a message using its syntax representation.
+ * Stringify a {@link Message} using its syntax representation.
+ * Parsing and stringifying a message will not necessarily produce
+ * exactly the same syntax representation.
  *
  * @category Message Data Model
  */

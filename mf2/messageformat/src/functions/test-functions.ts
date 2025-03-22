@@ -10,7 +10,7 @@ import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
 import { asPositiveInteger, asString } from './utils.ts';
 
-interface TestValue extends MessageValue {
+interface TestValue extends MessageValue<'test'> {
   readonly type: 'test';
   readonly options: {
     canFormat: boolean;

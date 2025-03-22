@@ -3,10 +3,17 @@ import { MessageResolutionError } from '../errors.ts';
 import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { DraftFunctions } from './index.ts';
 import { asBoolean, asPositiveInteger, asString } from './utils.ts';
 
-/** @beta */
-export interface MessageDateTime extends MessageValue {
+/**
+ * The resolved value of a {@link DraftFunctions.date | :date},
+ * {@link DraftFunctions.datetime | :datetime}, or {@link DraftFunctions.time | :time} expression.
+ *
+ * @beta
+ */
+export interface MessageDateTime extends MessageValue<'datetime'> {
   readonly type: 'datetime';
   readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
@@ -17,10 +24,12 @@ export interface MessageDateTime extends MessageValue {
 }
 
 /**
+ * The formatted part for a {@link MessageDateTime} value.
+ *
  * @beta
  * @category Formatted Parts
  */
-export interface MessageDateTimePart extends MessageExpressionPart {
+export interface MessageDateTimePart extends MessageExpressionPart<'datetime'> {
   type: 'datetime';
   source: string;
   locale: string;
@@ -51,9 +60,9 @@ const fieldOptions = new Set([
 export const datetime = (
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
-  input?: unknown
+  operand?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, input, res => {
+  dateTimeImplementation(ctx, operand, res => {
     let hasStyle = false;
     let hasFields = false;
     for (const [name, value] of Object.entries(options)) {
@@ -97,9 +106,9 @@ export const datetime = (
 export const date = (
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
-  input?: unknown
+  operand?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, input, res => {
+  dateTimeImplementation(ctx, operand, res => {
     for (const name of Object.keys(res)) {
       if (styleOptions.has(name) || fieldOptions.has(name)) delete res[name];
     }
@@ -134,9 +143,9 @@ export const date = (
 export const time = (
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
-  input?: unknown
+  operand?: unknown
 ): MessageDateTime =>
-  dateTimeImplementation(ctx, input, res => {
+  dateTimeImplementation(ctx, operand, res => {
     for (const name of Object.keys(res)) {
       if (styleOptions.has(name) || fieldOptions.has(name)) delete res[name];
     }

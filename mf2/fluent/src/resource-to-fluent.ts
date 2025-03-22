@@ -1,27 +1,29 @@
 import * as Fluent from '@fluent/syntax';
 import type { Model as MF } from 'messageformat';
 import type { FluentMessageResourceData } from './index.ts';
-import { FunctionMap, messageToFluent } from './message-to-fluent.ts';
+import { messageToFluent } from './message-to-fluent.ts';
 
 /**
- * Convert a Map of {@link MF.Message} data objects into a
+ * Convert a Map of {@link MF.Message | Model.Message} data objects into a
  * {@link https://projectfluent.org/fluent.js/syntax/classes/resource.html | Fluent.Resource}.
  *
- * @param template - If set, defines the resource-level comments, message order,
+ * @param options.functionMap - A mapping of custom MessageFormat 2 → Fluent function names.
+ * @param options.template - If set, defines the resource-level comments, message order,
  *   and the default variant identifiers for messages.
- * @param functionMap - A mapping of MessageFormat 2 → Fluent function names.
- *   The special value {@link FluentMessageRef} maps to Fluent message/term references.
  */
 export function resourceToFluent(
   resource: FluentMessageResourceData,
-  template?: Fluent.Resource,
-  functionMap?: FunctionMap
+  options?: {
+    functionMap?: Record<string, string>;
+    template?: Fluent.Resource;
+  }
 ): Fluent.Resource {
+  const functionMap = options?.functionMap ?? {};
   const body: Fluent.Entry[] = [];
   let res: Map<string, Map<string, MF.Message> | null>;
-  if (template) {
+  if (options?.template) {
     res = new Map(resource); // Should not modify argument
-    for (const entry of template.body) {
+    for (const entry of options.template.body) {
       switch (entry.type) {
         case 'Message':
         case 'Term': {
@@ -63,14 +65,14 @@ function messageGroupToFluent(
   msgId: string,
   messages: Map<string, MF.Message>,
   template: Fluent.Message | Fluent.Term | null,
-  functionMap: FunctionMap | undefined
+  functionMap: Record<string, string>
 ): Fluent.Message | Fluent.Term {
   let comment: string | undefined;
   let value: Fluent.Pattern | undefined;
   const attributes: Fluent.Attribute[] = [];
   for (const [attrId, msg] of messages) {
     const defaultKey = findDefaultKey(template, attrId);
-    const pattern = messageToFluent(msg, defaultKey, functionMap);
+    const pattern = messageToFluent(msg, { defaultKey, functionMap });
     if (!attrId) {
       comment = msg.comment;
       value = pattern;
