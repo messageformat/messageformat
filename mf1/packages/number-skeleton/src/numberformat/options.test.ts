@@ -1,4 +1,3 @@
-import { UnsupportedError } from '../errors';
 import { Skeleton } from '../types/skeleton';
 import { getNumberFormatOptions } from './options';
 
@@ -100,12 +99,12 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     },
     'group-on-aligned': {
       skeleton: { group: 'group-on-aligned' },
-      result: { useGrouping: 'always' },
+      result: {},
       unsupported: [['group-on-aligned']]
     },
     'group-thousands': {
       skeleton: { group: 'group-thousands' },
-      result: { useGrouping: 'always' },
+      result: {},
       unsupported: [['group-thousands']]
     }
   },
@@ -322,16 +321,10 @@ for (const [testSet, cases] of Object.entries(tests)) {
       const { skeleton, result, unsupported } = data;
       test(name, () => {
         const cb = jest.fn();
-        const opt = getNumberFormatOptions(skeleton, cb, []);
+        const opt = getNumberFormatOptions(skeleton, cb);
         expect(opt).toEqual(result || {});
-        if (unsupported) {
-          const errors = unsupported.map(([stem, source]) => [
-            new UnsupportedError(stem, source)
-          ]);
-          expect(cb.mock.calls).toEqual(errors);
-        } else {
-          expect(cb).not.toHaveBeenCalled();
-        }
+        if (unsupported) expect(cb.mock.calls).toEqual(unsupported);
+        else expect(cb).not.toHaveBeenCalled();
       });
     }
   });

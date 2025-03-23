@@ -1,4 +1,4 @@
-import { NumberFormatError } from './errors.js';
+import { NumberFormatError, UnsupportedError } from './errors.js';
 import {
   getNumberFormatModifier,
   getNumberFormatModifierSource
@@ -49,7 +49,11 @@ export function getNumberFormatter(
         ? parseNumberSkeleton(skeleton.slice(2), onError)
         : parseNumberPattern(skeleton, currency, onError);
   }
-  const opt = getNumberFormatOptions(skeleton, onError, ignoreUnsupported);
+  const opt = getNumberFormatOptions(skeleton, (stem, options) => {
+    if (onError && !ignoreUnsupported.includes(stem)) {
+      onError(new UnsupportedError(stem, options));
+    }
+  });
   const mod = getNumberFormatModifier(skeleton);
   const nf = new Intl.NumberFormat(locales, opt);
   if (skeleton.affix) {
@@ -113,7 +117,11 @@ export function getNumberFormatterSource(
         ? parseNumberSkeleton(skeleton.slice(2), onError)
         : parseNumberPattern(skeleton, currency, onError);
   }
-  const opt = getNumberFormatOptions(skeleton, onError, ignoreUnsupported);
+  const opt = getNumberFormatOptions(skeleton, (stem, options) => {
+    if (onError && !ignoreUnsupported.includes(stem)) {
+      onError(new UnsupportedError(stem, options));
+    }
+  });
   const modSrc = getNumberFormatModifierSource(skeleton);
   const lines = [
     `(function() {`,

@@ -6,6 +6,7 @@
  * @remarks
  * ```js
  * import {
+ *  getNumberFormatOptions,
  *  getNumberFormatter,
  *  getNumberFormatterSource,
  *  NumberFormatError,
@@ -38,6 +39,7 @@ export {
   getNumberFormatter,
   getNumberFormatterSource
 } from './get-formatter.js';
+export { getNumberFormatOptions } from './numberformat/options.js';
 export { parseNumberPattern } from './parse-pattern.js';
 export { parseNumberSkeleton } from './parse-skeleton.js';
 export type { Skeleton } from './types/skeleton.js';

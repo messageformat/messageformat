@@ -1,4 +1,3 @@
-import { UnsupportedError } from '../errors.js';
 import type { Skeleton } from '../types/skeleton.js';
 
 const isRoundingIncrement = (
@@ -9,13 +8,12 @@ const isRoundingIncrement = (
   ].includes(n);
 
 /**
- * Given an input ICU NumberFormatter skeleton, does its best to construct a
- * corresponding `Intl.NumberFormat` options structure.
+ * Given an input ICU NumberFormatter skeleton,
+ * constructs a corresponding `Intl.NumberFormat` options structure.
  *
- * @internal
- * @param onUnsupported - If defined, called when encountering unsupported (but
- *   valid) tokens, such as `decimal-always` or `permille`. The error `source`
- *   may specify the source of an unsupported option.
+ * @public
+ * @param onError - Called if encountering unsupported (but valid) tokens,
+ *   such as `decimal-always` or `precision-increment/0.05`.
  *
  * @example
  * ```js
@@ -39,23 +37,18 @@ const isRoundingIncrement = (
  * //   unitDisplay: 'narrow'
  * // }
  *
- * const sk2 = parseNumberSkeleton('group-min2')
- * // { group: 'group-min2' }
+ * const sk2 = parseNumberSkeleton('decimal-always')
+ * // { decimal: 'decimal-always' }
  *
  * getNumberFormatOptions(sk2, console.error)
- * // Error: The stem group-min2 is not supported
- * //   at UnsupportedError.NumberFormatError ... {
- * //     code: 'UNSUPPORTED',
- * //     stem: 'group-min2'
- * //   }
+ * // prints: ['decimal-always']
  * // {}
  * ```
  */
 export function getNumberFormatOptions(
   skeleton: Skeleton,
-  onUnsupported: ((err: UnsupportedError) => void) | undefined,
-  ignoreUnsupported: string[]
-) {
+  onError: (stem: string, options?: string) => void
+): Intl.NumberFormatOptions {
   const {
     affix,
     decimal,
@@ -71,62 +64,54 @@ export function getNumberFormatOptions(
     unitPer,
     unitWidth
   } = skeleton;
-  const fail = (stem: string, source?: string) => {
-    if (onUnsupported && !ignoreUnsupported.includes(stem)) {
-      onUnsupported(new UnsupportedError(stem, source));
-    }
-  };
-
   const opt: Intl.NumberFormatOptions = {};
 
   if (numberingSystem) {
     if (Intl.supportedValuesOf('numberingSystem').includes(numberingSystem)) {
       opt.numberingSystem = numberingSystem;
     } else {
-      fail('numbering-system', numberingSystem);
+      onError('numbering-system', numberingSystem);
     }
   }
 
-  if (unit) {
-    switch (unit.style) {
-      case 'base-unit':
-        opt.style = 'decimal';
-        break;
-      case 'currency':
-        opt.style = 'currency';
-        opt.currency = unit.currency;
-        break;
-      case 'measure-unit': {
-        opt.style = 'unit';
-        const jsUnit = unit.unit.replace(/^[^-]+-/, '');
-        if (Intl.supportedValuesOf('unit').includes(jsUnit)) opt.unit = jsUnit;
-        else fail(unit.style, unit.unit);
-        break;
-      }
-      case 'concise-unit': {
-        opt.style = 'unit';
-        const supported = Intl.supportedValuesOf('unit');
-        if (unit.unit.split('-per-').every(part => supported.includes(part))) {
-          opt.unit = unit.unit;
-        } else {
-          fail(unit.style, unit.unit);
-        }
-        break;
-      }
-      case 'percent':
-        if (scale === 100) {
-          opt.style = 'percent';
-        } else if (!scale || scale === 1) {
-          opt.style = 'unit';
-          opt.unit = 'percent';
-        } else {
-          fail('scale');
-        }
-        break;
-      case 'permille':
-        fail('permille');
-        break;
+  switch (unit?.style) {
+    case 'base-unit':
+      opt.style = 'decimal';
+      break;
+    case 'currency':
+      opt.style = 'currency';
+      opt.currency = unit.currency;
+      break;
+    case 'measure-unit': {
+      opt.style = 'unit';
+      const jsUnit = unit.unit.replace(/^[^-]+-/, '');
+      if (Intl.supportedValuesOf('unit').includes(jsUnit)) opt.unit = jsUnit;
+      else onError(unit.style, unit.unit);
+      break;
     }
+    case 'concise-unit': {
+      opt.style = 'unit';
+      const supported = Intl.supportedValuesOf('unit');
+      if (unit.unit.split('-per-').every(part => supported.includes(part))) {
+        opt.unit = unit.unit;
+      } else {
+        onError(unit.style, unit.unit);
+      }
+      break;
+    }
+    case 'percent':
+      if (scale === 100) {
+        opt.style = 'percent';
+      } else if (!scale || scale === 1) {
+        opt.style = 'unit';
+        opt.unit = 'percent';
+      } else {
+        onError('scale');
+      }
+      break;
+    case 'permille':
+    default:
+      if (unit) onError(unit.style);
   }
 
   if (unitPer) {
@@ -138,19 +123,18 @@ export function getNumberFormatOptions(
     ) {
       opt.unit += '-per-' + jsUnitPer;
     } else {
-      fail('per-measure-unit', unitPer);
+      onError('per-measure-unit', unitPer);
     }
   }
 
-  if (opt.style !== 'percent' && scale && scale !== 1) fail('scale');
+  if (opt.style !== 'percent' && scale && scale !== 1) {
+    onError('scale', String(scale));
+  }
 
   switch (unitWidth) {
     case 'unit-width-full-name':
       opt.currencyDisplay = 'name';
       opt.unitDisplay = 'long';
-      break;
-    case 'unit-width-hidden':
-      fail(unitWidth);
       break;
     case 'unit-width-iso-code':
       opt.currencyDisplay = 'code';
@@ -163,6 +147,9 @@ export function getNumberFormatOptions(
       opt.currencyDisplay = 'symbol';
       opt.unitDisplay = 'short';
       break;
+    case 'unit-width-hidden':
+    default:
+      if (unitWidth) onError(unitWidth);
   }
 
   switch (group) {
@@ -177,84 +164,82 @@ export function getNumberFormatOptions(
       break;
     case 'group-on-aligned':
     case 'group-thousands':
-      fail(group);
-      opt.useGrouping = 'always';
+    default:
+      if (group) onError(group);
+  }
+
+  switch (precision?.style) {
+    case 'precision-fraction': {
+      const {
+        minFraction: minF,
+        maxFraction: maxF,
+        minSignificant: minS,
+        maxSignificant: maxS,
+        source
+      } = precision;
+      if (typeof minF === 'number') {
+        opt.minimumFractionDigits = minF;
+        if (typeof minS === 'number') onError('precision-fraction', source);
+      }
+      if (typeof maxF === 'number') opt.maximumFractionDigits = maxF;
+      if (typeof minS === 'number') opt.minimumSignificantDigits = minS;
+      if (typeof maxS === 'number') opt.maximumSignificantDigits = maxS;
       break;
-  }
-
-  if (precision) {
-    switch (precision.style) {
-      case 'precision-fraction': {
-        const {
-          minFraction: minF,
-          maxFraction: maxF,
-          minSignificant: minS,
-          maxSignificant: maxS,
-          source
-        } = precision;
-        if (typeof minF === 'number') {
-          opt.minimumFractionDigits = minF;
-          if (typeof minS === 'number') fail('precision-fraction', source);
-        }
-        if (typeof maxF === 'number') opt.maximumFractionDigits = maxF;
-        if (typeof minS === 'number') opt.minimumSignificantDigits = minS;
-        if (typeof maxS === 'number') opt.maximumSignificantDigits = maxS;
-        break;
-      }
-      case 'precision-integer':
+    }
+    case 'precision-integer':
+      opt.maximumFractionDigits = 0;
+      break;
+    case 'precision-unlimited':
+      opt.maximumFractionDigits = 20;
+      break;
+    case 'precision-increment': {
+      const inc = precision.increment;
+      if (isRoundingIncrement(inc)) {
+        opt.roundingIncrement = inc;
         opt.maximumFractionDigits = 0;
-        break;
-      case 'precision-unlimited':
-        opt.maximumFractionDigits = 20;
-        break;
-      case 'precision-increment': {
-        const inc = precision.increment;
-        if (isRoundingIncrement(inc)) {
-          opt.roundingIncrement = inc;
-          opt.maximumFractionDigits = 0;
-          opt.minimumFractionDigits = 0;
-        } else {
-          fail(precision.style);
-        }
-        break;
+        opt.minimumFractionDigits = 0;
+      } else {
+        onError(precision.style);
       }
-      case 'precision-currency-standard':
-        break;
-      case 'precision-currency-cash':
-        fail(precision.style);
-        break;
+      break;
     }
-    if (precision.trailingZero) {
-      opt.trailingZeroDisplay = precision.trailingZero;
-    }
+    case 'precision-currency-standard':
+      break;
+    case 'precision-currency-cash':
+    default:
+      if (precision) onError(precision.style);
+  }
+  if (precision?.trailingZero) {
+    opt.trailingZeroDisplay = precision.trailingZero;
   }
 
-  if (notation) {
-    switch (notation.style) {
-      case 'compact-short':
-        opt.notation = 'compact';
-        opt.compactDisplay = 'short';
-        break;
-      case 'compact-long':
-        opt.notation = 'compact';
-        opt.compactDisplay = 'long';
-        break;
-      case 'notation-simple':
-        opt.notation = 'standard';
-        break;
-      case 'scientific':
-      case 'engineering': {
-        const { expDigits, expSign, source, style } = notation;
-        opt.notation = style;
-        if (
-          (expDigits && expDigits > 1) ||
-          (expSign && expSign !== 'sign-auto')
-        ) {
-          fail(style, source);
-        }
-        break;
+  switch (notation?.style) {
+    case 'compact-short':
+      opt.notation = 'compact';
+      opt.compactDisplay = 'short';
+      break;
+    case 'compact-long':
+      opt.notation = 'compact';
+      opt.compactDisplay = 'long';
+      break;
+    case 'notation-simple':
+      opt.notation = 'standard';
+      break;
+    case 'scientific':
+    case 'engineering': {
+      const { expDigits, expSign, source, style } = notation;
+      opt.notation = style;
+      if (
+        (expDigits && expDigits > 1) ||
+        (expSign && expSign !== 'sign-auto')
+      ) {
+        onError(style, source);
       }
+      break;
     }
+    default:
+      // @ts-expect-error Future-proofing
+      if (notation) onError(notation.style);
   }
 
   if (integerWidth) {
@@ -264,7 +249,7 @@ export function getNumberFormatOptions(
       const hasExp =
         opt.notation === 'engineering' || opt.notation === 'scientific';
       if (max === 3 && hasExp) opt.notation = 'engineering';
-      else fail('integer-width', source);
+      else onError('integer-width', source);
     }
   }
 
@@ -299,44 +284,44 @@ export function getNumberFormatOptions(
       opt.currencySign = 'accounting';
       opt.signDisplay = 'negative';
       break;
+    default:
+      if (sign) fail(sign);
   }
 
-  if (roundingMode) {
-    switch (roundingMode) {
-      case 'rounding-mode-ceiling':
-        opt.roundingMode = 'ceil';
-        break;
-      case 'rounding-mode-floor':
-        opt.roundingMode = 'floor';
-        break;
-      case 'rounding-mode-down':
-        opt.roundingMode = 'trunc';
-        break;
-      case 'rounding-mode-up':
-        opt.roundingMode = 'expand';
-        break;
-      case 'rounding-mode-half-even':
-        opt.roundingMode = 'halfEven';
-        break;
-      case 'rounding-mode-half-ceiling':
-        opt.roundingMode = 'halfCeil';
-        break;
-      case 'rounding-mode-half-floor':
-        opt.roundingMode = 'halfFloor';
-        break;
-      case 'rounding-mode-half-down':
-        opt.roundingMode = 'halfTrunc';
-        break;
-      case 'rounding-mode-half-up':
-        opt.roundingMode = 'halfExpand';
-        break;
-      default:
-        fail(roundingMode);
-    }
+  switch (roundingMode) {
+    case 'rounding-mode-ceiling':
+      opt.roundingMode = 'ceil';
+      break;
+    case 'rounding-mode-floor':
+      opt.roundingMode = 'floor';
+      break;
+    case 'rounding-mode-down':
+      opt.roundingMode = 'trunc';
+      break;
+    case 'rounding-mode-up':
+      opt.roundingMode = 'expand';
+      break;
+    case 'rounding-mode-half-even':
+      opt.roundingMode = 'halfEven';
+      break;
+    case 'rounding-mode-half-ceiling':
+      opt.roundingMode = 'halfCeil';
+      break;
+    case 'rounding-mode-half-floor':
+      opt.roundingMode = 'halfFloor';
+      break;
+    case 'rounding-mode-half-down':
+      opt.roundingMode = 'halfTrunc';
+      break;
+    case 'rounding-mode-half-up':
+      opt.roundingMode = 'halfExpand';
+      break;
+    default:
+      if (roundingMode) onError(roundingMode);
   }
 
-  if (affix) fail('affix');
-  if (decimal === 'decimal-always') fail(decimal);
+  if (affix) onError('affix');
+  if (decimal === 'decimal-always') onError(decimal);
 
   return opt;
 }
