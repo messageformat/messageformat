@@ -11,8 +11,7 @@
  *  NumberFormatError,
  *  parseNumberPattern,
  *  parseNumberSkeleton,
- *  Skeleton, // TS only
- *  Unit // TS only
+ *  type Skeleton
  * } from '@messageformat/number-skeleton'
  * ```
  *
@@ -41,5 +40,4 @@ export {
 } from './get-formatter.js';
 export { parseNumberPattern } from './parse-pattern.js';
 export { parseNumberSkeleton } from './parse-skeleton.js';
-export { Skeleton } from './types/skeleton.js';
-export { Unit } from './types/unit.js';
+export type { Skeleton } from './types/skeleton.js';

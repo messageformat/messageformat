@@ -1,14 +1,25 @@
 import { UnsupportedError } from '../errors';
 import { Skeleton } from '../types/skeleton';
-import { NumberFormatOptions, getNumberFormatOptions } from './options';
+import { getNumberFormatOptions } from './options';
 
 interface TestCase {
   skeleton: Skeleton;
-  result?: NumberFormatOptions;
+  result?: Intl.NumberFormatOptions;
   unsupported?: string[][];
 }
 
 const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
+  numberingSystem: {
+    'numbering-system/thai': {
+      skeleton: { numberingSystem: 'thai' },
+      result: { numberingSystem: 'thai' }
+    },
+    'numbering-system/foo': {
+      skeleton: { numberingSystem: 'foo' },
+      unsupported: [['numbering-system', 'foo']]
+    }
+  },
+
   unit: {
     'base-unit': {
       skeleton: { unit: { style: 'base-unit' } },
@@ -27,6 +38,14 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
         unit: { style: 'measure-unit', unit: 'length-meter' },
         unitPer: 'duration-second'
       },
+      result: { style: 'unit', unit: 'meter-per-second' }
+    },
+    'unit/meter': {
+      skeleton: { unit: { style: 'concise-unit', unit: 'meter' } },
+      result: { style: 'unit', unit: 'meter' }
+    },
+    'unit/meter-per-second': {
+      skeleton: { unit: { style: 'concise-unit', unit: 'meter-per-second' } },
       result: { style: 'unit', unit: 'meter-per-second' }
     },
     percent: {

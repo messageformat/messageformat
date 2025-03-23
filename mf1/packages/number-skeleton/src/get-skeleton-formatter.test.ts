@@ -71,7 +71,6 @@ const tests: {
     'decimal-always': [42, '42', [{}]],
     latin: [42, '42'],
     'numbering-system/thai': [42, '๔๒'],
-    'per-measure-unit/duration-second': [42, '42'],
     'measure-unit/length-meter per-measure-unit/duration-second': [
       42,
       '42 m/s'

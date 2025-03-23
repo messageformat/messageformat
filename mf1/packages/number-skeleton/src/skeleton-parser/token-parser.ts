@@ -6,9 +6,12 @@ import {
   NumberFormatError,
   TooManyOptionsError
 } from '../errors.js';
-import { Skeleton, isNumberingSystem } from '../types/skeleton.js';
-import { isUnit } from '../types/unit.js';
+import { Skeleton } from '../types/skeleton.js';
 import { parsePrecisionBlueprint } from './parse-precision-blueprint.js';
+
+const conciseUnit = /^[-0-9a-z]+$/;
+const measureUnit =
+  /^(acceleration|angle|area|concentr|consumption|digital|duration|electric|energy|force|frequency|graphics|length|light|mass|power|pressure|speed|temperature|torque|volume)-[-0-9a-z]+$/;
 
 /** @internal */
 export class TokenParser {
@@ -109,21 +112,31 @@ export class TokenParser {
         break;
       case 'measure-unit':
         if (ok('unit', 1, 1)) {
-          if (isUnit(option)) res.unit = { style: stem, unit: option };
-          else this.#error(new BadOptionError(stem, option));
+          if (measureUnit.test(option) && !option.includes('-per-')) {
+            res.unit = { style: stem, unit: option };
+          } else {
+            this.#error(new BadOptionError(stem, option));
+          }
         }
         break;
       case 'unit':
         if (ok('unit', 1, 1)) {
-          res.unit = { style: 'concise-unit', unit: option };
+          if (conciseUnit.test(option) && !measureUnit.test(option)) {
+            res.unit = { style: 'concise-unit', unit: option };
+          } else {
+            this.#error(new BadOptionError(stem, option));
+          }
         }
         break;
 
       // unitPer
       case 'per-measure-unit':
         if (ok('unitPer', 1, 1)) {
-          if (isUnit(option)) res.unitPer = option;
-          else this.#error(new BadOptionError(stem, option));
+          if (measureUnit.test(option) && !option.includes('-per-')) {
+            res.unitPer = option;
+          } else {
+            this.#error(new BadOptionError(stem, option));
+          }
         }
         break;
 
@@ -226,10 +239,7 @@ export class TokenParser {
         if (ok('numberingSystem', 0, 0)) res.numberingSystem = 'latn';
         break;
       case 'numbering-system': {
-        if (ok('numberingSystem', 1, 1)) {
-          if (isNumberingSystem(option)) res.numberingSystem = option;
-          else this.#error(new BadOptionError(stem, option));
-        }
+        if (ok('numberingSystem', 1, 1)) res.numberingSystem = option;
         break;
       }
 

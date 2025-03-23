@@ -1,5 +1,3 @@
-import { Unit } from './unit.js';
-
 /**
  * An object representation of a parsed string skeleton, with token values
  * grouped by type.
@@ -33,29 +31,7 @@ export interface Skeleton {
    * List collected from
    * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat | MDN documentation}
    */
-  numberingSystem?:
-    | 'arab'
-    | 'arabext'
-    | 'bali'
-    | 'beng'
-    | 'deva'
-    | 'fullwide'
-    | 'gujr'
-    | 'guru'
-    | 'hanidec'
-    | 'khmr'
-    | 'knda'
-    | 'laoo'
-    | 'latn'
-    | 'limb'
-    | 'mlym'
-    | 'mong'
-    | 'mymr'
-    | 'orya'
-    | 'tamldec'
-    | 'telu'
-    | 'thai'
-    | 'tibt';
+  numberingSystem?: string;
   precision?:
     | {
         style:
@@ -106,44 +82,13 @@ export interface Skeleton {
   unit?:
     | { style: 'percent' | 'permille' | 'base-unit' }
     | { style: 'currency'; currency: string }
-    | { style: 'measure-unit'; unit: Unit }
+    | { style: 'measure-unit'; unit: string }
     | { style: 'concise-unit'; unit: string };
-  unitPer?: Unit;
+  unitPer?: string;
   unitWidth?:
     | 'unit-width-narrow'
     | 'unit-width-short'
     | 'unit-width-full-name'
     | 'unit-width-iso-code'
     | 'unit-width-hidden';
-}
-
-/** @internal */
-export function isNumberingSystem(
-  ns: string
-): ns is string & Skeleton['numberingSystem'] {
-  const systems = [
-    'arab',
-    'arabext',
-    'bali',
-    'beng',
-    'deva',
-    'fullwide',
-    'gujr',
-    'guru',
-    'hanidec',
-    'khmr',
-    'knda',
-    'laoo',
-    'latn',
-    'limb',
-    'mlym',
-    'mong',
-    'mymr',
-    'orya',
-    'tamldec',
-    'telu',
-    'thai',
-    'tibt'
-  ];
-  return systems.indexOf(ns) !== -1;
 }

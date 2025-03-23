@@ -1,20 +1,9 @@
 import { UnsupportedError } from '../errors.js';
-import { Skeleton } from '../types/skeleton.js';
-
-/**
- * Extends `Intl.NumberFormat` options to include some features brought by the
- * {@link https://github.com/tc39/proposal-intl-numberformat-v3 | ECMA-402
- * Proposal: Intl.NumberFormat V3}
- *
- * @internal
- */
-export interface NumberFormatOptions extends Intl.NumberFormatOptions {
-  trailingZeroDisplay?: 'auto' | 'stripIfInteger';
-}
+import type { Skeleton } from '../types/skeleton.js';
 
 const isRoundingIncrement = (
   n: number
-): n is Exclude<NumberFormatOptions['roundingIncrement'], undefined> =>
+): n is Exclude<Intl.NumberFormatOptions['roundingIncrement'], undefined> =>
   [
     1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000
   ].includes(n);
@@ -88,9 +77,15 @@ export function getNumberFormatOptions(
     }
   };
 
-  const opt: NumberFormatOptions = {};
+  const opt: Intl.NumberFormatOptions = {};
 
-  if (numberingSystem) opt.numberingSystem = numberingSystem;
+  if (numberingSystem) {
+    if (Intl.supportedValuesOf('numberingSystem').includes(numberingSystem)) {
+      opt.numberingSystem = numberingSystem;
+    } else {
+      fail('numbering-system', numberingSystem);
+    }
+  }
 
   if (unit) {
     switch (unit.style) {
@@ -101,15 +96,23 @@ export function getNumberFormatOptions(
         opt.style = 'currency';
         opt.currency = unit.currency;
         break;
-      case 'measure-unit':
+      case 'measure-unit': {
         opt.style = 'unit';
-        opt.unit = unit.unit.replace(/.*-/, '');
-        if (unitPer) opt.unit += '-per-' + unitPer.replace(/.*-/, '');
+        const jsUnit = unit.unit.replace(/^[^-]+-/, '');
+        if (Intl.supportedValuesOf('unit').includes(jsUnit)) opt.unit = jsUnit;
+        else fail(unit.style, unit.unit);
         break;
-      case 'concise-unit':
+      }
+      case 'concise-unit': {
         opt.style = 'unit';
-        opt.unit = unit.unit;
+        const supported = Intl.supportedValuesOf('unit');
+        if (unit.unit.split('-per-').every(part => supported.includes(part))) {
+          opt.unit = unit.unit;
+        } else {
+          fail(unit.style, unit.unit);
+        }
         break;
+      }
       case 'percent':
         if (scale === 100) {
           opt.style = 'percent';
@@ -123,6 +126,19 @@ export function getNumberFormatOptions(
       case 'permille':
         fail('permille');
         break;
+    }
+  }
+
+  if (unitPer) {
+    const jsUnitPer = unitPer.replace(/^[^-]+-/, '');
+    if (
+      opt.unit &&
+      !opt.unit.includes('-per-') &&
+      Intl.supportedValuesOf('unit').includes(jsUnitPer)
+    ) {
+      opt.unit += '-per-' + jsUnitPer;
+    } else {
+      fail('per-measure-unit', unitPer);
     }
   }
 
@@ -208,7 +224,9 @@ export function getNumberFormatOptions(
         fail(precision.style);
         break;
     }
-    opt.trailingZeroDisplay = precision.trailingZero;
+    if (precision.trailingZero) {
+      opt.trailingZeroDisplay = precision.trailingZero;
+    }
   }
 
   if (notation) {

@@ -265,7 +265,6 @@ describe('errors', () => {
     'engineering',
     'integer-width',
     'measure-unit',
-    'numbering-system',
     'per-measure-unit',
     'precision-increment',
     'scale',
