@@ -1,6 +1,6 @@
 /**
  * Tools for working with
- * {@link http://userguide.icu-project.org/formatparse/datetime | ICU DateFormat skeletons}.
+ * {@link https://unicode-org.github.io/icu/userguide/format_parse/datetime/ | ICU DateFormat skeletons}.
  *
  * @remarks
  * ```js
@@ -27,8 +27,9 @@
  */
 
 export {
+  DateFormatError,
   getDateFormatter,
   getDateFormatterSource
 } from './get-date-formatter.js';
-export { DateFormatError } from './options.js';
-export { DateToken, parseDateTokens } from './tokens.js';
+export { getDateTimeFormatOptions } from './options.js';
+export { type DateToken, parseDateTokens } from './tokens.js';
