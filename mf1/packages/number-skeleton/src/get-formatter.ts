@@ -1,5 +1,4 @@
 import { NumberFormatError } from './errors.js';
-import { getNumberFormatLocales } from './numberformat/locales.js';
 import {
   getNumberFormatModifier,
   getNumberFormatModifierSource
@@ -8,6 +7,8 @@ import { getNumberFormatOptions } from './numberformat/options.js';
 import { parseNumberPattern } from './parse-pattern.js';
 import { parseNumberSkeleton } from './parse-skeleton.js';
 import { Skeleton } from './types/skeleton.js';
+
+const ignoreUnsupported = ['affix', 'precision-increment', 'scale'];
 
 /**
  * Returns a number formatter function for the given locales and number skeleton
@@ -48,10 +49,9 @@ export function getNumberFormatter(
         ? parseNumberSkeleton(skeleton.slice(2), onError)
         : parseNumberPattern(skeleton, currency, onError);
   }
-  const lc = getNumberFormatLocales(locales, skeleton);
-  const opt = getNumberFormatOptions(skeleton, onError);
+  const opt = getNumberFormatOptions(skeleton, onError, ignoreUnsupported);
   const mod = getNumberFormatModifier(skeleton);
-  const nf = new Intl.NumberFormat(lc, opt);
+  const nf = new Intl.NumberFormat(locales, opt);
   if (skeleton.affix) {
     const [p0, p1] = skeleton.affix.pos;
     const [n0, n1] = skeleton.affix.neg || ['', ''];
@@ -113,13 +113,12 @@ export function getNumberFormatterSource(
         ? parseNumberSkeleton(skeleton.slice(2), onError)
         : parseNumberPattern(skeleton, currency, onError);
   }
-  const lc = getNumberFormatLocales(locales, skeleton);
-  const opt = getNumberFormatOptions(skeleton, onError);
+  const opt = getNumberFormatOptions(skeleton, onError, ignoreUnsupported);
   const modSrc = getNumberFormatModifierSource(skeleton);
   const lines = [
     `(function() {`,
     `var opt = ${JSON.stringify(opt)};`,
-    `var nf = new Intl.NumberFormat(${JSON.stringify(lc)}, opt);`
+    `var nf = new Intl.NumberFormat(${JSON.stringify(locales)}, opt);`
   ];
 
   let res = 'nf.format(value)';

@@ -12,12 +12,16 @@ export interface NumberFormatOptions extends Intl.NumberFormatOptions {
   trailingZeroDisplay?: 'auto' | 'stripIfInteger';
 }
 
+const isRoundingIncrement = (
+  n: number
+): n is Exclude<NumberFormatOptions['roundingIncrement'], undefined> =>
+  [
+    1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000
+  ].includes(n);
+
 /**
  * Given an input ICU NumberFormatter skeleton, does its best to construct a
  * corresponding `Intl.NumberFormat` options structure.
- *
- * @remarks
- * Some features depend on `Intl.NumberFormat` features defined in ES2020.
  *
  * @internal
  * @param onUnsupported - If defined, called when encountering unsupported (but
@@ -60,25 +64,33 @@ export interface NumberFormatOptions extends Intl.NumberFormatOptions {
  */
 export function getNumberFormatOptions(
   skeleton: Skeleton,
-  onUnsupported?: (err: UnsupportedError) => void
+  onUnsupported: ((err: UnsupportedError) => void) | undefined,
+  ignoreUnsupported: string[]
 ) {
   const {
+    affix,
     decimal,
     group,
     integerWidth,
     notation,
+    numberingSystem,
     precision,
     roundingMode,
+    scale,
     sign,
     unit,
     unitPer,
     unitWidth
   } = skeleton;
   const fail = (stem: string, source?: string) => {
-    if (onUnsupported) onUnsupported(new UnsupportedError(stem, source));
+    if (onUnsupported && !ignoreUnsupported.includes(stem)) {
+      onUnsupported(new UnsupportedError(stem, source));
+    }
   };
 
   const opt: NumberFormatOptions = {};
+
+  if (numberingSystem) opt.numberingSystem = numberingSystem;
 
   if (unit) {
     switch (unit.style) {
@@ -94,14 +106,27 @@ export function getNumberFormatOptions(
         opt.unit = unit.unit.replace(/.*-/, '');
         if (unitPer) opt.unit += '-per-' + unitPer.replace(/.*-/, '');
         break;
+      case 'concise-unit':
+        opt.style = 'unit';
+        opt.unit = unit.unit;
+        break;
       case 'percent':
-        opt.style = 'percent';
+        if (scale === 100) {
+          opt.style = 'percent';
+        } else if (!scale || scale === 1) {
+          opt.style = 'unit';
+          opt.unit = 'percent';
+        } else {
+          fail('scale');
+        }
         break;
       case 'permille':
         fail('permille');
         break;
     }
   }
+
+  if (opt.style !== 'percent' && scale && scale !== 1) fail('scale');
 
   switch (unitWidth) {
     case 'unit-width-full-name':
@@ -129,13 +154,15 @@ export function getNumberFormatOptions(
       opt.useGrouping = false;
       break;
     case 'group-auto':
-      opt.useGrouping = true;
+      opt.useGrouping = 'auto';
       break;
     case 'group-min2':
+      opt.useGrouping = 'min2';
+      break;
     case 'group-on-aligned':
     case 'group-thousands':
       fail(group);
-      opt.useGrouping = true;
+      opt.useGrouping = 'always';
       break;
   }
 
@@ -164,15 +191,24 @@ export function getNumberFormatOptions(
       case 'precision-unlimited':
         opt.maximumFractionDigits = 20;
         break;
-      case 'precision-increment':
+      case 'precision-increment': {
+        const inc = precision.increment;
+        if (isRoundingIncrement(inc)) {
+          opt.roundingIncrement = inc;
+          opt.maximumFractionDigits = 0;
+          opt.minimumFractionDigits = 0;
+        } else {
+          fail(precision.style);
+        }
         break;
+      }
       case 'precision-currency-standard':
-        opt.trailingZeroDisplay = precision.trailingZero;
         break;
       case 'precision-currency-cash':
         fail(precision.style);
         break;
     }
+    opt.trailingZeroDisplay = precision.trailingZero;
   }
 
   if (notation) {
@@ -205,8 +241,8 @@ export function getNumberFormatOptions(
 
   if (integerWidth) {
     const { min, max, source } = integerWidth;
-    if (min > 0) opt.minimumIntegerDigits = min;
-    if (Number(max) > 0) {
+    if (min) opt.minimumIntegerDigits = min;
+    if (max) {
       const hasExp =
         opt.notation === 'engineering' || opt.notation === 'scientific';
       if (max === 3 && hasExp) opt.notation = 'engineering';
@@ -222,8 +258,6 @@ export function getNumberFormatOptions(
       opt.signDisplay = 'always';
       break;
     case 'sign-except-zero':
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore https://github.com/microsoft/TypeScript/issues/46712
       opt.signDisplay = 'exceptZero';
       break;
     case 'sign-never':
@@ -238,14 +272,53 @@ export function getNumberFormatOptions(
       break;
     case 'sign-accounting-except-zero':
       opt.currencySign = 'accounting';
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore https://github.com/microsoft/TypeScript/issues/46712
       opt.signDisplay = 'exceptZero';
+      break;
+    case 'sign-negative':
+      opt.signDisplay = 'negative';
+      break;
+    case 'sign-accounting-negative':
+      opt.currencySign = 'accounting';
+      opt.signDisplay = 'negative';
       break;
   }
 
+  if (roundingMode) {
+    switch (roundingMode) {
+      case 'rounding-mode-ceiling':
+        opt.roundingMode = 'ceil';
+        break;
+      case 'rounding-mode-floor':
+        opt.roundingMode = 'floor';
+        break;
+      case 'rounding-mode-down':
+        opt.roundingMode = 'trunc';
+        break;
+      case 'rounding-mode-up':
+        opt.roundingMode = 'expand';
+        break;
+      case 'rounding-mode-half-even':
+        opt.roundingMode = 'halfEven';
+        break;
+      case 'rounding-mode-half-ceiling':
+        opt.roundingMode = 'halfCeil';
+        break;
+      case 'rounding-mode-half-floor':
+        opt.roundingMode = 'halfFloor';
+        break;
+      case 'rounding-mode-half-down':
+        opt.roundingMode = 'halfTrunc';
+        break;
+      case 'rounding-mode-half-up':
+        opt.roundingMode = 'halfExpand';
+        break;
+      default:
+        fail(roundingMode);
+    }
+  }
+
+  if (affix) fail('affix');
   if (decimal === 'decimal-always') fail(decimal);
-  if (roundingMode) fail(roundingMode);
 
   return opt;
 }

@@ -22,7 +22,7 @@ const tests: {
     'compact-short': [42, '42'],
     'compact-long': [42, '42'],
     'compact-short currency/CAD': [42, 'CA$42'],
-    'group-min2': [42, '42', [{}]],
+    'group-min2': [42, '42'],
     'sign-always': [42, '+42'],
     'sign-except-zero': [42, '+42'],
     'sign-accounting currency/CAD': [-42, '(CA$42.00)']
@@ -77,7 +77,7 @@ const tests: {
       '42 m/s'
     ],
     'precision-integer': [42.123, '42'],
-    'rounding-mode-up': [42, '42', [{}]]
+    'rounding-mode-up': [42, '42']
   },
   errors: {
     '/': [42, '42', [{ code: 'BAD_STEM', stem: '' }]],

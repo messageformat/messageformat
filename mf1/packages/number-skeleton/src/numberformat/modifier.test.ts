@@ -13,7 +13,12 @@ test('scale', () => {
 
 test('percent', () => {
   const m = getNumberFormatModifier({ unit: { style: 'percent' } });
-  expect(m(1)).toBe(0.01);
+  expect(m(1)).toBe(1);
+});
+
+test('percent scale/100', () => {
+  const m = getNumberFormatModifier({ unit: { style: 'percent' }, scale: 100 });
+  expect(m(1)).toBe(1);
 });
 
 test('percent scale/1000', () => {

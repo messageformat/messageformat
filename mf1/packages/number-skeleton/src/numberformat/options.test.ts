@@ -31,6 +31,10 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     },
     percent: {
       skeleton: { unit: { style: 'percent' } },
+      result: { style: 'unit', unit: 'percent' }
+    },
+    'percent scale/100': {
+      skeleton: { unit: { style: 'percent' }, scale: 100 },
       result: { style: 'percent' }
     },
     permille: {
@@ -65,7 +69,7 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
   group: {
     'group-auto': {
       skeleton: { group: 'group-auto' },
-      result: { useGrouping: true }
+      result: { useGrouping: 'auto' }
     },
     'group-off': {
       skeleton: { group: 'group-off' },
@@ -73,17 +77,16 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     },
     'group-min2': {
       skeleton: { group: 'group-min2' },
-      result: { useGrouping: true },
-      unsupported: [['group-min2']]
+      result: { useGrouping: 'min2' }
     },
     'group-on-aligned': {
       skeleton: { group: 'group-on-aligned' },
-      result: { useGrouping: true },
+      result: { useGrouping: 'always' },
       unsupported: [['group-on-aligned']]
     },
     'group-thousands': {
       skeleton: { group: 'group-thousands' },
-      result: { useGrouping: true },
+      result: { useGrouping: 'always' },
       unsupported: [['group-thousands']]
     }
   },
@@ -149,7 +152,11 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
     },
     'precision-increment': {
       skeleton: { precision: { style: 'precision-increment', increment: 2 } },
-      result: {}
+      result: {
+        roundingIncrement: 2,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }
     },
     'precision-currency-standard': {
       skeleton: { precision: { style: 'precision-currency-standard' } },
@@ -243,6 +250,10 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
   },
 
   decimal: {
+    'decimal-auto': {
+      skeleton: { decimal: 'decimal-auto' },
+      result: {}
+    },
     'decimal-always': {
       skeleton: { decimal: 'decimal-always' },
       unsupported: [['decimal-always']]
@@ -252,31 +263,31 @@ const tests: { [K in keyof Skeleton]: { [name: string]: TestCase } } = {
   roundingMode: {
     'rounding-mode-ceiling': {
       skeleton: { roundingMode: 'rounding-mode-ceiling' },
-      unsupported: [['rounding-mode-ceiling']]
+      result: { roundingMode: 'ceil' }
     },
     'rounding-mode-floor': {
       skeleton: { roundingMode: 'rounding-mode-floor' },
-      unsupported: [['rounding-mode-floor']]
+      result: { roundingMode: 'floor' }
     },
     'rounding-mode-down': {
       skeleton: { roundingMode: 'rounding-mode-down' },
-      unsupported: [['rounding-mode-down']]
+      result: { roundingMode: 'trunc' }
     },
     'rounding-mode-up': {
       skeleton: { roundingMode: 'rounding-mode-up' },
-      unsupported: [['rounding-mode-up']]
+      result: { roundingMode: 'expand' }
     },
     'rounding-mode-half-even': {
       skeleton: { roundingMode: 'rounding-mode-half-even' },
-      unsupported: [['rounding-mode-half-even']]
+      result: { roundingMode: 'halfEven' }
     },
     'rounding-mode-half-down': {
       skeleton: { roundingMode: 'rounding-mode-half-down' },
-      unsupported: [['rounding-mode-half-down']]
+      result: { roundingMode: 'halfTrunc' }
     },
     'rounding-mode-half-up': {
       skeleton: { roundingMode: 'rounding-mode-half-up' },
-      unsupported: [['rounding-mode-half-up']]
+      result: { roundingMode: 'halfExpand' }
     },
     'rounding-mode-unnecessary': {
       skeleton: { roundingMode: 'rounding-mode-unnecessary' },
@@ -292,7 +303,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
       const { skeleton, result, unsupported } = data;
       test(name, () => {
         const cb = jest.fn();
-        const opt = getNumberFormatOptions(skeleton, cb);
+        const opt = getNumberFormatOptions(skeleton, cb, []);
         expect(opt).toEqual(result || {});
         if (unsupported) {
           const errors = unsupported.map(([stem, source]) => [
