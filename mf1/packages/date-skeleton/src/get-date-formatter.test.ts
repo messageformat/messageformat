@@ -15,49 +15,35 @@ const tests: {
   GrMMMdd: { expected: 'Jan 02, 2006 AD' },
   GMMd: { expected: '01/2 AD' },
   "u..''LLLLLL'foo'''do": {
-    expected: ['2 2006', '2006 (day: 2)'],
+    expected: 'J 2, 2006',
     errors: [
-      'Extended year is not supported; falling back to year:numeric',
-      'Ignoring string part: ..',
-      "Ignoring string part: '",
-      'Stand-alone month in year is not supported with width 6',
-      "Ignoring string part: foo'",
+      'Ignoring literal part: ..',
+      "Ignoring literal part: '",
+      "Ignoring literal part: foo'",
       'The letter o is not a valid field identifier'
     ]
   },
   Mk: { expected: '1, 15' },
   DEHhX: {
-    expected: /^Mon, 3\sPM$/,
+    expected: /^Mon, 3\sPM [A-Z]/,
     errors: [
-      'Day of year is not supported',
-      'Duplicate hour token',
-      'Time Zone: ISO8601 with Z is not supported'
+      'The field D is not supported by Intl.DateTimeFormat',
+      'Duplicate hour token'
     ]
   },
-  ccHv: {
-    expected: /^Mon, 15 [A-Z]/,
-    errors: [
-      'Numeric value is not supported for Stand-alone local day of week; falling back to weekday:short'
-    ]
-  },
+  ccHv: { expected: /^Mon, 15 [A-Z]/ },
   eeeeKVZ: {
     expected: /^Monday, 3\sPM [A-Z]/,
-    errors: [
-      'Time Zone: ID is not supported with width 1',
-      'Duplicate tz token'
-    ]
+    errors: ['Duplicate tz token']
   },
   hamszzzz: { expected: /^3:04:05\sPM [A-Z]/ },
-  sSVVVV: {
-    expected: /^5 [A-Z]/,
-    errors: ['Fractional second is not supported']
-  },
+  sSVVVV: { expected: /^5.7 [A-Z]/ },
   "qwdA'": {
     expected: '2',
     errors: [
-      'Stand-alone quarter is not supported',
-      'Week of year is not supported',
-      'Milliseconds in day is not supported',
+      'The field q is not supported by Intl.DateTimeFormat',
+      'The field w is not supported by Intl.DateTimeFormat',
+      'The field A is not supported by Intl.DateTimeFormat',
       "Unterminated quoted literal in pattern: qwdA'"
     ]
   }
@@ -158,7 +144,7 @@ describe('Options', () => {
 
   test('onError', () => {
     expect(() => getDateFormatter('en', '.')).toThrow(
-      'Ignoring string part: .'
+      'Ignoring literal part: .'
     );
   });
 });

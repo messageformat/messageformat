@@ -1,18 +1,18 @@
 /**
  * Tools for working with
- * {@link https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md | ICU NumberFormat skeletons}
+ * {@link https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html | ICU NumberFormat skeletons}
  * and {@link http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns | patterns}.
  *
  * @remarks
  * ```js
  * import {
+ *  getNumberFormatOptions,
  *  getNumberFormatter,
  *  getNumberFormatterSource,
  *  NumberFormatError,
  *  parseNumberPattern,
  *  parseNumberSkeleton,
- *  Skeleton, // TS only
- *  Unit // TS only
+ *  type Skeleton
  * } from '@messageformat/number-skeleton'
  * ```
  *
@@ -39,7 +39,7 @@ export {
   getNumberFormatter,
   getNumberFormatterSource
 } from './get-formatter.js';
+export { getNumberFormatOptions } from './numberformat/options.js';
 export { parseNumberPattern } from './parse-pattern.js';
 export { parseNumberSkeleton } from './parse-skeleton.js';
-export { Skeleton } from './types/skeleton.js';
-export { Unit } from './types/unit.js';
+export type { Skeleton } from './types/skeleton.js';

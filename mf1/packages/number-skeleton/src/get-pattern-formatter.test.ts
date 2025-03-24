@@ -12,6 +12,7 @@ const tests: {
       cur?: string;
       exp: string;
       errors?: string[];
+      only?: true;
     };
   };
 } = {
@@ -76,10 +77,11 @@ const tests: {
 
 for (const [testSet, cases] of Object.entries(tests)) {
   describe(testSet, () => {
-    for (const [src, { value, lc, cur, exp, errors = [] }] of Object.entries(
-      cases
-    )) {
-      test(src, () => {
+    for (const [
+      src,
+      { value, lc, cur, exp, errors = [], only }
+    ] of Object.entries(cases)) {
+      (only ? test.only : test)(src, () => {
         const cb = jest.fn();
 
         // function from string

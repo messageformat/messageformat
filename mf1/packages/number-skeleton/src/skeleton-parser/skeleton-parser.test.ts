@@ -4,6 +4,7 @@ import { parseNumberSkeleton } from '../parse-skeleton';
 const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
   examples: {
     percent: { unit: { style: 'percent' } },
+    '%': { unit: { style: 'percent' } },
     '.00': {
       precision: {
         style: 'precision-fraction',
@@ -23,12 +24,16 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
     },
     'scale/100': { scale: 100 },
     'percent scale/100': { scale: 100, unit: { style: 'percent' } },
+    '%x100': { scale: 100, unit: { style: 'percent' } },
     'measure-unit/length-meter': {
       unit: { style: 'measure-unit', unit: 'length-meter' }
     },
     'measure-unit/length-meter unit-width-full-name': {
       unit: { style: 'measure-unit', unit: 'length-meter' },
       unitWidth: 'unit-width-full-name'
+    },
+    'unit/furlong-per-second': {
+      unit: { style: 'concise-unit', unit: 'furlong-per-second' }
     },
     'currency/CAD': { unit: { style: 'currency', currency: 'CAD' } },
     'currency/CAD unit-width-narrow': {
@@ -37,6 +42,8 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
     },
     'compact-short': { notation: { style: 'compact-short' } },
     'compact-long': { notation: { style: 'compact-long' } },
+    K: { notation: { style: 'compact-short' } },
+    KK: { notation: { style: 'compact-long' } },
     'compact-short currency/CAD': {
       notation: { style: 'compact-short' },
       unit: { style: 'currency', currency: 'CAD' }
@@ -70,7 +77,10 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
         expSign: 'sign-always',
         source: '+ee/sign-always'
       }
-    }
+    },
+    E0: { notation: { style: 'scientific' } },
+    E00: { notation: { style: 'scientific', expDigits: 2 } },
+    'EE+!0': { notation: { style: 'engineering', expSign: 'sign-always' } }
   },
   precision: {
     'precision-increment/0.05': {
@@ -86,6 +96,9 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
     },
     '.00+': {
       precision: { style: 'precision-fraction', minFraction: 2, source: '.00+' }
+    },
+    '.00*': {
+      precision: { style: 'precision-fraction', minFraction: 2, source: '.00*' }
     },
     '.##': {
       precision: {
@@ -137,6 +150,13 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
         source: '@@@+'
       }
     },
+    '@@@*': {
+      precision: {
+        style: 'precision-fraction',
+        minSignificant: 3,
+        source: '@@@*'
+      }
+    },
     '@##': {
       precision: {
         style: 'precision-fraction',
@@ -153,6 +173,24 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
         source: '@@#'
       }
     },
+    '@@#r': {
+      precision: {
+        style: 'precision-fraction',
+        minSignificant: 2,
+        maxSignificant: 3,
+        roundingPriority: 'relaxed',
+        source: '@@#r'
+      }
+    },
+    '@@#s': {
+      precision: {
+        style: 'precision-fraction',
+        minSignificant: 2,
+        maxSignificant: 3,
+        roundingPriority: 'strict',
+        source: '@@#s'
+      }
+    },
     'precision-currency-standard/w': {
       precision: {
         style: 'precision-currency-standard',
@@ -164,7 +202,9 @@ const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
     'integer-width/+000': { integerWidth: { min: 3, source: '+000' } },
     'integer-width/##0': { integerWidth: { min: 1, max: 3, source: '##0' } },
     'integer-width/00': { integerWidth: { min: 2, max: 2, source: '00' } },
-    'integer-width/+': { integerWidth: { min: 0, source: '+' } }
+    'integer-width/+': { integerWidth: { min: 0, source: '+' } },
+    'integer-width/*': { integerWidth: { min: 0, source: '*' } },
+    '000': { integerWidth: { min: 3 } }
   },
   scale: {
     'scale/100': { scale: 100 },
@@ -211,7 +251,7 @@ describe('errors', () => {
     foo: { code: 'BAD_STEM', stem: 'foo' },
     currency: { code: 'MISSING_OPTION', stem: 'currency' },
     'currency/EUR/CAD': { code: 'TOO_MANY_OPTIONS', stem: 'currency' },
-    '.00/@@/@@': { code: 'TOO_MANY_OPTIONS', stem: '.00' },
+    '.00/@@/@@': { code: 'BAD_OPTION', stem: '.00' },
     '@@/.00': { code: 'BAD_OPTION', stem: '@@' },
     'notation-simple/foo': { code: 'BAD_OPTION', stem: 'notation-simple' },
     'scientific engineering': {
@@ -225,7 +265,6 @@ describe('errors', () => {
     'engineering',
     'integer-width',
     'measure-unit',
-    'numbering-system',
     'per-measure-unit',
     'precision-increment',
     'scale',

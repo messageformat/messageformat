@@ -2,33 +2,43 @@ import {
   BadOptionError,
   BadStemError,
   MaskedValueError,
-  NumberFormatError
+  MissingOptionError,
+  NumberFormatError,
+  TooManyOptionsError
 } from '../errors.js';
-import { Skeleton, isNumberingSystem } from '../types/skeleton.js';
-import { isUnit } from '../types/unit.js';
-import { validOptions } from './options.js';
+import { Skeleton } from '../types/skeleton.js';
 import { parsePrecisionBlueprint } from './parse-precision-blueprint.js';
+
+const conciseUnit = /^[-0-9a-z]+$/;
+const measureUnit =
+  /^(acceleration|angle|area|concentr|consumption|digital|duration|electric|energy|force|frequency|graphics|length|light|mass|power|pressure|speed|temperature|torque|volume)-[-0-9a-z]+$/;
 
 /** @internal */
 export class TokenParser {
-  onError: (err: NumberFormatError) => void;
+  #error: (err: NumberFormatError) => void;
   skeleton: Skeleton = {};
 
   constructor(onError: (err: NumberFormatError) => void) {
-    this.onError = onError;
-  }
-
-  badOption(stem: string, opt: string) {
-    this.onError(new BadOptionError(stem, opt));
-  }
-
-  assertEmpty(key: keyof Skeleton) {
-    const prev = this.skeleton[key];
-    if (prev) this.onError(new MaskedValueError(key, prev));
+    this.#error = onError;
   }
 
   parseToken(stem: string, options: string[]) {
-    if (!validOptions(stem, options, this.onError)) return;
+    const ok = (key: keyof Skeleton, min: number, max: number) => {
+      const prev = this.skeleton[key];
+      if (prev) this.#error(new MaskedValueError(key, prev));
+      if (options.length > max) {
+        if (max === 0) {
+          for (const opt of options) this.#error(new BadOptionError(stem, opt));
+        } else {
+          this.#error(new TooManyOptionsError(stem, options, max));
+        }
+        return false;
+      } else if (options.length < min) {
+        this.#error(new MissingOptionError(stem));
+        return false;
+      }
+      return true;
+    };
 
     const option = options[0];
     const res = this.skeleton;
@@ -38,12 +48,18 @@ export class TokenParser {
       case 'compact-short':
       case 'compact-long':
       case 'notation-simple':
-        this.assertEmpty('notation');
-        res.notation = { style: stem };
+        if (ok('notation', 0, 0)) res.notation = { style: stem };
+        break;
+      case 'K':
+        if (ok('notation', 0, 0)) res.notation = { style: 'compact-short' };
+        break;
+      case 'KK':
+        if (ok('notation', 0, 0)) res.notation = { style: 'compact-long' };
         break;
       case 'scientific':
       case 'engineering': {
-        let expDigits = null;
+        if (!ok('notation', 0, 2)) return;
+        let expDigits: number | undefined = undefined;
         let expSign: Skeleton['sign'] = undefined;
         for (const opt of options) {
           switch (opt) {
@@ -57,23 +73,19 @@ export class TokenParser {
               expSign = opt;
               break;
             default:
-              if (/^\+e+$/.test(opt)) {
+              if (/^[+*]e+$/.test(opt)) {
                 expDigits = opt.length - 1;
               } else {
-                this.badOption(stem, opt);
+                this.#error(new BadOptionError(stem, opt));
               }
           }
         }
-        this.assertEmpty('notation');
-        const source = options.join('/');
-        res.notation =
-          expDigits && expSign
-            ? { style: stem, source, expDigits, expSign }
-            : expDigits
-              ? { style: stem, source, expDigits }
-              : expSign
-                ? { style: stem, source, expSign }
-                : { style: stem, source };
+        res.notation = {
+          style: stem,
+          source: options.join('/'),
+          expDigits,
+          expSign
+        };
         break;
       }
 
@@ -81,37 +93,52 @@ export class TokenParser {
       case 'percent':
       case 'permille':
       case 'base-unit':
-        this.assertEmpty('unit');
-        res.unit = { style: stem };
+        if (ok('unit', 0, 0)) res.unit = { style: stem };
+        break;
+      case '%':
+        if (ok('unit', 0, 0)) res.unit = { style: 'percent' };
+        break;
+      case '%x100':
+        if (ok('unit', 0, 0)) res.unit = { style: 'percent' };
+        if (ok('scale', 0, 0)) res.scale = 100;
         break;
       case 'currency':
+        if (!ok('unit', 1, 1)) return;
         if (/^[A-Z]{3}$/.test(option)) {
-          this.assertEmpty('unit');
           res.unit = { style: stem, currency: option };
         } else {
-          this.badOption(stem, option);
+          this.#error(new BadOptionError(stem, option));
         }
         break;
-      case 'measure-unit': {
-        if (isUnit(option)) {
-          this.assertEmpty('unit');
-          res.unit = { style: stem, unit: option };
-        } else {
-          this.badOption(stem, option);
+      case 'measure-unit':
+        if (ok('unit', 1, 1)) {
+          if (measureUnit.test(option) && !option.includes('-per-')) {
+            res.unit = { style: stem, unit: option };
+          } else {
+            this.#error(new BadOptionError(stem, option));
+          }
         }
         break;
-      }
+      case 'unit':
+        if (ok('unit', 1, 1)) {
+          if (conciseUnit.test(option) && !measureUnit.test(option)) {
+            res.unit = { style: 'concise-unit', unit: option };
+          } else {
+            this.#error(new BadOptionError(stem, option));
+          }
+        }
+        break;
 
       // unitPer
-      case 'per-measure-unit': {
-        if (isUnit(option)) {
-          this.assertEmpty('unitPer');
-          res.unitPer = option;
-        } else {
-          this.badOption(stem, option);
+      case 'per-measure-unit':
+        if (ok('unitPer', 1, 1)) {
+          if (measureUnit.test(option) && !option.includes('-per-')) {
+            res.unitPer = option;
+          } else {
+            this.#error(new BadOptionError(stem, option));
+          }
         }
         break;
-      }
 
       // unitWidth
       case 'unit-width-narrow':
@@ -119,35 +146,26 @@ export class TokenParser {
       case 'unit-width-full-name':
       case 'unit-width-iso-code':
       case 'unit-width-hidden':
-        this.assertEmpty('unitWidth');
-        res.unitWidth = stem;
+        if (ok('unitWidth', 0, 0)) res.unitWidth = stem;
         break;
 
       // precision
       case 'precision-integer':
       case 'precision-unlimited':
       case 'precision-currency-cash':
-        this.assertEmpty('precision');
-        res.precision = { style: stem };
-        break;
       case 'precision-currency-standard':
-        this.assertEmpty('precision');
-        if (option === 'w') {
-          res.precision = { style: stem, trailingZero: 'stripIfInteger' };
-        } else {
+        if (ok('precision', 0, 1)) {
           res.precision = { style: stem };
+          if (option === 'w') res.precision.trailingZero = 'stripIfInteger';
         }
         break;
-      case 'precision-increment': {
-        const increment = Number(option);
-        if (increment > 0) {
-          this.assertEmpty('precision');
-          res.precision = { style: stem, increment };
-        } else {
-          this.badOption(stem, option);
+      case 'precision-increment':
+        if (ok('precision', 1, 1)) {
+          const increment = Number(option);
+          if (increment > 0) res.precision = { style: stem, increment };
+          else this.#error(new BadOptionError(stem, option));
         }
         break;
-      }
 
       // roundingMode
       case 'rounding-mode-ceiling':
@@ -161,42 +179,42 @@ export class TokenParser {
       case 'rounding-mode-half-down':
       case 'rounding-mode-half-up':
       case 'rounding-mode-unnecessary':
-        this.assertEmpty('roundingMode');
-        res.roundingMode = stem;
+        if (ok('roundingMode', 0, 0)) res.roundingMode = stem;
         break;
 
       // integerWidth
       case 'integer-width': {
-        if (/^\+0*$/.test(option)) {
-          this.assertEmpty('integerWidth');
+        if (!ok('integerWidth', 1, 1)) return;
+        if (/^[+*]0*$/.test(option)) {
           res.integerWidth = { source: option, min: option.length - 1 };
         } else {
           const m = option.match(/^#*(0*)$/);
           if (m) {
-            this.assertEmpty('integerWidth');
             res.integerWidth = {
               source: option,
               min: m[1].length,
               max: m[0].length
             };
           } else {
-            this.badOption(stem, option);
+            this.#error(new BadOptionError(stem, option));
           }
         }
         break;
       }
-
-      // scale
-      case 'scale': {
-        const scale = Number(option);
-        if (scale > 0) {
-          this.assertEmpty('scale');
-          res.scale = scale;
-        } else {
-          this.badOption(stem, option);
+      case 'integer-width-trunc':
+        if (ok('integerWidth', 0, 0)) {
+          res.integerWidth = { source: option, min: 0, max: 0 };
         }
         break;
-      }
+
+      // scale
+      case 'scale':
+        if (ok('scale', 1, 1)) {
+          const scale = Number(option);
+          if (scale > 0) res.scale = scale;
+          else this.#error(new BadOptionError(stem, option));
+        }
+        break;
 
       // group
       case 'group-off':
@@ -204,22 +222,24 @@ export class TokenParser {
       case 'group-auto':
       case 'group-on-aligned':
       case 'group-thousands':
-        this.assertEmpty('group');
-        res.group = stem;
+        if (ok('group', 0, 0)) res.group = stem;
+        break;
+      case ',_':
+        if (ok('group', 0, 0)) res.group = 'group-off';
+        break;
+      case ',?':
+        if (ok('group', 0, 0)) res.group = 'group-min2';
+        break;
+      case ',!':
+        if (ok('group', 0, 0)) res.group = 'group-on-aligned';
         break;
 
       // numberingSystem
       case 'latin':
-        this.assertEmpty('numberingSystem');
-        res.numberingSystem = 'latn';
+        if (ok('numberingSystem', 0, 0)) res.numberingSystem = 'latn';
         break;
       case 'numbering-system': {
-        if (isNumberingSystem(option)) {
-          this.assertEmpty('numberingSystem');
-          res.numberingSystem = option;
-        } else {
-          this.badOption(stem, option);
-        }
+        if (ok('numberingSystem', 1, 1)) res.numberingSystem = option;
         break;
       }
 
@@ -231,26 +251,64 @@ export class TokenParser {
       case 'sign-accounting-always':
       case 'sign-except-zero':
       case 'sign-accounting-except-zero':
-        this.assertEmpty('sign');
-        res.sign = stem;
+      case 'sign-negative':
+      case 'sign-accounting-negative':
+        if (ok('sign', 0, 0)) res.sign = stem;
+        break;
+      case '+!':
+        if (ok('sign', 0, 0)) res.sign = 'sign-always';
+        break;
+      case '+_':
+        if (ok('sign', 0, 0)) res.sign = 'sign-never';
+        break;
+      case '()':
+        if (ok('sign', 0, 0)) res.sign = 'sign-accounting';
+        break;
+      case '()!':
+        if (ok('sign', 0, 0)) res.sign = 'sign-accounting-always';
+        break;
+      case '+-':
+        if (ok('sign', 0, 0)) res.sign = 'sign-negative';
+        break;
+      case '()-':
+        if (ok('sign', 0, 0)) res.sign = 'sign-accounting-negative';
         break;
 
       // decimal
       case 'decimal-auto':
       case 'decimal-always':
-        this.assertEmpty('decimal');
-        res.decimal = stem;
+        if (ok('decimal', 0, 0)) res.decimal = stem;
         break;
 
-      // precision blueprint
       default: {
-        const precision = parsePrecisionBlueprint(stem, options, this.onError);
+        const precision = parsePrecisionBlueprint(stem, options, this.#error);
         if (precision) {
-          this.assertEmpty('precision');
-          res.precision = precision;
-        } else {
-          this.onError(new BadStemError(stem));
+          if (ok('precision', 0, 2)) res.precision = precision;
+          break;
         }
+
+        if (/^0+$/.test(stem)) {
+          if (ok('integerWidth', 0, 0)) res.integerWidth = { min: stem.length };
+          break;
+        }
+
+        const sciEng = stem.match(/^(EE?)(\+[!?])?(0+)$/);
+        if (sciEng) {
+          if (!ok('notation', 0, 0)) return;
+          const style = sciEng[1] === 'EE' ? 'engineering' : 'scientific';
+          const expSign = {
+            '+!': 'sign-always' as const,
+            '+?': 'sign-except-zero' as const
+          }[sciEng[2]];
+          const expDigits = sciEng[3].length;
+          res.notation =
+            expDigits === 1
+              ? { style, expSign }
+              : { style, expDigits, expSign };
+          break;
+        }
+
+        this.#error(new BadStemError(stem));
       }
     }
   }

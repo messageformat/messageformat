@@ -1,5 +1,18 @@
-import { DateFormatError, getDateFormatOptions } from './options.js';
+import { getDateTimeFormatOptions } from './options.js';
 import { DateToken, parseDateTokens } from './tokens.js';
+
+/** @public */
+export class DateFormatError extends Error {
+  type: 'invalid' | 'duplicate' | 'unsupported' | 'literal';
+  token: DateToken;
+
+  /** @internal */
+  constructor(type: DateFormatError['type'], msg: string, token: DateToken) {
+    super(msg);
+    this.type = type || 'error';
+    this.token = token;
+  }
+}
 
 /**
  * Returns a date formatter function for the given locales and date skeleton
@@ -32,15 +45,20 @@ export function getDateFormatter(
   tokens: string | DateToken[],
   timeZone?: string | ((error: DateFormatError) => void),
   onError?: (error: DateFormatError) => void
-) {
+): (date: Date | number) => string {
   if (typeof tokens === 'string') tokens = parseDateTokens(tokens);
   if (typeof timeZone === 'function') {
     onError = timeZone;
     timeZone = undefined;
   }
-  const opt = getDateFormatOptions(tokens, timeZone, onError);
+  const opt = getDateTimeFormatOptions(tokens, (type, message, token) => {
+    const error = new DateFormatError(type, message, token);
+    if (onError) onError(error);
+    else throw error;
+  });
+  if (timeZone) opt.timeZone = timeZone;
   const dtf = new Intl.DateTimeFormat(locales, opt);
-  return (date: Date | number) => dtf.format(date);
+  return date => dtf.format(date);
 }
 
 /**
@@ -87,13 +105,18 @@ export function getDateFormatterSource(
   tokens: string | DateToken[],
   timeZone?: string | ((err: DateFormatError) => void),
   onError?: (err: DateFormatError) => void
-) {
+): string {
   if (typeof tokens === 'string') tokens = parseDateTokens(tokens);
   if (typeof timeZone === 'function') {
     onError = timeZone;
     timeZone = undefined;
   }
-  const opt = getDateFormatOptions(tokens, timeZone, onError);
+  const opt = getDateTimeFormatOptions(tokens, (type, message, token) => {
+    const error = new DateFormatError(type, message, token);
+    if (onError) onError(error);
+    else throw error;
+  });
+  if (timeZone) opt.timeZone = timeZone;
   const lines = [
     `(function() {`,
     `var opt = ${JSON.stringify(opt)};`,

@@ -1,201 +1,223 @@
+import type { DateFormatError } from './get-date-formatter.js';
 import { DateToken } from './tokens.js';
-
-type ErrorHandler = (msg: string, type?: 'error' | 'warning') => void;
-
-/**
- * Parent class for errors.
- *
- * @remarks
- * Errors with `type: "warning"` do not necessarily indicate that the parser
- * encountered an error. In addition to a human-friendly `message`, may also
- * includes the `token` at which the error was encountered.
- *
- * @public
- */
-export class DateFormatError extends Error {
-  static ERROR: 'error';
-  static WARNING: 'warning';
-
-  token: DateToken;
-  type: 'error' | 'warning';
-
-  /** @internal */
-  constructor(msg: string, token: DateToken, type?: 'error' | 'warning') {
-    super(msg);
-    this.token = token;
-    this.type = type || 'error';
-  }
-}
 
 const alpha = (width: number) =>
   width < 4 ? 'short' : width === 4 ? 'long' : 'narrow';
 const numeric = (width: number) => (width % 2 === 0 ? '2-digit' : 'numeric');
 
-function yearOptions(
-  token: DateToken,
-  onError: ErrorHandler
-): { year: '2-digit' | 'numeric'; calendar?: 'gregory' } {
-  switch (token.char) {
-    case 'y':
-      return { year: numeric(token.width) };
-    case 'r':
-      return { calendar: 'gregory', year: 'numeric' };
-    case 'u':
-    case 'U':
-    case 'Y':
-    default:
-      onError(
-        `${token.desc} is not supported; falling back to year:numeric`,
-        DateFormatError.WARNING
-      );
-      return { year: 'numeric' };
-  }
-}
-
-function monthStyle(token: DateToken, onError: ErrorHandler) {
-  switch (token.width) {
-    case 1:
-      return 'numeric';
-    case 2:
-      return '2-digit';
-    case 3:
-      return 'short';
-    case 4:
-      return 'long';
-    case 5:
-      return 'narrow';
-    default:
-      onError(`${token.desc} is not supported with width ${token.width}`);
-      return undefined;
-  }
-}
-
-function dayStyle(token: DateToken, onError: ErrorHandler) {
-  const { char, desc, width } = token;
-  if (char === 'd') {
-    return numeric(width);
-  } else {
-    onError(`${desc} is not supported`);
-    return undefined;
-  }
-}
-
-function weekdayStyle(token: DateToken, onError: ErrorHandler) {
-  const { char, desc, width } = token;
-  if ((char === 'c' || char === 'e') && width < 3) {
-    // ignoring stand-alone-ness
-    const msg = `Numeric value is not supported for ${desc}; falling back to weekday:short`;
-    onError(msg, DateFormatError.WARNING);
-  }
-  // merging narrow styles
-  return alpha(width);
-}
-
-function hourOptions(token: DateToken): {
-  hour: '2-digit' | 'numeric';
-  hourCycle?: 'h11' | 'h12' | 'h23' | 'h24';
-} {
-  const hour = numeric(token.width);
-  let hourCycle: 'h11' | 'h12' | 'h23' | 'h24' | undefined;
-  switch (token.char) {
-    case 'h':
-      hourCycle = 'h12';
-      break;
-    case 'H':
-      hourCycle = 'h23';
-      break;
-    case 'k':
-      hourCycle = 'h24';
-      break;
-    case 'K':
-      hourCycle = 'h11';
-      break;
-  }
-  return hourCycle ? { hour, hourCycle } : { hour };
-}
-
-function timeZoneNameStyle(token: DateToken, onError: ErrorHandler) {
-  // so much fallback behaviour here
-  const { char, desc, width } = token;
-  switch (char) {
-    case 'v':
-    case 'z':
-      return width === 4 ? 'long' : 'short';
-    case 'V':
-      if (width === 4) return 'long';
-      onError(`${desc} is not supported with width ${width}`);
-      return undefined;
-    case 'X':
-      onError(`${desc} is not supported`);
-      return undefined;
-  }
-  return 'short';
-}
-
-function compileOptions(
-  token: DateToken,
-  onError: ErrorHandler
-): Intl.DateTimeFormatOptions | undefined {
-  switch (token.field) {
-    case 'era':
-      return { era: alpha(token.width) };
-    case 'year':
-      return yearOptions(token, onError);
-    case 'month':
-      return { month: monthStyle(token, onError) };
-    case 'day':
-      return { day: dayStyle(token, onError) };
-    case 'weekday':
-      return { weekday: weekdayStyle(token, onError) };
-    case 'period':
-      return undefined;
-    case 'hour':
-      return hourOptions(token);
-    case 'min':
-      return { minute: numeric(token.width) };
-    case 'sec':
-      return { second: numeric(token.width) };
-    case 'tz':
-      return { timeZoneName: timeZoneNameStyle(token, onError) };
-    case 'quarter':
-    case 'week':
-    case 'sec-frac':
-    case 'ms':
-      onError(`${token.desc} is not supported`);
-  }
-  return undefined;
-}
-
-export function getDateFormatOptions(
+/**
+ * Given a parsed ICU date/time formatter pattern,
+ * constructs a corresponding `Intl.DateTimeFormat` options structure.
+ *
+ * @public
+ * @param onError - Called if encountering invalid or unsupported tokens,
+ *   such as literal strings and day-of-week fields.
+ *
+ * @example
+ * ```js
+ * import { getDateTimeFormatOptions, parseDateTokens } from '@messageformat/date-skeleton'
+ *
+ * const tokens = parseDateTokens('GyMMMMdd', console.error)
+ * getDateTimeFormatOptions(tokens, console.error)
+ * ```
+ *
+ * ```js
+ * {
+ *   era: 'short',
+ *   year: 'numeric',
+ *   month: 'long',
+ *   day: '2-digit'
+ * }
+ * ```
+ */
+export function getDateTimeFormatOptions(
   tokens: DateToken[],
-  timeZone?: string,
-  onError: (error: DateFormatError) => void = error => {
-    throw error;
-  }
-) {
-  const options: Intl.DateTimeFormatOptions = {
-    timeZone
-  };
-  const fields: string[] = [];
+  onError: (
+    type: DateFormatError['type'],
+    message: string,
+    token: DateToken
+  ) => void
+): Intl.DateTimeFormatOptions {
+  const options: Intl.DateTimeFormatOptions = {};
+  const prevFields = new Set<string | undefined>();
   for (const token of tokens) {
-    const { error, field, str } = token;
-    if (error) {
-      const dte = new DateFormatError(error.message, token);
-      dte.stack = error.stack;
-      onError(dte);
+    if (typeof token === 'string') {
+      onError('literal', `Ignoring literal part: ${token}`, token);
+    } else if ('error' in token) {
+      onError('invalid', token.error, token);
+    } else {
+      const { char, width } = token;
+
+      let field = char;
+      switch (char) {
+        // era
+        case 'G':
+          options.era = alpha(width);
+          break;
+
+        // year
+        case 'y':
+          field = 'year';
+          options.year = width === 2 ? '2-digit' : 'numeric';
+          break;
+        case 'u':
+        case 'U':
+          field = 'year';
+          options.year = 'numeric';
+          break;
+        case 'r':
+          field = 'year';
+          options.year = 'numeric';
+          options.calendar = 'gregory';
+          break;
+
+        // month
+        case 'M':
+        case 'L':
+          field = 'month';
+          switch (width) {
+            case 1:
+              options.month = 'numeric';
+              break;
+            case 2:
+              options.month = '2-digit';
+              break;
+            case 3:
+              options.month = 'short';
+              break;
+            case 4:
+              options.month = 'long';
+              break;
+            default:
+              options.month = 'narrow';
+              break;
+          }
+          break;
+
+        // day
+        case 'd':
+          options.day = numeric(width);
+          break;
+
+        // weekday
+        case 'E':
+        case 'e':
+        case 'c':
+          field = 'weekday';
+          options.weekday = alpha(width);
+          break;
+
+        // period
+        case 'a':
+        case 'b':
+          field = 'day-period';
+          break;
+        case 'B':
+          field = 'day-period';
+          options.dayPeriod = alpha(width);
+          break;
+
+        // hour
+        case 'h':
+          field = 'hour';
+          options.hour = numeric(width);
+          options.hourCycle = 'h12';
+          break;
+        case 'H':
+          field = 'hour';
+          options.hour = numeric(width);
+          options.hourCycle = 'h23';
+          break;
+        case 'k':
+          field = 'hour';
+          options.hour = numeric(width);
+          options.hourCycle = 'h24';
+          break;
+        case 'K':
+          field = 'hour';
+          options.hour = numeric(width);
+          options.hourCycle = 'h11';
+          break;
+        case 'J':
+        case 'j':
+          field = 'hour';
+          options.hour = numeric(width);
+          break;
+        case 'C':
+          field = 'hour';
+          options.hour = numeric(width);
+          options.dayPeriod = 'short';
+          break;
+
+        // minute
+        case 'm':
+          options.minute = numeric(width);
+          break;
+
+        // second
+        case 's':
+          options.second = numeric(width);
+          break;
+
+        // second-fraction
+        case 'S':
+          options.fractionalSecondDigits = Math.min(width, 3) as 1 | 2 | 3;
+          break;
+
+        // timezone
+        case 'Z':
+          field = 'tz';
+          options.timeZoneName = 'longOffset';
+          break;
+        case 'z':
+          field = 'tz';
+          options.timeZoneName = width === 4 ? 'long' : 'short';
+          break;
+        case 'O':
+          field = 'tz';
+          options.timeZoneName = width === 4 ? 'longOffset' : 'shortOffset';
+          break;
+        case 'V':
+          field = 'tz';
+          options.timeZoneName = width === 4 ? 'long' : 'short';
+          break;
+        case 'v':
+          field = 'tz';
+          options.timeZoneName = width === 4 ? 'longGeneric' : 'shortGeneric';
+          break;
+        case 'X':
+        case 'x':
+          field = 'tz';
+          options.timeZoneName = width > 1 ? 'longOffset' : 'shortOffset';
+          break;
+
+        case 'Y': // year of week
+        case 'Q': // quarter
+        case 'q': // quarter
+        case 'W': // week of month
+        case 'w': // week of year
+        case 'D': // day of year
+        case 'F': // day of week in month
+        case 'g': // julian day
+        case 'A': // milliseconds in day
+          onError(
+            'unsupported',
+            `The field ${char} is not supported by Intl.DateTimeFormat`,
+            token
+          );
+          break;
+
+        default:
+          onError(
+            'invalid',
+            `The letter ${char} is not a valid field identifier`,
+            token
+          );
+      }
+
+      if (!prevFields.has(field)) prevFields.add(field);
+      else onError('duplicate', `Duplicate ${field} token`, token);
     }
-    if (str) {
-      const msg = `Ignoring string part: ${str}`;
-      onError(new DateFormatError(msg, token, DateFormatError.WARNING));
-    }
-    if (field) {
-      if (fields.indexOf(field) === -1) fields.push(field);
-      else onError(new DateFormatError(`Duplicate ${field} token`, token));
-    }
-    const opt = compileOptions(token, (msg, isWarning) =>
-      onError(new DateFormatError(msg, token, isWarning))
-    );
-    if (opt) Object.assign(options, opt);
   }
   return options;
 }

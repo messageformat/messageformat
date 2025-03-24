@@ -7,8 +7,10 @@ function round(x: number, precision: number) {
 }
 
 function getNumberFormatMultiplier({ scale, unit }: Skeleton) {
-  let mult = typeof scale === 'number' && scale >= 0 ? scale : 1;
-  if (unit && unit.style === 'percent') mult *= 0.01;
+  const mult = scale ?? 1;
+  if (unit?.style === 'percent') {
+    return mult === 1 || mult === 100 ? 1 : mult * 0.01;
+  }
   return mult;
 }
 

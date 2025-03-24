@@ -22,7 +22,7 @@ const tests: {
     'compact-short': [42, '42'],
     'compact-long': [42, '42'],
     'compact-short currency/CAD': [42, 'CA$42'],
-    'group-min2': [42, '42', [{}]],
+    'group-min2': [42, '42'],
     'sign-always': [42, '+42'],
     'sign-except-zero': [42, '+42'],
     'sign-accounting currency/CAD': [-42, '(CA$42.00)']
@@ -71,13 +71,12 @@ const tests: {
     'decimal-always': [42, '42', [{}]],
     latin: [42, '42'],
     'numbering-system/thai': [42, '๔๒'],
-    'per-measure-unit/duration-second': [42, '42'],
     'measure-unit/length-meter per-measure-unit/duration-second': [
       42,
       '42 m/s'
     ],
     'precision-integer': [42.123, '42'],
-    'rounding-mode-up': [42, '42', [{}]]
+    'rounding-mode-up': [42, '42']
   },
   errors: {
     '/': [42, '42', [{ code: 'BAD_STEM', stem: '' }]],
@@ -97,8 +96,8 @@ const tests: {
       42,
       '42',
       [
-        { code: 'TOO_MANY_OPTIONS', stem: '.00' },
-        { stem: 'precision-fraction', source: '.00/@@' }
+        { code: 'BAD_OPTION', stem: '.00' },
+        { stem: 'precision-fraction', source: '.00/@@/@@' }
       ]
     ],
     'notation-simple/foo': [

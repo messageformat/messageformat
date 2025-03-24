@@ -31,18 +31,12 @@ export function parseNumberSkeleton(
     throw error;
   }
 ): Skeleton {
-  const tokens = [];
+  const parser = new TokenParser(onError);
   for (const part of src.split(' ')) {
     if (part) {
-      const options = part.split('/');
-      const stem = options.shift() || '';
-      tokens.push({ stem, options });
+      const [stem, ...options] = part.split('/');
+      parser.parseToken(stem, options);
     }
-  }
-
-  const parser = new TokenParser(onError);
-  for (const { stem, options } of tokens) {
-    parser.parseToken(stem, options);
   }
   return parser.skeleton;
 }

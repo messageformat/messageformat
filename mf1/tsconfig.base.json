@@ -8,6 +8,6 @@
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "strict": true,
-    "target": "ES2017"
+    "target": "ES2023"
   }
 }
