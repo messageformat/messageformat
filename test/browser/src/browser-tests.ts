@@ -142,9 +142,7 @@ describe('compile() errors', () => {
   it('Number skeleton .00/@@/@@', () => {
     const mf = new MessageFormat('en');
     const src = '{value, number, :: .00/@@/@@}';
-    expect(() => mf.compile(src)).to.throw(
-      'Token .00 only supports one option (got 2)'
-    );
+    expect(() => mf.compile(src)).to.throw('Unknown .00 option: @@');
   });
 });
 
