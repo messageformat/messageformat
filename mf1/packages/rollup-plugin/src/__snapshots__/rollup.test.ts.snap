@@ -30,7 +30,7 @@ fr.message_intro({ count: 3 });
 
 exports[`YAML with default import 1`] = `
 "import { plural, number, select } from '@messageformat/runtime';
-import { en, fi } from '@messageformat/runtime/lib/plurals';
+import { fi, en } from '@messageformat/runtime/lib/plurals';
 
 var messages = {
   en: {
@@ -55,7 +55,7 @@ console.log(messages);
 
 exports[`YAML with named import 1`] = `
 "import { plural, number, select } from '@messageformat/runtime';
-import { en, fi } from '@messageformat/runtime/lib/plurals';
+import { fi, en } from '@messageformat/runtime/lib/plurals';
 
 var messages = {
   en: {
