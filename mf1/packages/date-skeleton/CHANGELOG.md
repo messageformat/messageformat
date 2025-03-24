@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0-0](https://github.com/messageformat/messageformat/compare/@messageformat/date-skeleton@1.1.0...@messageformat/date-skeleton@2.0.0-0) (2025-03-24)
+
+### ⚠ Breaking Changes
+
+* Make use of ES2023 Intl.DateTimeFormat features ([#446](https://github.com/messageformat/messageformat/issues/446))
+* Simplify DateToken ([#446](https://github.com/messageformat/messageformat/issues/446))
+
+### Features
+
+* Export `getDateTimeFormatOptions()` ([#446](https://github.com/messageformat/messageformat/issues/446))
+
 ## [1.1.0](https://github.com/messageformat/messageformat/compare/@messageformat/date-skeleton@1.0.1...@messageformat/date-skeleton@1.1.0) (2024-09-24)
 
 ### Features

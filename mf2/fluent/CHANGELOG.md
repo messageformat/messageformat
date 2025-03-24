@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.10.0...@messageformat/fluent@0.11.0) (2025-03-24)
+
+### ⚠ Breaking Changes
+
+* Use locale, source argument order ([#442](https://github.com/messageformat/messageformat/pull/442))
+* Replace `getFluentFunctions()` with `getMessageFunction()` ([#445](https://github.com/messageformat/messageformat/pull/445))
+
 ## [0.10.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.9.0...@messageformat/fluent@0.10.0) (2024-11-21)
 
 ### Features

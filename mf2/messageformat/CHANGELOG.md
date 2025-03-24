@@ -1,5 +1,48 @@
 # Changelog
 
+## [4.0.0-10](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-9...messageformat@4.0.0-10) (2025-03-24)
+
+### ⚠ Breaking Changes
+
+* Publish all packages as ES-only
+* Export data model types in a Model namespace
+* Drop `:currency currencyDisplay=formalSymbol` option value ([unicode-org/message-format-wg#985](https://github.com/unicode-org/message-format-wg/issues/985)) ([e67de75](https://github.com/messageformat/messageformat/commit/e67de75e4965ed52b633c2811762e169541372fc))
+* Remove `style=percent` from `:number` and `:integer` ([unicode-org/message-format-wg#988](https://github.com/unicode-org/message-format-wg/issues/988)) ([43f065c](https://github.com/messageformat/messageformat/commit/43f065c881d691b5ebbed844f55f09430e1a2d87))
+* Drop the `notation`, `compactDisplay`, & `numberingSystem` options ([unicode-org/message-format-wg#1015](https://github.com/unicode-org/message-format-wg/issues/1015)) ([2dd8a05](https://github.com/messageformat/messageformat/commit/2dd8a05753b62a7105f33d6d27f14b3673d9a5c9))
+* Drop selection from `:currency` ([unicode-org/message-format-wg#991](https://github.com/unicode-org/message-format-wg/issues/991)) ([b518ebd](https://github.com/messageformat/messageformat/commit/b518ebd5c6d4db2c8dc95a6e45fc530b324ae1cf))
+* Require select option to be set by a literal value ([unicode-org/message-format-wg#1016](https://github.com/unicode-org/message-format-wg/issues/1016)) ([f6ace5a](https://github.com/messageformat/messageformat/commit/f6ace5a311216d7e4239336cecf2ea9617914a1b))
+* Split functions into `DefaultFunctions` & `DraftFunctions` ([5506703](https://github.com/messageformat/messageformat/commit/5506703a25fb3d5f1d0f8bde5eb06b4ef4dba447))
+* Drop `u:locale` option ([unicode-org/message-format-wg#1012](https://github.com/unicode-org/message-format-wg/issues/1012)) ([c036d97](https://github.com/messageformat/messageformat/commit/c036d97da2f706283d03b6abe0399b0924ad357e))
+* Move CST functions and types under a separate 'messageformat/cst' entry point ([1ccc09f](https://github.com/messageformat/messageformat/commit/1ccc09f7d2559770f689023a41bda36b3f6fef15))
+* Export `MessageFunction` from 'messageformat/functions' rather than 'messageformat' ([b21839c](https://github.com/messageformat/messageformat/commit/b21839cdd4f35051699b0798f27c49d9241f40a2))
+* Drop `MessageFormat.p.resolvedOptions` ([tc39/proposal-intl-messageformat#54](https://github.com/tc39/proposal-intl-messageformat/issues/54)) ([7832edd](https://github.com/messageformat/messageformat/commit/7832eddb8635f5f6f50f78f39220d2e96ee54002))
+* Use type `"text"` rather than `"literal"` for formatted text parts ([unicode-org/message-format-wg#1060](https://github.com/unicode-org/message-format-wg/issues/1060)) ([135e0fa](https://github.com/messageformat/messageformat/commit/135e0fa246fc5ed540aadaf685dc5cd68b153dd9))
+* The 'messageformat/functions/utils' endpoint is merged into 'messageformat/utils',
+  and functions are only published via:
+
+      import { DefaultFunctions, DraftFunctions } from 'messageformat/functions';
+
+  By default, on DefaultFunctions are included in MessageFormat.
+  To use all available functions:
+
+      import { MessageFormat } from 'messageformat';
+      import { DraftFunctions } from 'messageformat/functions';
+
+      const mf = new MessageFormat(locale, msgsrc, { functions: DraftFunctions });
+
+### Features
+
+* Implement `:unit` formatter ([unicode-org/message-format-wg#922](https://github.com/unicode-org/message-format-wg/issues/922)) ([3e3c8db](https://github.com/messageformat/messageformat/commit/3e3c8db3bb42df77a8d7b189288ece76fbfa80ef))
+* Expand `name-char` and allow `name-char` as first character of `unquoted-literal` ([5dcb24c](https://github.com/messageformat/messageformat/commit/5dcb24cce2514722fc711493e68566dc4a56ac6b))
+* Parametrize formatter to discriminate formatted parts ([#444](https://github.com/messageformat/messageformat/issues/444)) ([45978b3](https://github.com/messageformat/messageformat/commit/45978b3dab38283695c39e72ba14f22b6f0e41f7))
+
+### Bug Fixes
+
+* Be stricter about `:integer` options ([6551ab0](https://github.com/messageformat/messageformat/commit/6551ab066505cc2dbda628a7b4f8680829fcf81d))
+* Replace `MessageFunctions` interface with `MessageFunction` type ([d62db35](https://github.com/messageformat/messageformat/commit/d62db3555401706dca159023c836c846d4267237))
+* Do not allow for literal resolution to be customized ([369394b](https://github.com/messageformat/messageformat/commit/369394b7070b15f7d0f053fd829dac24d47e7654))
+* Use null prototype for `MessageFormat.p.#functions` ([09b0197](https://github.com/messageformat/messageformat/commit/09b01970b832549a4dc94f657b0f8ba1cb4693c2))
+
 ## [4.0.0-9](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-8...messageformat@4.0.0-9) (2024-11-21)
 
 ### Features

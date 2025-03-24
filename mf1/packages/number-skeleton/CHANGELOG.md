@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0-0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.2.0...@messageformat/number-skeleton@2.0.0-0) (2025-03-24)
+
+### ⚠ Breaking Changes
+
+* Validate `numberingSystem` & `unit` only when converting to options ([#446](https://github.com/messageformat/messageformat/issues/446))
+
+### Features
+
+* Support concise forms, `*` instead of `+`, and other updates ([#446](https://github.com/messageformat/messageformat/issues/446))
+* Make use of ES2023 Intl.NumberFormat features ([#446](https://github.com/messageformat/messageformat/issues/446))
+* Export `getNumberFormatOptions()` ([#446](https://github.com/messageformat/messageformat/issues/446))
+
 ## [1.2.0](https://github.com/messageformat/messageformat/compare/@messageformat/number-skeleton@1.1.0...@messageformat/number-skeleton@1.2.0) (2023-05-27)
 
 ### Features

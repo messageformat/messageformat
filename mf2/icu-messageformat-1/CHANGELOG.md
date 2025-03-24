@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.9.0...@messageformat/icu-messageformat-1@0.10.0) (2025-03-24)
+
+### ⚠ Breaking Changes
+
+- Refactor `getMF1Functions()` as `MF1Functions` ([#447](https://github.com/messageformat/messageformat/pull/447))
+- Use locale, source argument order ([#447](https://github.com/messageformat/messageformat/pull/447))
+
+### Features
+
+- Add `mf1Validate()` ([#447](https://github.com/messageformat/messageformat/pull/447))
+- Support datetime & number skeletons + number patterns ([#447](https://github.com/messageformat/messageformat/pull/447))
+
 ## [0.9.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.8.0...@messageformat/icu-messageformat-1@0.9.0) (2024-11-21)
 
 ### Features
