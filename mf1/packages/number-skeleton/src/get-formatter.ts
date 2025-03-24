@@ -49,9 +49,9 @@ export function getNumberFormatter(
         ? parseNumberSkeleton(skeleton.slice(2), onError)
         : parseNumberPattern(skeleton, currency, onError);
   }
-  const opt = getNumberFormatOptions(skeleton, (stem, options) => {
+  const opt = getNumberFormatOptions(skeleton, (stem, option) => {
     if (onError && !ignoreUnsupported.includes(stem)) {
-      onError(new UnsupportedError(stem, options));
+      onError(new UnsupportedError(stem, option));
     }
   });
   const mod = getNumberFormatModifier(skeleton);
@@ -117,9 +117,9 @@ export function getNumberFormatterSource(
         ? parseNumberSkeleton(skeleton.slice(2), onError)
         : parseNumberPattern(skeleton, currency, onError);
   }
-  const opt = getNumberFormatOptions(skeleton, (stem, options) => {
+  const opt = getNumberFormatOptions(skeleton, (stem, option) => {
     if (onError && !ignoreUnsupported.includes(stem)) {
-      onError(new UnsupportedError(stem, options));
+      onError(new UnsupportedError(stem, option));
     }
   });
   const modSrc = getNumberFormatModifierSource(skeleton);

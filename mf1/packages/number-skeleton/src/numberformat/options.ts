@@ -47,7 +47,7 @@ const isRoundingIncrement = (
  */
 export function getNumberFormatOptions(
   skeleton: Skeleton,
-  onError: (stem: string, options?: string) => void
+  onError: (stem: string, option?: string) => void
 ): Intl.NumberFormatOptions {
   const {
     affix,
@@ -106,7 +106,7 @@ export function getNumberFormatOptions(
         opt.style = 'unit';
         opt.unit = 'percent';
       } else {
-        onError('scale');
+        onError('scale', String(scale));
       }
       break;
     case 'permille':
