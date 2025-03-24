@@ -97,15 +97,12 @@ function duration(
   }
 
   return {
-    type: 'mf1-duration' as const,
+    type: 'mf1-duration',
     source,
-    toParts() {
-      const res = { type: 'mf1-duration' as const, source, value: str };
-      return [res] as [typeof res];
-    },
+    toParts: () => [{ type: 'mf1-duration', source, value: str }],
     toString: () => str,
     valueOf: () => value
-  } satisfies MessageValue;
+  } satisfies MessageValue<'mf1-duration'>;
 }
 
 function number(

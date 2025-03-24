@@ -227,19 +227,16 @@ function asFluentSelect(
   }
 }
 
-export type FluentToMessageOptions = {
-  /** Set `false` to disable number selector detection based on keys. */
-  detectNumberSelection?: boolean;
-};
-
 /**
  * Compile a {@link https://projectfluent.org/fluent.js/syntax/classes/pattern.html | Fluent.Pattern}
  * (i.e. the value of a Fluent message or an attribute) into a
- * {@link MF.Message} data object.
+ * {@link MF.Message | Model.Message} data object.
+ *
+ * @param options.detectNumberSelection - Set `false` to disable number selector detection based on keys.
  */
 export function fluentToMessage(
   ast: Fluent.Pattern,
-  { detectNumberSelection }: FluentToMessageOptions = {}
+  options?: { detectNumberSelection?: boolean }
 ): MF.PatternMessage | MF.SelectMessage {
   const args = findSelectArgs(ast);
   if (args.length === 0) {
@@ -325,7 +322,7 @@ export function fluentToMessage(
   addParts(ast, []);
 
   const declarations = args.map((arg, index) =>
-    asSelectorDeclaration(arg, index, detectNumberSelection)
+    asSelectorDeclaration(arg, index, options?.detectNumberSelection)
   );
   return {
     type: 'select',

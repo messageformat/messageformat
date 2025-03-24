@@ -52,7 +52,7 @@ import {
   fluentToMessage,
   fluentToResource,
   fluentToResourceData,
-  getFluentFunctions,
+  getMessageFunction,
   messageToFluent,
   resourceToFluent
 } from '@messageformat/fluent';

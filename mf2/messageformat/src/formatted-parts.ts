@@ -1,13 +1,25 @@
-export type { MessageDateTimePart } from './functions/datetime.ts';
-export type { MessageFallbackPart } from './functions/fallback.ts';
-export type { MessageNumberPart } from './functions/number.ts';
-export type { MessageStringPart } from './functions/string.ts';
-export type { MessageUnknownPart } from './functions/unknown.ts';
+import type { MessageDateTimePart } from './functions/datetime.ts';
+import type { MessageFallbackPart } from './functions/fallback.ts';
+import type { MessageNumberPart } from './functions/number.ts';
+import type { MessageStringPart } from './functions/string.ts';
+import type { MessageUnknownPart } from './functions/unknown.ts';
+
+export type {
+  MessageDateTimePart,
+  MessageFallbackPart,
+  MessageNumberPart,
+  MessageStringPart,
+  MessageUnknownPart
+};
 
 /**
  * These are always paired in the output.
- * The first part has U+2066 LEFT-TO-RIGHT ISOLATE, U+2067 RIGHT-TO-LEFT ISOLATE,
- * or U+2068 FIRST STRONG ISOLATE as its `value`,
+ * The first part has
+ * - U+2066 LEFT-TO-RIGHT ISOLATE,
+ * - U+2067 RIGHT-TO-LEFT ISOLATE, or
+ * - U+2068 FIRST STRONG ISOLATE
+ *
+ * as its `value`,
  * and an ending isolation part has U+2069 POP DIRECTIONAL ISOLATE as its `value`.
  *
  * @category Formatted Parts
@@ -18,9 +30,14 @@ export interface MessageBiDiIsolationPart {
   value: '\u2066' | '\u2067' | '\u2068' | '\u2069';
 }
 
-/** @category Formatted Parts */
-export interface MessageExpressionPart {
-  type: string;
+/**
+ * The base formatted part for all expressions.
+ *
+ * @category Formatted Parts
+ * @typeParam P - The `"type"` of the formatted part
+ */
+export interface MessageExpressionPart<P extends string> {
+  type: P;
   source: string;
   dir?: 'ltr' | 'rtl';
   locale?: string;
@@ -30,12 +47,16 @@ export interface MessageExpressionPart {
 }
 
 /** @category Formatted Parts */
-export interface MessageLiteralPart {
-  type: 'literal';
+export interface MessageTextPart {
+  type: 'text';
   value: string;
 }
 
-/** @category Formatted Parts */
+/**
+ * The formatted part for a markup placeholder.
+ *
+ * @category Formatted Parts
+ */
 export interface MessageMarkupPart {
   type: 'markup';
   kind: 'open' | 'standalone' | 'close';
@@ -50,8 +71,25 @@ export interface MessageMarkupPart {
  *
  * @category Formatted Parts
  */
-export type MessagePart =
+export type MessagePart<P extends string> =
   | MessageBiDiIsolationPart
-  | MessageExpressionPart
-  | MessageLiteralPart
-  | MessageMarkupPart;
+  | MessageFallbackPart
+  | MessageMarkupPart
+  | MessageNumberPart
+  | MessageStringPart
+  | MessageTextPart
+  | MessageUnknownPart
+  | MessageExpressionPart<
+      Exclude<
+        P,
+        (
+          | MessageBiDiIsolationPart
+          | MessageFallbackPart
+          | MessageMarkupPart
+          | MessageNumberPart
+          | MessageStringPart
+          | MessageTextPart
+          | MessageUnknownPart
+        )['type']
+      >
+    >;

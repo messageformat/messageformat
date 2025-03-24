@@ -4,7 +4,7 @@ import { validate } from './data-model/validate.ts';
 import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.ts';
 import { MessageDataModelError, MessageError } from './errors.ts';
 import type { Context } from './format-context.ts';
-import type { MessagePart } from './formatted-parts.ts';
+import type { MessageFallbackPart, MessagePart } from './formatted-parts.ts';
 import { DefaultFunctions } from './functions/index.ts';
 import { BIDI_ISOLATE, type MessageValue } from './message-value.ts';
 import { formatMarkup } from './resolve/format-markup.ts';
@@ -13,24 +13,37 @@ import { resolveExpression } from './resolve/resolve-expression.ts';
 import { UnresolvedExpression } from './resolve/resolve-variable.ts';
 import { selectPattern } from './select-pattern.ts';
 
+type DefaultFunctionTypes = ReturnType<
+  (typeof DefaultFunctions)[keyof typeof DefaultFunctions]
+>['type'];
+
 /**
  * An MF2 function handler, for use in {@link MessageFormatOptions.functions}.
  *
  * @category Formatting
  */
-export type MessageFunction = (
+export type MessageFunction<T extends string, P extends string = T> = (
   context: MessageFunctionContext,
   options: Record<string, unknown>,
   input?: unknown
-) => MessageValue;
+) => MessageValue<T, P>;
 
-/** @category Formatting */
-export interface MessageFormatOptions {
+/**
+ * @category Formatting
+ * @typeParam T - The `type` used by custom message functions, if any.
+ *   These extend the {@link DefaultFunctions | default functions}.
+ * @typeParam P - The formatted-parts `type` used by any custom message values.
+ */
+export interface MessageFormatOptions<
+  T extends string = never,
+  P extends string = T
+> {
   /**
-   * The bidi isolation strategy for messages,
-   * i.e. how parts with different or unknown directionalities are isolated from each other.
+   * The bidi isolation strategy for message formatting,
+   * i.e. how expression placeholders with different or unknown directionalities
+   * are isolated from the rest of the formatted message.
    *
-   * The default `'default'` strategy isolates all placeholders,
+   * The default `'default'` strategy isolates all expression placeholders,
    * except when both the message and the placeholder are known to be left-to-right.
    *
    * The `'none'` strategy applies no isolation at all.
@@ -48,36 +61,44 @@ export interface MessageFormatOptions {
    * determines which algorithm to use when selecting between them;
    * the default for `Intl` formatters is `'best fit'`.
    *
+   * The locale is resolved separately by each message function handler call.
+   *
    * See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_negotiation
    */
   localeMatcher?: 'best fit' | 'lookup';
 
   /**
-   * The set of custom functions available during message resolution.
-   * Extends the default set of functions.
+   * A set of custom functions to make available during message resolution.
+   * Extends the {@link DefaultFunctions | default functions}.
    */
-  functions?: Record<string, MessageFunction>;
+  functions?: Record<string, MessageFunction<T, P>>;
 }
 
 /**
- * A message formatter that implements the [ECMA-402 Intl.MessageFormat proposal].
- *
- * [ecma-402 intl.messageformat proposal]: https://github.com/tc39/proposal-intl-messageformat/
+ * A message formatter for that implements the
+ * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 47 MessageFormat}
+ * specification as well as the {@link https://github.com/tc39/proposal-intl-messageformat/ | TC39 Intl.MessageFormat proposal}.
  *
  * @category Formatting
+ * @typeParam T - The `type` used by custom message functions, if any.
+ *   These extend the {@link DefaultFunctions | default functions}.
+ * @typeParam P - The formatted-parts `type` used by any custom message values.
  */
-export class MessageFormat {
+export class MessageFormat<T extends string = never, P extends string = T> {
   readonly #bidiIsolation: boolean;
   readonly #dir: 'ltr' | 'rtl' | 'auto';
   readonly #localeMatcher: 'best fit' | 'lookup';
   readonly #locales: Intl.Locale[];
   readonly #message: Message;
-  readonly #functions: Record<string, MessageFunction>;
+  readonly #functions: Record<
+    string,
+    MessageFunction<T | DefaultFunctionTypes, P | DefaultFunctionTypes>
+  >;
 
   constructor(
     locales: string | string[] | undefined,
     source: string | Message,
-    options?: MessageFormatOptions
+    options?: MessageFormatOptions<T, P>
   ) {
     this.#bidiIsolation = options?.bidiIsolation !== 'none';
     this.#localeMatcher = options?.localeMatcher ?? 'best fit';
@@ -92,7 +113,7 @@ export class MessageFormat {
       throw new MessageDataModelError(type, node);
     });
     this.#functions = options?.functions
-      ? { ...DefaultFunctions, ...options.functions }
+      ? Object.assign(Object.create(null), DefaultFunctions, options.functions)
       : DefaultFunctions;
   }
 
@@ -103,16 +124,17 @@ export class MessageFormat {
    * import { MessageFormat } from 'messageformat';
    * import { DraftFunctions } from 'messageformat/functions';
    *
-   * const msg = 'Hello {$user.name}, today is {$date :date}';
+   * const msg = 'Hello {$user.name}, today is {$date :date style=long}';
    * const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
    * mf.format({ user: { name: 'Kat' }, date: new Date('2025-03-01') });
    * ```
    *
    * ```js
-   * 'Hello Kat, today is Mar 1, 2025'
+   * 'Hello Kat, today is March 1, 2025'
    * ```
    *
-   * @param msgParams - To refer to an inner property of an object value,
+   * @param msgParams - Values that may be referenced by `$`-prefixed variable references.
+   *   To refer to an inner property of an object value,
    *   use `.` as a separator; in case of conflict, the longest starting substring wins.
    * @param onError - Called in case of error.
    *   If not set, errors are by default logged as warnings.
@@ -121,7 +143,7 @@ export class MessageFormat {
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void
   ): string {
-    const ctx = this.createContext(msgParams, onError);
+    const ctx = this.#createContext(msgParams, onError);
     let res = '';
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
@@ -130,7 +152,7 @@ export class MessageFormat {
         // Handle errors, but discard results
         formatMarkup(ctx, elem);
       } else {
-        let mv: MessageValue | undefined;
+        let mv: MessageValue<string> | undefined;
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toString === 'function') {
@@ -164,25 +186,25 @@ export class MessageFormat {
    * import { MessageFormat } from 'messageformat';
    * import { DraftFunctions } from 'messageformat/functions';
    *
-   * const msg = 'Hello {$user.name}, today is {$date :date}';
+   * const msg = 'Hello {$user.name}, today is {$date :date style=long}';
    * const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
    * mf.formatToParts({ user: { name: 'Kat' }, date: new Date('2025-03-01') });
    * ```
    *
    * ```js
    * [
-   *   { type: 'literal', value: 'Hello ' },
+   *   { type: 'text', value: 'Hello ' },
    *   { type: 'bidiIsolation', value: '\u2068' },
    *   { type: 'string', source: '$user.name', locale: 'en', value: 'Kat' },
    *   { type: 'bidiIsolation', value: '\u2069' },
-   *   { type: 'literal', value: ', today is ' },
+   *   { type: 'text', value: ', today is ' },
    *   {
    *     type: 'datetime',
    *     source: '$date',
    *     dir: 'ltr',
    *     locale: 'en',
    *     parts: [
-   *       { type: 'month', value: 'Mar' },
+   *       { type: 'month', value: 'March' },
    *       { type: 'literal', value: ' ' },
    *       { type: 'day', value: '1' },
    *       { type: 'literal', value: ', ' },
@@ -192,7 +214,8 @@ export class MessageFormat {
    * ]
    * ```
    *
-   * @param msgParams - To refer to an inner property of an object value,
+   * @param msgParams - Values that may be referenced by `$`-prefixed variable references.
+   *   To refer to an inner property of an object value,
    *   use `.` as a separator; in case of conflict, the longest starting substring wins.
    * @param onError - Called in case of error.
    *   If not set, errors are by default logged as warnings.
@@ -200,20 +223,21 @@ export class MessageFormat {
   formatToParts(
     msgParams?: Record<string, unknown>,
     onError?: (error: unknown) => void
-  ): MessagePart[] {
-    const ctx = this.createContext(msgParams, onError);
-    const parts: MessagePart[] = [];
+  ): MessagePart<P>[] {
+    const ctx = this.#createContext(msgParams, onError);
+    const parts: MessagePart<P>[] = [];
     for (const elem of selectPattern(ctx, this.#message)) {
       if (typeof elem === 'string') {
-        parts.push({ type: 'literal', value: elem });
+        parts.push({ type: 'text', value: elem });
       } else if (elem.type === 'markup') {
         parts.push(formatMarkup(ctx, elem));
       } else {
-        let mv: MessageValue | undefined;
+        let mv;
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toParts === 'function') {
-            const mp = mv.toParts();
+            // Let's presume that parts that look like MessageNumberPart or MessageStringPart are such.
+            const mp = mv.toParts() as typeof parts;
             if (
               this.#bidiIsolation &&
               (this.#dir !== 'ltr' || mv.dir !== 'ltr' || mv[BIDI_ISOLATE])
@@ -232,7 +256,10 @@ export class MessageFormat {
           }
         } catch (error) {
           ctx.onError(error);
-          const fb = { type: 'fallback', source: mv?.source ?? '�' };
+          const fb: MessageFallbackPart = {
+            type: 'fallback',
+            source: mv?.source ?? '�'
+          };
           if (this.#bidiIsolation) {
             parts.push({ type: 'bidiIsolation', value: FSI }, fb, {
               type: 'bidiIsolation',
@@ -247,16 +274,7 @@ export class MessageFormat {
     return parts;
   }
 
-  resolvedOptions() {
-    return {
-      bidiIsolation: this.#bidiIsolation,
-      dir: this.#dir,
-      functions: Object.freeze(this.#functions),
-      localeMatcher: this.#localeMatcher
-    };
-  }
-
-  private createContext(
+  #createContext(
     msgParams?: Record<string, unknown>,
     onError: Context['onError'] = (error: Error) => {
       // Emit warning for errors by default
@@ -274,7 +292,7 @@ export class MessageFormat {
         decl.type === 'input' ? (msgParams ?? {}) : undefined
       );
     }
-    const ctx: Context = {
+    const ctx: Context<T | DefaultFunctionTypes, P | DefaultFunctionTypes> = {
       onError,
       localeMatcher: this.#localeMatcher,
       locales: this.#locales,
