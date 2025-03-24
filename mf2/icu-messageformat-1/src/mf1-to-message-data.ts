@@ -1,3 +1,12 @@
+import {
+  getDateTimeFormatOptions,
+  parseDateTokens
+} from '@messageformat/date-skeleton';
+import {
+  getNumberFormatOptions,
+  parseNumberPattern,
+  parseNumberSkeleton
+} from '@messageformat/number-skeleton';
 import type * as AST from '@messageformat/parser';
 import type { Model as MF } from 'messageformat';
 
@@ -45,6 +54,220 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
   return args;
 }
 
+function parseDateTimeArgStyle(argStyle: string): MF.Options {
+  const options: MF.Options = new Map();
+  const onError = () =>
+    options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  const tokens = parseDateTokens(argStyle.substring(2));
+  const dtfOpt = getDateTimeFormatOptions(tokens, onError);
+  loop: for (let [key, value] of Object.entries(dtfOpt)) {
+    switch (key) {
+      case 'dayPeriod':
+        onError();
+        continue loop;
+      case 'hourCycle':
+        key = 'hour12';
+        value = String(value === 'h11' || value === 'h12');
+        break;
+    }
+    options.set(key, { type: 'literal', value });
+  }
+  return options;
+}
+
+function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
+  let name = 'number';
+  const options: MF.Options = new Map();
+  const onError = () => {
+    if (name === 'number') name = 'mf1:number';
+    options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  };
+  const skeleton = argStyle.startsWith('::')
+    ? parseNumberSkeleton(argStyle.substring(2), onError)
+    : parseNumberPattern(argStyle, 'XXX', onError);
+  const nfOpt = getNumberFormatOptions(skeleton, (stem, option) => {
+    if (stem === 'scale') {
+      options.set('mf1:scale', { type: 'literal', value: String(option) });
+      if (skeleton.unit?.style === 'percent') {
+        name = 'mf1:unit';
+        options.set('unit', { type: 'literal', value: 'percent' });
+      } else if (name === 'number') {
+        name = 'mf1:number';
+      }
+    } else {
+      onError();
+    }
+  });
+  const optEntries = Object.entries(nfOpt);
+  loop: for (let [key, value] of optEntries) {
+    switch (key) {
+      case 'currency':
+        if (value === 'XXX' && !argStyle.includes('XXX')) {
+          continue loop;
+        }
+        break;
+      case 'notation':
+        onError();
+        break;
+      case 'style':
+        switch (value) {
+          case 'currency':
+            name = 'mf1:currency';
+            continue loop;
+          case 'percent':
+            name = 'mf1:unit';
+            key = 'mf1:scale';
+            value = '100';
+            if (options.has(key)) continue loop;
+            break;
+          case 'unit':
+            name = 'mf1:unit';
+            continue loop;
+          default:
+            continue loop;
+        }
+        break;
+      case 'useGrouping':
+        if (value === false) value = 'never';
+        break;
+    }
+    options.set(key, { type: 'literal', value });
+  }
+  return { type: 'function', name, options };
+}
+
+function tokenToFunctionRef(token: AST.FunctionArg): {
+  functionRef: MF.FunctionRef;
+  attributes: MF.Attributes;
+} {
+  const attributes: MF.Attributes = new Map([
+    ['mf1:argType', { type: 'literal', value: token.key }]
+  ]);
+  let argStyle = '';
+  if (token.param) {
+    for (const pt of token.param) {
+      if (pt.type === 'content') argStyle += pt.value;
+      else throw new Error(`Unsupported param type: ${pt.type}`);
+    }
+    argStyle = argStyle.trim();
+    attributes.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  }
+
+  switch (token.key) {
+    case 'date': {
+      let options: MF.Options;
+      if (argStyle.startsWith('::')) {
+        options = parseDateTimeArgStyle(argStyle);
+      } else {
+        const month: MF.Literal = { type: 'literal', value: 'short' };
+        options = new Map([
+          ['year', { type: 'literal', value: 'numeric' }],
+          ['month', month],
+          ['day', { type: 'literal', value: 'numeric' }]
+        ]);
+        switch (argStyle) {
+          case 'full':
+            month.value = 'long';
+            options.set('weekday', { type: 'literal', value: 'long' });
+            break;
+          case 'long':
+            month.value = 'long';
+            break;
+          case 'short':
+            month.value = 'numeric';
+            break;
+          case '':
+          case 'medium':
+            break;
+          default:
+            options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+        }
+      }
+      return {
+        functionRef: { type: 'function', name: 'mf1:datetime', options },
+        attributes
+      };
+    }
+
+    case 'number':
+      switch (argStyle) {
+        case 'currency':
+          return {
+            functionRef: { type: 'function', name: 'mf1:currency' },
+            attributes
+          };
+        case 'integer':
+          return {
+            functionRef: { type: 'function', name: 'integer' },
+            attributes
+          };
+        case 'percent':
+          return {
+            functionRef: {
+              type: 'function',
+              name: 'mf1:unit',
+              options: new Map([
+                ['unit', { type: 'literal', value: 'percent' }],
+                ['mf1:scale', { type: 'literal', value: '100' }]
+              ])
+            },
+            attributes
+          };
+        case '':
+          return {
+            functionRef: { type: 'function', name: 'number' },
+            attributes
+          };
+        default:
+          return { functionRef: parseNumberArgStyle(argStyle), attributes };
+      }
+
+    case 'time': {
+      let options: MF.Options;
+      if (argStyle.startsWith('::')) {
+        options = parseDateTimeArgStyle(argStyle);
+      } else {
+        options = new Map([
+          ['hour', { type: 'literal', value: 'numeric' }],
+          ['minute', { type: 'literal', value: 'numeric' }]
+        ]);
+        switch (argStyle) {
+          case 'full':
+          case 'long':
+            options.set('second', { type: 'literal', value: 'numeric' });
+            options.set('timeZoneName', { type: 'literal', value: 'short' });
+            break;
+          case 'short':
+            break;
+          case '':
+          case 'medium':
+            options.set('second', { type: 'literal', value: 'numeric' });
+            break;
+          default:
+            options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+        }
+      }
+      return {
+        functionRef: { type: 'function', name: 'mf1:datetime', options },
+        attributes
+      };
+    }
+
+    default: {
+      const functionRef: MF.FunctionRef = {
+        type: 'function',
+        name: `mf1:${token.key}`
+      };
+      if (argStyle) {
+        functionRef.options = new Map([
+          ['mf1:argStyle', { type: 'literal', value: argStyle }]
+        ]);
+      }
+      return { functionRef, attributes };
+    }
+  }
+}
+
 function tokenToPart(
   token: AST.Token,
   pluralArg: string | null
@@ -57,25 +280,12 @@ function tokenToPart(
         type: 'expression',
         arg: { type: 'variable', name: token.arg }
       };
-    case 'function': {
-      const functionRef: MF.FunctionRef = {
-        type: 'function',
-        name: `mf1:${token.key}`
-      };
-      if (token.param && token.param.length > 0) {
-        let value = '';
-        for (const pt of token.param) {
-          if (pt.type === 'content') value += pt.value;
-          else throw new Error(`Unsupported param type: ${pt.type}`);
-        }
-        functionRef.options = new Map([['param', { type: 'literal', value }]]);
-      }
+    case 'function':
       return {
         type: 'expression',
         arg: { type: 'variable', name: token.arg },
-        functionRef
+        ...tokenToFunctionRef(token)
       };
-    }
     case 'octothorpe':
       return pluralArg
         ? { type: 'expression', arg: { type: 'variable', name: pluralArg } }
@@ -87,7 +297,7 @@ function tokenToPart(
 }
 
 function argToInputDeclaration({
-  arg: selName,
+  arg: name,
   pluralOffset,
   type
 }: SelectArg): MF.InputDeclaration {
@@ -96,38 +306,70 @@ function argToInputDeclaration({
     functionRef = { type: 'function', name: 'string' };
   } else {
     const options: MF.Options = new Map();
-    if (pluralOffset) {
-      options.set('pluralOffset', {
-        type: 'literal',
-        value: String(pluralOffset)
-      });
-    }
     if (type === 'selectordinal') {
-      options.set('type', { type: 'literal', value: 'ordinal' });
+      options.set('select', { type: 'literal', value: 'ordinal' });
     }
-
-    functionRef = { type: 'function', name: 'mf1:number' };
-    if (options.size) functionRef.options = options;
+    if (pluralOffset) {
+      options.set('offset', { type: 'literal', value: String(pluralOffset) });
+      functionRef = { type: 'function', name: 'mf1:plural', options };
+    } else {
+      functionRef = { type: 'function', name: 'number' };
+      if (options.size) functionRef.options = options;
+    }
   }
   return {
     type: 'input',
-    name: selName,
+    name,
     value: {
       type: 'expression',
-      arg: { type: 'variable', name: selName },
+      arg: { type: 'variable', name },
       functionRef
     }
   };
 }
 
 /**
- * Convert an ICU MessageFormat 1 message into a {@link MF.Message} data object.
+ * Convert an ICU MessageFormat 1 message into a {@link MF.Message | Model.Message} data object.
  *
  * If the source message contains any inner selectors, they will be
  * lifted into a single top-level selector.
  *
- * Only literal values are supported in formatter parameters. Any
- * such value will be passed in as an option `{ param: string }`.
+ * Only literal values are supported in formatter parameters.
+ * Any unsupported `argStyle` value will be included as a {@link MF.Options | Model.Options} value.
+ *
+ * ```js
+ * import { mf1ToMessageData, mf1Validate } from '@messageformat/icu-messageformat-1';
+ * import { parse } from '@messageformat/parser';
+ *
+ * const mf1Msg = parse('The total is {V, number, ::currency/EUR}.');
+ * const mf2Msg = mf1ToMessageData(mf1Msg);
+ * mf1Validate(mf2Msg);
+ * mf2msg;
+ * ```
+ *
+ * ```js
+ * {
+ *   type: 'message',
+ *   declarations: [],
+ *   pattern: [
+ *     'The total is ',
+ *     {
+ *       type: 'expression',
+ *       arg: { type: 'variable', name: 'V' },
+ *       functionRef: {
+ *         type: 'function',
+ *         name: 'mf1:currency',
+ *         options: Map(1) { 'currency' => { type: 'literal', value: 'EUR' } }
+ *       },
+ *       attributes: Map(2) {
+ *         'mf1:argType' => { type: 'literal', value: 'number' },
+ *         'mf1:argStyle' => { type: 'literal', value: '::currency/EUR' }
+ *       }
+ *     },
+ *     '.'
+ *   ]
+ * }
+ * ```
  *
  * @param ast - An ICU MessageFormat message as an array of `@messageformat/parser`
  *   {@link https://messageformat.github.io/messageformat/api/parser.parse/ | AST tokens}.

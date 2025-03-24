@@ -28,9 +28,10 @@ mf.format({ today: new Date('2022-02-02') });
 
 ```js
 import {
-  getMF1Functions,
+  MF1Functions,
   mf1ToMessage,
-  mf1ToMessageData
+  mf1ToMessageData,
+  mf1Validate
 } from '@messageformat/icu-messageformat-1';
 ```
 

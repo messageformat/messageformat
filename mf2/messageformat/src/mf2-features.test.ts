@@ -1,6 +1,6 @@
 import { fluentToResource } from '@messageformat/fluent';
 import {
-  getMF1Functions,
+  MF1Functions,
   mf1ToMessage,
   mf1ToMessageData
 } from '@messageformat/icu-messageformat-1';
@@ -88,7 +88,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     expect(msg.selectors).toHaveLength(4);
     expect(msg.variants).toHaveLength(81);
 
-    const mf = mf1ToMessage(msg, 'en');
+    const mf = mf1ToMessage('en', msg);
 
     const none = mf.format({
       poolCount: 0,
@@ -136,7 +136,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
     expect(msg.selectors).toHaveLength(6);
     expect(msg.variants).toHaveLength(64);
 
-    const mf = new MessageFormat('en', msg, { functions: getMF1Functions() });
+    const mf = new MessageFormat('en', msg, { functions: MF1Functions });
 
     const one = mf.format({
       N: 1,

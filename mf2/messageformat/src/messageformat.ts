@@ -2,7 +2,7 @@ import { parseMessage } from './data-model/parse.ts';
 import type { Message } from './data-model/types.ts';
 import { validate } from './data-model/validate.ts';
 import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.ts';
-import { MessageDataModelError, MessageError } from './errors.ts';
+import { MessageError } from './errors.ts';
 import type { Context } from './format-context.ts';
 import type { MessageFallbackPart, MessagePart } from './formatted-parts.ts';
 import { DefaultFunctions } from './functions/index.ts';
@@ -109,9 +109,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
         : [];
     this.#dir = options?.dir ?? getLocaleDir(this.#locales[0]);
     this.#message = typeof source === 'string' ? parseMessage(source) : source;
-    validate(this.#message, (type, node) => {
-      throw new MessageDataModelError(type, node);
-    });
+    validate(this.#message);
     this.#functions = options?.functions
       ? Object.assign(Object.create(null), DefaultFunctions, options.functions)
       : DefaultFunctions;

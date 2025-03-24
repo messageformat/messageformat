@@ -28,5 +28,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
-      - run: npm run build -w mf1/packages/parser
+      - run: npm run build -w mf1/packages/parser -w mf1/packages/date-skeleton -w mf1/packages/number-skeleton
       - run: npm run docs:mf2

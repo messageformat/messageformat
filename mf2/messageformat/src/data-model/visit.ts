@@ -21,7 +21,7 @@ import type {
  * Visitors for nodes that contain other nodes may return a callback function
  * that will be called with no arguments when exiting the node.
  *
- * If set, the `node` visitor is called for all {@link Model.Node} values
+ * If set, the `node` visitor is called for all {@link Node} values
  * for which an explicit visitor is not defined.
  *
  * Many visitors will be called with additional arguments
