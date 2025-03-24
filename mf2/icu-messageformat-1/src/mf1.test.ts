@@ -7,12 +7,7 @@ export type TestCase = {
   src: string;
   exp: [
     Record<string, string | number | Date> | (string | number)[] | undefined,
-    (
-      | string
-      | RegExp
-      | { compileError: RegExp }
-      | { res: string | RegExp; errors: string[] }
-    )
+    string | RegExp | { res: string | RegExp; errors: string[] }
   ][];
   only?: boolean;
 };
@@ -358,7 +353,7 @@ export const testCases: Record<string, TestCase[]> = {
     },
     {
       src: '{N, number, ::foo}',
-      exp: [[{ N: 42 }, { compileError: /argStyle/ }]]
+      exp: [[{ N: 42 }, { res: '42', errors: ['bad-option'] }]]
     }
   ],
 
@@ -381,18 +376,23 @@ export const testCases: Record<string, TestCase[]> = {
     },
     {
       src: "{1, date, ::EEE, MMM d, ''yy}",
-      exp: [[{ 1: 978484385000 }, { compileError: /argStyle/ }]]
+      exp: [
+        [
+          { 1: 978484385000 },
+          { res: 'Wed, Jan 3, 2001', errors: ['bad-option'] }
+        ]
+      ]
     }
   ],
 
   'Unsupported formatters': [
     {
       src: '{N, spellout}',
-      exp: [[{ N: 42 }, { compileError: /argType/ }]]
+      exp: [[{ N: 42 }, { res: '{$N}', errors: ['unknown-function'] }]]
     },
     {
       src: '{N, ordinal}',
-      exp: [[{ N: 42 }, { compileError: /argType/ }]]
+      exp: [[{ N: 42 }, { res: '{$N}', errors: ['unknown-function'] }]]
     }
   ]
 };
@@ -427,11 +427,6 @@ for (const [title, cases] of Object.entries(testCases)) {
             let errors: [{ type: string }][];
             if (typeof res === 'string' || res instanceof RegExp) {
               errors = [];
-            } else if ('compileError' in res) {
-              expect(() => mf1ToMessage(locale, data)).toThrow(
-                res.compileError
-              );
-              return;
             } else {
               errors = res.errors.map(type => [{ type }]);
               res = res.res;

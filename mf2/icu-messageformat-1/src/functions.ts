@@ -8,23 +8,34 @@ import {
   type MessageValue
 } from 'messageformat/functions';
 
-const currency: (
+function checkArgStyle(
   ctx: MessageFunctionContext,
-  options: Record<string, unknown>,
-  operand?: unknown
-) => MessageNumber = DraftFunctions.currency;
+  options: Record<string, unknown>
+) {
+  const argStyle = options['mf1:argStyle'];
+  if (argStyle) {
+    const msg = `Unsupported MF1 number argStyle: ${argStyle}`;
+    ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+  }
+}
 
-const datetime: (
+function currency(
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   operand?: unknown
-) => MessageDateTime = DraftFunctions.datetime;
+): MessageNumber {
+  checkArgStyle(ctx, options);
+  return DraftFunctions.currency(ctx, options, operand);
+}
 
-const unit: (
+function datetime(
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   operand?: unknown
-) => MessageNumber = DraftFunctions.unit;
+): MessageDateTime {
+  checkArgStyle(ctx, options);
+  return DraftFunctions.datetime(ctx, options, operand);
+}
 
 function duration(
   ctx: MessageFunctionContext,
@@ -71,12 +82,13 @@ function duration(
   } satisfies MessageValue<'mf1:duration'>;
 }
 
-function percent(
+function number(
   ctx: MessageFunctionContext,
-  _options: Record<string, unknown>,
+  options: Record<string, unknown>,
   operand?: unknown
 ): MessageNumber {
-  return DraftFunctions.unit(ctx, { unit: 'percent' }, 100 * Number(operand));
+  checkArgStyle(ctx, options);
+  return DefaultFunctions.number(ctx, options, operand);
 }
 
 function plural(
@@ -91,16 +103,11 @@ function plural(
     if (typeof num === 'number') num -= offset;
     else if (typeof num === 'bigint') num -= BigInt(offset);
   } else {
-    ctx.onError(
-      new MessageResolutionError(
-        'bad-option',
-        `Plural offset must be an integer: ${options.offset}`,
-        ctx.source
-      )
-    );
+    const msg = `Plural offset must be an integer: ${options.offset}`;
+    ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
   }
 
-  const mv = DefaultFunctions.number(ctx, options, num);
+  const mv = DefaultFunctions.number(ctx, {}, num);
   mv.selectKey = keys => {
     const str = String(origNum);
     if (keys.has(str)) return str;
@@ -114,6 +121,17 @@ function plural(
   return mv;
 }
 
+function unit(
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  operand?: unknown
+): MessageNumber {
+  checkArgStyle(ctx, options);
+  const scale = Number(options['mf1:scale']);
+  if (scale && scale !== 1) operand = scale * Number(operand);
+  return DraftFunctions.unit(ctx, options, operand);
+}
+
 /**
  * Function handlers for ICU MessageFormat 1.
  *
@@ -121,22 +139,16 @@ function plural(
  */
 export let MF1Functions = {
   /**
-   * A re-export of {@link DraftFunctions.currency},
+   * A wrapper around {@link DraftFunctions.currency},
    * used for formatting a `number, currency` and `number, ::currency` placeholder.
    */
-  currency,
+  'mf1:currency': currency,
 
   /**
-   * A re-export of {@link DraftFunctions.datetime},
+   * A wrapper around {@link DraftFunctions.datetime},
    * used for formatting `date` and `time` placeholders.
    */
-  datetime,
-
-  /**
-   * A re-export of {@link DraftFunctions.unit},
-   * used for formatting `number, ::measure-unit` and `number, ::unit` placeholders.
-   */
-  unit,
+  'mf1:datetime': datetime,
 
   /**
    * Formats a duration expressed as seconds.
@@ -148,16 +160,22 @@ export let MF1Functions = {
   'mf1:duration': duration,
 
   /**
-   * A wrapper around {@link DraftFunctions.unit},
-   * used for formatting a `number, percent` placeholder.
+   * A wrapper around {@link DefaultFunctions.number},
+   * used for formatting most `number` placeholders.
    */
-  'mf1:percent': percent,
+  'mf1:number': number,
 
   /**
    * A plural or selectordinal selector that includes an `offset`.
    *
    * Selectors without an offset are represented by `:number`.
    */
-  'mf1:plural': plural
+  'mf1:plural': plural,
+
+  /**
+   * A wrapper around {@link DraftFunctions.unit},
+   * used for formatting `number, percent`, `number, ::unit`, and other placeholders.
+   */
+  'mf1:unit': unit
 };
 MF1Functions = Object.freeze(Object.assign(Object.create(null), MF1Functions));

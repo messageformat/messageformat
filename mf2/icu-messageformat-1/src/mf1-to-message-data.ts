@@ -78,8 +78,10 @@ function parseDateTimeArgStyle(argStyle: string): MF.Options {
 function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
   let name = 'number';
   const options: MF.Options = new Map();
-  const onError = () =>
+  const onError = () => {
+    if (name === 'number') name = 'mf1:number';
     options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  };
   const skeleton = argStyle.startsWith('::')
     ? parseNumberSkeleton(argStyle.substring(2), onError)
     : parseNumberPattern(argStyle, 'XXX', onError);
@@ -98,21 +100,20 @@ function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
       case 'style':
         switch (value) {
           case 'currency':
-            name = 'currency';
+            name = 'mf1:currency';
             continue loop;
           case 'percent':
-            name = 'mf1:percent';
-            if (optEntries.length > 1) {
-              options.clear();
-              onError();
-            }
-            break loop;
+            name = 'mf1:unit';
+            key = 'mf1:scale';
+            value = '100';
+            break;
           case 'unit':
-            name = 'unit';
+            name = 'mf1:unit';
             continue loop;
           default:
             continue loop;
         }
+        break;
       case 'useGrouping':
         if (value === false) value = 'never';
         break;
@@ -170,7 +171,7 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
         }
       }
       return {
-        functionRef: { type: 'function', name: 'datetime', options },
+        functionRef: { type: 'function', name: 'mf1:datetime', options },
         attributes
       };
     }
@@ -179,7 +180,7 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
       switch (argStyle) {
         case 'currency':
           return {
-            functionRef: { type: 'function', name: 'currency' },
+            functionRef: { type: 'function', name: 'mf1:currency' },
             attributes
           };
         case 'integer':
@@ -189,7 +190,14 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
           };
         case 'percent':
           return {
-            functionRef: { type: 'function', name: 'mf1:percent' },
+            functionRef: {
+              type: 'function',
+              name: 'mf1:unit',
+              options: new Map([
+                ['unit', { type: 'literal', value: 'percent' }],
+                ['mf1:scale', { type: 'literal', value: '100' }]
+              ])
+            },
             attributes
           };
         case '':
@@ -227,7 +235,7 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
         }
       }
       return {
-        functionRef: { type: 'function', name: 'datetime', options },
+        functionRef: { type: 'function', name: 'mf1:datetime', options },
         attributes
       };
     }
@@ -337,7 +345,7 @@ function argToInputDeclaration({
  *       arg: { type: 'variable', name: 'V' },
  *       functionRef: {
  *         type: 'function',
- *         name: 'currency',
+ *         name: 'mf1:currency',
  *         options: Map(1) { 'currency' => { type: 'literal', value: 'EUR' } }
  *       },
  *       attributes: Map(2) {

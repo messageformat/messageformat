@@ -6,7 +6,6 @@ import {
 } from 'messageformat';
 import { MF1Functions } from './functions.ts';
 import { mf1ToMessageData } from './mf1-to-message-data.ts';
-import { mf1Validate } from './validate.ts';
 
 export type MF1Options = {
   /** See {@link https://messageformat.github.io/messageformat/api/parser.parseoptions/ ParseOptions.strict} in @messageformat/parser */
@@ -47,7 +46,6 @@ export function mf1ToMessage(
   } else {
     msg = source;
   }
-  mf1Validate(msg);
   opt.functions = opt.functions
     ? Object.assign(Object.create(null), MF1Functions, opt.functions)
     : MF1Functions;
