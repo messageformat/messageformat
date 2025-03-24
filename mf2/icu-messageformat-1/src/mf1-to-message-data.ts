@@ -1,3 +1,12 @@
+import {
+  getDateTimeFormatOptions,
+  parseDateTokens
+} from '@messageformat/date-skeleton';
+import {
+  getNumberFormatOptions,
+  parseNumberPattern,
+  parseNumberSkeleton
+} from '@messageformat/number-skeleton';
 import type * as AST from '@messageformat/parser';
 import type { Model as MF } from 'messageformat';
 
@@ -45,6 +54,74 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
   return args;
 }
 
+function parseDateTimeArgStyle(argStyle: string): MF.Options {
+  const options: MF.Options = new Map();
+  const onError = () =>
+    options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  const tokens = parseDateTokens(argStyle.substring(2));
+  const dtfOpt = getDateTimeFormatOptions(tokens, onError);
+  loop: for (let [key, value] of Object.entries(dtfOpt)) {
+    switch (key) {
+      case 'dayPeriod':
+        onError();
+        continue loop;
+      case 'hourCycle':
+        key = 'hour12';
+        value = String(value === 'h11' || value === 'h12');
+        break;
+    }
+    options.set(key, { type: 'literal', value });
+  }
+  return options;
+}
+
+function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
+  let name = 'number';
+  const options: MF.Options = new Map();
+  const onError = () =>
+    options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+  const skeleton = argStyle.startsWith('::')
+    ? parseNumberSkeleton(argStyle.substring(2), onError)
+    : parseNumberPattern(argStyle, 'XXX', onError);
+  const nfOpt = getNumberFormatOptions(skeleton, onError);
+  const optEntries = Object.entries(nfOpt);
+  loop: for (let [key, value] of optEntries) {
+    switch (key) {
+      case 'currency':
+        if (value === 'XXX' && !argStyle.includes('XXX')) {
+          continue loop;
+        }
+        break;
+      case 'notation':
+        onError();
+        break;
+      case 'style':
+        switch (value) {
+          case 'currency':
+            name = 'currency';
+            continue loop;
+          case 'percent':
+            name = 'mf1:percent';
+            if (optEntries.length > 1) {
+              options.clear();
+              onError();
+            }
+            break loop;
+          case 'unit':
+            name = 'unit';
+            continue loop;
+          default:
+            continue loop;
+        }
+      case 'useGrouping':
+        if (value === false) value = 'never';
+        break;
+    }
+    options.set(key, { type: 'literal', value });
+  }
+  return { type: 'function', name, options };
+}
+
 function tokenToFunctionRef(token: AST.FunctionArg): {
   functionRef: MF.FunctionRef;
   attributes: MF.Attributes;
@@ -64,28 +141,33 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
 
   switch (token.key) {
     case 'date': {
-      const month: MF.Literal = { type: 'literal', value: 'short' };
-      const options: MF.Options = new Map([
-        ['day', { type: 'literal', value: 'numeric' }],
-        ['month', month],
-        ['year', { type: 'literal', value: 'numeric' }]
-      ]);
-      switch (argStyle) {
-        case 'full':
-          month.value = 'long';
-          options.set('weekday', { type: 'literal', value: 'long' });
-          break;
-        case 'long':
-          month.value = 'long';
-          break;
-        case 'short':
-          month.value = 'numeric';
-          break;
-        case '':
-        case 'medium':
-          break;
-        default:
-          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+      let options: MF.Options;
+      if (argStyle.startsWith('::')) {
+        options = parseDateTimeArgStyle(argStyle);
+      } else {
+        const month: MF.Literal = { type: 'literal', value: 'short' };
+        options = new Map([
+          ['year', { type: 'literal', value: 'numeric' }],
+          ['month', month],
+          ['day', { type: 'literal', value: 'numeric' }]
+        ]);
+        switch (argStyle) {
+          case 'full':
+            month.value = 'long';
+            options.set('weekday', { type: 'literal', value: 'long' });
+            break;
+          case 'long':
+            month.value = 'long';
+            break;
+          case 'short':
+            month.value = 'numeric';
+            break;
+          case '':
+          case 'medium':
+            break;
+          default:
+            options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+        }
       }
       return {
         functionRef: { type: 'function', name: 'datetime', options },
@@ -97,13 +179,7 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
       switch (argStyle) {
         case 'currency':
           return {
-            functionRef: {
-              type: 'function',
-              name: 'currency',
-              options: new Map([
-                ['currency', { type: 'literal', value: 'XXX' }]
-              ])
-            },
+            functionRef: { type: 'function', name: 'currency' },
             attributes
           };
         case 'integer':
@@ -122,38 +198,33 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
             attributes
           };
         default:
-          return {
-            functionRef: {
-              type: 'function',
-              name: 'number',
-              options: new Map([
-                ['mf1:argStyle', { type: 'literal', value: argStyle }]
-              ])
-            },
-            attributes
-          };
+          return { functionRef: parseNumberArgStyle(argStyle), attributes };
       }
 
     case 'time': {
-      const options: MF.Options = new Map([
-        ['second', { type: 'literal', value: 'numeric' }],
-        ['minute', { type: 'literal', value: 'numeric' }],
-        ['hour', { type: 'literal', value: 'numeric' }]
-      ]);
-      switch (argStyle) {
-        case 'full':
-        case 'long':
-          options.set('second', { type: 'literal', value: 'numeric' });
-          options.set('timeZoneName', { type: 'literal', value: 'short' });
-          break;
-        case 'short':
-          options.delete('second');
-          break;
-        case '':
-        case 'medium':
-          break;
-        default:
-          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+      let options: MF.Options;
+      if (argStyle.startsWith('::')) {
+        options = parseDateTimeArgStyle(argStyle);
+      } else {
+        options = new Map([
+          ['hour', { type: 'literal', value: 'numeric' }],
+          ['minute', { type: 'literal', value: 'numeric' }]
+        ]);
+        switch (argStyle) {
+          case 'full':
+          case 'long':
+            options.set('second', { type: 'literal', value: 'numeric' });
+            options.set('timeZoneName', { type: 'literal', value: 'short' });
+            break;
+          case 'short':
+            break;
+          case '':
+          case 'medium':
+            options.set('second', { type: 'literal', value: 'numeric' });
+            break;
+          default:
+            options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+        }
       }
       return {
         functionRef: { type: 'function', name: 'datetime', options },
@@ -249,7 +320,7 @@ function argToInputDeclaration({
  * import { mf1ToMessageData, mf1Validate } from '@messageformat/icu-messageformat-1';
  * import { parse } from '@messageformat/parser';
  *
- * const mf1Msg = parse('The total is {V, number, currency}.');
+ * const mf1Msg = parse('The total is {V, number, ::currency/EUR}.');
  * const mf2Msg = mf1ToMessageData(mf1Msg);
  * mf1Validate(mf2Msg);
  * mf2msg;
@@ -267,11 +338,11 @@ function argToInputDeclaration({
  *       functionRef: {
  *         type: 'function',
  *         name: 'currency',
- *         options: Map(1) { 'currency' => { type: 'literal', value: 'XXX' } }
+ *         options: Map(1) { 'currency' => { type: 'literal', value: 'EUR' } }
  *       },
  *       attributes: Map(2) {
  *         'mf1:argType' => { type: 'literal', value: 'number' },
- *         'mf1:argStyle' => { type: 'literal', value: 'currency' }
+ *         'mf1:argStyle' => { type: 'literal', value: '::currency/EUR' }
  *       }
  *     },
  *     '.'

@@ -348,10 +348,16 @@ export const testCases: Record<string, TestCase[]> = {
     },
     {
       src: 'The total is {V, number, currency}.',
-      exp: [[{ V: 5.5 }, 'The total is ¤5.50.']]
+      exp: [
+        [{ V: 5.5 }, { res: 'The total is {$V}.', errors: ['bad-operand'] }]
+      ]
     },
     {
       src: '{N, number, ::currency/GBP}',
+      exp: [[{ N: 42 }, '£42.00']]
+    },
+    {
+      src: '{N, number, ::foo}',
       exp: [[{ N: 42 }, { compileError: /argStyle/ }]]
     }
   ],
@@ -365,6 +371,17 @@ export const testCases: Record<string, TestCase[]> = {
       locale: 'fi',
       src: 'Kello on nyt {T, time}',
       exp: [[{ T: 978384385000 }, /^Kello on nyt \d\d?.\d\d.25/]]
+    }
+  ],
+
+  'Datetime skeletons': [
+    {
+      src: 'At {1,time,::jmm} on {1,date,::dMMMM}',
+      exp: [[{ 1: 978484385000 }, /^At \d\d?:\d\d\s(AM|PM) on January \d$/]]
+    },
+    {
+      src: "{1, date, ::EEE, MMM d, ''yy}",
+      exp: [[{ 1: 978484385000 }, { compileError: /argStyle/ }]]
     }
   ],
 

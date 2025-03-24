@@ -19,12 +19,12 @@ export type MF1Options = {
  * ```js
  * import { mf1ToMessage } from '@messageformat/icu-messageformat-1';
  *
- * const msg = mf1ToMessage('The total is {V, number, currency}.', 'en');
+ * const msg = mf1ToMessage('en', 'The total is {V, number, ::currency/EUR}.');
  * msg.format({ V: 4.2 });
  * ```
  *
  * ```js
- * 'The total is ¤4.20.' // 'XXX' is used as the default currency code.
+ * 'The total is €4.20.'
  * ```
  *
  * @param locales - The locale to use for the message.

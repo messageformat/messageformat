@@ -31,6 +31,8 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
+    "@messageformat/date-skeleton": "^1.1.0",
+    "@messageformat/number-skeleton": "^1.2.0",
     "@messageformat/parser": "^5.0.0",
     "messageformat": "4.0.0-9"
   },

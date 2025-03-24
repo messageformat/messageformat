@@ -20,6 +20,12 @@ const datetime: (
   operand?: unknown
 ) => MessageDateTime = DraftFunctions.datetime;
 
+const unit: (
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  operand?: unknown
+) => MessageNumber = DraftFunctions.unit;
+
 function duration(
   ctx: MessageFunctionContext,
   _options: unknown,
@@ -116,9 +122,7 @@ function plural(
 export let MF1Functions = {
   /**
    * A re-export of {@link DraftFunctions.currency},
-   * used for formatting a `number, currency` placeholder.
-   *
-   * Note that the currency code is set to `"XXX"`.
+   * used for formatting a `number, currency` and `number, ::currency` placeholder.
    */
   currency,
 
@@ -127,6 +131,12 @@ export let MF1Functions = {
    * used for formatting `date` and `time` placeholders.
    */
   datetime,
+
+  /**
+   * A re-export of {@link DraftFunctions.unit},
+   * used for formatting `number, ::measure-unit` and `number, ::unit` placeholders.
+   */
+  unit,
 
   /**
    * Formats a duration expressed as seconds.
