@@ -25,6 +25,8 @@ function currency(
   operand?: unknown
 ): MessageNumber {
   checkArgStyle(ctx, options);
+  const scale = Number(options['mf1:scale']);
+  if (scale && scale !== 1) operand = scale * Number(operand);
   return DraftFunctions.currency(ctx, options, operand);
 }
 
@@ -88,6 +90,8 @@ function number(
   operand?: unknown
 ): MessageNumber {
   checkArgStyle(ctx, options);
+  const scale = Number(options['mf1:scale']);
+  if (scale && scale !== 1) operand = scale * Number(operand);
   return DefaultFunctions.number(ctx, options, operand);
 }
 

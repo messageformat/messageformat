@@ -85,7 +85,19 @@ function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
   const skeleton = argStyle.startsWith('::')
     ? parseNumberSkeleton(argStyle.substring(2), onError)
     : parseNumberPattern(argStyle, 'XXX', onError);
-  const nfOpt = getNumberFormatOptions(skeleton, onError);
+  const nfOpt = getNumberFormatOptions(skeleton, (stem, option) => {
+    if (stem === 'scale') {
+      options.set('mf1:scale', { type: 'literal', value: String(option) });
+      if (skeleton.unit?.style === 'percent') {
+        name = 'mf1:unit';
+        options.set('unit', { type: 'literal', value: 'percent' });
+      } else if (name === 'number') {
+        name = 'mf1:number';
+      }
+    } else {
+      onError();
+    }
+  });
   const optEntries = Object.entries(nfOpt);
   loop: for (let [key, value] of optEntries) {
     switch (key) {
@@ -106,6 +118,7 @@ function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
             name = 'mf1:unit';
             key = 'mf1:scale';
             value = '100';
+            if (options.has(key)) continue loop;
             break;
           case 'unit':
             name = 'mf1:unit';

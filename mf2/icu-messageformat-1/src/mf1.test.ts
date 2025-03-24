@@ -342,6 +342,13 @@ export const testCases: Record<string, TestCase[]> = {
       // IE 11 may insert a space or non-breaking space before the % char
     },
     {
+      src: '{P, number, :: % scale/10}',
+      exp: [
+        [{ P: 1 }, /^10\D?%$/],
+        [{ P: 0.99 }, /^9.9\D?%$/]
+      ]
+    },
+    {
       src: 'The total is {V, number, currency}.',
       exp: [
         [{ V: 5.5 }, { res: 'The total is {$V}.', errors: ['bad-operand'] }]
@@ -350,6 +357,14 @@ export const testCases: Record<string, TestCase[]> = {
     {
       src: '{N, number, ::currency/GBP}',
       exp: [[{ N: 42 }, '£42.00']]
+    },
+    {
+      src: '{N, number, ::currency/GBP scale/0.01}',
+      exp: [[{ N: 4200 }, '£42.00']]
+    },
+    {
+      src: '{N, number, ::unit/meter-per-second scale/1}',
+      exp: [[{ N: 42 }, '42 m/s']]
     },
     {
       src: '{N, number, ::foo}',
