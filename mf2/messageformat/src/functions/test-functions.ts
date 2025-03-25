@@ -118,7 +118,7 @@ function testFunction(
       ? () => {
           if (opt.failsFormat) throw new Error('Formatting failed');
           const parts = Array.from(testParts(value, opt.decimalPlaces));
-          return [{ type: 'test', source, locale: 'und', parts }];
+          return [{ type: 'test', locale: 'und', parts }];
         }
       : undefined,
     toString: opt.canFormat

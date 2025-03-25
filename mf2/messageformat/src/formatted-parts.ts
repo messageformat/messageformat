@@ -38,11 +38,10 @@ export interface MessageBiDiIsolationPart {
  */
 export interface MessageExpressionPart<P extends string> {
   type: P;
-  source: string;
   dir?: 'ltr' | 'rtl';
   locale?: string;
   id?: string;
-  parts?: Array<{ type: string; source?: string; value?: unknown }>;
+  parts?: Array<{ type: string; value?: unknown }>;
   value?: unknown;
 }
 

@@ -27,7 +27,7 @@ describe('Simple open/close', () => {
       },
       { type: 'text', value: 'foo' },
       { type: 'bidiIsolation', value: '\u2068' },
-      { type: 'string', source: '$foo', locale: 'en', value: 'foo bar' },
+      { type: 'string', locale: 'en', value: 'foo bar' },
       { type: 'bidiIsolation', value: '\u2069' },
       { type: 'markup', kind: 'close', name: 'b', options: { foo: ' bar 13 ' } }
     ]);

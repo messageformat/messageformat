@@ -135,17 +135,14 @@ type ExpPart =
   | {
       type: 'markup';
       kind: 'open' | 'standalone' | 'close';
-      source?: string;
       name: string;
       options?: Record<string, unknown>;
     }
   | {
       type: string;
-      source: string;
       locale?: string;
       parts?: {
         type: string;
-        source?: string;
         value?: unknown;
         [k: string]: unknown;
       }[];

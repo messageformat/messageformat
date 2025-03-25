@@ -42,7 +42,6 @@ export interface MessageNumber extends MessageValue<'number'> {
  */
 export interface MessageNumberPart extends MessageExpressionPart<'number'> {
   type: 'number';
-  source: string;
   locale: string;
   parts: Intl.NumberFormatPart[];
 }
@@ -82,7 +81,7 @@ export function getMessageNumber(
   options: MessageNumberOptions,
   canSelect: boolean
 ): MessageNumber {
-  let { dir, locales, source } = ctx;
+  let { dir, locales } = ctx;
   // @ts-expect-error We may have been a bit naughty earlier.
   if (options.useGrouping === 'never') options.useGrouping = false;
   if (
@@ -91,7 +90,7 @@ export function getMessageNumber(
     !ctx.literalOptionKeys.has('select')
   ) {
     const msg = 'The option select may only be set by a literal value';
-    ctx.onError(new MessageResolutionError('bad-option', msg, source));
+    ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
     canSelect = false;
   }
 
@@ -101,7 +100,7 @@ export function getMessageNumber(
   let str: string | undefined;
   return {
     type: 'number',
-    source,
+    source: ctx.source,
     get dir() {
       if (dir == null) {
         locale ??= Intl.NumberFormat.supportedLocalesOf(locales, options)[0];
@@ -133,8 +132,8 @@ export function getMessageNumber(
       locale ??= nf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
       return dir === 'ltr' || dir === 'rtl'
-        ? [{ type: 'number', source, dir, locale, parts }]
-        : [{ type: 'number', source, locale, parts }];
+        ? [{ type: 'number', dir, locale, parts }]
+        : [{ type: 'number', locale, parts }];
     },
     toString() {
       nf ??= new Intl.NumberFormat(locales, options);

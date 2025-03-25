@@ -449,7 +449,6 @@ describe('formatToParts', () => {
         { type: 'text', value: 'Foo ' },
         {
           type: 'number',
-          source: '$num',
           dir: 'ltr',
           locale: 'en',
           parts: [{ type: 'integer', value: '42' }]
@@ -475,7 +474,6 @@ describe('formatToParts', () => {
       expect(bar).toMatchObject([
         {
           type: 'fluent-message',
-          source: '|foo|',
           parts: [
             { type: 'text', value: 'Foo ' },
             { type: 'bidiIsolation', value: '\u2068' },
@@ -582,7 +580,6 @@ describe('formatToParts', () => {
         { type: 'text', value: 'Foo ' },
         {
           type: 'number',
-          source: '$num',
           dir: 'ltr',
           locale: 'en',
           parts: [{ type: 'integer', value: '42' }]

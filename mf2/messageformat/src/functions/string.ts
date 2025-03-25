@@ -23,7 +23,6 @@ export interface MessageString extends MessageValue<'string'> {
  */
 export interface MessageStringPart extends MessageExpressionPart<'string'> {
   type: 'string';
-  source: string;
   locale: string;
   value: string;
 }
@@ -41,11 +40,11 @@ export function string(
     dir: ctx.dir ?? 'auto',
     selectKey: keys => (keys.has(selStr) ? selStr : null),
     toParts() {
-      const { dir, source } = ctx;
+      const { dir } = ctx;
       const locale = ctx.locales[0];
       return dir === 'ltr' || dir === 'rtl'
-        ? [{ type: 'string', source, dir, locale, value: str }]
-        : [{ type: 'string', source, locale, value: str }];
+        ? [{ type: 'string', dir, locale, value: str }]
+        : [{ type: 'string', locale, value: str }];
     },
     toString: () => str,
     valueOf: () => str
