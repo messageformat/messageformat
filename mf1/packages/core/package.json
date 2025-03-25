@@ -30,8 +30,8 @@
     "messageformat.js"
   ],
   "dependencies": {
-    "@messageformat/date-skeleton": "^1.0.0",
-    "@messageformat/number-skeleton": "^1.0.0",
+    "@messageformat/date-skeleton": "2.0.0-0",
+    "@messageformat/number-skeleton": "2.0.0-0",
     "@messageformat/parser": "^5.1.0",
     "@messageformat/runtime": "^3.0.1",
     "make-plural": "^7.0.0",
