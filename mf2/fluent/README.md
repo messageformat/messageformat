@@ -26,8 +26,7 @@ import { fluentToResource } from '@messageformat/fluent';
 const locale = 'en-US';
 const src = 'msg = Today is {DATETIME($today, dateStyle: "medium")}\n';
 
-const resource = fluentToResource(src, locale);
-
+const resource = fluentToResource(locale, src);
 const msg = resource.get('msg').get('');
 
 msg.format({ today: new Date('2022-02-02') });
@@ -35,12 +34,18 @@ msg.format({ today: new Date('2022-02-02') });
 
 msg.formatToParts({ today: new Date('2022-02-02') });
 // [
-//   MessageLiteral { type: 'literal', value: 'Today is ' },
-//   MessageDateTime {
+//   { type: 'text', value: 'Today is ' },
+//   {
 //     type: 'datetime',
-//     value: 2022-02-02T00:00:00.000Z,
-//     options: { localeMatcher: 'best fit', dateStyle: 'medium' },
-//     source: '$today :DATETIME'
+//     dir: 'ltr',
+//     locale: 'en',
+//     parts: [
+//       { type: 'month', value: 'Feb' },
+//       { type: 'literal', value: ' ' },
+//       { type: 'day', value: '2' },
+//       { type: 'literal', value: ', ' },
+//       { type: 'year', value: '2022' }
+//     ]
 //   }
 // ]
 ```
