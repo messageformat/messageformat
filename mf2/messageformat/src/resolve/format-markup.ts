@@ -8,9 +8,7 @@ export function formatMarkup(
   ctx: Context,
   { kind, name, options }: Markup
 ): MessageMarkupPart {
-  const source =
-    kind === 'close' ? `/${name}` : kind === 'open' ? `#${name}` : `#${name}/`;
-  const part: MessageMarkupPart = { type: 'markup', kind, source, name };
+  const part: MessageMarkupPart = { type: 'markup', kind, name };
   if (options?.size) {
     part.options = {};
     for (const [name, value] of options) {

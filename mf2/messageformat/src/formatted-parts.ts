@@ -60,7 +60,6 @@ export interface MessageTextPart {
 export interface MessageMarkupPart {
   type: 'markup';
   kind: 'open' | 'standalone' | 'close';
-  source: string;
   name: string;
   id?: string;
   options?: { [key: string]: unknown };
