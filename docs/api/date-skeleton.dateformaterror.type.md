@@ -14,5 +14,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-type: 'error' | 'warning';
+type: 'invalid' | 'duplicate' | 'unsupported' | 'literal';
 ```

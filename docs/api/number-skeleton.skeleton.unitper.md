@@ -14,5 +14,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-unitPer?: Unit;
+unitPer?: string;
 ```

@@ -10,8 +10,6 @@ grand_parent: API Reference
 
 # DateFormatError class
 
-Parent class for errors.
-
 **Signature:**
 
 ```typescript
@@ -21,16 +19,12 @@ export declare class DateFormatError extends Error
 
 ## Remarks
 
-Errors with `type: "warning"` do not necessarily indicate that the parser encountered an error. In addition to a human-friendly `message`<!-- -->, may also includes the `token` at which the error was encountered.
-
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `DateFormatError` class.
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [ERROR](./date-skeleton.dateformaterror.error.md) | <code>static</code> | 'error' |  |
 |  [token](./date-skeleton.dateformaterror.token.md) |  | [DateToken](./date-skeleton.datetoken.md) |  |
-|  [type](./date-skeleton.dateformaterror.type.md) |  | 'error' \| 'warning' |  |
-|  [WARNING](./date-skeleton.dateformaterror.warning.md) | <code>static</code> | 'warning' |  |
+|  [type](./date-skeleton.dateformaterror.type.md) |  | 'invalid' \| 'duplicate' \| 'unsupported' \| 'literal' |  |
 

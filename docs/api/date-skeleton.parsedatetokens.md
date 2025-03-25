@@ -10,7 +10,7 @@ grand_parent: API Reference
 
 # parseDateTokens() function
 
-Parse an [ICU DateFormat skeleton](http://userguide.icu-project.org/formatparse/datetime) string into a [DateToken](./date-skeleton.datetoken.md) array.
+Parse an [ICU DateFormat skeleton](https://unicode-org.github.io/icu/userguide/format_parse/datetime/) string into a [DateToken](./date-skeleton.datetoken.md) array.
 
 **Signature:**
 
@@ -30,7 +30,7 @@ export declare function parseDateTokens(src: string): DateToken[];
 
 ## Remarks
 
-Errors will not be thrown, but if encountered are included as the relevant token's `error` value.
+Errors will not be thrown, but if encountered are included as an `{ error }` token.
 
 ## Example
 
@@ -40,10 +40,10 @@ import { parseDateTokens } from '@messageformat/date-skeleton'
 
 parseDateTokens('GrMMMdd', console.error)
 // [
-//   { char: 'G', field: 'era', desc: 'Era', width: 1 },
-//   { char: 'r', field: 'year', desc: 'Related Gregorian year', width: 1 },
-//   { char: 'M', field: 'month', desc: 'Month in year', width: 3 },
-//   { char: 'd', field: 'day', desc: 'Day in month', width: 2 }
+//   { char: 'G', width: 1 },
+//   { char: 'r', width: 1 },
+//   { char: 'M', width: 3 },
+//   { char: 'd', width: 2 }
 // ]
 ```
 

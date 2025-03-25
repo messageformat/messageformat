@@ -17,7 +17,7 @@ The returned function takes two parameters `(msgId, msgParams)`<!-- -->, which w
 **Signature:**
 
 ```typescript
-export declare function useMessageGetter(rootId: string | string[], opt?: MessageGetterOptions): (id?: string | string[] | undefined, params?: Record<string, unknown> | undefined) => any;
+export declare function useMessageGetter(rootId: string | string[], opt?: MessageGetterOptions): (id?: string | string[], params?: Record<string, unknown>) => any;
 ```
 
 ## Parameters
@@ -29,7 +29,7 @@ export declare function useMessageGetter(rootId: string | string[], opt?: Messag
 
 **Returns:**
 
-(id?: string \| string\[\] \| undefined, params?: Record&lt;string, unknown&gt; \| undefined) =&gt; any
+(id?: string \| string\[\], params?: Record&lt;string, unknown&gt;) =&gt; any
 
 ## Example
 

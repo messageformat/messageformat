@@ -15,19 +15,20 @@ nav_exclude: true
 
 ```typescript
 precision?: {
-        style: 'precision-integer' | 'precision-unlimited' | 'precision-currency-cash';
-    } | {
-        style: 'precision-currency-standard';
-        trailingZero?: 'auto' | 'stripIfInteger' | undefined;
+        style: 'precision-integer' | 'precision-unlimited' | 'precision-currency-cash' | 'precision-currency-standard';
+        trailingZero?: 'auto' | 'stripIfInteger';
     } | {
         style: 'precision-increment';
         increment: number;
+        trailingZero?: 'auto' | 'stripIfInteger';
     } | {
         style: 'precision-fraction';
         minFraction?: number;
         maxFraction?: number;
         minSignificant?: number;
         maxSignificant?: number;
+        roundingPriority?: 'relaxed' | 'strict';
+        trailingZero?: 'auto' | 'stripIfInteger';
         source?: string;
     };
 ```

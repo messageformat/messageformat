@@ -14,5 +14,5 @@ nav_exclude: true
 **Signature:**
 
 ```typescript
-sign?: 'sign-auto' | 'sign-always' | 'sign-never' | 'sign-accounting' | 'sign-accounting-always' | 'sign-except-zero' | 'sign-accounting-except-zero';
+sign?: 'sign-auto' | 'sign-always' | 'sign-never' | 'sign-accounting' | 'sign-accounting-always' | 'sign-except-zero' | 'sign-accounting-except-zero' | 'sign-negative' | 'sign-accounting-negative';
 ```

@@ -21,6 +21,9 @@ unit?: {
         currency: string;
     } | {
         style: 'measure-unit';
-        unit: Unit;
+        unit: string;
+    } | {
+        style: 'concise-unit';
+        unit: string;
     };
 ```

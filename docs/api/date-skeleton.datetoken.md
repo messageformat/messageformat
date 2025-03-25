@@ -15,12 +15,10 @@ An object representation of a parsed date skeleton token
 **Signature:**
 
 ```typescript
-export type DateToken = {
+export type DateToken = string | {
     char: string;
-    error?: Error;
-    field?: DateField;
-    desc?: string;
-    str?: string;
     width: number;
+} | {
+    error: string;
 };
 ```

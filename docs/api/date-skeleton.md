@@ -11,7 +11,7 @@ has_toc: false
 
 # date-skeleton package
 
-Tools for working with [ICU DateFormat skeletons](http://userguide.icu-project.org/formatparse/datetime)<!-- -->.
+Tools for working with [ICU DateFormat skeletons](https://unicode-org.github.io/icu/userguide/format_parse/datetime/)<!-- -->.
 
 ## Remarks
 
@@ -33,7 +33,7 @@ Uses [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScri
 
 |  Class | Description |
 |  --- | --- |
-|  [DateFormatError](./date-skeleton.dateformaterror.md) | Parent class for errors. |
+|  [DateFormatError](./date-skeleton.dateformaterror.md) |  |
 
 ## Functions
 
@@ -41,7 +41,8 @@ Uses [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScri
 |  --- | --- |
 |  [getDateFormatter(locales, tokens, timeZone, onError)](./date-skeleton.getdateformatter.md) | Returns a date formatter function for the given locales and date skeleton |
 |  [getDateFormatterSource(locales, tokens, timeZone, onError)](./date-skeleton.getdateformattersource.md) | Returns a string of JavaScript source that evaluates to a date formatter function with the same <code>(date: Date &#124; number) =&gt; string</code> signature as the function returned by [getDateFormatter()](./date-skeleton.getdateformatter.md)<!-- -->. |
-|  [parseDateTokens(src)](./date-skeleton.parsedatetokens.md) | Parse an [ICU DateFormat skeleton](http://userguide.icu-project.org/formatparse/datetime) string into a [DateToken](./date-skeleton.datetoken.md) array. |
+|  [getDateTimeFormatOptions(tokens, onError)](./date-skeleton.getdatetimeformatoptions.md) | Given a parsed ICU date/time formatter pattern, constructs a corresponding <code>Intl.DateTimeFormat</code> options structure. |
+|  [parseDateTokens(src)](./date-skeleton.parsedatetokens.md) | Parse an [ICU DateFormat skeleton](https://unicode-org.github.io/icu/userguide/format_parse/datetime/) string into a [DateToken](./date-skeleton.datetoken.md) array. |
 
 ## Type Aliases
 

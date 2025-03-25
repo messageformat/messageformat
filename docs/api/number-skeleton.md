@@ -11,20 +11,20 @@ has_toc: false
 
 # number-skeleton package
 
-Tools for working with [ICU NumberFormat skeletons](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md) and [patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)<!-- -->.
+Tools for working with [ICU NumberFormat skeletons](https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html) and [patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns)<!-- -->.
 
 ## Remarks
 
 
 ```js
 import {
+ getNumberFormatOptions,
  getNumberFormatter,
  getNumberFormatterSource,
  NumberFormatError,
  parseNumberPattern,
  parseNumberSkeleton,
- Skeleton, // TS only
- Unit // TS only
+ type Skeleton
 } from '@messageformat/number-skeleton'
 ```
 The package is released as an ES module only. If using from a CommonJS context, you may need to `import()` it, or use a module loader like [esm](https://www.npmjs.com/package/esm)<!-- -->.
@@ -41,6 +41,7 @@ Uses [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 
 |  Function | Description |
 |  --- | --- |
+|  [getNumberFormatOptions(skeleton, onError)](./number-skeleton.getnumberformatoptions.md) | Given an input ICU NumberFormatter skeleton, constructs a corresponding <code>Intl.NumberFormat</code> options structure. |
 |  [getNumberFormatter(locales, skeleton, currency, onError)](./number-skeleton.getnumberformatter.md) | Returns a number formatter function for the given locales and number skeleton |
 |  [getNumberFormatterSource(locales, skeleton, currency, onError)](./number-skeleton.getnumberformattersource.md) | Returns a string of JavaScript source that evaluates to a number formatter function with the same <code>(value: number) =&gt; string</code> signature as the function returned by [getNumberFormatter()](./number-skeleton.getnumberformatter.md)<!-- -->. |
 |  [parseNumberPattern(src, currency, onError)](./number-skeleton.parsenumberpattern.md) | Parse an [ICU NumberFormatter pattern](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns) string into a [Skeleton](./number-skeleton.skeleton.md) structure. |
@@ -51,10 +52,4 @@ Uses [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript
 |  Interface | Description |
 |  --- | --- |
 |  [Skeleton](./number-skeleton.skeleton.md) | An object representation of a parsed string skeleton, with token values grouped by type. |
-
-## Type Aliases
-
-|  Type Alias | Description |
-|  --- | --- |
-|  [Unit](./number-skeleton.unit.md) | Measurement units defined by the [Unicode CLDR](https://github.com/unicode-org/cldr/blob/d4d77a2/common/validity/unit.xml) |
 
