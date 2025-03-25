@@ -5,11 +5,9 @@ has_children: true
 ---
 
 <!-- prettier-ignore-start -->
-# Using messageformat
+# Using messageformat v3
 {: .no_toc }
 <!-- prettier-ignore-end -->
-
-## Build Tools
 
 Fundamentally, `@messageformat/core` is a compiler that turns ICU MessageFormat input into JavaScript.
 While it's certainly possible to use it directly in your client code, it's really intended for use as a part of your build, unlike other such libraries.

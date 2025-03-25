@@ -1,5 +1,5 @@
 ---
-title: Home
+title: messageformat v3
 nav_order: 1
 ---
 
@@ -7,19 +7,24 @@ nav_order: 1
 {: .my-0 }
 
 <!-- prettier-ignore-start -->
-# messageformat
+# messageformat v3
 {: .mt-2 }
 <!-- prettier-ignore-end -->
 
 The experience and subtlety of your program's text is important.
 The messageformat project provides a complete set of tools for handling all the messages of your application, for both front-end and back-end environments; for both runtime and build-time use.
-It's built around the ICU MessageFormat standard and supports [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) included in the [Unicode CLDR](http://cldr.unicode.org/), but it can be just as useful if you're dealing with only one of them.
+
+messageformat v3 is built around the ICU MessageFormat standard and
+it supports [all the languages](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html)
+included in the [Unicode CLDR](http://cldr.unicode.org/),
+but it can be just as useful if you're dealing with only one of them.
 
 [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) is a mechanism for handling both **pluralization** and **gender** in your applications.
 This JavaScript project supports and extends all parts of the official Java/C++ implementation, with the exception of the deprecated ChoiceFormat.
 In addition to compiling messages into JavaScript functions, it also provides tooling for making their use easy during both the build and runtime of your site or application.
 
-**Note**: This is the documentation for messageformat v3. [Documentation for messageformat v2]({{ 'v2/' | relative_url }}) is available separately.
+**Note**: For message formatting with Unicode MessageFormat (aka. "MessageFormat 2" or "MF2"),
+see the next major version of this library: [messageformat v4](/).
 
 ## What problems does it solve?
 
@@ -69,7 +74,7 @@ Fundamentally, this project is built around [`@messageformat/core`](api/core.md)
 The core feature that makes ours different from others is that it can do its work during your **application build**, by [compiling a set of source messages](api/core.compilemodule.md) into the string representation of an ES module.
 
 By doing this work during the build, supporting more complex features such as [date](api/date-skeleton.md) and [number skeletons](api/number-skeleton.md) does not increase the runtime size or complexity of the messages.
-This also means that we can support a **large variety of source file formats** (including JSON, YAML, Java properties, and gettext .po files) at no additional cost, optionally even converting other formats to MessageFormat before processing them.
+This also means that we can support a **large variety of source file formats** (including JSON, YAML, Java properties, and gettext .po files) at no additional cost, optionally even converting other formats to ICU MessageFormat before processing them.
 
 For **library developers**, all of the various API levels from [message parsing](api/parser.md) to [React tooling](react.md) are separately available, with clear and minimal dependencies.
 In particular, our parser is already either used by or has inspired the implementations of a number of other message formatting libraries' parsers.

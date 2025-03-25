@@ -1,5 +1,5 @@
 ---
-title: Format Guide
+title: ICU MessageFormat Syntax
 nav_order: 4
 has_children: true
 ---
@@ -19,7 +19,7 @@ has_children: true
 
 This guide aims to provide an introduction to ICU MessageFormat syntax, as supported by this project.
 
-Each of the sample messages is shown first as MessageFormat source, and then with a JS result.
+Each of the sample messages is shown first as ICU MessageFormat source, and then with a JS result.
 Except where otherwise specified, the `msg` function may be determined as follows:
 
 ```js
@@ -31,7 +31,7 @@ const msg = mf.compile(msgSrc);
 
 ## String Lookup
 
-The simplest case of MessageFormat involves no formatting, just a string passthrough.
+The simplest case of message formatting involves no formatting, just a string passthrough.
 This may sound silly, but often it's nice to always use the same message formatting system when doing translations, and not everything requires variables.
 
 ```
@@ -44,8 +44,8 @@ msg(); // 'This is a message.'
 
 ## Variables
 
-The most common way to use MessageFormat is for simple variable replacement.
-MessageFormat may look odd at first, but it's actually fairly simple.
+The most common way to use ICU MessageFormat is for simple variable replacement.
+The syntax may look odd at first, but it's actually fairly simple.
 One way to think about the `{` and `}` is that every level of them bring you into and out-of "literal" and "code" mode.
 Whitespace (including newlines) is ignored when not in literal mode.
 
@@ -156,14 +156,14 @@ msg({ ADDS: 3 }); // 'You and 2 others added this.'
 
 ## Formatters
 
-MessageFormat includes date, duration, number, and time formatting functions in the style of ICU's [simpleArg syntax].
-They are implemented using the [Intl] object defined by ECMA-402.
-Be aware that even relatively recent versions of browsers may have incomplete or non-standard support for all advanced features used by the date and number formatter skeletons.
+ICU MessageFormat includes date, duration, number, and time formatting functions in the style of ICU's [simpleArg syntax].
+They are implemented using JavaScript's [Intl.NumberFormat] and [Intl.DateTimeFormat] formatters.
 
 See alse [Custom Formatters](custom-formatters.md) for an extension of the spec provided by this library.
 
-[simplearg syntax]: http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html
-[intl]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
+[simplearg syntax]: https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/com/ibm/icu/text/MessageFormat.html
+[intl.numberformat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
+[intl.datetimeformat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
 
 ### date and time
 
@@ -216,7 +216,7 @@ msg({ D: -151200.42 }); // 'It has been -42:00:00.420'
 ### number
 
 Supported simple parameters are `integer`, `percent` , or `currency`.
-For more options, use a [NumberFormat skeleton string](https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md).
+For more options, use a [NumberFormat skeleton string](https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html).
 Most [NumberFormat patterns](http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns) are also supported.
 
 ```
@@ -240,7 +240,7 @@ msg({ V: 5.5 }); // 'The total is £5.50.'
 
 ## Nesting
 
-All types of messageformat statements may be nested within each other, to unlimited depth:
+All types of statements may be nested within each other, to unlimited depth:
 
 ```
 { SEL1, select,

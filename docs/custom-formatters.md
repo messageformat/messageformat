@@ -1,13 +1,13 @@
 ---
 title: Custom Formatters
-parent: Format Guide
+parent: ICU MessageFormat Syntax
 ---
 
 # Custom Formatters
 
 Custom formatters are an extension of the ICU MessageFormat spec that's specific to this library.
 
-In MessageFormat source, a formatter function is called with the syntax
+In message source, a formatter function is called with the syntax
 
 ```
 {var, name, arg}

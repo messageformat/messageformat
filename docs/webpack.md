@@ -4,7 +4,7 @@ parent: Usage
 nav_order: 4
 ---
 
-# Webpack Loader for MessageFormat
+# Webpack Loader for ICU MessageFormat
 
 A loader that parses input JSON, YAML and Java .properties files consisting of messages as objects of JavaScript message functions with a matching structure, all during the build of your application.
 

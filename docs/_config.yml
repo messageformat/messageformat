@@ -7,8 +7,9 @@ remote_theme: just-the-docs/just-the-docs
 color_scheme: custom
 
 aux_links:
+  'v4 docs': /
   'v2 docs': /messageformat/v2/
-  'GitHub repo': https://github.com/messageformat/messageformat
+  'GitHub': https://github.com/messageformat/messageformat
 logo: https://messageformat.github.io/messageformat/logo/messageformat.svg
 
 gh_edit_link: true

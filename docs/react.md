@@ -4,10 +4,10 @@ parent: Usage
 nav_order: 2
 ---
 
-# MessageFormat in React
+# ICU MessageFormat in React
 
 An efficient React front-end for message formatting libraries.
-Designed in particular for use with [messageformat], but will work with any messages.
+Designed in particular for use with [messageformat v3], but will work with any messages.
 Provides the best possible API for a front-end developer, without making the back end any more difficult than it needs to be either.
 Should add **at most about 1kB** to your compiled & minified bundle size.
 
@@ -119,7 +119,7 @@ export const Example = () => (
 // - xyzzy  (uses fallback to child node)
 ```
 
-[messageformat]: https://messageformat.github.io
+[messageformat v3]: https://www.npmjs.com/package/@messageformat/core
 [react-message-context]: https://www.npmjs.com/package/react-message-context
 [api documentation]: http://messageformat.github.io/messageformat/api/react/
 [example]: https://github.com/messageformat/messageformat/tree/main/examples/react

@@ -1,5 +1,5 @@
 {
-  "name": "MessageFormat 2 for JavaScript",
+  "name": "Unicode MessageFormat for JavaScript",
   "entryPointStrategy": "packages",
   "entryPoints": [
     "../mf2/messageformat/",
@@ -21,7 +21,6 @@
   "projectDocuments": ["../mf2/docs/project.md", "../mf2/docs/contributing.md"],
   "readme": "../mf2/messageformat/README.md",
   "redirects": {
-    "_": "/messageformat/",
-    "mf1/": "/messageformat/"
+    "mf1/": "/messageformat/api/"
   }
 }

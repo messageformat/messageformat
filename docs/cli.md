@@ -6,7 +6,7 @@ nav_order: 1
 
 # Command-line MessageFormat Compiler
 
-Parses and compiles JSON, YAML and .properties files of MessageFormat strings into an ES module of corresponding hierarchical functions.
+Parses and compiles JSON, YAML and .properties files of ICU MessageFormat strings into an ES module of corresponding hierarchical functions.
 
 This package was previously named [messageformat-cli].
 

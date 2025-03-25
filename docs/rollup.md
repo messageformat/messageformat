@@ -4,7 +4,7 @@ parent: Usage
 nav_order: 3
 ---
 
-# Rollup Plugin for MessageFormat
+# Rollup Plugin for ICU MessageFormat
 
 Plugin for [Rollup] that lets you `import` JSON, YAML & .properties files containing ICU MessageFormat messages, turning them into message functions to use e.g. with [@messageformat/react].
 
