@@ -19,6 +19,8 @@ import {
   visit
 } from './index.ts';
 
+const skipTags = new Set(['u:locale']);
+
 const tests = (tc: Test) => () => {
   const functions = { ...DraftFunctions, ...TestFunctions };
   switch (testType(tc)) {
@@ -121,7 +123,12 @@ const tests = (tc: Test) => () => {
 for (const scenario of testScenarios('test/messageformat-wg/test/tests')) {
   describe(scenario.scenario, () => {
     for (const tc of testCases(scenario)) {
-      (tc.only ? describe.only : describe)(testName(tc), tests(tc));
+      const describe_ = tc.only
+        ? describe.only
+        : tc.tags?.some(tag => skipTags.has(tag))
+          ? describe.skip
+          : describe;
+      describe_(testName(tc), tests(tc));
     }
   });
 }

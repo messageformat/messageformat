@@ -93,6 +93,9 @@ type DefaultTestProperties = {
     | { name: string; type: 'datetime'; value: string }
   >;
 
+  /** List of features that the test relies on. */
+  tags?: string[];
+
   /** The expected result of formatting the message to a string. */
   exp?: string;
 
