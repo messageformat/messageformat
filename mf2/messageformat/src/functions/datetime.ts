@@ -31,7 +31,6 @@ export interface MessageDateTime extends MessageValue<'datetime'> {
  */
 export interface MessageDateTimePart extends MessageExpressionPart<'datetime'> {
   type: 'datetime';
-  source: string;
   locale: string;
   parts: Intl.DateTimeFormatPart[];
 }
@@ -176,7 +175,7 @@ function dateTimeImplementation(
   input: unknown,
   parseOptions: (res: Record<string, unknown>) => void
 ): MessageDateTime {
-  const { localeMatcher, locales, source } = ctx;
+  const { localeMatcher, locales } = ctx;
   const opt: Intl.DateTimeFormatOptions = { localeMatcher };
   if (input && typeof input === 'object') {
     if (input && 'options' in input) Object.assign(opt, input.options);
@@ -197,7 +196,7 @@ function dateTimeImplementation(
   }
   if (!(value instanceof Date) || isNaN(value.getTime())) {
     const msg = 'Input is not a date';
-    throw new MessageResolutionError('bad-operand', msg, source);
+    throw new MessageResolutionError('bad-operand', msg, ctx.source);
   }
 
   parseOptions(opt as Record<string, unknown>);
@@ -209,7 +208,7 @@ function dateTimeImplementation(
   let str: string | undefined;
   return {
     type: 'datetime',
-    source,
+    source: ctx.source,
     get dir() {
       if (dir == null) {
         locale ??= Intl.DateTimeFormat.supportedLocalesOf(locales, opt)[0];
@@ -226,8 +225,8 @@ function dateTimeImplementation(
       locale ??= dtf.resolvedOptions().locale;
       dir ??= getLocaleDir(locale);
       return dir === 'ltr' || dir === 'rtl'
-        ? [{ type: 'datetime', source, dir, locale, parts }]
-        : [{ type: 'datetime', source, locale, parts }];
+        ? [{ type: 'datetime', dir, locale, parts }]
+        : [{ type: 'datetime', locale, parts }];
     },
     toString() {
       dtf ??= new Intl.DateTimeFormat(locales, opt);

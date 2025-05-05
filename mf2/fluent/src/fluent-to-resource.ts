@@ -38,6 +38,7 @@ export function fluentToResource(
   opt.functions = Object.assign(
     {
       currency: DraftFunctions.currency,
+      datetime: DraftFunctions.datetime,
       unit: DraftFunctions.unit,
       'fluent:message': getMessageFunction(res)
     },

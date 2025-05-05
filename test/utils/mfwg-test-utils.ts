@@ -93,6 +93,9 @@ type DefaultTestProperties = {
     | { name: string; type: 'datetime'; value: string }
   >;
 
+  /** List of features that the test relies on. */
+  tags?: string[];
+
   /** The expected result of formatting the message to a string. */
   exp?: string;
 
@@ -135,17 +138,14 @@ type ExpPart =
   | {
       type: 'markup';
       kind: 'open' | 'standalone' | 'close';
-      source?: string;
       name: string;
       options?: Record<string, unknown>;
     }
   | {
       type: string;
-      source: string;
       locale?: string;
       parts?: {
         type: string;
-        source?: string;
         value?: unknown;
         [k: string]: unknown;
       }[];

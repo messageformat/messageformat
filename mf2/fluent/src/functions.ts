@@ -33,7 +33,6 @@ export interface MessageReferenceValue extends MessageValue<'fluent-message'> {
 export interface MessageReferencePart
   extends MessageExpressionPart<'fluent-message'> {
   type: 'fluent-message';
-  source: string;
   dir?: 'ltr' | 'rtl';
   parts: MessagePart<string>[];
 }
@@ -53,7 +52,7 @@ export const getMessageFunction = (res: FluentMessageResource) =>
     options: Record<string, unknown>,
     input?: unknown
   ): MessageReferenceValue {
-    const { onError, source } = ctx;
+    const { onError } = ctx;
     const locale = ctx.locales[0];
     const dir = ctx.dir ?? getLocaleDir(locale);
     const { msgId, msgAttr } = valueToMessageRef(input ? String(input) : '');
@@ -63,7 +62,7 @@ export const getMessageFunction = (res: FluentMessageResource) =>
     let str: string | undefined;
     return {
       type: 'fluent-message',
-      source,
+      source: ctx.source,
       dir,
       selectKey(keys) {
         str ??= mf.format(options, onError);
@@ -73,8 +72,8 @@ export const getMessageFunction = (res: FluentMessageResource) =>
         const parts = mf.formatToParts(options, onError);
         const res =
           dir === 'ltr' || dir === 'rtl'
-            ? { type: 'fluent-message' as const, source, dir, locale, parts }
-            : { type: 'fluent-message' as const, source, locale, parts };
+            ? { type: 'fluent-message' as const, dir, locale, parts }
+            : { type: 'fluent-message' as const, locale, parts };
         return [res];
       },
       toString: () => (str ??= mf.format(options, onError)),

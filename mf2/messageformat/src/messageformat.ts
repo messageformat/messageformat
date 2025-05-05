@@ -193,12 +193,11 @@ export class MessageFormat<T extends string = never, P extends string = T> {
    * [
    *   { type: 'text', value: 'Hello ' },
    *   { type: 'bidiIsolation', value: '\u2068' },
-   *   { type: 'string', source: '$user.name', locale: 'en', value: 'Kat' },
+   *   { type: 'string', locale: 'en', value: 'Kat' },
    *   { type: 'bidiIsolation', value: '\u2069' },
    *   { type: 'text', value: ', today is ' },
    *   {
    *     type: 'datetime',
-   *     source: '$date',
    *     dir: 'ltr',
    *     locale: 'en',
    *     parts: [

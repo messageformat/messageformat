@@ -11,7 +11,7 @@ test('Custom function', () => {
     source,
     dir: dir ?? 'auto',
     locale,
-    toParts: () => [{ type: 'custom', source, locale, value: `part:${input}` }],
+    toParts: () => [{ type: 'custom', locale, value: `part:${input}` }],
     toString: () => `str:${input}`
   });
   const mf = new MessageFormat('en', '{$var :custom}', {
@@ -20,7 +20,7 @@ test('Custom function', () => {
   expect(mf.format({ var: 42 })).toEqual('\u2068str:42\u2069');
   expect(mf.formatToParts({ var: 42 })).toEqual([
     { type: 'bidiIsolation', value: '\u2068' },
-    { type: 'custom', source: '$var', locale: 'en', value: 'part:42' },
+    { type: 'custom', locale: 'en', value: 'part:42' },
     { type: 'bidiIsolation', value: '\u2069' }
   ]);
 });

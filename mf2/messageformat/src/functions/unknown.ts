@@ -13,7 +13,6 @@ export interface MessageUnknownValue extends MessageValue<'unknown'> {
 /** @category Formatted Parts */
 export interface MessageUnknownPart extends MessageExpressionPart<'unknown'> {
   type: 'unknown';
-  source: string;
   value: unknown;
 }
 
@@ -24,7 +23,7 @@ export const unknown = (
   type: 'unknown',
   source,
   dir: 'auto',
-  toParts: () => [{ type: 'unknown', source, value: input }],
+  toParts: () => [{ type: 'unknown', value: input }],
   toString: () => String(input),
   valueOf: () => input
 });

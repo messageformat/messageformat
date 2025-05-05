@@ -5,9 +5,9 @@ describe('Simple open/close', () => {
   test('no options, literal body', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{/b}');
     expect(mf.formatToParts()).toEqual([
-      { type: 'markup', kind: 'open', source: '#b', name: 'b' },
+      { type: 'markup', kind: 'open', name: 'b' },
       { type: 'text', value: 'foo' },
-      { type: 'markup', kind: 'close', source: '/b', name: 'b' }
+      { type: 'markup', kind: 'close', name: 'b' }
     ]);
     expect(mf.format()).toBe('foo');
   });
@@ -23,20 +23,13 @@ describe('Simple open/close', () => {
         type: 'markup',
         kind: 'open',
         options: { foo: '42', bar: 'foo bar' },
-        source: '#b',
         name: 'b'
       },
       { type: 'text', value: 'foo' },
       { type: 'bidiIsolation', value: '\u2068' },
-      { type: 'string', source: '$foo', locale: 'en', value: 'foo bar' },
+      { type: 'string', locale: 'en', value: 'foo bar' },
       { type: 'bidiIsolation', value: '\u2069' },
-      {
-        type: 'markup',
-        kind: 'close',
-        source: '/b',
-        name: 'b',
-        options: { foo: ' bar 13 ' }
-      }
+      { type: 'markup', kind: 'close', name: 'b', options: { foo: ' bar 13 ' } }
     ]);
     expect(mf.format({ foo: 'foo bar' })).toBe('foo\u2068foo bar\u2069');
   });
@@ -64,12 +57,12 @@ describe('Multiple open/close', () => {
   test('adjacent', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{/b}{#a}bar{/a}');
     expect(mf.formatToParts()).toEqual([
-      { type: 'markup', kind: 'open', source: '#b', name: 'b' },
+      { type: 'markup', kind: 'open', name: 'b' },
       { type: 'text', value: 'foo' },
-      { type: 'markup', kind: 'close', source: '/b', name: 'b' },
-      { type: 'markup', kind: 'open', source: '#a', name: 'a' },
+      { type: 'markup', kind: 'close', name: 'b' },
+      { type: 'markup', kind: 'open', name: 'a' },
       { type: 'text', value: 'bar' },
-      { type: 'markup', kind: 'close', source: '/a', name: 'a' }
+      { type: 'markup', kind: 'close', name: 'a' }
     ]);
     expect(mf.format()).toBe('foobar');
   });
@@ -77,12 +70,12 @@ describe('Multiple open/close', () => {
   test('nested', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{#a}bar{/a}{/b}');
     expect(mf.formatToParts()).toEqual([
-      { type: 'markup', kind: 'open', source: '#b', name: 'b' },
+      { type: 'markup', kind: 'open', name: 'b' },
       { type: 'text', value: 'foo' },
-      { type: 'markup', kind: 'open', source: '#a', name: 'a' },
+      { type: 'markup', kind: 'open', name: 'a' },
       { type: 'text', value: 'bar' },
-      { type: 'markup', kind: 'close', source: '/a', name: 'a' },
-      { type: 'markup', kind: 'close', source: '/b', name: 'b' }
+      { type: 'markup', kind: 'close', name: 'a' },
+      { type: 'markup', kind: 'close', name: 'b' }
     ]);
     expect(mf.format()).toBe('foobar');
   });
@@ -90,13 +83,13 @@ describe('Multiple open/close', () => {
   test('overlapping', () => {
     const mf = new MessageFormat(undefined, '{#b}foo{#a}bar{/b}baz{/a}');
     expect(mf.formatToParts()).toEqual([
-      { type: 'markup', kind: 'open', source: '#b', name: 'b' },
+      { type: 'markup', kind: 'open', name: 'b' },
       { type: 'text', value: 'foo' },
-      { type: 'markup', kind: 'open', source: '#a', name: 'a' },
+      { type: 'markup', kind: 'open', name: 'a' },
       { type: 'text', value: 'bar' },
-      { type: 'markup', kind: 'close', source: '/b', name: 'b' },
+      { type: 'markup', kind: 'close', name: 'b' },
       { type: 'text', value: 'baz' },
-      { type: 'markup', kind: 'close', source: '/a', name: 'a' }
+      { type: 'markup', kind: 'close', name: 'a' }
     ]);
     expect(mf.format()).toBe('foobarbaz');
   });
