@@ -251,18 +251,12 @@ export function fluentToMessage(
   let keys: (string | number | symbol)[][] = [];
   for (let i = 0; i < args.length; ++i) {
     const arg = args[i];
-    const kk = Array.from(new Set(arg.keys));
-    kk.sort((a, b) => {
-      if (a === CATCHALL) return 1;
-      if (typeof a === 'number' || b === CATCHALL) return -1;
-      if (typeof b === 'number') return 1;
-      return 0;
-    });
+    const sk = new Set(arg.keys);
     if (i === 0) {
-      keys = kk.map(key => [key]);
+      keys = Array.from(sk, key => [key]);
     } else {
       for (let i = keys.length - 1; i >= 0; --i) {
-        keys.splice(i, 1, ...kk.map(key => [...keys[i], key]));
+        keys.splice(i, 1, ...Array.from(sk, key => [...keys[i], key]));
       }
     }
   }

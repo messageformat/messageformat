@@ -410,12 +410,6 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       new FixResult().visit(res);
 
       class FixExpected extends Fluent.Transformer {
-        // MF2 uses first-match selection, so default variants will be last
-        visitSelectExpression(node: Fluent.SelectExpression) {
-          node.variants.sort((a, b) => (a.default ? 1 : b.default ? -1 : 0));
-          return this.genericVisit(node);
-        }
-
         // Consider { -foo() } as { -foo }
         visitCallArguments(node: Fluent.CallArguments) {
           return node.named.length === 0 && node.positional.length === 0
