@@ -7,7 +7,7 @@ export function* testScenarios(root: string): Iterable<TestScenario> {
     withFileTypes: true
   })) {
     if (ent.isFile() && ent.name.endsWith('.json')) {
-      const path = join(ent.path, ent.name);
+      const path = join(ent.path ?? ent.parentPath, ent.name);
       const src = readFileSync(path, { encoding: 'utf-8' });
       const ts: TestScenario = JSON.parse(src);
       ts.scenario ||= relative(root, path);
