@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.0-11](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-10...messageformat@4.0.0-11) (2025-05-07)
+
+### ⚠ Breaking Changes
+
+* Drop source from `MessageExpressionPart` and `MessageMarkupPart` ([#450](https://github.com/messageformat/messageformat/issues/450), [unicode-org/message-format-wg#1061](https://github.com/unicode-org/message-format-wg/issues/1061))
+  * To explicitly identify a part, set `u:id` on the placeholder rather than relying on the `source` property
+
 ## [4.0.0-10](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-9...messageformat@4.0.0-10) (2025-03-24)
 
 ### ⚠ Breaking Changes

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.11.0...@messageformat/fluent@0.12.0) (2025-05-07)
+
+* Keep variant order from source ([a1e83e2](https://github.com/messageformat/messageformat/commit/a1e83e2d67c95efae6a84f863821cc70e648fd9a))
+* Add datetime to functions ([cbd9df2](https://github.com/messageformat/messageformat/commit/cbd9df2966d9bd90749a6242f15e5bbdbc1f33bc))
+
 ## [0.11.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.10.0...@messageformat/fluent@0.11.0) (2025-03-24)
 
 ### ⚠ Breaking Changes
@@ -19,7 +24,7 @@
 
 ## [0.9.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.8.0...@messageformat/fluent@0.9.0) (2024-09-24)
 
-* Prefix custom functions: fluent:message, mf1:date, mf1:number, ... ([030d00f](https://github.com/messageformat/messageformat/commit/030d00f5450632184913c098342169ed50ef4a77))
+* Prefix custom functions: `:fluent:message` ([030d00f](https://github.com/messageformat/messageformat/commit/030d00f5450632184913c098342169ed50ef4a77))
 
 ## [0.8.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.7.0...@messageformat/fluent@0.8.0) (2024-02-28)
 
@@ -33,14 +38,8 @@
 
 ### Update MF2 to match upstream changes ([#414](https://github.com/messageformat/messageformat/pull/414))
 
-* **mf2-fluent:** Add default-true detectNumberSelection option ([6d31d55](https://github.com/messageformat/messageformat/commit/6d31d55fec5dfc51e553629eb75f305a09b0cd76))
-* **mf2-fluent:** Resolve message references with local variable inputs ([6f6c1a3](https://github.com/messageformat/messageformat/commit/6f6c1a30458ecc385058cf14c5bfbfadee0a1583))
-* In Pattern, replace Text with a primitive string ([fc4db14](https://github.com/messageformat/messageformat/commit/fc4db14df9f0445f3960f3ca7d2426b0b5c8c95c))
-* Refactor Expression to have arg+annotation rather than body ([c98b911](https://github.com/messageformat/messageformat/commit/c98b911688f97c94a4703a4afa698f064551f849))
-* Add ReservedStatement ([c0dda51](https://github.com/messageformat/messageformat/commit/c0dda5188d12a86461ea103b71ac41bf23d79509))
-* Support `{#markup}`, `{/markup}`, and `{#markup /}` ([c4e8261](https://github.com/messageformat/messageformat/commit/c4e8261677e499c39ac3fcc16579910037d6498f))
-* Rename FunctionRef -> FunctionAnnotation ([8aef253](https://github.com/messageformat/messageformat/commit/8aef2531256df40ecffd75d90ec17ab48aff7af8))
-* Use only 'messageformat/functions' for function type exports ([207476f](https://github.com/messageformat/messageformat/commit/207476f9c3adaead437fc7c7c84ac42a3b26c1c8))
+* Add default-true detectNumberSelection option ([6d31d55](https://github.com/messageformat/messageformat/commit/6d31d55fec5dfc51e553629eb75f305a09b0cd76))
+* Resolve message references with local variable inputs ([6f6c1a3](https://github.com/messageformat/messageformat/commit/6f6c1a30458ecc385058cf14c5bfbfadee0a1583))
 
 ## [0.6.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.5.0...@messageformat/fluent@0.6.0) (2023-11-14)
 
