@@ -395,20 +395,6 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
       const template = Fluent.parse(src, { withSpans: false });
       const res = resourceToFluent(data, { template });
 
-      class FixResult extends Fluent.Transformer {
-        // When converting to MF2, number wrappers are added
-        visitSelectExpression(node: Fluent.SelectExpression) {
-          if (
-            node.selector.type === 'FunctionReference' &&
-            node.selector.id.name === 'NUMBER'
-          ) {
-            node.selector = node.selector.arguments.positional[0];
-          }
-          return this.genericVisit(node);
-        }
-      }
-      new FixResult().visit(res);
-
       class FixExpected extends Fluent.Transformer {
         // Consider { -foo() } as { -foo }
         visitCallArguments(node: Fluent.CallArguments) {
@@ -746,12 +732,12 @@ describe('fluentToResourceData', () => {
     const res = resourceToFluent(data);
     expect(Fluent.serialize(res, {})).toBe(source`
       single =
-          { NUMBER($num) ->
+          { $num ->
               [0] One Zero selector.
              *[other] One Other selector.
           }
       multi =
-          { NUMBER($num) ->
+          { $num ->
               [0]
                   { $gender ->
                       [feminine] Combine Zero multiple F selectors.
@@ -801,18 +787,8 @@ describe('messagetoFluent', () => {
           expression: {
             type: 'SelectExpression',
             selector: {
-              type: 'FunctionReference',
-              id: { type: 'Identifier', name: 'NUMBER' },
-              arguments: {
-                type: 'CallArguments',
-                positional: [
-                  {
-                    type: 'VariableReference',
-                    id: { type: 'Identifier', name: 'num' }
-                  }
-                ],
-                named: []
-              }
+              type: 'VariableReference',
+              id: { type: 'Identifier', name: 'num' }
             },
             variants: [
               {

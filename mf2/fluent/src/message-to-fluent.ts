@@ -51,7 +51,16 @@ export function messageToFluent(
     }));
     const k0 = variants[0].keys;
     while (k0.length > 0) {
-      const sel = variableRefToFluent(ctx, msg.selectors[k0.length - 1]);
+      let sel = variableRefToFluent(ctx, msg.selectors[k0.length - 1]);
+      if (
+        sel instanceof Fluent.FunctionReference &&
+        sel.id.name === 'NUMBER' &&
+        sel.arguments.positional.length === 1 &&
+        sel.arguments.positional[0] instanceof Fluent.VariableReference &&
+        sel.arguments.named.length === 0
+      ) {
+        sel = sel.arguments.positional[0];
+      }
       let baseKeys: (MF.Literal | MF.CatchallKey)[] = [];
       let exp: Fluent.SelectExpression | undefined;
       for (let i = 0; i < variants.length; ++i) {
