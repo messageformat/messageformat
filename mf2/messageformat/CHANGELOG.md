@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.0-12](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-11...messageformat@4.0.0-12) (2025-05-14)
+
+### Bug Fixes
+
+* When serialising, escape literal `{}` in quoted patterns ([118007f](https://github.com/messageformat/messageformat/commit/118007f4b793e313eed8e384b066da6014615add))
+
 ## [4.0.0-11](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-10...messageformat@4.0.0-11) (2025-05-07)
 
 ### ⚠ Breaking Changes
