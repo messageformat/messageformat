@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.2](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.10.1...@messageformat/icu-messageformat-1@0.10.2) (2025-05-14)
+
+- Use updated `messageformat`.
+
 ## [0.10.1](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.10.0...@messageformat/icu-messageformat-1@0.10.1) (2025-05-07)
 
 - Use updated `messageformat`.

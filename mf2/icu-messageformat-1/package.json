@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/icu-messageformat-1",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Compile ICU MessageFormat 1 sources into MessageFormat 2 formatters",
   "keywords": [
     "messageformat",

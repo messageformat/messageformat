@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.12.3](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.12.2...@messageformat/fluent@0.12.3) (2025-05-14)
+
+- Use updated `messageformat`.
+
 ## [0.12.2](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.12.1...@messageformat/fluent@0.12.2) (2025-05-07)
 
 * Drop bare `NUMBER()` wrapper from selectors ([0018573](https://github.com/messageformat/messageformat/commit/001857360d4e6db20dec3254c102a59d2484f318))
