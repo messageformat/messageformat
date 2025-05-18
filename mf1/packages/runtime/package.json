@@ -16,7 +16,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/messageformat/messageformat.git",
-    "directory": "packages/runtime"
+    "directory": "mf1/packages/runtime"
   },
   "files": [
     "esm/",
