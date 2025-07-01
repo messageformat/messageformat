@@ -1,5 +1,5 @@
 import { getLocaleDir } from '../dir-utils.ts';
-import { MessageResolutionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
@@ -70,7 +70,7 @@ export function readNumericOperand(
   }
   if (typeof value !== 'bigint' && typeof value !== 'number') {
     const msg = 'Input is not numeric';
-    throw new MessageResolutionError('bad-operand', msg, source);
+    throw new MessageFunctionError('bad-operand', msg, source);
   }
   return { value, options };
 }
@@ -90,7 +90,7 @@ export function getMessageNumber(
     !ctx.literalOptionKeys.has('select')
   ) {
     const msg = 'The option select may only be set by a literal value';
-    ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+    ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
     canSelect = false;
   }
 
@@ -180,7 +180,7 @@ export function number(
       }
     } catch {
       const msg = `Value ${optval} is not valid for :number option ${name}`;
-      ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+      ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
     }
   }
 
@@ -220,7 +220,7 @@ export function integer(
       }
     } catch {
       const msg = `Value ${optval} is not valid for :integer option ${name}`;
-      ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+      ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
     }
   }
 

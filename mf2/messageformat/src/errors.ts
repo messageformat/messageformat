@@ -7,14 +7,8 @@ import { cstKey } from './data-model/from-cst.ts';
  * @category Errors
  */
 export class MessageError extends Error {
-  type:
-    | 'not-formattable'
-    | 'unknown-function'
-    | typeof MessageResolutionError.prototype.type
-    | typeof MessageSelectionError.prototype.type
-    | typeof MessageSyntaxError.prototype.type;
-
-  constructor(type: typeof MessageError.prototype.type, message: string) {
+  type: string;
+  constructor(type: string, message: string) {
     super(message);
     this.type = type;
   }
@@ -86,34 +80,43 @@ export class MessageDataModelError extends MessageSyntaxError {
 export class MessageResolutionError extends MessageError {
   declare type:
     | 'bad-function-result'
+    | 'bad-selector'
+    | 'no-match'
+    | 'unknown-function'
+    | 'unresolved-variable';
+  source: string;
+  cause?: unknown;
+  constructor(
+    type: typeof MessageResolutionError.prototype.type,
+    message: string,
+    source: string,
+    cause?: unknown
+  ) {
+    super(type, message);
+    this.source = source;
+    if (cause !== undefined) this.cause = cause;
+  }
+}
+
+/**
+ * Message runtime resolution errors
+ *
+ * @category Errors
+ */
+export class MessageFunctionError extends MessageError {
+  declare type:
     | 'bad-operand'
     | 'bad-option'
-    | 'unresolved-variable'
+    | 'bad-variant-key'
+    | 'not-formattable'
     | 'unsupported-operation';
   source: string;
   constructor(
-    type: typeof MessageResolutionError.prototype.type,
+    type: typeof MessageFunctionError.prototype.type,
     message: string,
     source: string
   ) {
     super(type, message);
     this.source = source;
-  }
-}
-
-/**
- * Errors in message selection.
- *
- * @category Errors
- */
-export class MessageSelectionError extends MessageError {
-  declare type: 'bad-selector' | 'no-match';
-  cause?: unknown;
-  constructor(
-    type: typeof MessageSelectionError.prototype.type,
-    cause?: unknown
-  ) {
-    super(type, `Selection error: ${type}`);
-    if (cause !== undefined) this.cause = cause;
   }
 }

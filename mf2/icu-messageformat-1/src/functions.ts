@@ -1,4 +1,4 @@
-import { MessageResolutionError } from 'messageformat';
+import { MessageFunctionError } from 'messageformat';
 import {
   DefaultFunctions,
   DraftFunctions,
@@ -15,7 +15,7 @@ function checkArgStyle(
   const argStyle = options['mf1:argStyle'];
   if (argStyle) {
     const msg = `Unsupported MF1 number argStyle: ${argStyle}`;
-    ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+    ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
   }
 }
 
@@ -108,7 +108,7 @@ function plural(
     else if (typeof num === 'bigint') num -= BigInt(offset);
   } else {
     const msg = `Plural offset must be an integer: ${options.offset}`;
-    ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+    ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
   }
 
   const mv = DefaultFunctions.number(ctx, {}, num);

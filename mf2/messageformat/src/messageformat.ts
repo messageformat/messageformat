@@ -2,7 +2,7 @@ import { parseMessage } from './data-model/parse.ts';
 import type { Message } from './data-model/types.ts';
 import { validate } from './data-model/validate.ts';
 import { FSI, LRI, PDI, RLI, getLocaleDir } from './dir-utils.ts';
-import { MessageError } from './errors.ts';
+import { MessageFunctionError } from './errors.ts';
 import type { Context } from './format-context.ts';
 import type { MessageFallbackPart, MessagePart } from './formatted-parts.ts';
 import { DefaultFunctions } from './functions/index.ts';
@@ -165,7 +165,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
             }
           } else {
             const msg = 'Message part is not formattable';
-            throw new MessageError('not-formattable', msg);
+            throw new MessageFunctionError('not-formattable', msg, mv.source);
           }
         } catch (error) {
           ctx.onError(error);
@@ -249,7 +249,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
             }
           } else {
             const msg = 'Message part is not formattable';
-            throw new MessageError('not-formattable', msg);
+            throw new MessageFunctionError('not-formattable', msg, mv.source);
           }
         } catch (error) {
           ctx.onError(error);

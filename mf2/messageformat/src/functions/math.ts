@@ -1,4 +1,4 @@
-import { MessageResolutionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { MessageFunctionContext } from './index.ts';
 import { MessageNumber, number, readNumericOperand } from './number.ts';
 import { asPositiveInteger } from './utils.ts';
@@ -22,12 +22,12 @@ export function math(
     add = 'add' in exprOpt ? asPositiveInteger(exprOpt.add) : -1;
     sub = 'subtract' in exprOpt ? asPositiveInteger(exprOpt.subtract) : -1;
   } catch (error) {
-    throw new MessageResolutionError('bad-option', String(error), source);
+    throw new MessageFunctionError('bad-option', String(error), source);
   }
   if (add < 0 === sub < 0) {
     const msg =
       'Exactly one of "add" or "subtract" is required as a :math option';
-    throw new MessageResolutionError('bad-option', msg, source);
+    throw new MessageFunctionError('bad-option', msg, source);
   }
   const delta = add < 0 ? -sub : add;
   if (typeof value === 'number') value += delta;

@@ -4,7 +4,7 @@ import type {
   Options,
   VariableRef
 } from '../data-model/types.ts';
-import { MessageError } from '../errors.ts';
+import { MessageError, MessageResolutionError } from '../errors.ts';
 import type { Context } from '../format-context.ts';
 import { fallback } from '../functions/fallback.ts';
 import type { MessageFallback } from '../functions/index.ts';
@@ -17,12 +17,17 @@ export function resolveFunctionRef<T extends string, P extends string>(
   operand: Literal | VariableRef | undefined,
   { name, options }: FunctionRef
 ): MessageValue<T, P> | MessageFallback {
-  const source = getValueSource(operand) ?? `:${name}`;
+  const fnSource = `:${name}`;
+  const source = getValueSource(operand) ?? fnSource;
   try {
     const fnInput = operand ? [resolveValue(ctx, operand)] : [];
     const rf = ctx.functions[name];
     if (!rf) {
-      throw new MessageError('unknown-function', `Unknown function :${name}`);
+      throw new MessageResolutionError(
+        'unknown-function',
+        `Unknown function ${fnSource}`,
+        fnSource
+      );
     }
     const msgCtx = new MessageFunctionContext(ctx, source, options);
     const opt = resolveOptions(ctx, options);
@@ -33,9 +38,10 @@ export function resolveFunctionRef<T extends string, P extends string>(
       typeof res.type !== 'string' ||
       typeof res.source !== 'string'
     ) {
-      throw new MessageError(
+      throw new MessageResolutionError(
         'bad-function-result',
-        `Function :${name} did not return a MessageValue`
+        `Function ${fnSource} did not return a MessageValue`,
+        fnSource
       );
     }
     if (msgCtx.dir) res = { ...res, dir: msgCtx.dir, [BIDI_ISOLATE]: true };
@@ -51,7 +57,16 @@ export function resolveFunctionRef<T extends string, P extends string>(
     }
     return res;
   } catch (error) {
-    ctx.onError(error);
+    ctx.onError(
+      error instanceof MessageError
+        ? error
+        : new MessageResolutionError(
+            'bad-function-result',
+            String(error),
+            source,
+            error
+          )
+    );
     return fallback(source);
   }
 }

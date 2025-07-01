@@ -1,4 +1,4 @@
-import { MessageError, MessageResolutionError } from '../errors.ts';
+import { MessageError, MessageFunctionError } from '../errors.ts';
 import type { MessageFunctionContext } from './index.ts';
 import type { MessageNumber, MessageNumberOptions } from './number.ts';
 import { getMessageNumber, readNumericOperand } from './number.ts';
@@ -46,7 +46,7 @@ export function currency(
           const strval = asString(optval);
           if (strval === 'never') {
             ctx.onError(
-              new MessageResolutionError(
+              new MessageFunctionError(
                 'unsupported-operation',
                 'Currency display "never" is not yet supported',
                 source
@@ -76,14 +76,14 @@ export function currency(
         ctx.onError(error);
       } else {
         const msg = `Value ${optval} is not valid for :currency option ${name}`;
-        ctx.onError(new MessageResolutionError('bad-option', msg, source));
+        ctx.onError(new MessageFunctionError('bad-option', msg, source));
       }
     }
   }
 
   if (!options.currency) {
     const msg = 'A currency code is required for :currency';
-    throw new MessageResolutionError('bad-operand', msg, source);
+    throw new MessageFunctionError('bad-operand', msg, source);
   }
 
   return getMessageNumber(ctx, input.value, options, false);

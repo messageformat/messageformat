@@ -1,4 +1,4 @@
-import { MessageResolutionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { Context } from '../format-context.ts';
 import { getValueSource, resolveValue } from './resolve-value.ts';
 import { Options } from '../data-model/types.ts';
@@ -21,7 +21,7 @@ export class MessageFunctionContext {
       } else if (dir !== 'inherit') {
         const msg = 'Unsupported value for u:dir option';
         const optSource = getValueSource(dirOpt);
-        ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
+        ctx.onError(new MessageFunctionError('bad-option', msg, optSource));
       }
     }
 

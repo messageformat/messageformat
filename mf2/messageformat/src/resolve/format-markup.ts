@@ -1,4 +1,4 @@
-import { MessageResolutionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { Context } from '../format-context.ts';
 import type { MessageMarkupPart } from '../formatted-parts.ts';
 import { getValueSource, resolveValue } from './resolve-value.ts';
@@ -15,7 +15,7 @@ export function formatMarkup(
       if (name === 'u:dir') {
         const msg = `The option ${name} is not valid for markup`;
         const optSource = getValueSource(value);
-        ctx.onError(new MessageResolutionError('bad-option', msg, optSource));
+        ctx.onError(new MessageFunctionError('bad-option', msg, optSource));
       } else {
         let rv = resolveValue(ctx, value);
         if (typeof rv === 'object' && typeof rv?.valueOf === 'function') {

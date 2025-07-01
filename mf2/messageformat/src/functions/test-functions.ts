@@ -5,7 +5,7 @@
  * and are not a part of the library's public API.
  */
 
-import { MessageResolutionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
 import { asPositiveInteger, asString } from './utils.ts';
@@ -60,7 +60,7 @@ function testFunction(
   }
   if (typeof input !== 'number') {
     const msg = 'Input is not numeric';
-    throw new MessageResolutionError('bad-operand', msg, source);
+    throw new MessageFunctionError('bad-operand', msg, source);
   }
   const value: number = input; // Otherwise TS complains in callbacks
 
@@ -71,7 +71,7 @@ function testFunction(
       else throw 1;
     } catch {
       const msg = `Invalid option decimalPlaces=${options.decimalPlaces}`;
-      throw new MessageResolutionError('bad-option', msg, source);
+      throw new MessageFunctionError('bad-option', msg, source);
     }
   }
   if ('fails' in options) {
@@ -94,7 +94,7 @@ function testFunction(
       }
     } catch {
       const msg = `Invalid option fails=${options.fails}`;
-      onError(new MessageResolutionError('bad-option', msg, source));
+      onError(new MessageFunctionError('bad-option', msg, source));
     }
   }
 
@@ -106,7 +106,10 @@ function testFunction(
     },
     selectKey: opt.canSelect
       ? keys => {
-          if (opt.failsSelect) throw new Error('Selection failed');
+          if (opt.failsSelect) {
+            const msg = 'Selection failed';
+            throw new MessageFunctionError('bad-option', msg, source);
+          }
           if (value === 1) {
             if (opt.decimalPlaces === 1 && keys.has('1.0')) return '1.0';
             if (keys.has('1')) return '1';
@@ -116,14 +119,20 @@ function testFunction(
       : undefined,
     toParts: opt.canFormat
       ? () => {
-          if (opt.failsFormat) throw new Error('Formatting failed');
+          if (opt.failsFormat) {
+            const msg = 'Formatting failed';
+            throw new MessageFunctionError('bad-option', msg, source);
+          }
           const parts = Array.from(testParts(value, opt.decimalPlaces));
           return [{ type: 'test', locale: 'und', parts }];
         }
       : undefined,
     toString: opt.canFormat
       ? () => {
-          if (opt.failsFormat) throw new Error('Formatting failed');
+          if (opt.failsFormat) {
+            const msg = 'Formatting failed';
+            throw new MessageFunctionError('bad-option', msg, source);
+          }
           const parts = Array.from(testParts(value, opt.decimalPlaces));
           return parts.map(part => part.value).join('');
         }

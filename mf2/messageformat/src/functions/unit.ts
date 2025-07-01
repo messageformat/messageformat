@@ -1,4 +1,4 @@
-import { MessageError, MessageResolutionError } from '../errors.ts';
+import { MessageError, MessageFunctionError } from '../errors.ts';
 import type { MessageFunctionContext } from './index.ts';
 import type { MessageNumber, MessageNumberOptions } from './number.ts';
 import { getMessageNumber, readNumericOperand } from './number.ts';
@@ -50,14 +50,14 @@ export function unit(
         ctx.onError(error);
       } else {
         const msg = `Value ${optval} is not valid for :currency option ${name}`;
-        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+        ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
       }
     }
   }
 
   if (!options.unit) {
     const msg = 'A unit identifier is required for :unit';
-    throw new MessageResolutionError('bad-operand', msg, ctx.source);
+    throw new MessageFunctionError('bad-operand', msg, ctx.source);
   }
 
   return getMessageNumber(ctx, input.value, options, false);

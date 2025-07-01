@@ -1,5 +1,5 @@
 import { getLocaleDir } from '../dir-utils.ts';
-import { MessageResolutionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { MessageExpressionPart } from '../formatted-parts.ts';
 import type { MessageValue } from '../message-value.ts';
 import type { MessageFunctionContext } from '../resolve/function-context.ts';
@@ -84,7 +84,7 @@ export const datetime = (
         }
       } catch {
         const msg = `Value ${value} is not valid for :datetime ${name} option`;
-        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+        ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
       }
     }
     if (!hasStyle && !hasFields) {
@@ -92,7 +92,7 @@ export const datetime = (
       res.timeStyle = 'short';
     } else if (hasStyle && hasFields) {
       const msg = 'Style and field options cannot be both set for :datetime';
-      throw new MessageResolutionError('bad-option', msg, ctx.source);
+      throw new MessageFunctionError('bad-option', msg, ctx.source);
     }
   });
 
@@ -127,7 +127,7 @@ export const date = (
         }
       } catch {
         const msg = `Value ${value} is not valid for :date ${name} option`;
-        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+        ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
       }
     }
     res.dateStyle ??= 'medium';
@@ -164,7 +164,7 @@ export const time = (
         }
       } catch {
         const msg = `Value ${value} is not valid for :time ${name} option`;
-        ctx.onError(new MessageResolutionError('bad-option', msg, ctx.source));
+        ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
       }
     }
     res.timeStyle ??= 'short';
@@ -196,7 +196,7 @@ function dateTimeImplementation(
   }
   if (!(value instanceof Date) || isNaN(value.getTime())) {
     const msg = 'Input is not a date';
-    throw new MessageResolutionError('bad-operand', msg, ctx.source);
+    throw new MessageFunctionError('bad-operand', msg, ctx.source);
   }
 
   parseOptions(opt as Record<string, unknown>);

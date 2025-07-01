@@ -26,8 +26,8 @@ export { visit } from './data-model/visit.ts';
 export {
   MessageDataModelError,
   MessageError,
+  MessageFunctionError,
   MessageResolutionError,
-  MessageSelectionError,
   MessageSyntaxError
 } from './errors.ts';
 export { MessageFormat, MessageFormatOptions } from './messageformat.ts';

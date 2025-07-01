@@ -1,11 +1,16 @@
-import { type Model as MF, MessageError, visit } from 'messageformat';
+import {
+  type Model as MF,
+  MessageFunctionError,
+  MessageResolutionError,
+  visit
+} from 'messageformat';
 import { DefaultFunctions } from 'messageformat/functions';
 import { MF1Functions } from './functions.ts';
 
 /**
  * Ensure that the `msg` data model does not contain any unsupported MF1 argType or argStyle references,
  * calling `onError` on errors.
- * If `onError` is not defined, a {@link MessageError} will be thrown on error.
+ * If `onError` is not defined, errors will be thrown.
  */
 export function mf1Validate(
   msg: MF.Message,
@@ -19,13 +24,18 @@ export function mf1Validate(
         ? argTypeAttr.value
         : expr.functionRef!.name.replace('mf1:', '');
     if (type === 'unknown-function') {
-      throw new MessageError(type, `Unsupported MF1 argType: ${argType}`);
+      throw new MessageResolutionError(
+        type,
+        `Unsupported MF1 argType: ${argType}`,
+        argType
+      );
     } else {
       const opt = expr.functionRef!.options!.get('mf1:argStyle')!;
       const argStyle = opt?.type === 'literal' ? opt.value : '�';
-      throw new MessageError(
+      throw new MessageFunctionError(
         type,
-        `Unsupported MF1 ${argType} argStyle: ${argStyle}`
+        `Unsupported MF1 ${argType} argStyle: ${argStyle}`,
+        argStyle
       );
     }
   }
