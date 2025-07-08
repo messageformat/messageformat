@@ -8,9 +8,12 @@ import type { DefaultFunctions, DraftFunctions } from './index.ts';
 import { asPositiveInteger, asString } from './utils.ts';
 
 /**
- * The resolved value of a {@link DraftFunctions.currency | :currency},
- * {@link DefaultFunctions.integer | :integer}, {@link DraftFunctions.math | :math},
- * {@link DefaultFunctions.number | :number}, or {@link DraftFunctions.unit | :unit} expression.
+ * The resolved value of a
+ * {@link DraftFunctions.currency | :currency},
+ * {@link DefaultFunctions.integer | :integer},
+ * {@link DefaultFunctions.number | :number},
+ * {@link DefaultFunctions.offset | :offset},
+ * or {@link DraftFunctions.unit | :unit} expression.
  */
 export interface MessageNumber extends MessageValue<'number'> {
   readonly type: 'number';

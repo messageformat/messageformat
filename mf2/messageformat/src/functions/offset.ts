@@ -4,11 +4,11 @@ import { MessageNumber, number, readNumericOperand } from './number.ts';
 import { asPositiveInteger } from './utils.ts';
 
 /**
- * `math` accepts a numeric value as input and adds or subtracts an integer value from it
+ * `offset` accepts a numeric value as input and adds or subtracts an integer value from it
  *
  * @beta
  */
-export function math(
+export function offset(
   ctx: MessageFunctionContext,
   exprOpt: Record<string | symbol, unknown>,
   operand?: unknown
@@ -26,7 +26,7 @@ export function math(
   }
   if (add < 0 === sub < 0) {
     const msg =
-      'Exactly one of "add" or "subtract" is required as a :math option';
+      'Exactly one of "add" or "subtract" is required as an :offset option';
     throw new MessageFunctionError('bad-option', msg, source);
   }
   const delta = add < 0 ? -sub : add;

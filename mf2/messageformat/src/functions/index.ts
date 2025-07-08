@@ -25,7 +25,7 @@ export type { MessageString } from './string.ts';
 
 import { currency } from './currency.ts';
 import { date, datetime, time } from './datetime.ts';
-import { math } from './math.ts';
+import { offset } from './offset.ts';
 import { integer, number } from './number.ts';
 import { string } from './string.ts';
 import { unit } from './unit.ts';
@@ -52,6 +52,15 @@ export let DefaultFunctions = {
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
    */
   number,
+
+  /**
+   * Supports formatting and selection as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-offset-function | :offset function}.
+   *
+   * The `operand` must be a number, BigInt, or string representing a JSON number,
+   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
+   */
+  offset,
 
   /**
    * Supports formatting and selection as defined in LDML 47 for the
@@ -110,15 +119,6 @@ export let DraftFunctions = {
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
    */
   datetime,
-
-  /**
-   * Supports formatting and selection as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-math-function | :math function}.
-   *
-   * The `operand` must be a number, BigInt, or string representing a JSON number,
-   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
-   */
-  math,
 
   /**
    * Supports formatting as defined in LDML 47 for the
