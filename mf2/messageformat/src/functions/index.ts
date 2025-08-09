@@ -25,8 +25,9 @@ export type { MessageString } from './string.ts';
 
 import { currency } from './currency.ts';
 import { date, datetime, time } from './datetime.ts';
-import { offset } from './offset.ts';
 import { integer, number } from './number.ts';
+import { offset } from './offset.ts';
+import { percent } from './percent.ts';
 import { string } from './string.ts';
 import { unit } from './unit.ts';
 
@@ -119,6 +120,15 @@ export let DraftFunctions = {
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
    */
   datetime,
+
+  /**
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-percent-function | :percent function}.
+   *
+   * The `operand` must be a number, BigInt, or string representing a JSON number,
+   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
+   */
+  percent,
 
   /**
    * Supports formatting as defined in LDML 47 for the

@@ -115,7 +115,12 @@ export function getMessageNumber(
     },
     selectKey: canSelect
       ? keys => {
-          const str = String(value);
+          let numVal = value;
+          if (options.style === 'percent') {
+            if (typeof numVal === 'bigint') numVal *= 100n;
+            else numVal *= 100;
+          }
+          const str = String(numVal);
           if (keys.has(str)) return str;
           if (options.select === 'exact') return null;
           const pluralOpt = options.select
@@ -123,7 +128,7 @@ export function getMessageNumber(
             : options;
           // Intl.PluralRules needs a number, not bigint
           cat ??= new Intl.PluralRules(locales, pluralOpt).select(
-            Number(value)
+            Number(numVal)
           );
           return keys.has(cat) ? cat : null;
         }
