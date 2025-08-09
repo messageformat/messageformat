@@ -19,9 +19,12 @@ export class MessageFunctionContext {
       if (dir === 'ltr' || dir === 'rtl' || dir === 'auto') {
         this.dir = dir;
       } else if (dir !== 'inherit') {
-        const msg = 'Unsupported value for u:dir option';
-        const optSource = getValueSource(dirOpt);
-        ctx.onError(new MessageFunctionError('bad-option', msg, optSource));
+        const error = new MessageFunctionError(
+          'bad-option',
+          'Unsupported value for u:dir option'
+        );
+        error.source = getValueSource(dirOpt);
+        ctx.onError(error);
       }
     }
 
@@ -50,7 +53,25 @@ export class MessageFunctionContext {
     return this.#ctx.locales.map(String);
   }
 
-  get onError() {
-    return this.#ctx.onError;
+  onError(error: unknown): void;
+  onError(
+    type: typeof MessageFunctionError.prototype.type,
+    message: string
+  ): void;
+  onError(error: unknown, message?: string) {
+    let mfError: MessageFunctionError;
+    if (error instanceof MessageFunctionError) {
+      mfError = error;
+    } else if (typeof error === 'string' && typeof message === 'string') {
+      mfError = new MessageFunctionError(
+        error as typeof MessageFunctionError.prototype.type,
+        message
+      );
+    } else {
+      mfError = new MessageFunctionError('function-error', String(error));
+      mfError.cause = error;
+    }
+    mfError.source = this.source;
+    this.#ctx.onError(mfError);
   }
 }

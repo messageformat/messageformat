@@ -15,7 +15,7 @@ export function unit(
   exprOpt: Record<string | symbol, unknown>,
   operand?: unknown
 ): MessageNumber {
-  const input = readNumericOperand(operand, ctx.source);
+  const input = readNumericOperand(operand);
   const options: MessageNumberOptions = Object.assign({}, input.options, {
     localeMatcher: ctx.localeMatcher,
     style: 'unit'
@@ -49,15 +49,19 @@ export function unit(
       if (error instanceof MessageError) {
         ctx.onError(error);
       } else {
-        const msg = `Value ${optval} is not valid for :currency option ${name}`;
-        ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
+        ctx.onError(
+          'bad-option',
+          `Value ${optval} is not valid for :currency option ${name}`
+        );
       }
     }
   }
 
   if (!options.unit) {
-    const msg = 'A unit identifier is required for :unit';
-    throw new MessageFunctionError('bad-operand', msg, ctx.source);
+    throw new MessageFunctionError(
+      'bad-operand',
+      'A unit identifier is required for :unit'
+    );
   }
 
   return getMessageNumber(ctx, input.value, options, false);

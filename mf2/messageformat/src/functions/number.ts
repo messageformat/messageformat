@@ -52,10 +52,10 @@ export interface MessageNumberPart extends MessageExpressionPart<'number'> {
 export type MessageNumberOptions = Intl.NumberFormatOptions &
   Intl.PluralRulesOptions & { select?: 'exact' | 'cardinal' | 'ordinal' };
 
-export function readNumericOperand(
-  value: unknown,
-  source: string
-): { value: number | bigint; options: unknown } {
+export function readNumericOperand(value: unknown): {
+  value: number | bigint;
+  options: unknown;
+} {
   let options: unknown = undefined;
   if (typeof value === 'object') {
     const valueOf = value?.valueOf;
@@ -72,8 +72,7 @@ export function readNumericOperand(
     }
   }
   if (typeof value !== 'bigint' && typeof value !== 'number') {
-    const msg = 'Input is not numeric';
-    throw new MessageFunctionError('bad-operand', msg, source);
+    throw new MessageFunctionError('bad-operand', 'Input is not numeric');
   }
   return { value, options };
 }
@@ -92,8 +91,10 @@ export function getMessageNumber(
     'select' in options &&
     !ctx.literalOptionKeys.has('select')
   ) {
-    const msg = 'The option select may only be set by a literal value';
-    ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
+    ctx.onError(
+      'bad-option',
+      'The option select may only be set by a literal value'
+    );
     canSelect = false;
   }
 
@@ -152,7 +153,7 @@ export function number(
   exprOpt: Record<string, unknown>,
   operand?: unknown
 ): MessageNumber {
-  const input = readNumericOperand(operand, ctx.source);
+  const input = readNumericOperand(operand);
   const value = input.value;
   const options: MessageNumberOptions = Object.assign({}, input.options, {
     localeMatcher: ctx.localeMatcher,
@@ -182,8 +183,10 @@ export function number(
           options[name] = asString(optval);
       }
     } catch {
-      const msg = `Value ${optval} is not valid for :number option ${name}`;
-      ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
+      ctx.onError(
+        'bad-option',
+        `Value ${optval} is not valid for :number option ${name}`
+      );
     }
   }
 
@@ -195,7 +198,7 @@ export function integer(
   exprOpt: Record<string, unknown>,
   operand?: unknown
 ) {
-  const input = readNumericOperand(operand, ctx.source);
+  const input = readNumericOperand(operand);
   const value = Number.isFinite(input.value)
     ? Math.round(input.value as number)
     : input.value;
@@ -222,8 +225,10 @@ export function integer(
           options[name] = asString(optval);
       }
     } catch {
-      const msg = `Value ${optval} is not valid for :integer option ${name}`;
-      ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
+      ctx.onError(
+        'bad-option',
+        `Value ${optval} is not valid for :integer option ${name}`
+      );
     }
   }
 

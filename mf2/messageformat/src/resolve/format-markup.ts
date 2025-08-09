@@ -13,9 +13,12 @@ export function formatMarkup(
     part.options = {};
     for (const [name, value] of options) {
       if (name === 'u:dir') {
-        const msg = `The option ${name} is not valid for markup`;
-        const optSource = getValueSource(value);
-        ctx.onError(new MessageFunctionError('bad-option', msg, optSource));
+        const error = new MessageFunctionError(
+          'bad-option',
+          `The option ${name} is not valid for markup`
+        );
+        error.source = getValueSource(value);
+        ctx.onError(error);
       } else {
         let rv = resolveValue(ctx, value);
         if (typeof rv === 'object' && typeof rv?.valueOf === 'function') {

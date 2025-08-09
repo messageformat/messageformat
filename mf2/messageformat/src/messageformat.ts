@@ -164,8 +164,12 @@ export class MessageFormat<T extends string = never, P extends string = T> {
               res += mv.toString();
             }
           } else {
-            const msg = 'Message part is not formattable';
-            throw new MessageFunctionError('not-formattable', msg, mv.source);
+            const error = new MessageFunctionError(
+              'not-formattable',
+              'Message part is not formattable'
+            );
+            error.source = mv.source;
+            throw error;
           }
         } catch (error) {
           ctx.onError(error);
@@ -248,8 +252,12 @@ export class MessageFormat<T extends string = never, P extends string = T> {
               parts.push(...mp);
             }
           } else {
-            const msg = 'Message part is not formattable';
-            throw new MessageFunctionError('not-formattable', msg, mv.source);
+            const error = new MessageFunctionError(
+              'not-formattable',
+              'Message part is not formattable'
+            );
+            error.source = mv.source;
+            throw error;
           }
         } catch (error) {
           ctx.onError(error);

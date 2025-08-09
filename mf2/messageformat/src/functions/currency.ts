@@ -1,4 +1,4 @@
-import { MessageError, MessageFunctionError } from '../errors.ts';
+import { MessageFunctionError } from '../errors.ts';
 import type { MessageFunctionContext } from './index.ts';
 import type { MessageNumber, MessageNumberOptions } from './number.ts';
 import { getMessageNumber, readNumericOperand } from './number.ts';
@@ -15,8 +15,7 @@ export function currency(
   exprOpt: Record<string | symbol, unknown>,
   operand?: unknown
 ): MessageNumber {
-  const { source } = ctx;
-  const input = readNumericOperand(operand, source);
+  const input = readNumericOperand(operand);
   const options: MessageNumberOptions = Object.assign({}, input.options, {
     localeMatcher: ctx.localeMatcher,
     style: 'currency'
@@ -46,11 +45,8 @@ export function currency(
           const strval = asString(optval);
           if (strval === 'never') {
             ctx.onError(
-              new MessageFunctionError(
-                'unsupported-operation',
-                'Currency display "never" is not yet supported',
-                source
-              )
+              'unsupported-operation',
+              'Currency display "never" is not yet supported'
             );
           } else {
             // @ts-expect-error Let Intl.NumberFormat construction fail
@@ -71,19 +67,19 @@ export function currency(
           break;
         }
       }
-    } catch (error) {
-      if (error instanceof MessageError) {
-        ctx.onError(error);
-      } else {
-        const msg = `Value ${optval} is not valid for :currency option ${name}`;
-        ctx.onError(new MessageFunctionError('bad-option', msg, source));
-      }
+    } catch {
+      ctx.onError(
+        'bad-option',
+        `Value ${optval} is not valid for :currency option ${name}`
+      );
     }
   }
 
   if (!options.currency) {
-    const msg = 'A currency code is required for :currency';
-    throw new MessageFunctionError('bad-operand', msg, source);
+    throw new MessageFunctionError(
+      'bad-operand',
+      'A currency code is required for :currency'
+    );
   }
 
   return getMessageNumber(ctx, input.value, options, false);

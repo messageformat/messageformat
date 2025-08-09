@@ -13,21 +13,32 @@ export function offset(
   exprOpt: Record<string | symbol, unknown>,
   operand?: unknown
 ): MessageNumber {
-  const { source } = ctx;
-  let { value, options } = readNumericOperand(operand, source);
+  let { value, options } = readNumericOperand(operand);
 
   let add: number;
-  let sub: number;
   try {
     add = 'add' in exprOpt ? asPositiveInteger(exprOpt.add) : -1;
-    sub = 'subtract' in exprOpt ? asPositiveInteger(exprOpt.subtract) : -1;
-  } catch (error) {
-    throw new MessageFunctionError('bad-option', String(error), source);
+  } catch {
+    throw new MessageFunctionError(
+      'bad-option',
+      `Value ${exprOpt.add} is not valid for :offset option add`
+    );
   }
+
+  let sub: number;
+  try {
+    sub = 'subtract' in exprOpt ? asPositiveInteger(exprOpt.subtract) : -1;
+  } catch {
+    throw new MessageFunctionError(
+      'bad-option',
+      `Value ${exprOpt.subtract} is not valid for :offset option subtract`
+    );
+  }
+
   if (add < 0 === sub < 0) {
     const msg =
       'Exactly one of "add" or "subtract" is required as an :offset option';
-    throw new MessageFunctionError('bad-option', msg, source);
+    throw new MessageFunctionError('bad-option', msg);
   }
   const delta = add < 0 ? -sub : add;
   if (typeof value === 'number') value += delta;

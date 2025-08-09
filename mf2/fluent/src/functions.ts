@@ -52,7 +52,7 @@ export const getMessageFunction = (res: FluentMessageResource) =>
     options: Record<string, unknown>,
     input?: unknown
   ): MessageReferenceValue {
-    const { onError } = ctx;
+    const onError = ctx.onError.bind(ctx);
     const locale = ctx.locales[0];
     const dir = ctx.dir ?? getLocaleDir(locale);
     const { msgId, msgAttr } = valueToMessageRef(input ? String(input) : '');

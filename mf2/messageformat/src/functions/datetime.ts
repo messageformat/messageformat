@@ -88,8 +88,9 @@ function dateTimeImplementation(
   exprOpt: Record<string, unknown>,
   operand?: unknown
 ): MessageDateTime {
-  const { localeMatcher, locales, source } = ctx;
-  const options: Intl.DateTimeFormatOptions = { localeMatcher };
+  const options: Intl.DateTimeFormatOptions = {
+    localeMatcher: ctx.localeMatcher
+  };
 
   let value = operand;
   if (typeof value === 'object' && value !== null) {
@@ -108,8 +109,7 @@ function dateTimeImplementation(
       value = new Date(value);
   }
   if (!(value instanceof Date) || isNaN(value.getTime())) {
-    const msg = 'Input is not a valid date';
-    throw new MessageFunctionError('bad-operand', msg, source);
+    throw new MessageFunctionError('bad-operand', 'Input is not a valid date');
   }
 
   // Override options
@@ -117,16 +117,17 @@ function dateTimeImplementation(
     try {
       options.calendar = asString(exprOpt.calendar);
     } catch {
-      const msg = `Invalid :${functionName} calendar option value`;
-      ctx.onError(new MessageFunctionError('bad-option', msg, source));
+      ctx.onError(
+        'bad-option',
+        `Invalid :${functionName} calendar option value`
+      );
     }
   }
   if (exprOpt.hour12 !== undefined && functionName !== 'date') {
     try {
       options.hour12 = asBoolean(exprOpt.hour12);
     } catch {
-      const msg = `Invalid :${functionName} hour12 option value`;
-      ctx.onError(new MessageFunctionError('bad-option', msg, source));
+      ctx.onError('bad-option', `Invalid :${functionName} hour12 option value`);
     }
   }
   if (exprOpt.timeZone !== undefined) {
@@ -134,19 +135,25 @@ function dateTimeImplementation(
     try {
       tz = asString(exprOpt.timeZone);
     } catch {
-      const msg = `Invalid :${functionName} timeZone option value`;
-      ctx.onError(new MessageFunctionError('bad-option', msg, source));
+      ctx.onError(
+        'bad-option',
+        `Invalid :${functionName} timeZone option value`
+      );
     }
     if (tz === 'input') {
       if (options.timeZone === undefined) {
-        const msg = `Missing input timeZone value for :${functionName}`;
-        ctx.onError(new MessageFunctionError('bad-operand', msg, source));
+        ctx.onError(
+          'bad-operand',
+          `Missing input timeZone value for :${functionName}`
+        );
       }
     } else if (tz !== undefined) {
       if (options.timeZone !== undefined && tz !== options.timeZone) {
         // Use fallback value for expression
-        const msg = 'Time zone conversion is not supported';
-        throw new MessageFunctionError('bad-option', msg, source);
+        throw new MessageFunctionError(
+          'bad-option',
+          'Time zone conversion is not supported'
+        );
       }
       options.timeZone = tz;
     }
@@ -203,13 +210,13 @@ function dateTimeImplementation(
   }
 
   // Resolved value
-  const dtf = new Intl.DateTimeFormat(locales, options);
+  const dtf = new Intl.DateTimeFormat(ctx.locales, options);
   let dir = ctx.dir;
   let locale: string | undefined;
   let str: string | undefined;
   return {
     type: 'datetime',
-    source,
+    source: ctx.source,
     get dir() {
       if (dir == null) {
         locale ??= dtf.resolvedOptions().locale;
@@ -249,8 +256,7 @@ function readStringOption<T extends string>(
       if (allowed && !allowed.has(str)) throw Error();
       return str;
     } catch {
-      const msg = `Invalid value for ${name} option`;
-      ctx.onError(new MessageFunctionError('bad-option', msg, ctx.source));
+      ctx.onError('bad-option', `Invalid value for ${name} option`);
     }
   }
   return undefined;

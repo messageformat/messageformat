@@ -30,13 +30,15 @@ export function mf1Validate(
         argType
       );
     } else {
+      const msg = `Unsupported MF1 ${argType} argStyle`;
       const opt = expr.functionRef!.options!.get('mf1:argStyle')!;
-      const argStyle = opt?.type === 'literal' ? opt.value : '�';
-      throw new MessageFunctionError(
-        type,
-        `Unsupported MF1 ${argType} argStyle: ${argStyle}`,
-        argStyle
-      );
+      if (opt?.type === 'literal') {
+        const error = new MessageFunctionError(type, `${msg}: ${opt.value}`);
+        error.source = opt.value;
+        throw error;
+      } else {
+        throw new MessageFunctionError(type, msg);
+      }
     }
   }
 ) {

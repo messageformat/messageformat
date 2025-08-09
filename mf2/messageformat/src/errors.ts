@@ -108,15 +108,16 @@ export class MessageFunctionError extends MessageError {
     | 'bad-operand'
     | 'bad-option'
     | 'bad-variant-key'
+    | 'function-error'
     | 'not-formattable'
     | 'unsupported-operation';
   source: string;
+  cause?: unknown;
   constructor(
     type: typeof MessageFunctionError.prototype.type,
-    message: string,
-    source: string
+    message: string
   ) {
     super(type, message);
-    this.source = source;
+    this.source = '�';
   }
 }
