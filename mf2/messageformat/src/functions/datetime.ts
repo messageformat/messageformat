@@ -15,7 +15,6 @@ import { asBoolean, asString } from './utils.ts';
  */
 export interface MessageDateTime extends MessageValue<'datetime'> {
   readonly type: 'datetime';
-  readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
   readonly options: Readonly<Intl.DateTimeFormatOptions>;
   toParts(): [MessageDateTimePart];
@@ -216,7 +215,6 @@ function dateTimeImplementation(
   let str: string | undefined;
   return {
     type: 'datetime',
-    source: ctx.source,
     get dir() {
       if (dir == null) {
         locale ??= dtf.resolvedOptions().locale;

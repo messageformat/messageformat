@@ -101,7 +101,6 @@ function testFunction(
 
   return {
     type: 'test',
-    source: ctx.source,
     get options() {
       return { ...opt };
     },

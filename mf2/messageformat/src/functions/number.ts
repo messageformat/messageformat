@@ -17,7 +17,6 @@ import { asPositiveInteger, asString } from './utils.ts';
  */
 export interface MessageNumber extends MessageValue<'number'> {
   readonly type: 'number';
-  readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
   readonly options: Readonly<
     Intl.NumberFormatOptions & Intl.PluralRulesOptions
@@ -104,7 +103,6 @@ export function getMessageNumber(
   let str: string | undefined;
   return {
     type: 'number',
-    source: ctx.source,
     get dir() {
       if (dir == null) {
         locale ??= Intl.NumberFormat.supportedLocalesOf(locales, options)[0];

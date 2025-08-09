@@ -16,7 +16,7 @@ export function resolveFunctionRef<T extends string, P extends string>(
   ctx: Context<T, P>,
   operand: Literal | VariableRef | undefined,
   { name, options }: FunctionRef
-): MessageValue<T, P> | MessageFallback {
+): (MessageValue<T, P> & { source: string }) | MessageFallback {
   const fnSource = `:${name}`;
   const source = getValueSource(operand) ?? fnSource;
   try {
@@ -26,36 +26,41 @@ export function resolveFunctionRef<T extends string, P extends string>(
       throw new MessageResolutionError(
         'unknown-function',
         `Unknown function ${fnSource}`,
-        fnSource
+        source
       );
     }
+
     const msgCtx = new MessageFunctionContext(ctx, source, options);
     const opt = resolveOptions(ctx, options);
-    let res = rf(msgCtx, opt, ...fnInput);
+    const res = rf(msgCtx, opt, ...fnInput);
     if (
       res === null ||
-      (typeof res !== 'object' && typeof res !== 'function') ||
-      typeof res.type !== 'string' ||
-      typeof res.source !== 'string'
+      typeof res !== 'object' ||
+      typeof res.type !== 'string'
     ) {
       throw new MessageResolutionError(
         'bad-function-result',
         `Function ${fnSource} did not return a MessageValue`,
-        fnSource
+        source
       );
     }
-    if (msgCtx.dir) res = { ...res, dir: msgCtx.dir, [BIDI_ISOLATE]: true };
+
+    const override = { source } as { source: string } & {
+      -readonly [K in keyof MessageValue<T, P>]: MessageValue<T, P>[K];
+    };
+    if (msgCtx.dir) {
+      override.dir = msgCtx.dir;
+      override[BIDI_ISOLATE] = true;
+    }
     if (msgCtx.id && typeof res.toParts === 'function') {
-      return {
-        ...res,
-        toParts() {
-          const parts = res.toParts!();
-          for (const part of parts) part.id = msgCtx.id;
-          return parts;
-        }
+      override.toParts = () => {
+        const parts = res.toParts!();
+        for (const part of parts) part.id = msgCtx.id;
+        return parts;
       };
     }
-    return res;
+
+    return { ...res, ...override };
   } catch (error) {
     ctx.onError(
       error instanceof MessageError

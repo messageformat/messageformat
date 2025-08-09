@@ -6,11 +6,12 @@ import { Options } from '../data-model/types.ts';
 export class MessageFunctionContext {
   #ctx: Context;
   #litKeys: Set<string> | undefined;
+  #source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto' | undefined;
   readonly id: string | undefined;
-  readonly source: string;
   constructor(ctx: Context, source: string, options?: Options) {
     this.#ctx = ctx;
+    this.#source = source;
 
     this.dir = undefined;
     const dirOpt = options?.get('u:dir');
@@ -37,8 +38,6 @@ export class MessageFunctionContext {
         if (value.type === 'literal') this.#litKeys.add(key);
       }
     }
-
-    this.source = source;
   }
 
   get literalOptionKeys() {
@@ -71,7 +70,7 @@ export class MessageFunctionContext {
       mfError = new MessageFunctionError('function-error', String(error));
       mfError.cause = error;
     }
-    mfError.source = this.source;
+    mfError.source = this.#source;
     this.#ctx.onError(mfError);
   }
 }

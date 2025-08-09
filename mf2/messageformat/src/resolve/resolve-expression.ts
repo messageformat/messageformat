@@ -11,7 +11,11 @@ import { resolveVariableRef } from './resolve-variable.ts';
 export function resolveExpression<T extends string, P extends string>(
   ctx: Context<T, P>,
   { arg, functionRef }: Expression
-): MessageFallback | MessageString | MessageUnknownValue | MessageValue<T, P> {
+):
+  | MessageFallback
+  | (MessageString & { source: string })
+  | MessageUnknownValue
+  | (MessageValue<T, P> & { source: string }) {
   if (functionRef) {
     return resolveFunctionRef(ctx, arg, functionRef);
   }

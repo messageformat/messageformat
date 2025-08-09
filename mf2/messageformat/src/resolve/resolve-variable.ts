@@ -1,9 +1,10 @@
 import type { Expression, VariableRef } from '../data-model/types.ts';
 import { MessageResolutionError } from '../errors.ts';
 import type { Context } from '../format-context.ts';
-import { fallback } from '../functions/fallback.ts';
-import { unknown } from '../functions/unknown.ts';
-import { MessageValue } from '../message-value.ts';
+import { type MessageFallback, fallback } from '../functions/fallback.ts';
+import { type MessageUnknownValue, unknown } from '../functions/unknown.ts';
+import type { MessageValue } from '../message-value.ts';
+import type { MessageFunction } from '../messageformat.ts';
 import { MessageFunctionContext } from './function-context.ts';
 import { resolveExpression } from './resolve-expression.ts';
 
@@ -81,30 +82,43 @@ export function lookupVariableRef(ctx: Context, { name }: VariableRef) {
 export function resolveVariableRef<T extends string, P extends string>(
   ctx: Context<T, P>,
   ref: VariableRef
-) {
+):
+  | MessageFallback
+  | MessageUnknownValue
+  | (MessageValue<T, P> & { source: string }) {
   const source = '$' + ref.name;
   const value = lookupVariableRef(ctx, ref);
+  if (value === undefined) return fallback(source);
 
   let type = typeof value;
   if (type === 'object') {
-    const mv = value as MessageValue<T, P>;
+    const mv = value as MessageValue<T, P> & { source: string };
     if (mv.type === 'fallback') return fallback(source);
-    if (ctx.localVars.has(mv)) return mv;
+    if (ctx.localVars.has(mv)) {
+      mv.source = source;
+      return mv;
+    }
     if (value instanceof Number) type = 'number';
     else if (value instanceof String) type = 'string';
   }
 
+  let msgFn: MessageFunction<T, P>;
   switch (type) {
     case 'bigint':
-    case 'number': {
-      const msgCtx = new MessageFunctionContext(ctx, source);
-      return ctx.functions.number(msgCtx, {}, value);
-    }
-    case 'string': {
-      const msgCtx = new MessageFunctionContext(ctx, source);
-      return ctx.functions.string(msgCtx, {}, value);
-    }
+    case 'number':
+      msgFn = ctx.functions.number;
+      break;
+    case 'string':
+      msgFn = ctx.functions.string;
+      break;
+    default:
+      return unknown(source, value);
   }
 
-  return value === undefined ? fallback(source) : unknown(source, value);
+  const msgCtx = new MessageFunctionContext(ctx, source);
+  const mv = msgFn(msgCtx, {}, value) as MessageValue<T, P> & {
+    source: string;
+  };
+  mv.source = source;
+  return mv;
 }

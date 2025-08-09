@@ -47,7 +47,7 @@ function time(
 }
 
 function duration(
-  ctx: MessageFunctionContext,
+  _ctx: MessageFunctionContext,
   _options: unknown,
   operand?: unknown
 ) {
@@ -81,11 +81,9 @@ function duration(
       parts.map(n => (Number(n) < 10 ? '0' + String(n) : String(n))).join(':');
   }
 
-  const { source } = ctx;
   return {
     type: 'mf1:duration',
-    source,
-    toParts: () => [{ type: 'mf1:duration', source, value: str }] as const,
+    toParts: () => [{ type: 'mf1:duration', value: str }] as const,
     toString: () => str,
     valueOf: () => value
   } satisfies MessageValue<'mf1:duration'>;

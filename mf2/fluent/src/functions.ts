@@ -19,7 +19,6 @@ import { valueToMessageRef } from './message-to-fluent.ts';
  */
 export interface MessageReferenceValue extends MessageValue<'fluent-message'> {
   readonly type: 'fluent-message';
-  readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
   selectKey(keys: Set<string>): string | null;
   toParts(): [MessageReferencePart];
@@ -62,7 +61,6 @@ export const getMessageFunction = (res: FluentMessageResource) =>
     let str: string | undefined;
     return {
       type: 'fluent-message',
-      source: ctx.source,
       dir,
       selectKey(keys) {
         str ??= mf.format(options, onError);

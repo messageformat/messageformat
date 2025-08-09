@@ -150,7 +150,7 @@ export class MessageFormat<T extends string = never, P extends string = T> {
         // Handle errors, but discard results
         formatMarkup(ctx, elem);
       } else {
-        let mv: MessageValue<string> | undefined;
+        let mv: (MessageValue<string> & { source: string }) | undefined;
         try {
           mv = resolveExpression(ctx, elem);
           if (typeof mv.toString === 'function') {

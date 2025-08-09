@@ -3,12 +3,11 @@ import { DraftFunctions, MessageFunction } from 'messageformat/functions';
 
 test('Custom function', () => {
   const custom: MessageFunction<'custom'> = (
-    { dir, source, locales: [locale] },
+    { dir, locales: [locale] },
     _opt,
     input
   ) => ({
     type: 'custom',
-    source,
     dir: dir ?? 'auto',
     locale,
     toParts: () => [{ type: 'custom', locale, value: `part:${input}` }],
@@ -92,8 +91,8 @@ describe('Type casts based on runtime', () => {
 });
 
 describe('Function return is not a MessageValue', () => {
-  test('object with type, but no source', () => {
-    const functions = { fail: () => ({ type: 'fail' }) as any };
+  test('object with no type', () => {
+    const functions = { fail: () => ({ foo: 'fail' }) as any };
     const mf = new MessageFormat('en', '{:fail}', { functions });
     const onError = jest.fn();
     expect(mf.format(undefined, onError)).toEqual('\u2068{:fail}\u2069');

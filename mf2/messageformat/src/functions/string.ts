@@ -8,7 +8,6 @@ import type { MessageFunctionContext } from '../resolve/function-context.ts';
  */
 export interface MessageString extends MessageValue<'string'> {
   readonly type: 'string';
-  readonly source: string;
   readonly dir: 'ltr' | 'rtl' | 'auto';
   selectKey(keys: Set<string>): string | null;
   toParts(): [MessageStringPart];
@@ -28,7 +27,7 @@ export interface MessageStringPart extends MessageExpressionPart<'string'> {
 }
 
 export function string(
-  ctx: Pick<MessageFunctionContext, 'dir' | 'locales' | 'source'>,
+  ctx: Pick<MessageFunctionContext, 'dir' | 'locales'>,
   _options: Record<string, unknown>,
   operand?: unknown
 ): MessageString {
@@ -36,7 +35,6 @@ export function string(
   const selStr = str.normalize();
   return {
     type: 'string',
-    source: ctx.source,
     dir: ctx.dir ?? 'auto',
     selectKey: keys => (keys.has(selStr) ? selStr : null),
     toParts() {

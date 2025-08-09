@@ -10,7 +10,6 @@ export const BIDI_ISOLATE = Symbol('bidi-isolate');
  */
 export interface MessageValue<T extends string, P extends string = T> {
   readonly type: T;
-  readonly source: string;
   readonly dir?: 'ltr' | 'rtl' | 'auto';
   readonly options?: Readonly<object>;
   selectKey?: (keys: Set<string>) => string | null;

@@ -21,7 +21,7 @@ import {
 
 describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-wg#125)', () => {
   function range(
-    { source, locales: [locale] }: MessageFunctionContext,
+    { locales: [locale] }: MessageFunctionContext,
     options: Record<string, unknown>,
     input: unknown
   ): MessageValue<'range'> {
@@ -30,7 +30,6 @@ describe('Plural Range Selectors & Range Formatters (unicode-org/message-format-
     return {
       type: 'range',
       dir: 'ltr',
-      source,
       selectKey(keys) {
         if (locale !== 'nl') throw new Error('Only Dutch supported');
         const pr = new Intl.PluralRules(locale, options);
@@ -210,7 +209,7 @@ maybe('List formatting', () => {
   const listFn =
     (each_?: Record<string, (locales: string[], value: string) => string>) =>
     (
-      { locales, source }: MessageFunctionContext,
+      { locales }: MessageFunctionContext,
       options: Record<string, unknown>,
       input?: unknown
     ): MessageValue<'list', 'element' | 'literal'> => {
@@ -228,7 +227,6 @@ maybe('List formatting', () => {
       const lf = new Intl.ListFormat(locales, options);
       return {
         type: 'list',
-        source,
         dir: 'ltr',
         toParts: () => lf.formatToParts(list),
         toString: () => lf.format(list)
