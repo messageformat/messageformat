@@ -155,7 +155,16 @@ describe('timeZone option', () => {
     expect(onError.mock.calls).toMatchObject([[{ type: 'bad-operand' }]]);
   });
 
-  for (const timeZone of ['UTC', 'America/Chicago', 'Etc/GMT+8', '+23']) {
+  for (const timeZone of ['UTC', 'America/Chicago', 'Etc/GMT+8', '+23'].filter(
+    timeZone => {
+      try {
+        new Intl.DateTimeFormat(undefined, { timeZone });
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  )) {
     describe(`timeZone ${timeZone}`, () => {
       test('set on operand, with timeZone=input', () => {
         const mf = new MessageFormat('en', '{$now2 :time timeZone=input}', {
