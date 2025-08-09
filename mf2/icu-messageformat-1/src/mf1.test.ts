@@ -384,22 +384,6 @@ export const testCases: Record<string, TestCase[]> = {
     }
   ],
 
-  'Datetime skeletons': [
-    {
-      src: 'At {1,time,::jmm} on {1,date,::dMMMM}',
-      exp: [[{ 1: 978484385000 }, /^At \d\d?:\d\d\s(AM|PM) on January \d$/]]
-    },
-    {
-      src: "{1, date, ::EEE, MMM d, ''yy}",
-      exp: [
-        [
-          { 1: 978484385000 },
-          { res: 'Wed, Jan 3, 2001', errors: ['bad-option'] }
-        ]
-      ]
-    }
-  ],
-
   'Unsupported formatters': [
     {
       src: '{N, spellout}',

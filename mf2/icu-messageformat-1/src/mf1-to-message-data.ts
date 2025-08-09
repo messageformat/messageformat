@@ -1,8 +1,4 @@
 import {
-  getDateTimeFormatOptions,
-  parseDateTokens
-} from '@messageformat/date-skeleton';
-import {
   getNumberFormatOptions,
   parseNumberPattern,
   parseNumberSkeleton
@@ -52,27 +48,6 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
     }
   }
   return args;
-}
-
-function parseDateTimeArgStyle(argStyle: string): MF.Options {
-  const options: MF.Options = new Map();
-  const onError = () =>
-    options.set('mf1:argStyle', { type: 'literal', value: argStyle });
-  const tokens = parseDateTokens(argStyle.substring(2));
-  const dtfOpt = getDateTimeFormatOptions(tokens, onError);
-  loop: for (let [key, value] of Object.entries(dtfOpt)) {
-    switch (key) {
-      case 'dayPeriod':
-        onError();
-        continue loop;
-      case 'hourCycle':
-        key = 'hour12';
-        value = String(value === 'h11' || value === 'h12');
-        break;
-    }
-    options.set(key, { type: 'literal', value });
-  }
-  return options;
 }
 
 function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
@@ -155,36 +130,27 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
 
   switch (token.key) {
     case 'date': {
-      let options: MF.Options;
-      if (argStyle.startsWith('::')) {
-        options = parseDateTimeArgStyle(argStyle);
-      } else {
-        const month: MF.Literal = { type: 'literal', value: 'short' };
-        options = new Map([
-          ['year', { type: 'literal', value: 'numeric' }],
-          ['month', month],
-          ['day', { type: 'literal', value: 'numeric' }]
-        ]);
-        switch (argStyle) {
-          case 'full':
-            month.value = 'long';
-            options.set('weekday', { type: 'literal', value: 'long' });
-            break;
-          case 'long':
-            month.value = 'long';
-            break;
-          case 'short':
-            month.value = 'numeric';
-            break;
-          case '':
-          case 'medium':
-            break;
-          default:
-            options.set('mf1:argStyle', { type: 'literal', value: argStyle });
-        }
+      const options: MF.Options = new Map();
+      switch (argStyle) {
+        case '':
+          break;
+        case 'full':
+          options.set('fields', {
+            type: 'literal',
+            value: 'year-month-day-weekday'
+          });
+          options.set('length', { type: 'literal', value: 'long' });
+          break;
+        case 'long':
+        case 'medium':
+        case 'short':
+          options.set('length', { type: 'literal', value: argStyle });
+          break;
+        default:
+          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
       }
       return {
-        functionRef: { type: 'function', name: 'mf1:datetime', options },
+        functionRef: { type: 'function', name: 'mf1:date', options },
         attributes
       };
     }
@@ -223,32 +189,28 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
       }
 
     case 'time': {
-      let options: MF.Options;
-      if (argStyle.startsWith('::')) {
-        options = parseDateTimeArgStyle(argStyle);
-      } else {
-        options = new Map([
-          ['hour', { type: 'literal', value: 'numeric' }],
-          ['minute', { type: 'literal', value: 'numeric' }]
-        ]);
-        switch (argStyle) {
-          case 'full':
-          case 'long':
-            options.set('second', { type: 'literal', value: 'numeric' });
-            options.set('timeZoneName', { type: 'literal', value: 'short' });
-            break;
-          case 'short':
-            break;
-          case '':
-          case 'medium':
-            options.set('second', { type: 'literal', value: 'numeric' });
-            break;
-          default:
-            options.set('mf1:argStyle', { type: 'literal', value: argStyle });
-        }
+      const options: MF.Options = new Map();
+      switch (argStyle) {
+        case 'full':
+          options.set('precision', { type: 'literal', value: 'second' });
+          options.set('timeZoneName', { type: 'literal', value: 'long' });
+          break;
+        case 'long':
+          options.set('precision', { type: 'literal', value: 'second' });
+          options.set('timeZoneName', { type: 'literal', value: 'short' });
+          break;
+        case '':
+        case 'medium':
+          options.set('precision', { type: 'literal', value: 'second' });
+          break;
+        case 'short':
+          options.set('precision', { type: 'literal', value: 'minute' });
+          break;
+        default:
+          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
       }
       return {
-        functionRef: { type: 'function', name: 'mf1:datetime', options },
+        functionRef: { type: 'function', name: 'mf1:time', options },
         attributes
       };
     }

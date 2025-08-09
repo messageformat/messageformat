@@ -30,13 +30,22 @@ function currency(
   return DraftFunctions.currency(ctx, options, operand);
 }
 
-function datetime(
+function date(
   ctx: MessageFunctionContext,
   options: Record<string, unknown>,
   operand?: unknown
 ): MessageDateTime {
   checkArgStyle(ctx, options);
-  return DraftFunctions.datetime(ctx, options, operand);
+  return DraftFunctions.date(ctx, options, operand);
+}
+
+function time(
+  ctx: MessageFunctionContext,
+  options: Record<string, unknown>,
+  operand?: unknown
+): MessageDateTime {
+  checkArgStyle(ctx, options);
+  return DraftFunctions.time(ctx, options, operand);
 }
 
 function duration(
@@ -149,10 +158,16 @@ export let MF1Functions = {
   'mf1:currency': currency,
 
   /**
-   * A wrapper around {@link DraftFunctions.datetime},
-   * used for formatting `date` and `time` placeholders.
+   * A wrapper around {@link DraftFunctions.date},
+   * used for formatting `date` placeholders.
    */
-  'mf1:datetime': datetime,
+  'mf1:date': date,
+
+  /**
+   * A wrapper around {@link DraftFunctions.time},
+   * used for formatting `time` placeholders.
+   */
+  'mf1:time': time,
 
   /**
    * Formats a duration expressed as seconds.
