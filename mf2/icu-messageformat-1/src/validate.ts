@@ -18,7 +18,7 @@ export function mf1Validate(
     type: 'unknown-function' | 'unsupported-operation',
     expr: MF.Expression
   ) => void = (type, expr) => {
-    const argTypeAttr = expr.attributes?.get('mf1:argType');
+    const argTypeAttr = expr.attributes?.['mf1:argType'];
     const argType =
       argTypeAttr && argTypeAttr !== true
         ? argTypeAttr.value
@@ -31,7 +31,7 @@ export function mf1Validate(
       );
     } else {
       const msg = `Unsupported MF1 ${argType} argStyle`;
-      const opt = expr.functionRef!.options!.get('mf1:argStyle')!;
+      const opt = expr.functionRef!.options!['mf1:argStyle']!;
       if (opt?.type === 'literal') {
         const error = new MessageFunctionError(type, `${msg}: ${opt.value}`);
         error.source = opt.value;
@@ -49,7 +49,7 @@ export function mf1Validate(
         if (!(name in DefaultFunctions) && !(name in MF1Functions)) {
           onError('unknown-function', expr);
         }
-        if (expr.functionRef.options?.has('mf1:argStyle')) {
+        if (Object.hasOwn(expr.functionRef.options, 'mf1:argStyle')) {
           onError('unsupported-operation', expr);
         }
       }

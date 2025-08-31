@@ -89,7 +89,7 @@ export function visit(
     if (options_) {
       const end = options?.(options_, context);
       if (value) {
-        for (const value_ of options_.values()) {
+        for (const value_ of Object.values(options_)) {
           value(value_, context, 'option');
         }
       }
@@ -104,7 +104,7 @@ export function visit(
     if (attributes_) {
       const end = attributes?.(attributes_, context);
       if (value) {
-        for (const value_ of attributes_.values()) {
+        for (const value_ of Object.values(attributes_)) {
           if (value_ !== true) value(value_, context, 'attribute');
         }
       }

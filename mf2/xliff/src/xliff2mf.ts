@@ -381,7 +381,7 @@ function getMessageElements(
 function resolveExpression(elements: X.MessageElements): MF.Expression {
   let xArg: X.MessageLiteral | X.MessageVariable | undefined;
   let xFunc: X.MessageFunction | undefined;
-  const attributes: MF.Attributes = new Map();
+  const attributes: MF.Attributes = {};
   for (const el of elements) {
     switch (el.name) {
       case 'mf:literal':
@@ -397,7 +397,7 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
         throw new Error('Cannot reference markup as expression');
       case 'mf:attribute': {
         const aName = el.attributes.name;
-        if (attributes.has(aName)) {
+        if (Object.hasOwn(attributes, aName)) {
           throw new Error(`Duplicate attribute name: ${aName}`);
         }
         const value = el.elements?.find(el => el.type === 'element');
@@ -406,9 +406,9 @@ function resolveExpression(elements: X.MessageElements): MF.Expression {
           if (rv.type !== 'literal') {
             throw new Error(`Unsupported attribute value: ${value}`);
           }
-          attributes.set(aName, rv);
+          attributes[aName] = rv;
         } else {
-          attributes.set(aName, true);
+          attributes[aName] = true;
         }
         break;
       }
@@ -449,14 +449,11 @@ function resolveOptions(
 ): MF.Options | undefined {
   const optEls = parent.elements?.filter(el => el.type === 'element');
   if (!optEls?.length) return undefined;
-  const options: MF.Options = new Map();
+  const options: MF.Options = {};
   for (const el of optEls) {
     const name = el.attributes.name;
-    if (options.has(name)) throw new Error(`Duplicate option name: ${name}`);
-    options.set(
-      name,
-      resolveValue(el.elements.find(el => el.type === 'element'))
-    );
+    if (Object.hasOwn(options, name)) throw new Error(`Duplicate option name: ${name}`);
+    options[name] = resolveValue(el.elements.find(el => el.type === 'element'));
   }
   return options;
 }

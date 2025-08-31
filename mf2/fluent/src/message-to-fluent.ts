@@ -151,9 +151,9 @@ function functionRefToFluent(
 ): Fluent.InlineExpression {
   const args = new Fluent.CallArguments();
   if (arg) args.positional[0] = arg;
-  if (options?.size) {
+  if (Object.keys(options || {}).length) {
     args.named = [];
-    for (const [name, value] of options) {
+    for (const [name, value] of Object.entries(options || {})) {
       if (name === 'u:dir' || name === 'u:locale') {
         throw new Error(`The option "${name}" is not supported in Fluent`);
       }

@@ -129,18 +129,18 @@ function asExpression(exp: Fluent.Expression): MF.Expression {
         throw new Error(`More than one positional argument is not supported.`);
       }
       if (named.length > 0) {
-        annotation.options = new Map();
+        annotation.options = {}
         for (const { name, value } of named) {
           const quoted = value.type !== 'NumberLiteral';
           const litValue = quoted ? value.parse().value : value.value;
-          annotation.options.set(name.name, {
+          annotation.options[name.name] = {
             type: 'literal',
             value: litValue
-          });
+          };
         }
       }
       if (annotation.name === 'number') {
-        const style = annotation.options?.get('style');
+        const style = annotation.options?.style;
         if (style?.type === 'literal') {
           switch (style.value) {
             case 'decimal':
@@ -154,7 +154,7 @@ function asExpression(exp: Fluent.Expression): MF.Expression {
                 `Unsupported NUMBER(..., style=${JSON.stringify(style.value)})`
               );
           }
-          annotation.options!.delete('style');
+          delete annotation.options!.style;
         }
       }
       return args.length > 0
@@ -180,14 +180,14 @@ function asExpression(exp: Fluent.Expression): MF.Expression {
         ? `-${exp.id.name}.${exp.attribute.name}`
         : `-${exp.id.name}`;
       if (exp.arguments?.named.length) {
-        annotation.options = new Map();
+        annotation.options = {};
         for (const { name, value } of exp.arguments.named) {
           const quoted = value.type !== 'NumberLiteral';
           const litValue = quoted ? value.parse().value : value.value;
-          annotation.options.set(name.name, {
+          annotation.options[name.name] = {
             type: 'literal',
             value: litValue
-          });
+          };
         }
       }
       return {

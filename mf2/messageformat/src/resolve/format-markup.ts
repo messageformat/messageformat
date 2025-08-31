@@ -9,9 +9,9 @@ export function formatMarkup(
   { kind, name, options }: Markup
 ): MessageMarkupPart {
   const part: MessageMarkupPart = { type: 'markup', kind, name };
-  if (options?.size) {
+  if (Object.keys(options || {}).length) {
     part.options = {};
-    for (const [name, value] of options) {
+    for (const [name, value] of Object.entries(options || {})) {
       if (name === 'u:dir') {
         const error = new MessageFunctionError(
           'bad-option',

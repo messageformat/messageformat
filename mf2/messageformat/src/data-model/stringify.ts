@@ -56,7 +56,7 @@ function stringifyDeclaration(decl: Declaration) {
 function stringifyFunctionRef({ name, options }: FunctionRef) {
   let res = `:${name}`;
   if (options) {
-    for (const [key, value] of options) {
+    for (const [key, value] of Object.entries(options)) {
       res += ' ' + stringifyOption(key, value);
     }
   }
@@ -67,12 +67,12 @@ function stringifyMarkup({ kind, name, options, attributes }: Markup) {
   let res = kind === 'close' ? '{/' : '{#';
   res += name;
   if (options) {
-    for (const [name, value] of options) {
+    for (const [name, value] of Object.entries(options)) {
       res += ' ' + stringifyOption(name, value);
     }
   }
   if (attributes) {
-    for (const [name, value] of attributes) {
+    for (const [name, value] of Object.entries(attributes)) {
       res += ' ' + stringifyAttribute(name, value);
     }
   }
@@ -127,7 +127,7 @@ function stringifyExpression({ arg, attributes, functionRef }: Expression) {
     res += stringifyFunctionRef(functionRef);
   }
   if (attributes) {
-    for (const [name, value] of attributes) {
+    for (const [name, value] of Object.entries(attributes)) {
       res += ' ' + stringifyAttribute(name, value);
     }
   }

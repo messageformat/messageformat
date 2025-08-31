@@ -472,7 +472,7 @@ function resolveExpression({
   if (functionRef) {
     const elements: X.MessageFunction['elements'] = [];
     if (functionRef.options) {
-      for (const [name, value] of functionRef.options) {
+      for (const [name, value] of Object.entries(functionRef.options)) {
         elements.push({
           type: 'element',
           name: 'mf:option',
@@ -494,7 +494,7 @@ function resolveExpression({
     else throw new Error('Invalid empty expression');
   }
   if (attributes) {
-    for (const [name, value] of attributes) {
+    for (const [name, value] of Object.entries(attributes)) {
       elements.push({
         type: 'element',
         name: 'mf:attribute',
@@ -509,7 +509,7 @@ function resolveExpression({
 function resolveMarkup({ name, options, attributes }: MF.Markup) {
   const elements: X.MessageOption[] = [];
   if (options) {
-    for (const [name, value] of options) {
+    for (const [name, value] of Object.entries(options)) {
       elements.push({
         type: 'element',
         name: 'mf:option',
@@ -522,7 +522,7 @@ function resolveMarkup({ name, options, attributes }: MF.Markup) {
     { type: 'element', name: 'mf:markup', attributes: { name }, elements }
   ];
   if (attributes) {
-    for (const [name, value] of attributes) {
+    for (const [name, value] of Object.entries(attributes)) {
       mfElements.push({
         type: 'element',
         name: 'mf:attribute',

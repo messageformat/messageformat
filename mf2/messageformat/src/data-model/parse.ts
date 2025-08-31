@@ -256,20 +256,20 @@ function expression(allowMarkup: boolean): Model.Expression | Model.Markup {
 /** Requires and consumes leading and trailing whitespace. */
 function options() {
   ws('/}');
-  const options: Model.Options = new Map();
+  const options: Model.Options = {};
   let isEmpty = true;
   while (pos < source.length) {
     const next = source[pos];
     if (next === '@' || next === '/' || next === '}') break;
     const start = pos;
     const name_ = identifier();
-    if (options.has(name_)) {
+    if (Object.hasOwn(options, name_)) {
       throw SyntaxError('duplicate-option-name', start, pos);
     }
     ws();
     expect('=', true);
     ws();
-    options.set(name_, value(true));
+    options[name_] = value(true);
     isEmpty = false;
     ws('/}');
   }
@@ -277,23 +277,23 @@ function options() {
 }
 
 function attributes() {
-  const attributes: Model.Attributes = new Map();
+  const attributes: Model.Attributes = {};
   let isEmpty = true;
   while (source[pos] === '@') {
     const start = pos;
     pos += 1; // '@'
     const name_ = identifier();
-    if (attributes.has(name_)) {
+    if (Object.hasOwn(attributes, name_)) {
       throw SyntaxError('duplicate-attribute', start, pos);
     }
     ws('=/}');
     if (source[pos] === '=') {
       pos += 1; // '='
       ws();
-      attributes.set(name_, literal(true));
+      attributes[name_] = literal(true);
       ws('/}');
     } else {
-      attributes.set(name_, true);
+      attributes[name_] = true;
     }
     isEmpty = false;
   }

@@ -14,7 +14,7 @@ export class MessageFunctionContext {
     this.#source = source;
 
     this.dir = undefined;
-    const dirOpt = options?.get('u:dir');
+    const dirOpt = options?.['u:dir'];
     if (dirOpt) {
       const dir = String(resolveValue(ctx, dirOpt));
       if (dir === 'ltr' || dir === 'rtl' || dir === 'auto') {
@@ -29,12 +29,12 @@ export class MessageFunctionContext {
       }
     }
 
-    const idOpt = options?.get('u:id');
+    const idOpt = options?.['u:id'];
     this.id = idOpt ? String(resolveValue(ctx, idOpt)) : undefined;
 
     if (options) {
       this.#litKeys = new Set();
-      for (const [key, value] of options) {
+      for (const [key, value] of Object.entries(options)) {
         if (value.type === 'literal') this.#litKeys.add(key);
       }
     }
