@@ -196,9 +196,9 @@ export interface Markup {
 /**
  * The options of {@link FunctionRef} and {@link Markup}.
  */
-export type Options = Map<string, Literal | VariableRef>;
+export type Options = Record<string, Literal | VariableRef>;
 
 /**
  * The attributes of {@link Expression} and {@link Markup}.
  */
-export type Attributes = Map<string, true | Literal>;
+export type Attributes = Record<string, true | Literal>;

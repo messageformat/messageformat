@@ -137,25 +137,25 @@ function asExpression(
 }
 
 function asOptions(options: CST.Option[]): Model.Options {
-  const map: Model.Options = new Map();
+  const map: Model.Options = {};
   for (const opt of options) {
     const name = asName(opt.name);
-    if (map.has(name)) {
+    if (Object.hasOwn(map, name)) {
       throw new MessageSyntaxError('duplicate-option-name', opt.start, opt.end);
     }
-    map.set(name, asValue(opt.value));
+    map[name] = asValue(opt.value);
   }
   return map;
 }
 
 function asAttributes(attributes: CST.Attribute[]): Model.Attributes {
-  const map: Model.Attributes = new Map();
+  const map: Model.Attributes = {};
   for (const attr of attributes) {
     const name = asName(attr.name);
-    if (map.has(name)) {
+    if (Object.hasOwn(map, name)) {
       throw new MessageSyntaxError('duplicate-attribute', attr.start, attr.end);
     }
-    map.set(name, attr.value ? asValue(attr.value) : true);
+    map[name] = attr.value ? asValue(attr.value) : true;
   }
   return map;
 }

@@ -79,7 +79,7 @@ export function resolveFunctionRef<T extends string, P extends string>(
 function resolveOptions(ctx: Context, options: Options | undefined) {
   const opt: Record<string, unknown> = Object.create(null);
   if (options) {
-    for (const [name, value] of options) {
+    for (const [name, value] of Object.entries(options)) {
       if (!name.startsWith('u:')) opt[name] = resolveValue(ctx, value);
     }
   }

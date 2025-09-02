@@ -52,20 +52,20 @@ function findSelectArgs(tokens: AST.Token[]): SelectArg[] {
 
 function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
   let name = 'number';
-  const options: MF.Options = new Map();
+  const options: MF.Options = {};
   const onError = () => {
     if (name === 'number') name = 'mf1:number';
-    options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+    options['mf1:argStyle'] = { type: 'literal', value: argStyle };
   };
   const skeleton = argStyle.startsWith('::')
     ? parseNumberSkeleton(argStyle.substring(2), onError)
     : parseNumberPattern(argStyle, 'XXX', onError);
   const nfOpt = getNumberFormatOptions(skeleton, (stem, option) => {
     if (stem === 'scale') {
-      options.set('mf1:scale', { type: 'literal', value: String(option) });
+      options['mf1:scale'] = { type: 'literal', value: String(option) };
       if (skeleton.unit?.style === 'percent') {
         name = 'mf1:unit';
-        options.set('unit', { type: 'literal', value: 'percent' });
+        options['unit'] = { type: 'literal', value: 'percent' };
       } else if (name === 'number') {
         name = 'mf1:number';
       }
@@ -93,7 +93,7 @@ function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
             name = 'mf1:unit';
             key = 'mf1:scale';
             value = '100';
-            if (options.has(key)) continue loop;
+            if (Object.hasOwn(options, key)) continue loop;
             break;
           case 'unit':
             name = 'mf1:unit';
@@ -106,7 +106,7 @@ function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
         if (value === false) value = 'never';
         break;
     }
-    options.set(key, { type: 'literal', value });
+    options[key] = { type: 'literal', value };
   }
   return { type: 'function', name, options };
 }
@@ -115,9 +115,9 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
   functionRef: MF.FunctionRef;
   attributes: MF.Attributes;
 } {
-  const attributes: MF.Attributes = new Map([
-    ['mf1:argType', { type: 'literal', value: token.key }]
-  ]);
+  const attributes: MF.Attributes = {
+    'mf1:argType': { type: 'literal', value: token.key }
+  };
   let argStyle = '';
   if (token.param) {
     for (const pt of token.param) {
@@ -125,29 +125,29 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
       else throw new Error(`Unsupported param type: ${pt.type}`);
     }
     argStyle = argStyle.trim();
-    attributes.set('mf1:argStyle', { type: 'literal', value: argStyle });
+    attributes['mf1:argStyle'] = { type: 'literal', value: argStyle };
   }
 
   switch (token.key) {
     case 'date': {
-      const options: MF.Options = new Map();
+      const options: MF.Options = {};
       switch (argStyle) {
         case '':
           break;
         case 'full':
-          options.set('fields', {
+          options['fields'] = {
             type: 'literal',
             value: 'year-month-day-weekday'
-          });
-          options.set('length', { type: 'literal', value: 'long' });
+          };
+          options['length'] = { type: 'literal', value: 'long' };
           break;
         case 'long':
         case 'medium':
         case 'short':
-          options.set('length', { type: 'literal', value: argStyle });
+          options['length'] = { type: 'literal', value: argStyle };
           break;
         default:
-          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+          options['mf1:argStyle'] = { type: 'literal', value: argStyle };
       }
       return {
         functionRef: { type: 'function', name: 'mf1:date', options },
@@ -172,10 +172,10 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
             functionRef: {
               type: 'function',
               name: 'mf1:unit',
-              options: new Map([
-                ['unit', { type: 'literal', value: 'percent' }],
-                ['mf1:scale', { type: 'literal', value: '100' }]
-              ])
+              options: {
+                unit: { type: 'literal', value: 'percent' },
+                'mf1:scale': { type: 'literal', value: '100' }
+              }
             },
             attributes
           };
@@ -189,25 +189,25 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
       }
 
     case 'time': {
-      const options: MF.Options = new Map();
+      const options: MF.Options = {};
       switch (argStyle) {
         case 'full':
-          options.set('precision', { type: 'literal', value: 'second' });
-          options.set('timeZoneName', { type: 'literal', value: 'long' });
+          options['precision'] = { type: 'literal', value: 'second' };
+          options['timeZoneName'] = { type: 'literal', value: 'long' };
           break;
         case 'long':
-          options.set('precision', { type: 'literal', value: 'second' });
-          options.set('timeZoneName', { type: 'literal', value: 'short' });
+          options['precision'] = { type: 'literal', value: 'second' };
+          options['timeZoneName'] = { type: 'literal', value: 'short' };
           break;
         case '':
         case 'medium':
-          options.set('precision', { type: 'literal', value: 'second' });
+          options['precision'] = { type: 'literal', value: 'second' };
           break;
         case 'short':
-          options.set('precision', { type: 'literal', value: 'minute' });
+          options['precision'] = { type: 'literal', value: 'minute' };
           break;
         default:
-          options.set('mf1:argStyle', { type: 'literal', value: argStyle });
+          options['mf1:argStyle'] = { type: 'literal', value: argStyle };
       }
       return {
         functionRef: { type: 'function', name: 'mf1:time', options },
@@ -221,9 +221,9 @@ function tokenToFunctionRef(token: AST.FunctionArg): {
         name: `mf1:${token.key}`
       };
       if (argStyle) {
-        functionRef.options = new Map([
-          ['mf1:argStyle', { type: 'literal', value: argStyle }]
-        ]);
+        functionRef.options = {
+          'mf1:argStyle': { type: 'literal', value: argStyle }
+        };
       }
       return { functionRef, attributes };
     }
@@ -267,16 +267,16 @@ function argToInputDeclaration({
   if (type === 'select') {
     functionRef = { type: 'function', name: 'string' };
   } else {
-    const options: MF.Options = new Map();
+    const options: MF.Options = {};
     if (type === 'selectordinal') {
-      options.set('select', { type: 'literal', value: 'ordinal' });
+      options['select'] = { type: 'literal', value: 'ordinal' };
     }
     if (pluralOffset) {
-      options.set('offset', { type: 'literal', value: String(pluralOffset) });
+      options['offset'] = { type: 'literal', value: String(pluralOffset) };
       functionRef = { type: 'function', name: 'mf1:plural', options };
     } else {
       functionRef = { type: 'function', name: 'number' };
-      if (options.size) functionRef.options = options;
+      if (Object.keys(options).length) functionRef.options = options;
     }
   }
   return {
