@@ -18,7 +18,10 @@ export function mf1Validate(
     type: 'unknown-function' | 'unsupported-operation',
     expr: MF.Expression
   ) => void = (type, expr) => {
-    const argTypeAttr = expr.attributes && Object.hasOwn(expr.attributes, 'mf1:argType') ? expr.attributes['mf1:argType'] : undefined;
+    const argTypeAttr =
+      expr.attributes && Object.hasOwn(expr.attributes, 'mf1:argType')
+        ? expr.attributes['mf1:argType']
+        : undefined;
     const argType =
       argTypeAttr && argTypeAttr !== true
         ? argTypeAttr.value

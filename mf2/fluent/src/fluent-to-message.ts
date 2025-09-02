@@ -129,7 +129,7 @@ function asExpression(exp: Fluent.Expression): MF.Expression {
         throw new Error(`More than one positional argument is not supported.`);
       }
       if (named.length > 0) {
-        annotation.options = {}
+        annotation.options = {};
         for (const { name, value } of named) {
           const quoted = value.type !== 'NumberLiteral';
           const litValue = quoted ? value.parse().value : value.value;
