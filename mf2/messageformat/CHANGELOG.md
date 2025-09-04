@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.0-13](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-12...messageformat@4.0.0-13) (2025-09-04)
+
+### ⚠ Breaking Changes
+
+* Use Object rather than Map for options & attributes in data model ([#457](https://github.com/messageformat/messageformat/issues/457))
+* Drop `source` from `MessageValue` and `MessageFunctionContext`
+
+### Features
+
+* Rename `:math` as `:offset`, make it default
+* Follow new datetime function spec ([unicode-org/message-format-wg#1078](https://github.com/unicode-org/message-format-wg/issues/1078), [unicode-org/message-format-wg#1083](https://github.com/unicode-org/message-format-wg/issues/1083))
+* Add `MessageFunctionError`, drop `MessageSelectionError`
+* Add :percent ([unicode-org/message-format-wg#1094](https://github.com/unicode-org/message-format-wg/issues/1094))
+
 ## [4.0.0-12](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-11...messageformat@4.0.0-12) (2025-05-14)
 
 ### Bug Fixes

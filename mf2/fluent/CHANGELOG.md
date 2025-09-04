@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.13.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.12.3...@messageformat/fluent@0.13.0) (2025-09-04)
+
+- Use updated `messageformat`.
+
 ## [0.12.3](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.12.2...@messageformat/fluent@0.12.3) (2025-05-14)
 
 - Use updated `messageformat`.
