@@ -18,9 +18,10 @@ npm install --save messageformat
 
 ```js
 import { MessageFormat } from 'messageformat';
+import { DraftFunctions } from 'messageformat/functions';
 
 const msg = 'Today is {$today :datetime dateStyle=medium}';
-const mf = new MessageFormat('en', msg);
+const mf = new MessageFormat('en', msg, { functions: DraftFunctions });
 
 mf.format({ today: new Date('2022-02-02') });
 // 'Today is Feb 2, 2022'
