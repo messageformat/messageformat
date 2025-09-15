@@ -19,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/messageformat/messageformat.git",
-    "directory": "packages/xliff"
+    "directory": "mf2/xliff"
   },
   "main": "lib/index.js",
   "type": "module",
