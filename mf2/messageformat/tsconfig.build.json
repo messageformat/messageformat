@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "lib"
   },
-  "include": ["src/*"],
-  "exclude": ["**/*.test.*"]
+  "include": ["src/**/*"],
+  "exclude": ["**/*.test.*", "**/test-*"]
 }
