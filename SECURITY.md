@@ -15,7 +15,7 @@ please reach out to the maintainers to discuss a support agreement.
 
 ## Escalation
 
-If you do not receive an acknowledgement of your report within 6 business days, 
+If you do not receive an acknowledgement of your report within 6 business days,
 you may escalate to the OpenJS Foundation CNA at `security@lists.openjsf.org`.
 
 If the project acknowledges your report but does not provide any further response

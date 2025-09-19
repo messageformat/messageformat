@@ -452,8 +452,9 @@ function resolveOptions(
   const options: MF.Options = {};
   for (const el of optEls) {
     const name = el.attributes.name;
-    if (Object.hasOwn(options, name))
+    if (Object.hasOwn(options, name)) {
       throw new Error(`Duplicate option name: ${name}`);
+    }
     options[name] = resolveValue(el.elements.find(el => el.type === 'element'));
   }
   return options;
