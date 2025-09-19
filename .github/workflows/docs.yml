@@ -1,5 +1,7 @@
 name: Docs
 
+permissions: {}
+
 on:
   pull_request:
   push:
