@@ -139,3 +139,11 @@ it('addMessages', async () => {
   messages.addMessages(() => 'z', null, ['x', 'y']);
   expect(messages.get(['x', 'y'])).toBe('z');
 });
+
+it('prototype pollution', () => {
+  messages.addMessages({ payload: 'polluted' }, 'en', [
+    '__proto__',
+    'injectedProp'
+  ]);
+  expect(({} as any).injectedProp).toBeUndefined();
+});
