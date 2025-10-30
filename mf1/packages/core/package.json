@@ -33,7 +33,7 @@
     "@messageformat/date-skeleton": "2.0.0-0",
     "@messageformat/number-skeleton": "2.0.0-0",
     "@messageformat/parser": "^5.1.0",
-    "@messageformat/runtime": "^3.0.1",
+    "@messageformat/runtime": "^3.0.2",
     "make-plural": "^7.0.0",
     "safe-identifier": "^0.4.1"
   },
