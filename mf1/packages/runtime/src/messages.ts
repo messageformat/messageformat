@@ -110,7 +110,7 @@ export default class Messages {
   constructor(msgData: { [key: string]: MessageData }, defaultLocale?: string) {
     Object.keys(msgData).forEach(lc => {
       if (lc !== 'toString') {
-        this._data[lc] = msgData[lc];
+        this._data[lc] = _withNullPrototype(msgData[lc]);
         if (defaultLocale === undefined) defaultLocale = lc;
       }
     });
@@ -171,17 +171,12 @@ export default class Messages {
     keypath?: string[]
   ) {
     const lc = locale || String(this.locale);
-    if (typeof data !== 'function') {
-      data = Object.keys(data).reduce<MessageData>((map, key) => {
-        if (key !== 'toString') map[key] = (data as MessageData)[key];
-        return map;
-      }, {});
-    }
+    data = _withNullPrototype(data);
     if (Array.isArray(keypath) && keypath.length > 0) {
       let parent = this._data[lc] as MessageData;
       for (let i = 0; i < keypath.length - 1; ++i) {
         const key = keypath[i];
-        if (!parent[key]) parent[key] = {};
+        if (!parent[key]) parent[key] = Object.create(null);
         parent = parent[key] as MessageData;
       }
       parent[keypath[keypath.length - 1]] = data;
@@ -341,4 +336,15 @@ function _has(
     }
   }
   return false;
+}
+
+function _withNullPrototype<T = MessageData | MessageFunction | string>(
+  value: T
+): T {
+  if (!value || typeof value !== 'object') return value;
+  const data: MessageData = Object.create(null);
+  for (const [key, value_] of Object.entries(value)) {
+    data[key] = _withNullPrototype(value_);
+  }
+  return data as T;
 }
