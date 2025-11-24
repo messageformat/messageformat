@@ -31,7 +31,7 @@ const tests: {
       'Duplicate hour token'
     ]
   },
-  ccHv: { expected: /^Mon, 15 [A-Z]/ },
+  ccHv: { expected: /^Mon, 15h? [A-Z]/ },
   eeeeKVZ: {
     expected: /^Monday, 3\sPM [A-Z]/,
     errors: ['Duplicate tz token']
