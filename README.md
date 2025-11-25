@@ -7,9 +7,16 @@ The experience and subtlety of your program's text can be important.
 Messageformat is a mechanism for handling both **pluralization** and **gender** in your applications.
 It can also lead to much better translations, as it's designed to support [all the languages] included in the [Unicode CLDR].
 
-This monorepo provides packages supporting JS implementations of both [ICU MessageFormat] (MF1) and [Unicode MessageFormat 2] (MF2):
+This monorepo provides packages supporting JS implementations of both [Unicode MessageFormat 2] (MF2) and [ICU MessageFormat] (MF1):
 
-## ICU MessageFormat 1 Packages
+## Unicode MessageFormat 2
+
+- [messageformat](mf2/messageformat/) - MF2 parser, runtime, and polyfill for Intl.MessageFormat
+- [@messageformat/fluent](mf2/fluent) - Compile Fluent sources into MF2 resources
+- [@messageformat/icu-messageformat-1](mf2/icu-messageformat-1) - Compile MF1 sources into MF2 formatters
+- [@messageformat/xliff](mf2/xliff) - **_(ALPHA)_** Convert between XLIFF 2 and MF2
+
+## ICU MessageFormat 1
 
 - [@messageformat/cli](mf1/packages/cli/) - A command-line client for the library
 - [@messageformat/convert](mf1/packages/convert/) - Converts other localization formats into ICU MessageFormat
@@ -22,12 +29,6 @@ This monorepo provides packages supporting JS implementations of both [ICU Messa
 - [@messageformat/runtime](mf1/packages/runtime/) - Runtime dependencies of compiled message modules
 - [rollup-plugin-messageformat](mf1/packages/rollup-plugin/) - Rollup plugin for JSON, YAML, & .properties message files
 
-## Unicode MessageFormat 2 Packages
-
-- [messageformat](mf2/messageformat/) - **_(BETA)_** Intl.MessageFormat / MF2 parser, runtime and polyfill
-- [@messageformat/fluent](mf2/fluent) - **_(BETA)_** Compile Fluent sources into MF2 resources
-- [@messageformat/icu-messageformat-1](mf2/icu-messageformat-1) - **_(BETA)_** Compile MF1 sources into MF2 formatters
-
 [all the languages]: http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 [unicode cldr]: http://cldr.unicode.org/
 [icu messageformat]: https://unicode-org.github.io/icu/userguide/format_parse/messages/
@@ -35,7 +36,7 @@ This monorepo provides packages supporting JS implementations of both [ICU Messa
 [icu dateformat skeletons]: https://unicode-org.github.io/icu/userguide/format_parse/datetime/
 [icu numberformat skeletons]: https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html
 
-## Getting Started (MF1)
+### Getting Started (MF1)
 
 Depending on your situation, consult one or more of the following guides:
 
