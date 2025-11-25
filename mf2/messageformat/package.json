@@ -1,6 +1,6 @@
 {
   "name": "messageformat",
-  "version": "4.0.0-13",
+  "version": "4.0.0",
   "description": "Intl.MessageFormat / Unicode MessageFormat 2 parser, runtime and polyfill",
   "keywords": [
     "messageformat",
@@ -31,6 +31,9 @@
     "./cst": "./lib/cst/index.js",
     "./functions": "./lib/functions/index.js",
     "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": "^20.19 || ^22.12 || >=24"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json"

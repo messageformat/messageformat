@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/icu-messageformat-1",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Compile ICU MessageFormat 1 sources into MessageFormat 2 formatters",
   "keywords": [
     "messageformat",
@@ -34,7 +34,10 @@
     "@messageformat/date-skeleton": "2.0.0-0",
     "@messageformat/number-skeleton": "2.0.0-0",
     "@messageformat/parser": "^5.0.0",
-    "messageformat": "4.0.0-13"
+    "messageformat": "^4.0.0"
+  },
+  "engines": {
+    "node": "^20.19 || ^22.12 || >=24"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json"

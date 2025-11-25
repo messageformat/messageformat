@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.11.0...@messageformat/icu-messageformat-1@0.12.0) (2025-11-25)
+
+- Use updated `messageformat`.
+- Require Node.js 20 or later with `require(esm)` support
+
 ## [0.11.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.10.2...@messageformat/icu-messageformat-1@0.11.0) (2025-09-04)
 
 - Use updated `messageformat`.

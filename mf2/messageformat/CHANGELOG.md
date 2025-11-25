@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.0](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-13...messageformat@4.0.0) (2025-11-25)
+
+* Update LDML references to [v48](https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#contents-of-part-9-messageformat)
+* Fix tsconfig for `messageformat/cst` ([#460](https://github.com/messageformat/messageformat/issues/460))
+* Require Node.js 20 or later with `require(esm)` support
+
 ## [4.0.0-13](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-12...messageformat@4.0.0-13) (2025-09-04)
 
 ### ⚠ Breaking Changes

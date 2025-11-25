@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.14.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.13.0...@messageformat/fluent@0.14.0) (2025-11-25)
+
+- Use updated `messageformat`.
+- Require Node.js 20 or later with `require(esm)` support
+
 ## [0.13.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.12.3...@messageformat/fluent@0.13.0) (2025-09-04)
 
 - Use updated `messageformat`.
