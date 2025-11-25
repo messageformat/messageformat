@@ -33,12 +33,12 @@ import { unit } from './unit.ts';
 
 /**
  * Functions classified as REQUIRED by the
- * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 47 MessageFormat specification}.
+ * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 48 MessageFormat specification}.
  */
 export let DefaultFunctions = {
   /**
-   * Supports formatting and selection as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-integer-function | :integer function}.
+   * Supports formatting and selection as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-integer-function | :integer function}.
    *
    * The `operand` must be a number, BigInt, or string representing a JSON number,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
@@ -46,8 +46,8 @@ export let DefaultFunctions = {
   integer,
 
   /**
-   * Supports formatting and selection as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-number-function | :number function}.
+   * Supports formatting and selection as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-number-function | :number function}.
    *
    * The `operand` must be a number, BigInt, or string representing a JSON number,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
@@ -64,8 +64,8 @@ export let DefaultFunctions = {
   offset,
 
   /**
-   * Supports formatting and selection as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-string-function | :string function}.
+   * Supports formatting and selection as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-string-function | :string function}.
    *
    * The `operand` must be a stringifiable value.
    * An `undefined` value is resolved as an empty string.
@@ -78,7 +78,7 @@ DefaultFunctions = Object.freeze(
 
 /**
  * Functions classified as DRAFT by the
- * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 47 MessageFormat specification}.
+ * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 48 MessageFormat specification}.
  *
  * These are liable to change, and are **_not_** covered by any stability guarantee.
  *
@@ -93,8 +93,8 @@ DefaultFunctions = Object.freeze(
  */
 export let DraftFunctions = {
   /**
-   * Supports formatting as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-currency-function | :currency function}.
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-currency-function | :currency function}.
    *
    * The `operand` must be a number, BigInt, or string representing a JSON number,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
@@ -104,8 +104,8 @@ export let DraftFunctions = {
   currency,
 
   /**
-   * Supports formatting as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-date-function | :date function}.
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-date-function | :date function}.
    *
    * The `operand` must be a Date, number, or string representing a date,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
@@ -113,8 +113,8 @@ export let DraftFunctions = {
   date,
 
   /**
-   * Supports formatting as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-datetime-function | :datetime function}.
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-datetime-function | :datetime function}.
    *
    * The `operand` must be a Date, number, or string representing a date,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
@@ -131,8 +131,8 @@ export let DraftFunctions = {
   percent,
 
   /**
-   * Supports formatting as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-time-function | :time function}.
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-time-function | :time function}.
    *
    * The `operand` must be a Date, number, or string representing a date,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
@@ -140,8 +140,8 @@ export let DraftFunctions = {
   time,
 
   /**
-   * Supports formatting as defined in LDML 47 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#the-unit-function | :unit function}.
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-unit-function | :unit function}.
    *
    * The `operand` must be a number, BigInt, or string representing a JSON number,
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.

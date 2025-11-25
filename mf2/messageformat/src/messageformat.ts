@@ -76,7 +76,7 @@ export interface MessageFormatOptions<
 
 /**
  * A message formatter for that implements the
- * {@link https://www.unicode.org/reports/tr35/tr35-75/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 47 MessageFormat}
+ * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#contents-of-part-9-messageformat | LDML 48 MessageFormat}
  * specification as well as the {@link https://github.com/tc39/proposal-intl-messageformat/ | TC39 Intl.MessageFormat proposal}.
  *
  * @category Formatting
