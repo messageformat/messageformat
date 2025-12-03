@@ -106,6 +106,8 @@ test('source only', () => {
 test('combine source & target', () => {
   const src = source`
     msg = Message
+    -term = Term
+      .attr = Private
     var = Foo { $num }
     select = {$selector ->
         [a] A
@@ -115,6 +117,8 @@ test('combine source & target', () => {
 
   const trg = source`
     msg = Viesti
+    -term = Termi
+      .attr = Yksityinen
     var = Föö { $num }
     select = {$selector ->
         [a] Ä
@@ -137,6 +141,20 @@ test('combine source & target', () => {
             <segment>
               <source>Message</source>
               <target>Viesti</target>
+            </segment>
+          </unit>
+        </group>
+        <group id="g:-term" name="-term">
+          <unit id="u:-term" name="-term">
+            <segment>
+              <source>Term</source>
+              <target>Termi</target>
+            </segment>
+          </unit>
+          <unit id="u:-term.attr" name="attr">
+            <segment>
+              <source>Private</source>
+              <target>Yksityinen</target>
             </segment>
           </unit>
         </group>
@@ -194,6 +212,8 @@ test('combine source & target', () => {
     ])
   ).toEqual([
     [['msg'], 'Message', 'Viesti'],
+    [['-term'], 'Term', 'Termi'],
+    [['-term', 'attr'], 'Private', 'Yksityinen'],
     [['var'], 'Foo {$num}', 'Föö {$num}'],
     [
       ['select'],
