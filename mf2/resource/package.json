@@ -19,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/messageformat/messageformat.git",
-    "directory": "packages/mf2-resource"
+    "directory": "mf2/resource"
   },
   "main": "lib/index.js",
   "files": [
