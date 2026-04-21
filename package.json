@@ -75,7 +75,7 @@
     "babel-eslint": "^10.0.2",
     "babel-jest": "^30.0.5",
     "browserstack-local": "^1.4.8",
-    "chai": "^5.1.0",
+    "chai": "^6.2.2",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^17.5.0",
