@@ -19,7 +19,8 @@ import {
   visit
 } from './index.ts';
 
-const skipTags = new Set(['u:locale']);
+// Use to declare test tags for unsupported features
+const skipTags = new Set();
 
 const tests = (tc: Test) => () => {
   const functions = { ...DraftFunctions, ...TestFunctions };

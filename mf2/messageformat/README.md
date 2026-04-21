@@ -4,13 +4,13 @@ the new standard for localization developed by the [MessageFormat Working Group]
 This includes a formatter that can be used as a polyfill for
 the proposed [ECMA-402 Intl.MessageFormat] formatter.
 
-The API provided by this library is current as of the [LDML 48] (October 2025)
-version of the MF2 specification.
+The API provided by this library is current as of the [LDML 48.2][ldml] (March 2026)
+version of the Unicode MessageFormat specification.
 
 [unicode messageformat 2.0]: https://unicode.org/reports/tr35/tr35-messageFormat.html
 [messageformat working group]: https://github.com/unicode-org/message-format-wg
 [ecma-402 intl.messageformat ]: https://github.com/tc39/proposal-intl-messageformat/
-[ldml 48]: https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html
+[ldml]: https://www.unicode.org/reports/tr35/tr35-78/tr35-messageFormat.html
 
 ```sh
 npm install --save messageformat

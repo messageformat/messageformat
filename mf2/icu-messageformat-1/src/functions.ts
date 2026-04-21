@@ -25,7 +25,7 @@ function currency(
   checkArgStyle(ctx, options);
   const scale = Number(options['mf1:scale']);
   if (scale && scale !== 1) operand = scale * Number(operand);
-  return DraftFunctions.currency(ctx, options, operand);
+  return DefaultFunctions.currency(ctx, options, operand);
 }
 
 function date(
@@ -150,7 +150,7 @@ function unit(
  */
 export let MF1Functions = {
   /**
-   * A wrapper around {@link DraftFunctions.currency},
+   * A wrapper around {@link DefaultFunctions.currency},
    * used for formatting a `number, currency` and `number, ::currency` placeholder.
    */
   'mf1:currency': currency,
