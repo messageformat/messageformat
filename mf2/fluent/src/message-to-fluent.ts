@@ -155,7 +155,7 @@ function functionRefToFluent(
   if (entries?.length) {
     args.named = [];
     for (const [name, value] of entries) {
-      if (name === 'u:dir' || name === 'u:locale') {
+      if (name === 'u:dir') {
         throw new Error(`The option "${name}" is not supported in Fluent`);
       }
       const va = valueToFluent(ctx, value);
