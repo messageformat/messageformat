@@ -29,8 +29,7 @@ export interface MessageReferenceValue extends MessageValue<'fluent-message'> {
 /**
  * The formatted part for a {@link MessageReferenceValue}.
  */
-export interface MessageReferencePart
-  extends MessageExpressionPart<'fluent-message'> {
+export interface MessageReferencePart extends MessageExpressionPart<'fluent-message'> {
   type: 'fluent-message';
   dir?: 'ltr' | 'rtl';
   parts: MessagePart<string>[];

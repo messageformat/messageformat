@@ -55,16 +55,9 @@ console.log(messages);
 
 exports[`YAML with named import 1`] = `
 "import { plural, number, select } from '@messageformat/runtime';
-import { fi, en } from '@messageformat/runtime/lib/plurals';
+import { fi } from '@messageformat/runtime/lib/plurals';
 
 var messages = {
-  en: {
-    simple: () => "A simple message.",
-    "var": (d) => "Message with " + d.X + ".",
-    plural: (d) => "You have " + plural(d.N, 0, en, { "0": "no messages", one: "1 message", other: number("en", d.N, 0) + " messages" }) + ".",
-    select: (d) => select(d.GENDER, { male: "He has", female: "She has", other: "They have" }) + " sent you a message.",
-    ordinal: (d) => "The " + plural(d.N, 0, en, { one: "1st", two: "2nd", few: "3rd", other: number("en", d.N, 0) + "th" }, 1) + " message."
-  },
   fi: {
     simple: () => "Yksinkertainen viesti.",
     "var": (d) => "Viesti jossa " + d.X + ".",

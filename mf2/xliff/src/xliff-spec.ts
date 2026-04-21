@@ -289,8 +289,9 @@ export interface Group<
   )[];
 }
 
-export interface Unit<UnitOther extends Element | never = never>
-  extends Element {
+export interface Unit<
+  UnitOther extends Element | never = never
+> extends Element {
   name: 'unit';
   attributes: {
     id: string;
