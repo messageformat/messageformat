@@ -16,7 +16,7 @@ import type {
  * Compile a Fluent resource (i.e. an FTL file) into a Map of
  * {@link MessageFormat} instances.
  *
- * Uses {@link DraftFunctions.currency}, {@link DraftFunctions.unit}, as well as
+ * In addition to default functions, uses {@link DraftFunctions.unit} as well as
  * a custom `fluent:message` function provided by {@link getMessageFunction}.
  *
  * @param source - A Fluent resource,
@@ -37,7 +37,6 @@ export function fluentToResource(
   const { detectNumberSelection, ...opt } = options ?? {};
   opt.functions = Object.assign(
     {
-      currency: DraftFunctions.currency,
       datetime: DraftFunctions.datetime,
       unit: DraftFunctions.unit,
       'fluent:message': getMessageFunction(res)

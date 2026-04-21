@@ -37,6 +37,17 @@ import { unit } from './unit.ts';
  */
 export let DefaultFunctions = {
   /**
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-currency-function | :currency function}.
+   *
+   * The `operand` must be a number, BigInt, or string representing a JSON number,
+   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
+   *
+   * The `currency` option must be provided by either the operand's `options` or the `exprOpt` expression options.
+   */
+  currency,
+
+  /**
    * Supports formatting and selection as defined in LDML 48 for the
    * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-integer-function | :integer function}.
    *
@@ -62,6 +73,15 @@ export let DefaultFunctions = {
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
    */
   offset,
+
+  /**
+   * Supports formatting as defined in LDML 48 for the
+   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-percent-function | :percent function}.
+   *
+   * The `operand` must be a number, BigInt, or string representing a JSON number,
+   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
+   */
+  percent,
 
   /**
    * Supports formatting and selection as defined in LDML 48 for the
@@ -94,17 +114,6 @@ DefaultFunctions = Object.freeze(
 export let DraftFunctions = {
   /**
    * Supports formatting as defined in LDML 48 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-currency-function | :currency function}.
-   *
-   * The `operand` must be a number, BigInt, or string representing a JSON number,
-   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
-   *
-   * The `currency` option must be provided by either the operand's `options` or the `exprOpt` expression options.
-   */
-  currency,
-
-  /**
-   * Supports formatting as defined in LDML 48 for the
    * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-date-function | :date function}.
    *
    * The `operand` must be a Date, number, or string representing a date,
@@ -120,15 +129,6 @@ export let DraftFunctions = {
    * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
    */
   datetime,
-
-  /**
-   * Supports formatting as defined in LDML 48 for the
-   * {@link https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#the-percent-function | :percent function}.
-   *
-   * The `operand` must be a number, BigInt, or string representing a JSON number,
-   * or an object wrapping such a value, with a `valueOf()` accessor and an optional `options` object.
-   */
-  percent,
 
   /**
    * Supports formatting as defined in LDML 48 for the
