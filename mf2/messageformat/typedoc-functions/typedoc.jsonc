@@ -12,6 +12,6 @@
     "MessageStringPart",
     "Options"
   ],
-
-  "readme": "none"
+  "readme": "none",
+  "tsconfig": "../../tsconfig.typedoc.json"
 }
