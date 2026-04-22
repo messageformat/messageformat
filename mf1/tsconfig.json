@@ -14,7 +14,7 @@
       "@messageformat/parser": ["./packages/parser/src/parser"],
       "@messageformat/react": ["./packages/react/src/index"],
       "@messageformat/runtime": ["./packages/runtime/src/runtime"],
-      "@messageformat/runtime/lib/*": ["./packages/runtime/src/*"],
+      "@messageformat/runtime/lib/*": ["./packages/runtime/src/*"]
     },
     "types": ["node"]
   }
