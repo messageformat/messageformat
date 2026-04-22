@@ -4,8 +4,8 @@ import { promisify } from 'util';
 import compileModule, {
   MessageModule
 } from '../../mf1/packages/core/src/compile-module';
-import { StringStructure } from '../../mf1/packages/core/src/compiler';
-import MessageFormat from '@messageformat/core';
+import type { StringStructure } from '../../mf1/packages/core/src/compiler';
+import type MessageFormat from '../../mf1/packages/core/src/messageformat';
 
 const write = promisify(fs.write);
 

@@ -9,6 +9,17 @@
 
     "paths": {
       "#test/*": ["../test/*"],
+
+      // MF1
+      "@messageformat/date-skeleton": [
+        "../mf1/packages/date-skeleton/src/index.ts"
+      ],
+      "@messageformat/number-skeleton": [
+        "../mf1/packages/number-skeleton/src/index.ts"
+      ],
+      "@messageformat/parser": ["../mf1/packages/parser/src/parser.ts"],
+
+      // MF2
       "@messageformat/fluent": ["fluent/src/index.ts"],
       "@messageformat/icu-messageformat-1": [
         "icu-messageformat-1/src/index.ts"

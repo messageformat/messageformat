@@ -1,11 +1,14 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./lib",
     "emitDeclarationOnly": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "removeComments": false,
     "rootDir": "./src"
   },
+  "include": ["src/*"],
   "exclude": ["**/*.test.ts", "**/api.d.ts"]
 }

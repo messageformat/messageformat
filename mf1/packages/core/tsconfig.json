@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "preserve",
-    "moduleResolution": "bundler",
     "paths": {
-      "#test/*": ["../../../test/*"]
-    },
-    "removeComments": true
-  },
-  "include": ["src/*"],
-  "exclude": ["**/*.test.ts"]
+      "#test/*": ["../../../test/*"],
+      "@messageformat/date-skeleton": ["../date-skeleton/src/index.ts"],
+      "@messageformat/number-skeleton": ["../number-skeleton/src/index.ts"],
+      "@messageformat/parser": ["../parser/src/parser.ts"],
+      "@messageformat/runtime": ["../runtime/src/runtime.ts"],
+      "@messageformat/runtime/lib/*": ["../runtime/src/*"]
+    }
+  }
 }

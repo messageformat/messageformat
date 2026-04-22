@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": false,
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "removeComments": true
+  },
+  "include": ["src/*"],
+  "exclude": ["**/*.test.ts"]
+}
