@@ -121,7 +121,12 @@ describe('Options', () => {
 
   test('custom timezone', () => {
     const onError = vitest.fn();
-    const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'CST', onError);
+    const fmt = getDateFormatter(
+      'en-US-u-hc-h23',
+      'jms',
+      'America/Chicago',
+      onError
+    );
     const zoneOffset = date.getTimezoneOffset();
     const cstOffset = -6 * 60;
     const offsetDate = new Date(
@@ -133,12 +138,12 @@ describe('Options', () => {
 
   test('calendar locale subtag', () => {
     const onError = vitest.fn();
-    const fmt = getDateFormatter('en-GB-u-ca-islamic', 'yMMMMd', onError);
+    const fmt = getDateFormatter('en-GB-u-ca-islamic-tbla', 'yMMMMd', onError);
     expect([
-      '2 Dhuʻl-Hijjah 1426',
-      'Dhuʻl-Hijjah 2, 1426',
-      'Dhuʻl-Hijjah 2, 1426 AH',
-      '2 Dhuʻl-Hijjah 1426 AH'
+      '3 Dhuʻl-Hijjah 1426',
+      'Dhuʻl-Hijjah 3, 1426',
+      'Dhuʻl-Hijjah 3, 1426 AH',
+      '3 Dhuʻl-Hijjah 1426 AH'
     ]).toContain(fmt(date));
     expect(onError).not.toHaveBeenCalled();
   });
