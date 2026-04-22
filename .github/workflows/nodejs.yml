@@ -9,10 +9,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  node:
+  test:
     strategy:
       matrix:
-        node-version: [18, 20, latest]
+        node-version: [20, 24, latest]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
+      - run: npm install --no-save @vitest/coverage-v8@4
       - run: npm test -- --coverage
       - run: npm run build
 
