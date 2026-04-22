@@ -41,13 +41,9 @@
     "lint": "eslint",
     "prettier": "prettier --write .",
     "start": "node -i -r ./mf1/scripts/start.js",
-    "pretest:browsers": "cd test && rollup -c",
-    "test:browsers": "mocha --parallel --jobs 5 --require test/browser/browserstack-fixtures.js --timeout 120000 test/browser/tests/",
-    "test:chrome": "npm run pretest:browsers && mocha-selenium-bridge -b chrome test/browser/test.html",
-    "test:firefox": "npm run pretest:browsers && mocha-selenium-bridge -b firefox test/browser/test.html",
-    "test:serve": "npm run pretest:browsers && serve",
     "pretest": "npm run build:esm -w mf1/packages/runtime",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:browsers": "vitest run --config=vitest.browser.config.mts"
   },
   "prettier": {
     "arrowParens": "avoid",
@@ -74,6 +70,7 @@
     "@types/react": "^18.0.0",
     "@types/react-test-renderer": "^18.0.0",
     "@types/tmp": "^0.2.6",
+    "@vitest/browser-playwright": "^4.1.5",
     "babel-eslint": "^10.0.2",
     "browserstack-local": "^1.4.8",
     "chai": "^6.2.2",
