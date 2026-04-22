@@ -6,5 +6,6 @@
     "Formatted Parts",
     "Message Data Model",
     "Errors"
-  ]
+  ],
+  "tsconfig": "../tsconfig.typedoc.json"
 }

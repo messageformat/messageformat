@@ -2,19 +2,20 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "~/*": ["./*"],
-      "@messageformat/core": ["./packages/core/src/messageformat"],
+      "#test/*": ["../test/*"],
+      "@messageformat/core": ["./packages/core/src/messageformat.ts"],
       "@messageformat/core/compile-module": [
-        "./packages/core/src/compile-module"
+        "./packages/core/src/compile-module.ts"
       ],
-      "@messageformat/date-skeleton": ["./packages/date-skeleton/src/index"],
+      "@messageformat/date-skeleton": ["./packages/date-skeleton/src/index.ts"],
       "@messageformat/number-skeleton": [
-        "./packages/number-skeleton/src/index"
+        "./packages/number-skeleton/src/index.ts"
       ],
-      "@messageformat/parser": ["./packages/parser/src/parser"],
-      "@messageformat/react": ["./packages/react/src/index"],
-      "@messageformat/runtime": ["./packages/runtime/src/runtime"],
+      "@messageformat/parser": ["./packages/parser/src/parser.ts"],
+      "@messageformat/react": ["./packages/react/src/index.ts"],
+      "@messageformat/runtime": ["./packages/runtime/src/runtime.ts"],
       "@messageformat/runtime/lib/*": ["./packages/runtime/src/*"]
-    }
+    },
+    "types": ["node"]
   }
 }

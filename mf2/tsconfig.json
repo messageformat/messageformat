@@ -1,14 +1,19 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    // Option 'baseUrl' is deprecated and will stop functioning in TypeScript 7.0.
-    // It's required here to satisy typedoc 0.28.19, which otherwise emits errors:
-    //   error TS5090: Non-relative paths are not allowed when 'baseUrl' is not set. Did you forget a leading './'?
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
-
     "paths": {
-      "~/*": ["../*"],
+      "#test/*": ["../test/*"],
+
+      // MF1
+      "@messageformat/date-skeleton": [
+        "../mf1/packages/date-skeleton/src/index.ts"
+      ],
+      "@messageformat/number-skeleton": [
+        "../mf1/packages/number-skeleton/src/index.ts"
+      ],
+      "@messageformat/parser": ["../mf1/packages/parser/src/parser.ts"],
+
+      // MF2
       "@messageformat/fluent": ["fluent/src/index.ts"],
       "@messageformat/icu-messageformat-1": [
         "icu-messageformat-1/src/index.ts"
@@ -16,6 +21,6 @@
       "messageformat": ["messageformat/src/index.ts"],
       "messageformat/functions": ["messageformat/src/functions/index.ts"]
     },
-    "types": ["jest", "node"]
+    "types": ["node"]
   }
 }

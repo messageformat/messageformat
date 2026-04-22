@@ -4,5 +4,6 @@
   "name": "messageformat/cst",
   "entryPoints": ["../src/cst/index.ts"],
   "intentionallyNotExported": ["Message", "MessageSyntaxError"],
-  "readme": "none"
+  "readme": "none",
+  "tsconfig": "../../tsconfig.typedoc.json"
 }

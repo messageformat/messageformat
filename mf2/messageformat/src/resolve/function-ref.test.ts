@@ -1,5 +1,6 @@
 import { MessageFormat, MessageNumberPart } from 'messageformat';
 import { DraftFunctions, MessageFunction } from 'messageformat/functions';
+import { describe, expect, test, vitest } from 'vitest';
 
 test('Custom function', () => {
   const custom: MessageFunction<'custom'> = (
@@ -94,7 +95,7 @@ describe('Function return is not a MessageValue', () => {
   test('object with no type', () => {
     const functions = { fail: () => ({ foo: 'fail' }) as any };
     const mf = new MessageFormat('en', '{:fail}', { functions });
-    const onError = jest.fn();
+    const onError = vitest.fn();
     expect(mf.format(undefined, onError)).toEqual('\u2068{:fail}\u2069');
     expect(mf.formatToParts(undefined, onError)).toEqual([
       { type: 'bidiIsolation', value: '\u2068' },
@@ -107,7 +108,7 @@ describe('Function return is not a MessageValue', () => {
   test('null', () => {
     const functions = { fail: () => null as any };
     const mf = new MessageFormat('en', '{42 :fail}', { functions });
-    const onError = jest.fn();
+    const onError = vitest.fn();
     expect(mf.format(undefined, onError)).toEqual('\u2068{|42|}\u2069');
     expect(mf.formatToParts(undefined, onError)).toEqual([
       { type: 'bidiIsolation', value: '\u2068' },
@@ -119,7 +120,7 @@ describe('Function return is not a MessageValue', () => {
 
   test('Object.p.toString used as function', () => {
     const mf = new MessageFormat('en', '{13 :toString}', { functions: {} });
-    const onError = jest.fn();
+    const onError = vitest.fn();
     expect(mf.format(undefined, onError)).toEqual('\u2068{|13|}\u2069');
     expect(onError.mock.calls).toMatchObject([[{ type: 'unknown-function' }]]);
   });

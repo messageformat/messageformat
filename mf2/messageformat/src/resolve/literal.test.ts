@@ -1,8 +1,9 @@
+import { describe, expect, test, vitest } from 'vitest';
 import { MessageFormat } from '../index.ts';
 
 function resolve(source: string, errors: any[] = []) {
   const mf = new MessageFormat(undefined, source);
-  const onError = jest.fn();
+  const onError = vitest.fn();
   const res = mf.formatToParts(undefined, onError);
   expect(onError).toHaveBeenCalledTimes(errors.length);
   for (let i = 0; i < errors.length; ++i) {

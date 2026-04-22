@@ -1,12 +1,13 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
+import { describe, expect, test, vitest } from 'vitest';
 
 import { Message, MessageContext, MessageProvider } from '@messageformat/react';
 
 describe('No locale', () => {
   test('Null message', () => {
     const component = renderer.create(
-      <MessageProvider messages={{ x: null }}>
+      <MessageProvider messages={{ x: null as any }}>
         <Message id="x" />
       </MessageProvider>
     );
@@ -257,7 +258,7 @@ describe('Hierarchical messages', () => {
 
   test('Incomplete path, with error handler', () => {
     const messages = { obj: { x: 'X' } };
-    const onError = jest.fn(err => err.path.join(','));
+    const onError = vitest.fn(err => err.path.join(','));
     const component = renderer.create(
       <MessageProvider messages={messages} onError={onError}>
         <Message id={['obj']} />
@@ -270,7 +271,7 @@ describe('Hierarchical messages', () => {
   });
 
   test('Incomplete path, hacked context with no error handler', () => {
-    const onError = jest.fn();
+    const onError = vitest.fn();
     const messages = { obj: { x: 'X' } };
     const Inner = () => {
       const ctx = React.useContext(MessageContext);
@@ -328,7 +329,7 @@ describe('Hierarchical messages', () => {
 
   test('Bad path, with error handler', () => {
     const messages = { obj: { x: 'X' } };
-    const onError = jest.fn(err => err.path.join(','));
+    const onError = vitest.fn(err => err.path.join(','));
     const component = renderer.create(
       <MessageProvider messages={messages} onError={onError}>
         <Message id={['not', 'valid']} />
@@ -352,7 +353,7 @@ describe('Hierarchical messages', () => {
 
   test('Bad path, fallback message with error handler', () => {
     const messages = { obj: { x: 'X' } };
-    const onError = jest.fn(err => err.path.join(','));
+    const onError = vitest.fn(err => err.path.join(','));
     const component = renderer.create(
       <MessageProvider messages={messages} onError={onError}>
         <Message id="not.valid">fallback</Message>
@@ -372,7 +373,7 @@ describe('Render prop', () => {
   test('String message with lookup', () => {
     const component = renderer.create(
       <MessageProvider messages={{ x: 'X' }}>
-        <Message id="x">{msg => msg}</Message>
+        <Message id="x">{(msg: any) => msg}</Message>
       </MessageProvider>
     );
     expect(component.toJSON()).toBe('X');
@@ -381,7 +382,7 @@ describe('Render prop', () => {
   test('String message without lookup', () => {
     const component = renderer.create(
       <MessageProvider messages={{ x: 'X' }}>
-        <Message>{msg => msg.x}</Message>
+        <Message>{(msg: { x: any }) => msg.x}</Message>
       </MessageProvider>
     );
     expect(component.toJSON()).toBe('X');
@@ -390,7 +391,7 @@ describe('Render prop', () => {
   test('Function message with lookup', () => {
     const component = renderer.create(
       <MessageProvider messages={{ x: () => 'fun' }}>
-        <Message id="x">{msg => msg()}</Message>
+        <Message id="x">{(msg: () => any) => msg()}</Message>
       </MessageProvider>
     );
     expect(component.toJSON()).toBe('fun');
@@ -399,7 +400,7 @@ describe('Render prop', () => {
   test('Function message without lookup', () => {
     const component = renderer.create(
       <MessageProvider messages={{ x: () => 'fun' }}>
-        <Message>{msg => msg.x()}</Message>
+        <Message>{(msg: { x: () => any }) => msg.x()}</Message>
       </MessageProvider>
     );
     expect(component.toJSON()).toBe('fun');

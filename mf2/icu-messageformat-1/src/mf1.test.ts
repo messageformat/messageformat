@@ -1,4 +1,5 @@
 import { parse } from '@messageformat/parser';
+import { describe, expect, test, vitest } from 'vitest';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
 export type TestCase = {
@@ -432,7 +433,7 @@ for (const [title, cases] of Object.entries(testCases)) {
             }
 
             const mf = mf1ToMessage(locale, data, { bidiIsolation: 'none' });
-            const onError = jest.fn();
+            const onError = vitest.fn();
             const msg = mf.format(
               param as Record<string, string | number | Date>,
               onError

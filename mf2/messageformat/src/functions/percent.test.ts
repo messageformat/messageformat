@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { MessageFormat } from '../index.ts';
 import { percent } from './percent.ts';
 

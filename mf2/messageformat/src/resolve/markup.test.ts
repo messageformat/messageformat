@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { parseCST } from '../cst/index.ts';
 import { MessageFormat } from '../index.ts';
 

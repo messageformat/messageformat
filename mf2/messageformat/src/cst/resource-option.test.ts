@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { type CST, parseCST } from './index.ts';
 
 describe('messages in resources', () => {

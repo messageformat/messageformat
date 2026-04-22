@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { rollup } from 'rollup';
-import { messageformat } from './index';
+import { expect, test } from 'vitest';
+import { messageformat } from './index.js';
 
 const external = /^@messageformat\/runtime\b/;
 const fixtures = resolve(__dirname, '__fixtures__');

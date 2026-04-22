@@ -1,8 +1,12 @@
-import { getNumberFormatter, getNumberFormatterSource } from './get-formatter';
-import { parseNumberSkeleton } from './parse-skeleton';
+import { describe, expect, test as test_, vitest } from 'vitest';
+import {
+  getNumberFormatter,
+  getNumberFormatterSource
+} from './get-formatter.js';
+import { parseNumberSkeleton } from './parse-skeleton.js';
 
 // Too many divergences in Intl.NumberFormat output on Node.js 10 and earlier
-if (process.version < 'v12') test = test.skip;
+const test = process.version < 'v12' ? test_.skip : test_;
 
 const tests: {
   [testSet: string]: {
@@ -112,7 +116,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
   describe(testSet, () => {
     for (const [src, [value, expected, errors]] of Object.entries(cases)) {
       test(src, () => {
-        const cb = jest.fn();
+        const cb = vitest.fn();
 
         // function from string
         let fmt = getNumberFormatter('en', `::${src}`, null, cb);
@@ -128,7 +132,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
         expect(fmt(value)).toBe(expected);
 
         // function from skeleton
-        const skeleton = parseNumberSkeleton(src, jest.fn());
+        const skeleton = parseNumberSkeleton(src, vitest.fn());
         fmt = getNumberFormatter(['en'], skeleton);
         expect(fmt(value)).toBe(expected);
 
@@ -137,13 +141,13 @@ for (const [testSet, cases] of Object.entries(tests)) {
           'en',
           `:: ${src}`,
           null,
-          jest.fn()
+          vitest.fn()
         );
         fmt = new Function(`return ${fmtSrc}`)();
         expect(fmt(value)).toBe(expected);
 
         // source from skeleton
-        fmtSrc = getNumberFormatterSource(['en'], skeleton, null, jest.fn());
+        fmtSrc = getNumberFormatterSource(['en'], skeleton, null, vitest.fn());
         fmt = new Function(`return ${fmtSrc}`)();
         expect(fmt(value)).toBe(expected);
       });

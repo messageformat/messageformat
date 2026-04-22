@@ -1,3 +1,4 @@
+import { describe, expect, test, vitest } from 'vitest';
 import { MessageFormat } from '../index.ts';
 import { currency } from './currency.ts';
 
@@ -42,7 +43,7 @@ describe('currencyDisplay', () => {
         currency: 'EUR',
         currencyDisplay: cd === 'never' ? undefined : cd
       });
-      const onError = jest.fn();
+      const onError = vitest.fn();
       expect(mf.format(undefined, onError)).toEqual(nf.format(42));
       expect(mf.formatToParts(undefined, onError)).toMatchObject([
         { parts: nf.formatToParts(42) }
@@ -65,7 +66,7 @@ test('selection', () => {
     '.local $n = {42 :currency currency=EUR} .match $n 42 {{exact}} * {{other}}',
     { functions: { currency } }
   );
-  const onError = jest.fn();
+  const onError = vitest.fn();
   expect(mf.format(undefined, onError)).toEqual('other');
   expect(onError.mock.calls).toMatchObject([[{ type: 'bad-selector' }]]);
 });

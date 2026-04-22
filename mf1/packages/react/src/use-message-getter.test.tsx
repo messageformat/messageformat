@@ -1,5 +1,14 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
+import {
+  Mock,
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  test,
+  vitest
+} from 'vitest';
 
 import { MessageProvider, useMessageGetter } from '@messageformat/react';
 
@@ -103,7 +112,7 @@ for (const { title, locale, messages } of cases) {
 
 describe('Functional messages', () => {
   const messages = {
-    x: { y: args => args.z }
+    x: { y: (args: { z: any }) => args.z }
   };
 
   test('Message parameters', () => {
@@ -166,27 +175,30 @@ describe('Wrapped provider', () => {
 describe('Errors', () => {
   // Silence pointless console errors until this is resolved:
   // https://github.com/facebook/react/pull/17383
-  let spy;
+  let spy: Mock<{
+    (...data: any[]): void;
+    (message?: any, ...optionalParams: any[]): void;
+  }>;
   beforeAll(() => {
-    spy = jest.spyOn(console, 'error').mockImplementation();
+    spy = vitest.spyOn(console, 'error').mockImplementation(() => {});
   });
   afterAll(() => {
     spy.mockRestore();
   });
 
   class Catch extends React.Component {
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(error: any) {
       return { error };
     }
 
     state: { error: null | Error };
-    constructor(props) {
+    constructor(props: any) {
       super(props);
       this.state = { error: null };
     }
     render() {
       const { error } = this.state;
-      return error ? error.message : this.props.children;
+      return error ? error.message : (this.props as any).children;
     }
   }
 

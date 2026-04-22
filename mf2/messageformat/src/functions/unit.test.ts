@@ -1,3 +1,4 @@
+import { describe, expect, test, vitest } from 'vitest';
 import { MessageFormat } from '../index.ts';
 import { unit } from './unit.ts';
 
@@ -7,7 +8,7 @@ test('selection', () => {
     '.local $n = {42 :unit unit=meter} .match $n 42 {{exact}} * {{other}}',
     { functions: { unit } }
   );
-  const onError = jest.fn();
+  const onError = vitest.fn();
   expect(mf.format(undefined, onError)).toEqual('other');
   expect(onError.mock.calls).toMatchObject([[{ type: 'bad-selector' }]]);
 });

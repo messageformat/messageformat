@@ -1,4 +1,5 @@
-import { getTestCases } from '~/test/fixtures/messageformat';
+import { getTestCases } from '#test/fixtures/messageformat';
+import { describe, expect, test } from 'vitest';
 import MessageFormat from './messageformat';
 import { PluralFunction } from './plurals';
 
@@ -197,10 +198,10 @@ for (const [title, cases] of Object.entries(
 )) {
   describe(title, () => {
     for (const { locale, options, src, exp, skip } of cases) {
-      let desc = describe;
+      let desc: typeof describe | typeof describe.skip = describe;
       if (skip) {
         if (isNode12 && skip.includes('node12')) desc = describe.skip;
-        if (!isV2 && skip.includes('v1')) desc = describe.skip;
+        else if (!isV2 && skip.includes('v1')) desc = describe.skip;
       }
       let name = src;
       if (locale || options) {

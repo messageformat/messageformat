@@ -2,6 +2,7 @@
 import merge from 'lodash.merge';
 import React, { Component } from 'react';
 import renderer from 'react-test-renderer';
+import { describe, expect, test, vitest } from 'vitest';
 
 import {
   Message,
@@ -86,7 +87,7 @@ test('Changed values', () => {
       locale: string;
       messages: MessageObject;
     };
-    constructor(props) {
+    constructor(props: any) {
       super(props);
       this.state = {
         locale: props.locale,
@@ -172,7 +173,7 @@ describe('Inheritance', () => {
   });
 
   test('Custom context', () => {
-    const onError = jest.fn(path => path.join(','));
+    const onError = vitest.fn(path => path.join(','));
     const Inner = () => {
       const ctx = Object.assign({}, React.useContext(MessageContext), {
         onError

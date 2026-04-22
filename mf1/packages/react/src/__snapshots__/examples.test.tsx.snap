@@ -1,20 +1,12 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`API Message Example 1`] = `
+exports[`API > Message Example 1`] = `
 <span>
   Your message here
 </span>
 `;
 
-exports[`API MessageContext Example 1`] = `
-<span>
-  Your message here
-   | 
-  Another message
-</span>
-`;
-
-exports[`API MessageProvider Example 1`] = `
+exports[`API > MessageContext Example 1`] = `
 <span>
   Your message here
    | 
@@ -22,7 +14,15 @@ exports[`API MessageProvider Example 1`] = `
 </span>
 `;
 
-exports[`API useMessage Example 1`] = `
+exports[`API > MessageProvider Example 1`] = `
+<span>
+  Your message here
+   | 
+  Another message
+</span>
+`;
+
+exports[`API > useMessage Example 1`] = `
 <article>
   <h1>
     "fi" ja "en"
@@ -33,9 +33,9 @@ exports[`API useMessage Example 1`] = `
 </article>
 `;
 
-exports[`API useMessageGetter Example 1`] = `"Your message here"`;
+exports[`API > useMessageGetter Example 1`] = `"Your message here"`;
 
-exports[`README Example 1 1`] = `
+exports[`README > Example 1 1`] = `
 <ul>
   <li>
     Your message is important
@@ -49,7 +49,7 @@ exports[`README Example 1 1`] = `
 </ul>
 `;
 
-exports[`README Example 2 1`] = `
+exports[`README > Example 2 1`] = `
 [
   "FÖÖ",
   "FOO",
@@ -60,7 +60,7 @@ exports[`README Example 2 1`] = `
 ]
 `;
 
-exports[`README Example 3 1`] = `
+exports[`README > Example 3 1`] = `
 [
   <ul>
     <li>

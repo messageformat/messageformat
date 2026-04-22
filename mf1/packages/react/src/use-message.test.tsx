@@ -1,5 +1,14 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
+import {
+  Mock,
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  test,
+  vitest
+} from 'vitest';
 
 import { MessageProvider, useMessage } from '@messageformat/react';
 
@@ -139,7 +148,7 @@ describe('Wrapped provider', () => {
 
 describe('Reporting errors', () => {
   test('onError="silent"', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const warn = vitest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       const component = renderer.create(
         <MessageProvider messages={{ x: 'X' }} onError="silent">
@@ -154,10 +163,10 @@ describe('Reporting errors', () => {
   });
 
   test('onError={null}', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const warn = vitest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       const component = renderer.create(
-        <MessageProvider messages={{ x: 'X' }} onError={null}>
+        <MessageProvider messages={{ x: 'X' }} onError={null as any}>
           <ShowMessage id="y" />
         </MessageProvider>
       );
@@ -169,7 +178,7 @@ describe('Reporting errors', () => {
   });
 
   test('onError="warn"', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const warn = vitest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       const component = renderer.create(
         <MessageProvider messages={{ x: 'X' }} onError="warn">
@@ -186,26 +195,26 @@ describe('Reporting errors', () => {
   describe('onError="error"', () => {
     // Silence pointless console errors until this is resolved:
     // https://github.com/facebook/react/pull/17383
-    let spy;
+    let spy: Mock;
     beforeAll(() => {
-      spy = jest.spyOn(console, 'error').mockImplementation();
+      spy = vitest.spyOn(console, 'error').mockImplementation(() => {});
     });
     afterAll(() => {
       spy.mockRestore();
     });
 
     class Catch extends React.Component {
-      static getDerivedStateFromError(error) {
+      static getDerivedStateFromError(error: any) {
         return { error };
       }
       state: { error: null | Error };
-      constructor(props) {
+      constructor(props: any) {
         super(props);
         this.state = { error: null };
       }
       render() {
         const { error } = this.state;
-        return error ? error.message : this.props.children;
+        return error ? error.message : (this.props as any).children;
       }
     }
 
@@ -222,7 +231,7 @@ describe('Reporting errors', () => {
   });
 
   test('onError={() => string}', () => {
-    const onError = jest.fn(err => err.path.join('.'));
+    const onError = vitest.fn(err => err.path.join('.'));
     const component = renderer.create(
       <MessageProvider messages={{ x: 'X' }} onError={onError}>
         <ShowMessage id="y" />
@@ -235,7 +244,7 @@ describe('Reporting errors', () => {
   });
 
   test('onError={() => null}', () => {
-    const onError = jest.fn(() => null);
+    const onError = vitest.fn(() => null);
     const component = renderer.create(
       <MessageProvider messages={{ x: 'X' }} onError={onError}>
         <ShowMessage id="y" />
@@ -248,7 +257,7 @@ describe('Reporting errors', () => {
   });
 
   test('debug={() => string} (deprecated)', () => {
-    const debug = jest.fn(msg => `[${msg}]`);
+    const debug = vitest.fn(msg => `[${msg}]`);
     const component = renderer.create(
       <MessageProvider debug={debug} messages={{ x: 'X' }}>
         <ShowMessage id="y" />
@@ -259,7 +268,7 @@ describe('Reporting errors', () => {
   });
 
   test('debug={() => null} (deprecated)', () => {
-    const debug = jest.fn(() => null);
+    const debug = vitest.fn(() => null);
     const component = renderer.create(
       <MessageProvider debug={debug} messages={{ x: 'X' }}>
         <ShowMessage id="y" />
@@ -270,7 +279,7 @@ describe('Reporting errors', () => {
   });
 
   test('non-object messages', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const warn = vitest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       const component = renderer.create(
         <MessageProvider messages={42 as any}>

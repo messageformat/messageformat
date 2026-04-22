@@ -1,5 +1,6 @@
-import { Skeleton } from '../types/skeleton';
-import { getNumberFormatOptions } from './options';
+import { describe, expect, test, vitest } from 'vitest';
+import { Skeleton } from '../types/skeleton.js';
+import { getNumberFormatOptions } from './options.js';
 
 interface TestCase {
   skeleton: Skeleton;
@@ -320,7 +321,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
     for (const [name, data] of Object.entries(cases)) {
       const { skeleton, result, unsupported } = data;
       test(name, () => {
-        const cb = jest.fn();
+        const cb = vitest.fn();
         const opt = getNumberFormatOptions(skeleton, cb);
         expect(opt).toEqual(result || {});
         if (unsupported) expect(cb.mock.calls).toEqual(unsupported);

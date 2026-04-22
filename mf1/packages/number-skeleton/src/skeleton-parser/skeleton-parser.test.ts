@@ -1,5 +1,6 @@
-import { Skeleton } from '../types/skeleton';
-import { parseNumberSkeleton } from '../parse-skeleton';
+import { describe, expect, test, vitest } from 'vitest';
+import { parseNumberSkeleton } from '../parse-skeleton.js';
+import { Skeleton } from '../types/skeleton.js';
 
 const tests: { [testSet: string]: { [src: string]: Skeleton } } = {
   examples: {
@@ -236,7 +237,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
   describe(testSet, () => {
     for (const [src, expected] of Object.entries(cases)) {
       test(src, () => {
-        const onError = jest.fn();
+        const onError = vitest.fn();
         const skeleton = parseNumberSkeleton(src, onError);
         expect(onError).not.toHaveBeenCalled();
         expect(skeleton).toEqual(expected);
@@ -276,7 +277,7 @@ describe('errors', () => {
   for (const [src, expected] of Object.entries(cases)) {
     test(src, () => {
       expect(() => parseNumberSkeleton(src)).toThrow();
-      const onError = jest.fn();
+      const onError = vitest.fn();
       parseNumberSkeleton(src, onError);
       expect(onError.mock.calls).toMatchObject([[expected]]);
     });

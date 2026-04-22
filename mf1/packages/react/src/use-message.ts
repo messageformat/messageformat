@@ -48,7 +48,7 @@ import { MessageContext } from './message-context.js';
  * ```
  */
 export function useMessage(
-  id: string | string[],
+  id?: string | string[],
   params?: unknown,
   locale?: string | string[]
 ) {

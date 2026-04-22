@@ -1,8 +1,10 @@
+import { describe, expect, test, vitest } from 'vitest';
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-jest.mock('fs', () => require('memfs').fs);
+vitest.mock('fs', () => require('memfs').fs);
 
 import { fs } from 'memfs';
-import { source } from '~/test/utils/source';
+import { source } from '#test/utils/source';
 import { messageformat } from './index';
 
 const jsonSrc = '{"key":{"inner":"value {foo}"}}';

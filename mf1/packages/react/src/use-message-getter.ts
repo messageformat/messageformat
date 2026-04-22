@@ -39,7 +39,7 @@ import { MessageContext } from './message-context.js';
  * ```
  */
 export function useMessageGetter(
-  rootId: string | string[],
+  rootId?: string | string[],
   opt?: MessageGetterOptions
 ) {
   const context = useContext(MessageContext);

@@ -1,8 +1,8 @@
-//import { describe, expect, test, vi as jest } from 'vitest'
+import { describe, expect, test as test_, vitest } from 'vitest';
 import { CST, parseCST } from './cst-parser.ts';
 
 const nodeVersion = process.versions?.node?.split('.');
-if (nodeVersion && Number(nodeVersion[0]) < 16) test = test.skip;
+const test = nodeVersion && Number(nodeVersion[0]) < 16 ? test_.skip : test_;
 
 type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
@@ -14,7 +14,7 @@ type RecursivePartial<T> = {
 type TestResource = RecursivePartial<CST.Resource>;
 
 function parseOk(source: string) {
-  const onError = jest.fn();
+  const onError = vitest.fn();
   const res = parseCST(source, onError);
   for (const [range, msg] of onError.mock.calls) {
     console.error(`${msg}: ${source.substring(range[0], range[1])}`);
@@ -24,10 +24,10 @@ function parseOk(source: string) {
 }
 
 function parseFail(source: string) {
-  const onError = jest.fn();
+  const onError = vitest.fn();
   const res = parseCST(source, onError);
   expect(onError).toHaveBeenCalled();
-  return [res, onError.mock.calls];
+  return [res, onError.mock.calls] as const;
 }
 
 test('empty string', () => {
@@ -237,9 +237,9 @@ describe('duplicate identifiers', () => {
       }
     ]);
     expect(calls).toMatchObject([
-      [res[0].id.range, 'Duplicate identifier'],
-      [res[1].id.range, 'Duplicate identifier'],
-      [res[2].id.range, 'Duplicate identifier']
+      [(res[0] as CST.Entry).id.range, 'Duplicate identifier'],
+      [(res[1] as CST.Entry).id.range, 'Duplicate identifier'],
+      [(res[2] as CST.Entry).id.range, 'Duplicate identifier']
     ]);
   });
 
@@ -286,9 +286,18 @@ describe('duplicate identifiers', () => {
       { type: 'section-head', id: { value: ['a', 'b'] } }
     ]);
     expect(calls).toMatchObject([
-      [res[0].id.range, 'Shorter matching identifier must precede longer one'],
-      [res[1].id.range, 'Shorter matching identifier must precede longer one'],
-      [res[2].id.range, 'Shorter matching identifier must precede longer one']
+      [
+        (res[0] as CST.Entry).id.range,
+        'Shorter matching identifier must precede longer one'
+      ],
+      [
+        (res[1] as CST.Entry).id.range,
+        'Shorter matching identifier must precede longer one'
+      ],
+      [
+        (res[2] as CST.Entry).id.range,
+        'Shorter matching identifier must precede longer one'
+      ]
     ]);
   });
 });

@@ -19,7 +19,7 @@ export interface MessageProviderProps {
    * A hierarchical object containing the messages as boolean, number, string or function values.
    */
   messages: MessageObject;
-  context?: MessageContext;
+  context?: MessageContext | null;
 
   /** @deprecated Use onError instead */
   debug?: 'error' | 'warn' | ((msg: string) => unknown);

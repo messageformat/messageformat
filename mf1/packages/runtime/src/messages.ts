@@ -107,7 +107,10 @@ export default class Messages {
    * @param msgData - A map of locale codes to their function objects
    * @param defaultLocale - If not defined, default and initial locale is the first key of `msgData`
    */
-  constructor(msgData: { [key: string]: MessageData }, defaultLocale?: string) {
+  constructor(
+    msgData: { [key: string]: MessageData },
+    defaultLocale?: string | null
+  ) {
     Object.keys(msgData).forEach(lc => {
       if (lc !== 'toString') {
         this._data[lc] = _withNullPrototype(msgData[lc]);
@@ -167,7 +170,7 @@ export default class Messages {
    */
   addMessages(
     data: MessageData | MessageFunction,
-    locale?: string,
+    locale?: string | null,
     keypath?: string[]
   ) {
     const lc = locale || String(this.locale);
@@ -247,7 +250,11 @@ export default class Messages {
    * @param locale - If empty or undefined, defaults to `this.locale`
    * @param fallback - If true, also checks fallback locales
    */
-  hasMessage(key: string | string[], locale?: string, fallback?: boolean) {
+  hasMessage(
+    key: string | string[],
+    locale?: string | null,
+    fallback?: boolean
+  ) {
     const lc = locale || String(this.locale);
     const fb = fallback ? this.getFallback(lc) : null;
     return _has(this._data, lc, key, fb, 'function');
@@ -265,7 +272,11 @@ export default class Messages {
    * @param locale - If empty or undefined, defaults to `this.locale`
    * @param fallback - If true, also checks fallback locales
    */
-  hasObject(key: string | string[], locale?: string, fallback?: boolean) {
+  hasObject(
+    key: string | string[],
+    locale?: string | null,
+    fallback?: boolean
+  ) {
     const lc = locale || String(this.locale);
     const fb = fallback ? this.getFallback(lc) : null;
     return _has(this._data, lc, key, fb, 'object');
