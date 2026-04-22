@@ -1,13 +1,13 @@
 import Compiler from './compiler';
 import {
-  PluralFunction,
-  PluralObject,
+  type PluralFunction,
+  type PluralObject,
   getAllPlurals,
   getPlural,
   hasPlural
 } from './plurals';
 
-export { PluralFunction };
+export type { PluralFunction };
 
 /**
  * A compiled message function, which may accept an object parameter

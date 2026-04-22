@@ -30,4 +30,4 @@ export {
   MessageResolutionError,
   MessageSyntaxError
 } from './errors.ts';
-export { MessageFormat, MessageFormatOptions } from './messageformat.ts';
+export { MessageFormat, type MessageFormatOptions } from './messageformat.ts';
