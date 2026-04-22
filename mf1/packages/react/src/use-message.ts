@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { getMessage } from './get-message';
-import { MessageContext } from './message-context';
+import { getMessage } from './get-message.js';
+import { MessageContext } from './message-context.js';
 
 /**
  * A custom React hook providing an entry from the messages object of the current or given locale.

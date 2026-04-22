@@ -2,9 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "declaration": true,
-    "module": "CommonJS",
-    "outDir": "lib/",
-    "removeComments": true
+    "outDir": "./lib",
+    "removeComments": true,
+    "rootDir": "./src",
+    "types": ["node"]
   },
   "include": ["src/*"],
   "exclude": ["**/*.test.ts"]

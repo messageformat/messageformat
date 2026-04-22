@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { MessageGetterOptions, getMessageGetter } from './get-message';
-import { MessageContext } from './message-context';
+import { MessageGetterOptions, getMessageGetter } from './get-message.js';
+import { MessageContext } from './message-context.js';
 
 /**
  * A custom [React hook] providing a message getter function, which may have a preset root id path, locale, and/or base parameters for message functions.

@@ -4,7 +4,8 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "jsx": "react",
-    "outDir": "lib"
+    "outDir": "./lib",
+    "rootDir": "./src"
   },
   "include": ["src/*"],
   "exclude": ["**/*.test.tsx"]

@@ -2,9 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "lib",
+    "declarationDir": "./lib",
     "emitDeclarationOnly": true,
-    "removeComments": false
+    "removeComments": false,
+    "rootDir": "./src"
   },
   "exclude": ["**/*.test.ts", "**/api.d.ts"]
 }

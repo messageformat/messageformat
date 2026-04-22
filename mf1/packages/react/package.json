@@ -20,6 +20,7 @@
   ],
   "license": "MIT",
   "homepage": "http://messageformat.github.io/messageformat/api/react/",
+  "type": "module",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",

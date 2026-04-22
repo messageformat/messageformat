@@ -1,6 +1,10 @@
 import { ReactNode, createElement, useContext, useMemo } from 'react';
-import { MessageContext, MessageObject, defaultValue } from './message-context';
-import { ErrorCode, MessageError, errorMessages } from './message-error';
+import {
+  MessageContext,
+  MessageObject,
+  defaultValue
+} from './message-context.js';
+import { ErrorCode, MessageError, errorMessages } from './message-error.js';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - https://github.com/microsoft/rushstack/issues/1050

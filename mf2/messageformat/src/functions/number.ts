@@ -9,7 +9,7 @@ import { asPositiveInteger, asString } from './utils.ts';
 
 /**
  * The resolved value of a
- * {@link DraftFunctions.currency | :currency},
+ * {@link DefaultFunctions.currency | :currency},
  * {@link DefaultFunctions.integer | :integer},
  * {@link DefaultFunctions.number | :number},
  * {@link DefaultFunctions.offset | :offset},

@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES5"
+    "rootDir": "./src",
+    "target": "ES2017"
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.ts"]
