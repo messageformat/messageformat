@@ -19,6 +19,7 @@ export default [
       'mf1/packages/core/messageformat.*',
       'mf1/packages/date-skeleton/lib/*',
       'mf1/packages/number-skeleton/lib/*',
+      'mf1/packages/parser/esm/*',
       'mf1/packages/parser/lib/*',
       'mf1/packages/react/lib/*',
       'mf1/packages/react/src/__fixtures__/*',
