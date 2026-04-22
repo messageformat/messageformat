@@ -37,8 +37,7 @@ const browserBundle = {
     resolve(),
     commonjs(),
     typescript({
-      downlevelIteration: true,
-      target: 'ES5'
+      target: 'ES2017'
     }),
     babel({
       babelHelpers: 'bundled',

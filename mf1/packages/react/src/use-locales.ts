@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { MessageContext } from './message-context';
+import { MessageContext } from './message-context.js';
 
 /**
  * A custom React hook providing the current locales as an array of string identifiers, with earlier entries taking precedence over latter ones.

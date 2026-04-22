@@ -285,7 +285,7 @@ export function getNumberFormatOptions(
       opt.signDisplay = 'negative';
       break;
     default:
-      if (sign) fail(sign);
+      if (sign) onError(sign);
   }
 
   switch (roundingMode) {

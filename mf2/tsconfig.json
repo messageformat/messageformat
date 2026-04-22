@@ -2,7 +2,6 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "types": ["jest", "node"],
-    "baseUrl": ".",
     "paths": {
       "~/*": ["../*"],
       "@messageformat/fluent": ["fluent/src/index.ts"],

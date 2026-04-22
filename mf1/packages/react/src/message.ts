@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { getMessage, getPath } from './get-message';
-import { MessageContext } from './message-context';
+import { getMessage, getPath } from './get-message.js';
+import { MessageContext } from './message-context.js';
 
 /** @public */
 export interface MessageProps {

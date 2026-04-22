@@ -21,11 +21,15 @@
  * } from '@messageformat/react'
  * ```
  */
-export { getMessage, getMessageGetter } from './get-message';
-export { Message, MessageProps } from './message';
-export { MessageContext, MessageObject, MessageValue } from './message-context';
-export { MessageError } from './message-error';
-export { MessageProvider, MessageProviderProps } from './message-provider';
-export { useLocales } from './use-locales';
-export { useMessage } from './use-message';
-export { useMessageGetter } from './use-message-getter';
+export { getMessage, getMessageGetter } from './get-message.js';
+export { Message, MessageProps } from './message.js';
+export {
+  MessageContext,
+  MessageObject,
+  MessageValue
+} from './message-context.js';
+export { MessageError } from './message-error.js';
+export { MessageProvider, MessageProviderProps } from './message-provider.js';
+export { useLocales } from './use-locales.js';
+export { useMessage } from './use-message.js';
+export { useMessageGetter } from './use-message-getter.js';
