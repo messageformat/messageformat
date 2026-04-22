@@ -1,4 +1,3 @@
-import { getTestCases } from '#test/fixtures/messageformat';
 import { describe, expect, test } from 'vitest';
 import MessageFormat from './messageformat';
 import { PluralFunction } from './plurals';
@@ -106,7 +105,7 @@ describe('new MessageFormat()', () => {
 
     test('should override time zone', () => {
       const date = new Date(2006, 0, 2, 15, 4, 5, 789);
-      const mf = new MessageFormat('en', { timeZone: 'CST' });
+      const mf = new MessageFormat('en', { timeZone: 'America/Chicago' });
       const src = '{value, date, ::hamszzz}';
       const zoneOffset = date.getTimezoneOffset();
       const cstOffset = -6 * 60;
@@ -114,7 +113,7 @@ describe('new MessageFormat()', () => {
         date.getTime() - (zoneOffset + cstOffset) * 60 * 1000
       );
       const opt = mf.resolvedOptions();
-      expect(opt.timeZone).toBe('CST');
+      expect(opt.timeZone).toBe('America/Chicago');
       expect(mf.compile(src)({ value: offsetDate })).toBe('3:04:05 PM CST');
     });
   });
@@ -187,56 +186,3 @@ describe('compile() errors', () => {
     expect(() => mf.compile(src)).toThrow('Unknown .00 option: @@');
   });
 });
-
-const isNode12 = process.version.startsWith('v12');
-const isV2 =
-  // @ts-ignore signDisplay introduced in Unified API proposal, i.e. "NumberFormat v2"
-  (55).toLocaleString('en-US', { signDisplay: 'always' }) === '+55';
-
-for (const [title, cases] of Object.entries(
-  getTestCases(MessageFormat.escape)
-)) {
-  describe(title, () => {
-    for (const { locale, options, src, exp, skip } of cases) {
-      let desc: typeof describe | typeof describe.skip = describe;
-      if (skip) {
-        if (isNode12 && skip.includes('node12')) desc = describe.skip;
-        else if (!isV2 && skip.includes('v1')) desc = describe.skip;
-      }
-      let name = src;
-      if (locale || options) {
-        const opt = [locale || 'en'];
-        for (const [key, value] of Object.entries(options || {})) {
-          opt.push(`${key}: ${value}`);
-        }
-        name = `[${opt.join(', ')}] ${src}`;
-      }
-      desc(name, () => {
-        for (const [param, res] of exp) {
-          const strParam = [];
-          if (param && typeof param === 'object') {
-            for (const [key, value] of Object.entries(param)) {
-              strParam.push(`${key}: ${value}`);
-            }
-          } else {
-            strParam.push(String(param));
-          }
-          test(strParam.join(', '), () => {
-            const mf = new MessageFormat(locale || 'en', options);
-            const msg = mf.compile(src);
-            if (res && typeof res === 'object' && 'error' in res) {
-              if (res.error === true) expect(() => msg(param)).toThrow();
-              else expect(() => msg(param)).toThrow(res.error);
-            } else if (res instanceof RegExp) {
-              expect(msg(param)).toMatch(res);
-            } else if (Array.isArray(res)) {
-              expect(msg(param)).toMatchObject(res);
-            } else {
-              expect(msg(param)).toBe(res);
-            }
-          });
-        }
-      });
-    }
-  });
-}

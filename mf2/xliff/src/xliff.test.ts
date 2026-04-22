@@ -1,5 +1,5 @@
-import { source } from '#test/utils/source.js';
 import { fluentToResourceData } from '@messageformat/fluent';
+import { source } from '@messageformat/test-utils/source.js';
 import {
   type Model as MF,
   parseMessage,

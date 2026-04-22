@@ -1,8 +1,9 @@
-/** Trim leading whitespace from each line */
-export function source(
-  strings: TemplateStringsArray,
-  ...expressions: unknown[]
-) {
+/**
+ * @param {TemplateStringsArray} strings
+ * @param {...unknown} expressions
+ * @returns {string}
+ */
+export function source(strings, ...expressions) {
   // concatenate
   let res = strings[0];
   for (let i = 1; i < strings.length; ++i) {

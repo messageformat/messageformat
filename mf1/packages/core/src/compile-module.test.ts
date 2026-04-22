@@ -1,11 +1,33 @@
-import { getModule } from '#test/fixtures/get-message-module';
+import { write as write_ } from 'fs';
+import { fileSync } from 'tmp';
+import { promisify } from 'util';
+
 import { describe, expect, it } from 'vitest';
-import compileModule from './compile-module';
+import compileModule, { MessageModule } from './compile-module';
+import type { StringStructure } from './compiler';
 import MessageFormat from './messageformat';
 import { PluralFunction } from './plurals';
 
-const NODE_VERSION =
-  typeof process === 'undefined' ? 99 : parseInt(process.version.slice(1));
+const write = promisify(write_);
+
+export async function getMessageModule<T extends StringStructure>(
+  mf: MessageFormat,
+  messages: T
+) {
+  const src = compileModule(mf, messages);
+  const tmpFile = fileSync({
+    dir: __dirname,
+    tmpdir: __dirname,
+    postfix: '.mjs'
+  });
+  await write(tmpFile.fd, src, 0, 'utf8');
+  try {
+    const mod = await import(tmpFile.name);
+    return mod.default as MessageModule<T>;
+  } finally {
+    tmpFile.removeCallback();
+  }
+}
 
 describe('compileModule()', function () {
   it('can compile an object of messages', async function () {
@@ -13,7 +35,7 @@ describe('compileModule()', function () {
       key: 'I have {FRIENDS, plural, one{one friend} other{# friends}}.'
     };
     const mf = new MessageFormat('en');
-    const mfunc = await getModule(mf, data);
+    const mfunc = await getMessageModule(mf, data);
     expect(mfunc).toBeInstanceOf(Object);
     expect(mfunc.key).toBeInstanceOf(Function);
     expect(mfunc.key({ FRIENDS: 1 })).toBe('I have one friend.');
@@ -27,7 +49,7 @@ describe('compileModule()', function () {
         'unreserved is not a JavaScript reserved word so should not be quoted'
     };
     const mf = new MessageFormat('en');
-    const mfunc = await getModule(mf, data);
+    const mfunc = await getMessageModule(mf, data);
 
     expect(mfunc['default']).toBeInstanceOf(Function);
     expect(mfunc['default']()).toBe(
@@ -43,10 +65,10 @@ describe('compileModule()', function () {
   it('can be instantiated multiple times', async function () {
     const mf = { en: new MessageFormat('en'), ru: new MessageFormat('ru') };
     const cf = {
-      en: await getModule(mf.en, {
+      en: await getMessageModule(mf.en, {
         msg: '{count} {count, plural, other{users}}'
       }),
-      ru: await getModule(mf.ru, {
+      ru: await getMessageModule(mf.ru, {
         msg: '{count} {count, plural, other{пользователей}}'
       })
     };
@@ -65,7 +87,7 @@ describe('compileModule()', function () {
       const mf = new MessageFormat(['en', 'fr', 'ru'], {
         customFormatters: { lc: (_, lc) => lc }
       });
-      const cf = await getModule(mf, {
+      const cf = await getMessageModule(mf, {
         fr: 'Locale: {_, lc}',
         ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
       });
@@ -77,7 +99,7 @@ describe('compileModule()', function () {
       const mf = new MessageFormat(null, {
         customFormatters: { lc: (_, lc) => lc }
       });
-      const cf = await getModule(mf, {
+      const cf = await getMessageModule(mf, {
         xx: 'Locale: {_, lc}',
         fr: 'Locale: {_, lc}'
       });
@@ -89,7 +111,7 @@ describe('compileModule()', function () {
       const mf = new MessageFormat('*', {
         customFormatters: { lc: (_, lc) => lc }
       });
-      const cf = await getModule(mf, {
+      const cf = await getMessageModule(mf, {
         fr: 'Locale: {_, lc}',
         xx: 'Locale: {_, lc}',
         ru: '{count, plural, one{1} few{2} many{3} other{x:#}}'
@@ -105,7 +127,7 @@ describe('compileModule()', function () {
         localeCodeFromKey: key =>
           key === 'fr' ? 'fr' : key === 'es-MX' ? 'es-MX' : null
       });
-      const cf = await getModule(mf, {
+      const cf = await getMessageModule(mf, {
         fr: 'Locale: {_, lc}',
         xx: 'Locale: {_, lc}',
         'es-MX': 'Locale: {_, lc}'
@@ -158,7 +180,7 @@ describe('compileModule()', function () {
   describe('message selectors', () => {
     it('select', async () => {
       const mf = new MessageFormat('en');
-      const msg = await getModule(mf, {
+      const msg = await getMessageModule(mf, {
         0: '{x, select, one{one} other{other}}'
       });
       expect(msg[0]({ x: 'one' })).toBe('one');
@@ -168,7 +190,7 @@ describe('compileModule()', function () {
 
     it('plural', async () => {
       const mf = new MessageFormat('en');
-      const msg = await getModule(mf, {
+      const msg = await getMessageModule(mf, {
         0: '{x, plural, one{one} other{other}}'
       });
       expect(msg[0]({ x: 1 })).toBe('one');
@@ -177,7 +199,7 @@ describe('compileModule()', function () {
 
     it('selectordinal', async () => {
       const mf = new MessageFormat('en');
-      const msg = await getModule(mf, {
+      const msg = await getMessageModule(mf, {
         0: '{x, selectordinal, one{one} two{two} other{other}}'
       });
       expect(msg[0]({ x: 1 })).toBe('one');
@@ -189,7 +211,7 @@ describe('compileModule()', function () {
   describe('spec formatters', () => {
     it('number', async () => {
       const mf = new MessageFormat('en');
-      const msg = await getModule(mf, {
+      const msg = await getMessageModule(mf, {
         0: 'This is {VAR, number, integer}.',
         1: 'Other {VAR, number, {type}}.'
       });
@@ -199,7 +221,7 @@ describe('compileModule()', function () {
 
     it('date', async () => {
       const mf = new MessageFormat('en');
-      const msg = await getModule(mf, {
+      const msg = await getMessageModule(mf, {
         0: 'Today is {T, date}',
         1: 'The year is {T, date, ::y}'
       });
@@ -214,24 +236,22 @@ describe('compileModule()', function () {
       const mf = new MessageFormat('en', {
         customFormatters: { uppercase: v => String(v).toUpperCase() }
       });
-      const msg = await getModule(mf, {
+      const msg = await getMessageModule(mf, {
         0: 'This is {VAR,uppercase}.',
         1: 'Other string'
       });
       expect(msg[0]({ VAR: 'big' })).toBe('This is BIG.');
     });
 
-    if (NODE_VERSION >= 12) {
-      it('supports number formatters', async function () {
-        const mf = new MessageFormat('en');
-        const msg = await getModule(mf, {
-          0: 'Your balance is {VAR, number, ¤#,##0.00;(¤#,##0.00)}.',
-          1: 'The sparrow flew {VAR, number, :: measure-unit/length-meter unit-width-full-name}'
-        });
-        expect(msg[0]({ VAR: -3.27 })).toBe('Your balance is ($3.27).');
-        expect(msg[1]({ VAR: 42 })).toBe('The sparrow flew 42 meters');
+    it('supports number formatters', async function () {
+      const mf = new MessageFormat('en');
+      const msg = await getMessageModule(mf, {
+        0: 'Your balance is {VAR, number, ¤#,##0.00;(¤#,##0.00)}.',
+        1: 'The sparrow flew {VAR, number, :: measure-unit/length-meter unit-width-full-name}'
       });
-    }
+      expect(msg[0]({ VAR: -3.27 })).toBe('Your balance is ($3.27).');
+      expect(msg[1]({ VAR: 42 })).toBe('The sparrow flew 42 meters');
+    });
 
     it('import from module; id == key', async () => {
       const upcase = {
@@ -359,7 +379,9 @@ describe('compileModule()', function () {
     it('allows overriding default formatters', async () => {
       const number = (v: unknown) => Number(v) + 2;
       const mf = new MessageFormat('en', { customFormatters: { number } });
-      const cf = await getModule(mf, { msg: 'one and one is {one, number}' });
+      const cf = await getMessageModule(mf, {
+        msg: 'one and one is {one, number}'
+      });
       expect(cf.msg({ one: 1 })).toBe('one and one is 3');
     });
 

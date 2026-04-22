@@ -4,7 +4,7 @@ import {
   testName,
   testScenarios,
   testType
-} from '#test/utils/mfwg-test-utils.js';
+} from '@messageformat/test-utils/mfwg-test-utils.js';
 import { describe, expect, test, vitest } from 'vitest';
 
 import { cstKey, messageFromCST, parseCST, stringifyCST } from './cst/index.ts';

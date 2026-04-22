@@ -1,71 +1,12 @@
-import { readFileSync, readdirSync } from 'node:fs';
-import { join, relative } from 'node:path';
-
-export function* testScenarios(root: string): Iterable<TestScenario> {
-  for (const ent of readdirSync(root, {
-    recursive: true,
-    withFileTypes: true
-  })) {
-    if (ent.isFile() && ent.name.endsWith('.json')) {
-      const path = join(ent.path ?? ent.parentPath, ent.name);
-      const src = readFileSync(path, { encoding: 'utf-8' });
-      const ts: TestScenario = JSON.parse(src);
-      ts.scenario ||= relative(root, path);
-      yield ts;
-    }
-  }
-}
-
-export function* testCases(scenario: TestScenario): Iterable<Test> {
-  const defaults = scenario.defaultTestProperties;
-  for (const test of scenario.tests) {
-    const td = Object.assign({}, defaults, test);
-    const tt = td as unknown as Test;
-    if (td.params) {
-      const pr: Record<string, unknown> = {};
-      for (const p of td.params) {
-        pr[p.name] =
-          'type' in p && p.type === 'datetime' ? new Date(p.value) : p.value;
-      }
-      tt.params = pr;
-    }
-    yield tt;
-  }
-}
-
-export function testName({ src, locale, params }: Test) {
-  let name = src;
-  if (locale !== 'en-US') name += ` [${locale}]`;
-  if (params) {
-    name += ` / {${Object.entries(params)
-      .map(p => ` ${p[0]}: ${p[1]}`)
-      .join()} }`;
-  }
-  return name.replace(/ *\n */g, ' ');
-}
-
-const dataModelErrors = [
-  'duplicate-attribute',
-  'duplicate-declaration',
-  'duplicate-option-name',
-  'duplicate-variant',
-  'missing-fallback-variant',
-  'missing-selector-annotation',
-  'variant-key-mismatch'
-];
-export function testType(tc: Test) {
-  if (!tc.expErrors) return 'valid';
-  if (Array.isArray(tc.expErrors)) {
-    for (const ee of tc.expErrors) {
-      if (ee.type === 'syntax-error') return 'syntax-error';
-      if (dataModelErrors.includes(ee.type)) return 'data-model-error';
-    }
-  }
-  return 'error';
-}
+export declare function testScenarios(root: string): Iterable<TestScenario>;
+export declare function testCases(scenario: TestScenario): Iterable<Test>;
+export declare function testName(test: Test): string;
+export declare function testType(
+  tc: Test
+): 'valid' | 'syntax-error' | 'data-model-error' | 'error';
 
 /** The main schema for MessageFormat 2 test data. */
-type TestScenario = {
+export type TestScenario = {
   /** Identifier for the tests in the file. */
   scenario: string;
 
@@ -77,7 +18,7 @@ type TestScenario = {
   tests: TestData[];
 };
 
-type DefaultTestProperties = {
+export type DefaultTestProperties = {
   /** The locale to use for formatting. */
   locale?: string;
 

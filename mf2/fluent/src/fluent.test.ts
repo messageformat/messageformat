@@ -21,8 +21,8 @@
  *     limitations under the License.
  */
 
-import { source } from '#test/utils/source.js';
 import * as Fluent from '@fluent/syntax';
+import { source } from '@messageformat/test-utils/source.js';
 import { type Model as MF, validate } from 'messageformat';
 import { DefaultFunctions } from 'messageformat/functions';
 import { describe, expect, test, vitest } from 'vitest';

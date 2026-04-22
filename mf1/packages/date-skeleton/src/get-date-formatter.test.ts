@@ -1,12 +1,9 @@
-import { describe, expect, test as test_, vitest } from 'vitest';
+import { describe, expect, test, vitest } from 'vitest';
 import {
   getDateFormatter,
   getDateFormatterSource
 } from './get-date-formatter.js';
 import { parseDateTokens } from './tokens.js';
-
-// Too many divergences in Intl.DateTimeFormat output on Node.js 10 and earlier
-const test = process.version < 'v12' ? test_.skip : test_;
 
 // 2006 Jan 2, 15:04:05.789 in local time
 const date = new Date(2006, 0, 2, 15, 4, 5, 789);

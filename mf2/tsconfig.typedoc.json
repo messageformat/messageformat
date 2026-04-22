@@ -8,7 +8,6 @@
     "baseUrl": ".",
 
     "paths": {
-      "#test/*": ["../test/*"],
       "@messageformat/fluent": ["./fluent/src/index.ts"],
       "@messageformat/icu-messageformat-1": [
         "./icu-messageformat-1/src/index.ts"
