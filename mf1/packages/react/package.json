@@ -5,7 +5,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/messageformat/messageformat.git",
-    "directory": "packages/react"
+    "directory": "mf1/packages/react"
   },
   "keywords": [
     "i18n",
