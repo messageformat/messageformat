@@ -1,7 +1,8 @@
-import Messages from './messages';
 import MessageFormat from '@messageformat/core';
-import { getModule } from '~/test/fixtures/get-message-module';
 import { MessageModule } from '@messageformat/core/src/compile-module'; // FIXME
+import { getModule } from '#test/fixtures/get-message-module';
+import { beforeAll, beforeEach, expect, it } from 'vitest';
+import Messages from './messages';
 
 const msgSet = {
   en: {

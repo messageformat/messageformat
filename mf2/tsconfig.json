@@ -8,7 +8,7 @@
     "baseUrl": ".",
 
     "paths": {
-      "~/*": ["../*"],
+      "#test/*": ["../test/*"],
       "@messageformat/fluent": ["fluent/src/index.ts"],
       "@messageformat/icu-messageformat-1": [
         "icu-messageformat-1/src/index.ts"
@@ -16,6 +16,6 @@
       "messageformat": ["messageformat/src/index.ts"],
       "messageformat/functions": ["messageformat/src/functions/index.ts"]
     },
-    "types": ["jest", "node"]
+    "types": ["node"]
   }
 }

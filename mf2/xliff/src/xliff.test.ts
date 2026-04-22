@@ -1,11 +1,12 @@
+import { source } from '#test/utils/source.js';
 import { fluentToResourceData } from '@messageformat/fluent';
-import { source } from '~/test/utils/source.js';
-import { mf2xliff, stringify, xliff2mf } from './index.ts';
 import {
   type Model as MF,
   parseMessage,
   stringifyMessage
 } from 'messageformat';
+import { describe, expect, test } from 'vitest';
+import { mf2xliff, stringify, xliff2mf } from './index.ts';
 
 test('source only', () => {
   const data = new Map<string, MF.Message>([

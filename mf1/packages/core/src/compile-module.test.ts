@@ -1,6 +1,7 @@
+import { getModule } from '#test/fixtures/get-message-module';
+import { describe, expect, it } from 'vitest';
 import compileModule from './compile-module';
 import MessageFormat from './messageformat';
-import { getModule } from '~/test/fixtures/get-message-module';
 import { PluralFunction } from './plurals';
 
 const NODE_VERSION =
@@ -62,7 +63,7 @@ describe('compileModule()', function () {
   describe('multiple languages', () => {
     it('basic support', async function () {
       const mf = new MessageFormat(['en', 'fr', 'ru'], {
-        customFormatters: { lc: (v, lc) => lc }
+        customFormatters: { lc: (_, lc) => lc }
       });
       const cf = await getModule(mf, {
         fr: 'Locale: {_, lc}',
@@ -74,7 +75,7 @@ describe('compileModule()', function () {
 
     it('defaults to supporting only English', async function () {
       const mf = new MessageFormat(null, {
-        customFormatters: { lc: (v, lc) => lc }
+        customFormatters: { lc: (_, lc) => lc }
       });
       const cf = await getModule(mf, {
         xx: 'Locale: {_, lc}',
@@ -86,7 +87,7 @@ describe('compileModule()', function () {
 
     it('supports all languages with locale "*"', async function () {
       const mf = new MessageFormat('*', {
-        customFormatters: { lc: (v, lc) => lc }
+        customFormatters: { lc: (_, lc) => lc }
       });
       const cf = await getModule(mf, {
         fr: 'Locale: {_, lc}',
@@ -100,7 +101,7 @@ describe('compileModule()', function () {
 
     it('filters & transforms plural codes using localeCodeFromKey', async () => {
       const mf = new MessageFormat(['en', 'fr', 'es-MX'], {
-        customFormatters: { lc: (v, lc) => lc },
+        customFormatters: { lc: (_, lc) => lc },
         localeCodeFromKey: key =>
           key === 'fr' ? 'fr' : key === 'es-MX' ? 'es-MX' : null
       });
@@ -248,7 +249,7 @@ describe('compileModule()', function () {
       const phone = {
         formatter: () => '',
         id: 'phone',
-        module: locale => `phone/${locale}`
+        module: (locale: any) => `phone/${locale}`
       };
       const mf = new MessageFormat('en', { customFormatters: { phone } });
       const msg = '{foo, phone}';
@@ -260,7 +261,7 @@ describe('compileModule()', function () {
       const phone = {
         formatter: (_: unknown) => '',
         id: 'phone',
-        module: locale => `phone/${locale}`
+        module: (locale: any) => `phone/${locale}`
       };
       const mf = new MessageFormat(['en-US', 'fr-FR'], {
         customFormatters: { phone },

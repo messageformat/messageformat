@@ -1,5 +1,6 @@
-import { Skeleton } from '../types/skeleton';
-import { parseNumberPattern } from '../parse-pattern';
+import { describe, expect, test, vitest } from 'vitest';
+import { parseNumberPattern } from '../parse-pattern.js';
+import { Skeleton } from '../types/skeleton.js';
 
 const cases: { [name: string]: { [pattern: string]: Skeleton } } = {
   'Number Patterns': {
@@ -374,7 +375,7 @@ describe('Errors', () => {
   for (const [pattern, { errors, expected }] of Object.entries(errorCases)) {
     test(pattern, () => {
       expect(() => parseNumberPattern(pattern)).toThrow(errors[0]);
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const res = parseNumberPattern(pattern, undefined, onError);
       expect(onError.mock.calls).toMatchObject(
         errors.map(message => [{ message }])

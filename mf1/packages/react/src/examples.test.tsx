@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import renderer from 'react-test-renderer';
+import { beforeAll, describe, expect, test } from 'vitest';
 
 import {
   Message,
@@ -21,15 +22,15 @@ import {
  * messageformat messages_fi.properties -l fi > messages_fi.js
  * ```
  */
-import en from './__fixtures__/messages_en';
-import fi from './__fixtures__/messages_fi';
+import en from './__fixtures__/messages_en.js';
+import fi from './__fixtures__/messages_fi.js';
 
 describe('README', () => {
   test('Example 1', () => {
     const messages = {
       message: 'Your message is important',
       answers: {
-        sixByNine: ({ base }) => (6 * 9).toString(base),
+        sixByNine: ({ base }: { base: number }) => (6 * 9).toString(base),
         universe: 42
       }
     };
@@ -187,7 +188,9 @@ describe('API', () => {
   });
 
   test('Message Example', () => {
-    const messages = { example: { key: ({ thing }) => `Your ${thing} here` } };
+    const messages = {
+      example: { key: ({ thing }: any) => `Your ${thing} here` }
+    };
 
     const Example = () => (
       <span>
@@ -211,8 +214,10 @@ describe('API', () => {
 
     function Example() {
       const locales = useLocales();
-      const lfOpt = { style: 'long', type: 'conjunction' };
-      const lf = new Intl.ListFormat(locales, lfOpt);
+      const lf = new Intl.ListFormat(locales, {
+        style: 'long',
+        type: 'conjunction'
+      });
       const lcMsg = lf.format(locales.map(lc => JSON.stringify(lc)));
       const keyMsg = useMessage('example.key');
       return (
@@ -238,7 +243,7 @@ describe('API', () => {
   test('useMessageGetter Example', () => {
     const messages = {
       example: {
-        funMsg: ({ thing }) => `Your ${thing} here`,
+        funMsg: ({ thing }: any) => `Your ${thing} here`,
         thing: 'message'
       }
     };

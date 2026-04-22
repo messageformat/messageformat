@@ -1,8 +1,12 @@
-import { getNumberFormatter, getNumberFormatterSource } from './get-formatter';
-import { parseNumberPattern } from './parse-pattern';
+import { describe, expect, test as test_, vitest } from 'vitest';
+import {
+  getNumberFormatter,
+  getNumberFormatterSource
+} from './get-formatter.js';
+import { parseNumberPattern } from './parse-pattern.js';
 
 // Too many divergences in Intl.NumberFormat output on Node.js 10 and earlier
-if (process.version < 'v12') test = test.skip;
+const test = process.version < 'v12' ? test_.skip : test_;
 
 const tests: {
   [testSet: string]: {
@@ -82,7 +86,7 @@ for (const [testSet, cases] of Object.entries(tests)) {
       { value, lc, cur, exp, errors = [], only }
     ] of Object.entries(cases)) {
       (only ? test.only : test)(src, () => {
-        const cb = jest.fn();
+        const cb = vitest.fn();
 
         // function from string
         let fmt = getNumberFormatter(lc, src, cur, cb);

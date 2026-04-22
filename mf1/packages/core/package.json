@@ -22,6 +22,7 @@
     "url": "git+https://github.com/messageformat/messageformat.git",
     "directory": "packages/core"
   },
+  "type": "commonjs",
   "main": "lib/messageformat.js",
   "browser": "./messageformat.js",
   "files": [

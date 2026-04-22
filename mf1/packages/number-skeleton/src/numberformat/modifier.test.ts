@@ -1,4 +1,5 @@
-import { getNumberFormatModifier } from './modifier';
+import { expect, test } from 'vitest';
+import { getNumberFormatModifier } from './modifier.js';
 
 test('empty skeleton', () => {
   const m = getNumberFormatModifier({});

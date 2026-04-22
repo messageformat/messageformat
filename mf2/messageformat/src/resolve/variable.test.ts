@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test } from 'vitest';
 import { MessageFormat } from '../index.ts';
 
 describe('variables', () => {

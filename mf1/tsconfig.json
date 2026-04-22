@@ -2,7 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "~/*": ["./*"],
+      "#test/*": ["../test/*"],
       "@messageformat/core": ["./packages/core/src/messageformat"],
       "@messageformat/core/compile-module": [
         "./packages/core/src/compile-module"
@@ -14,7 +14,8 @@
       "@messageformat/parser": ["./packages/parser/src/parser"],
       "@messageformat/react": ["./packages/react/src/index"],
       "@messageformat/runtime": ["./packages/runtime/src/runtime"],
-      "@messageformat/runtime/lib/*": ["./packages/runtime/src/*"]
-    }
+      "@messageformat/runtime/lib/*": ["./packages/runtime/src/*"],
+    },
+    "types": ["node"]
   }
 }

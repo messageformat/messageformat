@@ -3,6 +3,9 @@
   "compilerOptions": {
     "module": "preserve",
     "moduleResolution": "bundler",
+    "paths": {
+      "#test/*": ["../../../test/*"]
+    },
     "removeComments": true
   },
   "include": ["src/*"],

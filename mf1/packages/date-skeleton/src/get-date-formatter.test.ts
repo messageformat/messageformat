@@ -1,8 +1,12 @@
-import { getDateFormatter, getDateFormatterSource } from './get-date-formatter';
-import { parseDateTokens } from './tokens';
+import { describe, expect, test as test_, vitest } from 'vitest';
+import {
+  getDateFormatter,
+  getDateFormatterSource
+} from './get-date-formatter.js';
+import { parseDateTokens } from './tokens.js';
 
 // Too many divergences in Intl.DateTimeFormat output on Node.js 10 and earlier
-if (process.version < 'v12') test = test.skip;
+const test = process.version < 'v12' ? test_.skip : test_;
 
 // 2006 Jan 2, 15:04:05.789 in local time
 const date = new Date(2006, 0, 2, 15, 4, 5, 789);
@@ -60,7 +64,7 @@ describe('Examples', () => {
   for (const [src, { expected, errors }] of Object.entries(tests)) {
     test(src, () => {
       // function from string
-      let onError = jest.fn();
+      let onError = vitest.fn();
       let fmt = getDateFormatter('en', src, onError);
       assertExpected(fmt(date), expected);
       if (errors) {
@@ -72,20 +76,20 @@ describe('Examples', () => {
 
       // function from tokens
       const tokens = parseDateTokens(src);
-      onError = jest.fn();
+      onError = vitest.fn();
       fmt = getDateFormatter('en', tokens, onError);
       assertExpected(fmt(date), expected);
       expect(onError).toHaveBeenCalledTimes(errors ? errors.length : 0);
 
       // source from string
-      onError = jest.fn();
+      onError = vitest.fn();
       let fmtSrc = getDateFormatterSource('en', src, onError);
       fmt = new Function(`return ${fmtSrc}`)();
       assertExpected(fmt(date), expected);
       expect(onError).toHaveBeenCalledTimes(errors ? errors.length : 0);
 
       // source from tokens
-      onError = jest.fn();
+      onError = vitest.fn();
       fmtSrc = getDateFormatterSource('en', tokens, onError);
       fmt = new Function(`return ${fmtSrc}`)();
       assertExpected(fmt(date), expected);
@@ -96,21 +100,21 @@ describe('Examples', () => {
 
 describe('Options', () => {
   test('hourCycle locale subtag', () => {
-    const onError = jest.fn();
+    const onError = vitest.fn();
     const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', onError);
     expect(fmt(date)).toEqual('15:04:05');
     expect(onError).not.toHaveBeenCalled();
   });
 
   test('Undefined timezone', () => {
-    const onError = jest.fn();
+    const onError = vitest.fn();
     const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', undefined, onError);
     expect(fmt(date)).toEqual('15:04:05');
     expect(onError).not.toHaveBeenCalled();
   });
 
   test('UTC timezone', () => {
-    const onError = jest.fn();
+    const onError = vitest.fn();
     const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'UTC', onError);
     const zoneOffset = date.getTimezoneOffset();
     const offsetDate = new Date(date.getTime() - zoneOffset * 60 * 1000);
@@ -119,7 +123,7 @@ describe('Options', () => {
   });
 
   test('custom timezone', () => {
-    const onError = jest.fn();
+    const onError = vitest.fn();
     const fmt = getDateFormatter('en-US-u-hc-h23', 'jms', 'CST', onError);
     const zoneOffset = date.getTimezoneOffset();
     const cstOffset = -6 * 60;
@@ -131,7 +135,7 @@ describe('Options', () => {
   });
 
   test('calendar locale subtag', () => {
-    const onError = jest.fn();
+    const onError = vitest.fn();
     const fmt = getDateFormatter('en-GB-u-ca-islamic', 'yMMMMd', onError);
     expect([
       '2 Dhuʻl-Hijjah 1426',

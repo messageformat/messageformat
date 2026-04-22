@@ -1,5 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
+import { expect, test } from 'vitest';
 
 import { MessageProvider, useLocales } from '@messageformat/react';
 

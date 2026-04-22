@@ -1,3 +1,4 @@
+import { afterEach, beforeAll, describe, expect, test, vitest } from 'vitest';
 import { MessageFormat } from '../index.ts';
 import { date, datetime, time } from './datetime.ts';
 
@@ -7,9 +8,9 @@ let log: any;
 let warn: any;
 let error: any;
 beforeAll(() => {
-  log = jest.spyOn(console, 'log');
-  warn = jest.spyOn(console, 'warn');
-  error = jest.spyOn(console, 'error');
+  log = vitest.spyOn(console, 'log');
+  warn = vitest.spyOn(console, 'warn');
+  error = vitest.spyOn(console, 'error');
 });
 afterEach(() => {
   expect(log).not.toHaveBeenCalled();
@@ -150,7 +151,7 @@ describe('timeZone option', () => {
     const mf = new MessageFormat('en', '{$now :time timeZone=input}', {
       functions: { time }
     });
-    const onError = jest.fn();
+    const onError = vitest.fn();
     mf.format({ now }, onError);
     expect(onError.mock.calls).toMatchObject([[{ type: 'bad-operand' }]]);
   });
@@ -199,7 +200,7 @@ describe('timeZone option', () => {
           bidiIsolation: 'none',
           functions: { time }
         });
-        const onError = jest.fn();
+        const onError = vitest.fn();
         const now2 = Object.assign(new Date(), { options: { timeZone } });
         expect(mf.format({ now2 }, onError)).toEqual('{$now2}');
         expect(onError.mock.calls).toMatchObject([[{ type: 'bad-option' }]]);

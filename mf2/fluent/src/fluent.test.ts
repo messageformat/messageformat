@@ -21,13 +21,14 @@
  *     limitations under the License.
  */
 
+import { source } from '#test/utils/source.js';
 import * as Fluent from '@fluent/syntax';
-import { source } from '~/test/utils/source.js';
 import { type Model as MF, validate } from 'messageformat';
+import { DefaultFunctions } from 'messageformat/functions';
+import { describe, expect, test, vitest } from 'vitest';
 import { fluentToResource, fluentToResourceData } from './index.ts';
 import { messageToFluent } from './message-to-fluent.ts';
 import { resourceToFluent } from './resource-to-fluent.ts';
-import { DefaultFunctions } from 'messageformat/functions';
 
 type TestCase = {
   locale?: string;
@@ -369,7 +370,7 @@ for (const [title, { locale = 'en', src, tests }] of Object.entries(
 
       const test_ = only ? test.only : test;
       test_(name, () => {
-        const onError = jest.fn();
+        const onError = vitest.fn();
         const mf = res.get(msg)!.get(attr ?? '');
         const str = mf!.format(scope, onError);
         if (exp instanceof RegExp) expect(str).toMatch(exp);
@@ -437,7 +438,7 @@ describe('formatToParts', () => {
     });
 
     test('undefined formatted variable', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const foo = res.get('foo')?.get('')?.formatToParts(undefined, onError);
       expect(foo).toEqual([
         { type: 'text', value: 'Foo ' },
@@ -449,7 +450,7 @@ describe('formatToParts', () => {
     });
 
     test('message reference', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const bar = res.get('bar')?.get('')?.formatToParts({ num: 42 }, onError);
       expect(bar).toMatchObject([
         {
@@ -471,7 +472,7 @@ describe('formatToParts', () => {
     });
 
     test('undefined selector', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const sel = res.get('sel')?.get('')?.formatToParts(undefined, onError);
       expect(sel).toEqual([{ type: 'text', value: 'B' }]);
       expect(onError).toHaveBeenCalledTimes(1);
@@ -604,7 +605,7 @@ describe('formatToParts', () => {
     });
 
     test('case with fallback', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const msg = res
         .get('case')
         ?.get('')
@@ -622,7 +623,7 @@ describe('formatToParts', () => {
     });
 
     test('gender with fallback', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const msg = res.get('gender')?.get('')?.formatToParts(undefined, onError);
       expect(msg).toEqual([{ type: 'text', value: 'N' }]);
       expect(onError.mock.calls.map(args => args[0].type)).toEqual([
@@ -636,7 +637,7 @@ describe('formatToParts', () => {
     });
 
     test('plural with fallback', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const msg = res
         .get('plural')
         ?.get('')
@@ -646,7 +647,7 @@ describe('formatToParts', () => {
     });
 
     test('plural with non-plural input', () => {
-      const onError = jest.fn();
+      const onError = vitest.fn();
       const msg = res
         .get('plural')
         ?.get('')

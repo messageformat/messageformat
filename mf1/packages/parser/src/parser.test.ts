@@ -1,3 +1,4 @@
+import { describe, expect, it, test } from 'vitest';
 import { ParseOptions, Select, parse } from './parser.js';
 
 function run(shape: Record<string, any>) {

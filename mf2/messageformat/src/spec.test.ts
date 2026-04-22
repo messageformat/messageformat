@@ -4,7 +4,8 @@ import {
   testName,
   testScenarios,
   testType
-} from '~/test/utils/mfwg-test-utils.js';
+} from '#test/utils/mfwg-test-utils.js';
+import { describe, expect, test, vitest } from 'vitest';
 
 import { cstKey, messageFromCST, parseCST, stringifyCST } from './cst/index.ts';
 import { DraftFunctions } from './functions/index.ts';
@@ -50,7 +51,7 @@ const tests = (tc: Test) => () => {
         });
         test('parseCST(string)', () => {
           const cst = parseCST(tc.src);
-          const onError = jest.fn();
+          const onError = vitest.fn();
           try {
             const msg = messageFromCST(cst);
             validate(msg, onError);

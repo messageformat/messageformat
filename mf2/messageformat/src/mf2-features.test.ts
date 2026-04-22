@@ -1,3 +1,4 @@
+import { source } from '#test/utils/source.js';
 import { fluentToResource } from '@messageformat/fluent';
 import {
   MF1Functions,
@@ -5,7 +6,7 @@ import {
   mf1ToMessageData
 } from '@messageformat/icu-messageformat-1';
 import { parse } from '@messageformat/parser';
-import { source } from '~/test/utils/source.js';
+import { describe, expect, test } from 'vitest';
 
 import type {
   MessageFunctionContext,
