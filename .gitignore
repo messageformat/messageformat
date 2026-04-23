@@ -7,5 +7,4 @@ node_modules/
 /mf1/examples/cli/*.mjs
 /mf1/examples/package-lock.json
 /mf2/*/lib/
-/test/browser/*.log
 /tmp/

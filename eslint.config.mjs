@@ -86,10 +86,6 @@ export default [
     }
   },
   {
-    files: ['test/browser/tests/*.js'],
-    languageOptions: { globals: { ...globals.mocha } }
-  },
-  {
     files: ['**/*.test.{mts,ts,tsx}', 'test/**/*.ts'],
     rules: {
       '@typescript-eslint/ban-ts-comment': 'off',
