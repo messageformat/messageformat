@@ -15,10 +15,10 @@ jobs:
         node-version: [20, 24, latest]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: true
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
@@ -29,8 +29,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
       - run: npm ci
       - run: npm run lint
       - run: npx prettier --check .
@@ -38,11 +37,20 @@ jobs:
   mf1-examples:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
       - run: npm ci
       - run: npm run build
       - run: npm install
         working-directory: ./mf1/examples
       - run: npm run build
         working-directory: ./mf1/examples
+
+  browsers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: npm ci
+      - run: npx playwright install chromium firefox
+      - run: npm run build
+      - run: npm run test:browsers
