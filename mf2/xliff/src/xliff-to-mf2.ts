@@ -12,7 +12,6 @@ export type ParsedUnit = {
   target?: MF.Message;
 };
 
-// TODO: Support declarations
 export function* xliff2mf(
   xliff: string | X.Xliff | X.XliffDoc
 ): Generator<ParsedUnit, void> {
@@ -20,10 +19,12 @@ export function* xliff2mf(
   if (xliff.name !== 'xliff') xliff = xliff.elements[0];
   const { srcLang, trgLang } = xliff.attributes;
   for (const file of xliff.elements) {
-    const id = parseId('f', file.attributes.id).key.join('.');
-    const fileInfo = { id, srcLang, trgLang };
-    for (const el of file.elements) {
-      yield* resolveEntry(fileInfo, el);
+    if (file.name === 'file') {
+      const id = parseId('f', file.attributes.id).key.join('.');
+      const fileInfo = { id, srcLang, trgLang };
+      for (const el of file.elements) {
+        yield* resolveEntry(fileInfo, el);
+      }
     }
   }
 }
