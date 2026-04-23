@@ -357,7 +357,6 @@ export interface Unit<
     type?: string;
     'fs:fs'?: FormatStyle;
     'fs:subFs'?: string;
-    'mf:select'?: string;
 
     /**
      * Indicates the variable(s) used to select the message variant,

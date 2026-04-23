@@ -18,6 +18,16 @@ test('source only', () => {
       parseMessage(
         '.input {$selector :string} .match $selector a {{A}} * {{B}}'
       )
+    ],
+    [
+      'plural',
+      parseMessage('.input {$n :integer} .match $n one {{A}} * {{B}}')
+    ],
+    [
+      'ordinal',
+      parseMessage(
+        '.input {$n :number select=ordinal} .match $n 1 {{First!}} * {{Not first}}'
+      )
     ]
   ]);
   const xliff = stringify(mf2xliff({ data, id: 'res', locale: 'en' }));
@@ -56,7 +66,7 @@ test('source only', () => {
             <source xml:space="preserve">This is the <ph id="4" mf:ref="ph:3"/></source>
           </segment>
         </unit>
-        <unit id="u:select" name="select" canResegment="no" mf:select="selector">
+        <unit id="u:select" name="select" canResegment="no" pgs:switch="select:selector">
           <res:resourceData>
             <res:resourceItem id="selector" mf:declaration="input">
               <res:source>
@@ -65,11 +75,47 @@ test('source only', () => {
               </res:source>
             </res:resourceItem>
           </res:resourceData>
-          <segment id="s:select:a">
+          <segment id="s:select:a" pgs:case="a">
             <source>A</source>
           </segment>
-          <segment id="s:select:_other">
+          <segment id="s:select:other" pgs:case="*:other">
             <source>B</source>
+          </segment>
+        </unit>
+        <unit id="u:plural" name="plural" canResegment="no" pgs:switch="plural:n">
+          <res:resourceData>
+            <res:resourceItem id="n" mf:declaration="input">
+              <res:source>
+                <mf:variable name="n"/>
+                <mf:function name="integer"/>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment id="s:plural:one" pgs:case="one">
+            <source>A</source>
+          </segment>
+          <segment id="s:plural:other" pgs:case="*:other">
+            <source>B</source>
+          </segment>
+        </unit>
+        <unit id="u:ordinal" name="ordinal" canResegment="no" pgs:switch="ordinal:n">
+          <res:resourceData>
+            <res:resourceItem id="n" mf:declaration="input">
+              <res:source>
+                <mf:variable name="n"/>
+                <mf:function name="number">
+                  <mf:option name="select">
+                    <mf:literal>ordinal</mf:literal>
+                  </mf:option>
+                </mf:function>
+              </res:source>
+            </res:resourceItem>
+          </res:resourceData>
+          <segment id="s:ordinal:1" pgs:case="1">
+            <source>First!</source>
+          </segment>
+          <segment id="s:ordinal:other" pgs:case="*:other">
+            <source>Not first</source>
           </segment>
         </unit>
       </file>
@@ -85,21 +131,125 @@ test('source only', () => {
       } else {
         expect(file).toBe(file_);
       }
-      return [
-        key,
-        stringifyMessage(source),
-        target && stringifyMessage(target)
-      ];
+      expect(target).toBeUndefined();
+      return [key, source, stringifyMessage(source)];
     }
   );
   expect(res).toEqual([
-    [['msg'], 'Message', undefined],
-    [['var'], 'Foo {$num}', undefined],
-    [['ref'], 'This is the {msg :message @attr}', undefined],
+    [
+      ['msg'],
+      { type: 'message', declarations: [], pattern: ['Message'] },
+      'Message'
+    ],
+    [
+      ['var'],
+      {
+        type: 'message',
+        declarations: [],
+        pattern: [
+          'Foo ',
+          {
+            type: 'expression',
+            arg: { type: 'variable', name: 'num' },
+            attributes: {}
+          }
+        ]
+      },
+      'Foo {$num}'
+    ],
+    [
+      ['ref'],
+      {
+        type: 'message',
+        declarations: [],
+        pattern: [
+          'This is the ',
+          {
+            type: 'expression',
+            arg: { type: 'literal', value: 'msg' },
+            attributes: { attr: true },
+            functionRef: { type: 'function', name: 'message' }
+          }
+        ]
+      },
+      'This is the {msg :message @attr}'
+    ],
     [
       ['select'],
-      '.input {$selector :string}\n.match $selector\na {{A}}\n* {{B}}',
-      undefined
+      {
+        type: 'select',
+        declarations: [
+          {
+            type: 'input',
+            name: 'selector',
+            value: {
+              type: 'expression',
+              arg: { type: 'variable', name: 'selector' },
+              attributes: {},
+              functionRef: { type: 'function', name: 'string' }
+            }
+          }
+        ],
+        selectors: [{ name: 'selector', type: 'variable' }],
+        variants: [
+          { keys: [{ type: 'literal', value: 'a' }], value: ['A'] },
+          { keys: [{ type: '*', value: 'other' }], value: ['B'] }
+        ]
+      },
+      '.input {$selector :string}\n.match $selector\na {{A}}\n* {{B}}'
+    ],
+
+    [
+      ['plural'],
+      {
+        type: 'select',
+        declarations: [
+          {
+            type: 'input',
+            name: 'n',
+            value: {
+              type: 'expression',
+              arg: { type: 'variable', name: 'n' },
+              attributes: {},
+              functionRef: { type: 'function', name: 'integer' }
+            }
+          }
+        ],
+        selectors: [{ type: 'variable', name: 'n' }],
+        variants: [
+          { keys: [{ type: 'literal', value: 'one' }], value: ['A'] },
+          { keys: [{ type: '*', value: 'other' }], value: ['B'] }
+        ]
+      },
+      '.input {$n :integer}\n.match $n\none {{A}}\n* {{B}}'
+    ],
+    [
+      ['ordinal'],
+      {
+        type: 'select',
+        declarations: [
+          {
+            type: 'input',
+            name: 'n',
+            value: {
+              type: 'expression',
+              arg: { type: 'variable', name: 'n' },
+              attributes: {},
+              functionRef: {
+                type: 'function',
+                name: 'number',
+                options: { select: { type: 'literal', value: 'ordinal' } }
+              }
+            }
+          }
+        ],
+        selectors: [{ type: 'variable', name: 'n' }],
+        variants: [
+          { keys: [{ type: 'literal', value: '1' }], value: ['First!'] },
+          { keys: [{ type: '*', value: 'other' }], value: ['Not first'] }
+        ]
+      },
+      '.input {$n :number select=ordinal}\n.match $n\n1 {{First!}}\n* {{Not first}}'
     ]
   ]);
 });
@@ -178,7 +328,7 @@ test('combine source & target', () => {
           </unit>
         </group>
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" canResegment="no" mf:select="selector">
+          <unit id="u:select" name="select" canResegment="no" pgs:switch="select:selector">
             <res:resourceData>
               <res:resourceItem id="selector" mf:declaration="input">
                 <res:source>
@@ -191,11 +341,11 @@ test('combine source & target', () => {
                 </res:target>
               </res:resourceItem>
             </res:resourceData>
-            <segment id="s:select:a">
+            <segment id="s:select:a" pgs:case="a">
               <source>A</source>
               <target>Ä</target>
             </segment>
-            <segment id="s:select:_other">
+            <segment id="s:select:b" pgs:case="*:b">
               <source>B</source>
               <target>B</target>
             </segment>
@@ -251,7 +401,7 @@ test('selector mismatch between source & target languages', () => {
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet" trgLang="fi">
       <file id="f:res">
         <group id="g:select" name="select">
-          <unit id="u:select" name="select" canResegment="no" mf:select="gender case">
+          <unit id="u:select" name="select" canResegment="no" pgs:switch="select:gender select:case">
             <res:resourceData>
               <res:resourceItem id="gender" mf:declaration="input">
                 <res:source>
@@ -266,27 +416,27 @@ test('selector mismatch between source & target languages', () => {
                 </res:target>
               </res:resourceItem>
             </res:resourceData>
-            <segment id="s:select:masculine.allative">
+            <segment id="s:select:masculine.allative" pgs:case="masculine allative">
               <source>his house</source>
               <target>hänen talolle</target>
             </segment>
-            <segment id="s:select:masculine._other">
+            <segment id="s:select:masculine.nominative" pgs:case="masculine *:nominative">
               <source>his house</source>
               <target>hänen talo</target>
             </segment>
-            <segment id="s:select:feminine.allative">
+            <segment id="s:select:feminine.allative" pgs:case="feminine allative">
               <source>her house</source>
               <target>hänen talolle</target>
             </segment>
-            <segment id="s:select:feminine._other">
+            <segment id="s:select:feminine.nominative" pgs:case="feminine *:nominative">
               <source>her house</source>
               <target>hänen talo</target>
             </segment>
-            <segment id="s:select:_other.allative">
+            <segment id="s:select:other.allative" pgs:case="*:other allative">
               <source>their house</source>
               <target>hänen talolle</target>
             </segment>
-            <segment id="s:select:_other._other">
+            <segment id="s:select:other.nominative" pgs:case="*:other *:nominative">
               <source>their house</source>
               <target>hänen talo</target>
             </segment>
@@ -300,7 +450,8 @@ test('selector mismatch between source & target languages', () => {
     Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
       key,
       stringifyMessage(source),
-      target && stringifyMessage(target)
+      stringifyMessage(target!),
+      target
     ])
   ).toEqual([
     [
@@ -316,7 +467,40 @@ test('selector mismatch between source & target languages', () => {
         .input {$case :string}
         .match $case
         allative {{hänen talolle}}
-        * {{hänen talo}}`
+        * {{hänen talo}}`,
+      {
+        type: 'select',
+        declarations: [
+          {
+            type: 'input',
+            name: 'gender',
+            value: {
+              type: 'expression',
+              arg: { type: 'variable', name: 'gender' },
+              functionRef: { type: 'function', name: 'string' },
+              attributes: {}
+            }
+          },
+          {
+            type: 'input',
+            name: 'case',
+            value: {
+              type: 'expression',
+              arg: { type: 'variable', name: 'case' },
+              functionRef: { type: 'function', name: 'string' },
+              attributes: {}
+            }
+          }
+        ],
+        selectors: [{ type: 'variable', name: 'case' }],
+        variants: [
+          {
+            keys: [{ type: 'literal', value: 'allative' }],
+            value: ['hänen talolle']
+          },
+          { keys: [{ type: '*', value: 'nominative' }], value: ['hänen talo'] }
+        ]
+      }
     ]
   ]);
 });
@@ -337,7 +521,7 @@ describe('Parsing xml:space in parent elements', () => {
       Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
         key,
         stringifyMessage(source),
-        target && stringifyMessage(target)
+        target
       ])
     ).toEqual([[['key'], ' Message ', undefined]]);
   });
@@ -359,7 +543,7 @@ describe('Parsing xml:space in parent elements', () => {
       Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
         key,
         stringifyMessage(source),
-        target && stringifyMessage(target)
+        target
       ])
     ).toEqual([[['key'], ' Message ', undefined]]);
   });
@@ -387,7 +571,7 @@ describe('Parsing xml:space in parent elements', () => {
       Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
         key,
         stringifyMessage(source),
-        target && stringifyMessage(target)
+        target
       ])
     ).toEqual([[['key'], ' Message {msg :message} ', undefined]]);
   });
@@ -396,7 +580,7 @@ describe('Parsing xml:space in parent elements', () => {
     const xliff = source`
     <xliff version="2.0" srcLang="en" xmlns="urn:oasis:names:tc:xliff:document:2.0" xmlns:mf="http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet">
       <file id="f:res">
-        <unit id="u:key" canResegment="no" mf:select="sel" xml:space="preserve">
+        <unit id="u:key" canResegment="no" pgs:switch="select:sel" xml:space="preserve">
           <res:resourceData>
             <res:resourceItem id="sel" mf:declaration="input">
               <res:source>
@@ -405,10 +589,10 @@ describe('Parsing xml:space in parent elements', () => {
               </res:source>
             </res:resourceItem>
           </res:resourceData>
-          <segment id="s:select:a">
+          <segment id="s:select:a" pgs:case="a">
             <source> A </source>
           </segment>
-          <segment id="s:select:_other">
+          <segment id="s:select:other" pgs:case="*:other">
             <source> B </source>
           </segment>
         </unit>
@@ -418,7 +602,7 @@ describe('Parsing xml:space in parent elements', () => {
       Array.from(xliff2mf(xliff)).map(({ key, source, target }) => [
         key,
         stringifyMessage(source),
-        target && stringifyMessage(target)
+        target
       ])
     ).toEqual([
       [
@@ -460,7 +644,7 @@ test('variably available targets', () => {
             <target></target>
           </segment>
         </unit>
-        <unit id="u:five" canResegment="no" mf:select="x">
+        <unit id="u:five" canResegment="no" pgs:switch="plural:x">
           <res:resourceData>
             <res:resourceItem id="x" mf:declaration="input">
               <res:source>
@@ -473,14 +657,14 @@ test('variably available targets', () => {
               </res:target>
             </res:resourceItem>
           </res:resourceData>
-          <segment id="s:select:0">
+          <segment id="s:select:0" pgs:case="0">
             <source>A</source>
             <target>Ä</target>
           </segment>
-          <segment id="s:select:one">
+          <segment id="s:select:one" pgs:case="one">
             <source>B</source>
           </segment>
-          <segment id="s:select:_other">
+          <segment id="s:select:other" pgs:case="*:other">
             <source>C</source>
             <target>C</target>
           </segment>
