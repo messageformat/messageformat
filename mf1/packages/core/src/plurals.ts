@@ -12,8 +12,7 @@ function normalize(locale: string) {
   // Portuguese as spoken in Portugal.
   if (locale.startsWith('pt-PT')) return 'pt-PT';
 
-  const m = locale.match(/.+?(?=[-_])/);
-  return m ? m[0] : locale;
+  return locale.split(/[-_]/, 1)[0];
 }
 
 /**

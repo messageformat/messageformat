@@ -199,11 +199,14 @@ export default class Messages {
     let lc = String(locale);
     if (this._data[lc]) return locale;
     if (locale) {
-      while ((lc = lc.replace(/[-_]?[^-_]*$/, ''))) {
+      let lp = lc.split(/([-_])/).slice(0, -2);
+      while (lp.length > 0) {
+        lc = lp.join('');
         if (this._data[lc]) return lc;
+        lp = lp.slice(0, -2);
       }
       const ll = this.availableLocales;
-      const re = new RegExp('^' + locale + '[-_]');
+      const re = new RegExp(`^${locale}[-_]`);
       for (let i = 0; i < ll.length; ++i) {
         if (re.test(ll[i])) return ll[i];
       }
