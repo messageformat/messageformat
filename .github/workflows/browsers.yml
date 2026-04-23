@@ -3,26 +3,17 @@ name: Browsers
 permissions: {}
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
 
 jobs:
-  browserstack:
-    runs-on: ubuntu-latest
+  browsers:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Cache BrowserStackLocal
-        uses: actions/cache@v4
-        with:
-          path: ~/.browserstack
-          key: bsl-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            bsl-${{ runner.os }}-
-
+      - uses: actions/checkout@v6
       - run: npm ci
+      - run: npx playwright install chromium firefox
       - run: npm run build
       - run: npm run test:browsers
-        env:
-          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}

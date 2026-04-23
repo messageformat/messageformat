@@ -1,0 +1,7 @@
+{
+  "name": "@messageformat/test-utils",
+  "private": true,
+  "description": "Internal test utilities",
+  "license": "Apache-2.0",
+  "type": "module"
+}

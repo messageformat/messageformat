@@ -1,7 +1,8 @@
-import MessageFormat from '@messageformat/core';
-import { MessageModule } from '@messageformat/core/src/compile-module'; // FIXME
-import { getModule } from '#test/fixtures/get-message-module';
 import { beforeAll, beforeEach, expect, it } from 'vitest';
+
+import MessageFormat from '@messageformat/core';
+import type { MessageModule } from '@messageformat/core/compile-module';
+import { getMessageModule } from '@messageformat/core/src/compile-module.test';
 import Messages from './messages';
 
 const msgSet = {
@@ -21,7 +22,7 @@ const msgSet = {
 let msgData: MessageModule<typeof msgSet>;
 beforeAll(async () => {
   const mf = new MessageFormat(['en', 'fi']);
-  msgData = await getModule(mf, msgSet);
+  msgData = await getMessageModule(mf, msgSet);
 });
 
 let messages: Messages;
@@ -131,7 +132,7 @@ it('get object', () => {
 it('addMessages', async () => {
   const mf = new MessageFormat('sv');
   const sv = { e: 'Jag pratar lite svenska.' };
-  messages.addMessages(await getModule(mf, sv), 'sv');
+  messages.addMessages(await getMessageModule(mf, sv), 'sv');
   expect(messages.availableLocales).toMatchObject(['en', 'fi', 'sv']);
   await (() => (messages.locale = 'sv'))();
   expect(messages.get('e')).toBe('Jag pratar lite svenska.');

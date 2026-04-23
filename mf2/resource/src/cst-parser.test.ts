@@ -1,8 +1,5 @@
-import { describe, expect, test as test_, vitest } from 'vitest';
+import { describe, expect, test, vitest } from 'vitest';
 import { CST, parseCST } from './cst-parser.ts';
-
-const nodeVersion = process.versions?.node?.split('.');
-const test = nodeVersion && Number(nodeVersion[0]) < 16 ? test_.skip : test_;
 
 type RecursivePartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]

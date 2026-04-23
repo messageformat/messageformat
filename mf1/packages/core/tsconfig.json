@@ -2,12 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "#test/*": ["../../../test/*"],
       "@messageformat/date-skeleton": ["../date-skeleton/src/index.ts"],
       "@messageformat/number-skeleton": ["../number-skeleton/src/index.ts"],
       "@messageformat/parser": ["../parser/src/parser.ts"],
       "@messageformat/runtime": ["../runtime/src/runtime.ts"],
       "@messageformat/runtime/lib/*": ["../runtime/src/*"]
-    }
+    },
+    "types": ["node"]
   }
 }

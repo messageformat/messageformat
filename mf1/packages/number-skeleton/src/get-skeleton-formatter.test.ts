@@ -1,12 +1,9 @@
-import { describe, expect, test as test_, vitest } from 'vitest';
+import { describe, expect, test, vitest } from 'vitest';
 import {
   getNumberFormatter,
   getNumberFormatterSource
 } from './get-formatter.js';
 import { parseNumberSkeleton } from './parse-skeleton.js';
-
-// Too many divergences in Intl.NumberFormat output on Node.js 10 and earlier
-const test = process.version < 'v12' ? test_.skip : test_;
 
 const tests: {
   [testSet: string]: {

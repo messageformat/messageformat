@@ -1,4 +1,4 @@
-import { source } from '#test/utils/source.js';
+import { source } from '@messageformat/test-utils/source.js';
 import { fluentToResource } from '@messageformat/fluent';
 import {
   MF1Functions,
@@ -205,8 +205,7 @@ describe('Multi-selector messages (unicode-org/message-format-wg#119)', () => {
   });
 });
 
-const maybe = process.version > 'v14' ? describe : describe.skip;
-maybe('List formatting', () => {
+describe('List formatting', () => {
   const listFn =
     (each_?: Record<string, (locales: string[], value: string) => string>) =>
     (
