@@ -1,11 +1,12 @@
 /**
- * XLIFF 2.1 types for TypeScript
+ * XLIFF 2.2 types for TypeScript
  *
  * Includes types for the core spec as well as the following modules:
  *   - Translation Candidates (mtc)
  *   - Glossary (gls)
  *   - Format Style (fs)
  *   - Metadata (mda)
+ *   - Plural, Gender, and Select (pgs)
  *   - Resource Data (res)
  *   - Size and Length Restriction (slr)
  *   - Validation (val)
@@ -13,7 +14,8 @@
  * For custom extensions, use the `FileOther`, `GroupOther` and `UnitOther`
  * generics to define available elements for the corresponding parent element.
  *
- * http://docs.oasis-open.org/xliff/xliff-core/v2.1/os/xliff-core-v2.1-os.html
+ * https://docs.oasis-open.org/xliff/xliff-core/v2.2/xliff-core-v2.2-part1.html
+ * https://docs.oasis-open.org/xliff/xliff-core/v2.2/xliff-extended-v2.2-part2.html
  *
  * @module
  */
@@ -58,6 +60,8 @@ export interface Xliff<
      * XLIFF Version - is used to specify the Version of the XLIFF Document.
      * This corresponds to the Version number of the XLIFF specification
      * that the XLIFF Document adheres to.
+     *
+     * Expected to be '2.0', '2.1' or '2.2'.
      */
     version: string;
 
@@ -79,18 +83,21 @@ export interface Xliff<
      * Default: `default`
      */
     'xml:space'?: XmlSpace;
-    xmlns?: 'urn:oasis:names:tc:xliff:document:2.0';
+    xmlns?:
+      | 'urn:oasis:names:tc:xliff:document:2.0'
+      | 'urn:oasis:names:tc:xliff:document:2.2';
     'xmlns:fs'?: 'urn:oasis:names:tc:xliff:fs:2.0';
     'xmlns:gls'?: 'urn:oasis:names:tc:xliff:glossary:2.0';
     'xmlns:mda'?: 'urn:oasis:names:tc:xliff:metadata:2.0';
     'xmlns:mtc'?: 'urn:oasis:names:tc:xliff:matches:2.0';
+    'xmlns:pgs'?: 'urn:oasis:names:tc:xliff:pgs:1.0';
     'xmlns:res'?: 'urn:oasis:names:tc:xliff:resourcedata:2.0';
     'xmlns:slr'?: 'urn:oasis:names:tc:xliff:sizerestriction:2.0';
     'xmlns:val'?: 'urn:oasis:names:tc:xliff:validation:2.0';
     [key: string]: string | number | undefined;
     //'xmlns:mf'?: 'http://www.unicode.org/ns/2021/messageformat/2.0/not-real-yet';
   };
-  elements: File<FileOther, GroupOther, UnitOther>[];
+  elements: (Notes | Metadata | File<FileOther, GroupOther, UnitOther>)[];
 }
 
 export interface File<
@@ -202,6 +209,16 @@ export interface Note extends Element {
      * Default: `1`
      */
     priority?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+    /**
+     * URI referring to a `<segment>`, `<source>` or `<target>` element
+     * within the same enclosing `<unit>`.
+     *
+     * When the `ref` attribute points to a `<segment>` element,
+     * by default the `<note>` content applies to its `<source>` child,
+     * unless the optional `appliesTo` attribute is set to `target`.
+     */
+    ref?: string;
     'fs:fs'?: FormatStyle;
     'fs:subFs'?: string;
     [key: string]: string | number | undefined;
@@ -341,6 +358,26 @@ export interface Unit<
     'fs:fs'?: FormatStyle;
     'fs:subFs'?: string;
     'mf:select'?: string;
+
+    /**
+     * Indicates the variable(s) used to select the message variant,
+     * and the kind of “selector” that will be used.
+     *
+     * The text contains a space-separated list of items,
+     * each item containing a selector keyword, followed by colon (:),
+     * and followed by the variable name used for selection.
+     *
+     * List of allowed selector keywords:
+     * `plural`, `ordinal`, `gender`, `select`.
+     * No other selector keywords are allowed.
+     *
+     * Example:
+     *
+     *     <unit id="tu1" pgs:switch="plural:count gender:host_gender">
+     *     ...
+     *     </unit>
+     */
+    'pgs:switch'?: string;
     'slr:sizeInfo'?: string | number;
     'slr:sizeInfoRef'?: string;
     'slr:sizeRestriction'?: string | number;
@@ -411,6 +448,34 @@ export interface Segment extends Element {
      * and sub-values MAY be defined by the users.
      */
     subState?: string;
+
+    /**
+     * Indicates the value(s) that the switch variable(s) should have
+     * in order to select the message variant “annotated” with this element.
+     *
+     * The text contains a space-separated list of values forming a “tuple” used for selection.
+     *
+     * Example:
+     *
+     *     <unit id="tu1" pgs:switch="plural:count gender:host_gender">
+     *        <segment id="tu1__count_1__host_gender_feminine" pgs:case="1 feminine">...</segment>
+     *        <segment id="tu1__count_1__host_gender_masculine" pgs:case="1 masculine">...</segment>
+     *        ...
+     *     </unit>
+     *
+     * Constraints: the number of space-separated items (variables) in the `pgs:switch` attribute
+     * MUST match the number of space-separated values in the `pgs:case` attribute.
+     * Also, each value in case should also match the type of selector in the switch attribute.
+     *
+     * Valid matching:
+     * - `plural` and `ordinal`:
+     *   - integer (0, 7, 365)
+     *   - decimal (3.14)
+     *   - plural keyword: `zero`, `one`, `two`, `few`, `many`, `other`
+     * - `gender`: `feminine`, `masculine`, `neuter`, `other`, anything else
+     * - `select`: the values can be anything, or the `other` keyword
+     */
+    'pgs:case'?: string;
   };
   elements: [Source] | [Source, Target];
 }
@@ -1076,7 +1141,7 @@ export interface ResourceItem extends Element {
     'mf:declaration'?: 'input' | 'local';
     [key: string]: string | number | undefined;
   };
-  elements: (ResourceSource | ResourceTarget | ResourceReference)[];
+  elements: (Notes | ResourceSource | ResourceTarget | ResourceReference)[];
 }
 
 export interface ResourceSource extends Element {
