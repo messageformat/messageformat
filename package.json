@@ -43,7 +43,7 @@
     "start": "node -i -r ./mf1/scripts/start.js",
     "pretest": "npm run build:esm -w mf1/packages/runtime",
     "test": "vitest run",
-    "test:browsers": "vitest run --config=vitest.browser.config.mts"
+    "test:browsers": "vitest run --config=.config/vitest.browsers.config.mts"
   },
   "prettier": {
     "arrowParens": "avoid",
