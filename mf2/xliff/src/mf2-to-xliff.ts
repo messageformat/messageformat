@@ -14,8 +14,6 @@ import { toNmtoken } from './nmtoken.ts';
 let _id = 0;
 const nextId = () => String(++_id);
 
-const star = Symbol('*');
-
 // TODO: Support declarations
 export function mf2xliff(
   source: MessageFormatInfo,
@@ -51,16 +49,10 @@ export function mf2xliff(
   return { type: 'element', name: 'xliff', attributes, elements: [file] };
 }
 
-function msgId(
-  pre: 'f' | 'g' | 's' | 'u',
-  key: string[],
-  variant?: (string | typeof star)[]
-) {
+function msgId(pre: 'f' | 'g' | 's' | 'u', key: string[], variant?: string[]) {
   const id = `${pre}:${key.map(toNmtoken).join('.')}`;
   return variant?.length
-    ? `${id}:${variant
-        .map(v => (typeof v === 'string' ? toNmtoken(v) : '_other'))
-        .join('.')}`
+    ? `${id}:${variant.map(v => toNmtoken(v.replace('*:', ''))).join('.')}`
     : id;
 }
 
@@ -156,16 +148,22 @@ function resolveSelect(
     };
   }
 
-  const select: { id: string; keys: (string | typeof star)[] }[] =
-    srcSel.selectors.map(sel => ({ id: sel.name, keys: [] }));
+  const select: { id: string; keys: string[] }[] = srcSel.selectors.map(
+    sel => ({ id: sel.name, keys: [] })
+  );
   const segments: X.Segment[] = [];
 
   if (!trgSel) {
     // If there's only a source, we use its cases directly
     for (const v of srcSel.variants) {
       const segment = resolvePattern(v.value, undefined, rdElements);
-      const vk = v.keys.map(k => (k.type === '*' ? star : k.value));
-      segment.attributes = { id: msgId('s', key, vk) };
+      const vk = v.keys.map(k =>
+        k.type === '*' ? `*:${k.value ?? 'other'}` : k.value
+      );
+      segment.attributes = {
+        id: msgId('s', key, vk),
+        'pgs:case': vk.join(' ')
+      };
       segments.push(segment);
     }
   } else {
@@ -186,19 +184,23 @@ function resolveSelect(
     // Collect all of the key values for each case, in the right order
     const addSorted = (i: number, key: MF.Literal | MF.CatchallKey) => {
       const { keys } = select[i];
-      const sk = key.type === '*' ? star : key.value;
+      const isDefault = key.type === '*';
+      const sk = isDefault ? `*:${key.value ?? 'other'}` : key.value;
       if (keys.includes(sk)) return;
-      if (sk === star) {
+      if (isDefault) {
         keys.push(sk);
       } else if (Number.isFinite(Number(sk))) {
         let pos = 0;
-        while (keys[pos] !== star && Number.isFinite(Number(keys[pos]))) {
+        while (
+          !keys[pos].startsWith('*:') &&
+          Number.isFinite(Number(keys[pos]))
+        ) {
           pos += 1;
         }
         keys.splice(pos, 0, sk);
       } else {
         let pos = keys.length;
-        while (keys[pos - 1] === star) pos -= 1;
+        while (keys[pos - 1]?.startsWith('*:')) pos -= 1;
         keys.splice(pos, 0, sk);
       }
     };
@@ -227,15 +229,38 @@ function resolveSelect(
         throw new Error(`Case ${sk} not found‽ src:${srcCase} trg:${trgCase}`);
       }
       const segment = resolvePattern(srcCase.value, trgCase.value, rdElements);
-      segment.attributes = { id: msgId('s', key, sk) };
+      segment.attributes = {
+        id: msgId('s', key, sk),
+        'pgs:case': sk.join(' ')
+      };
       segments.push(segment);
     }
   }
 
   const unit = buildUnit(key, rdElements, segments);
   unit.attributes.canResegment = 'no';
-  unit.attributes['mf:select'] = select.map(s => s.id).join(' ');
+  unit.attributes['pgs:switch'] = select
+    .map(s => pgsSwitchValue(rdElements, s.id))
+    .join(' ');
   return unit;
+}
+
+function pgsSwitchValue(rdElements: X.ResourceItem[], id: string): string {
+  let kind = 'select';
+  const decl = rdElements.find(el => el.attributes.id === id);
+  const src = decl?.elements.find(el => el.name === 'res:source');
+  const func = (src?.elements as X.MessageFunction[])?.find(
+    el => el.name === 'mf:function'
+  );
+  if (func) {
+    const fnName = func.attributes.name;
+    if (fnName === 'number' || fnName === 'integer') {
+      const selOpt = func.elements?.find(el => el.attributes.name === 'select');
+      const selType = selOpt?.elements[0].elements?.[0] as X.Text | undefined;
+      kind = selType?.text === 'ordinal' ? 'ordinal' : 'plural';
+    }
+  }
+  return `${kind}:${id}`;
 }
 
 function resolveDeclarations(
@@ -348,12 +373,10 @@ function addRef(
   return { id, elements };
 }
 
-function everyKey(
-  select: { keys: (string | typeof star)[] }[]
-): Iterable<(string | typeof star)[]> {
+function everyKey(select: { keys: string[] }[]): Iterable<string[]> {
   let ptr: number[] | null = null;
   const max = select.map(s => s.keys.length - 1);
-  function next(): IteratorResult<(string | typeof star)[]> {
+  function next(): IteratorResult<string[]> {
     if (!ptr) {
       ptr = new Array<number>(select.length).fill(0);
     } else {

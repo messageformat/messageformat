@@ -20,7 +20,7 @@ export function* xliff2mf(
   const { srcLang, trgLang } = xliff.attributes;
   for (const file of xliff.elements) {
     if (file.name === 'file') {
-      const id = parseId('f', file.attributes.id).key.join('.');
+      const id = parseKeyFromId('file', file.attributes.id).join('.');
       const fileInfo = { id, srcLang, trgLang };
       for (const el of file.elements) {
         yield* resolveEntry(fileInfo, el);
@@ -40,11 +40,11 @@ function* resolveEntry(
         break;
       }
       case 'unit': {
-        const { key } = parseId('u', entry.attributes.id);
+        const key = parseKeyFromId('unit', entry.attributes.id);
         const rd = entry.elements.find(el => el.name === 'res:resourceData') as
           | X.ResourceData
           | undefined;
-        const { source, target } = entry.attributes['mf:select']
+        const { source, target } = entry.attributes['pgs:switch']
           ? resolveSelectMessage(rd, entry)
           : resolvePatternMessage(rd, entry);
         yield { file, key, source, target };
@@ -54,36 +54,30 @@ function* resolveEntry(
   }
 }
 
-function parseId(
-  pre: 's',
+function parseKeyFromId(
+  name: 'file' | 'group' | 'unit',
   id: string | undefined
-): { key: string[]; variant: MF.Variant['keys'] };
-function parseId(
-  pre: 'f' | 'g' | 'u',
-  id: string | undefined
-): { key: string[] };
-function parseId(
-  pre: 'f' | 'g' | 's' | 'u',
-  id: string | undefined
-): { key: string[]; variant?: MF.Variant['keys'] } {
+): string[] {
+  const pre = name[0] as 'f' | 'g' | 'u';
   const match = id?.match(/(?:_[_:]|[^:])+/g);
   if (match && match.length >= 2 && match[0] === pre) {
     const keyMatch = match[1].match(/(?:_[_.]|[^.])+/g);
-    const variantMatch = match[2]?.match(/(?:_[_.]|[^.])+/g);
-    if (keyMatch && (pre !== 's' || variantMatch)) {
-      return {
-        key: keyMatch.map(fromNmtoken),
-        variant: variantMatch?.map(v =>
-          v === '_other'
-            ? { type: '*' }
-            : { type: 'literal', quoted: false, value: fromNmtoken(v) }
-        )
-      };
+    if (keyMatch) return keyMatch.map(fromNmtoken);
+  }
+  const pe = prettyElement(name, id);
+  throw new Error(`Invalid id attribute for ${pe}`);
+}
+
+function parseVariantKeysFromPgsCase(
+  id: string | undefined
+): MF.Variant['keys'] {
+  const keys: MF.Variant['keys'] = [];
+  if (id) {
+    for (const [, isDefault, value] of id.matchAll(/(\*:)?(\S+)/g)) {
+      keys.push({ type: isDefault ? '*' : 'literal', value });
     }
   }
-  const el = { f: 'file', g: 'group', s: 'segment', u: 'unit' }[pre];
-  const pe = prettyElement(el, id);
-  throw new Error(`Invalid id attribute for ${pe}`);
+  return keys;
 }
 
 const prettyElement = (name: string, id: string | undefined) =>
@@ -111,7 +105,7 @@ function resolveSelectMessage(
   };
   for (const el of elements!) {
     if (el.name === 'segment') {
-      const keys = parseId('s', el.attributes?.id).variant;
+      const keys = parseVariantKeysFromPgsCase(el.attributes?.['pgs:case']);
       const pattern = resolvePattern(rd, el);
       source.variants.push({ keys, value: pattern.source });
       if (pattern.target) {
@@ -126,22 +120,25 @@ function resolveSelectMessage(
   const hasTarget = !!target.variants.length;
   const srcSelectors: boolean[] = [];
   const tgtSelectors: boolean[] = [];
-  for (const ref of attributes['mf:select']!.trim().split(/\s+/)) {
+  for (const ref of attributes['pgs:switch']!.matchAll(
+    /(gender|plural|ordinal|select):(\S+)/g
+  )) {
+    const name = ref[2];
     const ri = rd.elements.find(
       ri =>
         ri.name === 'res:resourceItem' &&
-        ri.attributes?.id === ref &&
+        ri.attributes?.id === name &&
         ri.attributes['mf:declaration']
     ) as X.ResourceItem | undefined;
-    if (!ri) throw new Error(`Unresolved MessageFormat reference: ${ref}`);
+    if (!ri) throw new Error(`Unresolved MessageFormat reference: ${ref[0]}`);
     let srcSel = false;
     let tgtSel = false;
     for (const el of ri.elements) {
       if (el.name === 'res:source') {
-        source.selectors.push({ type: 'variable', name: ref });
+        source.selectors.push({ type: 'variable', name });
         srcSel = true;
       } else if (hasTarget && el.name === 'res:target') {
-        target.selectors.push({ type: 'variable', name: ref });
+        target.selectors.push({ type: 'variable', name });
         tgtSel = true;
       }
     }
