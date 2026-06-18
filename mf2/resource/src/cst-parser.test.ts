@@ -29,21 +29,17 @@ function parseFail(source: string) {
 
 test('empty string', () => {
   const res = parseOk('');
-  expect(res).toMatchObject<TestResource>([
-    { type: 'empty-line', range: [0, 0] }
-  ]);
+  expect(res).toEqual<TestResource>([{ type: 'empty-line', range: [0, 0] }]);
 });
 
 test('single line terminator', () => {
   const res = parseOk('\r\n');
-  expect(res).toMatchObject<TestResource>([
-    { type: 'empty-line', range: [0, 2] }
-  ]);
+  expect(res).toEqual<TestResource>([{ type: 'empty-line', range: [0, 2] }]);
 });
 
 test('comments and empty lines', () => {
   const res = parseOk('\n\n#[foo\\] \n## bar\r\n  \t\n#');
-  expect(res).toMatchObject<TestResource>([
+  expect(res).toEqual<TestResource>([
     { type: 'empty-line', range: [0, 1] },
     { type: 'empty-line', range: [1, 2] },
     { type: 'comment', content: '[foo\\] ', range: [2, 11] },
@@ -53,9 +49,30 @@ test('comments and empty lines', () => {
   ]);
 });
 
+test('frontmatter', () => {
+  const res = parseOk('@locale en-ZZ\n---\n');
+  expect(res).toEqual<TestResource>([
+    {
+      type: 'metadata',
+      key: {
+        range: [1, 7],
+        raw: [{ range: [1, 7], type: 'content', value: 'locale' }],
+        value: 'locale'
+      },
+      range: [0, 14],
+      value: {
+        range: [8, 13],
+        raw: [[{ range: [8, 13], type: 'content', value: 'en-ZZ' }]],
+        value: 'en-ZZ'
+      }
+    },
+    { range: [14, 18], type: 'frontmatter' }
+  ]);
+});
+
 test('one-line entry', () => {
   const res = parseOk('foo = {bar}');
-  expect(res).toMatchObject<TestResource>([
+  expect(res).toEqual<TestResource>([
     {
       type: 'entry',
       id: {
@@ -76,7 +93,7 @@ test('one-line entry', () => {
 
 test('multi-line entry', () => {
   const res = parseOk('foo = \n  {\n    bar\n  }\nnext={value}');
-  expect(res).toMatchObject<TestResource>([
+  expect(res).toEqual<TestResource>([
     {
       type: 'entry',
       id: {
@@ -117,7 +134,7 @@ test('multi-line entry', () => {
 
 test('multi-line entry with CRLF terminators', () => {
   const res = parseOk('foo = \r\n  {\r\n    bar\r\n  }\r\n');
-  expect(res).toMatchObject<TestResource>([
+  expect(res).toEqual<TestResource>([
     {
       type: 'entry',
       id: {
@@ -133,7 +150,8 @@ test('multi-line entry with CRLF terminators', () => {
           [{ type: 'content', value: 'bar', range: [17, 20] }],
           [{ type: 'content', value: '}', range: [24, 25] }]
         ],
-        value: '{\r\n    bar\r\n  }'
+        value: '{\r\n    bar\r\n  }',
+        range: [10, 25]
       },
       range: [0, 27]
     }
@@ -142,7 +160,7 @@ test('multi-line entry with CRLF terminators', () => {
 
 test('section-head with trailing whitespace', () => {
   const res = parseOk('[ foo . bar ] \t\n');
-  expect(res).toMatchObject<TestResource>([
+  expect(res).toEqual<TestResource>([
     {
       type: 'section-head',
       id: {
@@ -233,7 +251,7 @@ describe('duplicate identifiers', () => {
         value: { raw: [[{ type: 'content', value: '3' }]] }
       }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [(res[0] as CST.Entry).id.range, 'Duplicate identifier'],
       [(res[1] as CST.Entry).id.range, 'Duplicate identifier'],
       [(res[2] as CST.Entry).id.range, 'Duplicate identifier']
@@ -282,7 +300,7 @@ describe('duplicate identifiers', () => {
       },
       { type: 'section-head', id: { value: ['a', 'b'] } }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [
         (res[0] as CST.Entry).id.range,
         'Shorter matching identifier must precede longer one'
@@ -309,7 +327,7 @@ describe('errors', () => {
         value: { raw: [[{ type: 'content', value: 'foo\u2028bar' }]] }
       }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [[0, 1], 'Invalid identifier character'],
       [[8, 9], 'Invalid entry content character']
     ]);
@@ -320,10 +338,62 @@ describe('errors', () => {
     expect(res).toMatchObject<TestResource>([
       {
         type: 'section-head',
-        id: { raw: [], value: [], range: [2, 2] }
+        id: { raw: [], value: [], range: [2, 3] }
       }
     ]);
-    expect(calls).toMatchObject([[[2, 3], 'Expected an identifier']]);
+    expect(calls).toEqual([[[2, 3], 'Expected an identifier']]);
+  });
+
+  test('metadata without key', () => {
+    const [res, calls] = parseFail('@ x');
+    expect(res).toEqual<TestResource>([
+      {
+        type: 'metadata',
+        key: { range: [1, 2], raw: [], value: '' },
+        value: {
+          raw: [[{ range: [2, 3], type: 'content', value: 'x' }]],
+          value: 'x',
+          range: [2, 3]
+        },
+        range: [0, 3]
+      }
+    ]);
+    expect(calls).toEqual([[[1, 2], 'Expected a metadata key']]);
+  });
+
+  test('metadata with no whitespace between key & value', () => {
+    const [res, calls] = parseFail('@x.foo');
+    expect(res).toEqual<TestResource>([
+      {
+        type: 'metadata',
+        key: {
+          raw: [{ range: [1, 2], type: 'content', value: 'x' }],
+          value: 'x',
+          range: [1, 2]
+        },
+        value: { range: [2, 2], raw: [], value: '' },
+        range: [0, 2]
+      },
+      {
+        type: 'entry',
+        id: {
+          range: [2, 6],
+          raw: [
+            { range: [2, 3], type: 'dot' },
+            { range: [3, 6], type: 'content', value: 'foo' }
+          ],
+          value: ['foo']
+        },
+        equal: -1,
+        value: { range: [6, 6], raw: [], value: '' },
+        range: [2, 6]
+      }
+    ]);
+    expect(calls).toEqual([
+      [[2, 6], 'Unexpected content at line end'],
+      [[2, 3], 'Leading dot in identifier'],
+      [[6, 7], 'Expected a = character here']
+    ]);
   });
 
   test('identifier dots', () => {
@@ -340,7 +410,7 @@ describe('errors', () => {
         }
       }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [[1, 2], 'Leading dot in identifier'],
       [[1, 3], 'Repeated dots in identifier'],
       [[2, 3], 'Trailing dot in identifier']
@@ -361,9 +431,7 @@ describe('errors', () => {
         }
       }
     ]);
-    expect(calls).toMatchObject([
-      [[2, 3], 'Unexpected whitespace in identifier']
-    ]);
+    expect(calls).toEqual([[[2, 3], 'Unexpected whitespace in identifier']]);
   });
 
   test('character escapes', () => {
@@ -391,7 +459,7 @@ describe('errors', () => {
         }
       }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [[0, 2], 'Unknown character escape'],
       [[4, 6], 'Unknown character escape'],
       [[7, 9], 'Unknown character escape'],
@@ -425,7 +493,7 @@ describe('errors', () => {
         value: { raw: [[{ type: 'content', value: '] d', range: [7, 10] }]] }
       }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [[2, 3], 'Expected a ] character here'],
       [[4, 5], 'Unexpected whitespace in identifier'],
       [[7, 8], 'Expected a = character here']
@@ -448,7 +516,7 @@ describe('errors', () => {
       },
       { type: 'comment', content: 'd', range: [9, 11] }
     ]);
-    expect(calls).toMatchObject([
+    expect(calls).toEqual([
       [[2, 4], 'Content with unexpected indent'],
       [[9, 11], 'Unexpected content at line end']
     ]);
