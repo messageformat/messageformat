@@ -252,9 +252,9 @@ describe('duplicate identifiers', () => {
       }
     ]);
     expect(calls).toEqual([
-      [(res[0] as CST.Entry).id.range, 'Duplicate identifier'],
-      [(res[1] as CST.Entry).id.range, 'Duplicate identifier'],
-      [(res[2] as CST.Entry).id.range, 'Duplicate identifier']
+      [(res[0] as CST.Entry).id.range, 'Message already defined'],
+      [(res[1] as CST.Entry).id.range, 'Message already defined'],
+      [(res[2] as CST.Entry).id.range, 'Message already defined']
     ]);
   });
 
@@ -328,8 +328,8 @@ describe('errors', () => {
       }
     ]);
     expect(calls).toEqual([
-      [[0, 1], 'Invalid identifier character'],
-      [[8, 9], 'Invalid entry content character']
+      [[0, 1], 'Invalid entry identifier: Unsupported character'],
+      [[8, 9], 'Invalid entry value']
     ]);
   });
 
@@ -341,7 +341,7 @@ describe('errors', () => {
         id: { raw: [], value: [], range: [2, 3] }
       }
     ]);
-    expect(calls).toEqual([[[2, 3], 'Expected an identifier']]);
+    expect(calls).toEqual([[[2, 3], 'Invalid section identifier']]);
   });
 
   test('metadata without key', () => {
@@ -390,8 +390,8 @@ describe('errors', () => {
       }
     ]);
     expect(calls).toEqual([
-      [[2, 6], 'Unexpected content at line end'],
-      [[2, 3], 'Leading dot in identifier'],
+      [[2, 6], 'Invalid metadata: Unexpected content at line end'],
+      [[2, 3], 'Invalid entry identifier: Leading dot'],
       [[6, 7], 'Expected a = character here']
     ]);
   });
@@ -411,9 +411,9 @@ describe('errors', () => {
       }
     ]);
     expect(calls).toEqual([
-      [[1, 2], 'Leading dot in identifier'],
-      [[1, 3], 'Repeated dots in identifier'],
-      [[2, 3], 'Trailing dot in identifier']
+      [[1, 2], 'Invalid section identifier: Leading dot'],
+      [[1, 3], 'Invalid section identifier: Repeated dots'],
+      [[2, 3], 'Invalid section identifier: Trailing dot']
     ]);
   });
 
@@ -431,7 +431,9 @@ describe('errors', () => {
         }
       }
     ]);
-    expect(calls).toEqual([[[2, 3], 'Unexpected whitespace in identifier']]);
+    expect(calls).toEqual([
+      [[2, 3], 'Invalid section identifier: Unexpected whitespace']
+    ]);
   });
 
   test('character escapes', () => {
@@ -495,7 +497,7 @@ describe('errors', () => {
     ]);
     expect(calls).toEqual([
       [[2, 3], 'Expected a ] character here'],
-      [[4, 5], 'Unexpected whitespace in identifier'],
+      [[4, 5], 'Invalid entry identifier: Unexpected whitespace'],
       [[7, 8], 'Expected a = character here']
     ]);
   });
@@ -517,8 +519,8 @@ describe('errors', () => {
       { type: 'comment', content: 'd', range: [9, 11] }
     ]);
     expect(calls).toEqual([
-      [[2, 4], 'Content with unexpected indent'],
-      [[9, 11], 'Unexpected content at line end']
+      [[2, 4], 'Invalid indent'],
+      [[9, 11], 'Invalid section identifier: Unexpected content at line end']
     ]);
   });
 });
