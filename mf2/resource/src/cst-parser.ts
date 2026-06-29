@@ -1,12 +1,21 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CST {
-  export type Resource = Array<EmptyLine | Comment | SectionHead | Entry>;
+  export type Resource = Array<
+    EmptyLine | Comment | Frontmatter | Metadata | SectionHead | Entry
+  >;
 
   export type EmptyLine = { type: 'empty-line'; range: Range };
   export type Comment = {
     type: 'comment';
     /** Does not include the `#` or the line terminator. */
     content: string;
+    range: Range;
+  };
+  export type Frontmatter = { type: 'frontmatter'; range: Range };
+  export type Metadata = {
+    type: 'metadata';
+    key: IdPart;
+    value: Value;
     range: Range;
   };
   export type SectionHead = {
@@ -26,9 +35,14 @@ export namespace CST {
     range: Range;
   };
 
-  export type Id = { raw: IdPart[]; value: string[]; range: Range };
-  export type IdPart = Content | Escape | IdDot;
+  export type Id = { raw: IdElem[]; value: string[]; range: Range };
+  export type IdElem = Content | Escape | IdDot;
   export type IdDot = { type: 'dot'; range: Range };
+  export type IdPart = {
+    raw: (Content | Escape)[];
+    value: string;
+    range: Range;
+  };
 
   export type Value = { raw: ValuePart[][]; value: string; range: Range };
   export type ValuePart = Content | Escape;
@@ -99,6 +113,15 @@ export function parseCST(
           sectionId = sh.id.value;
         }
         break;
+      case '@':
+        res.push(parseMetadata());
+        break;
+      case '-':
+        if (source.startsWith('---', pos)) {
+          res.push(parseFrontmatter());
+          break;
+        }
+      // fallthrough
       default:
         res.push(parseEntry(sectionId));
         break;
@@ -133,12 +156,22 @@ function parseComment(): CST.Comment {
   return { type: 'comment', content, range: [start, pos] };
 }
 
+// frontmatter = "---" [ws]
+function parseFrontmatter(): CST.Frontmatter {
+  const type = 'frontmatter';
+  const start = pos;
+  pos += 3; // '---'
+  parseWhitespace();
+  parseLineEnd('frontmatter separator');
+  return { type, range: [start, pos] };
+}
+
 // section-head = "[" [ws] id [ws] "]" [ws]
 function parseSectionHead(): CST.SectionHead {
   const type = 'section-head';
   const start = pos;
   pos += 1; // '['
-  const id = parseId();
+  const id = parseId('section');
   const close = parseChar(']');
   parseWhitespace();
   parseLineEnd(type);
@@ -146,32 +179,57 @@ function parseSectionHead(): CST.SectionHead {
   return { type, id, close, range: [start, pos] };
 }
 
+// metadata = "@" id-part [ws value]
+function parseMetadata(): CST.Metadata {
+  const type = 'metadata';
+  const start = pos;
+  pos += 1; // '@'
+  const key = parseId(type);
+  const idEnd = pos;
+  parseWhitespace();
+  if (pos > idEnd) {
+    const value = parseValue();
+    return { type, key, value, range: [start, pos] };
+  } else {
+    parseLineEnd(type);
+    return {
+      type,
+      key,
+      value: { raw: [], value: '', range: [pos, pos] },
+      range: [start, pos]
+    };
+  }
+}
+
+// entry = id [ws] "=" [ws] value
+function parseEntry(sectionId: string[]): CST.Entry {
+  const type = 'entry';
+  const start = pos;
+  const id = parseId(type);
+  checkId(sectionId, id);
+  const equal = parseChar('=');
+  const value = parseValue();
+  return { type, id, equal, value, range: [start, pos] };
+}
+
 /**
- * entry = id [ws] "=" [ws] value
- * value = value-line *(newline ws value-line)
+ * value = value-line *(1*newline ws value-line)
  * value-line = [(value-start / value-escape) *(content / value-escape)]
  * value-start = %x21-5B / %x5D-7E / %x00A0-2027 / %x202A-D7FF / %xE000-10FFFF
  * content = SP / HTAB / value-start
  */
 const contentRegExp =
   /[\t\x20-\x5B\x5D-\x7E\u{A0}-\u{2027}\u{202A}-\u{D7FF}\u{E000}-\u{10FFFF}]/u;
-function parseEntry(sectionId: string[]): CST.Entry {
-  const type = 'entry';
-  const start = pos;
-  const id = parseId();
-  checkId(sectionId, id);
-  const equal = parseChar('=');
-
-  let valueStart = -1;
-  let valueEnd = pos;
+function parseValue(): CST.Value {
+  let start = -1;
+  let end = pos;
   let range: CST.Range | null = null;
   const addContent = (line: CST.ValuePart[]) => {
     if (range) {
-      const [start, end] = range;
-      const value = source.substring(start, end);
+      const value = source.substring(range[0], range[1]);
       line.push({ type: 'content', value, range });
-      if (valueStart < 0) valueStart = start;
-      valueEnd = end;
+      if (start < 0) start = range[0];
+      end = range[1];
       range = null;
     }
   };
@@ -180,7 +238,14 @@ function parseEntry(sectionId: string[]): CST.Entry {
   while (pos < source.length) {
     const ls = pos;
     parseWhitespace();
-    if (pos === ls && raw.length > 0) break;
+    if (
+      pos === ls &&
+      raw.length > 0 &&
+      source[pos] !== '\n' &&
+      !source.startsWith('\r\n', pos)
+    ) {
+      break;
+    }
     const line: CST.ValuePart[] = [];
     line: while (pos < source.length) {
       const ch = source[pos];
@@ -192,14 +257,14 @@ function parseEntry(sectionId: string[]): CST.Entry {
           addContent(line);
           const esc = parseEscape('value');
           line.push(esc);
-          if (valueStart < 0) valueStart = esc.range[0];
-          valueEnd = esc.range[1];
+          if (start < 0) start = esc.range[0];
+          end = esc.range[1];
           break;
         }
         default: {
           const next = pos + 1;
           if (!contentRegExp.test(ch)) {
-            onError([pos, next], 'Invalid entry content character');
+            onError([pos, next], 'Invalid entry value');
           }
           if (range) range[1] = next;
           else range = [pos, next];
@@ -209,31 +274,53 @@ function parseEntry(sectionId: string[]): CST.Entry {
     }
     addContent(line);
     raw.push(line);
-    parseLineEnd(type);
+    parseLineEnd('entry');
   }
 
-  if (valueStart < 0) valueStart = valueEnd;
-  const value: CST.Value = {
-    raw,
-    value: source.substring(valueStart, valueEnd),
-    range: [valueStart, valueEnd]
-  };
-  return { type, id, equal, value, range: [start, pos] };
+  // Rewind to exclude trailing empty lines from the value
+  const rl0 = raw.length;
+  while (raw.at(-1)?.length === 0) raw.pop();
+  if (raw.length < rl0) {
+    pos = end;
+    parseWhitespace();
+    parseLineEnd('entry');
+  }
+
+  const value = [];
+  for (const line of raw) {
+    let valueLine = '';
+    for (const vp of line) {
+      valueLine +=
+        vp.type === 'content' ? vp.value : parseEscapeValue('value', vp.raw);
+    }
+    if (valueLine || value.length) value.push(valueLine);
+  }
+  if (start < 0) start = end;
+  return { raw, value: value.join('\n'), range: [start, end] };
 }
 
 /**
- * id = id-part *([ws] "." [ws] id-part)
- * id-part = 1*(id-char / id-escape)
- * id-char = ALPHA / DIGIT / "-" / "_"
+ * id = id-start *([ws] "." [ws] id-part)
+ * id-start = (["-"] ["-"] id-char [id-part]) / ("-" ["-"])
+ * id-part = 1*(id-char / "-")
+ * id-char = id-safe / id-escape
+ * id-safe = ALPHA / DIGIT / "_"
  *         / %x00A1-1FFF / %x200C-200D / %x2030-205E / %x2070-2FEF
  *         / %x3001-D7FF / %xF900-FDCF / %xFDF0-FFFD / %x10000-EFFFF
  */
 const idCharRegExp =
   /[-a-zA-Z0-9_\u{A1}-\u{1FFF}\u{200C}-\u{200D}\u{2030}-\u{205E}\u{2070}-\u{2FEF}\u{3001}-\u{D7FF}\u{F900}-\u{FDCF}\u{FDF0}-\u{FFFD}\u{10000}-\u{EFFFF}]/u;
-function parseId(): CST.Id {
+function parseId(context: 'entry' | 'section'): CST.Id;
+function parseId(context: 'metadata'): CST.IdPart;
+function parseId(
+  context: 'entry' | 'section' | 'metadata'
+): CST.Id | CST.IdPart {
+  const onIdError = (range: CST.Range, msg: string) =>
+    onError(range, `Invalid ${context} identifier: ${msg}`);
+  const asIdPart = context === 'metadata';
   let start = pos;
   let end = pos;
-  const raw: CST.IdPart[] = [];
+  const raw: CST.IdElem[] = [];
   const value: string[] = [];
 
   let curr = '';
@@ -268,13 +355,14 @@ function parseId(): CST.Id {
         break;
       }
       case '.': {
+        if (asIdPart) break loop;
         addContent(true);
         const range: CST.Range = [pos, pos + 1];
         const prev = raw.at(-1);
         if (!prev) {
-          onError(range, 'Leading dot in identifier');
+          onIdError(range, 'Leading dot');
         } else if (prev.type === 'dot') {
-          onError([prev.range[0], pos + 1], 'Repeated dots in identifier');
+          onIdError([prev.range[0], pos + 1], 'Repeated dots');
         }
         raw.push({ type: 'dot', range });
         pos += 1;
@@ -283,6 +371,7 @@ function parseId(): CST.Id {
       }
       case '\t':
       case ' ':
+        if (asIdPart) break loop;
         addContent(true);
         parseWhitespace();
         if (raw.length === 0) start = pos; // trim leading spaces
@@ -295,27 +384,41 @@ function parseId(): CST.Id {
           range = [pos, end];
           const prev = raw.at(-1);
           if (prev?.type === 'content') {
-            onError(
-              [prev.range[1], pos],
-              'Unexpected whitespace in identifier'
-            );
+            onIdError([prev.range[1], pos], 'Unexpected whitespace');
           }
         }
         if (!idCharRegExp.test(ch)) {
-          onError([pos, end], 'Invalid identifier character');
+          onIdError([pos, end], 'Unsupported character');
         }
         pos = end;
     }
   }
   addContent(true);
 
-  const last = raw.at(-1);
-  if (!last) {
-    onError([start, Math.max(start + 1, end)], 'Expected an identifier');
-  } else if (last.type === 'dot') {
-    onError(last.range, 'Trailing dot in identifier');
+  const first = raw[0];
+  range = [start, Math.max(start + 1, end)];
+
+  if (asIdPart) {
+    if (!first) onError(range, 'Expected a metadata key');
+    return {
+      raw: raw as (CST.Content | CST.Escape)[],
+      value: value[0] ?? '',
+      range
+    };
   }
-  return { raw, value, range: [start, Math.max(start, end)] };
+
+  if (!first) {
+    onError(range, `Invalid ${context} identifier`);
+  } else if (first.type === 'content' && first.value.startsWith('---')) {
+    onError(first.range, 'Invalid frontmatter separator');
+  }
+
+  const last = raw.at(-1);
+  if (last?.type === 'dot') {
+    onError(last.range, `Invalid ${context} identifier: Trailing dot`);
+  }
+
+  return { raw, value, range };
 }
 
 function checkId(sectionId: string[], { value, range }: CST.Id) {
@@ -327,12 +430,12 @@ function checkId(sectionId: string[], { value, range }: CST.Id) {
     for (let i = 0; i < minLen; ++i) {
       if (path[i] !== prev.path[i]) continue paths;
     }
-    const msg =
-      path.length < prevLen
-        ? 'Shorter matching identifier must precede longer one'
-        : path.length === prevLen
-          ? 'Duplicate identifier'
-          : '';
+    let msg = '';
+    if (path.length < prevLen) {
+      msg = 'Shorter matching identifier must precede longer one';
+    } else if (path.length === prevLen) {
+      msg = 'Message already defined';
+    }
     if (msg) {
       if (!prev.error) {
         onError(prev.range, msg);
@@ -443,10 +546,20 @@ function parseLineEnd(type: string) {
   } else if (pos < source.length) {
     let end = source.indexOf('\n', pos);
     if (end === -1) end = source.length;
-    const msg =
-      type === 'empty-line'
-        ? 'Content with unexpected indent'
-        : 'Unexpected content at line end';
+    let msg;
+    switch (type) {
+      case 'empty-line':
+        msg = 'Invalid indent';
+        break;
+      case 'frontmatter':
+        msg = 'Invalid frontmatter separator';
+        break;
+      case 'section-head':
+        msg = 'Invalid section identifier: Unexpected content at line end';
+        break;
+      default:
+        msg = `Invalid ${type}: Unexpected content at line end`;
+    }
     onError([pos, end], msg);
   }
 }
