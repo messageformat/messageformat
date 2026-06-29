@@ -109,7 +109,7 @@ test('multi-line entry', () => {
           [{ type: 'content', value: 'bar', range: [15, 18] }],
           [{ type: 'content', value: '}', range: [21, 22] }]
         ],
-        value: '{\n    bar\n  }',
+        value: '{\nbar\n}',
         range: [9, 22]
       },
       range: [0, 23]
@@ -150,7 +150,7 @@ test('multi-line entry with CRLF terminators', () => {
           [{ type: 'content', value: 'bar', range: [17, 20] }],
           [{ type: 'content', value: '}', range: [24, 25] }]
         ],
-        value: '{\r\n    bar\r\n  }',
+        value: '{\nbar\n}',
         range: [10, 25]
       },
       range: [0, 27]
@@ -225,7 +225,7 @@ test('escaped contents', () => {
             { type: 'content', value: 'lines}' }
           ]
         ],
-        value: '{\\{msg\\|\\nlines}'
+        value: '{\\{msg\\|\nlines}'
       }
     }
   ]);
