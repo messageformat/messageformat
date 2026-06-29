@@ -70,6 +70,57 @@ test('frontmatter', () => {
   ]);
 });
 
+test('empty entries', () => {
+  const res = parseOk('foo = \nbar =\nbaz=');
+  expect(res).toEqual<TestResource>([
+    {
+      type: 'entry',
+      id: {
+        raw: [{ type: 'content', value: 'foo', range: [0, 3] }],
+        value: ['foo'],
+        range: [0, 3]
+      },
+      equal: 4,
+      value: {
+        raw: [],
+        value: '',
+        range: [5, 5]
+      },
+      range: [0, 7]
+    },
+    {
+      type: 'entry',
+      id: {
+        raw: [{ type: 'content', value: 'bar', range: [7, 10] }],
+        value: ['bar'],
+        range: [7, 10]
+      },
+      equal: 11,
+      value: {
+        raw: [],
+        value: '',
+        range: [12, 12]
+      },
+      range: [7, 13]
+    },
+    {
+      type: 'entry',
+      id: {
+        raw: [{ type: 'content', value: 'baz', range: [13, 16] }],
+        value: ['baz'],
+        range: [13, 16]
+      },
+      equal: 16,
+      value: {
+        raw: [],
+        value: '',
+        range: [17, 17]
+      },
+      range: [13, 17]
+    }
+  ]);
+});
+
 test('one-line entry', () => {
   const res = parseOk('foo = {bar}');
   expect(res).toEqual<TestResource>([
@@ -128,6 +179,44 @@ test('multi-line entry', () => {
         range: [28, 35]
       },
       range: [23, 35]
+    }
+  ]);
+});
+
+test('multi-line entry with empty lines', () => {
+  const res = parseOk('foo = \n\n  {\n\n    bar\n  }\n\nnext={value}');
+  expect(res).toMatchObject<TestResource>([
+    {
+      type: 'entry',
+      id: {
+        raw: [{ type: 'content', value: 'foo' }],
+        value: ['foo']
+      },
+      equal: 4,
+      value: {
+        raw: [
+          [],
+          [],
+          [{ type: 'content', value: '{' }],
+          [],
+          [{ type: 'content', value: 'bar' }],
+          [{ type: 'content', value: '}' }]
+        ],
+        value: '{\n\nbar\n}'
+      }
+    },
+    { type: 'empty-line' },
+    {
+      type: 'entry',
+      id: {
+        raw: [{ type: 'content', value: 'next' }],
+        value: ['next']
+      },
+      equal: 30,
+      value: {
+        raw: [[{ type: 'content', value: '{value}' }]],
+        value: '{value}'
+      }
     }
   ]);
 });
