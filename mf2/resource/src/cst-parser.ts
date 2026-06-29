@@ -270,12 +270,17 @@ function parseValue(): CST.Value {
     parseLineEnd('entry');
   }
 
+  const value = [];
+  for (const line of raw) {
+    let valueLine = '';
+    for (const vp of line) {
+      valueLine +=
+        vp.type === 'content' ? vp.value : parseEscapeValue('value', vp.raw);
+    }
+    if (valueLine || value.length) value.push(valueLine);
+  }
   if (start < 0) start = end;
-  return {
-    raw,
-    value: source.substring(start, end),
-    range: [start, end]
-  };
+  return { raw, value: value.join('\n'), range: [start, end] };
 }
 
 /**
