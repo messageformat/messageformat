@@ -162,7 +162,7 @@ function parseFrontmatter(): CST.Frontmatter {
   const start = pos;
   pos += 3; // '---'
   parseWhitespace();
-  parseLineEnd(type);
+  parseLineEnd('frontmatter separator');
   return { type, range: [start, pos] };
 }
 
@@ -171,7 +171,7 @@ function parseSectionHead(): CST.SectionHead {
   const type = 'section-head';
   const start = pos;
   pos += 1; // '['
-  const id = parseId(type);
+  const id = parseId('section');
   const close = parseChar(']');
   parseWhitespace();
   parseLineEnd(type);
@@ -257,7 +257,7 @@ function parseValue(): CST.Value {
         default: {
           const next = pos + 1;
           if (!contentRegExp.test(ch)) {
-            onError([pos, next], 'Invalid entry content character');
+            onError([pos, next], 'Invalid entry value');
           }
           if (range) range[1] = next;
           else range = [pos, next];
@@ -267,7 +267,7 @@ function parseValue(): CST.Value {
     }
     addContent(line);
     raw.push(line);
-    parseLineEnd();
+    parseLineEnd('entry');
   }
 
   if (start < 0) start = end;
@@ -289,12 +289,14 @@ function parseValue(): CST.Value {
  */
 const idCharRegExp =
   /[-a-zA-Z0-9_\u{A1}-\u{1FFF}\u{200C}-\u{200D}\u{2030}-\u{205E}\u{2070}-\u{2FEF}\u{3001}-\u{D7FF}\u{F900}-\u{FDCF}\u{FDF0}-\u{FFFD}\u{10000}-\u{EFFFF}]/u;
-function parseId(type: 'entry' | 'section-head'): CST.Id;
-function parseId(type: 'metadata'): CST.IdPart;
+function parseId(context: 'entry' | 'section'): CST.Id;
+function parseId(context: 'metadata'): CST.IdPart;
 function parseId(
-  type: 'entry' | 'section-head' | 'metadata'
+  context: 'entry' | 'section' | 'metadata'
 ): CST.Id | CST.IdPart {
-  const asIdPart = type === 'metadata';
+  const onIdError = (range: CST.Range, msg: string) =>
+    onError(range, `Invalid ${context} identifier: ${msg}`);
+  const asIdPart = context === 'metadata';
   let start = pos;
   let end = pos;
   const raw: CST.IdElem[] = [];
@@ -337,9 +339,9 @@ function parseId(
         const range: CST.Range = [pos, pos + 1];
         const prev = raw.at(-1);
         if (!prev) {
-          onError(range, 'Leading dot in identifier');
+          onIdError(range, 'Leading dot');
         } else if (prev.type === 'dot') {
-          onError([prev.range[0], pos + 1], 'Repeated dots in identifier');
+          onIdError([prev.range[0], pos + 1], 'Repeated dots');
         }
         raw.push({ type: 'dot', range });
         pos += 1;
@@ -361,14 +363,11 @@ function parseId(
           range = [pos, end];
           const prev = raw.at(-1);
           if (prev?.type === 'content') {
-            onError(
-              [prev.range[1], pos],
-              'Unexpected whitespace in identifier'
-            );
+            onIdError([prev.range[1], pos], 'Unexpected whitespace');
           }
         }
         if (!idCharRegExp.test(ch)) {
-          onError([pos, end], 'Invalid identifier character');
+          onIdError([pos, end], 'Unsupported character');
         }
         pos = end;
     }
@@ -388,13 +387,15 @@ function parseId(
   }
 
   if (!first) {
-    onError(range, 'Expected an identifier');
+    onError(range, `Invalid ${context} identifier`);
   } else if (first.type === 'content' && first.value.startsWith('---')) {
-    onError(first.range, 'Identifier must not start with ---');
+    onError(first.range, 'Invalid frontmatter separator');
   }
 
   const last = raw.at(-1);
-  if (last?.type === 'dot') onError(last.range, 'Trailing dot in identifier');
+  if (last?.type === 'dot') {
+    onError(last.range, `Invalid ${context} identifier: Trailing dot`);
+  }
 
   return { raw, value, range };
 }
@@ -408,12 +409,12 @@ function checkId(sectionId: string[], { value, range }: CST.Id) {
     for (let i = 0; i < minLen; ++i) {
       if (path[i] !== prev.path[i]) continue paths;
     }
-    const msg =
-      path.length < prevLen
-        ? 'Shorter matching identifier must precede longer one'
-        : path.length === prevLen
-          ? 'Duplicate identifier'
-          : '';
+    let msg = '';
+    if (path.length < prevLen) {
+      msg = 'Shorter matching identifier must precede longer one';
+    } else if (path.length === prevLen) {
+      msg = 'Message already defined';
+    }
     if (msg) {
       if (!prev.error) {
         onError(prev.range, msg);
@@ -512,7 +513,7 @@ function parseChar(char: string) {
 }
 
 // newline = CRLF / LF
-function parseLineEnd(type?: string) {
+function parseLineEnd(type: string) {
   let count = 0;
   let ch = source[pos];
   if (ch === '\r') {
@@ -524,10 +525,20 @@ function parseLineEnd(type?: string) {
   } else if (pos < source.length) {
     let end = source.indexOf('\n', pos);
     if (end === -1) end = source.length;
-    const msg =
-      type === 'empty-line'
-        ? 'Content with unexpected indent'
-        : 'Unexpected content at line end';
+    let msg;
+    switch (type) {
+      case 'empty-line':
+        msg = 'Invalid indent';
+        break;
+      case 'frontmatter':
+        msg = 'Invalid frontmatter separator';
+        break;
+      case 'section-head':
+        msg = 'Invalid section identifier: Unexpected content at line end';
+        break;
+      default:
+        msg = `Invalid ${type}: Unexpected content at line end`;
+    }
     onError([pos, end], msg);
   }
 }
