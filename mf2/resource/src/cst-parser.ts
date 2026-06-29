@@ -213,7 +213,7 @@ function parseEntry(sectionId: string[]): CST.Entry {
 }
 
 /**
- * value = value-line *(newline ws value-line)
+ * value = value-line *(1*newline ws value-line)
  * value-line = [(value-start / value-escape) *(content / value-escape)]
  * value-start = %x21-5B / %x5D-7E / %x00A0-2027 / %x202A-D7FF / %xE000-10FFFF
  * content = SP / HTAB / value-start
@@ -238,7 +238,14 @@ function parseValue(): CST.Value {
   while (pos < source.length) {
     const ls = pos;
     parseWhitespace();
-    if (pos === ls && raw.length > 0) break;
+    if (
+      pos === ls &&
+      raw.length > 0 &&
+      source[pos] !== '\n' &&
+      !source.startsWith('\r\n', pos)
+    ) {
+      break;
+    }
     const line: CST.ValuePart[] = [];
     line: while (pos < source.length) {
       const ch = source[pos];
@@ -267,6 +274,15 @@ function parseValue(): CST.Value {
     }
     addContent(line);
     raw.push(line);
+    parseLineEnd('entry');
+  }
+
+  // Rewind to exclude trailing empty lines from the value
+  const rl0 = raw.length;
+  while (raw.at(-1)?.length === 0) raw.pop();
+  if (raw.length < rl0) {
+    pos = end;
+    parseWhitespace();
     parseLineEnd('entry');
   }
 
