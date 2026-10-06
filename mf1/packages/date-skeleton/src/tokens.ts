@@ -4,9 +4,7 @@
  * @public
  */
 export type DateToken =
-  | string
-  | { char: string; width: number }
-  | { error: string };
+  string | { char: string; width: number } | { error: string };
 
 const isLetter = (char: string) =>
   (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z');

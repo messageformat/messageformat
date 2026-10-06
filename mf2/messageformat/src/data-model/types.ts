@@ -120,9 +120,7 @@ export type Pattern = Array<string | Expression | Markup>;
  */
 export type Expression<
   A extends Literal | VariableRef | undefined =
-    | Literal
-    | VariableRef
-    | undefined
+    Literal | VariableRef | undefined
 > = {
   type: 'expression';
   attributes?: Attributes;

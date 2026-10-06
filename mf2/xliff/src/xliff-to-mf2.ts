@@ -42,8 +42,7 @@ function* resolveEntry(
       case 'unit': {
         const key = parseKeyFromId('unit', entry.attributes.id);
         const rd = entry.elements.find(el => el.name === 'res:resourceData') as
-          | X.ResourceData
-          | undefined;
+          X.ResourceData | undefined;
         const { source, target } = entry.attributes['pgs:switch']
           ? resolveSelectMessage(rd, entry)
           : resolvePatternMessage(rd, entry);
