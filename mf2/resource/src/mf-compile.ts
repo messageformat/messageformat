@@ -1,34 +1,43 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  MessageFormat,
-  type MessageFormatOptions,
-  type Model
-} from 'messageformat';
-import type { MessageResource, Messages } from './mf-parser.ts';
+import { MessageFormat, type MessageFormatOptions } from 'messageformat';
+import type { MessageResource, MessageWrapper } from './mf-parser.ts';
+
+/** Extends `Map`, adding a `.value` for the base message. */
+export class MessageFormatWrapper extends Map<string, MessageFormatWrapper> {
+  value?: MessageFormat;
+
+  constructor(
+    value?: MessageFormat,
+    entries?: readonly (readonly [string, MessageFormatWrapper])[]
+  ) {
+    super(entries);
+    if (value) this.value = value;
+  }
+}
 
 /**
  * Compile a parsed tree of Message data models
  * into a tree of MessageFormat instances.
  *
  * @param resource - The tree of Message values
- * @param options - The options used for each MessageFormat isntance.
+ * @param options - The options used for each MessageFormat instance.
  */
 export function compileMessageResource(
-  resource: MessageResource<Model.Message>,
+  resource: MessageResource,
   options?: MessageFormatOptions
-): MessageResource<MessageFormat> {
-  const res: MessageResource<any> = structuredClone(resource);
-  compileMessages(res.locale, options, res.messages);
-  return res;
+): Map<string, MessageFormatWrapper> {
+  return new Map(compileMessages(resource.locale, options, resource));
 }
 
 function compileMessages(
   locale: string,
   options: MessageFormatOptions | undefined,
-  messages: Messages<any>
-) {
-  for (const msg of Object.values(messages)) {
-    if (msg.value) msg.value = new MessageFormat(locale, msg.value, options);
-    if (msg.messages) compileMessages(locale, options, msg.messages);
-  }
+  messages: Map<string, MessageWrapper>
+): [string, MessageFormatWrapper][] {
+  return Array.from(messages, ([key, msg]) => {
+    const mf = msg.value
+      ? new MessageFormat(locale, msg.value, options)
+      : undefined;
+    const msgEntries = compileMessages(locale, options, msg);
+    return [key, new MessageFormatWrapper(mf, msgEntries)];
+  });
 }

@@ -1,7 +1,11 @@
-import { MessageSyntaxError, type Model, parseMessage } from 'messageformat';
+import { MessageSyntaxError, parseMessage } from 'messageformat';
 import type { CST } from './cst-parser.ts';
-import type { MessageResource, Messages } from './mf-parser.ts';
-import { MessageResourceParseError, getOrCreateSection } from './mf-parser.ts';
+import {
+  MessageResource,
+  MessageResourceParseError,
+  MessageWrapper,
+  getOrCreateSection
+} from './mf-parser.ts';
 
 /**
  * Compile a `CST.Resource` value into a tree of `Message` values.
@@ -10,12 +14,12 @@ import { MessageResourceParseError, getOrCreateSection } from './mf-parser.ts';
  */
 export function buildMessageResourceFromCST(
   cst: CST.Resource
-): MessageResource<Model.Message> {
-  let locale = '';
+): MessageResource {
   let inBody = false;
   let pos = 0;
-  const messages: Messages<Model.Message> = Object.create(null);
-  let section = messages;
+  const resource = new MessageResource('');
+  let section: Map<string, MessageWrapper> = resource;
+
   loop: for (const line of cst) {
     pos = line.range[0];
     switch (line.type) {
@@ -27,18 +31,20 @@ export function buildMessageResourceFromCST(
           const msg = 'Identifier must not start with ---';
           throw new MessageResourceParseError(pos, msg);
         }
-        if (!locale) {
+        if (!resource.locale) {
           const msg = 'No locale metadata in resource frontmatter';
           throw new MessageResourceParseError(pos, msg);
         }
         inBody = true;
         break;
       case 'metadata':
-        if (!inBody && line.key.value === 'locale') locale = line.value.value;
+        if (!inBody && line.key.value === 'locale') {
+          resource.locale = line.value.value;
+        }
         break;
       case 'section-head':
         if (!inBody) break loop;
-        section = getOrCreateSection(messages, line.id.value);
+        section = getOrCreateSection(resource, line.id.value);
         break;
       case 'entry':
         if (!inBody) {
@@ -47,8 +53,12 @@ export function buildMessageResourceFromCST(
           const path = [...line.id.value];
           const last = path.pop()!;
           const parent = getOrCreateSection(section, path);
-          const self = (parent[last] ??= {});
-          if ('value' in self) {
+          let self = parent.get(last);
+          if (!self) {
+            self = new MessageWrapper();
+            parent.set(last, self);
+          }
+          if (self.value) {
             throw new MessageResourceParseError(pos, 'Message already defined');
           }
           try {
@@ -73,5 +83,5 @@ export function buildMessageResourceFromCST(
     const msg = 'Missing resource frontmatter';
     throw new MessageResourceParseError(pos, msg);
   }
-  return { locale, messages };
+  return resource;
 }

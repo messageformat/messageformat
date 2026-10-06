@@ -2,15 +2,19 @@ import type { ExpectationResult } from '@vitest/expect';
 import {
   MessageFormat,
   type MessageFormatOptions,
-  type MessagePart
+  type MessagePart,
+  type Model
 } from 'messageformat';
 import { describe, expect, test } from 'vitest';
-import {
-  MessageResourceParseError,
-  parseMessageResource
-} from './mf-parser.ts';
 import { parseCST } from './cst-parser.ts';
 import { buildMessageResourceFromCST } from './mf-from-cst.ts';
+import {
+  MessageResource,
+  MessageResourceParseError,
+  MessageWrapper,
+  parseMessageResource
+} from './mf-parser.ts';
+import { compileMessageResource } from './mf-compile.ts';
 
 declare module 'vitest' {
   interface Matchers {
@@ -47,7 +51,10 @@ expect.extend({
 
     let mf;
     try {
-      mf = new MessageFormat(locale, msg, options);
+      mf =
+        msg instanceof MessageFormat
+          ? msg
+          : new MessageFormat(locale, msg, options);
     } catch (error) {
       return { pass: false, message: () => String(error), actual: msg };
     }
@@ -72,6 +79,13 @@ const PDI = '\u2069';
 for (const { name, parse } of [
   { name: 'parseMessageResource', parse: parseMessageResource },
   {
+    name: 'compileMessageResource',
+    parse(src: string) {
+      const res = parseMessageResource(src);
+      return compileMessageResource(res);
+    }
+  },
+  {
     name: 'buildMessageResourceFromCST',
     parse(src: string) {
       const cst = parseCST(src, (range, msg) => {
@@ -94,21 +108,16 @@ for (const { name, parse } of [
 
     test('minimal empty resource', () => {
       const res = parse('@locale und\n---\n');
-      expect(res).toEqual({ locale: 'und', messages: {} });
+      if (res instanceof MessageResource) expect(res.locale).toBe('und');
+      expect(res.size).toBe(0);
     });
 
     test('minimal non-empty resource', () => {
       const res = parse('@locale und\n---\nkey = value');
-      expect(res).toEqual({
-        locale: 'und',
-        messages: {
-          key: {
-            value: expect.messageFormatsAs({
-              formatted: 'value',
-              parts: [{ type: 'text', value: 'value' }]
-            })
-          }
-        }
+      expect(res.size).toBe(1);
+      expect(res.get('key')!.value).messageFormatsAs({
+        formatted: 'value',
+        parts: [{ type: 'text', value: 'value' }]
       });
     });
 
@@ -116,32 +125,28 @@ for (const { name, parse } of [
       const res = parse(
         '\n\n#[foo\\] \n## bar\r\n  \t\n#\n@locale und\n---\n\n\n#[foo\\] \n## bar\r\n  \t\n#\n'
       );
-      expect(res).toEqual({ locale: 'und', messages: {} });
+      if (res instanceof MessageResource) expect(res.locale).toBe('und');
+      expect(res.size).toBe(0);
     });
 
     test('frontmatter', () => {
       const res = parse(
         '@locale en-ZZ\n@foo value\n  on multiple\n\n\n lines\n---\n'
       );
-      expect(res).toEqual({ locale: 'en-ZZ', messages: {} });
+      if (res instanceof MessageResource) expect(res.locale).toBe('en-ZZ');
+      expect(res.size).toBe(0);
     });
 
     test('one-line entry', () => {
       const res = parse('@locale und\n---\nfoo = {bar}');
-      expect(res).toEqual({
+      expect(res.size).toBe(1);
+      expect(res.get('foo')!.value).messageFormatsAs({
         locale: 'und',
-        messages: {
-          foo: {
-            value: expect.messageFormatsAs({
-              locale: 'und',
-              parts: [
-                { type: 'bidiIsolation', value: FSI },
-                { locale: 'und', type: 'string', value: 'bar' },
-                { type: 'bidiIsolation', value: PDI }
-              ]
-            })
-          }
-        }
+        parts: [
+          { type: 'bidiIsolation', value: FSI },
+          { locale: 'und', type: 'string', value: 'bar' },
+          { type: 'bidiIsolation', value: PDI }
+        ]
       });
     });
 
@@ -149,108 +154,80 @@ for (const { name, parse } of [
       const res = parse(
         '@locale und\n---\nfoo = \n  {\n    bar\n  }\nnext=value'
       );
-      expect(res).toEqual({
+      expect(res.size).toBe(2);
+      expect(res.get('foo')!.value).messageFormatsAs({
         locale: 'und',
-        messages: {
-          foo: {
-            value: expect.messageFormatsAs({
-              locale: 'und',
-              parts: [
-                { type: 'bidiIsolation', value: FSI },
-                { locale: 'und', type: 'string', value: 'bar' },
-                { type: 'bidiIsolation', value: PDI }
-              ]
-            })
-          },
-          next: {
-            value: expect.messageFormatsAs({
-              locale: 'und',
-              parts: [{ type: 'text', value: 'value' }]
-            })
-          }
-        }
+        parts: [
+          { type: 'bidiIsolation', value: FSI },
+          { locale: 'und', type: 'string', value: 'bar' },
+          { type: 'bidiIsolation', value: PDI }
+        ]
       });
+      expect(res.get('next')!.value).messageFormatsAs([
+        { type: 'text', value: 'value' }
+      ]);
     });
 
     test('multi-line entry with empty lines', () => {
       const res = parse(
         '@locale und\n---\nfoo = \n\n  {\n\n    bar\n  }\n\nnext=value'
       );
-      expect(res).toEqual({
+      expect(res.size).toBe(2);
+      expect(res.get('foo')!.value).messageFormatsAs({
         locale: 'und',
-        messages: {
-          foo: {
-            value: expect.messageFormatsAs({
-              locale: 'und',
-              parts: [
-                { type: 'bidiIsolation', value: FSI },
-                { locale: 'und', type: 'string', value: 'bar' },
-                { type: 'bidiIsolation', value: PDI }
-              ]
-            })
-          },
-          next: {
-            value: expect.messageFormatsAs([{ type: 'text', value: 'value' }])
-          }
-        }
+        parts: [
+          { type: 'bidiIsolation', value: FSI },
+          { locale: 'und', type: 'string', value: 'bar' },
+          { type: 'bidiIsolation', value: PDI }
+        ]
       });
+      expect(res.get('next')!.value).messageFormatsAs([
+        { type: 'text', value: 'value' }
+      ]);
     });
 
     test('multi-line entry with CRLF terminators', () => {
       const res = parse(
         '@locale und\r\n---\r\nfoo = \r\n  {\r\n    bar\r\n  }\r\nnext=value'
       );
-      expect(res).toEqual({
+      expect(res.size).toBe(2);
+      expect(res.get('foo')!.value).messageFormatsAs({
         locale: 'und',
-        messages: {
-          foo: {
-            value: expect.messageFormatsAs({
-              locale: 'und',
-              parts: [
-                { type: 'bidiIsolation', value: FSI },
-                { locale: 'und', type: 'string', value: 'bar' },
-                { type: 'bidiIsolation', value: PDI }
-              ]
-            })
-          },
-          next: {
-            value: expect.messageFormatsAs([{ type: 'text', value: 'value' }])
-          }
-        }
+        parts: [
+          { type: 'bidiIsolation', value: FSI },
+          { locale: 'und', type: 'string', value: 'bar' },
+          { type: 'bidiIsolation', value: PDI }
+        ]
       });
+      expect(res.get('next')!.value).messageFormatsAs([
+        { type: 'text', value: 'value' }
+      ]);
     });
 
     test('section-head with trailing whitespace', () => {
       const res = parse('@locale und\n---\n[ foo . bar ] \t\n');
-      expect(res).toEqual({
-        locale: 'und',
-        messages: { foo: { messages: { bar: { messages: {} } } } }
-      });
+      expect(res.get('foo')!.get('bar')!.size).toBe(0);
     });
 
     test('escaped contents', () => {
       const res = parse(
         '@locale und\n---\n[f\\xf6o\\r\\n\\ \t.b\\u00E4r\\]\\|\\{]\nlong\\tkey=\\{msg\\|\\nlines\\}\n'
       );
-      expect(res).toEqual({
-        locale: 'und',
-        messages: {
-          'föo\r\n ': {
-            messages: {
-              'bär]|{': {
-                messages: {
-                  'long\tkey': {
-                    value: expect.messageFormatsAs('{msg|\nlines}')
-                  }
-                }
-              }
-            }
-          }
-        }
-      });
+      expect(res.size).toBe(1);
+      expect(
+        res.get('föo\r\n ')!.get('bär]|{')!.get('long\tkey')!.value
+      ).messageFormatsAs('{msg|\nlines}');
     });
 
-    describe('duplicate identifiers', () => {
+    describe.runIf(
+      name === 'parseMessageResource' || name === 'buildMessageResourceFromCST'
+    )('duplicate identifiers', () => {
+      const patternMessage = (pattern: string[]): Model.PatternMessage => ({
+        type: 'message',
+        declarations: [],
+        pattern
+      });
+
       test('top-level entries', () => {
         expect(() => parse('@locale und\n---\na=1\na=2\n')).toThrow(
           'Message already defined'
@@ -259,39 +236,22 @@ for (const { name, parse } of [
 
       test('identifiers get longer', () => {
         const res = parse('@locale und\n---\na=1\na.b=2\n[a.b]\nc=3');
-        expect(res).toEqual({
-          locale: 'und',
-          messages: {
-            a: {
-              value: expect.messageFormatsAs('1'),
-              messages: {
-                b: {
-                  value: expect.messageFormatsAs('2'),
-                  messages: { c: { value: expect.messageFormatsAs('3') } }
-                }
-              }
-            }
-          }
-        });
+        const c = new MessageWrapper(patternMessage(['3']));
+        const b = new MessageWrapper(patternMessage(['2']), [['c', c]]);
+        const a = new MessageWrapper(patternMessage(['1']), [['b', b]]);
+        expect(res).toEqual(new MessageResource('und', [['a', a]]));
       });
 
-      test.skip('identifiers get shorter', () => {
-        const res = parse('@locale und\n---\na.b.c=1\na.b=2\na=3\n[a.b]');
-        expect(res).toEqual({
-          locale: 'und',
-          messages: {
-            a: {
-              value: expect.messageFormatsAs('3'),
-              messages: {
-                b: {
-                  value: expect.messageFormatsAs('2'),
-                  messages: { c: { value: expect.messageFormatsAs('1') } }
-                }
-              }
-            }
-          }
-        });
-      });
+      test.runIf(name === 'parseMessageResource')(
+        'identifiers get shorter',
+        () => {
+          const res = parse('@locale und\n---\na.b.c=1\na.b=2\na=3\n[a.b]');
+          const c = new MessageWrapper(patternMessage(['1']));
+          const b = new MessageWrapper(patternMessage(['2']), [['c', c]]);
+          const a = new MessageWrapper(patternMessage(['3']), [['b', b]]);
+          expect(res).toEqual(new MessageResource('und', [['a', a]]));
+        }
+      );
     });
 
     describe('errors', () => {

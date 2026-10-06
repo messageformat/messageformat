@@ -1,16 +1,30 @@
 import { type Model, parseMessage } from 'messageformat';
 
-export type MessageResource<M> = {
+/** Extends `Map`, adding a `.locale` for the resource locale. */
+export class MessageResource extends Map<string, MessageWrapper> {
   locale: string;
-  messages: Messages<M>;
-};
 
-export type Messages<M> = { [key: string]: MessageGroup<M> };
+  constructor(
+    locale: string,
+    entries?: readonly (readonly [string, MessageWrapper])[]
+  ) {
+    super(entries);
+    this.locale = locale;
+  }
+}
 
-export type MessageGroup<M> = {
-  value?: M;
-  messages?: Messages<M>;
-};
+/** Extends `Map`, adding a `.value` for the base message. */
+export class MessageWrapper extends Map<string, MessageWrapper> {
+  value?: Model.Message;
+
+  constructor(
+    value?: Model.Message,
+    entries?: readonly (readonly [string, MessageWrapper])[]
+  ) {
+    super(entries);
+    if (value) this.value = value;
+  }
+}
 
 export class MessageResourceParseError extends Error {
   pos: number;
@@ -34,17 +48,13 @@ let source: string;
  *
  * @param source - The full source being parsed
  */
-export function parseMessageResource(
-  source: string
-): MessageResource<Model.Message>;
-export function parseMessageResource(
-  source_: string
-): MessageResource<Model.Message> {
+export function parseMessageResource(source: string): MessageResource;
+export function parseMessageResource(source_: string): MessageResource {
   pos = 0;
   source = source_;
   const locale = parseFrontmatter();
-  const messages: Messages<Model.Message> = Object.create(null);
-  let section = messages;
+  const resource = new MessageResource(locale);
+  let section: Map<string, MessageWrapper> = resource;
   while (pos < source.length) {
     switch (source[pos]) {
       case '\t':
@@ -61,7 +71,7 @@ export function parseMessageResource(
         break;
       case '[':
         pos += 1; // '['
-        section = getOrCreateSection(messages, parseId('section'));
+        section = getOrCreateSection(resource, parseId('section'));
         if (source[pos] !== ']') {
           const msg = 'Invalid section identifier';
           throw new MessageResourceParseError(pos, msg);
@@ -74,8 +84,12 @@ export function parseMessageResource(
         const path = parseId('entry');
         const last = path.pop()!;
         const parent = getOrCreateSection(section, path);
-        const self = (parent[last] ??= {});
-        if ('value' in self) {
+        let self = parent.get(last);
+        if (!self) {
+          self = new MessageWrapper();
+          parent.set(last, self);
+        }
+        if (self.value) {
           throw new MessageResourceParseError(start, 'Message already defined');
         }
         self.value = parseValue();
@@ -83,22 +97,22 @@ export function parseMessageResource(
       }
     }
   }
-  return { locale, messages };
+  return resource;
 }
 
 export function getOrCreateSection(
-  root: Messages<Model.Message>,
+  root: Map<string, MessageWrapper>,
   path: string[]
-): Messages<Model.Message> {
+): Map<string, MessageWrapper> {
   let section = root;
   for (const name of path) {
-    const prev = section[name];
+    const prev = section.get(name);
     if (prev) {
-      section = prev.messages ??= Object.create(null);
+      section = prev;
     } else {
-      const messages = Object.create(null);
-      section[name] = { messages };
-      section = messages;
+      const wrapper = new MessageWrapper();
+      section.set(name, wrapper);
+      section = wrapper;
     }
   }
   return section;
