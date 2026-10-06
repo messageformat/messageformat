@@ -1,5 +1,9 @@
 import type { ExpectationResult } from '@vitest/expect';
-import { MessageFormat, MessagePart } from 'messageformat';
+import {
+  MessageFormat,
+  type MessageFormatOptions,
+  type MessagePart
+} from 'messageformat';
 import { describe, expect, test } from 'vitest';
 import {
   MessageResourceParseError,
@@ -15,6 +19,8 @@ declare module 'vitest' {
         | string
         | MessagePart<string>[]
         | {
+            locale?: string;
+            options?: MessageFormatOptions;
             params?: Record<string, unknown>;
             formatted?: string;
             parts?: MessagePart<string>[];
@@ -24,36 +30,39 @@ declare module 'vitest' {
 }
 
 expect.extend({
-  messageFormatsAs(mf, expected) {
-    if (mf instanceof MessageFormat) {
-      let params: Record<string, unknown> | undefined;
-      let formatted: string | undefined;
-      let parts: MessagePart<string>[] | undefined;
-      if (typeof expected === 'string') {
-        formatted = expected;
-      } else if (Array.isArray(expected)) {
-        parts = expected;
-      } else if (expected) {
-        ({ params, formatted, parts } = expected);
-      }
-
-      if (typeof formatted === 'string') {
-        const res = mf.format(params);
-        expect(res).toEqual(formatted);
-      }
-
-      if (parts) {
-        const res = mf.formatToParts(params);
-        expect(res).toEqual(parts);
-      }
-
-      return { pass: true, message: () => 'ok' };
+  messageFormatsAs(msg, expected) {
+    let locale = 'en-US';
+    let options: MessageFormatOptions | undefined;
+    let params: Record<string, unknown> | undefined;
+    let formatted: string | undefined;
+    let parts: MessagePart<string>[] | undefined;
+    if (typeof expected === 'string') {
+      formatted = expected;
+    } else if (Array.isArray(expected)) {
+      parts = expected;
+    } else if (expected) {
+      ({ options, params, formatted, parts } = expected);
+      if (expected.locale) locale = expected.locale;
     }
-    return {
-      pass: false,
-      message: () => `expected ${mf} to be a MessageFormat`,
-      actual: mf
-    };
+
+    let mf;
+    try {
+      mf = new MessageFormat(locale, msg, options);
+    } catch (error) {
+      return { pass: false, message: () => String(error), actual: msg };
+    }
+
+    if (typeof formatted === 'string') {
+      const res = mf.format(params);
+      expect(res).toEqual(formatted);
+    }
+
+    if (parts) {
+      const res = mf.formatToParts(params);
+      expect(res).toEqual(parts);
+    }
+
+    return { pass: true, message: () => 'ok' };
   }
 });
 
@@ -123,11 +132,14 @@ for (const { name, parse } of [
         locale: 'und',
         messages: {
           foo: {
-            value: expect.messageFormatsAs([
-              { type: 'bidiIsolation', value: FSI },
-              { locale: 'und', type: 'string', value: 'bar' },
-              { type: 'bidiIsolation', value: PDI }
-            ])
+            value: expect.messageFormatsAs({
+              locale: 'und',
+              parts: [
+                { type: 'bidiIsolation', value: FSI },
+                { locale: 'und', type: 'string', value: 'bar' },
+                { type: 'bidiIsolation', value: PDI }
+              ]
+            })
           }
         }
       });
@@ -141,14 +153,20 @@ for (const { name, parse } of [
         locale: 'und',
         messages: {
           foo: {
-            value: expect.messageFormatsAs([
-              { type: 'bidiIsolation', value: FSI },
-              { locale: 'und', type: 'string', value: 'bar' },
-              { type: 'bidiIsolation', value: PDI }
-            ])
+            value: expect.messageFormatsAs({
+              locale: 'und',
+              parts: [
+                { type: 'bidiIsolation', value: FSI },
+                { locale: 'und', type: 'string', value: 'bar' },
+                { type: 'bidiIsolation', value: PDI }
+              ]
+            })
           },
           next: {
-            value: expect.messageFormatsAs([{ type: 'text', value: 'value' }])
+            value: expect.messageFormatsAs({
+              locale: 'und',
+              parts: [{ type: 'text', value: 'value' }]
+            })
           }
         }
       });
@@ -162,11 +180,14 @@ for (const { name, parse } of [
         locale: 'und',
         messages: {
           foo: {
-            value: expect.messageFormatsAs([
-              { type: 'bidiIsolation', value: FSI },
-              { locale: 'und', type: 'string', value: 'bar' },
-              { type: 'bidiIsolation', value: PDI }
-            ])
+            value: expect.messageFormatsAs({
+              locale: 'und',
+              parts: [
+                { type: 'bidiIsolation', value: FSI },
+                { locale: 'und', type: 'string', value: 'bar' },
+                { type: 'bidiIsolation', value: PDI }
+              ]
+            })
           },
           next: {
             value: expect.messageFormatsAs([{ type: 'text', value: 'value' }])
@@ -183,11 +204,14 @@ for (const { name, parse } of [
         locale: 'und',
         messages: {
           foo: {
-            value: expect.messageFormatsAs([
-              { type: 'bidiIsolation', value: FSI },
-              { locale: 'und', type: 'string', value: 'bar' },
-              { type: 'bidiIsolation', value: PDI }
-            ])
+            value: expect.messageFormatsAs({
+              locale: 'und',
+              parts: [
+                { type: 'bidiIsolation', value: FSI },
+                { locale: 'und', type: 'string', value: 'bar' },
+                { type: 'bidiIsolation', value: PDI }
+              ]
+            })
           },
           next: {
             value: expect.messageFormatsAs([{ type: 'text', value: 'value' }])

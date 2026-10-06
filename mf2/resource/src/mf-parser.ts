@@ -1,15 +1,15 @@
-import { MessageFormat, type MessageFormatOptions } from 'messageformat';
+import { type Model, parseMessage } from 'messageformat';
 
-export type MessageResource = {
+export type MessageResource<M> = {
   locale: string;
-  messages: Messages;
+  messages: Messages<M>;
 };
 
-export type Messages = { [key: string]: MessageGroup };
+export type Messages<M> = { [key: string]: MessageGroup<M> };
 
-export type MessageGroup = {
-  value?: MessageFormat;
-  messages?: Messages;
+export type MessageGroup<M> = {
+  value?: M;
+  messages?: Messages<M>;
 };
 
 export class MessageResourceParseError extends Error {
@@ -27,26 +27,23 @@ let pos: number;
 let source: string;
 
 /**
- * Parse input into a tree of MessageFormat instances.
+ * Parse input into a tree of Message data model values.
  *
  * The frontmatter locale is required;
  * all other metadata is ignored.
  *
  * @param source - The full source being parsed
- * @param options - The options used for each MessageFormat isntance.
  */
 export function parseMessageResource(
-  source: string,
-  options?: MessageFormatOptions
-): MessageResource;
+  source: string
+): MessageResource<Model.Message>;
 export function parseMessageResource(
-  source_: string,
-  options?: MessageFormatOptions
-): MessageResource {
+  source_: string
+): MessageResource<Model.Message> {
   pos = 0;
   source = source_;
   const locale = parseFrontmatter();
-  const messages: Messages = Object.create(null);
+  const messages: Messages<Model.Message> = Object.create(null);
   let section = messages;
   while (pos < source.length) {
     switch (source[pos]) {
@@ -81,7 +78,7 @@ export function parseMessageResource(
         if ('value' in self) {
           throw new MessageResourceParseError(start, 'Message already defined');
         }
-        self.value = parseValue(locale, options);
+        self.value = parseValue();
         break;
       }
     }
@@ -89,7 +86,10 @@ export function parseMessageResource(
   return { locale, messages };
 }
 
-export function getOrCreateSection(root: Messages, path: string[]): Messages {
+export function getOrCreateSection(
+  root: Messages<Model.Message>,
+  path: string[]
+): Messages<Model.Message> {
   let section = root;
   for (const name of path) {
     const prev = section[name];
@@ -206,10 +206,7 @@ const valueIndent = /[\t ]+|(?=\r?\n)/y;
 const valueLine =
   /((?:[\t\x20-\x5B\x5D-\x7E\u{A0}-\u{2027}\u{202A}-\u{D7FF}\u{E000}-\u{10FFFF}]|\\[\t \\{|}nrt]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{6})*)(?:\r?\n|$)/uy;
 const valueEscape = /\\(?:x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6}|.)/g;
-function parseValue(
-  locale: string,
-  options: MessageFormatOptions | undefined
-): MessageFormat {
+function parseValue(): Model.Message {
   valueStart.lastIndex = pos;
   if (!valueStart.test(source)) {
     throw new MessageResourceParseError(pos, 'Invalid entry identifier');
@@ -253,7 +250,7 @@ function parseValue(
         return esc;
     }
   });
-  return new MessageFormat(locale, src, options);
+  return parseMessage(src);
 }
 
 /**

@@ -1,26 +1,20 @@
-import {
-  MessageFormat,
-  type MessageFormatOptions,
-  MessageSyntaxError
-} from 'messageformat';
+import { MessageSyntaxError, type Model, parseMessage } from 'messageformat';
 import type { CST } from './cst-parser.ts';
 import type { MessageResource, Messages } from './mf-parser.ts';
 import { MessageResourceParseError, getOrCreateSection } from './mf-parser.ts';
 
 /**
- * Compile a `CST.Resource` value into a tree of MessageFormat instances.
+ * Compile a `CST.Resource` value into a tree of `Message` values.
  *
  * @param cst - The previously parsed CST resource
- * @param options - The options used for each MessageFormat isntance.
  */
 export function buildMessageResourceFromCST(
-  cst: CST.Resource,
-  options?: MessageFormatOptions
-): MessageResource {
+  cst: CST.Resource
+): MessageResource<Model.Message> {
   let locale = '';
   let inBody = false;
   let pos = 0;
-  const messages: Messages = Object.create(null);
+  const messages: Messages<Model.Message> = Object.create(null);
   let section = messages;
   loop: for (const line of cst) {
     pos = line.range[0];
@@ -58,7 +52,7 @@ export function buildMessageResourceFromCST(
             throw new MessageResourceParseError(pos, 'Message already defined');
           }
           try {
-            self.value = new MessageFormat(locale, line.value.value, options);
+            self.value = parseMessage(line.value.value);
           } catch (error) {
             let parseError;
             if (error instanceof MessageSyntaxError) {
