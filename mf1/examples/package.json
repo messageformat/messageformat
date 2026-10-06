@@ -10,5 +10,8 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces"
+  },
+  "devDependencies": {
+    "webpack": "5.108.4"
   }
 }
