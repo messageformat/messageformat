@@ -1,7 +1,7 @@
 {
   "name": "@messageformat/resource",
   "version": "0.0.0",
-  "description": "Unicode MessageFormat 2 resource parser",
+  "description": "W3C Message Resources for Unicode MessageFormat",
   "keywords": [
     "messageformat",
     "unicode",

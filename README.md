@@ -14,6 +14,7 @@ This monorepo provides packages supporting JS implementations of both [Unicode M
 - [messageformat](mf2/messageformat/) - MF2 parser, runtime, and polyfill for Intl.MessageFormat
 - [@messageformat/fluent](mf2/fluent) - Compile Fluent sources into MF2 resources
 - [@messageformat/icu-messageformat-1](mf2/icu-messageformat-1) - Compile MF1 sources into MF2 formatters
+- [@messageformat/resource](mf2/resource) - [Message resource] file parser
 - [@messageformat/xliff](mf2/xliff) - **_(ALPHA)_** Convert between XLIFF 2 and MF2
 
 ## ICU MessageFormat 1
@@ -33,6 +34,7 @@ This monorepo provides packages supporting JS implementations of both [Unicode M
 [unicode cldr]: http://cldr.unicode.org/
 [icu messageformat]: https://unicode-org.github.io/icu/userguide/format_parse/messages/
 [unicode messageformat 2]: https://github.com/unicode-org/message-format-wg
+[message resource]: https://github.com/w3c/i18n-discuss/blob/gh-pages/explainers/message-resources.md
 [icu dateformat skeletons]: https://unicode-org.github.io/icu/userguide/format_parse/datetime/
 [icu numberformat skeletons]: https://unicode-org.github.io/icu/userguide/format_parse/numbers/skeletons.html
 

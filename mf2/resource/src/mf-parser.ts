@@ -46,6 +46,8 @@ let source: string;
  * The frontmatter locale is required;
  * all other metadata is ignored.
  *
+ * Throws `MessageResourceParseError` on error.
+ *
  * @param source - The full source being parsed
  */
 export function parseMessageResource(source: string): MessageResource;

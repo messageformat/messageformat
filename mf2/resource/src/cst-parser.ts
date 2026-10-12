@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CST {
+  /** A concrete syntax tree representation for a message resource. */
   export type Resource = Array<
     EmptyLine | Comment | Frontmatter | Metadata | SectionHead | Entry
   >;
@@ -72,7 +73,8 @@ let source: string;
 
 /**
  * Parse input into a MessageResource CST.
- * Should never throw an Error.
+ *
+ * Should never throw an Error except due to resource exhaustion.
  *
  * @param source - The full source being parsed
  * @param onError - Error handler, may be called multiple times for bad input.
