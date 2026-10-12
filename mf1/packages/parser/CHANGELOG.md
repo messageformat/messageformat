@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/messageformat/messageformat/compare/@messageformat/parser@5.1.1...@messageformat/parser@5.2.0) (2026-10-12)
+
+### Features
+
+* Add ES Module output ([#469](https://github.com/messageformat/messageformat/issues/469))
+
 ## [5.1.1](https://github.com/messageformat/messageformat/compare/@messageformat/parser@5.1.0...@messageformat/parser@5.1.1) (2024-12-28)
 
 * Use correct regexp for 'quoted' escapes ([#436](https://github.com/messageformat/messageformat/issues/436))

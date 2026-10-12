@@ -3,18 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.2...@messageformat/runtime@3.0.3) (2026-10-12)
+
+* Simplify locale regexp processing
+* Use null prototype for internal `Messages` data containers
+
 ## [3.0.2](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.1...@messageformat/runtime@3.0.2) (2025-10-30)
 
-### Bug Fixes
-
-* **runtime:** Avoid prototype pollution in `Messages.p.addMessages()` ([#464](https://github.com/messageformat/messageformat/issues/464))
+* Avoid prototype pollution in `Messages.p.addMessages()` ([#464](https://github.com/messageformat/messageformat/issues/464))
 
 ## [3.0.1](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.0...@messageformat/runtime@3.0.1) (2022-02-06)
 
-### Bug Fixes
-
-* **runtime:** Use a string type in the `select()` arguments ([#344](https://github.com/messageformat/messageformat/issues/344))
-* **runtime:** Add missing `messages.d.ts` ([#342](https://github.com/messageformat/messageformat/issues/342))
+* Use a string type in the `select()` arguments ([#344](https://github.com/messageformat/messageformat/issues/344))
+* Add missing `messages.d.ts` ([#342](https://github.com/messageformat/messageformat/issues/342))
 
 # [3.0.0](https://github.com/messageformat/messageformat/compare/@messageformat/runtime@3.0.0-beta.2...@messageformat/runtime@3.0.0) (2021-05-13)
 

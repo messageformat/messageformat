@@ -1,6 +1,6 @@
 {
   "name": "@messageformat/core",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "PluralFormat and SelectFormat Message and i18n Tool - A JavaScript Implemenation of the ICU standards.",
   "keywords": [
     "i18n",
@@ -33,8 +33,8 @@
   "dependencies": {
     "@messageformat/date-skeleton": "2.0.0-0",
     "@messageformat/number-skeleton": "2.0.0-0",
-    "@messageformat/parser": "^5.1.0",
-    "@messageformat/runtime": "^3.0.2",
+    "@messageformat/parser": "^5.2.0",
+    "@messageformat/runtime": "^3.0.3",
     "make-plural": "^7.0.0",
     "safe-identifier": "^0.4.1"
   },
