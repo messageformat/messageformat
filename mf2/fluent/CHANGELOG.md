@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.15.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.14.0...@messageformat/fluent@0.15.0) (2026-10-12)
+
+- Use updated `messageformat`.
+- Apply updates to match LDML 48.2/49 spec ([#466](https://github.com/messageformat/messageformat/issues/466))
+
 ## [0.14.0](https://github.com/messageformat/messageformat/compare/@messageformat/fluent@0.13.0...@messageformat/fluent@0.14.0) (2025-11-25)
 
 - Use updated `messageformat`.

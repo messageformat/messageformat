@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.0](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0...messageformat@4.1.0) (2026-10-12)
+
+* Apply updates to match LDML 48.2/49 spec ([#466](https://github.com/messageformat/messageformat/issues/466))
+  * Drop remaining mentions of `u:locale`
+  * Promote `:currency` and `:percent` from Draft to Stable
+
 ## [4.0.0](https://github.com/messageformat/messageformat/compare/messageformat@4.0.0-13...messageformat@4.0.0) (2025-11-25)
 
 * Update LDML references to [v48](https://www.unicode.org/reports/tr35/tr35-76/tr35-messageFormat.html#contents-of-part-9-messageformat)

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.13.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.12.0...@messageformat/icu-messageformat-1@0.13.0) (2026-10-12)
+
+- Use updated `messageformat`.
+- Apply updates to match LDML 48.2/49 spec ([#466](https://github.com/messageformat/messageformat/issues/466))
+
 ## [0.12.0](https://github.com/messageformat/messageformat/compare/@messageformat/icu-messageformat-1@0.11.0...@messageformat/icu-messageformat-1@0.12.0) (2025-11-25)
 
 - Use updated `messageformat`.
