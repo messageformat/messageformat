@@ -92,10 +92,10 @@ export interface MessageData {
  */
 export default class Messages {
   /** @internal */
-  _data: { [key: string]: MessageData } = {};
+  _data: { [key: string]: MessageData } = Object.create(null);
 
   /** @internal */
-  _fallback: { [key: string]: string[] | null } = {};
+  _fallback: { [key: string]: string[] | null } = Object.create(null);
 
   /** @internal */
   _defaultLocale: string | null = null;
