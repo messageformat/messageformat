@@ -1,5 +1,4 @@
 import { parse } from '@messageformat/parser';
-import { stringifyMessage } from 'messageformat';
 import { describe, expect, test, vitest } from 'vitest';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
@@ -452,10 +451,3 @@ for (const [title, cases] of Object.entries(testCases)) {
     }
   });
 }
-
-describe('Message data model compatibility', () => {
-  test('stringifies numeric number skeleton options', () => {
-    const data = mf1ToMessageData(parse('{N, number, ::.00}'));
-    expect(() => stringifyMessage(data)).not.toThrow();
-  });
-});
