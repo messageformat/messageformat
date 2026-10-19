@@ -1,4 +1,5 @@
 import { parse } from '@messageformat/parser';
+import { stringifyMessage } from 'messageformat';
 import { describe, expect, test, vitest } from 'vitest';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
@@ -364,6 +365,10 @@ export const testCases: Record<string, TestCase[]> = {
       exp: [[{ N: 4200 }, '£42.00']]
     },
     {
+      src: '{N, number, ::.00}',
+      exp: [[{ N: 42 }, '42.00']]
+    },
+    {
       src: '{N, number, ::unit/meter-per-second scale/1}',
       exp: [[{ N: 42 }, '42 m/s']]
     },
@@ -447,3 +452,10 @@ for (const [title, cases] of Object.entries(testCases)) {
     }
   });
 }
+
+describe('Message data model compatibility', () => {
+  test('stringifies numeric number skeleton options', () => {
+    const data = mf1ToMessageData(parse('{N, number, ::.00}'));
+    expect(() => stringifyMessage(data)).not.toThrow();
+  });
+});

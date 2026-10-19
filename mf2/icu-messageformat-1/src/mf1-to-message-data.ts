@@ -106,7 +106,7 @@ function parseNumberArgStyle(argStyle: string): MF.FunctionRef {
         if (value === false) value = 'never';
         break;
     }
-    options[key] = { type: 'literal', value };
+    options[key] = { type: 'literal', value: String(value) };
   }
   return { type: 'function', name, options };
 }
