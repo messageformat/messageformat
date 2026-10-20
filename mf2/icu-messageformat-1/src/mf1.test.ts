@@ -1,5 +1,6 @@
 import { parse } from '@messageformat/parser';
 import { describe, expect, test, vitest } from 'vitest';
+import { stringifyMessage } from 'messageformat';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
 export type TestCase = {
@@ -451,3 +452,11 @@ for (const [title, cases] of Object.entries(testCases)) {
     }
   });
 }
+
+describe('MessageFormat 2 data model conversion', () => {
+  test('stringifies numeric number-skeleton options', () => {
+    const data = mf1ToMessageData(parse('{N, number, ::.00}'));
+
+    expect(stringifyMessage(data)).toContain('minimumFractionDigits=2');
+  });
+});
