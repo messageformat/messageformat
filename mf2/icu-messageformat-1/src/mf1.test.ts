@@ -364,6 +364,10 @@ export const testCases: Record<string, TestCase[]> = {
       exp: [[{ N: 4200 }, '£42.00']]
     },
     {
+      src: '{N, number, ::.00}',
+      exp: [[{ N: 42 }, '42.00']]
+    },
+    {
       src: '{N, number, ::unit/meter-per-second scale/1}',
       exp: [[{ N: 42 }, '42 m/s']]
     },
