@@ -1,8 +1,0 @@
-{
-  "name": "custom-formatter-example",
-  "private": true,
-  "scripts": {
-    "build": "rollup -c",
-    "start": "node dist/main"
-  }
-}

@@ -1,6 +1,0 @@
-paths:
-  - mf1
-  - mf2
-
-queries:
-  - uses: security-extended
