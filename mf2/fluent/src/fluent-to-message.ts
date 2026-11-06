@@ -82,13 +82,26 @@ function asSelectorDeclaration(
     }
   }
   const exp = asExpression(selector);
-  return exp.arg?.type === 'variable'
-    ? {
-        type: 'input',
-        name: exp.arg.name,
-        value: exp as MF.Expression<MF.VariableRef>
-      }
-    : { type: 'local', name: `_${index}`, value: exp };
+  if (exp.arg?.type === 'variable') {
+    // A function selector with options (e.g. NUMBER($n, minimumFractionDigits: 2))
+    // must not be emitted as `.input`: in MF2 an .input annotation also applies
+    // to every later use of the variable, so the options would leak into the
+    // variant placeholders. Bind it to a fresh local instead, as is already
+    // done when the argument is not a variable. An annotation without options
+    // formats the same way as the Fluent default, so it can stay an .input.
+    if (
+      exp.functionRef?.options &&
+      Object.keys(exp.functionRef.options).length > 0
+    ) {
+      return { type: 'local', name: `_${index}`, value: exp };
+    }
+    return {
+      type: 'input',
+      name: exp.arg.name,
+      value: exp as MF.Expression<MF.VariableRef>
+    };
+  }
+  return { type: 'local', name: `_${index}`, value: exp };
 }
 
 function asValue(exp: Fluent.VariableReference): MF.VariableRef;
