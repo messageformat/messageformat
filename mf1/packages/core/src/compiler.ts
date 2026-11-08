@@ -92,7 +92,9 @@ export default class Compiler {
       strictPluralKeys
     };
     this.arguments = [];
-    const r = parse(src, parserOptions).map(token => this.token(token, null));
+    const r = parse(src, parserOptions).map((token, i) =>
+      this.token(token, null, i === 0)
+    );
     const hasArgs = this.arguments.length > 0;
     const res = this.concatenate(r, true);
 
@@ -109,7 +111,7 @@ export default class Compiler {
     let needOther = true;
     const r = token.cases.map(({ key, tokens }) => {
       if (key === 'other') needOther = false;
-      const s = tokens.map(tok => this.token(tok, pluralToken));
+      const s = tokens.map((tok, i) => this.token(tok, pluralToken, i === 0));
       return `${property(null, key.replace(/^=/, ''))}: ${this.concatenate(
         s,
         false
@@ -136,7 +138,7 @@ export default class Compiler {
       : tokens.join(' + ') || '""';
   }
 
-  token(token: Token, pluralToken: Select | null) {
+  token(token: Token, pluralToken: Select | null, first: boolean) {
     if (token.type === 'content') return JSON.stringify(token.value);
 
     const { id, lc } = this.plural;
@@ -151,7 +153,9 @@ export default class Compiler {
       case 'argument':
         return this.options.biDiSupport
           ? biDiMarkText(String(args[0]), lc)
-          : String(args[0]);
+          : !first || this.options.returnType === 'values'
+            ? String(args[0])
+            : `String(${args[0]})`;
 
       case 'select':
         fn = 'select';
@@ -313,7 +317,9 @@ export default class Compiler {
       }
       return JSON.stringify(options);
     } else {
-      const parts = param.map(tok => this.token(tok, pluralToken));
+      const parts = param.map((tok, i) =>
+        this.token(tok, pluralToken, i === 0)
+      );
       if (argShape === 'raw') return `[${parts.join(', ')}]`;
       const s = parts.join(' + ');
       return s ? `(${s}).trim()` : '""';
@@ -390,7 +396,7 @@ export default class Compiler {
     args.push(JSON.stringify(locale));
     if (param && param.length > 0) {
       if (plural && this.options.strict) plural = null;
-      const s = param.map(tok => this.token(tok, plural));
+      const s = param.map((tok, i) => this.token(tok, plural, i === 0));
       args.push('(' + (s.join(' + ') || '""') + ').trim()');
     }
     this.setFormatter('date');
@@ -454,7 +460,7 @@ export default class Compiler {
 
     /* istanbul ignore next: never happens */
     if (plural && this.options.strict) plural = null;
-    const s = param.map(tok => this.token(tok, plural));
+    const s = param.map((tok, i) => this.token(tok, plural, i === 0));
     args.push('(' + (s.join(' + ') || '""') + ').trim()');
     args.push(JSON.stringify(this.options.currency));
     this.setFormatter('numberFmt');

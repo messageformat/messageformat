@@ -310,7 +310,7 @@ const testCases = {
         [undefined, { error: "Message requires argument 'foo'" }],
         [{}, { error: "Message requires argument 'foo'" }],
         [{ foo: undefined }, { error: "Message requires argument 'foo'" }],
-        [{ foo: null }, null],
+        [{ foo: null }, 'null'],
         [{ foo: '' }, '']
       ]
     },
@@ -329,7 +329,7 @@ const testCases = {
       src: '{bar, select, bar{{foo}} other{OTHER}}',
       exp: [
         [{ bar: null }, 'OTHER'],
-        [{ bar: 'bar' }, undefined]
+        [{ bar: 'bar' }, 'undefined']
       ]
     },
     {
@@ -531,6 +531,28 @@ const testCases = {
     {
       src: '{N} is almost {N, number, {type}}',
       exp: [[{ N: 3.14, type: 'integer' }, '3.14 is almost 3']]
+    },
+    {
+      src: '{a}{b}',
+      exp: [[{ a: 1, b: 2 }, '12']]
+    },
+    {
+      options: { returnType: 'values' },
+      src: '{a}{b}',
+      exp: [[{ a: 1, b: 2 }, [1, 2]]]
+    },
+    {
+      src: '{a}{b} x',
+      exp: [[{ a: 1, b: 2 }, '12 x']]
+    },
+    {
+      options: { returnType: 'values' },
+      src: '{a}{b} x',
+      exp: [[{ a: 1, b: 2 }, [1, 2, ' x']]]
+    },
+    {
+      src: '{a}{b, number, {type}}',
+      exp: [[{ a: 1, b: 2, type: 'integer' }, '12']]
     }
   ],
 
