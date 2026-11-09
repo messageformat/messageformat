@@ -553,6 +553,32 @@ const testCases = {
     {
       src: '{a}{b, number, {type}}',
       exp: [[{ a: 1, b: 2, type: 'integer' }, '12']]
+    },
+    {
+      locale: 'ja',
+      options: { currency: 'JPY' },
+      src: 'The total is {V, number, currency}.',
+      exp: [[{ V: 5.55 }, 'The total is ￥6.']]
+    },
+    {
+      options: { currency: 'JPY' },
+      src: 'The total is {V, number, currency:JPY}.',
+      exp: [[{ V: 5.55 }, 'The total is ¥6.']]
+    },
+    {
+      options: { currency: 'JPY' },
+      src: 'The total is {V, number, {type}}.',
+      exp: [[{ V: 5.55, type: 'currency' }, 'The total is ¥6.']]
+    },
+    {
+      options: { currency: 'KWD' },
+      src: 'The total is {V, number, currency}.',
+      exp: [[{ V: 5.555 }, /5\.555\.$/]]
+    },
+    {
+      options: { currency: 'USD' },
+      src: 'The total is {V, number, currency}.',
+      exp: [[{ V: 5.555 }, /5\.56\.$/]]
     }
   ],
 

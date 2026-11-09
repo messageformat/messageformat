@@ -43,9 +43,7 @@ export function numberFmt(
     percent: { style: 'percent' },
     currency: {
       style: 'currency',
-      currency: (currency && currency.trim()) || defaultCurrency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      currency: (currency && currency.trim()) || defaultCurrency
     }
   };
   return nf(lc, opt[type] || {}).format(value);
@@ -55,13 +53,7 @@ export const numberCurrency = (
   value: number,
   lc: string | string[],
   arg: string
-) =>
-  nf(lc, {
-    style: 'currency',
-    currency: arg,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value);
+) => nf(lc, { style: 'currency', currency: arg }).format(value);
 
 export const numberInteger = (value: number, lc: string | string[]) =>
   nf(lc, { maximumFractionDigits: 0 }).format(value);
