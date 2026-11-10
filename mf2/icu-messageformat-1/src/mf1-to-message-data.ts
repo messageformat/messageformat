@@ -258,34 +258,49 @@ function tokenToPart(
   }
 }
 
-function argToInputDeclaration({
-  arg: name,
-  pluralOffset,
-  type
-}: SelectArg): MF.InputDeclaration {
-  let functionRef: MF.FunctionRef;
-  if (type === 'select') {
-    functionRef = { type: 'function', name: 'string' };
-  } else {
-    const options: MF.Options = {};
-    if (type === 'selectordinal') {
-      options['select'] = { type: 'literal', value: 'ordinal' };
-    }
-    if (pluralOffset) {
-      options['offset'] = { type: 'literal', value: String(pluralOffset) };
-      functionRef = { type: 'function', name: 'mf1:plural', options };
-    } else {
-      functionRef = { type: 'function', name: 'number' };
-      if (Object.keys(options).length) functionRef.options = options;
-    }
+function argToFunctionRef({ pluralOffset, type }: SelectArg): MF.FunctionRef {
+  if (type === 'select') return { type: 'function', name: 'string' };
+  const options: MF.Options = {};
+  if (type === 'selectordinal') {
+    options['select'] = { type: 'literal', value: 'ordinal' };
   }
+  if (pluralOffset) {
+    options['offset'] = { type: 'literal', value: String(pluralOffset) };
+    return { type: 'function', name: 'mf1:plural', options };
+  }
+  const functionRef: MF.FunctionRef = { type: 'function', name: 'number' };
+  if (Object.keys(options).length) functionRef.options = options;
+  return functionRef;
+}
+
+/**
+ * In MF1, the same argument may drive several selectors of different types.
+ * As MF2 does not allow a variable to be declared more than once,
+ * such selectors are given unique names and resolved
+ * as `.local` declarations of the external argument.
+ */
+function selectorNames(args: SelectArg[]): string[] {
+  const counts = new Map<string, number>();
+  for (const { arg } of args) counts.set(arg, (counts.get(arg) || 0) + 1);
+  const used = new Set(counts.keys());
+  return args.map(({ arg }) => {
+    if (counts.get(arg) === 1) return arg;
+    let i = 1;
+    while (used.has(`${arg}_${i}`)) i += 1;
+    const name = `${arg}_${i}`;
+    used.add(name);
+    return name;
+  });
+}
+
+function argToDeclaration(arg: SelectArg, name: string): MF.Declaration {
   return {
-    type: 'input',
+    type: name === arg.arg ? 'input' : 'local',
     name,
     value: {
       type: 'expression',
-      arg: { type: 'variable', name },
-      functionRef
+      arg: { type: 'variable', name: arg.arg },
+      functionRef: argToFunctionRef(arg)
     }
   };
 }
@@ -338,6 +353,7 @@ function argToInputDeclaration({
  */
 export function mf1ToMessageData(ast: AST.Token[]): MF.Message {
   const args = findSelectArgs(ast);
+  const names = selectorNames(args);
   if (args.length === 0) {
     return {
       type: 'message',
@@ -386,10 +402,10 @@ export function mf1ToMessageData(ast: AST.Token[]): MF.Message {
   ) {
     for (const token of tokens) {
       if (isAstSelect(token)) {
-        const isPlural = token.type !== 'select';
-        const pa = isPlural ? token.arg : pluralArg;
-        const po = isPlural ? token.pluralOffset || null : pluralOffset;
         const idx = args.findIndex(equalSelectArgs(token));
+        const isPlural = token.type !== 'select';
+        const pa = isPlural ? names[idx] : pluralArg;
+        const po = isPlural ? token.pluralOffset || null : pluralOffset;
         for (const c of token.cases) {
           const value = isPlural ? asPluralKey(c.key) : c.key;
           addParts(c.tokens, pa, po, [...filter, { idx, value }]);
@@ -421,8 +437,8 @@ export function mf1ToMessageData(ast: AST.Token[]): MF.Message {
 
   return {
     type: 'select',
-    declarations: args.map(argToInputDeclaration),
-    selectors: args.map(arg => ({ type: 'variable', name: arg.arg })),
+    declarations: args.map((arg, i) => argToDeclaration(arg, names[i])),
+    selectors: names.map(name => ({ type: 'variable', name })),
     variants
   };
 }

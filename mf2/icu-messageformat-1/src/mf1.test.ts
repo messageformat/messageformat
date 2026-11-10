@@ -1,5 +1,7 @@
 import { parse } from '@messageformat/parser';
+import { MessageFormat, stringifyMessage } from 'messageformat';
 import { describe, expect, test, vitest } from 'vitest';
+import { MF1Functions } from './functions.ts';
 import { mf1ToMessage, mf1ToMessageData } from './index.ts';
 
 export type TestCase = {
@@ -279,6 +281,65 @@ export const testCases: Record<string, TestCase[]> = {
     }
   ],
 
+  'Multiple selectors per argument': [
+    {
+      src: '{type, select, ordinal {{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}} other {{count, plural, one {# task} other {# tasks}}}}',
+      exp: [
+        [{ type: 'ordinal', count: 1 }, '1st'],
+        [{ type: 'ordinal', count: 2 }, '2nd'],
+        [{ type: 'ordinal', count: 3 }, '3rd'],
+        [{ type: 'ordinal', count: 4 }, '4th'],
+        [{ type: 'other', count: 0 }, '0 tasks'],
+        [{ type: 'other', count: 1 }, '1 task'],
+        [{ type: 'other', count: 2 }, '2 tasks']
+      ]
+    },
+    {
+      src: '{n, plural, offset:1 one {#a} other {#b}} {n, plural, offset:2 one {#c} other {#d}}',
+      exp: [
+        [{ n: 2 }, '1a 0d'],
+        [{ n: 3 }, '2b 1c'],
+        [{ n: 4 }, '3b 2d'],
+        [{ n: 100 }, '99b 98d']
+      ]
+    },
+    {
+      src: '{count, plural, one {{count, selectordinal, one {#-first} other {#-ord}}} other {#-rest}}',
+      exp: [
+        [{ count: 1 }, '1-first'],
+        [{ count: 2 }, '2-rest'],
+        [{ count: 5 }, '5-rest']
+      ]
+    },
+    {
+      src: '{x, plural, one {{y, select, 1 {A#} other {B#}}} other {{y, selectordinal, one {1st} two {2nd} other {th}}}}',
+      exp: [
+        [{ x: 1, y: 1 }, 'A1'],
+        [{ x: 1, y: 2 }, 'B1'],
+        [{ x: 2, y: 1 }, '1st'],
+        [{ x: 2, y: 2 }, '2nd'],
+        [{ x: 2, y: 3 }, 'th']
+      ]
+    },
+    {
+      src: '{count, plural, one {{count_1, select, x {collide} other {nope}}} other {{count, selectordinal, one {#st} two {#nd} other {#th}}}}',
+      exp: [
+        [{ count: 1, count_1: 'x' }, 'collide'],
+        [{ count: 2, count_1: 'y' }, '2nd'],
+        [{ count: 3, count_1: 'y' }, '3th']
+      ]
+    },
+    {
+      src: '{N, plural, one {# one} other {{N, selectordinal, one {# o1} two {# o2} other {# oo}}}} {N, plural, offset:1 one {#o} other {#O}}',
+      exp: [
+        [{ N: 1 }, '1 one 0O'],
+        [{ N: 2 }, '2 o2 1o'],
+        [{ N: 3 }, '3 oo 2O'],
+        [{ N: 12 }, '12 oo 11O']
+      ]
+    }
+  ],
+
   'Date formatter': [
     {
       src: 'Today is {T, date}',
@@ -451,3 +512,29 @@ for (const [title, cases] of Object.entries(testCases)) {
     }
   });
 }
+
+describe('Selectors sharing an argument', () => {
+  const src =
+    '{type, select, ordinal {{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}} other {{count, plural, one {# task} other {# tasks}}}}';
+
+  test('uses uniquely named declarations', () => {
+    expect(mf1ToMessageData(parse(src))).toMatchObject({
+      declarations: [
+        { type: 'input', name: 'type' },
+        { type: 'local', name: 'count_1' },
+        { type: 'local', name: 'count_2' }
+      ],
+      selectors: [{ name: 'type' }, { name: 'count_1' }, { name: 'count_2' }]
+    });
+  });
+
+  test('round-trips through MF2 source', () => {
+    const str = stringifyMessage(mf1ToMessageData(parse(src)));
+    const mf = new MessageFormat('en', str, {
+      bidiIsolation: 'none',
+      functions: MF1Functions
+    });
+    expect(mf.format({ type: 'ordinal', count: 2 })).toBe('2nd');
+    expect(mf.format({ type: 'other', count: 3 })).toBe('3 tasks');
+  });
+});
