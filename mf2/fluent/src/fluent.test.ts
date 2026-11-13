@@ -104,6 +104,25 @@ const testCases: Record<string, TestCase> = {
     ]
   },
 
+  // https://github.com/messageformat/messageformat/issues/479
+  // The selector's NUMBER() options apply to selection only; a bare {$n} in
+  // a variant formats with defaults. Note that n=1 selects `other` here,
+  // because minimumFractionDigits: 2 makes Intl.PluralRules treat 1 as 1.00,
+  // which is what @fluent/bundle also produces for this message.
+  'NUMBER selector options do not leak into variants': {
+    src: source`
+      items = { NUMBER($n, minimumFractionDigits: 2) ->
+       [one] {$n} item
+      *[other] {$n} items
+      }
+    `,
+    tests: [
+      { msg: 'items', scope: { n: 1 }, exp: '1 items' },
+      { msg: 'items', scope: { n: 5 }, exp: '5 items' },
+      { msg: 'items', scope: { n: 1000 }, exp: '1,000 items' }
+    ]
+  },
+
   'Literals as selectors': {
     src: source`
       foo = { "a" ->
@@ -753,6 +772,60 @@ describe('fluentToResourceData', () => {
                   }
           }
     `);
+  });
+});
+
+describe('fluentToMessage selector declarations', () => {
+  test('function selector without options stays an input', () => {
+    const src = source`
+      items = { NUMBER($n) ->
+       [one] {$n} item
+      *[other] {$n} items
+      }
+    `;
+    const { data } = fluentToResourceData(src);
+    const msg = data.get('items')?.get('') as MF.SelectMessage;
+    expect(msg.declarations).toEqual([
+      {
+        type: 'input',
+        name: 'n',
+        value: {
+          type: 'expression',
+          arg: { type: 'variable', name: 'n' },
+          functionRef: { type: 'function', name: 'number' }
+        }
+      }
+    ]);
+    expect(msg.selectors).toEqual([{ type: 'variable', name: 'n' }]);
+  });
+
+  test('function selector with options binds to a local', () => {
+    const src = source`
+      items = { NUMBER($n, minimumFractionDigits: 2) ->
+       [one] {$n} item
+      *[other] {$n} items
+      }
+    `;
+    const { data } = fluentToResourceData(src);
+    const msg = data.get('items')?.get('') as MF.SelectMessage;
+    expect(msg.declarations).toEqual([
+      {
+        type: 'local',
+        name: '_0',
+        value: {
+          type: 'expression',
+          arg: { type: 'variable', name: 'n' },
+          functionRef: {
+            type: 'function',
+            name: 'number',
+            options: {
+              minimumFractionDigits: { type: 'literal', value: '2' }
+            }
+          }
+        }
+      }
+    ]);
+    expect(msg.selectors).toEqual([{ type: 'variable', name: '_0' }]);
   });
 });
 
