@@ -59,10 +59,12 @@ const cases: { [name: string]: { [pattern: string]: Skeleton } } = {
       unitWidth: 'unit-width-narrow'
     },
     "'#'#": {
-      affix: { pos: ['#', ''] }
+      affix: { pos: ['#', ''] },
+      precision: { style: 'precision-integer' }
     },
     "# o''clock": {
-      affix: { pos: ['', " o'clock"] }
+      affix: { pos: ['', " o'clock"] },
+      precision: { style: 'precision-integer' }
     },
     '#,##0.00;(#,##0.00)': {
       affix: { pos: ['', ''], neg: ['(', ')'] },
@@ -127,7 +129,8 @@ const cases: { [name: string]: { [pattern: string]: Skeleton } } = {
       sign: 'sign-never'
     },
     '#,##,##0': {
-      group: 'group-auto'
+      group: 'group-auto',
+      precision: { style: 'precision-integer' }
     },
     '#,##0.###,#': {
       group: 'group-auto',
@@ -261,7 +264,8 @@ const cases: { [name: string]: { [pattern: string]: Skeleton } } = {
       precision: { style: 'precision-fraction', minFraction: 2, maxFraction: 2 }
     },
     "* #0 o''clock": {
-      affix: { pos: ['', " o'clock"] }
+      affix: { pos: ['', " o'clock"] },
+      precision: { style: 'precision-integer' }
     }
   },
   Rounding: {
@@ -278,14 +282,19 @@ const cases: { [name: string]: { [pattern: string]: Skeleton } } = {
   'Unsupported Features & other oddities': {
     "# foo % 'bar'''": {
       affix: { pos: ['', " bar'"] },
+      precision: { style: 'precision-integer' },
+      scale: 100,
       unit: { style: 'percent' }
     },
     'foo ‰ bar 0E*': {
       affix: { pos: ['foo ', 'E*'] },
+      precision: { style: 'precision-integer' },
       unit: { style: 'permille' }
     },
     '%+#;foo- % -bar # baz % qux': {
       affix: { pos: ['', ''], neg: ['foo- ', ' qux'] },
+      precision: { style: 'precision-integer' },
+      scale: 100,
       sign: 'sign-never',
       unit: { style: 'percent' }
     },
@@ -309,7 +318,10 @@ for (const [name, tests] of Object.entries(cases)) {
 }
 
 const errorCases = {
-  '0#': { errors: ['Pattern has # after integer digits'], expected: {} },
+  '0#': {
+    errors: ['Pattern has # after integer digits'],
+    expected: { precision: { style: 'precision-integer' } }
+  },
   '0.#0': {
     errors: ['Pattern has digits after # in fraction'],
     expected: {
@@ -367,7 +379,10 @@ const errorCases = {
   },
   "0'foo": {
     errors: ['Unterminated quoted literal in pattern: foo'],
-    expected: { affix: { pos: ['', 'foo'] } }
+    expected: {
+      affix: { pos: ['', 'foo'] },
+      precision: { style: 'precision-integer' }
+    }
   }
 };
 

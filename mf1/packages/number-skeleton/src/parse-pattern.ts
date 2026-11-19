@@ -17,6 +17,8 @@ function handleAffix(
     switch (token.char) {
       case '%':
         res.unit = { style: token.style };
+        // In a pattern, % also multiplies the value by 100
+        if (token.style === 'percent') res.scale = 100;
         if (isPrefix) inFmt = true;
         else str = '';
         break;
@@ -132,6 +134,13 @@ export function parseNumberPattern(
     res.sign = 'sign-never';
   } else if (prefix || suffix) {
     res.affix = { pos: [prefix, suffix] };
+  }
+
+  // A pattern with no fraction digits shows none,
+  // but a currency pattern uses the currency's own digits.
+  const isCurrency = res.unit?.style === 'currency';
+  if (tokens.number.length && !res.precision && !res.notation && !isCurrency) {
+    res.precision = { style: 'precision-integer' };
   }
 
   return res;

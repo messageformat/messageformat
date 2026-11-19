@@ -31,7 +31,15 @@ const tests: {
       exp: '1 234,57 JPY'
     },
     "'#'#": { value: 123, lc: 'en', exp: '#123' },
-    "# o''clock": { value: 12, lc: 'en', exp: "12 o'clock" }
+    "# o''clock": { value: 12, lc: 'en', exp: "12 o'clock" },
+    '#,##0': { value: 1234.567, lc: 'en', exp: '1,235' },
+    '#': { value: 2.71828, lc: 'en', exp: '3' },
+    '00': { value: 2.71828, lc: 'en', exp: '03' }
+  },
+  'Percent sign': {
+    '#,##0%': { value: 0.1234, lc: 'en', exp: '12%' },
+    '0.0%': { value: 0.12345, lc: 'en', exp: '12.3%' },
+    '#,##0.00%': { value: 12.3456, lc: 'en', exp: '1,234.56%' }
   },
   'Currency symbol': {
     '¤': { value: 12, lc: 'en', cur: 'CAD', exp: 'CA$12.00' },
