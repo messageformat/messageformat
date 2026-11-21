@@ -337,6 +337,24 @@ export const testCases: Record<string, TestCase[]> = {
         [{ N: 3 }, '3 oo 2O'],
         [{ N: 12 }, '12 oo 11O']
       ]
+    },
+    {
+      // a plain `{count_1}` placeholder must not be shadowed by a renamed
+      // selector, which is why every argument name in the message has to be
+      // considered when synthesising unique selector names
+      src: '{count, plural, one{a} other{b}} {count, selectordinal, one{x} other{y}} {count_1}',
+      exp: [
+        [{ count: 1, count_1: 'SEVEN' }, 'a x SEVEN'],
+        [{ count: 2, count_1: 'SEVEN' }, 'b y SEVEN']
+      ]
+    },
+    {
+      // same as above for a function placeholder
+      src: '{count, plural, one{a} other{b}} {count, selectordinal, one{x} other{y}} {count_1, number}',
+      exp: [
+        [{ count: 1, count_1: 7 }, 'a x 7'],
+        [{ count: 2, count_1: 7 }, 'b y 7']
+      ]
     }
   ],
 

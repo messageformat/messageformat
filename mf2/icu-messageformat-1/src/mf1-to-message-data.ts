@@ -274,15 +274,37 @@ function argToFunctionRef({ pluralOffset, type }: SelectArg): MF.FunctionRef {
 }
 
 /**
+ * Collects the name of every argument referenced anywhere in the message:
+ * plain `{arg}` and function `{arg, fn}` placeholders as well as the
+ * arguments of selects, so that a synthesised name cannot shadow one of them.
+ */
+function collectArgNames(tokens: AST.Token[], names: Set<string>) {
+  for (const token of tokens) {
+    if ('arg' in token && typeof token.arg === 'string') names.add(token.arg);
+    if (isAstSelect(token)) {
+      for (const { tokens: caseTokens } of token.cases) {
+        collectArgNames(caseTokens, names);
+      }
+    } else if (token.type === 'function' && Array.isArray(token.params)) {
+      collectArgNames(token.params, names);
+    }
+  }
+}
+
+/**
  * In MF1, the same argument may drive several selectors of different types.
  * As MF2 does not allow a variable to be declared more than once,
  * such selectors are given unique names and resolved
  * as `.local` declarations of the external argument.
  */
-function selectorNames(args: SelectArg[]): string[] {
+function selectorNames(args: SelectArg[], ast: AST.Token[]): string[] {
   const counts = new Map<string, number>();
   for (const { arg } of args) counts.set(arg, (counts.get(arg) || 0) + 1);
+  // `used` must cover every argument name in the message, not only the
+  // selector arguments: a renamed selector must not shadow a plain
+  // `{count_1}` or `{count_1, number}` placeholder
   const used = new Set(counts.keys());
+  collectArgNames(ast, used);
   return args.map(({ arg }) => {
     if (counts.get(arg) === 1) return arg;
     let i = 1;
@@ -353,7 +375,7 @@ function argToDeclaration(arg: SelectArg, name: string): MF.Declaration {
  */
 export function mf1ToMessageData(ast: AST.Token[]): MF.Message {
   const args = findSelectArgs(ast);
-  const names = selectorNames(args);
+  const names = selectorNames(args, ast);
   if (args.length === 0) {
     return {
       type: 'message',
